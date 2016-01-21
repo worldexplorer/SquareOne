@@ -6,11 +6,11 @@ namespace Sq1.Core.Streaming {
 	public class DataDistributorSolidifiers : DataDistributor {
 		public const string REASON_TO_EXIST = "I_DONT_ALLOW_MULTIPLE_CONSUMERS_FOR_SAME_SYMBOL:SCALEINTERVAL_PAIR__SUITABLE_FOR_ONE_SOLIDIFIER_PER_SYMBOL";
 
-		public DataDistributorSolidifiers(StreamingAdapter streamingAdapter) : base(streamingAdapter) {
+		public DataDistributorSolidifiers(StreamingAdapter streamingAdapter) : base(streamingAdapter, "DataDistributorSolidifiers") {
 		}
 
 		public override bool ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval,
-										IStreamingConsumer solidifier, bool quotePumpSeparatePushingThreadEnabled) {
+										StreamingConsumer solidifier, bool quotePumpSeparatePushingThreadEnabled) {
 			bool ret = false;
 			string msig = " //SolidifierConsumerBarSubscribe([" + symbol + "] [" + scaleInterval + "] [" + solidifier + "])";
 
@@ -41,7 +41,7 @@ namespace Sq1.Core.Streaming {
 			return ret;
 		}
 		#if DEBUG
-		public override bool ConsumerBarUnsubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer solidifier) {
+		public override bool ConsumerBarUnsubscribe(string symbol, BarScaleInterval scaleInterval, StreamingConsumer solidifier) {
 			string msig = " //SolidifierConsumerBarUnsubscribe([" + symbol + "] [" + scaleInterval + "] [" + solidifier + "])";
 			bool ret = base.ConsumerBarUnsubscribe(symbol, scaleInterval, solidifier);
 			string msg2 = "SOLIDIFIER_UNSUBSCRIBED_BARS[" + ret + "]";
@@ -50,7 +50,7 @@ namespace Sq1.Core.Streaming {
 		}
 		#endif
 		public override bool ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval,
-										IStreamingConsumer solidifier, bool quotePumpSeparatePushingThreadEnabled) {
+										StreamingConsumer solidifier, bool quotePumpSeparatePushingThreadEnabled) {
 			bool ret = false;
 			string msig = " //SolidifierConsumerQuoteSubscribe(" + symbol + ":" + scaleInterval + "[" + solidifier + "])";
 
@@ -81,7 +81,7 @@ namespace Sq1.Core.Streaming {
 			return ret;
 		}
 		#if DEBUG
-		public override bool ConsumerQuoteUnsubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer solidifier) {
+		public override bool ConsumerQuoteUnsubscribe(string symbol, BarScaleInterval scaleInterval, StreamingConsumer solidifier) {
 			string msig = " //SolidifierConsumerQuoteUnsubscribe(" + symbol + ":" + scaleInterval + "[" + solidifier + "])";
 			bool ret = base.ConsumerQuoteUnsubscribe(symbol, scaleInterval, solidifier);
 			string msg2 = "SOLIDIFIER_UNSUBSCRIBED_QUOTES[" + ret + "]";

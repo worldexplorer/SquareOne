@@ -378,7 +378,7 @@
     <Compile Include="Backtesting\BacktestSpreadModeler.cs" />
     <Compile Include="Backtesting\BacktestSpreadModelerPercentage.cs" />
     <Compile Include="Backtesting\BacktestQuotesGenerator.cs" />
-    <Compile Include="Streaming\IStreamingConsumer.cs" />
+    <Compile Include="Streaming\StreamingConsumer.cs" />
     <Compile Include="Streaming\DataDistributor.cs" />
     <Compile Include="Streaming\StreamingDataSnapshot.cs" />
     <Compile Include="Streaming\SymbolScaleDistributionChannel.cs" />

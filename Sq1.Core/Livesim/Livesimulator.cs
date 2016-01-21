@@ -172,7 +172,7 @@ namespace Sq1.Core.Livesim {
 					string msg2 = "NOT_ABSORBING_LAST_LIVESIM_STREAMING_INTO_BARS_ORIGINAL__SOLIDIFIER_WILL_COMPLAIN_OTHERWISE";
 					Assembler.PopupException(msg2, null, false);
 				} else {
-					string msg2 = "LOOKS_LIKE_WE_USED_UP_ALL_BARS_AND_SUCCESSFULLY_FINISHED_LIVESIM";
+					string msg2 = "LOOKS_LIKE_WE_USED_UP_ALL_BARS_AND_SUCCESSFULLY_FINISHED_LIVESIM___OR_EXCEPTION";
 					//streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(
 					//	streamingBacktest, base.BarsOriginal.Symbol, base.BarsOriginal.ScaleInterval);
 				}

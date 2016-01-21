@@ -17,11 +17,11 @@ namespace Sq1.Core.Streaming {
 		public			bool						UpdateThreadNameAfterMaxConsumersSubscribed;
 		public			bool						HasSeparatePushingThread						{ get { return this is QuotePumpPerChannel; } }
 		public virtual	bool						Paused											{ get {
-				#if DEBUG
-				//Debugger.Break();
-				#endif
 				string msg = "QuoteQueue.Paused: OVERRIDE_ME_KOZ_PAUSING_MAKES_SENSE_FOR_REAL_STREAMING_QUOTE_PUMP_NOT_QUEUE"
 					+ " WHILE_ACTIVATING_ONE_OPRIMIZATION_RESULT_YOU_PAUSE_SINGLE_THREADED_BACKTESTER_INSTEAD_OF_STREAMING_PROVIDER?";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg); } }
 
 		public QuoteQueuePerChannel(SymbolScaleDistributionChannel channel) {
@@ -107,6 +107,7 @@ namespace Sq1.Core.Streaming {
 			if (this.Channel.ConsumersBarCount == 0) {
 				string msg = "INVOKE_ME_LATER_SO_THAT_THREAD_NAME_WILL_CONTAIN_CONSUMER_NAMES_AS_WELL ";
 				//Assembler.PopupException(msg + msig, null, false);
+				return;
 			} else {
 				string msg = "YEAH_NOW_IS_BETTER_TIME_TO_SET_THREAD_NAME__WILL_CONTAIN_CONSUMER_NAMES_AS_WELL ";
 				//Assembler.PopupException(msg + msig, null, false);
@@ -120,6 +121,6 @@ namespace Sq1.Core.Streaming {
 			}
 			return;
 		}
-		public override string ToString() { return THREAD_PREFIX + this.Channel.ToString(); }
+		public override string ToString() { return THREAD_PREFIX + this.Channel.ConsumerNames; }
 	}
 }

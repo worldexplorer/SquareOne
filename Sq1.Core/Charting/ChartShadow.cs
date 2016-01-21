@@ -46,8 +46,8 @@ namespace Sq1.Core.Charting {
 		public ChartShadow() : base() {
 			paintAllowed = new ManualResetEvent(true);
 			this.register();
-			this.ColorBackground_inDataSourceTree = Color.White;
-			this.ChartStreamingConsumer		= new ChartStreamingConsumer(this);
+			this.ColorBackground_inDataSourceTree	= Color.White;
+			this.ChartStreamingConsumer				= new ChartStreamingConsumer(this);
 		}
 		void register(bool dontAccessAssemblerWhileInDesignMode = false) {
 			if (base.DesignMode) return;

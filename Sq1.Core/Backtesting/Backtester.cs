@@ -258,7 +258,7 @@ namespace Sq1.Core.Backtesting {
 				DataDistributor distr = streaming.DataDistributor_replacedForLivesim;
 				distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer, false);
 				distr.ConsumerBarSubscribe  (this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer, false);
-				streaming.SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
+				distr.SetQuotePumpThreadName_unpausePump_sinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
 				
 				this.Executor.BacktestContextInitialize(this.BarsSimulating);
 

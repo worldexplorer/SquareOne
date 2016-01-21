@@ -2,9 +2,10 @@
 
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
+using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Streaming {
-	public class StreamingSolidifier : IStreamingConsumer {
+	public class StreamingSolidifier : StreamingConsumer {
 		DataSource	dataSource;
 
 		double		barStreamingDumpIntervalSeconds;
@@ -22,18 +23,31 @@ namespace Sq1.Core.Streaming {
 			this.dataSource = dataSource;
 			this.barStreamingDumpIntervalSeconds = barStreamingDumpIntervalSeconds;
 			this.barStreamingLastDumpedLocal = DateTime.MinValue;
+			base.ReasonToExist = "SOLIDIFIER[" + dataSource.ToString() + "]";
 		}
 
-		Bars IStreamingConsumer.ConsumerBarsToAppendInto { get { throw new Exception("YOU_SHOULD_NOT_ACCESS_BARS_OF_STREAMING_SOLIDIFIER__THEY_ARE_WRITE_ONLY_THOUGH_SOLIDIFIER_METHODS"); } }
+		#region StreamingConsumer
+		public override ScriptExecutor Executor { get {
+			throw new Exception("YOU_SHOULD_NOT_ACCESS_EXECUTOR_OF_STREAMING_SOLIDIFIER");
+		} }
+		public override Bars ConsumerBarsToAppendInto { get {
+			throw new Exception("YOU_SHOULD_NOT_ACCESS_BARS_OF_STREAMING_SOLIDIFIER__THEY_ARE_WRITE_ONLY_THOUGH_SOLIDIFIER_METHODS");
+		} }
 
-		void IStreamingConsumer.UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart) {
+		public override void UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart) {
 		}
-		void IStreamingConsumer.UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
+		public override void UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
 			this.replaceStreamingBar(quoteLastBeforeStop, true);
 		}
-		void IStreamingConsumer.ConsumeQuoteOfStreamingBar(Quote quote) {
+		public override void ConsumeQuoteOfStreamingBar(Quote quote) {
 			this.replaceStreamingBar(quote);
 		}
+		public override void ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated_WILL_BE_NULL) {
+			string millisSavingTook;
+			int barsSaved = this.dataSource.BarAppendOrReplaceLast(barLastFormed, out millisSavingTook);
+			string msg = millisSavingTook + "; DataSource[" + this.dataSource.Name + "] received barLastFormed[" + barLastFormed + "] from streaming";
+		}
+		#endregion
 
 		void replaceStreamingBar(Quote quote, bool ignoreIntervalForceReplaceBarImmediately = false) {
 			if (this.barStreamingLastDumpedLocal == DateTime.MinValue) {
@@ -64,12 +78,6 @@ namespace Sq1.Core.Streaming {
 			this.barStreamingLastDumpedLocal = quote.LocalTimeCreated;
 			this.barStreamingLastDumpedLocalAsString = quote.LocalTimeCreated.ToString("HH:mm:ss.fff");
 		}
-		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated_WILL_BE_NULL) {
-			string millisSavingTook;
-			int barsSaved = this.dataSource.BarAppendOrReplaceLast(barLastFormed, out millisSavingTook);
-			string msg = millisSavingTook + "; DataSource[" + this.dataSource.Name + "] received barLastFormed[" + barLastFormed + "] from streaming";
-		}
-
 		public override string ToString() {
 			return "StreamingSolidifier[" + this.dataSource.ToString() + "]";
 		}

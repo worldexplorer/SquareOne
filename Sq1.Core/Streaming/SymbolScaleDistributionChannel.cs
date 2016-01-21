@@ -7,12 +7,15 @@ using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
 	public partial class SymbolScaleDistributionChannel {
+		public	string							ReasonIwasCreated_propagatedFromDistributor;
 		public	string							Symbol							{ get; protected set; }
 		public	BarScaleInterval				ScaleInterval					{ get; protected set; }
+		public	List<StreamingConsumer>			ConsumersQuote					{ get; protected set; }
+		public	List<StreamingConsumer>			ConsumersBar					{ get; protected set; }
+
 		public	StreamingBarFactoryUnattached	StreamingBarFactoryUnattached	{ get; protected set; }
-				Dictionary<IStreamingConsumer, StreamingLateBinder> binderPerConsumer;
-		public	List<IStreamingConsumer>		ConsumersQuote					{ get; protected set; }
-		public	List<IStreamingConsumer>		ConsumersBar					{ get; protected set; }
+				Dictionary<StreamingConsumer, StreamingLateBinder> binderPerConsumer;
+
 				object							lockConsumersQuote;
 				object							lockConsumersBar;
 				List<Backtester>				backtestersRunningCausingPumpingPause;
@@ -27,15 +30,16 @@ namespace Sq1.Core.Streaming {
 		SymbolScaleDistributionChannel() {
 			lockConsumersQuote	= new object();
 			lockConsumersBar	= new object();
-			ConsumersQuote		= new List<IStreamingConsumer>();
-			ConsumersBar		= new List<IStreamingConsumer>();
-			binderPerConsumer	= new Dictionary<IStreamingConsumer, StreamingLateBinder>();
+			ConsumersQuote		= new List<StreamingConsumer>();
+			ConsumersBar		= new List<StreamingConsumer>();
+			binderPerConsumer	= new Dictionary<StreamingConsumer, StreamingLateBinder>();
 			backtestersRunningCausingPumpingPause = new List<Backtester>();
 			//QuotePump = new QuotePump(this);
 			// avoiding YOU_FORGOT_TO_INVOKE_INDICATOR.INITIALIZE()_OR_WAIT_UNTIL_ITLLBE_INVOKED_LATER
 			// Assembler instantiates StreamingAdapters early enough so these horses 
 			// NOPE_ON_APP_RESTART_BACKTESTER_COMPLAINS_ITS_ALREADY_PAUSED
 			// moved BacktesterRunningAdd() to QuotePump.PushConsumersPaused = true;
+			ReasonIwasCreated_propagatedFromDistributor = "REASON_UNKNOWN";
 		}
 		public SymbolScaleDistributionChannel(string symbol, BarScaleInterval scaleInterval, bool quotePumpSeparatePushingThreadEnabled) : this() {
 			this.Symbol = symbol;
@@ -145,7 +149,7 @@ namespace Sq1.Core.Streaming {
 			}
 			int consumerSerno = 1;
 			int streamingSolidifiersPoked = 0;
-			foreach (IStreamingConsumer barConsumer in this.ConsumersBar) {
+			foreach (StreamingConsumer barConsumer in this.ConsumersBar) {
 				msig = " missed barStreamingUnattached[" + barStreamingUnattached + "]: BarConsumer#"
 					+ (consumerSerno++) + "/" + this.ConsumersBar.Count + " " + barConsumer.ToString();
 
@@ -255,7 +259,7 @@ namespace Sq1.Core.Streaming {
 			}
 			int consumerSerno = 1;
 			int streamingSolidifiersPoked = 0;
-			foreach (IStreamingConsumer quoteConsumer in this.ConsumersQuote) {
+			foreach (StreamingConsumer quoteConsumer in this.ConsumersQuote) {
 				msig = " //bindConsumeQuote(): quoteSernoEnrichedWithUnboundStreamingBar[" + quoteSernoEnrichedWithUnboundStreamingBar.ToString()
 					+ "]: QuoteConsumer#" + (consumerSerno++) + "/" + this.ConsumersQuote.Count + " " + quoteConsumer.ToString();
 
@@ -316,7 +320,7 @@ namespace Sq1.Core.Streaming {
 
 		public string ConsumersQuoteAsString { get { lock (this.lockConsumersQuote) {
 					string ret = "";
-					foreach (IStreamingConsumer consumer in this.ConsumersQuote) {
+					foreach (StreamingConsumer consumer in this.ConsumersQuote) {
 						if (ret != "") ret += ", ";
 						ret += consumer.ToString();
 					}
@@ -324,13 +328,49 @@ namespace Sq1.Core.Streaming {
 				} } }
 		public string ConsumersBarAsString { get { lock (this.lockConsumersBar) {
 					string ret = "";
-					foreach (IStreamingConsumer consumer in this.ConsumersBar) {
+					foreach (StreamingConsumer consumer in this.ConsumersBar) {
 						if (ret != "") ret += ", ";
 						ret += consumer.ToString();
 					}
 					return ret;
 				} } }
+		public string ConsumersQuoteNames { get { lock (this.lockConsumersQuote) {
+					string ret = "";
+					foreach (StreamingConsumer consumer in this.ConsumersQuote) {
+						if (ret != "") ret += ",";
+						ret += consumer.ReasonToExist;
+					}
+					return ret;
+				} } }
+		public string ConsumersBarNames { get { lock (this.lockConsumersBar) {
+					string ret = "";
+					foreach (StreamingConsumer consumer in this.ConsumersBar) {
+						if (ret != "") ret += ",";
+						ret += consumer.ReasonToExist;
+					}
+					return ret;
+				} } }
+
 		public override string ToString() { return this.SymbolScaleInterval + ":Quotes[" + this.ConsumersQuoteAsString + "],Bars[" + this.ConsumersBarAsString + "]"; }
+		public string ToStringShort { get { return this.SymbolScaleInterval + "(b" + this.ConsumersBar.Count + "+" + this.ConsumersQuote.Count + "q)"; } }
+		public string ToStringNames { get { return this.SymbolScaleInterval + ":Quotes[" + this.ConsumersQuoteNames + "],Bars[" + this.ConsumersBarNames + "]"; } }
+		public string ConsumerNames	{ get {
+			List<StreamingConsumer>	merged = new List<StreamingConsumer>();
+			merged.AddRange(this.ConsumersQuote);
+			merged.AddRange(this.ConsumersBar);
+
+			string ret = "";
+			foreach (StreamingConsumer consumerEach in merged) {
+				if (string.IsNullOrEmpty(consumerEach.ReasonToExist)) continue;
+				if (ret.Contains(consumerEach.ReasonToExist)) continue;
+				if (ret != "") ret += ",";
+				ret += consumerEach.ReasonToExist;
+			}
+			if (ret == "") ret = "NO_CONSUMERS";
+			ret = this.SymbolScaleInterval + ":" + ret;
+			ret = this.ReasonIwasCreated_propagatedFromDistributor + "-" + this.SymbolScaleInterval + ":" + ret;
+			return ret;
+		} }
 
 		//public string ConsumersQuoteAsShortString { get { lock (this.lockConsumersQuote) {
 		//            string ret = "";
@@ -350,13 +390,13 @@ namespace Sq1.Core.Streaming {
 		//        } } }
 		//public override string ToShortString() { return this.SymbolScaleInterval + ":Quotes[" + this.ConsumersQuoteAsShortString + "],Bars[" + this.ConsumersBarAsShortString + "]"; }
 
-		public bool ConsumersQuoteContains(IStreamingConsumer consumer) { lock (this.lockConsumersQuote) { return this.ConsumersQuote.Contains(consumer); } }
-		public void ConsumersQuoteAdd(IStreamingConsumer consumer) { lock (this.lockConsumersQuote) {
+		public bool ConsumersQuoteContains(StreamingConsumer consumer) { lock (this.lockConsumersQuote) { return this.ConsumersQuote.Contains(consumer); } }
+		public void ConsumersQuoteAdd(StreamingConsumer consumer) { lock (this.lockConsumersQuote) {
 				this.ConsumersQuote.Add(consumer);
 				if (binderPerConsumer.ContainsKey(consumer)) return;
 				binderPerConsumer.Add(consumer, new StreamingLateBinder(this.StreamingBarFactoryUnattached, consumer));
 			} }
-		public void ConsumersQuoteRemove(IStreamingConsumer consumer) { lock (this.lockConsumersQuote) {
+		public void ConsumersQuoteRemove(StreamingConsumer consumer) { lock (this.lockConsumersQuote) {
 				this.ConsumersQuote.Remove(consumer);
 				//if (earlyBinders.ContainsKey(consumer) && this.consumersBar.Contains(consumer) == false) {
 				if (this.ConsumersBar.Contains(consumer)) return;
@@ -365,13 +405,13 @@ namespace Sq1.Core.Streaming {
 			} }
 		public int ConsumersQuoteCount { get { lock (this.lockConsumersQuote) { return this.ConsumersQuote.Count; } } }
 
-		public bool ConsumersBarContains(IStreamingConsumer consumer) { lock (this.lockConsumersBar) { return this.ConsumersBar.Contains(consumer); } }
-		public void ConsumersBarAdd(IStreamingConsumer consumer) { lock (this.lockConsumersBar) {
+		public bool ConsumersBarContains(StreamingConsumer consumer) { lock (this.lockConsumersBar) { return this.ConsumersBar.Contains(consumer); } }
+		public void ConsumersBarAdd(StreamingConsumer consumer) { lock (this.lockConsumersBar) {
 				this.ConsumersBar.Add(consumer);
 				if (binderPerConsumer.ContainsKey(consumer)) return;
 				binderPerConsumer.Add(consumer, new StreamingLateBinder(this.StreamingBarFactoryUnattached, consumer));
 			} }
-		public void ConsumersBarRemove(IStreamingConsumer consumer) { lock (this.lockConsumersBar) {
+		public void ConsumersBarRemove(StreamingConsumer consumer) { lock (this.lockConsumersBar) {
 				this.ConsumersBar.Remove(consumer);
 				//if (earlyBinders.ContainsKey(consumer) && this.consumersQuote.Contains(consumer) == false) {
 				if (this.ConsumersQuote.Contains(consumer)) return;
@@ -381,14 +421,14 @@ namespace Sq1.Core.Streaming {
 		public int ConsumersBarCount { get { lock (this.lockConsumersBar) { return this.ConsumersBar.Count; } } }
 
 		internal void UpstreamSubscribedToSymbolPokeConsumers(string symbol) {
-			foreach (IStreamingConsumer quoteConsumer in this.ConsumersQuote) quoteConsumer.UpstreamSubscribedToSymbolNotification(null);
-			foreach (IStreamingConsumer barConsumer in this.ConsumersBar) barConsumer.UpstreamSubscribedToSymbolNotification(null);
+			foreach (StreamingConsumer quoteConsumer in this.ConsumersQuote) quoteConsumer.UpstreamSubscribedToSymbolNotification(null);
+			foreach (StreamingConsumer barConsumer in this.ConsumersBar) barConsumer.UpstreamSubscribedToSymbolNotification(null);
 		}
 		internal void UpstreamUnSubscribedFromSymbolPokeConsumers(string symbol, Quote lastQuoteReceived) {
-			foreach (IStreamingConsumer quoteConsumer in this.ConsumersQuote) {
+			foreach (StreamingConsumer quoteConsumer in this.ConsumersQuote) {
 				quoteConsumer.UpstreamUnSubscribedFromSymbolNotification(lastQuoteReceived);
 			}
-			foreach (IStreamingConsumer barConsumer in this.ConsumersBar) {
+			foreach (StreamingConsumer barConsumer in this.ConsumersBar) {
 				if (barConsumer is StreamingSolidifier == false) {
 					lastQuoteReceived.SetParentBarStreaming(barConsumer.ConsumerBarsToAppendInto.BarStreamingNullUnsafe);
 				}
@@ -411,8 +451,8 @@ namespace Sq1.Core.Streaming {
 			if (this.QuotePump is QuoteQueuePerChannel && backtesterAdding is Livesimulator) {
 				string msg = "AVOIDED_UPSTACK NOPROB__YOU_SUBSCRIBED_LIVESIM_BARS_IN_SINGLE_THREADED_QUEUE SimulationPreBarsSubstitute_overrideable()<=Livesimulator.cs:105"
 					+ "NO_NEED_TO_PAUSE_COMPETITORS NO_COMPETITORS_FOR_LIVESIM_BAR_EVENTS";
-				Assembler.PopupException(msg, null, false);
-				return;
+				//Assembler.PopupException(msg, null, false);
+				//return;
 			}
 			if (this.QuotePump.Paused == true) {
 				if (addedFirstBacktester) {
@@ -430,8 +470,8 @@ namespace Sq1.Core.Streaming {
 			if (this.QuotePump is QuoteQueuePerChannel && backtesterRemoving is Livesimulator) {
 				string msg = "AVOIDED_UPSTACK NOPROB__YOU_SUBSCRIBED_LIVESIM_BARS_IN_SINGLE_THREADED_QUEUE SimulationPreBarsSubstitute_overrideable()<=Livesimulator.cs:105"
 					+ "NO_NEED_TO_PAUSE_COMPETITORS NO_COMPETITORS_FOR_LIVESIM_BAR_EVENTS";
-				Assembler.PopupException(msg, null, false);
-				return;
+				//Assembler.PopupException(msg, null, false);
+				//return;
 			}
 
 			if (this.QuotePump.Paused == false) {
@@ -460,9 +500,9 @@ namespace Sq1.Core.Streaming {
 			ret.Symbol									= this.Symbol;
 			ret.ScaleInterval							= this.ScaleInterval;
 			ret.StreamingBarFactoryUnattached			= this.StreamingBarFactoryUnattached;
-			ret.binderPerConsumer						= new Dictionary<IStreamingConsumer, StreamingLateBinder>(this.binderPerConsumer);
-			ret.ConsumersQuote							= new List<IStreamingConsumer>(this.ConsumersQuote);
-			ret.ConsumersBar							= new List<IStreamingConsumer>(this.ConsumersBar);
+			ret.binderPerConsumer						= new Dictionary<StreamingConsumer, StreamingLateBinder>(this.binderPerConsumer);
+			ret.ConsumersQuote							= new List<StreamingConsumer>(this.ConsumersQuote);
+			ret.ConsumersBar							= new List<StreamingConsumer>(this.ConsumersBar);
 			ret.backtestersRunningCausingPumpingPause	= new List<Backtester>(this.backtestersRunningCausingPumpingPause);
 			ret.QuotePump								= this.QuotePump;
 			return ret;
