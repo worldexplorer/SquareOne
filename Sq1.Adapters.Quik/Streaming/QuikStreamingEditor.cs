@@ -1,31 +1,14 @@
 ﻿using System;
+using System.Windows.Forms;
 
 using WeifenLuo.WinFormsUI.Docking;
 
 using Sq1.Core;
 using Sq1.Core.Streaming;
 using Sq1.Core.DataFeed;
-using System.Windows.Forms;
 
 namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreamingEditor {
-		public String DdeServerPrefix {
-			get { return this.txtDdeServerPrefix.Text; }
-			set { this.txtDdeServerPrefix.Text = value; }
-		}
-		public String DdeTopicQuotes {
-			get { return this.txtTopicQuotes.Text; }
-			set { this.txtTopicQuotes.Text = value; }
-		}
-		public String DdeTopicTrades {
-			get { return this.txtTopicTrades.Text; }
-			set { this.txtTopicTrades.Text = value; }
-		}
-		public String DdeTopicPrefixDom {
-			get { return this.txtTopicPrefixDOM.Text; }
-			set { this.txtTopicPrefixDOM.Text = value; }
-		}
-
 		QuikStreaming	quikStreamingAdapter { get { return base.StreamingAdapter as QuikStreaming; } }
 		bool			dontStartStopDdeServer_imSyncingDdeStarted_intoTheBtnText_only;
 
@@ -38,18 +21,23 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.propagateStreamingConnected_intoBtnStateText();
 		}
 
-		public override void PushStreamingAdapterSettingsToEditor() {
-			this.DdeServerPrefix	= this.quikStreamingAdapter.DdeServiceName;
-			this.DdeTopicQuotes		= this.quikStreamingAdapter.DdeTopicQuotes;
-			this.DdeTopicTrades		= this.quikStreamingAdapter.DdeTopicTrades;
-			this.DdeTopicPrefixDom	= this.quikStreamingAdapter.DdeTopicPrefixDom;
+		public override void PopulateStreamingAdapterSettingsToEditor() {
+			this.txtDdeServerPrefix.Text		= this.quikStreamingAdapter.DdeServiceName;
+			this.txtDdeTopicQuotes.Text			= this.quikStreamingAdapter.DdeTopicQuotes;
+			this.txtDdeTopicTrades.Text			= this.quikStreamingAdapter.DdeTopicTrades;
+			this.txtDdeTopicPrefixDom.Text		= this.quikStreamingAdapter.DdeTopicPrefixDom;
+			this.txtDdeMonitorRefreshRate.Text	= this.quikStreamingAdapter.DdeMonitorRefreshRate.ToString();
 		}
 		public override void PushEditedSettingsToStreamingAdapter() {
 			if (base.IgnoreEditorFieldChangesWhileInitializingEditor) return;
-			this.quikStreamingAdapter.DdeServiceName	= this.DdeServerPrefix;
-			this.quikStreamingAdapter.DdeTopicQuotes	= this.DdeTopicQuotes;
-			this.quikStreamingAdapter.DdeTopicTrades	= this.DdeTopicTrades;
-			this.quikStreamingAdapter.DdeTopicPrefixDom	= this.DdeTopicPrefixDom;
+			this.quikStreamingAdapter.DdeServiceName	= this.txtDdeServerPrefix.Text;
+			this.quikStreamingAdapter.DdeTopicQuotes	= this.txtDdeTopicQuotes.Text;
+			this.quikStreamingAdapter.DdeTopicTrades	= this.txtDdeTopicTrades.Text;
+			this.quikStreamingAdapter.DdeTopicPrefixDom	= this.txtDdeTopicPrefixDom.Text;
+
+			int refreshRateParsed = 200;
+			Int32.TryParse(this.txtDdeMonitorRefreshRate.Text, out refreshRateParsed);
+			this.quikStreamingAdapter.DdeMonitorRefreshRate	= refreshRateParsed;
 		}
 
 		void propagateStreamingConnected_intoBtnStateText() {

@@ -72,6 +72,7 @@
 			this.olvcLevelTwo.AllColumns.Add(this.olvAsk);
 			this.olvcLevelTwo.AllColumns.Add(this.olvPrice);
 			this.olvcLevelTwo.AllColumns.Add(this.olvBid);
+			this.olvcLevelTwo.AllowColumnReorder = true;
 			this.olvcLevelTwo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -80,7 +81,8 @@
             this.olvPrice,
             this.olvBid});
 			this.olvcLevelTwo.Cursor = System.Windows.Forms.Cursors.Default;
-			this.olvcLevelTwo.FullRowSelect = true;
+			this.olvcLevelTwo.EmptyListMsg = "No Level2 Received Yet";
+			this.olvcLevelTwo.HideSelection = false;
 			this.olvcLevelTwo.Location = new System.Drawing.Point(4, 72);
 			this.olvcLevelTwo.Margin = new System.Windows.Forms.Padding(3, 30, 3, 3);
 			this.olvcLevelTwo.Name = "olvcLevelTwo";

@@ -1,25 +1,31 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 using Sq1.Core.Support;
+using Sq1.Core.Streaming;
 
 using Sq1.Adapters.Quik.Streaming.Dde;
-using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik.Streaming.Monitor {
 	public partial class QuikStreamingMonitorDomUserControl : UserControlResizeable {
-		DdeTableDepth tableLevel2;
+		QuikStreaming	quikStreaming;
+		DdeTableDepth	tableLevel2;
+		Stopwatch		stopwatchRarifyingUIupdates;
 
 		public QuikStreamingMonitorDomUserControl() {
 			InitializeComponent();
 			this.olvDomCustomize();
+			this.stopwatchRarifyingUIupdates = new Stopwatch();
+			this.stopwatchRarifyingUIupdates.Start();
 		}
 		void layoutUserControlResizeable() {
 			base.UserControlInner.Controls.Add(this.olvcLevelTwo);
 			this.olvcLevelTwo.Dock = DockStyle.Fill;
 		}
-		internal void Initialize(DdeTableDepth tableLevel2Passed) {
+		internal void Initialize(QuikStreaming quikStreamingPassed, DdeTableDepth tableLevel2Passed) {
+			this.quikStreaming = quikStreamingPassed;
 			this.tableLevel2 = tableLevel2Passed;
 			this.tableLevel2.UserControlMonitoringMe = this;
 			this.layoutUserControlResizeable();
@@ -30,6 +36,10 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 				base.BeginInvoke((MethodInvoker)delegate { this.PopulateLevel2ToTitle(); });
 				return;
 			}
+			// I paid the price of switching to GuiThread, but I don' have to worry if I already stopwatch.Restart()ed
+			if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRate) return;
+			this.stopwatchRarifyingUIupdates.Restart();
+
 			this.lblDomTitle.Text = this.tableLevel2.ToString();
 		}
 
@@ -41,6 +51,9 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 				base.BeginInvoke((MethodInvoker)delegate { this.PopulateLevel2ToDomControl(levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl); });
 				return;
 			}
+			// I paid the price of switching to GuiThread, but I don' have to worry if I already stopwatch.Restart()ed
+			if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRate) return;
+			this.stopwatchRarifyingUIupdates.Restart();
 
 			this.olvcLevelTwo.SetObjects(levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl.FreezeSortAndFlatten());
 		}

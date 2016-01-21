@@ -7,8 +7,8 @@ using Sq1.Core;
 
 namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 	public class XlDdeServer : DdeServer {
-		Dictionary<string, XlDdeTable> tablesByTopic;
-		object lockSynchronousPoke;	// NOT_NEEDED_BUT_I_WANT_TO_MAKE_SURE__REMOVE_IF_TOO_SLOW
+		Dictionary<string, XlDdeTable>	tablesByTopic;
+		object							lockSynchronousPoke;	// NOT_NEEDED_BUT_I_WANT_TO_MAKE_SURE__REMOVE_IF_TOO_SLOW
 
 		public XlDdeServer(string service) : base(service) {
 			this.tablesByTopic = new Dictionary<string, XlDdeTable>();

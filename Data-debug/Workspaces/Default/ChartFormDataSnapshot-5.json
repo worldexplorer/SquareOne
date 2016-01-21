@@ -47,7 +47,7 @@
         "ManualOrder": 1,
         "Distance": 27,
         "SplitterHeight": 6,
-        "PanelHeight": 121
+        "PanelHeight": 33
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -57,14 +57,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 384
+        "PanelHeight": 811
       },
       "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 390,
+        "Distance": 817,
         "SplitterHeight": 6,
-        "PanelHeight": 218
+        "PanelHeight": 321
       }
     },
     "Name": "Default",
@@ -101,7 +101,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 70,
+    "SqueezeVerticalPaddingPx": 0,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,

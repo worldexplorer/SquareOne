@@ -22,9 +22,8 @@
     "DdeTopicQuotes": "quotes",
     "DdeTopicTrades": "trades",
     "DdeTopicPrefixDom": "dom",
-    "DdeServerStarted": true,
-    "IdentForMonitorWindowTitle": "Qmock :: MOCK [quotes] //TablesReceived[0]",
-    "ConnectionState": 1
+    "DdeMonitorRefreshRate": 200,
+    "UpstreamConnected": false
   },
   "BrokerAdapter": {
     "$type": "Sq1.Adapters.Quik.Broker.QuikBroker, Sq1.Adapters.Quik",

@@ -20,6 +20,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 		[JsonProperty]	public		string					DdeTopicQuotes;		//QuikStreamingLivesim needs it public{ get; internal set; }
 		[JsonProperty]	public		string					DdeTopicTrades;		//QuikStreamingLivesim needs it public{ get; internal set; }
 		[JsonProperty]	public		string					DdeTopicPrefixDom;	//QuikStreamingLivesim needs it public { get; internal set; }
+		[JsonProperty]	public		int						DdeMonitorRefreshRate;
 
 		[JsonIgnore]	public		XlDdeServer				DdeServer					{ get; private set; }
 		[JsonIgnore]	public		bool					DdeServerIsRegistered		{ get { return this.DdeServer != null && this.DdeServer.IsRegistered; } }
@@ -79,15 +80,16 @@ namespace Sq1.Adapters.Quik.Streaming {
 			} }
 
 		public QuikStreaming() : base() {
-			base.Name					= "QuikStreaming-DllScanned";
-			base.Icon					= (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
-			this.DdeServiceName			= "SQ1";
-			this.DdeTopicQuotes			= "quotes";
-			this.DdeTopicTrades			= "trades";
-			this.DdeTopicPrefixDom		= "dom";
-			base.StreamingDataSnapshot	= new QuikStreamingDataSnapshot(this);
-			this.UpstreamConnectionState		= ConnectionState.DisconnectedJustConstructed;
-			base.LivesimStreaming		= new QuikStreamingLivesim();
+			base.Name						= "QuikStreaming-DllScanned";
+			base.Icon						= (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
+			this.DdeServiceName				= "SQ1";
+			this.DdeTopicQuotes				= "quotes";
+			this.DdeTopicTrades				= "trades";
+			this.DdeTopicPrefixDom			= "dom";
+			this.DdeMonitorRefreshRate		= 200;
+			base.StreamingDataSnapshot		= new QuikStreamingDataSnapshot(this);
+			this.UpstreamConnectionState	= ConnectionState.DisconnectedJustConstructed;
+			base.LivesimStreaming			= new QuikStreamingLivesim();
 		}
 		public override void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {
 			base.Name			= "QuikStreaming";

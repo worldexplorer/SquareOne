@@ -2,14 +2,17 @@
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 using Sq1.Widgets;
-using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
+
 using Sq1.Adapters.Quik.Streaming.Dde;
+using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Streaming.Monitor {
 	public partial class QuikStreamingMonitorForm : DockContentImproved {
-		QuikStreaming quikStreaming;
+		QuikStreaming	quikStreaming;
+		Stopwatch		stopwatchRarifyingUIupdates;
 
 		// I_DONT_WANT_MONITOR_TO_STAY_AFTER_APPRESTART__HOPING_NEVER_INVOKED_BY_DESERIALIZER
 		public QuikStreamingMonitorForm() {
@@ -20,6 +23,8 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		public QuikStreamingMonitorForm(QuikStreaming quikStreamingInstantiatedForDataSource) : this() {
 			this.quikStreaming = quikStreamingInstantiatedForDataSource;
 			this.QuikStreamingMonitorControl.Initialize(this.quikStreaming);
+			this.stopwatchRarifyingUIupdates = new Stopwatch();
+			this.stopwatchRarifyingUIupdates.Start();
 		}
 
 		void quikStreaming_OnConnectionStateChanged(object sender, EventArgs e) {
@@ -31,7 +36,8 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 				base.BeginInvoke((MethodInvoker)delegate { this.populateWindowTitle_grpStatuses(); });
 				return;
 			}
-			base.Text = this.quikStreaming.DdeBatchSubscriber.WindowTitle;
+			string refreshRate = " (" + this.quikStreaming.DdeMonitorRefreshRate + "ms refresh rate)";
+			base.Text = this.quikStreaming.DdeBatchSubscriber.WindowTitle + refreshRate;
 			this.QuikStreamingMonitorControl.Populate_grpStatuses();
 		}
 
@@ -41,12 +47,21 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 				base.BeginInvoke((MethodInvoker)delegate { this.tableQuotes_DataStructuresParsed_Table(sender, e); });
 				return;
 			}
+			// I paid the price of switching to GuiThread, but I don' have to worry if I already stopwatch.Restart()ed
+			if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRate) return;
+			this.stopwatchRarifyingUIupdates.Restart();
+
 			this.QuikStreamingMonitorControl.OlvQuotes.SetObjects(e.DataStructureParsed);
-			XlDdeTableMonitoreable<QuoteQuik> xlDdeTable = sender as XlDdeTableMonitoreable<QuoteQuik>;
-			if (xlDdeTable == null) return;
-			this.QuikStreamingMonitorControl.grpQuotes.Text = xlDdeTable.ToString();
+			this.populateWindowTitle_grpStatuses();
+
+			// done in QuikStreamingMonitorControl.Populate_grpStatuses()
+			//XlDdeTableMonitoreable<QuoteQuik> xlDdeTable = sender as XlDdeTableMonitoreable<QuoteQuik>;
+			//if (xlDdeTable == null) return;
+			//this.QuikStreamingMonitorControl.grpQuotes.Text = xlDdeTable.ToString();
 		}
 		void tableQuotes_DataStructureParsed_One(object sender, XlDdeTableMonitoringEventArg<QuoteQuik> e) {
+			// dont forget about the stopwatch
+			// if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRate) return;
 		}
 
 		internal void PopulateWindowTitle_dataSourceName_market_quotesTopic() {

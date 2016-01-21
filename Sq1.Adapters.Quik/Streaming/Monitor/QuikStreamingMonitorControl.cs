@@ -20,7 +20,7 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 
 		internal void DomUserControl_createAddFor(DdeTableDepth tableLevel2) {
 			QuikStreamingMonitorDomUserControl controlForLevel2 = new QuikStreamingMonitorDomUserControl();
-			controlForLevel2.Initialize(tableLevel2);
+			controlForLevel2.Initialize(this.quikStreaming, tableLevel2);
 			this.flpDoms.Controls.Add(controlForLevel2);
 		}
 		internal void DomUserControl_deleteFor(DdeTableDepth tableLevel2) {
@@ -36,8 +36,8 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 
 		internal void Populate_grpStatuses() {
 			this.grpQuotes.Text = this.quikStreaming.DdeBatchSubscriber.TableQuotes.ToString();
-			this.grpTrades.Text = this.quikStreaming.DdeBatchSubscriber.TableTrades.ToString();
 			this.grpDom.Text	= this.quikStreaming.DdeBatchSubscriber.DomGroupboxTitle;
+			this.grpTrades.Text = this.quikStreaming.DdeBatchSubscriber.TableTrades.ToString();
 		}
 	}
 }

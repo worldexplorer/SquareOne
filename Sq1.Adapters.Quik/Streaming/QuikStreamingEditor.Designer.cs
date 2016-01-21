@@ -13,30 +13,32 @@ namespace Sq1.Adapters.Quik.Streaming {
 		#region Component Designer generated code
 		private System.ComponentModel.IContainer components = null;
 		private Label lblDdePrefix;
-		private TextBox txtTopicQuotes;
+		private TextBox txtDdeTopicQuotes;
 		private Label lblTopicQuotes;
 		private Label lblMinus;
-		private TextBox txtTopicTrades;
+		private TextBox txtDdeTopicTrades;
 		private Label lblTopicTrades;
 		private Label lblMinus2;
-		private TextBox txtTopicPrefixDOM;
+		private TextBox txtDdeTopicPrefixDom;
 		private Label lblTopicPrefixDOM;
 		private Label lblMinus4;
 		private TextBox txtDdeServerPrefix;
 		void InitializeComponent() {
 			this.lblDdePrefix = new System.Windows.Forms.Label();
 			this.txtDdeServerPrefix = new System.Windows.Forms.TextBox();
-			this.txtTopicQuotes = new System.Windows.Forms.TextBox();
+			this.txtDdeTopicQuotes = new System.Windows.Forms.TextBox();
 			this.lblTopicQuotes = new System.Windows.Forms.Label();
 			this.lblMinus = new System.Windows.Forms.Label();
-			this.txtTopicTrades = new System.Windows.Forms.TextBox();
+			this.txtDdeTopicTrades = new System.Windows.Forms.TextBox();
 			this.lblTopicTrades = new System.Windows.Forms.Label();
 			this.lblMinus2 = new System.Windows.Forms.Label();
-			this.txtTopicPrefixDOM = new System.Windows.Forms.TextBox();
+			this.txtDdeTopicPrefixDom = new System.Windows.Forms.TextBox();
 			this.lblTopicPrefixDOM = new System.Windows.Forms.Label();
 			this.lblMinus4 = new System.Windows.Forms.Label();
 			this.cbxStartDde = new System.Windows.Forms.CheckBox();
 			this.lnkDdeMonitor = new System.Windows.Forms.LinkLabel();
+			this.txtDdeMonitorRefreshRate = new System.Windows.Forms.TextBox();
+			this.lblRefreshMs = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// lblDdePrefix
@@ -58,10 +60,10 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// 
 			// txtTopicQuotes
 			// 
-			this.txtTopicQuotes.Location = new System.Drawing.Point(102, 22);
-			this.txtTopicQuotes.Name = "txtTopicQuotes";
-			this.txtTopicQuotes.Size = new System.Drawing.Size(108, 20);
-			this.txtTopicQuotes.TabIndex = 10;
+			this.txtDdeTopicQuotes.Location = new System.Drawing.Point(102, 22);
+			this.txtDdeTopicQuotes.Name = "txtTopicQuotes";
+			this.txtDdeTopicQuotes.Size = new System.Drawing.Size(108, 20);
+			this.txtDdeTopicQuotes.TabIndex = 10;
 			// 
 			// lblTopicQuotes
 			// 
@@ -83,10 +85,10 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// 
 			// txtTopicTrades
 			// 
-			this.txtTopicTrades.Location = new System.Drawing.Point(102, 100);
-			this.txtTopicTrades.Name = "txtTopicTrades";
-			this.txtTopicTrades.Size = new System.Drawing.Size(108, 20);
-			this.txtTopicTrades.TabIndex = 13;
+			this.txtDdeTopicTrades.Location = new System.Drawing.Point(102, 100);
+			this.txtDdeTopicTrades.Name = "txtTopicTrades";
+			this.txtDdeTopicTrades.Size = new System.Drawing.Size(108, 20);
+			this.txtDdeTopicTrades.TabIndex = 13;
 			// 
 			// lblTopicTrades
 			// 
@@ -108,10 +110,10 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// 
 			// txtTopicPrefixDOM
 			// 
-			this.txtTopicPrefixDOM.Location = new System.Drawing.Point(102, 61);
-			this.txtTopicPrefixDOM.Name = "txtTopicPrefixDOM";
-			this.txtTopicPrefixDOM.Size = new System.Drawing.Size(108, 20);
-			this.txtTopicPrefixDOM.TabIndex = 16;
+			this.txtDdeTopicPrefixDom.Location = new System.Drawing.Point(102, 61);
+			this.txtDdeTopicPrefixDom.Name = "txtTopicPrefixDOM";
+			this.txtDdeTopicPrefixDom.Size = new System.Drawing.Size(108, 20);
+			this.txtDdeTopicPrefixDom.TabIndex = 16;
 			// 
 			// lblTopicPrefixDOM
 			// 
@@ -146,7 +148,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// lnkDdeMonitor
 			// 
 			this.lnkDdeMonitor.AutoSize = true;
-			this.lnkDdeMonitor.Location = new System.Drawing.Point(71, 152);
+			this.lnkDdeMonitor.Location = new System.Drawing.Point(142, 158);
 			this.lnkDdeMonitor.Name = "lnkDdeMonitor";
 			this.lnkDdeMonitor.Size = new System.Drawing.Size(68, 13);
 			this.lnkDdeMonitor.TabIndex = 21;
@@ -154,19 +156,38 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.lnkDdeMonitor.Text = "DDE Monitor";
 			this.lnkDdeMonitor.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkDdeMonitor_LinkClicked);
 			// 
+			// txtRefreshRateDdeMonitor
+			// 
+			this.txtDdeMonitorRefreshRate.Location = new System.Drawing.Point(3, 155);
+			this.txtDdeMonitorRefreshRate.Name = "txtRefreshRateDdeMonitor";
+			this.txtDdeMonitorRefreshRate.Size = new System.Drawing.Size(33, 20);
+			this.txtDdeMonitorRefreshRate.TabIndex = 22;
+			this.txtDdeMonitorRefreshRate.Text = "200";
+			// 
+			// lblRefreshMs
+			// 
+			this.lblRefreshMs.AutoSize = true;
+			this.lblRefreshMs.Location = new System.Drawing.Point(36, 158);
+			this.lblRefreshMs.Name = "lblRefreshMs";
+			this.lblRefreshMs.Size = new System.Drawing.Size(104, 13);
+			this.lblRefreshMs.TabIndex = 23;
+			this.lblRefreshMs.Text = "ms Refresh Rate For";
+			// 
 			// QuikStreamingEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoScroll = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Controls.Add(this.lblRefreshMs);
+			this.Controls.Add(this.txtDdeMonitorRefreshRate);
 			this.Controls.Add(this.lnkDdeMonitor);
 			this.Controls.Add(this.cbxStartDde);
-			this.Controls.Add(this.txtTopicPrefixDOM);
+			this.Controls.Add(this.txtDdeTopicPrefixDom);
 			this.Controls.Add(this.lblTopicPrefixDOM);
-			this.Controls.Add(this.txtTopicTrades);
+			this.Controls.Add(this.txtDdeTopicTrades);
 			this.Controls.Add(this.lblTopicTrades);
-			this.Controls.Add(this.txtTopicQuotes);
+			this.Controls.Add(this.txtDdeTopicQuotes);
 			this.Controls.Add(this.lblTopicQuotes);
 			this.Controls.Add(this.txtDdeServerPrefix);
 			this.Controls.Add(this.lblDdePrefix);
@@ -174,7 +195,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.Controls.Add(this.lblMinus2);
 			this.Controls.Add(this.lblMinus4);
 			this.Name = "QuikStreamingEditor";
-			this.Size = new System.Drawing.Size(214, 169);
+			this.Size = new System.Drawing.Size(214, 181);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -189,5 +210,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 
 		private CheckBox cbxStartDde;
 		private LinkLabel lnkDdeMonitor;
+		private TextBox txtDdeMonitorRefreshRate;
+		private Label lblRefreshMs;
     }
 }

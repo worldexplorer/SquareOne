@@ -91,6 +91,15 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
+			try {
+				if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) {
+					Thread.CurrentThread.Name = "LIVESIM_QUOTE_GENERATING_FOR " + this.StreamingOriginal.DataDistributor_replacedForLivesim.ReasonIwasCreated;
+				}
+			} catch (Exception ex) {
+				string msg = "SETTING_LIVESIM_THREAD_NAME_FROM_STREAMING_IS_TOO_LATE__AND_DONT_DO_IT_TWICE";
+				Assembler.PopupException(msg);
+			}
+
 			//second Livesim gets NPE - fixed but the caveat is when you clicked on "stopping" disabled button, new livesim restarts with lots of NPE...)
 			if (base.Livesimulator.RequestingBacktestAbortMre.WaitOne(0) == true) {
 				string msg = "MUST_NEVER_HAPPEN PUSHING_QUOTE_DENERATED_AFTER_LIVESIM_REQUESTED_TO_STOP";
