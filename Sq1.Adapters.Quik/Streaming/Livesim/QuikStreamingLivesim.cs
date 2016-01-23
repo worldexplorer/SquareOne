@@ -93,7 +93,8 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
 			try {
 				if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) {
-					Thread.CurrentThread.Name = "LIVESIM_QUOTE_GENERATING_FOR " + this.StreamingOriginal.DataDistributor_replacedForLivesim.ReasonIwasCreated;
+					string name = "LIVESIM_QUOTE_GENERATING_FOR " + this.StreamingOriginal.DataDistributor_replacedForLivesim.ReasonIwasCreated;
+					Thread.CurrentThread.Name = name;
 				}
 			} catch (Exception ex) {
 				string msg = "SETTING_LIVESIM_THREAD_NAME_FROM_STREAMING_IS_TOO_LATE__AND_DONT_DO_IT_TWICE";
