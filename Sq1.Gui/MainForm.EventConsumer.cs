@@ -62,7 +62,7 @@ namespace Sq1.Gui {
 			this.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad = true;
 
 			foreach (ChartFormManager eachChartManager in this.GuiDataSnapshot.ChartFormManagers.Values) {
-				StreamingAdapter streaming = eachChartManager.Executor.DataSource.StreamingAdapter;
+				StreamingAdapter streaming = eachChartManager.Executor.DataSource_fromBars.StreamingAdapter;
 				if (streaming == null) continue;
 
 				Livesimulator livesimRunning =  eachChartManager.Executor.Livesimulator;

@@ -346,40 +346,50 @@ namespace Sq1.Core.DataFeed {
 
 			return barsCompressed;
 		}
-		public bool PumpPauseNeighborsIfAnyFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
+		public bool PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executor, bool wrongUsagePopup = true) {
 			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
 				.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
-			if (channel == null) return false;
+			string msig = " //PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executor + ")";
+			if (channel == null) {
+				string msg = "THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK";
+				Assembler.PopupException(msg + msig);
+				return false;
+			}
 
 			if (channel.QuotePump.HasSeparatePushingThread == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_PAUSE_DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig);
 				}
 				return false;
 			}
-			channel.PumpPauseBacktesterLaunchingAdd(executor.BacktesterOrLivesimulator);
+			channel.PumpPause_addBacktesterLaunchingScript_eachQuote(executor.BacktesterOrLivesimulator);
 			return true;
 		}
-		public bool PumpResumeNeighborsIfAnyFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
+		public bool PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executor, bool wrongUsagePopup = true) {
+			string msig = " //PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executor + ")";
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
 				string msg = "I_REFUSE_TO_RESUME_PUMP_BECAUSE_IT_LEADS_TO_DEADLOCK IM_CLOSING_MAINFORM_WHILE_LIVESIM_IS_RUNNING";
-				Assembler.PopupException(msg, null, false);
+				Assembler.PopupException(msg + msig, null, false);
 				return false;
 			}
 
 			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
 				.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
-			if (channel == null) return false;
+			if (channel == null) {
+				string msg = "THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK";
+				Assembler.PopupException(msg + msig);
+				return false;
+			}
 
 			if (channel.QuotePump.HasSeparatePushingThread == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_UNPAUSE_DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
-					Assembler.PopupException(msg, null, false);
+					Assembler.PopupException(msg + msig, null, false);
 				}
 				return false;
 			}
-			channel.PumpResumeBacktesterFinishedRemove(executor.BacktesterOrLivesimulator);
+			channel.PumpResume_removeBacktesterFinishedScript_eachQuote(executor.BacktesterOrLivesimulator);
 			return true;
 		}
 

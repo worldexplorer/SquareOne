@@ -136,7 +136,7 @@ namespace Sq1.Gui.Forms {
 		}
 		public void PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(Quote quote) {
 			if (quote == null) {
-				if (this.ChartFormManager.Executor.DataSource.StreamingAdapter == null) {
+				if (this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter == null) {
 					string msg = "I_REFUSE_TO_PRINT_QUOTE_TIMESTAMP this.ChartFormManager.Executor.DataSource.StreamingAdapter==null";
 					Assembler.PopupException(msg);
 					return;
@@ -146,7 +146,7 @@ namespace Sq1.Gui.Forms {
 					Assembler.PopupException(msg);
 					return;
 				}
-				quote = this.ChartFormManager.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(this.ChartFormManager.Executor.Bars.Symbol);
+				quote = this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(this.ChartFormManager.Executor.Bars.Symbol);
 			}
 
 			//DEADLOCK#1 - happens when DdeMessagePump thread wants to switch to GUI thread; switching to GUI thread via trampoline Task releases this method from held in GuiMessageQueue
@@ -184,7 +184,7 @@ namespace Sq1.Gui.Forms {
 			this.btnStreamingTriggersScript.Text = sb.ToString();
 		}
 		public void PopulateBtnStreamingTriggersScript_afterBarsLoaded() {
-			DataSource ds = this.ChartFormManager.Executor.DataSource;
+			DataSource ds = this.ChartFormManager.Executor.DataSource_fromBars;
 			if (ds.StreamingAdapter == null) {
 				this.btnStreamingTriggersScript.Text = "DataSource[" + ds + "]:Streaming[" + StreamingAdapter.NO_STREAMING_ADAPTER + "]";
 				this.btnStreamingTriggersScript.Enabled = false;
@@ -213,7 +213,7 @@ namespace Sq1.Gui.Forms {
 				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = Color.LightSalmon;
 				this.DdbBars.BackColor = Color.LightSalmon;
 
-				DataSource dataSource = this.ChartFormManager.Executor.DataSource;
+				DataSource dataSource = this.ChartFormManager.Executor.DataSource_fromBars;
 				string mniSubscribedText = "NOT Subscribed to [" + dataSource.StreamingAdapterName + "]";
 				mniSubscribedText += dataSource.StreamingAdapter != null ? "[" + dataSource.StreamingAdapter.UpstreamConnectionState + "]" : "[StreamingAdapter_NULL]";
 				this.mniSubscribedToStreamingAdapterQuotesBars.Text = mniSubscribedText;
@@ -222,7 +222,7 @@ namespace Sq1.Gui.Forms {
 				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = SystemColors.Control;
 				this.DdbBars.BackColor = SystemColors.Control;
 
-				DataSource dataSource = this.ChartFormManager.Executor.DataSource;
+				DataSource dataSource = this.ChartFormManager.Executor.DataSource_fromBars;
 				string mniSubscribedText = "Subscribed to [" + dataSource.StreamingAdapterName + "]";
 				mniSubscribedText += dataSource.StreamingAdapter != null ? "[" + dataSource.StreamingAdapter.UpstreamConnectionState + "]" : "[StreamingAdapter_NULL]";
 				this.mniSubscribedToStreamingAdapterQuotesBars.Text = mniSubscribedText;
@@ -235,7 +235,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 
-			StreamingAdapter streaming = this.ChartFormManager.Executor.DataSource.StreamingAdapter;
+			StreamingAdapter streaming = this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter;
 			Bitmap iconCanBeNull = streaming != null ? streaming.Icon : null;
 			this.btnStreamingTriggersScript.Image = iconCanBeNull; 			// NO_I_WANT_ABSENCE_OF_STREAMING_TO_CLEAR_PREVIOUS_BARS_IN_CHART_AFTER_CHANGING_SYMBOL_FOR_CHART if (iconCanBeNull != null) {
 

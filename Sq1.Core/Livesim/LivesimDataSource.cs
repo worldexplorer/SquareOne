@@ -25,8 +25,8 @@ namespace Sq1.Core.Livesim {
 			//this.StreamingAsLivesimNullUnsafe.Dispose();
 			//this.   BrokerAsLivesimNullUnsafe.Dispose();
 
-			base.StreamingAdapter	= this.Executor.DataSource.StreamingAdapter.LivesimStreaming;
-			base.BrokerAdapter		= this.Executor.DataSource.BrokerAdapter.LivesimBroker;
+			base.StreamingAdapter	= this.Executor.DataSource_fromBars.StreamingAdapter.LivesimStreaming;
+			base.BrokerAdapter		= this.Executor.DataSource_fromBars.BrokerAdapter.LivesimBroker;
 
 		    string msg1 = "ADAPTERS_SUBSTITUTED_FOR_LIVESIM_DATASOURCE";
 		    Assembler.PopupException(msg1 + msig, null, false);

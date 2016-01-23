@@ -15,6 +15,9 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	DataDistributor		distributorSolidifier_preLivesimForSymbolLivesimming;
 		[JsonIgnore]	LivesimStreaming	livesimStreamingForWhomDataDistributorsAreReplaced;
 
+		[JsonIgnore]	public bool			DataDistributorsAreReplacedByLivesim_dontPauseNeighborsOnBacktestContextInitRestore {
+			get { return this.livesimStreamingForWhomDataDistributorsAreReplaced != null; } }
+
 		internal void SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(LivesimStreaming livesimStreaming) {
 			this.livesimStreamingForWhomDataDistributorsAreReplaced = livesimStreaming;
 
@@ -76,6 +79,8 @@ namespace Sq1.Core.Streaming {
 			string msg1 = "STREAMING_CONSUMERS_RESTORED_CONNECTIVITY_TO_STREAMING_ADAPTER_AFTER_LIVESIM: "
 				+ this.DataDistributor_replacedForLivesim.ToString() + " SOLIDIFIERS:" + this.DataDistributorSolidifiers_replacedForLivesim	;
 			Assembler.PopupException(msg1, null, false);
+
+			this.livesimStreamingForWhomDataDistributorsAreReplaced = null;
 		}
 
 		public string ReasonWhyLivesimCanNotBeStartedForSymbol(string symbol, ChartShadow chartShadow) {

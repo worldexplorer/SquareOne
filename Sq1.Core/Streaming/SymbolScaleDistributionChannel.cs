@@ -436,12 +436,14 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		public void PumpPauseBacktesterLaunchingAdd(Backtester backtesterAdding) {	// POTENTINALLY_THREAD_UNSAFE lock(this.lockPump) {
+		public void PumpPause_addBacktesterLaunchingScript_eachQuote(Backtester backtesterAdding) {	// POTENTINALLY_THREAD_UNSAFE lock(this.lockPump) {
 			bool addedFirstBacktester = false;
 			if (this.backtestersRunningCausingPumpingPause.Contains(backtesterAdding)) {
-				string msg = "ADD_BACKTESTER_ONLY_ONCE [" + backtesterAdding + "]";
-				Assembler.PopupException(msg, null, false);
-				//return;
+				string msg = "ADD_BACKTESTER_ONLY_ONCE [" + backtesterAdding + "]"
+					+ " 1)YOU_INVOKE_Script.OnNewQuote()_WITHOUT_WAITING_FOR_IT_TO_FINISH_PREV_INVOCATION (TRYING_TO_ASSURE_NON_REENTERABILITY_OF_SCRIPT_HOOKS_HERE)"
+					+ " 2)Script.OnNewQuote()_THREW_EXCEPTION_AND_YOU_DIDNT_CATCH_IT_AND_DIDNT_REMOVE_BACKTESTER_POSSIBLY_DIDNT_UNPAUSE";
+				Assembler.PopupException(msg);
+				return;
 			} else {
 				this.backtestersRunningCausingPumpingPause.Add(backtesterAdding);
 				if (this.backtestersRunningCausingPumpingPause.Count == 1) {
@@ -466,7 +468,7 @@ namespace Sq1.Core.Streaming {
 				this.QuotePump.PusherPause();
 			}
 		}
-		public void PumpResumeBacktesterFinishedRemove(Backtester backtesterRemoving) {
+		public void PumpResume_removeBacktesterFinishedScript_eachQuote(Backtester backtesterRemoving) {
 			if (this.QuotePump is QuoteQueuePerChannel && backtesterRemoving is Livesimulator) {
 				string msg = "AVOIDED_UPSTACK NOPROB__YOU_SUBSCRIBED_LIVESIM_BARS_IN_SINGLE_THREADED_QUEUE SimulationPreBarsSubstitute_overrideable()<=Livesimulator.cs:105"
 					+ "NO_NEED_TO_PAUSE_COMPETITORS NO_COMPETITORS_FOR_LIVESIM_BAR_EVENTS";
@@ -479,12 +481,13 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.backtestersRunningCausingPumpingPause.Contains(backtesterRemoving) == false) {
+			if (this.backtestersRunningCausingPumpingPause.Contains(backtesterRemoving)) {
+				this.backtestersRunningCausingPumpingPause.Remove(backtesterRemoving);
+			} else {
 				string msg = "YOU_NEVER_ADDED_BACKTESTER [" + backtesterRemoving + "]";
 				Assembler.PopupException(msg);
-				return;
+				//return;
 			}
-			this.backtestersRunningCausingPumpingPause.Remove(backtesterRemoving);
 			if (this.backtestersRunningCausingPumpingPause.Count > 0) {
 				string msg = "STILL_HAVE_ANOTHER_BACKTEST_RUNNING_IN_PARALLEL__WILL_UNPAUSE_PUMP_AFTER_LAST_TERMINATES"
 					+ " backtestersRunningCausingPumpingPause.Count=[" + this.backtestersRunningCausingPumpingPause.Count + "]"

@@ -284,7 +284,7 @@ namespace Sq1.Gui {
 					//if (cfmgr.DataSnapshot.ContextChart.IsStreaming == true) {
 					//    string msg = "CHART_SUBSCRIBED__BUT_SHOULD_CONNECT_AFTER_BACKTEST";
 					//} else {
-						StreamingAdapter streaming = cfmgr.Executor.DataSource.StreamingAdapter;
+						StreamingAdapter streaming = cfmgr.Executor.DataSource_fromBars.StreamingAdapter;
 						if (streaming != null && (streaming is LivesimStreaming) == false) {
 							streaming.UpstreamConnect();
 						}

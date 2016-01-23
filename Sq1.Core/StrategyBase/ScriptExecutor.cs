@@ -56,7 +56,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return this.Strategy.ScriptContextCurrent.PositionSize;
 			} }
-		public	DataSource DataSource { get {
+		public	DataSource DataSource_fromBars { get {
 				if (this.Bars == null) {
 					string msg = "ScriptExecutor.DataSource: you should not access DataSource BEFORE you've set ScriptExecutor.Bars"
 						+ "; " + Assembler.InstanceInitialized.RepositoryJsonDataSource.AbsPath + "\\xxx.json/xxxFolder deleted between AppRestart?..";
@@ -248,7 +248,7 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Strategy == null) return;
 			if (this.Bars != null) {
 				this.Strategy.ScriptContextCurrent.Symbol = this.Bars.Symbol;
-				this.Strategy.ScriptContextCurrent.DataSourceName = this.DataSource.Name;
+				this.Strategy.ScriptContextCurrent.DataSourceName = this.DataSource_fromBars.Name;
 			}
 			if (this.Strategy.Script == null) {
 				msg = "I will be compiling this.Strategy.Script when in ChartFormsManager.StrategyCompileActivatePopulateSliders()";
@@ -852,7 +852,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 
-			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alertFilled.Symbol);
+			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alertFilled.Symbol);
 
 			int barFillRelno  = alertFilled.Bars.Count - 1;
 			if (barFillRelno != alertFilled.Bars.BarStreamingNullUnsafe.ParentBarsIndex) {
@@ -1283,15 +1283,17 @@ namespace Sq1.Core.StrategyBase {
 		DataSource	preDataSource;
 		bool		preBacktestIsStreaming;
 		internal void BacktestContextInitialize(Bars barsEmptyButWillGrow) {
-			if (this.Bars.DataSource.StreamingAdapter != null) {
-				bool thereWereNeighbours = this.Bars.DataSource.PumpPauseNeighborsIfAnyFor(this, this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow);
-			} else {
-				string msg = "NOT_PAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextInitialize(" + barsEmptyButWillGrow + ")";
-				Assembler.PopupException(msg, null, false);
+			if (this.DataSource_fromBars.StreamingAdapter.DataDistributorsAreReplacedByLivesim_dontPauseNeighborsOnBacktestContextInitRestore == false) {
+				if (this.Bars.DataSource.StreamingAdapter != null) {
+					bool thereWereNeighbours = this.Bars.DataSource.PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(this, this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow);
+				} else {
+					string msg = "NOT_PAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextInitialize(" + barsEmptyButWillGrow + ")";
+					Assembler.PopupException(msg, null, false);
+				}
 			}
-			
+	
 			this.preBacktestBars = this.Bars;	// this.preBacktestBars != null will help ignore this.IsStreaming saving IsStreaming state to json
-			this.preDataSource = this.DataSource;
+			this.preDataSource = this.DataSource_fromBars;
 			this.preBacktestIsStreaming = this.IsStreamingTriggeringScript;
 
 			if (this.Bars == barsEmptyButWillGrow) {
@@ -1336,12 +1338,14 @@ namespace Sq1.Core.StrategyBase {
 			// MOVED_HERE_AFTER_ASSIGNING_IS_STREAMING_TO"avoiding saving strategy each backtest due to streaming simulation switch on/off"
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 
-			if (this.DataSource.StreamingAdapter != null) {
-				bool thereWereNeighbours = this.Bars.DataSource.PumpResumeNeighborsIfAnyFor(this, this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow);
-			} else {
-				string msg = "NOT_UNPAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextRestore(" + this.Bars + ")";
-				Assembler.PopupException(msg, null, false);
-				// WHO_NEEDS_IT? channel.QuotePump.PushConsumersPaused = false;
+			if (this.DataSource_fromBars.StreamingAdapter.DataDistributorsAreReplacedByLivesim_dontPauseNeighborsOnBacktestContextInitRestore == false) {
+				if (this.DataSource_fromBars.StreamingAdapter != null) {
+					bool thereWereNeighbours = this.Bars.DataSource.PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(this, this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow);
+				} else {
+					string msg = "NOT_UNPAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextRestore(" + this.Bars + ")";
+					Assembler.PopupException(msg, null, false);
+					// WHO_NEEDS_IT? channel.QuotePump.PushConsumersPaused = false;
+				}
 			}
 			this.EventGenerator.RaiseOnBacktesterContextRestoredAfterExecutingAllBars_step4of4(null);
 		}
