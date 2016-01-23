@@ -61,7 +61,7 @@ namespace Sq1.Core.Streaming {
 //				return ret;
 //			} }
 		protected 		DataSource DataSource_nullReported { get {
-				var ret = this.Executor_nullReported.DataSource;
+				var ret = this.Executor_nullReported.DataSource_fromBars;
 				this.ActionForNullPointer(ret, "this.Executor.DataSource=null");
 				return ret;
 			} }

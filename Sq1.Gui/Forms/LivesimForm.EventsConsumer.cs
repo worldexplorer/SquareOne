@@ -21,7 +21,7 @@ namespace Sq1.Gui.Forms {
 			bool clickedStart = btnStartStop.Text.Contains("Start");
 			if (clickedStart) {
 				ScriptExecutor executor = this.chartFormManager.Executor;
-				string reasonWhyLivesimCanNotBeStartedForSymbol = executor.DataSource.StreamingAdapter
+				string reasonWhyLivesimCanNotBeStartedForSymbol = executor.DataSource_fromBars.StreamingAdapter
 				      .ReasonWhyLivesimCanNotBeStartedForSymbol(executor.Bars.Symbol, executor.ChartShadow);
 				if (string.IsNullOrEmpty(reasonWhyLivesimCanNotBeStartedForSymbol) == false) {
 				    string msg = "I_REFUSE_TO_START_LIVESIM_FOR[" + this.chartFormManager.WhoImServing_moveMeToExecutor + "]: " + reasonWhyLivesimCanNotBeStartedForSymbol;

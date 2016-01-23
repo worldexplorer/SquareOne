@@ -145,7 +145,7 @@ namespace Sq1.Core.StrategyBase {
 			priceSpreadSide = OrderSpreadSide.Unknown;
 			switch (entryMarketLimitStop) {
 				case MarketLimitStop.Market:
-					priceForMarketAlert = this.executor.DataSource.StreamingAdapter.StreamingDataSnapshot
+					priceForMarketAlert = this.executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot
 						.GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(
 							this.executor.Bars.Symbol, direction, out priceSpreadSide, false);
 					break;
@@ -237,10 +237,10 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			bool filled = false;
-			Quote quoteLast = this.executor.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alert.Symbol).Clone();
+			Quote quoteLast = this.executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alert.Symbol).Clone();
 			if (quoteLast == null) {
 				string msg = "MAKE_YOUR_STREAMING_SAVE_LAST_QUOTE_TO_SNAP LastQuoteGetForSymbol("
-					+ alert.Symbol + ")=null StreamingAdapter[" + this.executor.DataSource.StreamingAdapter + "]"
+					+ alert.Symbol + ")=null StreamingAdapter[" + this.executor.DataSource_fromBars.StreamingAdapter + "]"
 					+ " MARKET_SIM_NEEDS_QUOTE_TO_TRY_FILL_AND_SAY_IF_FILLED";
 				#if DEBUG
 				Debugger.Break();

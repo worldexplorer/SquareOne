@@ -153,7 +153,7 @@ namespace Sq1.Gui.Forms {
 				//I_NEED_STREAMING_PROVIDER_NAME__STRATEGY_NAME_IS_IN_WINDOW_TITLE string emptyChartOrStrategy = this.ContextCurrentChartOrStrategy.Symbol;
 				string emptyChartOrStrategy = this.Executor.Bars == null	// AVOIDING_NPE_IN_this.Executor.DataSource
 					? this.ContextCurrentChartOrStrategy.Symbol
-					: this.Executor.DataSource.StreamingAdapterName;
+					: this.Executor.DataSource_fromBars.StreamingAdapterName;
 
 				string subscribed = this.ContextCurrentChartOrStrategy.DownstreamSubscribed ? " Subscribed" : " NotSubscribed";
 				string triggering = this.ContextCurrentChartOrStrategy.StreamingIsTriggeringScript ? " TriggeringScript" : " NotTriggeringScript";

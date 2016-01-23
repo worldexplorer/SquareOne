@@ -40,7 +40,7 @@ namespace Sq1.Core.Livesim {
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_YOU_THEN!!! base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
 		}
 
-		[JsonIgnore]	public StreamingAdapter				StreamingOriginal;
+		//[JsonIgnore]	public StreamingAdapter				StreamingOriginal;
 		protected override void SimulationPreBarsSubstitute_overrideable() {
 			if (base.BarsOriginal == base.Executor.Bars) {
 				string msg = "DID_YOU_FORGET_TO_RESET_base.BarsOriginal_TO_NULL_AFTER_BACKTEST_FINISHED??";
@@ -80,7 +80,7 @@ namespace Sq1.Core.Livesim {
 				this.DataSourceAsLivesimNullUnsafe.PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource();	// no need to restore (this.DataSourceAsLivesimNullUnsafe will be re-initialized at next Livesim)
 				// NO!!! KEEP_THEM_TO_ORIGINAL_DATASOURCE_BECAUSE_DDE_SERVER_DELIVERS_LEVEL2_TO_ORIGINAL_DATA_SNAPSHOT base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;	// will need to restore (base.BarsSimulating is not needed after Livesim is done)
 				this.DataSourceAsLivesimNullUnsafe.Initialize(base.BarsSimulating, spreadModeler);
-				this.StreamingOriginal = this.Executor.DataSource.StreamingAdapter;		// will have to restore
+				//DURING_LIVESIM_I_LEFT_STREAMING_EXACTLY_THE_SAME_AS_FOR_LIVE_TRADING_TO_TEST_IT!!! this.StreamingOriginal = this.Executor.DataSource.StreamingAdapter;		// will have to restore
 				
 				if (this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe != null) {
 					string msg = "LivesimStreaming_HAS_REFERENCE_TO_LivesimDataSource_SHOULD_BE_NO_NPE_IN_eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree";
@@ -88,7 +88,8 @@ namespace Sq1.Core.Livesim {
 				}
 				// now I have those two assigned from Streaming/Broker-own-implemented instantiated adapters
 
-				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.InitializeLivesim	(this.DataSourceAsLivesimNullUnsafe, this.StreamingOriginal, base.BarsSimulating.Symbol);
+				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.InitializeLivesim	(
+					this.DataSourceAsLivesimNullUnsafe, this.Executor.DataSource_fromBars.StreamingAdapter, base.BarsSimulating.Symbol);
 				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.UpstreamConnect_LivesimStarting();
 
 				this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	.Initialize			(this.DataSourceAsLivesimNullUnsafe);
@@ -186,7 +187,7 @@ namespace Sq1.Core.Livesim {
 				base.Executor.BacktestContextRestore();
 
 				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.UpstreamDisconnect_LivesimTerminatedOrAborted();
-				this.Executor.DataSource.StreamingAdapter = this.StreamingOriginal;
+				//DURING_LIVESIM_I_LEFT_STREAMING_EXACTLY_THE_SAME_AS_FOR_LIVE_TRADING_TO_TEST_IT!!! this.Executor.DataSource.StreamingAdapter = this.StreamingOriginal;
 
 				//if (this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.settings.DelayBetweenSerialQuotesEnabled) {
 				if (base.Executor.Strategy.LivesimStreamingSettings.DelayBetweenSerialQuotesEnabled == false) {

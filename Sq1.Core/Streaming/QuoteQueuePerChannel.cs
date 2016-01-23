@@ -102,7 +102,9 @@ namespace Sq1.Core.Streaming {
 		}
 		public void SetThreadName() {
 			string msig = this.ToString();
-			if (Thread.CurrentThread.Name == msig) return;
+			if (string.IsNullOrEmpty(Thread.CurrentThread.Name) == false) return;
+			//if (Thread.CurrentThread.Name == msig) return;
+			if (msig.Contains("UNKNOWN")) return;
 
 			if (this.Channel.ConsumersBarCount == 0) {
 				string msg = "INVOKE_ME_LATER_SO_THAT_THREAD_NAME_WILL_CONTAIN_CONSUMER_NAMES_AS_WELL ";

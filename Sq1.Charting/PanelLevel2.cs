@@ -16,8 +16,8 @@ namespace Sq1.Charting {
 		[Browsable(false)]	protected override int					ValueIndexLastAvailableMinusOneUnsafe	{ get { return -1; } }
 		[Browsable(false)]	public			StreamingDataSnapshot	StreamingDataSnapshotNullUnsafe			{ get {
 			if (base.ChartControl.Executor == null) return null;		// for TestChartControl
-			if (base.ChartControl.Executor.DataSource.StreamingAdapter == null) return null;
-			return base.ChartControl.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot;
+			if (base.ChartControl.Executor.DataSource_fromBars.StreamingAdapter == null) return null;
+			return base.ChartControl.Executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot;
 		} }
 
 		bool errorDetected;
