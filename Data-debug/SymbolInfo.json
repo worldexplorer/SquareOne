@@ -1,7 +1,7 @@
 [
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
-    "priceDecimals": 2,
+    "priceDecimals": 0,
     "SecurityType": 1,
     "Symbol": "autogen",
     "SymbolClass": "NO_SYMBOL_CLASS",
@@ -20,7 +20,12 @@
     "ReplaceTidalWithCrossMarket": true,
     "ReplaceTidalMillis": 2000,
     "SimBugOutOfBarStopsFill": true,
-    "SimBugOutOfBarLimitsFill": false
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": false,
+    "Level2ShowCumulativesInsteadOfLots": false
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
@@ -43,11 +48,16 @@
     "ReplaceTidalWithCrossMarket": true,
     "ReplaceTidalMillis": 2000,
     "SimBugOutOfBarStopsFill": true,
-    "SimBugOutOfBarLimitsFill": false
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": false,
+    "Level2ShowCumulativesInsteadOfLots": false
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
-    "priceDecimals": 2,
+    "priceDecimals": 0,
     "SecurityType": 1,
     "Symbol": "GMKN",
     "SymbolClass": "EQBR",
@@ -66,7 +76,12 @@
     "ReplaceTidalWithCrossMarket": false,
     "ReplaceTidalMillis": 0,
     "SimBugOutOfBarStopsFill": false,
-    "SimBugOutOfBarLimitsFill": false
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": false,
+    "Level2ShowCumulativesInsteadOfLots": false
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
@@ -89,11 +104,16 @@
     "ReplaceTidalWithCrossMarket": false,
     "ReplaceTidalMillis": 0,
     "SimBugOutOfBarStopsFill": false,
-    "SimBugOutOfBarLimitsFill": false
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": false,
+    "Level2ShowCumulativesInsteadOfLots": false
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
-    "priceDecimals": 2,
+    "priceDecimals": 0,
     "SecurityType": 1,
     "Symbol": "RANDOM_GENERATED_BARS:250",
     "SymbolClass": "",
@@ -112,7 +132,12 @@
     "ReplaceTidalWithCrossMarket": false,
     "ReplaceTidalMillis": 0,
     "SimBugOutOfBarStopsFill": false,
-    "SimBugOutOfBarLimitsFill": false
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": false,
+    "Level2ShowCumulativesInsteadOfLots": false
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
@@ -135,7 +160,12 @@
     "ReplaceTidalWithCrossMarket": false,
     "ReplaceTidalMillis": 0,
     "SimBugOutOfBarStopsFill": false,
-    "SimBugOutOfBarLimitsFill": false
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": false,
+    "Level2ShowCumulativesInsteadOfLots": false
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
@@ -158,7 +188,40 @@
     "ReplaceTidalWithCrossMarket": false,
     "ReplaceTidalMillis": 0,
     "SimBugOutOfBarStopsFill": false,
-    "SimBugOutOfBarLimitsFill": false
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": false,
+    "Level2ShowCumulativesInsteadOfLots": false
+  },
+  {
+    "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
+    "priceDecimals": 0,
+    "SecurityType": 2,
+    "Symbol": "RIM3-Qmock",
+    "SymbolClass": "TESTCLASS",
+    "Point2Dollar": 1.0,
+    "VolumeDecimals": 0,
+    "SameBarPolarCloseThenOpen": true,
+    "SequencedOpeningAfterClosedDelayMillis": 1000,
+    "EmergencyCloseAttemptsMax": 5,
+    "EmergencyCloseInterAttemptDelayMillis": 8000,
+    "ReSubmitRejected": false,
+    "ReSubmittedUsesNextSlippage": false,
+    "MarketOrderAs": 6,
+    "SlippagesBuy": "",
+    "SlippagesSell": "",
+    "UseFirstSlippageForBacktest": true,
+    "ReplaceTidalWithCrossMarket": false,
+    "ReplaceTidalMillis": 0,
+    "SimBugOutOfBarStopsFill": false,
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": true,
+    "Level2ShowCumulativesInsteadOfLots": true
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
@@ -181,7 +244,12 @@
     "ReplaceTidalWithCrossMarket": true,
     "ReplaceTidalMillis": 2000,
     "SimBugOutOfBarStopsFill": true,
-    "SimBugOutOfBarLimitsFill": false
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": false,
+    "Level2ShowCumulativesInsteadOfLots": false
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
@@ -204,7 +272,12 @@
     "ReplaceTidalWithCrossMarket": false,
     "ReplaceTidalMillis": 0,
     "SimBugOutOfBarStopsFill": false,
-    "SimBugOutOfBarLimitsFill": false
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": false,
+    "Level2ShowCumulativesInsteadOfLots": false
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
@@ -227,7 +300,12 @@
     "ReplaceTidalWithCrossMarket": false,
     "ReplaceTidalMillis": 0,
     "SimBugOutOfBarStopsFill": false,
-    "SimBugOutOfBarLimitsFill": false
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": false,
+    "Level2ShowCumulativesInsteadOfLots": false
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
@@ -250,7 +328,12 @@
     "ReplaceTidalWithCrossMarket": false,
     "ReplaceTidalMillis": 0,
     "SimBugOutOfBarStopsFill": false,
-    "SimBugOutOfBarLimitsFill": false
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": false,
+    "Level2ShowCumulativesInsteadOfLots": false
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
@@ -273,7 +356,12 @@
     "ReplaceTidalWithCrossMarket": false,
     "ReplaceTidalMillis": 0,
     "SimBugOutOfBarStopsFill": false,
-    "SimBugOutOfBarLimitsFill": false
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": false,
+    "Level2ShowCumulativesInsteadOfLots": false
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
@@ -296,6 +384,11 @@
     "ReplaceTidalWithCrossMarket": false,
     "ReplaceTidalMillis": 0,
     "SimBugOutOfBarStopsFill": false,
-    "SimBugOutOfBarLimitsFill": false
+    "SimBugOutOfBarLimitsFill": false,
+    "Level2AskFillHoles": true,
+    "Level2ShowSpread": true,
+    "Level2BidFillHoles": true,
+    "Level2BidCumulativeShowColumn": false,
+    "Level2ShowCumulativesInsteadOfLots": false
   }
 ]

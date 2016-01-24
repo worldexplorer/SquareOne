@@ -1,45 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Sq1.Core.DataTypes;
+
 namespace Sq1.Core.Streaming {
 	public class LevelTwoHalfSortedFrozen : SortedDictionary<double, double> {
 		public class  ASC : IComparer<double> { int IComparer<double>.Compare(double x, double y) { return x > y ? 1 : -1; } }
 		public class DESC : IComparer<double> { int IComparer<double>.Compare(double x, double y) { return x < y ? 1 : -1; } }
-		
-		public string ReasonToExist;
 
-		public double PriceMin	{ get; private set; }
-		public double PriceMax	{ get; private set; }
-		public double LotMin	{ get; private set; }
-		public double LotMax	{ get; private set; }
-		public double LotSum	{ get; private set; }
+		public	BidOrAsk					BidOrAsk			{ get; private set; }
+		public	string						ReasonToExist		{ get; private set; }
+		public	bool						ImSortedAscending	{ get; private set; }
+		public	double						PriceMin			{ get; private set; }
+		public	double						PriceMax			{ get; private set; }
+		public	double						LotMin				{ get; private set; }
+		public	double						LotMax				{ get; private set; }
+		public	double						LotSum				{ get; private set; }
+		public	Dictionary<double, double>	LotsCumulative		{ get; private set; }
 
-		public Dictionary<double, double> LotsCumulative;
-
-		public LevelTwoHalfSortedFrozen(string reasonToExist, Dictionary<double, double> level2half, IComparer<double> orderby) : base(level2half, orderby) {
-			this.ReasonToExist = reasonToExist;
+		public LevelTwoHalfSortedFrozen(BidOrAsk bidOrAsk, string reasonToExist
+					, Dictionary<double, double> level2half_safeClone, IComparer<double> orderby) : base(level2half_safeClone, orderby) {
+			if (bidOrAsk != BidOrAsk.Ask && bidOrAsk != BidOrAsk.Bid) {
+				throw new Exception("I_NEED_DIRECTION_TO_CALCULATE_LOTS_CUMULATIVE");
+			}
+			BidOrAsk = bidOrAsk;
+			ReasonToExist = reasonToExist;
+			ImSortedAscending = orderby is LevelTwoHalfSortedFrozen.ASC;
 			LotsCumulative = new Dictionary<double, double>();
 			if (base.Count == 0) return;
-			this.calcProperties();
+			this.calcProperties_addingRemovingNotSupported();
 		}
 
-		void calcProperties() {
-			double[] keysCopy = new double[base.Keys.Count];
-			//base.Keys.CopyTo(keysCopy, 0);
+		void calcProperties_addingRemovingNotSupported() {
+			List<KeyValuePair<double, double>> sortedFromSpreadToTheEdgeOfMarket_toCalculateLotsCumulative = new List<KeyValuePair<double, double>>();
+			bool iShouldRevert = false;
+			if (this.BidOrAsk == BidOrAsk.Ask) {
+				// bigger values = edge of maket; smaller values => spread
+				if (this.ImSortedAscending) {
+					iShouldRevert = false;
+				} else {
+					iShouldRevert = true;
+				}
+			} else {
+				// bigger values = spread; smaller values => edge of maket
+				if (this.ImSortedAscending) {
+					iShouldRevert = true;
+				} else {
+					iShouldRevert = false;
+				}
+			}
 
-			//this.PriceMin = keysCopy[0];
-			//this.PriceMax = keysCopy[keysCopy.Length-1];
-
-			//v1
-			//this.LotMin = base[this.PriceMin];
-			//this.LotMax = base[this.PriceMax];
-			//v2 VERY_INCONVENIENT_"The given key was not present in the dictionary."
-			//this.LotMin = base[0];
-			//this.LotMax = base[keysCopy.Length - 1];
+			if (iShouldRevert) {
+				foreach (KeyValuePair<double, double> keyValue in this) {
+					sortedFromSpreadToTheEdgeOfMarket_toCalculateLotsCumulative.Insert(0, keyValue);
+				}
+			} else {
+			    sortedFromSpreadToTheEdgeOfMarket_toCalculateLotsCumulative.AddRange(this);
+			}
 
 			double prevLot = 0;
 			//foreach (double price in base.Keys) {
-			foreach (KeyValuePair<double, double> keyValue in this) {
+			//foreach (KeyValuePair<double, double> keyValue in this) {
+			foreach (KeyValuePair<double, double> keyValue in sortedFromSpreadToTheEdgeOfMarket_toCalculateLotsCumulative) {
 				double price = keyValue.Key;
 				double lot = keyValue.Value;
 
@@ -49,7 +71,6 @@ namespace Sq1.Core.Streaming {
 				if (this.PriceMin > price) this.PriceMin = price;
 				if (this.PriceMax < price) this.PriceMax = price;
 
-				//double lot = base[price];
 				double thisLot = prevLot + lot;
 				this.LotsCumulative.Add(price, thisLot);
 				prevLot = thisLot;
@@ -67,32 +88,4 @@ namespace Sq1.Core.Streaming {
 			return this.ReasonToExist + ":[" + base.Count + "]";
 		}
 	}
-
-	//v1
-	//public class LevelTwoHalfSafeCopy : Dictionary<double, double> {
-	//	public double PriceMin		{ get; private set; }
-	//	public double PriceMax		{ get; private set; }
-	//	public double LotMin		{ get; private set; }
-	//	public double LotMax		{ get; private set; }
-	//	public double ValuesTotal	{ get; private set; }
-
-	//	public LevelTwoHalfSafeCopy (Dictionary<double, double> concurrentSafeCopy) : base(concurrentSafeCopy) {
-	//		//foreach (double lot in base.Values) {
-	//		foreach (double price in base.Keys) {
-	//			if (this.PriceMin == 0) this.PriceMin = price;
-	//			if (this.PriceMax == 0) this.PriceMax = price;
-
-	//			if (this.PriceMin > price) this.PriceMin = price;
-	//			if (this.PriceMax < price) this.PriceMax = price;
-
-	//			double lot = base[price];
-	//			if (this.LotMin == 0) this.LotMin = lot;
-	//			if (this.LotMax == 0) this.LotMax = lot;
-
-	//			if (this.LotMin > lot) this.LotMin = lot;
-	//			if (this.LotMax < lot) this.LotMax = lot;
-	//			this.ValuesTotal += lot;
-	//		}
-	//	}
-	//}
 }

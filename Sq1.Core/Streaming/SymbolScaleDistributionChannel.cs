@@ -27,7 +27,7 @@ namespace Sq1.Core.Streaming {
 		//		ability to control on per-consumer level costs more, including dissync between Solidifier.BarsStored and Executor.BarsInMemory
 		public	QuoteQueuePerChannel			QuotePump						{ get; protected set; }
 
-		SymbolScaleDistributionChannel() {
+		SymbolScaleDistributionChannel(string reasonIwasCreated = "REASON_UNKNOWN") {
 			lockConsumersQuote	= new object();
 			lockConsumersBar	= new object();
 			ConsumersQuote		= new List<StreamingConsumer>();
@@ -39,9 +39,10 @@ namespace Sq1.Core.Streaming {
 			// Assembler instantiates StreamingAdapters early enough so these horses 
 			// NOPE_ON_APP_RESTART_BACKTESTER_COMPLAINS_ITS_ALREADY_PAUSED
 			// moved BacktesterRunningAdd() to QuotePump.PushConsumersPaused = true;
-			ReasonIwasCreated_propagatedFromDistributor = "REASON_UNKNOWN";
+			ReasonIwasCreated_propagatedFromDistributor = reasonIwasCreated;
 		}
-		public SymbolScaleDistributionChannel(string symbol, BarScaleInterval scaleInterval, bool quotePumpSeparatePushingThreadEnabled) : this() {
+		public SymbolScaleDistributionChannel(string symbol, BarScaleInterval scaleInterval, bool quotePumpSeparatePushingThreadEnabled
+						, string reasonIwasCreated) : this(reasonIwasCreated) {
 			this.Symbol = symbol;
 			this.ScaleInterval = scaleInterval;
 			this.StreamingBarFactoryUnattached = new StreamingBarFactoryUnattached(symbol, ScaleInterval);
