@@ -54,7 +54,7 @@ namespace Sq1.Widgets.Level2 {
 
 			if (ignoreTimer == false) {
 				// WHAT_IF_BEFORE_SWITCHING_TO_GUI_THREAD?
-				if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.streamingAdapter.StreamingDataSnapshot.Level2RefreshRate) return;
+				if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.streamingAdapter.Level2RefreshRateMs) return;
 			}
 
 			if (base.InvokeRequired) {
@@ -75,7 +75,7 @@ namespace Sq1.Widgets.Level2 {
 			if (base.IsDisposed) return;
 
 			// WHAT_IF_BEFORE_SWITCHING_TO_GUI_THREAD?
-			if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.streamingAdapter.StreamingDataSnapshot.Level2RefreshRate) return;
+			if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.streamingAdapter.Level2RefreshRateMs) return;
 			//this.stopwatchRarifyingUIupdates.Restart();
 
 			if (base.InvokeRequired) {
