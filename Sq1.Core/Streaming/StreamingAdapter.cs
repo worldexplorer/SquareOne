@@ -84,9 +84,12 @@ namespace Sq1.Core.Streaming {
 			return ret;
 		} }
 
+		[JsonProperty]	public int						Level2RefreshRateMs;
+
 		[JsonIgnore]	public bool						QuotePumpSeparatePushingThreadEnabled { get; protected set; }
 
 		[JsonIgnore]	public LivesimStreaming			LivesimStreaming					{ get; protected set; }
+
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public StreamingAdapter() {
@@ -97,6 +100,7 @@ namespace Sq1.Core.Streaming {
 			StreamingDataSnapshot					= new StreamingDataSnapshot(this);
 			StreamingSolidifier						= new StreamingSolidifier();
 			QuotePumpSeparatePushingThreadEnabled	= true;
+			Level2RefreshRateMs						= 200;
 			if (this is LivesimStreaming) return;
 			LivesimStreaming						= new LivesimStreaming(true);	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
 		}
