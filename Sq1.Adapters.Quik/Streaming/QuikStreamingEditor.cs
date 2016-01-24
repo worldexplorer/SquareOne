@@ -26,7 +26,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.txtDdeTopicQuotes.Text			= this.quikStreamingAdapter.DdeTopicQuotes;
 			this.txtDdeTopicTrades.Text			= this.quikStreamingAdapter.DdeTopicTrades;
 			this.txtDdeTopicPrefixDom.Text		= this.quikStreamingAdapter.DdeTopicPrefixDom;
-			this.txtDdeMonitorRefreshRate.Text	= this.quikStreamingAdapter.DdeMonitorRefreshRate.ToString();
+			this.txtDdeMonitorRefreshRate.Text	= this.quikStreamingAdapter.DdeMonitorRefreshRateMs.ToString();
 		}
 		public override void PushEditedSettingsToStreamingAdapter() {
 			if (base.IgnoreEditorFieldChangesWhileInitializingEditor) return;
@@ -37,7 +37,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 
 			int refreshRateParsed = 200;
 			Int32.TryParse(this.txtDdeMonitorRefreshRate.Text, out refreshRateParsed);
-			this.quikStreamingAdapter.DdeMonitorRefreshRate	= refreshRateParsed;
+			this.quikStreamingAdapter.DdeMonitorRefreshRateMs	= refreshRateParsed;
+			this.quikStreamingAdapter.Level2RefreshRateMs		= this.quikStreamingAdapter.DdeMonitorRefreshRateMs;
 		}
 
 		void propagateStreamingConnected_intoBtnStateText() {

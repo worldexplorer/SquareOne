@@ -36,7 +36,7 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 				base.BeginInvoke((MethodInvoker)delegate { this.populateWindowTitle_grpStatuses(); });
 				return;
 			}
-			string refreshRate = " (" + this.quikStreaming.DdeMonitorRefreshRate + "ms refresh rate)";
+			string refreshRate = " (" + this.quikStreaming.DdeMonitorRefreshRateMs + "ms refresh rate)";
 			base.Text = this.quikStreaming.DdeBatchSubscriber.WindowTitle + refreshRate;
 			this.QuikStreamingMonitorControl.Populate_grpStatuses();
 		}
@@ -48,7 +48,7 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 				return;
 			}
 			// I paid the price of switching to GuiThread, but I don' have to worry if I already stopwatch.Restart()ed
-			if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRate) return;
+			if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRateMs) return;
 			this.stopwatchRarifyingUIupdates.Restart();
 
 			this.QuikStreamingMonitorControl.OlvQuotes.SetObjects(e.DataStructureParsed);

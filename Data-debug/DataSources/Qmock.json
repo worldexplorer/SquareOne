@@ -22,7 +22,8 @@
     "DdeTopicTrades": "trades",
     "DdeTopicPrefixDom": "dom",
     "DdeMonitorRefreshRate": 200,
-    "UpstreamConnected": true
+    "UpstreamConnected": false,
+    "Level2RefreshRateMs": 200
   },
   "BrokerAdapter": {
     "$type": "Sq1.Adapters.Quik.Broker.QuikBroker, Sq1.Adapters.Quik",
