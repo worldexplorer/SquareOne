@@ -16,23 +16,18 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 		LevelTwoHalf	levelTwoBids;
 		LevelTwoOlv		levelTwoProxy;
 
-		public	string			FormatVolume	{ get; private set; }
-		public	string			FormatPrice		{ get; private set; }
+		public	SymbolInfo		SymbolInfo		{ get; private set; }
 
 		public DdeTableDepth(string topic, QuikStreaming quikStreaming, List<XlColumn> columns, string symbol) : base(topic, quikStreaming, columns) {
 			this.symbol = symbol;
+			this.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(symbol);
+
 			this.levelTwoAsks = base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks_getForSymbol(this.symbol);
 			this.levelTwoBids = base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids_getForSymbol(this.symbol);
 
-			this.FormatVolume	= "{0:N1}";
-			this.FormatPrice	= "{0:N1}";
-			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoNullUnsafe(symbol);
-			if (symbolInfo != null) {
-				this.FormatVolume	= "{0:" + symbolInfo.VolumeFormat + "}";
-				this.FormatPrice	= "{0:" + symbolInfo.PriceFormat + "}";
+			if (this.levelTwoBids != null && this.levelTwoAsks != null) {
+				this.levelTwoProxy = new LevelTwoOlv(this.levelTwoBids, this.levelTwoAsks, this.SymbolInfo);
 			}
-
-			if (this.levelTwoBids != null && this.levelTwoAsks != null) this.levelTwoProxy = new LevelTwoOlv(this.levelTwoBids, this.levelTwoAsks);
 		}
 		protected override void IncomingTableBegun() {
 			this.levelTwoAsks.Clear(this, "IncomingTableBegun");

@@ -2,7 +2,6 @@
   "$type": "Sq1.Core.DataFeed.DataSource, Sq1.Core",
   "SymbolSelected": "",
   "Symbols": [
-    "autogen",
     "RIM3-Qmock"
   ],
   "ScaleInterval": {
@@ -23,7 +22,7 @@
     "DdeTopicTrades": "trades",
     "DdeTopicPrefixDom": "dom",
     "DdeMonitorRefreshRate": 200,
-    "UpstreamConnected": false
+    "UpstreamConnected": true
   },
   "BrokerAdapter": {
     "$type": "Sq1.Adapters.Quik.Broker.QuikBroker, Sq1.Adapters.Quik",
