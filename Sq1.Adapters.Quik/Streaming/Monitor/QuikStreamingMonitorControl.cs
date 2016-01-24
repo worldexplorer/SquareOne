@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 using Sq1.Core;
+using Sq1.Widgets.Level2;
 
 using Sq1.Adapters.Quik.Streaming.Dde;
 
@@ -19,15 +20,16 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		}
 
 		internal void DomUserControl_createAddFor(DdeTableDepth tableLevel2) {
-			QuikStreamingMonitorDomUserControl controlForLevel2 = new QuikStreamingMonitorDomUserControl();
-			controlForLevel2.Initialize(this.quikStreaming, tableLevel2);
-			this.flpDoms.Controls.Add(controlForLevel2);
+			LevelTwoUserControl level2userControl = new LevelTwoUserControl();
+			level2userControl.Initialize(this.quikStreaming, tableLevel2.SymbolInfo, tableLevel2.ToString());
+			tableLevel2.UserControlMonitoringMe = level2userControl;
+			this.flpDoms.Controls.Add(level2userControl);
 		}
 		internal void DomUserControl_deleteFor(DdeTableDepth tableLevel2) {
 			string msig = " //DomUserControl_deleteFor(" + tableLevel2 + ")";
-			QuikStreamingMonitorDomUserControl domResizeable = tableLevel2.UserControlMonitoringMe as QuikStreamingMonitorDomUserControl;
+			LevelTwoUserControl domResizeable = tableLevel2.UserControlMonitoringMe as LevelTwoUserControl;
 			if (domResizeable == null) {
-				string msg = "I_MUST_HAVE_BEEN_QuikStreamingMonitorDomUserControl_tableLevel2.WhereIamMonitored[" + tableLevel2.UserControlMonitoringMe + "]";
+				string msg = "I_MUST_HAVE_BEEN_LevelTwoUserControl_tableLevel2.WhereIamMonitored[" + tableLevel2.UserControlMonitoringMe + "]";
 				Assembler.PopupException(msg + msig);
 				return;
 			}

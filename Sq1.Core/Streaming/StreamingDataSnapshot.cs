@@ -12,6 +12,7 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	StreamingAdapter			streamingAdapter;
 		[JsonIgnore]	object						lockLastQuote;
 		[JsonProperty]	Dictionary<string, LevelTwoAndLastQuote>	level2andLastQuoteUnboundClone_bySymbol;	// { get; private set; }
+		public long Level2RefreshRate;
 
 		[JsonProperty]	public string				SymbolsSubscribedAndReceiving		{ get {
 				string ret = "";

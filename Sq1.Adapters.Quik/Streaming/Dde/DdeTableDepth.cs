@@ -3,9 +3,11 @@
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Support;
+using Sq1.Core.Streaming;
+
+using Sq1.Widgets.Level2;
 
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
-using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik.Streaming.Dde {
 	public class DdeTableDepth : XlDdeTableMonitoreable<LevelTwoOlv> {

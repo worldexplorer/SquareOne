@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Sq1.Core;
+using Sq1.Widgets.Level2;
 
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
 using Sq1.Adapters.Quik.Streaming.Monitor;
@@ -18,9 +19,9 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			QuikStreamingMonitorDomUserControl domResizeable = tableLevel2.UserControlMonitoringMe as QuikStreamingMonitorDomUserControl;
+			LevelTwoUserControl domResizeable = tableLevel2.UserControlMonitoringMe as LevelTwoUserControl;
 			if (domResizeable == null) {
-				string msg = "I_MUST_HAVE_BEEN_QuikStreamingMonitorDomUserControl_tableLevel2.WhereIamMonitored[" + tableLevel2.UserControlMonitoringMe + "]";
+				string msg = "I_MUST_HAVE_BEEN_LevelTwoUserControl_tableLevel2.WhereIamMonitored[" + tableLevel2.UserControlMonitoringMe + "]";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
