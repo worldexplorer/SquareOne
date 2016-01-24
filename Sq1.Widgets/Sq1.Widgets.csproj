@@ -190,6 +190,18 @@
     <Compile Include="LabeledTextBox\MenuItemLabeledTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Level2\LevelTwoOlv.cs" />
+    <Compile Include="Level2\LevelTwoOlvEachLine.cs" />
+    <Compile Include="Level2\LevelTwoUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Level2\LevelTwoUserControl.Customizer.cs">
+      <DependentUpon>LevelTwoUserControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Level2\LevelTwoUserControl.Designer.cs">
+      <DependentUpon>LevelTwoUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Livesim\LivesimControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -419,6 +431,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="LabeledTextBox\LabeledTextBoxControl.resx">
       <DependentUpon>LabeledTextBoxControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Level2\LevelTwoUserControl.resx">
+      <DependentUpon>LevelTwoUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Livesim\LivesimControl.resx">
       <DependentUpon>LivesimControl.cs</DependentUpon>
