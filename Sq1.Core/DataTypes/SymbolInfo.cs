@@ -107,6 +107,26 @@ namespace Sq1.Core.DataTypes {
 		[Category("6. Other"), Description(""), DefaultValue(true)]
 		[JsonProperty]	public	bool			SimBugOutOfBarLimitsFill	{ get; set; }
 
+
+		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
+		[JsonProperty]	public	bool			Level2AskFillHoles			{ get; set; }
+
+		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
+		[JsonProperty]	public	bool			Level2ShowSpread			{ get; set; }
+
+		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
+		[JsonProperty]	public	bool			Level2BidFillHoles			{ get; set; }
+
+		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
+		[JsonProperty]	public bool Level2BidCumulativeShowColumn			{ get; set; }
+
+		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
+		[JsonProperty]	public bool Level2ShowCumulativesInsteadOfLots		{ get; set; }
+
+		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
+		[JsonProperty]	public int	Level2PriceLevels						{ get; set; }
+
+
 		public SymbolInfo() { 		// used by JSONdeserialize() /  XMLdeserialize()
 			//this.MarketName = "US Equities";
 			this.SecurityType					= SecurityType.Stock;
@@ -127,6 +147,10 @@ namespace Sq1.Core.DataTypes {
 			this.UseFirstSlippageForBacktest	= true;
 			this.EmergencyCloseInterAttemptDelayMillis		= 8000;
 			this.EmergencyCloseAttemptsMax		= 5;
+			this.Level2AskFillHoles				= true;
+			this.Level2ShowSpread				= true;
+			this.Level2BidFillHoles				= true;
+			this.Level2PriceLevels				= 10;
 		}
 		public int getSlippageIndexMax(Direction direction) {
 			int ret = -1;

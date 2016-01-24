@@ -10,17 +10,7 @@ namespace Sq1.Core.Streaming {
 		protected	StreamingAdapter																	StreamingAdapter;
 		public		Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>>	DistributionChannels	{ get; protected set; }
 
-
-					string	reasonIwasCreated;
-		public		string	ReasonIwasCreated {
-			get { return this.reasonIwasCreated; }
-			protected set {
-				this.reasonIwasCreated = value;
-				foreach (SymbolScaleDistributionChannel eachChannel in this.flattenDistributionChannels()) {
-					eachChannel.ReasonIwasCreated_propagatedFromDistributor = this.reasonIwasCreated;
-				}
-			}
-		}
+		public		string	ReasonIwasCreated 	{ get; protected set; }
 
 		DataDistributor(string reasonIwasCreated) {
 			DistributionChannels	= new Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>>();
@@ -29,13 +19,13 @@ namespace Sq1.Core.Streaming {
 		}
 		public DataDistributor(StreamingAdapter streamingAdapter, string reasonIwasCreated) : this(reasonIwasCreated) {
 			this.StreamingAdapter = streamingAdapter;
-			this.ReasonIwasCreated = this.StreamingAdapter + ":" + this.ReasonIwasCreated;
+			//this.ReasonIwasCreated = this.StreamingAdapter + ":" + this.ReasonIwasCreated;
 		}
 
 		public virtual bool ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval,
 				StreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled) { lock (this.lockConsumersBySymbol) {
 			if (this.DistributionChannels.ContainsKey(symbol) == false) {
-				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled);
+				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled, this.ReasonIwasCreated);
 				newChannel.ConsumersQuoteAdd(consumer);
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> newScaleChannels = new Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>();
 				newScaleChannels.Add(scaleInterval, newChannel);
@@ -47,7 +37,7 @@ namespace Sq1.Core.Streaming {
 			}
 			Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> channels = this.DistributionChannels[symbol];
 			if (channels.ContainsKey(scaleInterval) == false) {
-				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled);
+				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled, this.ReasonIwasCreated);
 				newChannel.ConsumersQuoteAdd(consumer);
 				channels.Add(scaleInterval, newChannel);
 				return true;
@@ -115,7 +105,7 @@ namespace Sq1.Core.Streaming {
 		public virtual bool ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval,
 										StreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled) { lock (this.lockConsumersBySymbol) {
 			if (this.DistributionChannels.ContainsKey(symbol) == false) {
-				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled);
+				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled, this.ReasonIwasCreated);
 				newChannel.ConsumersBarAdd(consumer);
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> newScaleChannels = new Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>();
 				newScaleChannels.Add(scaleInterval, newChannel);
@@ -127,7 +117,7 @@ namespace Sq1.Core.Streaming {
 			}
 			Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> channels = this.DistributionChannels[symbol];
 			if (channels.ContainsKey(scaleInterval) == false) {
-				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled);
+				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled, this.ReasonIwasCreated);
 				newChannel.ConsumersBarAdd(consumer);
 				channels.Add(scaleInterval, newChannel);
 				return true;
