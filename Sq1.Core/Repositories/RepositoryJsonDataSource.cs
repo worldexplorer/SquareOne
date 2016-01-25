@@ -50,8 +50,8 @@ namespace Sq1.Core.Repositories {
 		}
 		public override void ItemCanBeDeletedCascade(NamedObjectJsonEventArgs<DataSource> args, object sender = null) {
 		}
-		public override void ItemRenameCascade(DataSource itemToRename, string newName, object sender = null) {
-			itemToRename.DataSourceFolderRename(newName);
+		public override bool ItemRenameCascade(DataSource itemToRename, string newName, object sender = null) {
+			return itemToRename.DataSourceFolderRename(newName);
 		}
 
 		public DataSourceSymbolEventArgs SymbolCanBeDeleted(DataSource dataSource, string symbolToDelete, object sender = null) {

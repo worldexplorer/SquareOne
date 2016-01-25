@@ -8,6 +8,7 @@ namespace Sq1.Core.DataFeed {
 	public class NamedObjectJsonSerializable {
 		[Browsable(false)]
 		[JsonProperty]	public	string	Name;
+		[JsonIgnore]	public	string	NameImStoredUnder_asUniqueKeyForRename;
 
 
 		//v1 was needed for NamedObjectJsonSerializableList.Contains() in Serializer<T>; now using RepositoryJsonChartSettingsTemplates

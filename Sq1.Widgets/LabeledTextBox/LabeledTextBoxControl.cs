@@ -12,16 +12,23 @@ namespace Sq1.Widgets.LabeledTextBox {
 //			get { return new Size(base.Size.Width, base.Size.Height - 2); }
 //			set { base.Size = new Size(value.Width, value.Height + 2); }
 //		}
-		//[Browsable(true)]
-		//public TextBox InternalTextBox {
-		//	get { return this.TextBox; }
-		//	set { this.TextBox = value; }
-		//}
-//		[Browsable(true)]
-//		public Label InternalLabel {
-//			get { return this.Label; }
-//			set { this.Label = value; }
-//		}
+
+		[Browsable(true)]
+		public TextBox InternalTextBox {
+			get { return this.TextBox; }
+			set { this.TextBox = value; }
+		}
+		[Browsable(true)]
+		public Label InternalLabelLeft {
+			get { return this.LabelLeft; }
+			set { this.LabelLeft = value; }
+		}
+		[Browsable(true)]
+		public Label InternalLabelRight {
+			get { return this.LabelRight; }
+			set { this.LabelRight = value; }
+		}
+
 		[Browsable(true)]
 		public string TextLeft {
 			get { return this.LabelLeft.Text; }

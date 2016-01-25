@@ -103,6 +103,18 @@ namespace Sq1.Widgets {
 			}
 			this.Show(dockPanel, DockState.Document);
 		}
+
+		public void ShowAsSiblingTabOnTopOf(DockContentImproved existingFormThatIWillCover) {
+			//existingFormThatIWillCover.Show(this);
+			//base.Show(this.DockHandler.Pane, existingFormThatIWillCover);
+			base.Show(base.DockHandler.DockPanel, existingFormThatIWillCover.DockState);
+			//this.Activate();
+		}
+		public void ShowAsSiblingTabOnTopOfMe(DockContentImproved willCoverMe) {
+			//base.Show(willCoverMe.DockHandler.Pane, this);
+			base.Show(this.DockPanel, this.DockState);
+			//willCoverMe.Activate();
+		}
 		
 		#region taken from Exceptions, TODO use variables from this class (replace first steps of explorations with DockContentImproved's methods)
 		public void ShowPopupSwitchToGuiThreadRunDelegateInIt(Delegate runInGuiThread = null) {

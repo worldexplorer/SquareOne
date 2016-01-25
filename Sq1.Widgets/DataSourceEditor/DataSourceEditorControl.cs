@@ -29,11 +29,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 				OrderProcessor							orderProcessor;
 				DataSource								dataSourceIamEditing;
 
-		string symbolsDefault;
-		string windowTitleDefault;
-
 		public DataSourceEditorControl() {
-			this.symbolsDefault = "RIZ2,RIH3";
 			InitializeComponent();
 		}
 
@@ -62,10 +58,10 @@ namespace Sq1.Widgets.DataSourceEditor {
 			} else {
 				this.Text = dataSourceIamEditing.Name;
 			}
-			if (this.dataSourceIamEditing.Name != windowTitleDefault) {
-				this.txtDataSourceName.Text = this.dataSourceIamEditing.Name;
-			}
-			this.txtSymbols.Text = this.dataSourceIamEditing.SymbolsCSV;
+
+			this.tsiLtbDataSourceName.InputFieldValue = this.dataSourceIamEditing.Name;
+			this.tsiLtbSymbols.InputFieldValue = this.dataSourceIamEditing.SymbolsCSV;
+
 			this.PopulateScaleIntervalFromDataSource();
 			this.PopulateStreamingBrokerListViewsFromDataSource();
 
@@ -103,11 +99,12 @@ namespace Sq1.Widgets.DataSourceEditor {
 		}
 
 		public void PopulateScaleIntervalFromDataSource() {
-			this.cmbScale.Items.Clear();
+			this.tsiCbxScale.ComboBoxItems.Clear();
+			this.tsiCbxScale.ComboBoxSorted = false;
 			int indexSelected = 0;
 			int i = 0;
 			foreach (BarScale barScale in Enum.GetValues(typeof(BarScale))) {
-				this.cmbScale.Items.Add(barScale.ToString());
+				this.tsiCbxScale.ComboBoxItems.Add(barScale.ToString());
 				if (this.dataSourceIamEditing.ScaleInterval == null) {
 					if (barScale == BarScale.Unknown) indexSelected = i;  
 				} else {
@@ -115,9 +112,16 @@ namespace Sq1.Widgets.DataSourceEditor {
 				}
 				i++;
 			}
-			this.cmbScale.SelectedIndex = indexSelected;
+			this.tsiCbxScale.ComboBoxSelectedIndex = indexSelected;
+			string selectedInDropbox = this.tsiCbxScale.ComboBox.SelectedItem.ToString();
+			string dataSourceScale = dataSourceIamEditing.ScaleInterval.Scale.ToString();
+			if (selectedInDropbox != dataSourceScale) {
+				string msg = "FIXME__cbxScale_WAS_ComboBoxSorted=false tsiCbxScale.ComboBox.SelectedValue[" + selectedInDropbox + "] != dataSourceIamEditing.ScaleInterval.Scale[" + dataSourceScale + "]";
+				Assembler.PopupException(msg);
+			}
+
 			if (this.dataSourceIamEditing.ScaleInterval != null) {
-				this.nmrInterval.Value = dataSourceIamEditing.ScaleInterval.Interval;
+				this.tsiNudInterval.NumericUpDownWithMouseEvents.Value = dataSourceIamEditing.ScaleInterval.Interval;
 			}
 		}
 		public void PopulateStreamingBrokerListViewsFromDataSource() {
@@ -238,48 +242,31 @@ namespace Sq1.Widgets.DataSourceEditor {
 			lvBrokerAdapters_SelectedIndexChanged(null, null);
 		}
 		public void ApplyEditorsToDataSource() {
-			if (this.txtDataSourceName.Text == "") {
+			if (this.tsiLtbDataSourceName.InputFieldValue == "") {
 				string msg = "Please provide Name for this new DataSet";
 				Assembler.PopupException(msg);
-				this.txtDataSourceName.Focus();
+				this.tsiLtbDataSourceName.InputFieldFocus();
 				return;
 			}
-//			DataSource foundSameName = Assembler.Instance.RepositoryJsonDataSource.DataSourceFind(this.txtDataSourceName.Text);
-//			if (foundSameName != null) {
-//				string msg = "DataSource[" + this.txtDataSourceName.Text + "] existed before; Overwrite?";
-//				DialogResult dialogResult = MessageBox.Show(msg, "DataSource [" + this.txtDataSourceName.Text + "] already exists", MessageBoxButtons.YesNoCancel);
-//				switch (dialogResult) {
-//					case System.Windows.Forms.DialogResult.Cancel:
-//					case DialogResult.No:
-//						this.txtDataSourceName.SelectAll();
-//						this.txtDataSourceName.Focus();
-//						return;
-//					case DialogResult.Yes:
-//						Assembler.Instance.RepositoryJsonDataSource.SerializeSingle(ds);
-//						base.DialogResult = System.Windows.Forms.DialogResult.OK;
-//						return;
-//				}
-//			}
-
-			this.dataSourceIamEditing.Name = this.txtDataSourceName.Text;
-			this.dataSourceIamEditing.Symbols = SymbolParser.ParseSymbols(this.txtSymbols.Text);
+			this.dataSourceIamEditing.Name = this.tsiLtbDataSourceName.InputFieldValue;
+			this.dataSourceIamEditing.Symbols = SymbolParser.ParseSymbols(this.tsiLtbSymbols.InputFieldValue);
 			this.dataSourceIamEditing.ScaleInterval.StringsCachedInvalidate();
 
 			if (this.dataSourceIamEditing.StreamingAdapter	!= null) this.dataSourceIamEditing.StreamingAdapter	.EditorInstance.PushEditedSettingsToStreamingAdapter();
 			if (this.dataSourceIamEditing.BrokerAdapter		!= null) this.dataSourceIamEditing.BrokerAdapter	.EditorInstance.PushEditedSettingsToBrokerAdapter();
+
+			try {
+				this.repositoryJsonDataSource.SerializeSingle(dataSourceIamEditing);
+			} catch (Exception ex) {
+				string msg = "SOMETHING_HAPPENED_WHILE_repositoryJsonDataSource.SerializeSingle(" + this.dataSourceIamEditing + ")";
+				Assembler.PopupException(msg, ex);
+			}
 
 			// for DataSource, nothing changed, but providers were assigned by user clicks, so DS will Initialize() each
 			try {
 				this.dataSourceIamEditing.Initialize(this.repositoryJsonDataSource.AbsPath, this.orderProcessor);
 			} catch (Exception ex) {
 				string msg = "SOMETHING_HAPPENED_WHILE_dataSourceIamEditing[" + this.dataSourceIamEditing + "].Initialize(" + this.repositoryJsonDataSource.AbsPath + ")";
-				Assembler.PopupException(msg, ex);
-			}
-
-			try {
-				this.repositoryJsonDataSource.SerializeSingle(dataSourceIamEditing);
-			} catch (Exception ex) {
-				string msg = "SOMETHING_HAPPENED_WHILE_repositoryJsonDataSource.SerializeSingle(" + this.dataSourceIamEditing + ")";
 				Assembler.PopupException(msg, ex);
 			}
 
@@ -299,5 +286,6 @@ namespace Sq1.Widgets.DataSourceEditor {
 				Assembler.PopupException(msg, ex);
 			}
 		}
+
 	}
 }

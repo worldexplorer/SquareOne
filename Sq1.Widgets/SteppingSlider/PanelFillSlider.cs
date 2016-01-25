@@ -9,6 +9,7 @@ using Sq1.Core.Indicators;
 
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class PanelFillSlider : PanelDoubleBuffered {
+	//public partial class PanelFillSlider : Panel {
 		SolidBrush brushBgValueCurrentEnabled = new SolidBrush(Color.LightSteelBlue);
 		SolidBrush brushBgValueCurrentDisabled = new SolidBrush(Color.DarkGray);
 		SolidBrush brushBgValueCurrent { get { return base.Enabled ? brushBgValueCurrentEnabled : brushBgValueCurrentDisabled; } }

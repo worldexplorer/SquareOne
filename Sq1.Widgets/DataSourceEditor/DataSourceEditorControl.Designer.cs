@@ -1,16 +1,10 @@
 ﻿namespace Sq1.Widgets.DataSourceEditor {
 	partial class DataSourceEditorControl {
 		private System.ComponentModel.IContainer components;
-		private System.Windows.Forms.Panel pnlIntro;
-		private System.Windows.Forms.Panel pnlContent;
-		private System.Windows.Forms.Button btnSave;
 		private System.Windows.Forms.ListView lvBrokerAdapters;
 		private System.Windows.Forms.ListView lvStreamingAdapters;
 		private System.Windows.Forms.ImageList imglStreamingAdapters;
 		private System.Windows.Forms.ImageList imglBrokerAdapters;
-		private System.Windows.Forms.TextBox txtDataSourceName;
-		private System.Windows.Forms.SplitContainer splitContainer1;
-		private System.Windows.Forms.Label lblDataSourceName;
 		private System.Windows.Forms.Label lblStreaming;
 		private System.Windows.Forms.Label lblExecution;
 		private System.Windows.Forms.Panel pnlStreamingEditor;
@@ -22,12 +16,6 @@
 		private System.Windows.Forms.SplitContainer splitContainer5;
 		private System.Windows.Forms.GroupBox grpStreaming;
 		private System.Windows.Forms.GroupBox grpBroker;
-		private System.Windows.Forms.Label lblSymbols;
-		private System.Windows.Forms.TextBox txtSymbols;
-		private System.Windows.Forms.NumericUpDown nmrInterval;
-		private System.Windows.Forms.Label lblInterval;
-		private System.Windows.Forms.ComboBox cmbScale;
-		private System.Windows.Forms.Label lblScale;
 		
 		protected override void Dispose(bool disposing) {
 			if (disposing && this.components != null) {
@@ -37,8 +25,6 @@
 		}
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
-			this.btnSave = new System.Windows.Forms.Button();
-			this.pnlIntro = new System.Windows.Forms.Panel();
 			this.splitContainer3 = new System.Windows.Forms.SplitContainer();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this.splitContainer4 = new System.Windows.Forms.SplitContainer();
@@ -54,17 +40,12 @@
 			this.grpBroker = new System.Windows.Forms.GroupBox();
 			this.pnlBrokerEditor = new System.Windows.Forms.Panel();
 			this.marketInfoEditor = new Sq1.Widgets.DataSourceEditor.MarketInfoEditor();
-			this.txtDataSourceName = new System.Windows.Forms.TextBox();
-			this.pnlContent = new System.Windows.Forms.Panel();
-			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-			this.lblScale = new System.Windows.Forms.Label();
-			this.nmrInterval = new System.Windows.Forms.NumericUpDown();
-			this.txtSymbols = new System.Windows.Forms.TextBox();
-			this.cmbScale = new System.Windows.Forms.ComboBox();
-			this.lblDataSourceName = new System.Windows.Forms.Label();
-			this.lblSymbols = new System.Windows.Forms.Label();
-			this.lblInterval = new System.Windows.Forms.Label();
-			this.pnlIntro.SuspendLayout();
+			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+			this.tsiBtnSave = new System.Windows.Forms.ToolStripButton();
+			this.tsiLtbDataSourceName = new Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox();
+			this.tsiNudInterval = new Sq1.Widgets.ToolStripImproved.ToolStripItemNumericUpDownWithMouseEvents();
+			this.tsiLtbSymbols = new Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox();
+			this.tsiCbxScale = new Sq1.Widgets.ToolStripImproved.ToolStripItemComboBox();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
 			this.splitContainer3.Panel1.SuspendLayout();
 			this.splitContainer3.Panel2.SuspendLayout();
@@ -83,38 +64,15 @@
 			this.splitContainer5.Panel2.SuspendLayout();
 			this.splitContainer5.SuspendLayout();
 			this.grpBroker.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-			this.splitContainer1.Panel1.SuspendLayout();
-			this.splitContainer1.Panel2.SuspendLayout();
-			this.splitContainer1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.nmrInterval)).BeginInit();
+			this.statusStrip1.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// btnSave
-			// 
-			this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnSave.Location = new System.Drawing.Point(6, 399);
-			this.btnSave.Name = "btnSave";
-			this.btnSave.Size = new System.Drawing.Size(128, 23);
-			this.btnSave.TabIndex = 0;
-			this.btnSave.Text = "Save";
-			this.btnSave.UseVisualStyleBackColor = true;
-			this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-			// 
-			// pnlIntro
-			// 
-			this.pnlIntro.Controls.Add(this.splitContainer3);
-			this.pnlIntro.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.pnlIntro.Location = new System.Drawing.Point(0, 0);
-			this.pnlIntro.Name = "pnlIntro";
-			this.pnlIntro.Size = new System.Drawing.Size(525, 425);
-			this.pnlIntro.TabIndex = 0;
 			// 
 			// splitContainer3
 			// 
+			this.splitContainer3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.splitContainer3.BackColor = System.Drawing.SystemColors.ControlDark;
-			this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.splitContainer3.Location = new System.Drawing.Point(0, 0);
 			this.splitContainer3.Name = "splitContainer3";
 			this.splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -128,8 +86,8 @@
 			// 
 			this.splitContainer3.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer3.Panel2.Controls.Add(this.marketInfoEditor);
-			this.splitContainer3.Size = new System.Drawing.Size(525, 425);
-			this.splitContainer3.SplitterDistance = 269;
+			this.splitContainer3.Size = new System.Drawing.Size(652, 398);
+			this.splitContainer3.SplitterDistance = 250;
 			this.splitContainer3.TabIndex = 12;
 			// 
 			// splitContainer2
@@ -148,8 +106,8 @@
 			// 
 			this.splitContainer2.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer2.Panel2.Controls.Add(this.splitContainer5);
-			this.splitContainer2.Size = new System.Drawing.Size(525, 269);
-			this.splitContainer2.SplitterDistance = 262;
+			this.splitContainer2.Size = new System.Drawing.Size(652, 250);
+			this.splitContainer2.SplitterDistance = 324;
 			this.splitContainer2.TabIndex = 11;
 			// 
 			// splitContainer4
@@ -170,8 +128,8 @@
 			// 
 			this.splitContainer4.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer4.Panel2.Controls.Add(this.grpStreaming);
-			this.splitContainer4.Size = new System.Drawing.Size(262, 269);
-			this.splitContainer4.SplitterDistance = 90;
+			this.splitContainer4.Size = new System.Drawing.Size(324, 250);
+			this.splitContainer4.SplitterDistance = 81;
 			this.splitContainer4.TabIndex = 7;
 			// 
 			// lblStreaming
@@ -192,7 +150,7 @@
 			this.lvStreamingAdapters.Location = new System.Drawing.Point(3, 21);
 			this.lvStreamingAdapters.MultiSelect = false;
 			this.lvStreamingAdapters.Name = "lvStreamingAdapters";
-			this.lvStreamingAdapters.Size = new System.Drawing.Size(256, 66);
+			this.lvStreamingAdapters.Size = new System.Drawing.Size(318, 57);
 			this.lvStreamingAdapters.SmallImageList = this.imglStreamingAdapters;
 			this.lvStreamingAdapters.TabIndex = 5;
 			this.lvStreamingAdapters.UseCompatibleStateImageBehavior = false;
@@ -213,7 +171,7 @@
 			this.grpStreaming.Controls.Add(this.pnlStreamingEditor);
 			this.grpStreaming.Location = new System.Drawing.Point(3, 3);
 			this.grpStreaming.Name = "grpStreaming";
-			this.grpStreaming.Size = new System.Drawing.Size(256, 172);
+			this.grpStreaming.Size = new System.Drawing.Size(318, 162);
 			this.grpStreaming.TabIndex = 8;
 			this.grpStreaming.TabStop = false;
 			this.grpStreaming.Text = "Streaming Settings";
@@ -225,7 +183,7 @@
 			this.pnlStreamingEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlStreamingEditor.Location = new System.Drawing.Point(3, 16);
 			this.pnlStreamingEditor.Name = "pnlStreamingEditor";
-			this.pnlStreamingEditor.Size = new System.Drawing.Size(250, 153);
+			this.pnlStreamingEditor.Size = new System.Drawing.Size(312, 143);
 			this.pnlStreamingEditor.TabIndex = 7;
 			// 
 			// splitContainer5
@@ -246,8 +204,8 @@
 			// 
 			this.splitContainer5.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer5.Panel2.Controls.Add(this.grpBroker);
-			this.splitContainer5.Size = new System.Drawing.Size(259, 269);
-			this.splitContainer5.SplitterDistance = 90;
+			this.splitContainer5.Size = new System.Drawing.Size(324, 250);
+			this.splitContainer5.SplitterDistance = 81;
 			this.splitContainer5.TabIndex = 11;
 			// 
 			// lblExecution
@@ -268,7 +226,7 @@
 			this.lvBrokerAdapters.Location = new System.Drawing.Point(3, 21);
 			this.lvBrokerAdapters.MultiSelect = false;
 			this.lvBrokerAdapters.Name = "lvBrokerAdapters";
-			this.lvBrokerAdapters.Size = new System.Drawing.Size(253, 66);
+			this.lvBrokerAdapters.Size = new System.Drawing.Size(318, 57);
 			this.lvBrokerAdapters.SmallImageList = this.imglBrokerAdapters;
 			this.lvBrokerAdapters.TabIndex = 10;
 			this.lvBrokerAdapters.UseCompatibleStateImageBehavior = false;
@@ -281,15 +239,15 @@
 			this.imglBrokerAdapters.ImageSize = new System.Drawing.Size(16, 16);
 			this.imglBrokerAdapters.TransparentColor = System.Drawing.Color.Transparent;
 			// 
-			// grpExecution
+			// grpBroker
 			// 
 			this.grpBroker.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.grpBroker.Controls.Add(this.pnlBrokerEditor);
 			this.grpBroker.Location = new System.Drawing.Point(3, 3);
-			this.grpBroker.Name = "grpExecution";
-			this.grpBroker.Size = new System.Drawing.Size(253, 172);
+			this.grpBroker.Name = "grpBroker";
+			this.grpBroker.Size = new System.Drawing.Size(318, 162);
 			this.grpBroker.TabIndex = 10;
 			this.grpBroker.TabStop = false;
 			this.grpBroker.Text = "Broker Settings";
@@ -302,7 +260,7 @@
 			this.pnlBrokerEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlBrokerEditor.Location = new System.Drawing.Point(3, 16);
 			this.pnlBrokerEditor.Name = "pnlBrokerEditor";
-			this.pnlBrokerEditor.Size = new System.Drawing.Size(247, 153);
+			this.pnlBrokerEditor.Size = new System.Drawing.Size(312, 143);
 			this.pnlBrokerEditor.TabIndex = 9;
 			// 
 			// marketInfoEditor
@@ -312,108 +270,91 @@
 			this.marketInfoEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.marketInfoEditor.Location = new System.Drawing.Point(0, 0);
 			this.marketInfoEditor.Name = "marketInfoEditor";
-			this.marketInfoEditor.Size = new System.Drawing.Size(525, 152);
+			this.marketInfoEditor.Size = new System.Drawing.Size(652, 144);
 			this.marketInfoEditor.TabIndex = 0;
 			// 
-			// txtDataSourceName
+			// statusStrip1
 			// 
-			this.txtDataSourceName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtDataSourceName.Location = new System.Drawing.Point(6, 21);
-			this.txtDataSourceName.Name = "txtDataSourceName";
-			this.txtDataSourceName.Size = new System.Drawing.Size(128, 20);
-			this.txtDataSourceName.TabIndex = 1;
+			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsiBtnSave,
+            this.tsiLtbDataSourceName,
+            this.tsiNudInterval,
+            this.tsiCbxScale,
+            this.tsiLtbSymbols});
+			this.statusStrip1.Location = new System.Drawing.Point(0, 401);
+			this.statusStrip1.Name = "statusStrip1";
+			this.statusStrip1.Size = new System.Drawing.Size(655, 25);
+			this.statusStrip1.SizingGrip = false;
+			this.statusStrip1.TabIndex = 53;
+			this.statusStrip1.Text = "statusStrip1";
 			// 
-			// pnlContent
+			// tsiBtnSave
 			// 
-			this.pnlContent.AutoScroll = true;
-			this.pnlContent.AutoSize = true;
-			this.pnlContent.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.pnlContent.Location = new System.Drawing.Point(0, 0);
-			this.pnlContent.Name = "pnlContent";
-			this.pnlContent.Size = new System.Drawing.Size(525, 425);
-			this.pnlContent.TabIndex = 3;
+			this.tsiBtnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsiBtnSave.Name = "tsiBtnSave";
+			this.tsiBtnSave.Size = new System.Drawing.Size(35, 23);
+			this.tsiBtnSave.Text = "Save";
+			this.tsiBtnSave.Click += new System.EventHandler(this.btnSave_Click);
 			// 
-			// splitContainer1
+			// tsiLtbDataSourceName
 			// 
-			this.splitContainer1.BackColor = System.Drawing.SystemColors.ControlDark;
-			this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-			this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-			this.splitContainer1.Name = "splitContainer1";
+			this.tsiLtbDataSourceName.BackColor = System.Drawing.Color.Transparent;
+			this.tsiLtbDataSourceName.InputFieldAlignedRight = false;
+			this.tsiLtbDataSourceName.InputFieldBackColor = System.Drawing.SystemColors.Window;
+			this.tsiLtbDataSourceName.InputFieldEditable = true;
+			this.tsiLtbDataSourceName.InputFieldMultiline = false;
+			this.tsiLtbDataSourceName.InputFieldOffsetX = 80;
+			this.tsiLtbDataSourceName.InputFieldValue = "QMOCK";
+			this.tsiLtbDataSourceName.InputFieldWidth = 60;
+			this.tsiLtbDataSourceName.Name = "tsiLtbDataSourceName";
+			this.tsiLtbDataSourceName.OffsetTop = 1;
+			this.tsiLtbDataSourceName.Size = new System.Drawing.Size(147, 23);
+			this.tsiLtbDataSourceName.Text = "tsiLtbDataSourceName";
+			this.tsiLtbDataSourceName.TextLeft = "DS Name:";
+			this.tsiLtbDataSourceName.TextLeftOffsetX = 21;
+			this.tsiLtbDataSourceName.TextLeftWidth = 61;
+			this.tsiLtbDataSourceName.TextRed = false;
+			this.tsiLtbDataSourceName.TextRight = "";
+			this.tsiLtbDataSourceName.TextRightOffsetX = 140;
+			this.tsiLtbDataSourceName.TextRightWidth = 4;
 			// 
-			// splitContainer1.Panel1
+			// tsiNudInterval
 			// 
-			this.splitContainer1.Panel1.BackColor = System.Drawing.SystemColors.Control;
-			this.splitContainer1.Panel1.Controls.Add(this.lblScale);
-			this.splitContainer1.Panel1.Controls.Add(this.btnSave);
-			this.splitContainer1.Panel1.Controls.Add(this.nmrInterval);
-			this.splitContainer1.Panel1.Controls.Add(this.txtSymbols);
-			this.splitContainer1.Panel1.Controls.Add(this.cmbScale);
-			this.splitContainer1.Panel1.Controls.Add(this.lblDataSourceName);
-			this.splitContainer1.Panel1.Controls.Add(this.lblSymbols);
-			this.splitContainer1.Panel1.Controls.Add(this.txtDataSourceName);
-			this.splitContainer1.Panel1.Controls.Add(this.lblInterval);
+			this.tsiNudInterval.DomainUpDownMinimumSize = new System.Drawing.Size(40, 0);
+			this.tsiNudInterval.Name = "tsiNudInterval";
+			this.tsiNudInterval.Size = new System.Drawing.Size(41, 23);
+			this.tsiNudInterval.Text = "15";
+			this.tsiNudInterval.DomainUpDownArrowUpStepAdd += new System.EventHandler(this.tsiNudInterval_ValueChanged);
+			this.tsiNudInterval.DomainUpDownArrowDownStepSubstract += new System.EventHandler(this.tsiNudInterval_ValueChanged);
 			// 
-			// splitContainer1.Panel2
+			// tsiLtbSymbols
 			// 
-			this.splitContainer1.Panel2.BackColor = System.Drawing.SystemColors.Control;
-			this.splitContainer1.Panel2.Controls.Add(this.pnlIntro);
-			this.splitContainer1.Panel2.Controls.Add(this.pnlContent);
-			this.splitContainer1.Size = new System.Drawing.Size(669, 425);
-			this.splitContainer1.SplitterDistance = 140;
-			this.splitContainer1.TabIndex = 4;
+			this.tsiLtbSymbols.BackColor = System.Drawing.Color.Transparent;
+			this.tsiLtbSymbols.InputFieldAlignedRight = false;
+			this.tsiLtbSymbols.InputFieldBackColor = System.Drawing.SystemColors.Window;
+			this.tsiLtbSymbols.InputFieldEditable = true;
+			this.tsiLtbSymbols.InputFieldMultiline = false;
+			this.tsiLtbSymbols.InputFieldOffsetX = 60;
+			this.tsiLtbSymbols.InputFieldValue = "LKOH,RIM3,autogen";
+			this.tsiLtbSymbols.InputFieldWidth = 90;
+			this.tsiLtbSymbols.Margin = new System.Windows.Forms.Padding(5, 2, 0, 0);
+			this.tsiLtbSymbols.Name = "tsiLtbSymbols";
+			this.tsiLtbSymbols.OffsetTop = 1;
+			this.tsiLtbSymbols.Size = new System.Drawing.Size(160, 23);
+			this.tsiLtbSymbols.Text = "tsmniSymbols";
+			this.tsiLtbSymbols.TextLeft = "Symbols:";
+			this.tsiLtbSymbols.TextLeftOffsetX = 0;
+			this.tsiLtbSymbols.TextLeftWidth = 57;
+			this.tsiLtbSymbols.TextRed = false;
+			this.tsiLtbSymbols.TextRight = "";
+			this.tsiLtbSymbols.TextRightOffsetX = 153;
+			this.tsiLtbSymbols.TextRightWidth = 4;
 			// 
-			// lblScale
+			// tsiCbxScale
 			// 
-			this.lblScale.AutoSize = true;
-			this.lblScale.Location = new System.Drawing.Point(6, 47);
-			this.lblScale.Name = "lblScale";
-			this.lblScale.Size = new System.Drawing.Size(51, 13);
-			this.lblScale.TabIndex = 1;
-			this.lblScale.Text = "Bar scale";
-			// 
-			// nmrInterval
-			// 
-			this.nmrInterval.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.nmrInterval.Location = new System.Drawing.Point(72, 71);
-			this.nmrInterval.Maximum = new decimal(new int[] {
-            9999,
-            0,
-            0,
-            0});
-			this.nmrInterval.Name = "nmrInterval";
-			this.nmrInterval.Size = new System.Drawing.Size(62, 20);
-			this.nmrInterval.TabIndex = 2;
-			this.nmrInterval.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-			this.nmrInterval.ValueChanged += new System.EventHandler(this.nmrInterval_ValueChanged);
-			// 
-			// txtSymbols
-			// 
-			this.txtSymbols.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtSymbols.Enabled = false;
-			this.txtSymbols.Location = new System.Drawing.Point(6, 112);
-			this.txtSymbols.Multiline = true;
-			this.txtSymbols.Name = "txtSymbols";
-			this.txtSymbols.Size = new System.Drawing.Size(128, 281);
-			this.txtSymbols.TabIndex = 6;
-			this.txtSymbols.Text = "RIZ2,RIH3";
-			// 
-			// cmbScale
-			// 
-			this.cmbScale.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.cmbScale.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cmbScale.FormattingEnabled = true;
-			this.cmbScale.Items.AddRange(new object[] {
+			this.tsiCbxScale.ComboBoxDropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.tsiCbxScale.ComboBoxFormattingEnabled = false;
+			this.tsiCbxScale.ComboBoxItems.AddRange(new object[] {
             "Unknown",
             "Tick",
             "Second",
@@ -423,48 +364,23 @@
             "Monthly",
             "Quarterly",
             "Yearly"});
-			this.cmbScale.Location = new System.Drawing.Point(72, 44);
-			this.cmbScale.Name = "cmbScale";
-			this.cmbScale.Size = new System.Drawing.Size(62, 21);
-			this.cmbScale.TabIndex = 1;
-			this.cmbScale.SelectedIndexChanged += new System.EventHandler(this.cmbScale_SelectedIndexChanged);
-			// 
-			// lblDataSourceName
-			// 
-			this.lblDataSourceName.AutoSize = true;
-			this.lblDataSourceName.Location = new System.Drawing.Point(3, 5);
-			this.lblDataSourceName.Name = "lblDataSourceName";
-			this.lblDataSourceName.Size = new System.Drawing.Size(98, 13);
-			this.lblDataSourceName.TabIndex = 4;
-			this.lblDataSourceName.Text = "Data Source Name";
-			// 
-			// lblSymbols
-			// 
-			this.lblSymbols.AutoSize = true;
-			this.lblSymbols.Location = new System.Drawing.Point(6, 96);
-			this.lblSymbols.Name = "lblSymbols";
-			this.lblSymbols.Size = new System.Drawing.Size(70, 13);
-			this.lblSymbols.TabIndex = 7;
-			this.lblSymbols.Text = "Symbols CSV";
-			// 
-			// lblInterval
-			// 
-			this.lblInterval.AutoSize = true;
-			this.lblInterval.Location = new System.Drawing.Point(6, 73);
-			this.lblInterval.Name = "lblInterval";
-			this.lblInterval.Size = new System.Drawing.Size(60, 13);
-			this.lblInterval.TabIndex = 2;
-			this.lblInterval.Text = "Bar interval";
+			this.tsiCbxScale.ComboBoxLocation = new System.Drawing.Point(224, 3);
+			this.tsiCbxScale.ComboBoxSelectedIndex = -1;
+			this.tsiCbxScale.ComboBoxSize = new System.Drawing.Size(70, 21);
+			this.tsiCbxScale.ComboBoxSorted = false;
+			this.tsiCbxScale.Name = "tsiCbxScale";
+			this.tsiCbxScale.Size = new System.Drawing.Size(70, 23);
+			this.tsiCbxScale.ComboBoxSelectedIndexChanged += new System.EventHandler<System.EventArgs>(this.tsiCmbScale_SelectedIndexChanged);
 			// 
 			// DataSourceEditorControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.splitContainer1);
+			this.Controls.Add(this.splitContainer3);
+			this.Controls.Add(this.statusStrip1);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.Name = "DataSourceEditorControl";
-			this.Size = new System.Drawing.Size(669, 425);
-			this.pnlIntro.ResumeLayout(false);
+			this.Size = new System.Drawing.Size(655, 426);
 			this.splitContainer3.Panel1.ResumeLayout(false);
 			this.splitContainer3.Panel2.ResumeLayout(false);
 			this.splitContainer3.Panel2.PerformLayout();
@@ -486,15 +402,18 @@
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).EndInit();
 			this.splitContainer5.ResumeLayout(false);
 			this.grpBroker.ResumeLayout(false);
-			this.splitContainer1.Panel1.ResumeLayout(false);
-			this.splitContainer1.Panel1.PerformLayout();
-			this.splitContainer1.Panel2.ResumeLayout(false);
-			this.splitContainer1.Panel2.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-			this.splitContainer1.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.nmrInterval)).EndInit();
+			this.statusStrip1.ResumeLayout(false);
+			this.statusStrip1.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
+
+		private System.Windows.Forms.StatusStrip statusStrip1;
+		private ToolStripImproved.ToolStripItemComboBox tsiCbxScale;
+		public System.Windows.Forms.ToolStripButton tsiBtnSave;
+		private LabeledTextBox.ToolStripItemLabeledTextBox tsiLtbDataSourceName;
+		private LabeledTextBox.ToolStripItemLabeledTextBox tsiLtbSymbols;
+		private ToolStripImproved.ToolStripItemNumericUpDownWithMouseEvents tsiNudInterval;
 	}
 }

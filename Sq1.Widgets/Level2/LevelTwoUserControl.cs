@@ -46,19 +46,20 @@ namespace Sq1.Widgets.Level2 {
 			this.olvcLevelTwo.RebuildColumns();
 
 			this.layoutUserControlResizeable();
-			this.PopulateLevel2ToTitle(true);
+			this.PopulateLevel2ToTitle(this.windowTitle, true);
 		}
-		public void PopulateLevel2ToTitle(bool ignoreTimer = false) {
+		public void PopulateLevel2ToTitle(string windowTitlePassed, bool ignoreTimer = false) {
 			if (this.olvcLevelTwo.IsDisposed) return;
 			if (base.IsDisposed) return;
 
+			this.windowTitle = windowTitlePassed;
 			if (ignoreTimer == false) {
 				// WHAT_IF_BEFORE_SWITCHING_TO_GUI_THREAD?
 				if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.streamingAdapter.Level2RefreshRateMs) return;
 			}
 
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.PopulateLevel2ToTitle(ignoreTimer); });
+				base.BeginInvoke((MethodInvoker)delegate { this.PopulateLevel2ToTitle(windowTitlePassed, ignoreTimer); });
 				return;
 			}
 			// I paid the price of switching to GuiThread, but I don' have to worry if I already stopwatch.Restart()ed

@@ -115,8 +115,8 @@ namespace Sq1.Core.DataFeed {
 			this.BrokerAdapter.Initialize(this, this.StreamingAdapter, orderProcessor);
 		}
 		public override string ToString() {
-			return Name + "(" + this.ScaleInterval.ToString() + ")" + SymbolsCSV
-				+ " {" + StreamingAdapterName + ":" + BrokerAdapterName + "}";
+			return this.Name + "(" + this.ScaleInterval.ToString() + ")" + this.SymbolsCSV
+				+ " {" + this.StreamingAdapterName + ":" + this.BrokerAdapterName + "}";
 		}
 
 		// internal => use only RepositoryJsonDataSource.SymbolAdd() which will notify subscribers about add operation
@@ -279,19 +279,51 @@ namespace Sq1.Core.DataFeed {
 			this.BarsRepository.DeleteAllDataFilesAllSymbols();
 			Directory.Delete(this.DataSourceAbspath);
 		}
-		internal void DataSourceFolderRename(string newName) {
+		internal bool DataSourceFolderRename(string newName) {
+			bool ret = false;
 			string msig = " DataSourceFolderRename(" + this.Name + "=>" + newName + ")";
 			if (Directory.Exists(this.DataSourceAbspath) == false) {
 				throw new Exception("DATASOURCE_OLD_FOLDER_DOESNT_EXIST this.FolderForBarDataStore[" + this.DataSourceAbspath + "]" + msig);
 			}
 			string abspathNewFolderName = Path.Combine(this.DataSourcesAbspath, newName);
 			if (Directory.Exists(abspathNewFolderName)) {
-				throw new Exception("DATASOURCE_NEW_FOLDER_ALREADY_EXISTS abspathNewFolderName[" + abspathNewFolderName + "]" + msig);
+				string abspathNewRandomFolderName = Path.Combine(this.DataSourcesAbspath, newName + "-OutOfMyWay-" + new Random().Next(1000000, 9999999));
+				int newNameGenTrialsDone = 0;
+				int newNameGenTrialsLimit = 1000;
+				while (Directory.Exists(abspathNewRandomFolderName)) {
+					abspathNewRandomFolderName = Path.Combine(this.DataSourcesAbspath, newName + "-OutOfMyWay-" + new Random().Next(1000000, 9999999));
+					newNameGenTrialsDone++;
+					if (newNameGenTrialsDone >= newNameGenTrialsLimit) {
+						string fatal = "CHECK_YOUR_FOLDER_IT_HAS_WAY_TOO_MANY_-OutOfMyWay-_FOLDERS LAST_EXISTING[" + abspathNewRandomFolderName + "]"
+							+ " newNameGenTrialsDone[" + newNameGenTrialsDone + "] >= newNameGenTrialsLimit[" +  newNameGenTrialsLimit + "]";
+						//throw new Exception(fatal + msig);
+						Assembler.PopupException(fatal + msig);
+						return ret;
+					}
+				}
+				string msg = "DATASOURCE_NEW_FOLDER_ALREADY_EXISTS abspathNewFolderName[" + abspathNewFolderName + "]=>renamingToRandom[" + abspathNewRandomFolderName + "] TO_GET_CLEAR_WAY";
+				try {
+					Directory.Move(abspathNewFolderName, abspathNewRandomFolderName);
+					Assembler.PopupException(msg + msig);
+				} catch (Exception ex) {
+					msg = "RENAME_FAILED__GRANT_YOURSELF_FULL_CONTROL_TO_FOLDER this.DataSourcesAbspath[" + this.DataSourcesAbspath + "] " + msg;
+					Assembler.PopupException(msg + msig, ex);
+					return ret;
+				}
 			}
-			Directory.Move(this.DataSourceAbspath, abspathNewFolderName);
+			try {
+				Directory.Move(this.DataSourceAbspath, abspathNewFolderName);
+			} catch (Exception ex) {
+				string msg = "RENAME_FAILED__GRANT_YOURSELF_FULL_CONTROL_TO_FOLDER this.DataSourcesAbspath[" + this.DataSourcesAbspath + "] "
+					+ " Directory.Move(" + this.DataSourceAbspath + "=>" + abspathNewFolderName + ")";
+				Assembler.PopupException(msg + msig, ex);
+				return ret;
+			}
 			this.Name = newName;
 			this.DataSourceAbspath = abspathNewFolderName;
 			this.BarsRepository = new RepositoryBarsSameScaleInterval(this.DataSourceAbspath, this.ScaleInterval, true);
+			ret = true;
+			return ret;
 		}
 		public Bars BarsLoadAndCompress(string symbolRq, BarScaleInterval scaleIntervalRq, out string millisElapsed) {
 			millisElapsed = "WASNT_LOADED";

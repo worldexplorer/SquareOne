@@ -37,7 +37,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 		}
 		public void populateMarketFromDataSource() {
 			if (base.DesignMode) return;
-
+			if (this.dataSource == null) return;
 			this.populateMarketNamesDataGrid();
 			this.populateMarketIntradayInterruptsDataGrid();
 			this.populateMarketShortDaysDataGrid();
