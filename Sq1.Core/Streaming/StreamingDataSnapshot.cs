@@ -41,17 +41,6 @@ namespace Sq1.Core.Streaming {
 			}
 			this.streamingAdapter = streamingAdapter;
 		}
-		public void InitializeWithStreaming(StreamingAdapter streamingAdapter) {
-			if (this.streamingAdapter != null) {
-				if (this.streamingAdapter == streamingAdapter) {
-					Assembler.PopupException("TWO_DATASOURCES_WITH_SAME_STREAMING_ADAPTERS__EACH_", null, false);
-					return;
-				}
-				string msg = "STREAMING_DATA_SNAPSHOT__REASSIGNED_FOR_LIVESIM_PUPPET";
-				Assembler.PopupException(msg, null, false);
-			}
-			this.streamingAdapter = streamingAdapter;
-		}
 
 		public void InitializeLastQuoteReceived(List<string> symbols) {
 			foreach (string symbol in symbols) {

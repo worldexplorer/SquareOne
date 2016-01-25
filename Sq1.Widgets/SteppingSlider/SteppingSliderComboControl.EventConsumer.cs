@@ -10,24 +10,24 @@ namespace Sq1.Widgets.SteppingSlider {
 	public partial class SteppingSliderComboControl {
 		void domainUpDown_KeyDown(object sender, KeyEventArgs e) {
 			if (e.KeyCode != Keys.Enter) return;
-			this.DomainUpDown.Select(0, this.DomainUpDown.Text.Length);
+			this.NumericUpDown.Select(0, this.NumericUpDown.Text.Length);
 			decimal parsed;
 			try {
-				parsed = Decimal.Parse(this.DomainUpDown.Text);
-				this.DomainUpDown.BackColor = Color.White;
+				parsed = Decimal.Parse(this.NumericUpDown.Text);
+				this.NumericUpDown.BackColor = Color.White;
 			} catch (Exception ex) {
-				this.DomainUpDown.BackColor = Color.LightSalmon;
+				this.NumericUpDown.BackColor = Color.LightSalmon;
 				return;
 			}
 			if (parsed > this.ValueMaxRtlSafe) {
 				parsed = this.ValueMaxRtlSafe;
-				this.DomainUpDown.BackColor = Color.LightSalmon;
+				this.NumericUpDown.BackColor = Color.LightSalmon;
 			}
 			if (parsed < this.ValueMinRtlSafe) {
 				parsed = this.ValueMinRtlSafe;
-				this.DomainUpDown.BackColor = Color.LightSalmon;
+				this.NumericUpDown.BackColor = Color.LightSalmon;
 			}
-			this.DomainUpDown.BackColor = Color.White;
+			this.NumericUpDown.BackColor = Color.White;
 			parsed = this.PanelFillSlider.RoundToClosestStep(parsed);
 			this.ValueCurrent = parsed;
 			this.RaiseValueChanged();
@@ -42,26 +42,26 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 		void domainUpDown_OnArrowDownStepSubstract(object sender, EventArgs e) {
 			try {
-				decimal parsed = Decimal.Parse(this.DomainUpDown.Text);
-				this.DomainUpDown.BackColor = Color.White;
+				decimal parsed = Decimal.Parse(this.NumericUpDown.Text);
+				this.NumericUpDown.BackColor = Color.White;
 				parsed -= this.ValueIncrement;
 				if (parsed < this.ValueMinRtlSafe) return;
 				this.ValueCurrent = parsed;		// => RaiseValueCurrentChanged()
 				// AVOIDING_DUPLICATED_EVENT__ASSIGNING_ALREADY_RAISED this.RaiseValueChanged();
 			} catch (Exception ex) {
-				this.DomainUpDown.BackColor = Color.LightSalmon;
+				this.NumericUpDown.BackColor = Color.LightSalmon;
 			}
 		}
 		void domainUpDown_OnArrowUpStepAdd(object sender, EventArgs e) {
 			try {
-				decimal parsed = Decimal.Parse(this.DomainUpDown.Text);
-				this.DomainUpDown.BackColor = Color.White;
+				decimal parsed = Decimal.Parse(this.NumericUpDown.Text);
+				this.NumericUpDown.BackColor = Color.White;
 				parsed += this.ValueIncrement;
 				if (parsed > this.ValueMaxRtlSafe) return;
 				this.ValueCurrent = parsed;		// => RaiseValueCurrentChanged()
 				// AVOIDING_DUPLICATED_EVENT__ASSIGNING_ALREADY_RAISED this.RaiseValueChanged();
 			} catch (Exception ex) {
-				this.DomainUpDown.BackColor = Color.LightSalmon;
+				this.NumericUpDown.BackColor = Color.LightSalmon;
 			}
 		}
 
@@ -107,13 +107,13 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 	
 		void domainUpDown_GotFocus (object sender, EventArgs e) {
-			this.DomainUpDown.Select(0, this.DomainUpDown.Text.Length);
+			this.NumericUpDown.Select(0, this.NumericUpDown.Text.Length);
 		}
 
 		void PanelFillSlider_ValueCurrentChanged(object sender, EventArgs e) {
 			string valueClicked = this.PanelFillSlider.ValueCurrent.ToString(this.ValueFormat);
-			if (valueClicked == this.DomainUpDown.Text) return;
-			this.DomainUpDown.Text = valueClicked;
+			if (valueClicked == this.NumericUpDown.Text) return;
+			this.NumericUpDown.Text = valueClicked;
 			this.RaiseValueChanged();
 		}
 
@@ -139,7 +139,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 
 		void ctxSlider_Opening(object sender, CancelEventArgs e) {
-			this.DomainUpDown.Text = this.format(this.ValueCurrent);
+			this.NumericUpDown.Text = this.format(this.ValueCurrent);
 			this.mniltbValueCurrent.InputFieldValue = this.format(this.ValueCurrent);
 			this.mniltbValueMin.InputFieldValue = this.format(this.ValueMin);
 			this.mniltbValueMax.InputFieldValue = this.format(this.ValueMax);

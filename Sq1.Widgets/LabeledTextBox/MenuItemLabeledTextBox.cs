@@ -2,21 +2,22 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using System.Drawing;
 
 namespace Sq1.Widgets.LabeledTextBox {
 	[ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.MenuStrip |
 									   ToolStripItemDesignerAvailability.ContextMenuStrip)]
 	public class MenuItemLabeledTextBox : ToolStripControlHost {		//http://stackoverflow.com/questions/5549895/toolstriptextbox-customisation
 		public event EventHandler<LabeledTextBoxUserTypedArgs> UserTyped;
-		private LabeledTextBoxControl LabeledTextBoxControl; // { get; private set; }
+		public LabeledTextBoxControl LabeledTextBoxControl { get; private set; }
 		
 		[Browsable(true)]
-		public new string TextLeft {
+		public string TextLeft {
 			get { return this.LabeledTextBoxControl.TextLeft; }
 			set { this.LabeledTextBoxControl.TextLeft = value; }
 		}
 		[Browsable(true)]
-		public new string TextRight {
+		public string TextRight {
 			get { return this.LabeledTextBoxControl.TextRight; }
 			set { this.LabeledTextBoxControl.TextRight = value; }
 		}
@@ -75,6 +76,31 @@ namespace Sq1.Widgets.LabeledTextBox {
 			get { return this.LabeledTextBoxControl.InputFieldAlignedRight; }
 			set { this.LabeledTextBoxControl.InputFieldAlignedRight = value; }
 		}
+		[Browsable(true)]
+		public bool InputFieldMultiline {
+			get { return this.LabeledTextBoxControl.TextBox.Multiline; }
+			set { this.LabeledTextBoxControl.TextBox.Multiline = value; }
+		}
+		[Browsable(true)]
+		public Color InputFieldBackColor {
+			get { return this.LabeledTextBoxControl.TextBox.BackColor; }
+			set { this.LabeledTextBoxControl.TextBox.BackColor = value; }
+		}
+		[Browsable(true)]
+		public int OffsetTop {
+			get { return this.LabeledTextBoxControl.LabelLeft.Padding.Top; }
+			set {
+				this.LabeledTextBoxControl.LabelLeft.Padding = new Padding(this.LabeledTextBoxControl.LabelLeft.Padding.Left, value
+					, this.LabeledTextBoxControl.LabelLeft.Padding.Right, this.LabeledTextBoxControl.LabelLeft.Padding.Bottom);
+				this.LabeledTextBoxControl.LabelRight.Padding = new Padding(this.LabeledTextBoxControl.LabelRight.Padding.Right, value
+					, this.LabeledTextBoxControl.LabelRight.Padding.Right, this.LabeledTextBoxControl.LabelRight.Padding.Bottom);
+
+				//this.LabeledTextBoxControl.TextBox.Margin = new Padding(this.LabeledTextBoxControl.TextBox.Margin.Left, value
+				//	, this.LabeledTextBoxControl.TextBox.Margin.Right, this.LabeledTextBoxControl.TextBox.Margin.Bottom);
+				this.LabeledTextBoxControl.TextBox.Location = new Point(this.LabeledTextBoxControl.TextBox.Location.X, this.LabeledTextBoxControl.TextBox.Location.Y + value);
+				this.LabeledTextBoxControl.TextBox.Size = new Size(this.LabeledTextBoxControl.TextBox.Size.Width, this.LabeledTextBoxControl.TextBox.Size.Height - value);
+			}
+		}
 
 		public MenuItemLabeledTextBox() : base(new LabeledTextBoxControl()) {
 			this.LabeledTextBoxControl = this.Control as LabeledTextBoxControl;
@@ -98,6 +124,9 @@ namespace Sq1.Widgets.LabeledTextBox {
 			ContextMenuStrip ctx = this.Owner as ContextMenuStrip;
 			if (ctx == null) return;
 			ctx.Close();
+		}
+		internal void InputFieldFocus() {
+			this.LabeledTextBoxControl.TextBox.Focus();
 		}
 	}
 }

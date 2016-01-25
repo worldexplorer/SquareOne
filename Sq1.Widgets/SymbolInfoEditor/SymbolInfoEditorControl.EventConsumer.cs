@@ -3,8 +3,9 @@ using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.DataTypes;
-using Sq1.Widgets.LabeledTextBox;
 using Sq1.Core.DataFeed;
+
+using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Widgets.SymbolEditor {
 	public partial class SymbolInfoEditorControl {
@@ -41,7 +42,7 @@ namespace Sq1.Widgets.SymbolEditor {
 				this.openDropDownAfterSelected = true;
 				return;
 			}
-			this.toolStripItemComboBox1.ComboBox.DroppedDown = true;
+			this.tsiCbxSymbols.ComboBox.DroppedDown = true;
 		}
 		void propertyGrid1_PropertyValueChanged(object sender, PropertyValueChangedEventArgs e) {
 			this.repositorySerializerSymbolInfo.Serialize();
@@ -63,7 +64,7 @@ namespace Sq1.Widgets.SymbolEditor {
 			SymbolInfo priorToDeleted = this.repositorySerializerSymbolInfo.Delete(this.symbolInfoSelectedNullUnsafe);
 			if (priorToDeleted == null) return;
 			this.PopulateWithSymbolInfo(priorToDeleted, true);
-			this.toolStripItemComboBox1.ComboBox.DroppedDown = true;
+			this.tsiCbxSymbols.ComboBox.DroppedDown = true;
 		}
 		void mniltbAddNew_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			SymbolInfo added = this.repositorySerializerSymbolInfo.Add(e.StringUserTyped);

@@ -111,6 +111,7 @@ namespace Sq1.Core.Repositories {
 					TypeNameHandling = TypeNameHandling.Objects});
 				//if (ret == null) ret = new T();
 				if (ret == null) return null;
+				ret.NameImStoredUnder_asUniqueKeyForRename = ret.Name;
 				if (this.CheckIfValidAndShouldBeAddedAfterDeserialized != null) {
 					bool valid = this.CheckIfValidAndShouldBeAddedAfterDeserialized(jsonAbsfile, ret);
 					if (!valid) return null;
@@ -125,6 +126,13 @@ namespace Sq1.Core.Repositories {
 			return ret;
 		}
 		public virtual void SerializeSingle(DATASOURCE itemStored, string jsonRelname = null) {
+			if (string.IsNullOrEmpty(itemStored.NameImStoredUnder_asUniqueKeyForRename) == false) {
+				string newName = itemStored.Name;
+				itemStored.Name = itemStored.NameImStoredUnder_asUniqueKeyForRename;
+				itemStored.NameImStoredUnder_asUniqueKeyForRename = null;
+				this.ItemRename(itemStored, newName);	// SerializeSingle_WILL_BE_INVOKED_AGAIN_BUT_WILL_SERIALIZE_WITHOUT_MAKING_A_COPY
+				return;
+			}
 			if (jsonRelname == null) jsonRelname = this.jsonRelnameForItem(itemStored);
 			string jsonAbsname = Path.Combine(this.AbsPath, jsonRelname);
 			try {
@@ -219,23 +227,83 @@ namespace Sq1.Core.Repositories {
 					// throw new Exception(msg);
 					Assembler.PopupException(msg + msig);
 				}
-				string jsonRelnameToDeleteBeforeRename = this.jsonRelnameForItem(itemStored);
-				this.ItemRenameCascade(itemStored, newName, sender);
+				bool dataSourceFolderRenamed = this.ItemRenameCascade(itemStored, newName, sender);
 
-				var items = new List<DATASOURCE>(this.ItemsByName.Values);
-				this.ItemsByName.Clear();
-				foreach (var item in items) {
-					this.ItemsByName.Add(item.Name, item);
+				if (dataSourceFolderRenamed) {
+					var items = new List<DATASOURCE>(this.ItemsByName.Values);
+					this.ItemsByName.Clear();
+					foreach (var item in items) {
+						this.ItemsByName.Add(item.Name, item);
+					}
+
+					//string jsonRelnameToDeleteBeforeRename = this.jsonRelnameForItem(itemStored);
+					string jsonRelnameBeforeRename	= this.jsonRelnameForItem(itemStored);
+					string jsonRelnameAfterRename	= newName + this.Extension;
+					bool jsonRenamed = this.jsonRename(jsonRelnameBeforeRename, jsonRelnameAfterRename);
+					if (jsonRenamed) {
+						itemStored.Name = newName;
+						this.SerializeSingle(itemStored);
+						//this.JsonDeleteRelname(jsonRelnameToDeleteBeforeRename);
+						this.RaiseOnItemRenamed(sender, itemStored);
+					} else {
+						string msg = "I_REFUSE_TO_SerializeSingle(itemStored): jsonRenamed[" + jsonRenamed + "] NOT_RAISING_OnItemRenamed_EVENT";
+						Assembler.PopupException(msg + msig);
+					}
+				} else {
+					string msg = "I_REFUSE_TO_SerializeSingle(itemStored)_AND_REBUILD_RepositoryJsonsInFolder.ItemsByName dataSourceFolderRenamed[" + dataSourceFolderRenamed + "] NOT_RAISING_OnItemRenamed_EVENT";
+					Assembler.PopupException(msg + msig);
 				}
-
-				this.SerializeSingle(itemStored);
-				this.JsonDeleteRelname(jsonRelnameToDeleteBeforeRename);
-				this.RaiseOnItemRenamed(sender, itemStored);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			}
 		}
-		public virtual void ItemRenameCascade(DATASOURCE itemToRename, string newName, object sender = null) {
+
+		bool jsonRename(string jsonRelnameBeforeRename, string jsonRelnameAfterRename) {
+			bool ret = false;
+			string msig = " JsonRename(" + jsonRelnameBeforeRename + "=>" + jsonRelnameAfterRename + ")";
+			if (Directory.Exists(this.AbsPath) == false) {
+				throw new Exception("DATASOURCE_OLD_FOLDER_DOESNT_EXIST this.FolderForBarDataStore[" + this.AbsPath + "]" + msig);
+			}
+			string abspathOldJsonName = Path.Combine(this.AbsPath, jsonRelnameBeforeRename);
+			string abspathNewJsonName = Path.Combine(this.AbsPath, jsonRelnameAfterRename);
+			if (Directory.Exists(abspathNewJsonName)) {
+				string abspathNewRandomFolderName = Path.Combine(this.AbsPath, jsonRelnameAfterRename + "-OutOfMyWay-" + new Random().Next(1000000, 9999999));
+				int newNameGenTrialsDone = 0;
+				int newNameGenTrialsLimit = 1000;
+				while (Directory.Exists(abspathNewRandomFolderName)) {
+					abspathNewRandomFolderName = Path.Combine(this.AbsPath, jsonRelnameAfterRename + "-OutOfMyWay-" + new Random().Next(1000000, 9999999));
+					newNameGenTrialsDone++;
+					if (newNameGenTrialsDone >= newNameGenTrialsLimit) {
+						string fatal = "CHECK_YOUR_FOLDER_IT_HAS_WAY_TOO_MANY_-OutOfMyWay-_FOLDERS LAST_EXISTING[" + abspathNewRandomFolderName + "]"
+							+ " newNameGenTrialsDone[" + newNameGenTrialsDone + "] >= newNameGenTrialsLimit[" +  newNameGenTrialsLimit + "]";
+						//throw new Exception(fatal + msig);
+						Assembler.PopupException(fatal + msig);
+						return ret;
+					}
+				}
+				string msg = "DATASOURCE_NEW_FOLDER_ALREADY_EXISTS abspathNewFolderName[" + abspathNewJsonName + "]=>renamingToRandom[" + abspathNewRandomFolderName + "] TO_GET_CLEAR_WAY";
+				try {
+					Directory.Move(abspathNewJsonName, abspathNewRandomFolderName);
+					Assembler.PopupException(msg + msig);
+				} catch (Exception ex) {
+					msg = "RENAME_FAILED__GRANT_YOURSELF_FULL_CONTROL_TO_FOLDER this.AbsPath[" + this.AbsPath + "] " + msg;
+					Assembler.PopupException(msg + msig, ex);
+					return ret;
+				}
+			}
+			try {
+				Directory.Move(abspathOldJsonName, abspathNewJsonName);
+			} catch (Exception ex) {
+				string msg = "RENAME_FAILED__GRANT_YOURSELF_FULL_CONTROL_TO_FOLDER this.AbsPath[" + this.AbsPath + "] "
+					+ " Directory.Move(" + abspathOldJsonName + "=>" + abspathNewJsonName + ")";
+				Assembler.PopupException(msg + msig, ex);
+				return ret;
+			}
+			ret = true;
+			return ret;
+		}
+		public virtual bool ItemRenameCascade(DATASOURCE itemToRename, string newName, object sender = null) {
+			return true;	// returning "yes renamed okay"
 		}
 		public void JsonDeleteItem(DATASOURCE itemStored) {
 			string jsonRelname = this.jsonRelnameForItem(itemStored);

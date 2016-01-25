@@ -296,7 +296,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SteppingSlider\DomainUpDownWithMouseEvents.cs">
+    <Compile Include="SteppingSlider\NumericUpDownWithMouseEvents.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="SteppingSlider\PanelFillSlider.cs">
@@ -335,7 +335,13 @@
     <Compile Include="SteppingSlider\SteppingSliderComboControl.Designer.cs">
       <DependentUpon>SteppingSliderComboControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ToolStripImproved\ToolStripItemProgressBarETA.cs">
+    <Compile Include="ToolStripWidgets\ToolStripItemLabeledTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ToolStripWidgets\ToolStripItemNumericUpDownWithMouseEvents.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ToolStripWidgets\ToolStripItemProgressBarETA.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="SteppingSlider\SteppingSlidersAutoGrowControl.EventConsumer.cs">
@@ -357,9 +363,6 @@
     <Compile Include="SteppingSlider\SteppingSlidersAutoGrowControl.MenuProvider.EventGenerator.cs">
       <DependentUpon>SteppingSlidersAutoGrowControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ToolStripImproved\ToolStripItemSteppingSlider.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="StrategiesTree\StrategiesTreeControl.cs">
       <SubType>UserControl</SubType>
@@ -390,7 +393,7 @@
       <DependentUpon>SymbolInfoEditorControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ToolStripImproved\ToolStripItemComboBox.cs">
+    <Compile Include="ToolStripWidgets\ToolStripItemComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="WalkForward\WalkForwardControl.cs">
@@ -399,7 +402,7 @@
     <Compile Include="WalkForward\WalkForwardControl.Designer.cs">
       <DependentUpon>WalkForwardControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ToolStripImproved\ToolStripItemWalkForward.cs">
+    <Compile Include="ToolStripWidgets\ToolStripItemWalkForward.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>

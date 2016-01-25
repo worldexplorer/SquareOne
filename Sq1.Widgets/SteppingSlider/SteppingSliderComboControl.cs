@@ -7,6 +7,7 @@ using Sq1.Core.DoubleBuffered;
 
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class SteppingSliderComboControl : UserControlDoubleBuffered {
+	//public partial class SteppingSliderComboControl : UserControl {
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public decimal ValueMin {
 			get { return this.PanelFillSlider.ValueMin; }
@@ -25,7 +26,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			set {
 				this.PanelFillSlider.ValueCurrent = value;		// => RaiseValueCurrentChanged()
 				this.mniltbValueCurrent.InputFieldValue = this.format(this.PanelFillSlider.ValueCurrent);
-				this.DomainUpDown.Text = this.format(this.PanelFillSlider.ValueCurrent);
+				this.NumericUpDown.Text = this.format(this.PanelFillSlider.ValueCurrent);
 				// numericUpDown clicked causes double backtest and Disposes TSI menu items this.RaiseValueChanged();
 			}
 		}
@@ -134,7 +135,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			set {
 				this.splitContainer1.Panel1Collapsed = !value;
 				// disables cursor on hidden field and makes keybord ArrowUp & ArrowDown not affect the value
-				this.DomainUpDown.Enabled = value;
+				this.NumericUpDown.Enabled = value;
 				//this.mniDisableNumeric.Text = this.splitContainer1.Panel1Collapsed ? "Show Numeric Field" : "Hide Numeric Field";
 				this.mniShowNumeric.Checked = this.EnableNumeric;
 			}
@@ -147,9 +148,9 @@ namespace Sq1.Widgets.SteppingSlider {
 		//}
 
 		[Browsable(true)]
-		public DomainUpDownWithMouseEvents InnerDomainUpDownWithMouseEvents {
-			get { return this.DomainUpDown; }
-			set { this.DomainUpDown = value; }
+		public NumericUpDownWithMouseEvents InnerNumericUpDownWithMouseEvents {
+			get { return this.NumericUpDown; }
+			set { this.NumericUpDown = value; }
 		}
 		
 		[Browsable(true)]

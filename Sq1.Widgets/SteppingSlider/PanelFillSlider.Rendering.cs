@@ -2,10 +2,12 @@
 using System.Drawing;
 using System.Windows.Forms;
 
+using Sq1.Core;
+
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class PanelFillSlider {
 
-		//WHEN_INHERITED_FROM_REGULAR_USERCONTROL protected override void OnPaint(PaintEventArgs e) {
+		//WHEN_INHERITED_FROM_REGULAR_USERCONTROL		protected override void OnPaint(PaintEventArgs pe) {
 		protected override void OnPaintDoubleBuffered(PaintEventArgs pe) {
 			int paddingLeft = 3;
 			int paddingTop = 0;
@@ -131,8 +133,9 @@ namespace Sq1.Widgets.SteppingSlider {
 					}
 				}
 				//DOUBLEBUFFERED_PARENT_DID_THAT base.OnPaint(pe);
-			} catch (Exception e) {
+			} catch (Exception ex) {
 				string msg = "WindProc won't catch your exceptions; keep a breakpoint here";
+				Assembler.PopupException(msg, ex);
 			}
 		}
 	}

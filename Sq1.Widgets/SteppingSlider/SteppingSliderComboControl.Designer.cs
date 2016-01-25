@@ -16,7 +16,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-			this.DomainUpDown = new Sq1.Widgets.SteppingSlider.DomainUpDownWithMouseEvents();
+			this.NumericUpDown = new Sq1.Widgets.SteppingSlider.NumericUpDownWithMouseEvents();
 			this.PanelFillSlider = new Sq1.Widgets.SteppingSlider.PanelFillSlider();
 			this.ctxSlider = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniHeaderNonHighlighted = new Sq1.Widgets.LabeledTextBox.MenuItemLabel();
@@ -45,7 +45,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			// 
 			// splitContainer1.Panel1
 			// 
-			this.splitContainer1.Panel1.Controls.Add(this.DomainUpDown);
+			this.splitContainer1.Panel1.Controls.Add(this.NumericUpDown);
 			this.splitContainer1.Panel1MinSize = 30;
 			// 
 			// splitContainer1.Panel2
@@ -58,20 +58,20 @@ namespace Sq1.Widgets.SteppingSlider {
 			// 
 			// DomainUpDown
 			// 
-			this.DomainUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.DomainUpDown.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.DomainUpDown.Location = new System.Drawing.Point(0, 0);
-			this.DomainUpDown.Name = "DomainUpDown";
-			this.DomainUpDown.Size = new System.Drawing.Size(41, 20);
-			this.DomainUpDown.TabIndex = 0;
-			this.DomainUpDown.Text = "domainUpDown1";
-			this.DomainUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.DomainUpDown.OnArrowUpStepAdd += new System.EventHandler(this.domainUpDown_OnArrowUpStepAdd);
-			this.DomainUpDown.OnArrowDownStepSubstract += new System.EventHandler(this.domainUpDown_OnArrowDownStepSubstract);
-			this.DomainUpDown.Scroll += new System.Windows.Forms.ScrollEventHandler(this.domainUpDown_Scroll);
-			this.DomainUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.domainUpDown_KeyDown);
-			this.DomainUpDown.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.domainUpDown_PreviewKeyDown);
-			this.DomainUpDown.GotFocus += new System.EventHandler(this.domainUpDown_GotFocus);
+			this.NumericUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.NumericUpDown.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.NumericUpDown.Location = new System.Drawing.Point(0, 0);
+			this.NumericUpDown.Name = "DomainUpDown";
+			this.NumericUpDown.Size = new System.Drawing.Size(41, 20);
+			this.NumericUpDown.TabIndex = 0;
+			this.NumericUpDown.Text = "domainUpDown1";
+			this.NumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.NumericUpDown.OnArrowUpStepAdd += new System.EventHandler(this.domainUpDown_OnArrowUpStepAdd);
+			this.NumericUpDown.OnArrowDownStepSubstract += new System.EventHandler(this.domainUpDown_OnArrowDownStepSubstract);
+			this.NumericUpDown.Scroll += new System.Windows.Forms.ScrollEventHandler(this.domainUpDown_Scroll);
+			this.NumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.domainUpDown_KeyDown);
+			this.NumericUpDown.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.domainUpDown_PreviewKeyDown);
+			this.NumericUpDown.GotFocus += new System.EventHandler(this.domainUpDown_GotFocus);
 			// 
 			// PanelFillSlider
 			// 
@@ -258,6 +258,6 @@ namespace Sq1.Widgets.SteppingSlider {
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbValueMax;
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbValueStep;
 		public PanelFillSlider PanelFillSlider;
-		public DomainUpDownWithMouseEvents DomainUpDown;
+		public NumericUpDownWithMouseEvents NumericUpDown;
 	}
 }

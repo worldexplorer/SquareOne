@@ -27,7 +27,7 @@ namespace Sq1.Widgets.SymbolEditor {
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SymbolInfoEditorControl));
 			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-			this.toolStripItemComboBox1 = new Sq1.Widgets.ToolStripImproved.ToolStripItemComboBox();
+			this.tsiCbxSymbols = new Sq1.Widgets.ToolStripImproved.ToolStripItemComboBox();
 			this.tsmniModify = new System.Windows.Forms.ToolStripDropDownButton();
 			this.mniDeleteSymbol = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniltbAddNew = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
@@ -52,7 +52,7 @@ namespace Sq1.Widgets.SymbolEditor {
 			// statusStrip1
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripItemComboBox1,
+            this.tsiCbxSymbols,
             this.tsmniModify});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 515);
 			this.statusStrip1.Name = "statusStrip1";
@@ -61,10 +61,16 @@ namespace Sq1.Widgets.SymbolEditor {
 			this.statusStrip1.TabIndex = 2;
 			this.statusStrip1.Text = "statusStrip1";
 			// 
-			// toolStripItemComboBox1
+			// tsiCbxSymbols
 			// 
-			this.toolStripItemComboBox1.Name = "toolStripItemComboBox1";
-			this.toolStripItemComboBox1.Size = new System.Drawing.Size(140, 23);
+			this.tsiCbxSymbols.ComboBoxDropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.tsiCbxSymbols.ComboBoxFormattingEnabled = true;
+			this.tsiCbxSymbols.ComboBoxSelectedIndex = -1;
+			this.tsiCbxSymbols.ComboBoxSorted = true;
+			this.tsiCbxSymbols.Name = "tsiCbxSymbols";
+			this.tsiCbxSymbols.Size = new System.Drawing.Size(140, 23);
+			this.tsiCbxSymbols.ComboBoxDropDown += new System.EventHandler<System.EventArgs>(this.toolStripItemComboBox1_DropDown);
+			this.tsiCbxSymbols.ComboBoxSelectedIndexChanged += new System.EventHandler<System.EventArgs>(this.toolStripItemComboBox1_SelectedIndexChanged);
 			// 
 			// tsmniModify
 			// 
@@ -178,6 +184,6 @@ namespace Sq1.Widgets.SymbolEditor {
 		private LabeledTextBox.MenuItemLabeledTextBox mniltbRename;
 		private LabeledTextBox.MenuItemLabeledTextBox mniltbDuplicate;
 		private LabeledTextBox.MenuItemLabeledTextBox mniltbAddNew;
-		private ToolStripImproved.ToolStripItemComboBox toolStripItemComboBox1;
+		private ToolStripImproved.ToolStripItemComboBox tsiCbxSymbols;
 	}
 }

@@ -13,7 +13,7 @@ namespace Sq1.Widgets.SymbolEditor {
 
 		RepositorySerializerSymbolInfo	repositorySerializerSymbolInfo;
 		RepositoryJsonDataSource		repositoryJsonDataSource;
-		SymbolInfo						symbolInfoSelectedNullUnsafe { get { return this.toolStripItemComboBox1.ComboBox.SelectedItem as SymbolInfo; } }
+		SymbolInfo						symbolInfoSelectedNullUnsafe { get { return this.tsiCbxSymbols.ComboBox.SelectedItem as SymbolInfo; } }
 		bool							rebuildingDropdown;
 		bool							openDropDownAfterSelected;
 		bool							ignoreEvent_SelectedIndexChanged_resetInHandler;
@@ -21,11 +21,11 @@ namespace Sq1.Widgets.SymbolEditor {
 		public SymbolInfoEditorControl() {
 			InitializeComponent();
 
-			// DESIGNER_RESETS_TO_EDITABLE__LAZY_TO_TUNNEL_PROPERTIES_AND_EVENTS_IN_ToolStripItemComboBox.cs
-			this.toolStripItemComboBox1.ComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-			this.toolStripItemComboBox1.ComboBox.Sorted = true;
-			this.toolStripItemComboBox1.ComboBox.SelectedIndexChanged	+= new EventHandler(this.toolStripItemComboBox1_SelectedIndexChanged);
-			this.toolStripItemComboBox1.ComboBox.DropDown				+= new EventHandler(this.toolStripItemComboBox1_DropDown);
+			//MOVED_TO_DESIGNER_AFTER_TUNNELING DESIGNER_RESETS_TO_EDITABLE__LAZY_TO_TUNNEL_PROPERTIES_AND_EVENTS_IN_ToolStripItemComboBox.cs
+			//this.toolStripItemComboBox1.ComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+			//this.toolStripItemComboBox1.ComboBox.Sorted = true;
+			//this.toolStripItemComboBox1.ComboBox.SelectedIndexChanged	+= new EventHandler(this.toolStripItemComboBox1_SelectedIndexChanged);
+			//this.toolStripItemComboBox1.ComboBox.DropDown				+= new EventHandler(this.toolStripItemComboBox1_DropDown);
 
 			this.noSymbolSelected_symbolInfo = new SymbolInfo();
 			this.noSymbolSelected_symbolInfo.Symbol = noSymbolSelected_symbol;
@@ -54,16 +54,16 @@ namespace Sq1.Widgets.SymbolEditor {
 		void rebuildDropdown() {
 			this.rebuildingDropdown = true;
 			try {
-				this.toolStripItemComboBox1.ComboBox.Items.Clear();
+				this.tsiCbxSymbols.ComboBox.Items.Clear();
 				foreach (SymbolInfo symbolInfo in this.repositorySerializerSymbolInfo.SymbolInfos) {
-					this.toolStripItemComboBox1.ComboBox.Items.Add(symbolInfo);
+					this.tsiCbxSymbols.ComboBox.Items.Add(symbolInfo);
 				}
 			} finally {
 				this.rebuildingDropdown = false;
 			}
 		}
 		public void CleanPropertyEditor() {
-			this.toolStripItemComboBox1.ComboBox.Items.Add(this.noSymbolSelected_symbolInfo);
+			this.tsiCbxSymbols.ComboBox.Items.Add(this.noSymbolSelected_symbolInfo);
 			this.PopulateWithSymbolInfo(this.noSymbolSelected_symbolInfo);
 			// that's it! nothing else is needed to be done: once any other symbol is selected,
 			// toolStripItemComboBox1_SelectedIndexChanged() will do this.PopulateWithSymbolInfo(this.symbolInfoSelectedNullUnsafe, true);
@@ -75,9 +75,9 @@ namespace Sq1.Widgets.SymbolEditor {
 				return;
 			}
 
-			if (this.toolStripItemComboBox1.ComboBox.SelectedItem != symbolInfo) {
+			if (this.tsiCbxSymbols.ComboBox.SelectedItem != symbolInfo) {
 				this.ignoreEvent_SelectedIndexChanged_resetInHandler = true;
-				this.toolStripItemComboBox1.ComboBox.SelectedItem = symbolInfo;
+				this.tsiCbxSymbols.ComboBox.SelectedItem = symbolInfo;
 			}
 
 			Form parent = base.Parent as Form;
@@ -101,12 +101,12 @@ namespace Sq1.Widgets.SymbolEditor {
 			if (this.symbolInfoSelectedNullUnsafe != null && this.symbolInfoSelectedNullUnsafe.ToString() == symbolInfo.ToString()) {
 				return;
 			}
-			foreach (SymbolInfo eachSymbolInfo in this.toolStripItemComboBox1.ComboBox.Items) {
+			foreach (SymbolInfo eachSymbolInfo in this.tsiCbxSymbols.ComboBox.Items) {
 				if (eachSymbolInfo.ToString() != symbolInfo.ToString()) continue;
 				this.openDropDownAfterSelected = false;
-				if (this.toolStripItemComboBox1.ComboBox.SelectedItem == eachSymbolInfo) break;
+				if (this.tsiCbxSymbols.ComboBox.SelectedItem == eachSymbolInfo) break;
 				this.ignoreEvent_SelectedIndexChanged_resetInHandler = true;
-				this.toolStripItemComboBox1.ComboBox.SelectedItem = eachSymbolInfo;	// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelectedNullUnsafe + Initialize()
+				this.tsiCbxSymbols.ComboBox.SelectedItem = eachSymbolInfo;	// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelectedNullUnsafe + Initialize()
 				break;
 			}
 		}

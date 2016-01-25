@@ -11,8 +11,6 @@ namespace Sq1.Widgets.DataSourceEditor {
 	public partial class DataSourceEditorControl {
 		void lvStreamingAdapters_SelectedIndexChanged(object sender, EventArgs e) {
 			if (this.lvStreamingAdapters.SelectedItems.Count == 0) {
-				//this.btnNext.Enabled = false;
-				//this.btnFinished.Enabled = false;
 				return;
 			}
 			ListViewItem lvi = this.lvStreamingAdapters.SelectedItems[0];
@@ -25,16 +23,12 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.dataSourceIamEditing.StreamingAdapter = (StreamingAdapter)lvi.Tag;
 			this.dataSourceIamEditing.StreamingAdapter.EditorInstance.PopulateStreamingAdapterSettingsToEditor();
 			this.dataSourceIamEditing.StreamingAdapter.EditorInstance.Dock = DockStyle.Fill;
-			//this.btnNext.Enabled = true;
-			//this.btnFinished.Enabled = false;
 			this.pnlStreamingEditor.Controls.Clear();
 			this.pnlStreamingEditor.Controls.Add(this.dataSourceIamEditing.StreamingAdapter.EditorInstance);
 			this.grpStreaming.Text = this.dataSourceIamEditing.StreamingAdapter.NameWithVersion + " Settings";
 		}
 		void lvBrokerAdapters_SelectedIndexChanged(object sender, EventArgs e) {
 			if (this.lvBrokerAdapters.SelectedItems.Count == 0) {
-				//this.btnNext.Enabled = false;
-				//this.btnFinished.Enabled = false;
 				return;
 			}
 			ListViewItem lvi = this.lvBrokerAdapters.SelectedItems[0];
@@ -47,8 +41,6 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.dataSourceIamEditing.BrokerAdapter = (BrokerAdapter)lvi.Tag;
 			this.dataSourceIamEditing.BrokerAdapter.EditorInstance.PushBrokerAdapterSettingsToEditor();
 			this.dataSourceIamEditing.BrokerAdapter.EditorInstance.Dock = DockStyle.Fill;
-			//this.btnNext.Enabled = true;
-			//this.btnFinished.Enabled = false;
 			this.pnlBrokerEditor.Controls.Clear();
 			this.pnlBrokerEditor.Controls.Add(this.dataSourceIamEditing.BrokerAdapter.EditorInstance);
 			this.grpBroker.Text = this.dataSourceIamEditing.BrokerAdapter.NameWithVersion + " Settings";
@@ -60,30 +52,28 @@ namespace Sq1.Widgets.DataSourceEditor {
 				Assembler.PopupException("btnSave_Click()", exc);
 			}
 		}
-		void cmbScale_SelectedIndexChanged(object sender, EventArgs e) {
+		void tsiCmbScale_SelectedIndexChanged(object sender, EventArgs e) {
 			int i = 0;
 			foreach (BarScale barScale in Enum.GetValues(typeof(BarScale))) {
-				if (i == this.cmbScale.SelectedIndex) {
+				if (i == this.tsiCbxScale.ComboBoxSelectedIndex) {
 					this.dataSourceIamEditing.ScaleInterval.Scale = barScale;
 					break;
 				}
 				i++;
 			}
-			if (this.cmbScale.SelectedIndex > 3) {
-				this.nmrInterval.Value = 0;
-				this.lblInterval.Enabled = false;
-				this.nmrInterval.Enabled = false;
+			if (this.tsiCbxScale.ComboBoxSelectedIndex > 3) {
+				this.tsiNudInterval.Enabled = false;
+				this.tsiNudInterval.NumericUpDownWithMouseEvents.Value = 0;
 				return;
 			}
-			this.lblInterval.Enabled = true;
-			this.nmrInterval.Enabled = true;
+			this.tsiNudInterval.Enabled = true;
 		}
-		void nmrInterval_ValueChanged(object sender, EventArgs e) {
-			this.dataSourceIamEditing.ScaleInterval.Interval = (int)this.nmrInterval.Value;
+		void tsiNudInterval_ValueChanged(object sender, EventArgs e) {
+			this.dataSourceIamEditing.ScaleInterval.Interval = (int)this.tsiNudInterval.NumericUpDownWithMouseEvents.Value;
 		}
 
 		void repositoryJsonDataSource_OnDataSourceRenamed_refreshTitle(object sender, NamedObjectJsonEventArgs<DataSource> e) {
-			this.txtDataSourceName.Text = this.dataSourceIamEditing.Name;
+			this.tsiLtbDataSourceName.InputFieldValue = this.dataSourceIamEditing.Name;
 		}
 		void repositoryJsonDataSource_OnDataSourceDeleted_closeDataSourceEditor(object sender, NamedObjectJsonEventArgs<DataSource> e) {
 			this.ParentForm.Close();
@@ -97,8 +87,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			//this.txtSymbols.Text = this.ds.SymbolsCSV;
-			this.txtSymbols.Text = e.DataSource.SymbolsCSV;
+			this.tsiLtbSymbols.InputFieldValue = e.DataSource.SymbolsCSV;
 		}
 	}
 }
