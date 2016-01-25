@@ -58,10 +58,10 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.txtDdeServerPrefix.TabIndex = 8;
 			this.txtDdeServerPrefix.TextChanged += new System.EventHandler(this.txtDdeServerPrefix_TextChanged);
 			// 
-			// txtTopicQuotes
+			// txtDdeTopicQuotes
 			// 
 			this.txtDdeTopicQuotes.Location = new System.Drawing.Point(102, 22);
-			this.txtDdeTopicQuotes.Name = "txtTopicQuotes";
+			this.txtDdeTopicQuotes.Name = "txtDdeTopicQuotes";
 			this.txtDdeTopicQuotes.Size = new System.Drawing.Size(108, 20);
 			this.txtDdeTopicQuotes.TabIndex = 10;
 			// 
@@ -83,10 +83,10 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.lblMinus.TabIndex = 11;
 			this.lblMinus.Text = "-";
 			// 
-			// txtTopicTrades
+			// txtDdeTopicTrades
 			// 
 			this.txtDdeTopicTrades.Location = new System.Drawing.Point(102, 100);
-			this.txtDdeTopicTrades.Name = "txtTopicTrades";
+			this.txtDdeTopicTrades.Name = "txtDdeTopicTrades";
 			this.txtDdeTopicTrades.Size = new System.Drawing.Size(108, 20);
 			this.txtDdeTopicTrades.TabIndex = 13;
 			// 
@@ -108,10 +108,10 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.lblMinus2.Text = "-";
 			this.lblMinus2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// txtTopicPrefixDOM
+			// txtDdeTopicPrefixDom
 			// 
 			this.txtDdeTopicPrefixDom.Location = new System.Drawing.Point(102, 61);
-			this.txtDdeTopicPrefixDom.Name = "txtTopicPrefixDOM";
+			this.txtDdeTopicPrefixDom.Name = "txtDdeTopicPrefixDom";
 			this.txtDdeTopicPrefixDom.Size = new System.Drawing.Size(108, 20);
 			this.txtDdeTopicPrefixDom.TabIndex = 16;
 			// 
@@ -148,7 +148,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// lnkDdeMonitor
 			// 
 			this.lnkDdeMonitor.AutoSize = true;
-			this.lnkDdeMonitor.Location = new System.Drawing.Point(142, 158);
+			this.lnkDdeMonitor.Location = new System.Drawing.Point(3, 158);
 			this.lnkDdeMonitor.Name = "lnkDdeMonitor";
 			this.lnkDdeMonitor.Size = new System.Drawing.Size(68, 13);
 			this.lnkDdeMonitor.TabIndex = 21;
@@ -156,10 +156,10 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.lnkDdeMonitor.Text = "DDE Monitor";
 			this.lnkDdeMonitor.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkDdeMonitor_LinkClicked);
 			// 
-			// txtRefreshRateDdeMonitor
+			// txtDdeMonitorRefreshRate
 			// 
-			this.txtDdeMonitorRefreshRate.Location = new System.Drawing.Point(3, 155);
-			this.txtDdeMonitorRefreshRate.Name = "txtRefreshRateDdeMonitor";
+			this.txtDdeMonitorRefreshRate.Location = new System.Drawing.Point(86, 155);
+			this.txtDdeMonitorRefreshRate.Name = "txtDdeMonitorRefreshRate";
 			this.txtDdeMonitorRefreshRate.Size = new System.Drawing.Size(33, 20);
 			this.txtDdeMonitorRefreshRate.TabIndex = 22;
 			this.txtDdeMonitorRefreshRate.Text = "200";
@@ -167,11 +167,11 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// lblRefreshMs
 			// 
 			this.lblRefreshMs.AutoSize = true;
-			this.lblRefreshMs.Location = new System.Drawing.Point(36, 158);
+			this.lblRefreshMs.Location = new System.Drawing.Point(119, 158);
 			this.lblRefreshMs.Name = "lblRefreshMs";
-			this.lblRefreshMs.Size = new System.Drawing.Size(104, 13);
+			this.lblRefreshMs.Size = new System.Drawing.Size(86, 13);
 			this.lblRefreshMs.TabIndex = 23;
-			this.lblRefreshMs.Text = "ms Refresh Rate For";
+			this.lblRefreshMs.Text = "ms Refresh Rate";
 			// 
 			// QuikStreamingEditor
 			// 

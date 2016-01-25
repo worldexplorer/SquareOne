@@ -5,6 +5,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 using Sq1.Core;
 using Sq1.Widgets.DataSourceEditor;
+using Sq1.Widgets;
 
 namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreamingEditor  {
@@ -16,8 +17,15 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.quikStreamingAdapter.MonitorForm.PopulateWindowTitle_dataSourceName_market_quotesTopic();
 			//COUNTRY_STARTING_WITH_U DockContent parentDocked = base.Parent.Parent.Parent.Parent.Parent.Parent.Parent.Parent as DockContent;
 			DataSourceEditorControl myParent = base.DataSourceEditor as DataSourceEditorControl;
+
+			DockContentImproved dataSourceEditorForm = null;
+			if (myParent != null) dataSourceEditorForm = myParent.Parent as DockContentImproved;
+			//if (dataSourceEditorForm != null) {
+			//	//dataSourceEditorForm.ShowAsSiblingTabOnTopOfMe(this.quikStreamingAdapter.MonitorForm);
+			//	this.quikStreamingAdapter.MonitorForm.ShowAsSiblingTabOnTopOf(dataSourceEditorForm);
+
 			if (myParent != null && myParent.MainFormDockPanel_forDdeMonitor != null) {
-				this.quikStreamingAdapter.MonitorForm.Show(myParent.MainFormDockPanel_forDdeMonitor);
+				this.quikStreamingAdapter.MonitorForm.Show(myParent.MainFormDockPanel_forDdeMonitor, dataSourceEditorForm.DockState);
 			} else {
 				string msg = "WILL_POPUP_AS_UNDOCKABLE_WINDOWS_FORM Assembler.InstanceInitialized.MainFormDockPanel_forDdeMonitor=NULL";
 				Assembler.PopupException(msg);

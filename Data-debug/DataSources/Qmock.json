@@ -8,7 +8,7 @@
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
     "Interval": 1,
     "Scale": 3,
-    "AsString_cached": "1-Minute",
+    "AsString_cached": null,
     "IsIntraday": true,
     "AsTimeSpanInSeconds": 60,
     "AsTimeSpan": "00:01:00",
@@ -21,9 +21,9 @@
     "DdeTopicQuotes": "quotes",
     "DdeTopicTrades": "trades",
     "DdeTopicPrefixDom": "dom",
-    "DdeMonitorRefreshRate": 200,
-    "UpstreamConnected": false,
-    "Level2RefreshRateMs": 200
+    "DdeMonitorRefreshRateMs": 200,
+    "Level2RefreshRateMs": 200,
+    "UpstreamConnected": false
   },
   "BrokerAdapter": {
     "$type": "Sq1.Adapters.Quik.Broker.QuikBroker, Sq1.Adapters.Quik",

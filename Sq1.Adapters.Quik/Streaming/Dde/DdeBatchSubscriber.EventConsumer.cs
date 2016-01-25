@@ -26,7 +26,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				return;
 			}
 			// second BeginInvoke below is hell of overhead, but this one is light, and succeeds if the second fails => visible counters increase
-			domResizeable.PopulateLevel2ToTitle();
+			domResizeable.PopulateLevel2ToTitle(tableLevel2.ToString());
 
 			if (alwaysJustOneDom == null) {
 				string msg = "MUST_NOT_BE_NULL_EVENT_ARG alwaysJustOneDom[" + alwaysJustOneDom + "]";
