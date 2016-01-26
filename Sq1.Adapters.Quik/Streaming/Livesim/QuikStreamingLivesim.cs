@@ -24,12 +24,18 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 												+ "3) push quotes generated using DDE client";
 
 		[JsonIgnore]	public	QuikLivesimBatchPublisher	QuikLivesimBatchPublisher;
-		[JsonIgnore]	public	QuikStreaming				QuikStreamingOriginal						{ get { return base.StreamingOriginal as QuikStreaming; } }
+		[JsonIgnore]	public	QuikStreaming				QuikStreamingOriginal								{ get { return base.StreamingOriginal as QuikStreaming; } }
 		[JsonIgnore]			bool						upstreamWasSubscribed_preLivesim;
+		
+		// or 1) override DdeClient.EndPoke()
+		// or 2) create AsyncContext to deal with Invoke/BeginInvoke/EndInvoke just like GuiThread's message queue
+		// (lazy to dig in; google for ppl complaining on NDde sync'ed to GuiThread - but what else should it be locked onto?... Dde is MessageQueue-based data transfer, if I sync on my own thread there is no reliable BeginPoke/EndPoke)
+		[JsonIgnore]	public	bool						DdePokerShouldSyncWaitForDdeServerToReceiveMessage_falseToAvoidDeadlocks	{ get; private set; }
 
 		public QuikStreamingLivesim() : base(true) {
 			base.Name = "QuikStreamingLivesim";
 			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Streaming.Livesim.Properties.Resources.imgQuikStreamingLivesim;
+			this.DdePokerShouldSyncWaitForDdeServerToReceiveMessage_falseToAvoidDeadlocks = false;
 
 			//NO_DESERIALIZATION_WILL_THROW_YOULL_NULLIFY_ME_IN_UpstreamConnect YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
 			//this.StreamingDataSnapshot = null;
@@ -120,7 +126,6 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 				string msg = "QuikLIVESTREAMING_CAUGHT_PAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
 				//Assembler.PopupException(msg, null, false);
 				this.UnpausedMre.WaitOne();	// 1CORE=100% while Livesim Paused
-
 
 				string msg2 = "QuikLIVESTREAMING_CAUGHT_UNPAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
 				//Assembler.PopupException(msg2, null, false);

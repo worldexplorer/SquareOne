@@ -4,8 +4,8 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
 using Sq1.Core;
-using Sq1.Widgets.DataSourceEditor;
 using Sq1.Widgets;
+using Sq1.Widgets.DataSourceEditor;
 
 namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreamingEditor  {

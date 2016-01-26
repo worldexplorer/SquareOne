@@ -8,6 +8,7 @@ using NDde.Client;
 using Sq1.Core;
 
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
+using NDde;
 
 namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 	public abstract class XlDdeTableGenerator  : ISynchronizeInvoke {
@@ -127,6 +128,26 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 			string connectedPaused = "DISCONNECTED";
 			if (this.DdeClient.IsConnected) connectedPaused = this.DdeClient.IsPaused ? "PAUSED" : "CONNECTED";
 			return "Topic[" + this.ddeTopic + "]:" + connectedPaused;
+		}
+
+		protected void Send_DdeClientPokesDdeServer_asynControlledByLivesim(string itemName_noClueHowIuseIt) {
+			try {
+				byte[] bufferToSend = this.XlWriter.ConvertToXlDdeMessage();
+				IAsyncResult handle = this.DdeClient.BeginPoke(itemName_noClueHowIuseIt, bufferToSend, 0, null, this);
+				if (this.QuikStreamingLivesim.DdePokerShouldSyncWaitForDdeServerToReceiveMessage_falseToAvoidDeadlocks) {
+					this.DdeClient.EndPoke(handle);		//SYNCHRONOUS
+				}
+			} catch (ArgumentNullException ex) {
+				Assembler.PopupException("This is thrown when item or data is a null reference.", ex);
+			} catch (ArgumentException ex) {
+				Assembler.PopupException("This is thown when item exceeds 255 characters.", ex);
+			} catch (InvalidOperationException ex) {
+				Assembler.PopupException("This is thrown when the client is not connected.", ex);
+			} catch (DdeException ex) {
+				Assembler.PopupException("This is thrown when the asynchronous operation could not begin.", ex);
+			} catch (Exception ex) {
+				Assembler.PopupException("UNKNOWN_ERROR_DDE_CLIENT_BEGIN_POKE", ex);
+			}
 		}
 	}
 }

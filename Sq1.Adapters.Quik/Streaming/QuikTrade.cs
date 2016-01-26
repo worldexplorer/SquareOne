@@ -11,7 +11,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 
 		public	double		Price;
 		public	double		Quantity;
-		public	bool		BuyTrue_SellFalse;
+		public	bool		BoughtTrue_SoldFalse;
 
 		public QuikTrade(string reasonToExist) {
 			Source = reasonToExist;

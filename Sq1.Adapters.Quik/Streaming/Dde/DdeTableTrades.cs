@@ -18,8 +18,15 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 			quikTrade.Price				= (double)row["PRICE"];
 			quikTrade.Quantity			= (double)row["QTY"];
-			quikTrade.BuyTrue_SellFalse	= (string)row["BUYSELL"] == "Купля" ? true : false;
 
+			// HOW IT CAN BE ONLY BUY OR SELL? IT'S BOTH SIMULTANEOUSLY! IT CAN ONLY BE ONE OF THE TWO:
+			// 1) it was filled at bid (passive buyer  got filled by active crossmarket seller) or
+			// 2) it was filled at ask (passive seller got filled by active crossmarket buyer)
+			quikTrade.BoughtTrue_SoldFalse	= (string)row["BUYSELL"] == "Купля" ? true : false;
+
+			// 1) I can have a monitor here;
+			// 2) I should check all orders I'm waiting for the fill;
+			// 3) the FILL notification should go to QuikBroker, despite we got information about our fill from Dde listened by Streaming
 			base.QuikStreaming.TradeDeliveredDdeCallback(quikTrade);
 		}
 	}

@@ -57,9 +57,14 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			XlDdeTable tableRecipient = (XlDdeTable)c.Tag;
 			
 			// only for QuikStreamingLivesim
-			if (item.Contains("level2") && tableRecipient is DdeTableDepth == false) {
+			if (item.Contains("-level2") && tableRecipient is DdeTableDepth == false) {
 				string msg = "NDDE_WRONGLY_ASSOCIATED_THE_MESSAGE_RECEIVED_WITH DdeConversation[" + c.Topic + "]"
 					+ " MUST_BE_DdeTableDepth_GOT[" + tableRecipient.ToString() + "]";
+				Assembler.PopupException(msg);
+			}
+			if (item.Contains("-quote") && tableRecipient is DdeTableQuotes == false) {
+				string msg = "NDDE_WRONGLY_ASSOCIATED_THE_MESSAGE_RECEIVED_WITH DdeConversation[" + c.Topic + "]"
+					+ " MUST_BE_DdeTableQuotes_GOT[" + tableRecipient.ToString() + "]";
 				Assembler.PopupException(msg);
 			}
 			

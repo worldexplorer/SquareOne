@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 using Sq1.Core;
+using Sq1.Widgets;
 using Sq1.Widgets.Level2;
 
 using Sq1.Adapters.Quik.Streaming.Dde;
@@ -20,8 +21,14 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		}
 
 		internal void DomUserControl_createAddFor(DdeTableDepth tableLevel2) {
+			string msig = " //DomUserControl_createAddFor(" + tableLevel2.ToString() + ")";
 			LevelTwoUserControl level2userControl = new LevelTwoUserControl();
-			level2userControl.Initialize(this.quikStreaming, tableLevel2.SymbolInfo, tableLevel2.ToString());
+			DockContentImproved ddeMonitorForm = this.Parent as DockContentImproved;
+			if (ddeMonitorForm == null) {
+				string msg = "I_NEED_THE_UPPER_LEVEL_FORM_VISIBILITY_TO_NOT_TO_REPAINT_IF_FORM_IS_MINIMIZED_OR_NOT_SHOWN";
+				Assembler.PopupException(msg + msig);
+			}
+			level2userControl.Initialize(this.quikStreaming, tableLevel2.SymbolInfo, tableLevel2.ToString(), ddeMonitorForm);
 			tableLevel2.UserControlMonitoringMe = level2userControl;
 			this.flpDoms.Controls.Add(level2userControl);
 		}

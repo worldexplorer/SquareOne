@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Sq1.Core;
+using Sq1.Widgets;
 using Sq1.Widgets.Level2;
 
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
@@ -25,6 +26,11 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
+
+			// finally Form and inner Control are in the same DLL!!
+			if (domResizeable.DdeMonitorForm.Visible == false) return;
+			if (domResizeable.DdeMonitorForm.IsCoveredOrAutoHidden) return;
+
 			// second BeginInvoke below is hell of overhead, but this one is light, and succeeds if the second fails => visible counters increase
 			domResizeable.PopulateLevel2ToTitle(tableLevel2.ToString());
 

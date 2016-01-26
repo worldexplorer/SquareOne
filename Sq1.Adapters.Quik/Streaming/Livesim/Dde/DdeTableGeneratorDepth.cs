@@ -46,26 +46,10 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 		}
 
 		internal void Send_DdeClientPokesDdeServer_waitServerProcessed(LevelTwoHalf levelTwoAsks, LevelTwoHalf levelTwoBids) {
-			try {
-				base.OutgoingTableBegin();
-				this.OutgoingObjectsBufferize_perSymbol(levelTwoAsks, levelTwoBids);
-				base.OutgoingTableTerminate();
-
-				byte[] bufferToSend = base.XlWriter.ConvertToXlDdeMessage();
-
-				IAsyncResult handle = base.DdeClient.BeginPoke("item-level2", bufferToSend, 0, null, this);
-				base.DdeClient.EndPoke(handle);		//SYNCHRONOUS
-			} catch (ArgumentNullException ex) {
-				Assembler.PopupException("This is thrown when item or data is a null reference.", ex);
-			} catch (ArgumentException ex) {
-				Assembler.PopupException("This is thown when item exceeds 255 characters.", ex);
-			} catch (InvalidOperationException ex) {
-				Assembler.PopupException("This is thrown when the client is not connected.", ex);
-			} catch (DdeException ex) {
-				Assembler.PopupException("This is thrown when the asynchronous operation could not begin.", ex);
-			} catch (Exception ex) {
-				Assembler.PopupException("UNKNOWN_ERROR_DDE_CLIENT_BEGIN_POKE", ex);
-			}
+			base.OutgoingTableBegin();
+			this.OutgoingObjectsBufferize_perSymbol(levelTwoAsks, levelTwoBids);
+			base.OutgoingTableTerminate();
+			base.Send_DdeClientPokesDdeServer_asynControlledByLivesim("item-level2");
 		}
 		public override string ToString() {
 			string ret = base.ToString();

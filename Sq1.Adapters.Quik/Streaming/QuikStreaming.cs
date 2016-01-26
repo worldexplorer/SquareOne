@@ -86,7 +86,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.DdeTopicQuotes				= "quotes";
 			this.DdeTopicTrades				= "trades";
 			this.DdeTopicPrefixDom			= "dom";
-			this.DdeMonitorRefreshRateMs		= 200;
+			this.DdeMonitorRefreshRateMs	= 200;
 			base.StreamingDataSnapshot		= new QuikStreamingDataSnapshot(this);
 			this.UpstreamConnectionState	= ConnectionState.DisconnectedJustConstructed;
 			base.LivesimStreaming			= new QuikStreamingLivesim();
