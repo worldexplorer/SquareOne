@@ -383,11 +383,15 @@ namespace Sq1.Core.DataFeed {
 				.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
 			string msig = " //PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executor + ")";
 			if (channel == null) {
-				string msg = "THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK";
-				Assembler.PopupException(msg + msig);
+				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
+					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
+					;
+				//Assembler.PopupException(msg + msig);
 				return false;
 			}
-
+			if (channel.QuotePump == null) {
+				return false;
+			}
 			if (channel.QuotePump.HasSeparatePushingThread == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_PAUSE_DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
@@ -409,8 +413,10 @@ namespace Sq1.Core.DataFeed {
 			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
 				.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
 			if (channel == null) {
-				string msg = "THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK";
-				Assembler.PopupException(msg + msig);
+				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
+					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
+					;
+				//Assembler.PopupException(msg + msig);
 				return false;
 			}
 

@@ -44,14 +44,6 @@ namespace Sq1.Core.StrategyBase {
 			this.ShowRangeBar					= found.ShowRangeBar;
 		}
 		public override string ToString() {
-			//return this.Name;
-			//v1
-			//string ret = this.DataSourceName + " :: " + this.Symbol;
-			//if (typeof(ContextChart) != this.GetType()) {	//append ContextScript name, not for ContextChart
-			//	ret += " ctx/" + this.Name;
-			//}
-			//return ret;
-			//v2
 			StringBuilder sb = new StringBuilder();
 			//sb.Append(this.DataSourceName);
 			//sb.Append(" :: ");
@@ -59,7 +51,7 @@ namespace Sq1.Core.StrategyBase {
 			sb.Append(" [");
 			if (this.ScaleInterval != null) sb.Append(this.ScaleInterval.ToString());
 			sb.Append("]");
-			if (typeof(ContextChart) != this.GetType()) {	//append ContextScript name, not for ContextChart
+			if (this is ContextScript) {	//append ContextScript name, not for ContextChart
 				sb.Append(" ctx/");
 				sb.Append(this.Name);
 			}

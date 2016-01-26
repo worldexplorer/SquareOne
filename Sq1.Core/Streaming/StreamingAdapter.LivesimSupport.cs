@@ -11,8 +11,8 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Streaming {
 	public partial class StreamingAdapter {
-		[JsonIgnore]	DataDistributor		distributorCharts_preLivesimForSymbolLivesimming;
-		[JsonIgnore]	DataDistributor		distributorSolidifier_preLivesimForSymbolLivesimming;
+		[JsonIgnore]	DataDistributor		dataDistributor_preLivesimForSymbolLivesimming;
+		[JsonIgnore]	DataDistributor		dataDistributorSolidifiers_preLivesimForSymbolLivesimming;
 		[JsonIgnore]	LivesimStreaming	livesimStreamingForWhomDataDistributorsAreReplaced;
 
 		[JsonIgnore]	public bool			DataDistributorsAreReplacedByLivesim_dontPauseNeighborsOnBacktestContextInitRestore {
@@ -22,15 +22,15 @@ namespace Sq1.Core.Streaming {
 			this.livesimStreamingForWhomDataDistributorsAreReplaced = livesimStreaming;
 
 			ScriptExecutor executor = this.livesimStreamingForWhomDataDistributorsAreReplaced.Livesimulator.Executor;
-			string reasonForNewDistributor = "LIVESIM_STARTING:"
+			string reasonForNewDistributor = "LIVESIM_STARTED:"
 				+ this.livesimStreamingForWhomDataDistributorsAreReplaced.Name
 				+ "/" + executor.StrategyName
 				// NO_IT_DOES_CONTAIN_GARBAGE!!! + "@" + executor.Bars.ToString()	// should not contain Static/Streaming bars since Count=0
 				+ executor.Bars.SymbolIntervalScale
 				;
 
-			this.DataDistributor_replacedForLivesim.AllQuotePumps_Pause(reasonForNewDistributor);
-			this.distributorCharts_preLivesimForSymbolLivesimming = this.DataDistributor_replacedForLivesim;
+			this.dataDistributor_preLivesimForSymbolLivesimming = this.DataDistributor_replacedForLivesim;
+			this.dataDistributor_preLivesimForSymbolLivesimming.AllQuotePumps_Pause(reasonForNewDistributor);
 			this.DataDistributor_replacedForLivesim = new DataDistributor(this, reasonForNewDistributor);
 
 			string symbol					= livesimStreaming.Livesimulator.BarsSimulating.Symbol;
@@ -54,27 +54,29 @@ namespace Sq1.Core.Streaming {
 			// the chart will be subscribed twice to the same Symbol+ScaleInterval, yes! but the original distributor is backed up and PushBarReceived will only push to the new DataDistributor(this) with one chart only
 			this.DataDistributor_replacedForLivesim.ConsumerBarSubscribe(symbol, scaleInterval, chartShadow, willPushUsingPumpInSeparateThread);
 
-			this.DataDistributorSolidifiers_replacedForLivesim.AllQuotePumps_Pause(reasonForNewDistributor);
-			this.distributorSolidifier_preLivesimForSymbolLivesimming = this.DataDistributorSolidifiers_replacedForLivesim;
+			this.dataDistributorSolidifiers_preLivesimForSymbolLivesimming = this.DataDistributorSolidifiers_replacedForLivesim;
+			this.dataDistributorSolidifiers_preLivesimForSymbolLivesimming.AllQuotePumps_Pause(reasonForNewDistributor);
 			this.DataDistributorSolidifiers_replacedForLivesim = new DataDistributor(this, reasonForNewDistributor);		// EMPTY!!! exactly what I wanted
 
 			this.DataDistributor_replacedForLivesim.SetQuotePumpThreadName_unpausePump_sinceNoMoreSubscribersWillFollowFor(symbol, scaleInterval);
 
 			string msg1 = "THESE_STREAMING_CONSUMERS_LOST_INCOMING_QUOTES_FOR_THE_DURATION_OF_LIVESIM: ";
-			string msg2= this.distributorCharts_preLivesimForSymbolLivesimming.ToString();
+			string msg2= this.dataDistributor_preLivesimForSymbolLivesimming.ToString();
 			Assembler.PopupException(msg1 + msg2, null, false);
 		}
 
 		internal void SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor() {
-			this.DataDistributor_replacedForLivesim				= this.distributorCharts_preLivesimForSymbolLivesimming;
-			this.DataDistributorSolidifiers_replacedForLivesim	= this.distributorSolidifier_preLivesimForSymbolLivesimming;
-
 			ScriptExecutor executor = this.livesimStreamingForWhomDataDistributorsAreReplaced.Livesimulator.Executor;
-			string reasonForNewDistributor = this.livesimStreamingForWhomDataDistributorsAreReplaced.Name
+			string reasonForStoppingReplacedDistributor = this.livesimStreamingForWhomDataDistributorsAreReplaced.Name
 				+ "==RESTORING_AFTER_LIVESIM" + executor.StrategyName + "@" + executor.Bars.ToString();	// should not contain Static/Streaming bars since Count=0
 
-			this.DataDistributor_replacedForLivesim				.AllQuotePumps_Unpause(reasonForNewDistributor);
-			this.DataDistributorSolidifiers_replacedForLivesim	.AllQuotePumps_Unpause(reasonForNewDistributor);
+			this.DataDistributor_replacedForLivesim.AllQuotePumps_Stop(reasonForStoppingReplacedDistributor);
+
+			this.DataDistributor_replacedForLivesim				= this.dataDistributor_preLivesimForSymbolLivesimming;
+			this.DataDistributorSolidifiers_replacedForLivesim	= this.dataDistributorSolidifiers_preLivesimForSymbolLivesimming;
+
+			this.DataDistributor_replacedForLivesim				.AllQuotePumps_Unpause(reasonForStoppingReplacedDistributor);
+			this.DataDistributorSolidifiers_replacedForLivesim	.AllQuotePumps_Unpause(reasonForStoppingReplacedDistributor);
 
 			string msg1 = "STREAMING_CONSUMERS_RESTORED_CONNECTIVITY_TO_STREAMING_ADAPTER_AFTER_LIVESIM: "
 				+ this.DataDistributor_replacedForLivesim.ToString() + " SOLIDIFIERS:" + this.DataDistributorSolidifiers_replacedForLivesim	;

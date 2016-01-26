@@ -60,7 +60,7 @@ namespace Sq1.Core.Livesim {
 				// v1 this.DataSourceAsLivesimNullUnsafe.BacktestStreamingAdapter.InitializeSpreadModelerPercentage(base.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
 				// v2 UI-controlled in the future, right now the stub  
 				ContextScript ctx = base.Executor.Strategy.ScriptContextCurrent;
-				string msig = "Strategy[" + base.Executor.Strategy + "].ScriptContextCurrent[" + ctx + "]";
+				string msig = "STARTING_LIVESIM " + base.Executor.Strategy.ToString() + " //SimulationPreBarsSubstitute_overrideable()";
 				switch (ctx.SpreadModelerClassName) {
 					case "BacktestSpreadModelerPercentage":
 						spreadModeler = new BacktestSpreadModelerPercentage(base.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
@@ -72,6 +72,10 @@ namespace Sq1.Core.Livesim {
 						Assembler.PopupException(msg + msig);
 						spreadModeler = new BacktestSpreadModelerPercentage(base.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
 						break;
+				}
+
+				if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) {
+					Thread.CurrentThread.Name = "LIVESIMMING/QuoteGen " + base.Executor.Strategy.WindowTitle;
 				}
 				// each time I change bars on chart switching to 
 				//LivesimStreaming streamingAsLivesimChild = this.DataSourceAsLivesimNullUnsafe.StreamingAdapter_instantiatedForLivesim;
@@ -240,7 +244,8 @@ namespace Sq1.Core.Livesim {
 					}
 					ordersStale.Clear();
 				}
-				base.Stopwatch.Restart();
+				//base.Stopwatch.Restart();
+				var alreadyStartedUpstack = base.Stopwatch;
 
 				this.chartShadow.BeginInvoke((MethodInvoker)delegate { this.executor_BacktesterContextInitializedStep2of4(sender, e); });
 				return;
@@ -275,7 +280,7 @@ namespace Sq1.Core.Livesim {
 			});
 		}
 
-		public void Stop_inGuiThread() {
+		public void  Stop_inGuiThread() {
 			string msig = " //Livesimulator.Stop_inGuiThread()";
 			if (this.IsBacktestingLivesimNow == false) {
 				Assembler.PopupException("WHY_DID_YOU_INVOKE_ME? LIVESIM_IS_NOT_RUNNING_NOW" + msig);

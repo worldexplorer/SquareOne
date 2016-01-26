@@ -362,14 +362,15 @@ namespace Sq1.Core.Streaming {
 
 			string ret = "";
 			foreach (StreamingConsumer consumerEach in merged) {
-				if (string.IsNullOrEmpty(consumerEach.ReasonToExist)) continue;
-				if (ret.Contains(consumerEach.ReasonToExist)) continue;
+				string reasonOrFullDump = string.IsNullOrEmpty(consumerEach.ReasonToExist) ? consumerEach.ToString() : consumerEach.ReasonToExist;
+				if (string.IsNullOrEmpty(reasonOrFullDump)) continue;
+				if (ret.Contains(reasonOrFullDump)) continue;
 				if (ret != "") ret += ",";
-				ret += consumerEach.ReasonToExist;
+				ret += reasonOrFullDump;
 			}
 			if (ret == "") ret = "NO_CONSUMERS";
-			ret = this.SymbolScaleInterval + ":" + ret;
-			ret = this.ReasonIwasCreated_propagatedFromDistributor + "-" + this.SymbolScaleInterval + ":" + ret;
+			ret = this.ReasonIwasCreated_propagatedFromDistributor + ":" + ret;
+			ret += this.SymbolScaleInterval;
 			return ret;
 		} }
 

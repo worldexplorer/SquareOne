@@ -73,7 +73,8 @@ namespace Sq1.Gui {
 					chartFormsManager.ScriptEditorFormConditionalInstance.Text = e.Strategy.Name;
 				}
 				if (chartFormsManager.ChartForm != null) {
-					chartFormsManager.ChartForm.Text = e.Strategy.Name;
+					//v1 chartFormsManager.ChartForm.Text = e.Strategy.Name;
+					chartFormsManager.PopulateWindowTitlesFromChartContextOrStrategy();
 				}
 			}
 		}

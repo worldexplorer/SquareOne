@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+
+using BrightIdeasSoftware;
 
 using Sq1.Core.DataFeed;
 using Sq1.Core.Charting;
-using System.Drawing;
-using BrightIdeasSoftware;
 
 namespace Sq1.Widgets.DataSourcesTree {
 	public partial class DataSourcesTreeControl {

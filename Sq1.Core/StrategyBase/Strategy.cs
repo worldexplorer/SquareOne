@@ -72,6 +72,7 @@ namespace Sq1.Core.StrategyBase {
 				string ret = this.Name;
 				if (this.ScriptEditedNeedsSaving) ret = PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + ret;
 				if (this.ActivatedFromDll == true) ret += "-DLL";
+				ret += " ctx/" + this.ScriptContextCurrentName;
 				return ret;
 			} }
 		[JsonIgnore]	public	string			NameAndDll { get {
