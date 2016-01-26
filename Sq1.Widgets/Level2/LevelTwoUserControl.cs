@@ -10,9 +10,10 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Widgets.Level2 {
 	public partial class LevelTwoUserControl : UserControlResizeable {
-		StreamingAdapter	streamingAdapter;
-		string				windowTitle;
-		SymbolInfo			symbolInfo;
+				StreamingAdapter		streamingAdapter;
+				SymbolInfo				symbolInfo;
+				string					windowTitle;
+		public	DockContentImproved		DdeMonitorForm		{ get; private set; }
 
 		Stopwatch			stopwatchRarifyingUIupdates;
 
@@ -27,10 +28,11 @@ namespace Sq1.Widgets.Level2 {
 			this.olvcLevelTwo.Dock = DockStyle.Fill;
 		}
 
-		public void Initialize(StreamingAdapter quikStreamingPassed, SymbolInfo symbolInfoPassed, string windowTitlePassed) {
-			this.streamingAdapter = quikStreamingPassed;
-			this.symbolInfo = symbolInfoPassed;
-			this.windowTitle = windowTitlePassed;
+		public void Initialize(StreamingAdapter quikStreamingPassed, SymbolInfo symbolInfoPassed, string windowTitlePassed, DockContentImproved ddeMonitorFormPassed) {
+			this.streamingAdapter	= quikStreamingPassed;
+			this.symbolInfo			= symbolInfoPassed;
+			this.windowTitle		= windowTitlePassed;
+			this.DdeMonitorForm		= ddeMonitorFormPassed;
 
 			if (this.symbolInfo.Level2ShowCumulativesInsteadOfLots) {
 				this.olvAskCumulative	.IsVisible = true;

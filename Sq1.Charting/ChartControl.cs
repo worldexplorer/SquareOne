@@ -11,9 +11,9 @@ using Sq1.Core.Indicators;
 using Sq1.Core.Streaming;
 using Sq1.Core.Charting;
 using Sq1.Core.DataFeed;
+using Sq1.Core.Livesim;
 
 using Sq1.Charting.MultiSplit;
-using Sq1.Core.Livesim;
 
 namespace Sq1.Charting {
 	public partial class ChartControl {

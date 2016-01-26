@@ -1,7 +1,8 @@
+using System;
+
 using Sq1.Core.DataTypes;
 using Sq1.Core.Charting;
 using Sq1.Core.DataFeed;
-using System;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Streaming {
@@ -14,7 +15,6 @@ namespace Sq1.Core.Streaming {
 		public abstract	void	UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop);
 		public abstract	void	ConsumeQuoteOfStreamingBar(Quote quote);
 		public abstract	void	ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated);
-
 
 
 		public abstract	ScriptExecutor	Executor			{ get; }

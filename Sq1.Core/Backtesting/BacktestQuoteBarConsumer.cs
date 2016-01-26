@@ -8,8 +8,8 @@ using Sq1.Core.StrategyBase;
 namespace Sq1.Core.Backtesting {
 	public class BacktestQuoteBarConsumer : StreamingConsumer {
 				Backtester backtester;
-		public	BacktestQuoteBarConsumer(Backtester backtester) {
-			this.backtester = backtester;
+		public	BacktestQuoteBarConsumer(Backtester backtesterPassed) {
+			this.backtester = backtesterPassed;
 		}
 
 		#region StreamingConsumer
@@ -21,6 +21,7 @@ namespace Sq1.Core.Backtesting {
 
 		public override Bars ConsumerBarsToAppendInto { get { return this.backtester.BarsSimulating; } }
 		public override void UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart) {
+			base.ReasonToExist = "Backtest[" + base.Symbol_nullReported + "]";
 		}
 		public override void UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
 		}

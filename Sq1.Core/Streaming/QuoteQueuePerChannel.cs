@@ -101,8 +101,8 @@ namespace Sq1.Core.Streaming {
 			return false;
 		}
 		public void SetThreadName() {
-			string msig = this.ToString();
 			if (string.IsNullOrEmpty(Thread.CurrentThread.Name) == false) return;
+			string msig = this.ToString();
 			//if (Thread.CurrentThread.Name == msig) return;
 			if (msig.Contains("UNKNOWN")) return;
 

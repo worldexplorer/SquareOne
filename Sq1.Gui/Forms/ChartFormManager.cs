@@ -166,7 +166,7 @@ namespace Sq1.Gui.Forms {
 		public string WhoImServing_moveMeToExecutor { get {
 			string ret = "EMPTY_CHART";
 
-			if (this.Strategy == null) {
+			if (this.Strategy != null) {
 				ret = this.Strategy.WindowTitle;
 			} else {
 				if (this.DataSnapshot.ContextChart == null) {
@@ -225,6 +225,11 @@ namespace Sq1.Gui.Forms {
 		// 4. Executor.EventGenerator generates OnStrategyExecutedOneQuote => consumed in GuiThread (here) to unblink Strategy<=Symbol<=DataSource
 		// all the above should be subscribed in Livesim_pre()
 		void eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree(object sender, QuoteEventArgs e) {
+			return;
+			
+			
+			//TODO unblinkDataSourceTree makes the UI laggy
+
 			string symbol = e.Quote.ParentBarStreaming.Symbol;
 			DataSource originalBarsDataSource_evenForLivesimmed = e.Quote.ParentBarStreaming.ParentBars.DataSource;
 

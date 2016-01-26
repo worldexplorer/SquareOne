@@ -451,7 +451,6 @@
     </None>
     <None Include="Streaming\StreamingAdapterReferringItsOwnLivesimStreaming.jpg" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Livesim\LivesimBrokerEditor.resx">
       <DependentUpon>LivesimBrokerEditor.cs</DependentUpon>

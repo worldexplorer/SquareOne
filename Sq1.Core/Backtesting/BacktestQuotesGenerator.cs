@@ -208,7 +208,7 @@ namespace Sq1.Core.Backtesting {
 
 			if (quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde == null) {
 				string msg = "I_CANNOT_CONTINUE_LIVESIM_FIXME#1";
-				Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig, null, false);
 				return null;
 			}
 

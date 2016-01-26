@@ -322,7 +322,7 @@ namespace Sq1.Core.Streaming {
 					string msg1 = "PUMP_ALREADY_UNPAUSED livesimCausedPauseName=[" + livesimCausedPauseName + "]";
 					Assembler.PopupException(msg1);
 				} else {
-					eachChannel.QuotePump.PusherPause();
+					eachChannel.QuotePump.PusherUnpause();
 				}
 				if (msg != "") msg += ",";
 				msg += "[" + eachChannel.ToStringShort + "]";
@@ -335,6 +335,26 @@ namespace Sq1.Core.Streaming {
 			Assembler.PopupException(msg, null, false);
 		}
 
+
+		internal void AllQuotePumps_Stop(string livesimCausedPauseName) {
+			string msg = "";
+			foreach(SymbolScaleDistributionChannel eachChannel in this.flattenDistributionChannels()) {
+				if (eachChannel.QuotePump.HasSeparatePushingThread == false) {
+					string msg1 = "QUOTE_PUMP_IS_A_QUEUE_MUST_BE_PUMP livesimCausedPauseName=[" + livesimCausedPauseName + "]";
+					Assembler.PopupException(msg1);
+					continue;
+				}
+				QuotePumpPerChannel pump = eachChannel.QuotePump as QuotePumpPerChannel;
+				pump.PushingThreadStop();
+				if (msg != "") msg += ",";
+				msg += "[" + eachChannel.ToStringShort + "]";
+			}
+			if (string.IsNullOrEmpty(msg)) {
+				msg = "";
+			} else {
+				msg = "LIVESIM_RECEIVING_PUMPS_STOPPED_INSIDE_REPLACED_DATADISTRIBUTOR [" + this.ReasonIwasCreated + "] livesimCausedPauseName[" + livesimCausedPauseName + "]: " + msg;
+			}
+			Assembler.PopupException(msg, null, false);		}
 
 		internal void SetQuotePumpThreadName_unpausePump_sinceNoMoreSubscribersWillFollowFor(string symbol, BarScaleInterval barScaleInterval) {
 			SymbolScaleDistributionChannel channel = this.GetDistributionChannelFor_nullUnsafe(symbol, barScaleInterval);

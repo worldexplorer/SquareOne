@@ -7,29 +7,29 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Livesim {
 	public class LivesimQuoteBarConsumer : StreamingConsumer {
-		protected		Livesimulator Livesimulator;
-		public	LivesimQuoteBarConsumer(Livesimulator livesimulator) {
-			this.Livesimulator = livesimulator;
+				Livesimulator livesimulator;
+		public	LivesimQuoteBarConsumer(Livesimulator livesimulatorPassed) {
+			this.livesimulator = livesimulatorPassed;
 		}
 
 		#region StreamingConsumer
 		public	override ScriptExecutor	Executor			{ get {
-				var ret = this.Livesimulator.Executor;
+				var ret = this.livesimulator.Executor;
 				base.ActionForNullPointer(ret, "this.Livesimulator.Executor=null");
 				return ret;
 			} }
 
-		public override Bars ConsumerBarsToAppendInto { get { return this.Livesimulator.BarsSimulating; } }
+		public override Bars ConsumerBarsToAppendInto { get { return this.livesimulator.BarsSimulating; } }
 		public override void UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart) {
-			base.ReasonToExist = "Livesim[" + this.Symbol_nullReported + "]";
+			base.ReasonToExist = "Livesim[" + base.Symbol_nullReported + "]";
 			if (this.Strategy_nullReported != null) this.ReasonToExist += "[" + this.Strategy_nullReported.Name + "]";
 		}
 		public override void UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
 		}
 		public override void ConsumeQuoteOfStreamingBar(Quote quote) {
-			bool guiHasTime = this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
-			ScriptExecutor executor = this.Livesimulator.Executor;
-			ReporterPokeUnit pokeUnitNullUnsafe = this.Livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quote);
+			bool guiHasTime = this.livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
+			ScriptExecutor executor = this.livesimulator.Executor;
+			ReporterPokeUnit pokeUnitNullUnsafe = this.livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quote);
 			if (pokeUnitNullUnsafe != null && pokeUnitNullUnsafe.PositionsOpenNow.Count > 0) {
 				executor.PerformanceAfterBacktest.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(executor.ExecutionDataSnapshot.PositionsOpenNow);
 				if (guiHasTime) {
@@ -54,12 +54,12 @@ namespace Sq1.Core.Livesim {
 			}
 			msig += "(" + barLastFormed.ToString() + ")";
 			//v1 this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
-			ReporterPokeUnit pokeUnitNullUnsafe = this.Livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);
+			ReporterPokeUnit pokeUnitNullUnsafe = this.livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);
 		}
 		#endregion
 
 		public override string ToString() {
-			string ret = "CONSUMER_FOR_" + this.Livesimulator.ToString();
+			string ret = "CONSUMER_FOR_" + this.livesimulator.ToString();
 			return ret;
 		}
 	}
