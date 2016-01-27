@@ -11,6 +11,7 @@ namespace Sq1.Core.Streaming {
 		public	BidOrAsk					BidOrAsk			{ get; private set; }
 		public	string						ReasonToExist		{ get; private set; }
 		public	bool						ImSortedAscending	{ get; private set; }
+		public	bool						ImFrozen			{ get; private set; }
 		public	double						PriceMin			{ get; private set; }
 		public	double						PriceMax			{ get; private set; }
 		public	double						LotMin				{ get; private set; }
@@ -23,6 +24,7 @@ namespace Sq1.Core.Streaming {
 			if (bidOrAsk != BidOrAsk.Ask && bidOrAsk != BidOrAsk.Bid) {
 				throw new Exception("I_NEED_DIRECTION_TO_CALCULATE_LOTS_CUMULATIVE");
 			}
+			ImFrozen = true;
 			BidOrAsk = bidOrAsk;
 			ReasonToExist = reasonToExist;
 			ImSortedAscending = orderby is LevelTwoHalfSortedFrozen.ASC;
@@ -82,6 +84,21 @@ namespace Sq1.Core.Streaming {
 				if (this.LotMin > lot) this.LotMin = lot;
 				if (this.LotMax < lot) this.LotMax = lot;
 			}
+		}
+
+		public new void Add(double key, double value) {
+			if (this.ImFrozen) throw new Exception("FILL_ME_IN_CTOR()__FROZEN_MEANS_UNABLE_TO_MODIFY_AFTER_CONSTRUCTED__LAZY_TO_RECALCULATE_CUMULATIVES");
+			base.Add(key, value);
+		}
+
+		public new void Remove(double key) {
+			if (this.ImFrozen) throw new Exception("FILL_ME_IN_CTOR()__FROZEN_MEANS_UNABLE_TO_MODIFY_AFTER_CONSTRUCTED__LAZY_TO_RECALCULATE_CUMULATIVES");
+			base.Remove(key);
+		}
+
+		public new void Clear() {
+			if (this.ImFrozen) throw new Exception("FILL_ME_IN_CTOR()__FROZEN_MEANS_UNABLE_TO_MODIFY_AFTER_CONSTRUCTED__LAZY_TO_RECALCULATE_CUMULATIVES");
+			base.Clear();
 		}
 
 		public override string ToString() {

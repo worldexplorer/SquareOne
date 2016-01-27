@@ -30,6 +30,7 @@ namespace Sq1.Core.Streaming {
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> newScaleChannels = new Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>();
 				newScaleChannels.Add(scaleInterval, newChannel);
 				this.DistributionChannels.Add(symbol, newScaleChannels);
+				if (newChannel.QuotePump_nullUnsafe != null && newChannel.QuotePump_nullUnsafe.Paused) newChannel.QuotePump_nullUnsafe.PusherUnpause();
 				if (this.StreamingAdapter.UpstreamIsSubscribed(symbol) == false) {
 					this.StreamingAdapter.UpstreamSubscribe(symbol);
 				}
@@ -74,6 +75,7 @@ namespace Sq1.Core.Streaming {
 			channel.ConsumersQuoteRemove(consumer);
 			if (channel.ConsumersBarCount == 0 && channel.ConsumersQuoteCount == 0) {
 				//Assembler.PopupException("QuoteConsumer [" + consumer + "] was the last one using [" + symbol + "][" + scaleInterval + "]; removing QuoteBarDistributor[" + channel + "]");
+				if (channel.QuotePump_nullUnsafe != null) channel.QuotePump_nullUnsafe.PushingThreadStop();
 				channels.Remove(scaleInterval);
 				if (channels.Count == 0) {
 					//Assembler.PopupException("QuoteConsumer [" + scaleInterval + "] was the last one listening for [" + symbol + "]");
@@ -110,6 +112,7 @@ namespace Sq1.Core.Streaming {
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> newScaleChannels = new Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>();
 				newScaleChannels.Add(scaleInterval, newChannel);
 				this.DistributionChannels.Add(symbol, newScaleChannels);
+				if (newChannel.QuotePump_nullUnsafe != null && newChannel.QuotePump_nullUnsafe.Paused) newChannel.QuotePump_nullUnsafe.PusherUnpause();
 				if (this.StreamingAdapter.UpstreamIsSubscribed(symbol) == false) {
 					this.StreamingAdapter.UpstreamSubscribe(symbol);
 				}
@@ -155,6 +158,7 @@ namespace Sq1.Core.Streaming {
 			channel.ConsumersBarRemove(consumer);
 			if (channel.ConsumersBarCount == 0 && channel.ConsumersQuoteCount == 0) {
 				//Assembler.PopupException("BarConsumer [" + consumer + "] was the last one using [" + symbol + "][" + scaleInterval + "]; removing QuoteBarDistributor[" + distributor + "]");
+				if (channel.QuotePump_nullUnsafe != null) channel.QuotePump_nullUnsafe.PushingThreadStop();
 				channelsByScaleInterval.Remove(scaleInterval);
 				if (channelsByScaleInterval.Count == 0) {
 					//Assembler.PopupException("BarConsumer [" + scaleInterval + "] was the last one listening for [" + symbol + "]");
@@ -298,11 +302,15 @@ namespace Sq1.Core.Streaming {
 		internal void AllQuotePumps_Pause(string livesimCausingPauseName) {
 			string msg = "";
 			foreach(SymbolScaleDistributionChannel eachChannel in this.flattenDistributionChannels()) {
-				if (eachChannel.QuotePump.Paused == true) {
+				if (eachChannel.QuotePump_nullUnsafe == null) {
+					string msg1 = "CHANNEL_IS_A_QUEUE_NOT_PUMP__CAN_NOT_PAUSE eachChannel=[" + eachChannel + "]";
+					Assembler.PopupException(msg1);
+				}
+				if (eachChannel.QuotePump_nullUnsafe.Paused == true) {
 					string msg1 = "PUMP_ALREADY_PAUSED livesimCausingPauseName=[" + livesimCausingPauseName + "]";
 					Assembler.PopupException(msg1, null, false);
 				} else {
-					eachChannel.QuotePump.PusherPause();
+					eachChannel.QuotePump_nullUnsafe.PusherPause();
 				}
 				if (msg != "") msg += ",";
 				msg += "[" + eachChannel.ToStringShort + "]";
@@ -318,11 +326,15 @@ namespace Sq1.Core.Streaming {
 		internal void AllQuotePumps_Unpause(string livesimCausedPauseName) {
 			string msg = "";
 			foreach(SymbolScaleDistributionChannel eachChannel in this.flattenDistributionChannels()) {
-				if (eachChannel.QuotePump.Paused == false) {
+				if (eachChannel.QuotePump_nullUnsafe == null) {
+					string msg1 = "CHANNEL_IS_A_QUEUE_NOT_PUMP__CAN_NOT_PAUSE eachChannel=[" + eachChannel + "]";
+					Assembler.PopupException(msg1);
+				}
+				if (eachChannel.QuotePump_nullUnsafe.Paused == false) {
 					string msg1 = "PUMP_ALREADY_UNPAUSED livesimCausedPauseName=[" + livesimCausedPauseName + "]";
 					Assembler.PopupException(msg1);
 				} else {
-					eachChannel.QuotePump.PusherUnpause();
+					eachChannel.QuotePump_nullUnsafe.PusherUnpause();
 				}
 				if (msg != "") msg += ",";
 				msg += "[" + eachChannel.ToStringShort + "]";
@@ -339,13 +351,13 @@ namespace Sq1.Core.Streaming {
 		internal void AllQuotePumps_Stop(string livesimCausedPauseName) {
 			string msg = "";
 			foreach(SymbolScaleDistributionChannel eachChannel in this.flattenDistributionChannels()) {
-				if (eachChannel.QuotePump.HasSeparatePushingThread == false) {
+				//v1 if (eachChannel.QuoteQueue.HasSeparatePushingThread == false) {
+				if (eachChannel.QuotePump_nullUnsafe == null) {
 					string msg1 = "QUOTE_PUMP_IS_A_QUEUE_MUST_BE_PUMP livesimCausedPauseName=[" + livesimCausedPauseName + "]";
 					Assembler.PopupException(msg1);
 					continue;
 				}
-				QuotePumpPerChannel pump = eachChannel.QuotePump as QuotePumpPerChannel;
-				pump.PushingThreadStop();
+				eachChannel.QuotePump_nullUnsafe.PushingThreadStop();
 				if (msg != "") msg += ",";
 				msg += "[" + eachChannel.ToStringShort + "]";
 			}
@@ -356,7 +368,7 @@ namespace Sq1.Core.Streaming {
 			}
 			Assembler.PopupException(msg, null, false);		}
 
-		internal void SetQuotePumpThreadName_unpausePump_sinceNoMoreSubscribersWillFollowFor(string symbol, BarScaleInterval barScaleInterval) {
+		internal void SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(string symbol, BarScaleInterval barScaleInterval) {
 			SymbolScaleDistributionChannel channel = this.GetDistributionChannelFor_nullUnsafe(symbol, barScaleInterval);
 			if (channel == null) {
 				string msg = "SPLIT_QUOTE_PUMP_TO_SINGLE_THREADED_AND_SELF_LAUNCHING";
@@ -364,10 +376,9 @@ namespace Sq1.Core.Streaming {
 				return;
 			}
 			if (this.StreamingAdapter.QuotePumpSeparatePushingThreadEnabled) {
-				channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
-				channel.QuotePump.PusherUnpause();
-			} else {
-				channel.QuotePump.SetThreadName();
+			    channel.QuoteQueue_onlyWhenBacktesting.UpdateThreadNameAfterMaxConsumersSubscribed = true;
+				// SELF_MANAGED_BY_CHANNEL channel.QuoteQueue.PusherUnpause();
+			    channel.QuoteQueue_onlyWhenBacktesting.SetThreadName();
 			}
 		}
 
