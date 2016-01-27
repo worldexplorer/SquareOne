@@ -180,8 +180,8 @@ namespace Sq1.Gui.Forms {
 			return ret;
 		} }
 
-		System.Threading.Timer timerUnblink;
-		const int timerUnblinkInterval = 200;
+		//System.Threading.Timer timerUnblink;
+		//const int timerUnblinkInterval = 200;
 
 
 		// WHATTTTT???? I dont want it "internal" when "private" is omitted
@@ -194,11 +194,11 @@ namespace Sq1.Gui.Forms {
 			this.Executor.EventGenerator.OnStrategyPreExecuteOneQuote	+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyPreExecuteOneQuote_updateBtnStreamingText);
 			this.Executor.EventGenerator.OnStrategyExecutedOneQuote		+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree);
 
-			this.timerUnblink				= new System.Threading.Timer(new TimerCallback(this.timerUnblink_IntervalElapsed), null, Timeout.Infinite, Timeout.Infinite);
+			//this.timerUnblink				= new System.Threading.Timer(new TimerCallback(this.timerUnblink_IntervalElapsed), null, Timeout.Infinite, Timeout.Infinite);
 
-			this.colorBackgroundOrange_barsNotSubscribed				= Color.LightSalmon;
-			this.colorBackgroundRed_barsSubscribed_scriptNotTriggering	= Color.FromArgb(255, 230, 230);
-			this.colorBackgroundGreen_barsSubscribed_scriptIsTriggering	= Color.FromArgb(230, 255, 230);
+			//this.colorBackgroundOrange_barsNotSubscribed				= Color.LightSalmon;
+			//this.colorBackgroundRed_barsSubscribed_scriptNotTriggering	= Color.FromArgb(255, 230, 230);
+			//this.colorBackgroundGreen_barsSubscribed_scriptIsTriggering	= Color.FromArgb(230, 255, 230);
 
 			this.ReportersFormsManager		= new ReportersFormsManager(this);
 
@@ -210,9 +210,9 @@ namespace Sq1.Gui.Forms {
 			this.DataSnapshotSerializer		= new Serializer<ChartFormDataSnapshot>();
 		}
 
-		Color colorBackgroundOrange_barsNotSubscribed;
-		Color colorBackgroundRed_barsSubscribed_scriptNotTriggering;
-		Color colorBackgroundGreen_barsSubscribed_scriptIsTriggering;
+		//Color colorBackgroundOrange_barsNotSubscribed;
+		//Color colorBackgroundRed_barsSubscribed_scriptNotTriggering;
+		//Color colorBackgroundGreen_barsSubscribed_scriptIsTriggering;
 
 		void eventGenerator_OnStrategyPreExecuteOneQuote_updateBtnStreamingText(object sender, QuoteEventArgs e) {
 			this.ChartForm.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(e.Quote);
@@ -225,66 +225,71 @@ namespace Sq1.Gui.Forms {
 		// 4. Executor.EventGenerator generates OnStrategyExecutedOneQuote => consumed in GuiThread (here) to unblink Strategy<=Symbol<=DataSource
 		// all the above should be subscribed in Livesim_pre()
 		void eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree(object sender, QuoteEventArgs e) {
-			return;
+			//return;
 			
-			
-			//TODO unblinkDataSourceTree makes the UI laggy
+			////TODO unblinkDataSourceTree makes the UI laggy
 
-			string symbol = e.Quote.ParentBarStreaming.Symbol;
-			DataSource originalBarsDataSource_evenForLivesimmed = e.Quote.ParentBarStreaming.ParentBars.DataSource;
+			//string symbol = e.Quote.ParentBarStreaming.Symbol;
+			//DataSource originalBarsDataSource_evenForLivesimmed = e.Quote.ParentBarStreaming.ParentBars.DataSource;
 
-			if (this.Executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) return;
+			//if (this.Executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) return;
 
-			// in the future, one chart can be subscribed to many symbols, so executing a Script.OnQuote has to use DataSource+Symbol supplied
-			//NOT_FOR_LIVESIM if (this.ContextCurrentChartOrStrategy.IsStreaming == false) {
-			LivesimStreaming streamingAsLivesimNullUnsafe = this.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe;
-			if (streamingAsLivesimNullUnsafe == null) {
-				string msg = "LivesimDataSource_MUST_BE_INITIALIZED_WITH_ITS_LivesimStreamingQuik_FIXME_IN_SimulationPreBarsSubstitute_overrideable()";
-				Assembler.PopupException(msg, null, false);
-				return;
-			}
+			//// in the future, one chart can be subscribed to many symbols, so executing a Script.OnQuote has to use DataSource+Symbol supplied
+			////NOT_FOR_LIVESIM if (this.ContextCurrentChartOrStrategy.IsStreaming == false) {
+			//LivesimStreaming streamingAsLivesimNullUnsafe = this.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe;
+			//if (streamingAsLivesimNullUnsafe == null) {
+			//    string msg = "LivesimDataSource_MUST_BE_INITIALIZED_WITH_ITS_LivesimStreamingQuik_FIXME_IN_SimulationPreBarsSubstitute_overrideable()";
+			//    Assembler.PopupException(msg, null, false);
+			//    return;
+			//}
+			//TreeListView olvTree = DataSourcesForm.Instance.DataSourcesTreeControl.OlvTree;
+			////this.timerUnblink.Change(ChartFormManager.timerUnblinkInterval, Timeout.Infinite);
+			////olvTree.DeselectAll();
+			////DEADLOCK#2 - happens when DdeMessagePump thread wants to switch to GUI thread; switching to GUI thread via trampoline Task releases this method from held in GuiMessageQueue
+			//if (olvTree.InvokeRequired) {
+			//    Task deadlockOtherwize = new Task(delegate {
+			//        // WRONG_COLOR__QUIKSTREAMINGLIVESIM_HAS_NO_SUBSCRIBERS_AND_DOESNT_PUSH_TO_DISTRIBUTOR__ONLY_SENDS_OVER_DDE
+			//        //if (streamingAsLivesimNullUnsafe.DataDistributor.DistributionChannels.Count == 0) {
+			//        //    this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = colorBackgroundOrange_barsNotSubscribed;
+			//        //} else {
+			//            this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = this.Executor.IsStreamingTriggeringScript
+			//                ? this.colorBackgroundGreen_barsSubscribed_scriptIsTriggering
+			//                : this.colorBackgroundRed_barsSubscribed_scriptNotTriggering;
+			//        //}
+			//        olvTree.BeginInvoke((MethodInvoker)delegate { olvTree.RefreshObject(this.ChartForm.ChartControl); });
+			//        if (this.timerUnblink_skipUntilExpires) return;
+			//        this.timerUnblink_skipUntilExpires = true;
+			//        this.timerUnblink.Change(ChartFormManager.timerUnblinkInterval, Timeout.Infinite);
+			//    });
+			//    deadlockOtherwize.Start();
+			//    return;
+			//}
+
 			TreeListView olvTree = DataSourcesForm.Instance.DataSourcesTreeControl.OlvTree;
-			//this.timerUnblink.Change(ChartFormManager.timerUnblinkInterval, Timeout.Infinite);
-			//olvTree.DeselectAll();
-			//DEADLOCK#2 - happens when DdeMessagePump thread wants to switch to GUI thread; switching to GUI thread via trampoline Task releases this method from held in GuiMessageQueue
-			if (olvTree.InvokeRequired) {
-				Task deadlockOtherwize = new Task(delegate {
-					// WRONG_COLOR__QUIKSTREAMINGLIVESIM_HAS_NO_SUBSCRIBERS_AND_DOESNT_PUSH_TO_DISTRIBUTOR__ONLY_SENDS_OVER_DDE
-					//if (streamingAsLivesimNullUnsafe.DataDistributor.DistributionChannels.Count == 0) {
-					//    this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = colorBackgroundOrange_barsNotSubscribed;
-					//} else {
-						this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = this.Executor.IsStreamingTriggeringScript
-							? this.colorBackgroundGreen_barsSubscribed_scriptIsTriggering
-							: this.colorBackgroundRed_barsSubscribed_scriptNotTriggering;
-					//}
-					olvTree.BeginInvoke((MethodInvoker)delegate { olvTree.RefreshObject(this.ChartForm.ChartControl); });
-					if (this.timerUnblink_skipUntilExpires) return;
-					this.timerUnblink_skipUntilExpires = true;
-					this.timerUnblink.Change(ChartFormManager.timerUnblinkInterval, Timeout.Infinite);
+			Action linkingTwoUnrelatedDlls = new Action(delegate {
+					olvTree.RefreshObject(this.ChartForm.ChartControl);
 				});
-				deadlockOtherwize.Start();
-				return;
-			}
+			this.ChartForm.ChartControl.OnStrategyExecutedOneQuote_unblinkDataSourceTree(linkingTwoUnrelatedDlls);
 		}
-		void timerUnblink_IntervalElapsed(object state) {
-			if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) {
-				Thread.CurrentThread.Name = "timerUnblink_IntervalElapsed[" + this.WhoImServing_moveMeToExecutor + "]";
-			}
-			if (this.ChartForm.InvokeRequired) {
-			    this.ChartForm.BeginInvoke(new MethodInvoker(delegate { this.timerUnblink_IntervalElapsed(state); }));
-			    return;
-			}
-			// create an illusion for System.Threading.Timer to wake up in GUI thread, just because we will have to go to GUI thread anyway to unblink
-			this.timerUnblink_IntervalElapsed(null, null);
-		}
-		bool timerUnblink_skipUntilExpires;
-		void timerUnblink_IntervalElapsed(object sender, EventArgs e) {
-			if (this.IsDisposed) return;
-			this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = Color.White;
-			TreeListView olvTree = DataSourcesForm.Instance.DataSourcesTreeControl.OlvTree;
-			olvTree.RefreshObject(this.ChartForm.ChartControl);
-			this.timerUnblink_skipUntilExpires = false;
-		}
+		//void timerUnblink_IntervalElapsed(object state) {
+		//    if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) {
+		//        Thread.CurrentThread.Name = "timerUnblink_IntervalElapsed[" + this.WhoImServing_moveMeToExecutor + "]";
+		//    }
+		//    if (this.ChartForm.InvokeRequired) {
+		//        this.ChartForm.BeginInvoke(new MethodInvoker(delegate { this.timerUnblink_IntervalElapsed(state); }));
+		//        return;
+		//    }
+		//    // create an illusion for System.Threading.Timer to wake up in GUI thread, just because we will have to go to GUI thread anyway to unblink
+		//    this.timerUnblink_IntervalElapsed(null, null);
+		//}
+		//bool timerUnblink_skipUntilExpires;
+		//void timerUnblink_IntervalElapsed(object sender, EventArgs e) {
+		//    if (this.IsDisposed) return;
+		//    this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = Color.White;
+		//    TreeListView olvTree = DataSourcesForm.Instance.DataSourcesTreeControl.OlvTree;
+		//    olvTree.RefreshObject(this.ChartForm.ChartControl);
+		//    this.timerUnblink_skipUntilExpires = false;
+		//}
 
 		public ChartFormManager(MainForm mainForm, int charSernoDeserialized = -1) : this() {
 			this.MainForm = mainForm;

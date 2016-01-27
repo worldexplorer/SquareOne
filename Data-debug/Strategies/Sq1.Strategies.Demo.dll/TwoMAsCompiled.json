@@ -72,7 +72,7 @@
         "Positions": {
           "$type": "Sq1.Reporters.PositionsDataSnapshot, Sq1.Reporters",
           "Colorify": true,
-          "PositionsOlvStateBase64": "AAEAAAD/////AQAAAAAAAAAMAgAAAFVPYmplY3RMaXN0VmlldywgVmVyc2lvbj0yLjguMC4yMzMzOCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iMWM1YmY1ODE0ODFiY2Q0DAMAAABXU3lzdGVtLldpbmRvd3MuRm9ybXMsIFZlcnNpb249NC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAA2QnJpZ2h0SWRlYXNTb2Z0d2FyZS5PYmplY3RMaXN0VmlldytPYmplY3RMaXN0Vmlld1N0YXRlCQAAAA1WZXJzaW9uTnVtYmVyD051bWJlck9mQ29sdW1ucwtDdXJyZW50VmlldwpTb3J0Q29sdW1uD0lzU2hvd2luZ0dyb3Vwcw1MYXN0U29ydE9yZGVyD0NvbHVtbklzVmlzaWJsZRVDb2x1bW5EaXNwbGF5SW5kaWNpZXMMQ29sdW1uV2lkdGhzAAAEAAAEAwMDCAgZU3lzdGVtLldpbmRvd3MuRm9ybXMuVmlldwMAAAAIAR5TeXN0ZW0uV2luZG93cy5Gb3Jtcy5Tb3J0T3JkZXIDAAAAHFN5c3RlbS5Db2xsZWN0aW9ucy5BcnJheUxpc3QcU3lzdGVtLkNvbGxlY3Rpb25zLkFycmF5TGlzdBxTeXN0ZW0uQ29sbGVjdGlvbnMuQXJyYXlMaXN0AgAAAAEAAAAYAAAABfz///8ZU3lzdGVtLldpbmRvd3MuRm9ybXMuVmlldwEAAAAHdmFsdWVfXwAIAwAAAAEAAAD/////AAX7////HlN5c3RlbS5XaW5kb3dzLkZvcm1zLlNvcnRPcmRlcgEAAAAHdmFsdWVfXwAIAwAAAAAAAAAJBgAAAAkHAAAACQgAAAAEBgAAABxTeXN0ZW0uQ29sbGVjdGlvbnMuQXJyYXlMaXN0AwAAAAZfaXRlbXMFX3NpemUIX3ZlcnNpb24FAAAICAkJAAAAGAAAABgAAAABBwAAAAYAAAAJCgAAABgAAAAYAAAAAQgAAAAGAAAACQsAAAAYAAAAGAAAABAJAAAAIAAAAAgBAQgBAQgBAAgBAAgBAAgBAAgBAAgBAAgBAQgBAAgBAAgBAAgBAQgBAAgBAAgBAAgBAAgBAAgBAAgBAAgBAAgBAAgBAAgBAA0IEAoAAAAgAAAACAgAAAAACAgBAAAACAgCAAAACAgDAAAACAgEAAAACAgFAAAACAgGAAAACAgHAAAACAgIAAAACAgJAAAACAgKAAAACAgLAAAACAgMAAAACAgNAAAACAgOAAAACAgPAAAACAgQAAAACAgRAAAACAgSAAAACAgTAAAACAgUAAAACAgVAAAACAgWAAAACAj/////DQgQCwAAACAAAAAICCMAAAAICB4AAAAICCgAAAAICA8AAAAICDwAAAAICHgAAAAICDwAAAAICCMAAAAICHgAAAAICDwAAAAICCMAAAAICEUAAAAICCwAAAAICB8AAAAICCgAAAAICEYAAAAICEYAAAAICC8AAAAICC8AAAAICDgAAAAICDkAAAAICD4AAAAICDwAAAAICC0AAAANCAs="
+          "PositionsOlvStateBase64": "AAEAAAD/////AQAAAAAAAAAMAgAAAFVPYmplY3RMaXN0VmlldywgVmVyc2lvbj0yLjguMC4zNTIwNSwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iMWM1YmY1ODE0ODFiY2Q0DAMAAABXU3lzdGVtLldpbmRvd3MuRm9ybXMsIFZlcnNpb249NC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAA2QnJpZ2h0SWRlYXNTb2Z0d2FyZS5PYmplY3RMaXN0VmlldytPYmplY3RMaXN0Vmlld1N0YXRlCQAAAA1WZXJzaW9uTnVtYmVyD051bWJlck9mQ29sdW1ucwtDdXJyZW50VmlldwpTb3J0Q29sdW1uD0lzU2hvd2luZ0dyb3Vwcw1MYXN0U29ydE9yZGVyD0NvbHVtbklzVmlzaWJsZRVDb2x1bW5EaXNwbGF5SW5kaWNpZXMMQ29sdW1uV2lkdGhzAAAEAAAEAwMDCAgZU3lzdGVtLldpbmRvd3MuRm9ybXMuVmlldwMAAAAIAR5TeXN0ZW0uV2luZG93cy5Gb3Jtcy5Tb3J0T3JkZXIDAAAAHFN5c3RlbS5Db2xsZWN0aW9ucy5BcnJheUxpc3QcU3lzdGVtLkNvbGxlY3Rpb25zLkFycmF5TGlzdBxTeXN0ZW0uQ29sbGVjdGlvbnMuQXJyYXlMaXN0AgAAAAEAAAAYAAAABfz///8ZU3lzdGVtLldpbmRvd3MuRm9ybXMuVmlldwEAAAAHdmFsdWVfXwAIAwAAAAEAAAD/////AAX7////HlN5c3RlbS5XaW5kb3dzLkZvcm1zLlNvcnRPcmRlcgEAAAAHdmFsdWVfXwAIAwAAAAAAAAAJBgAAAAkHAAAACQgAAAAEBgAAABxTeXN0ZW0uQ29sbGVjdGlvbnMuQXJyYXlMaXN0AwAAAAZfaXRlbXMFX3NpemUIX3ZlcnNpb24FAAAICAkJAAAAGAAAABgAAAABBwAAAAYAAAAJCgAAABgAAAAYAAAAAQgAAAAGAAAACQsAAAAYAAAAGAAAABAJAAAAIAAAAAgBAQgBAQgBAAgBAAgBAAgBAAgBAAgBAAgBAQgBAAgBAAgBAAgBAQgBAAgBAAgBAAgBAAgBAAgBAAgBAAgBAAgBAAgBAAgBAA0IEAoAAAAgAAAACAgAAAAACAgBAAAACAgCAAAACAgDAAAACAgEAAAACAgFAAAACAgGAAAACAgHAAAACAgIAAAACAgJAAAACAgKAAAACAgLAAAACAgMAAAACAgNAAAACAgOAAAACAgPAAAACAgQAAAACAgRAAAACAgSAAAACAgTAAAACAgUAAAACAgVAAAACAgWAAAACAj/////DQgQCwAAACAAAAAICCMAAAAICB4AAAAICCgAAAAICA8AAAAICDwAAAAICHgAAAAICDwAAAAICCMAAAAICHgAAAAICDwAAAAICCMAAAAICEUAAAAICCwAAAAICB8AAAAICCgAAAAICEYAAAAICEYAAAAICC8AAAAICC8AAAAICDgAAAAICDkAAAAICD4AAAAICDwAAAAICC0AAAANCAs="
         }
       },
       "ApplyCommission": false,
@@ -96,12 +96,14 @@
       "DataSourceName": "MOCK",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-        "AsString_cached": "5-Minute",
-        "Scale": 3,
         "Interval": 5,
+        "Scale": 3,
+        "AsString_cached": "5-Minute",
         "IsIntraday": true,
         "AsTimeSpanInSeconds": 300,
-        "AsTimeSpan": "00:05:00"
+        "AsTimeSpan": "00:05:00",
+        "AsStringShortest_cached": "5m",
+        "AsStringShort_cached": "5min"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
@@ -111,9 +113,9 @@
         "RecentBars": 510,
         "RecentTimeunits": 0
       },
-      "IsStreamingTriggeringScript": true,
+      "StreamingIsTriggeringScript": true,
       "ShowRangeBar": false,
-      "IsStreaming": false,
+      "DownstreamSubscribed": true,
       "ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString": "(MAfast.Period=32,MAslow.Period=16)",
       "SymbolScaleIntervalDataRangeForScriptContextNewName": "RIM3 5-Minute 510 Bars"
     },
@@ -200,12 +202,14 @@
       "DataSourceName": "MOCK",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-        "AsString_cached": "1-Minute",
-        "Scale": 3,
         "Interval": 1,
+        "Scale": 3,
+        "AsString_cached": "1-Minute",
         "IsIntraday": true,
         "AsTimeSpanInSeconds": 60,
-        "AsTimeSpan": "00:01:00"
+        "AsTimeSpan": "00:01:00",
+        "AsStringShortest_cached": "1m",
+        "AsStringShort_cached": "1min"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
@@ -215,9 +219,9 @@
         "RecentBars": 511,
         "RecentTimeunits": 0
       },
-      "IsStreamingTriggeringScript": true,
+      "StreamingIsTriggeringScript": false,
       "ShowRangeBar": false,
-      "IsStreaming": false,
+      "DownstreamSubscribed": false,
       "ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString": "(MAfast.Period=26,MAslow.Period=14)",
       "SymbolScaleIntervalDataRangeForScriptContextNewName": "RIM3 1-Minute 511 Bars"
     },
@@ -307,12 +311,14 @@
       "DataSourceName": "MOCK",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-        "AsString_cached": "1-Minute",
-        "Scale": 3,
         "Interval": 1,
+        "Scale": 3,
+        "AsString_cached": "1-Minute",
         "IsIntraday": true,
         "AsTimeSpanInSeconds": 60,
-        "AsTimeSpan": "00:01:00"
+        "AsTimeSpan": "00:01:00",
+        "AsStringShortest_cached": "1m",
+        "AsStringShort_cached": "1min"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
@@ -322,9 +328,9 @@
         "RecentBars": 510,
         "RecentTimeunits": 0
       },
-      "IsStreamingTriggeringScript": true,
+      "StreamingIsTriggeringScript": false,
       "ShowRangeBar": false,
-      "IsStreaming": false,
+      "DownstreamSubscribed": false,
       "ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString": "(MAfast.Period=32,MAslow.Period=14)",
       "SymbolScaleIntervalDataRangeForScriptContextNewName": "RIM3 1-Minute 510 Bars"
     }
@@ -363,7 +369,7 @@
   },
   "LivesimStreamingSettings": {
     "$type": "Sq1.Core.Livesim.LivesimStreamingSettings, Sq1.Core",
-    "DelayBetweenSerialQuotesMin": 50,
+    "DelayBetweenSerialQuotesMin": 340,
     "DelayBetweenSerialQuotesMax": 0,
     "DelayBetweenSerialQuotesEnabled": true,
     "OutOfOrderQuoteGenerationHappensOncePerQuoteMin": 0,

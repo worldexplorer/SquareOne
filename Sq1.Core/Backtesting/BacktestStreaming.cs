@@ -48,7 +48,8 @@ namespace Sq1.Core.Backtesting {
 		}
 
 		public override string ToString() {
-			return this.Name + ": DataSource[" + this.DataSource + "]";
+			string dataSourceAsString = this.DataSource != null ? this.DataSource.ToString() : "NOT_INITIALIZED_YET";
+			return this.Name + ": DataSource[" + dataSourceAsString + "]";
 		}
 
 	}

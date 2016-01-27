@@ -269,6 +269,15 @@
     <Compile Include="StrategyBase\Script.ReusableExecutorChecks.cs">
       <DependentUpon>Script.cs</DependentUpon>
     </Compile>
+    <Compile Include="StrategyBase\ScriptExecutor.BacktestLauncher.cs">
+      <DependentUpon>ScriptExecutor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategyBase\ScriptExecutor.OrderWrappers.cs">
+      <DependentUpon>ScriptExecutor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategyBase\ScriptExecutor.ScriptWrappers.cs">
+      <DependentUpon>ScriptExecutor.cs</DependentUpon>
+    </Compile>
     <Compile Include="StrategyBase\SystemPerformancePositionsTracking.cs" />
     <Compile Include="StrategyBase\Reporter.cs">
       <SubType>UserControl</SubType>

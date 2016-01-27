@@ -93,16 +93,16 @@ namespace Sq1.Core.Streaming {
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public StreamingAdapter() {
-			SymbolsSubscribedLock					= new object();
-			SymbolsUpstreamSubscribed				= new List<string>();
-			DataDistributor_replacedForLivesim							= new DataDistributorCharts(this);
-			DataDistributorSolidifiers_replacedForLivesim				= new DataDistributorSolidifiers(this);
-			StreamingDataSnapshot					= new StreamingDataSnapshot(this);
-			StreamingSolidifier						= new StreamingSolidifier();
-			QuotePumpSeparatePushingThreadEnabled	= true;
-			Level2RefreshRateMs						= 200;
+			SymbolsSubscribedLock							= new object();
+			SymbolsUpstreamSubscribed						= new List<string>();
+			DataDistributor_replacedForLivesim				= new DataDistributorCharts(this);
+			DataDistributorSolidifiers_replacedForLivesim	= new DataDistributorSolidifiers(this);
+			StreamingDataSnapshot							= new StreamingDataSnapshot(this);
+			StreamingSolidifier								= new StreamingSolidifier();
+			QuotePumpSeparatePushingThreadEnabled			= true;
+			Level2RefreshRateMs								= 200;
 			if (this is LivesimStreaming) return;
-			LivesimStreaming						= new LivesimStreaming(true);	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
+			LivesimStreaming								= new LivesimStreaming(true);	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
 		}
 		public virtual void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {	//, bool imRestoringSolidifierAfterLivesimTerminatedAborted = false) {
 			//if (subscribeSolidifier == false) {

@@ -39,12 +39,12 @@ namespace Sq1.Core.Livesim {
 			base.Name = "LivesimStreaming-child_ACTIVATOR_DLL-SCANNED";
 		}
 		public LivesimStreaming(bool IamNotAdummy) : base() {
-			base.Name = "LivesimStreaming";
-			base.StreamingSolidifier = null;
+			base.Name						= "LivesimStreaming";
+			base.StreamingSolidifier		= null;
 			base.QuotePumpSeparatePushingThreadEnabled = false;
-			this.UnpausedMre = new ManualResetEvent(true);
-			this.LevelTwoGenerator = new LevelTwoGeneratorLivesim(this);
-			this.LivesimStreamingSpoiler = new LivesimStreamingSpoiler(this);
+			this.UnpausedMre				= new ManualResetEvent(true);
+			this.LevelTwoGenerator			= new LevelTwoGeneratorLivesim(this);
+			this.LivesimStreamingSpoiler	= new LivesimStreamingSpoiler(this);
 		}
 		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, StreamingAdapter streamingOriginalPassed, string symbolLivesimming) {
 			if (livesimDataSource == null) {

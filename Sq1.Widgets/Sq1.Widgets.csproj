@@ -335,6 +335,7 @@
     <Compile Include="SteppingSlider\SteppingSliderComboControl.Designer.cs">
       <DependentUpon>SteppingSliderComboControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="TimerSimplified.cs" />
     <Compile Include="ToolStripWidgets\ToolStripItemLabeledTextBox.cs">
       <SubType>Component</SubType>
     </Compile>

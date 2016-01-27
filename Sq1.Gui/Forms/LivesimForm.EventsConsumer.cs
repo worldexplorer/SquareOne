@@ -3,6 +3,7 @@ using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Gui.Forms {
 	public partial class LivesimForm {
@@ -21,13 +22,15 @@ namespace Sq1.Gui.Forms {
 			bool clickedStart = btnStartStop.Text.Contains("Start");
 			if (clickedStart) {
 				ScriptExecutor executor = this.chartFormManager.Executor;
-				string reasonWhyLivesimCanNotBeStartedForSymbol = executor.DataSource_fromBars.StreamingAdapter
-				      .ReasonWhyLivesimCanNotBeStartedForSymbol(executor.Bars.Symbol, executor.ChartShadow);
-				if (string.IsNullOrEmpty(reasonWhyLivesimCanNotBeStartedForSymbol) == false) {
-				    string msg = "I_REFUSE_TO_START_LIVESIM_FOR[" + this.chartFormManager.WhoImServing_moveMeToExecutor + "]: " + reasonWhyLivesimCanNotBeStartedForSymbol;
-				    Assembler.PopupException(msg);
-					btnStartStop.Checked = false;
-				    return;
+				StreamingAdapter streamingAdapter = executor.DataSource_fromBars.StreamingAdapter;
+				if (streamingAdapter != null) {
+					string reasonWhyLivesimCanNotBeStartedForSymbol = streamingAdapter.ReasonWhyLivesimCanNotBeStartedForSymbol(executor.Bars.Symbol, executor.ChartShadow);
+					if (string.IsNullOrEmpty(reasonWhyLivesimCanNotBeStartedForSymbol) == false) {
+						string msg = "I_REFUSE_TO_START_LIVESIM_FOR[" + this.chartFormManager.WhoImServing_moveMeToExecutor + "]: " + reasonWhyLivesimCanNotBeStartedForSymbol;
+						Assembler.PopupException(msg);
+						btnStartStop.Checked = false;
+						return;
+					}
 				}
 
 				btnStartStop.Text = "Starting";

@@ -12,6 +12,8 @@ namespace Sq1.Core.Livesim {
 
 		LivesimDataSource() {
 			base.Name				= "LivesimDataSource";
+			base.StreamingAdapter	= new LivesimStreaming(true);
+			base.BrokerAdapter		= new LivesimBroker(true);
 		}
 
 		public LivesimDataSource(ScriptExecutor executor) : this() {
@@ -20,16 +22,34 @@ namespace Sq1.Core.Livesim {
 
 		public void PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource() {
 			string msig = " //PushPreInstantiatedLivesimAdaptersToLivesimDataSource() [" + this.ToString() + "]";
-
-			//TOO_MANY_ALREADY_DISPOSED_EXCEPTIONS SEEMS_TO_BE_SAME_DUMMY_ACROSS_MANY_DATASOURCES_POINTING_TO_IT
-			//this.StreamingAsLivesimNullUnsafe.Dispose();
-			//this.   BrokerAsLivesimNullUnsafe.Dispose();
-
-			base.StreamingAdapter	= this.Executor.DataSource_fromBars.StreamingAdapter.LivesimStreaming;
-			base.BrokerAdapter		= this.Executor.DataSource_fromBars.BrokerAdapter.LivesimBroker;
-
-		    string msg1 = "ADAPTERS_SUBSTITUTED_FOR_LIVESIM_DATASOURCE";
-		    Assembler.PopupException(msg1 + msig, null, false);
+			if (this.Executor.DataSource_fromBars.StreamingAdapter != null) {
+				base.StreamingAdapter	= this.Executor.DataSource_fromBars.StreamingAdapter.LivesimStreaming;
+			    string msg1 = "STREAMING_SUBSTITUTED_FOR_LIVESIM_DATASOURCE";
+			    Assembler.PopupException(msg1 + msig, null, false);
+			} else {
+				if (this.StreamingAsLivesimNullUnsafe == null) {
+					string msg1 = "I_REFUSE_TO_RUN_LIVESIM_WITHOUT_LIVESIMSTREAMING"
+						+ " LivesimDataSource.ctor() should have created its own basic LivesimStreaming<=BacktestStreaming, now NULL";
+					Assembler.PopupException(msg1);
+				} else {
+					string msg1 = "USING_LivesimStreaming (no streaming chosen in DataSourceEditor), will use QuoteGen=>Pump straight;"
+						+ " StreamingAsLivesimNullUnsafe[" + this.StreamingAsLivesimNullUnsafe + "]";
+				}
+			}
+			if (this.Executor.DataSource_fromBars.BrokerAdapter != null) {
+				base.BrokerAdapter		= this.Executor.DataSource_fromBars.BrokerAdapter.LivesimBroker;
+			    string msg1 = "BROKER_SUBSTITUTED_FOR_LIVESIM_DATASOURCE";
+			    Assembler.PopupException(msg1 + msig, null, false);
+			} else {
+				if (this.BrokerAsLivesimNullUnsafe == null) {
+					string msg2 = "I_REFUSE_TO_RUN_LIVESIM_WITHOUT_LIVESIMBROKER"
+						+ " LivesimDataSource.ctor() should have created its own basic LivesimBroker<=BacktestBroker, now NULL";
+					Assembler.PopupException(msg2);
+				} else {
+					string msg1 = "USING_LivesimBroker (no broker chosen in DataSourceEditor), will use OrderProcessor straight;"
+						+ " BrokerAsLivesimNullUnsafe[" + this.BrokerAsLivesimNullUnsafe + "]";
+				}
+			}
 		}
 
 		public void Dispose() {
