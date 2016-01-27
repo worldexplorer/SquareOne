@@ -155,7 +155,7 @@ namespace Sq1.Core.Streaming {
 			//channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
 			//MOVED_TO_SetQuotePumpThreadName_unpausePump_sinceNoMoreSubscribersWillFollowFor() channel.QuotePump.PusherUnpause();
 			//v2
-			this.DataDistributorSolidifiers_replacedForLivesim.SetQuotePumpThreadName_unpausePump_sinceNoMoreSubscribersWillFollowFor(symbol, this.DataSource.ScaleInterval);
+			this.DataDistributorSolidifiers_replacedForLivesim.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(symbol, this.DataSource.ScaleInterval);
 		}
 		//protected virtual void SolidifierAllSymbolsUnsubscribe(bool throwOnAlreadySubscribed = true) {
 		//    List<string> oneSymbolImLivesimming = this.DataSource.Symbols;
@@ -189,7 +189,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			channel.QuotePump.PusherPause();
+			channel.QuoteQueue_onlyWhenBacktesting.PusherPause();
 		}
 
 		#region the essence#1 of streaming adapter

@@ -174,9 +174,9 @@ namespace Sq1.Core.Backtesting {
 					//}
 					//bool removed = this.Executor.ExecutionDataSnapshot.AlertsPending.Remove(alertPending);
 					this.Executor.AlertKillPending(alertPending);
-				} catch (Exception e) {
+				} catch (Exception ex) {
 					string msg = "NOT_AN_ERROR BACKTEST_POSITION_FINALIZER: check innerException: most likely you got POSITION_ALREADY_CLOSED on counterparty alert's force-close?";
-					this.Executor.PopupException(msg, e);
+					this.Executor.PopupException(msg, ex, false);
 				}
 			}
 			if (this.Executor.ExecutionDataSnapshot.AlertsPending.Count > 0) {
@@ -258,7 +258,7 @@ namespace Sq1.Core.Backtesting {
 				DataDistributor distr = streaming.DataDistributor_replacedForLivesim;
 				distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer, false);
 				distr.ConsumerBarSubscribe  (this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer, false);
-				distr.SetQuotePumpThreadName_unpausePump_sinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
+				distr.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
 				
 				this.Executor.BacktestContextInitialize(this.BarsSimulating);
 

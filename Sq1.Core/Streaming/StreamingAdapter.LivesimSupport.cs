@@ -58,7 +58,7 @@ namespace Sq1.Core.Streaming {
 			this.dataDistributorSolidifiers_preLivesimForSymbolLivesimming.AllQuotePumps_Pause(reasonForNewDistributor);
 			this.DataDistributorSolidifiers_replacedForLivesim = new DataDistributor(this, reasonForNewDistributor);		// EMPTY!!! exactly what I wanted
 
-			this.DataDistributor_replacedForLivesim.SetQuotePumpThreadName_unpausePump_sinceNoMoreSubscribersWillFollowFor(symbol, scaleInterval);
+			this.DataDistributor_replacedForLivesim.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(symbol, scaleInterval);
 
 			string msg1 = "THESE_STREAMING_CONSUMERS_LOST_INCOMING_QUOTES_FOR_THE_DURATION_OF_LIVESIM: ";
 			string msg2= this.dataDistributor_preLivesimForSymbolLivesimming.ToString();

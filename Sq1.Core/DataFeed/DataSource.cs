@@ -389,10 +389,10 @@ namespace Sq1.Core.DataFeed {
 				//Assembler.PopupException(msg + msig);
 				return false;
 			}
-			if (channel.QuotePump == null) {
+			if (channel.QuoteQueue_onlyWhenBacktesting == null) {
 				return false;
 			}
-			if (channel.QuotePump.HasSeparatePushingThread == false) {
+			if (channel.QuoteQueue_onlyWhenBacktesting.HasSeparatePushingThread == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_PAUSE_DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
 					Assembler.PopupException(msg + msig);
@@ -420,7 +420,7 @@ namespace Sq1.Core.DataFeed {
 				return false;
 			}
 
-			if (channel.QuotePump.HasSeparatePushingThread == false) {
+			if (channel.QuoteQueue_onlyWhenBacktesting.HasSeparatePushingThread == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_UNPAUSE_DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
 					Assembler.PopupException(msg + msig, null, false);
@@ -446,7 +446,7 @@ namespace Sq1.Core.DataFeed {
 		public bool PumpingWaitUntilPaused(Bars bars, int maxWaitingMillis = 1000) {
 			DataDistributor distr = this.StreamingAdapter.DataDistributor_replacedForLivesim;
 			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
-			bool paused = channel.QuotePump.WaitUntilPaused(maxWaitingMillis);
+			bool paused = channel.QuoteQueue_onlyWhenBacktesting.WaitUntilPaused(maxWaitingMillis);
 			return paused;
 		}
 	}

@@ -25,7 +25,8 @@ namespace Sq1.Core.Streaming {
 		//		2) pause the Live trading and re-Backtest with new parameters imported from Sequencer, and continue Live with them (handling open positions at the edge NYI)
 		//NB#2	QuotePump.PushConsumersPaused will freeze max all opened charts and one Solidifier per DataSource:Symbol:ScaleInterval;
 		//		ability to control on per-consumer level costs more, including dissync between Solidifier.BarsStored and Executor.BarsInMemory
-		public	QuoteQueuePerChannel			QuotePump						{ get; protected set; }
+		public	QuoteQueuePerChannel			QuoteQueue_onlyWhenBacktesting	{ get; protected set; }
+		public	QuotePumpPerChannel				QuotePump_nullUnsafe			{ get { return this.QuoteQueue_onlyWhenBacktesting as QuotePumpPerChannel; } }
 
 		SymbolScaleDistributionChannel(string reasonIwasCreated = "REASON_UNKNOWN") {
 			lockConsumersQuote	= new object();
@@ -58,9 +59,9 @@ namespace Sq1.Core.Streaming {
 			//QuotePump = new QuotePumpPerChannel(this, quotePumpSeparatePushingThreadEnabled);
 			//v3 UNMESSING_QuotePump
 			if (quotePumpSeparatePushingThreadEnabled) {
-				this.QuotePump = new QuotePumpPerChannel(this);
+				this.QuoteQueue_onlyWhenBacktesting = new QuotePumpPerChannel(this);
 			} else {
-				this.QuotePump = new QuoteQueuePerChannel(this);
+				this.QuoteQueue_onlyWhenBacktesting = new QuoteQueuePerChannel(this);
 			}
 		}
 		public void PushQuoteToPump(Quote quote2bClonedForEachConsumer) {
@@ -82,8 +83,8 @@ namespace Sq1.Core.Streaming {
 
 			//v1 this.PushQuoteToConsumers(quoteSernoEnrichedWithUnboundStreamingBar);
 			//v2 let the user re-backtest during live streaming using 1) QuotePump.OnHold=true; 2) RunBacktest(); 3) QuotePump.OnHold=false;
-			int straightOrBuffered = this.QuotePump.PushStraightOrBuffered(quoteSernoEnrichedWithUnboundStreamingBar);
-			if (this.QuotePump.HasSeparatePushingThread) {
+			int straightOrBuffered = this.QuoteQueue_onlyWhenBacktesting.PushStraightOrBuffered(quoteSernoEnrichedWithUnboundStreamingBar);
+			if (this.QuoteQueue_onlyWhenBacktesting.HasSeparatePushingThread) {
 				int pushedBuffered = straightOrBuffered;
 			} else {
 				int pushedStraight = straightOrBuffered;
@@ -452,13 +453,13 @@ namespace Sq1.Core.Streaming {
 					addedFirstBacktester = true;
 				}
 			}
-			if (this.QuotePump is QuoteQueuePerChannel && backtesterAdding is Livesimulator) {
+			if (this.QuoteQueue_onlyWhenBacktesting is QuoteQueuePerChannel && backtesterAdding is Livesimulator) {
 				string msg = "AVOIDED_UPSTACK NOPROB__YOU_SUBSCRIBED_LIVESIM_BARS_IN_SINGLE_THREADED_QUEUE SimulationPreBarsSubstitute_overrideable()<=Livesimulator.cs:105"
 					+ "NO_NEED_TO_PAUSE_COMPETITORS NO_COMPETITORS_FOR_LIVESIM_BAR_EVENTS";
 				//Assembler.PopupException(msg, null, false);
 				//return;
 			}
-			if (this.QuotePump.Paused == true) {
+			if (this.QuoteQueue_onlyWhenBacktesting.Paused == true) {
 				if (addedFirstBacktester) {
 					string msg = "WE_ARE_ON_APP_RESTART_RIGHT??? ALL_PUMPS_ARE_BORN_PAUSED  backtesterAdding=[" + backtesterAdding + "]";
 				} else {
@@ -467,18 +468,18 @@ namespace Sq1.Core.Streaming {
 					//return;
 				}
 			} else {
-				this.QuotePump.PusherPause();
+				this.QuoteQueue_onlyWhenBacktesting.PusherPause();
 			}
 		}
 		public void PumpResume_removeBacktesterFinishedScript_eachQuote(Backtester backtesterRemoving) {
-			if (this.QuotePump is QuoteQueuePerChannel && backtesterRemoving is Livesimulator) {
+			if (this.QuoteQueue_onlyWhenBacktesting is QuoteQueuePerChannel && backtesterRemoving is Livesimulator) {
 				string msg = "AVOIDED_UPSTACK NOPROB__YOU_SUBSCRIBED_LIVESIM_BARS_IN_SINGLE_THREADED_QUEUE SimulationPreBarsSubstitute_overrideable()<=Livesimulator.cs:105"
 					+ "NO_NEED_TO_PAUSE_COMPETITORS NO_COMPETITORS_FOR_LIVESIM_BAR_EVENTS";
 				//Assembler.PopupException(msg, null, false);
 				//return;
 			}
 
-			if (this.QuotePump.Paused == false) {
+			if (this.QuoteQueue_onlyWhenBacktesting.Paused == false) {
 				string msg = "YOU_RUINED_WHOLE_IDEA_OF_DISTRIBUTOR_CHANNEL_TO_AUTORESUME_ITS_OWN_PUMP backtesterRemoving=[" + backtesterRemoving + "]";
 				Assembler.PopupException(msg);
 				return;
@@ -497,7 +498,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.QuotePump.PusherUnpause();
+			this.QuoteQueue_onlyWhenBacktesting.PusherUnpause();
 		}
 
 		internal SymbolScaleDistributionChannel CloneFullyFunctional_withNewDictioniariesAndLists_toPossiblyRemoveMatchingConsumers() {
@@ -509,7 +510,7 @@ namespace Sq1.Core.Streaming {
 			ret.ConsumersQuote							= new List<StreamingConsumer>(this.ConsumersQuote);
 			ret.ConsumersBar							= new List<StreamingConsumer>(this.ConsumersBar);
 			ret.backtestersRunningCausingPumpingPause	= new List<Backtester>(this.backtestersRunningCausingPumpingPause);
-			ret.QuotePump								= this.QuotePump;
+			ret.QuoteQueue_onlyWhenBacktesting								= this.QuoteQueue_onlyWhenBacktesting;
 			return ret;
 		}
 	}
