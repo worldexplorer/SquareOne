@@ -35,7 +35,8 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		public QuikStreamingLivesim() : base(true) {
 			base.Name = "QuikStreamingLivesim";
 			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Streaming.Livesim.Properties.Resources.imgQuikStreamingLivesim;
-			this.DdePokerShouldSyncWaitForDdeServerToReceiveMessage_falseToAvoidDeadlocks = false;
+			// true is preferred; true/false both are not causing a deadlock after QuotePumpPerChannel turns HasQuote=false after pause/unpause (last commit)
+			this.DdePokerShouldSyncWaitForDdeServerToReceiveMessage_falseToAvoidDeadlocks = true;
 
 			//NO_DESERIALIZATION_WILL_THROW_YOULL_NULLIFY_ME_IN_UpstreamConnect YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
 			//this.StreamingDataSnapshot = null;
