@@ -173,7 +173,7 @@ namespace Sq1.Core.Streaming {
 			double price = 0;
 			oss = OrderSpreadSide.ERROR;
 
-			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoNullUnsafe(symbol);
+			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoNullUnsafe(symbol);
 			MarketOrderAs spreadSide;
 			if (forceCrossMarket) {
 				spreadSide = MarketOrderAs.LimitCrossMarket;
@@ -245,7 +245,7 @@ namespace Sq1.Core.Streaming {
 				string msg = "NEVER_HAPPENED_SO_FAR PRICE_MUST_BE_POSITIVE_NOT_NAN";
 				Debugger.Break();
 			}
-			symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(symbol);
+			symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(symbol);
 			//v2
 			price = symbolInfo.AlignAlertToPriceLevelSimplified(price, direction, MarketLimitStop.Market);
 

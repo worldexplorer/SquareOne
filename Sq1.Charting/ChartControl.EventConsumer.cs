@@ -207,7 +207,7 @@ namespace Sq1.Charting {
 			this.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 
-		void repositoryJsonDataSource_OnSymbolRemoved_clearChart(object sender, DataSourceSymbolEventArgs e) {
+		void repositoryJsonDataSources_OnSymbolRemoved_clearChart(object sender, DataSourceSymbolEventArgs e) {
 			string msig = " //repositoryJsonDataSource_OnSymbolRemoved_clearChart(" + e.Symbol + ") chart[" + this.ToString() + "]";
 			if (this.Bars.DataSource != e.DataSource) {
 				string msg = "IGNORING_DELETION_OTHER_DATASOURCE_NOT_IM_ACTUALLY_DISPLAYING"

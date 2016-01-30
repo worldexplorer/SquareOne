@@ -4,7 +4,7 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Repositories {
 	// the hackiest class in the whole solution :(
-	public partial class RepositoryJsonDataSource {
+	public partial class RepositoryJsonDataSources {
 		public event EventHandler<DataSourceSymbolEventArgs> OnSymbolAdded;
 		public event EventHandler<DataSourceSymbolRenamedEventArgs> OnSymbolRenamed;
 		public event EventHandler<DataSourceSymbolEventArgs> OnSymbolCanBeRemoved;

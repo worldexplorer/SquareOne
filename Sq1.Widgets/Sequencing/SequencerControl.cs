@@ -190,7 +190,7 @@ namespace Sq1.Widgets.Sequencing {
 					this.backtestsLocalEasierToSync.FileName = symbolScaleRange;
 					this.backtestsLocalEasierToSync.CheckPositionsCountMustIncreaseOnly();
 
-					RepositorySerializerSymbolInfo symbolInfoRep = Assembler.InstanceInitialized.RepositorySymbolInfo;
+					RepositorySerializerSymbolInfos symbolInfoRep = Assembler.InstanceInitialized.RepositorySymbolInfos;
 					SymbolInfo reloadNetWhenSymbolInfoChanged = symbolInfoRep.FindSymbolInfoNullUnsafe(this.backtestsLocalEasierToSync.Symbol);
 					if (reloadNetWhenSymbolInfoChanged != null) {
 						reloadNetWhenSymbolInfoChanged.PriceDecimalsChanged -= new EventHandler<EventArgs>(reloadNetWhenSymbolInfoChanged_PriceDecimalsChanged);

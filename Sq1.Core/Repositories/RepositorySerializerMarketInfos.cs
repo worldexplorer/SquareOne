@@ -8,7 +8,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Serializers;
 
 namespace Sq1.Core.Repositories {
-	public class RepositorySerializerMarketInfo : Serializer<Dictionary<string, MarketInfo>> {
+	public class RepositorySerializerMarketInfos : Serializer<Dictionary<string, MarketInfo>> {
 		public static string MarketDefaultName = "FORTS";
 		const string fnameTimeZonesCsv = "MicrosoftTimeZones.csv";
 		public string AbsFilenameTimeZonesCsv { get { return base.RootPath + Path.DirectorySeparatorChar + fnameTimeZonesCsv; } }
@@ -16,7 +16,7 @@ namespace Sq1.Core.Repositories {
 
 		public	Dictionary<string, MarketInfo>	MarketsByName { get { return base.EntityDeserialized; } }
 
-		public RepositorySerializerMarketInfo() : base() {}
+		public RepositorySerializerMarketInfos() : base() {}
 		public new bool Initialize(string rootPath, string relFname,
 					string subfolder = "Workspaces", string workspaceName = "Default",
 					bool createNonExistingPath = true, bool createNonExistingFile = true) {
@@ -164,12 +164,12 @@ namespace Sq1.Core.Repositories {
 		}
 		public MarketInfo MarketDefault {
 			get {
-				if (base.EntityDeserialized.ContainsKey(RepositorySerializerMarketInfo.MarketDefaultName) == false) {
-					throw new Exception("please add Market.Name=[" + RepositorySerializerMarketInfo.MarketDefaultName + "]"
+				if (base.EntityDeserialized.ContainsKey(RepositorySerializerMarketInfos.MarketDefaultName) == false) {
+					throw new Exception("please add Market.Name=[" + RepositorySerializerMarketInfos.MarketDefaultName + "]"
 						+ " into your [" + Path.Combine(base.RootPath, base.FnameRelpath) + "]"
 						+ " for MarketInfoRepository.MarketDefault");
 				}
-				return EntityDeserialized[RepositorySerializerMarketInfo.MarketDefaultName];
+				return EntityDeserialized[RepositorySerializerMarketInfos.MarketDefaultName];
 			}
 		}
 		public static List<DayOfWeek> ParseDaysOfWeekCsv(string csv, string separator) {

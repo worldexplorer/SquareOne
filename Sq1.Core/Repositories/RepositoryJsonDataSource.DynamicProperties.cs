@@ -7,7 +7,7 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Repositories {
 	// the hackiest class in the whole solution :(
-	public partial class RepositoryJsonDataSource {
+	public partial class RepositoryJsonDataSources {
 		public List<Account> AccountsFromUnderlyingBrokerAdapters { get {
 				List<Account> ret = new List<Account>();
 				foreach (DataSource ds in base.ItemsAsList) {

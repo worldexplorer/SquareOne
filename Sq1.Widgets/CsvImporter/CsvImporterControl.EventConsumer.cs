@@ -152,7 +152,7 @@ namespace Sq1.Widgets.CsvImporter {
 				}
 				bool overwrote = true;
 				if (this.targetDataSource.Symbols.Contains(this.BarsParsed.Symbol) == false) {
-					Assembler.InstanceInitialized.RepositoryJsonDataSource.SymbolAdd(this.targetDataSource, this.BarsParsed.Symbol);
+					Assembler.InstanceInitialized.RepositoryJsonDataSources.SymbolAdd(this.targetDataSource, this.BarsParsed.Symbol);
 					overwrote = false;
 				}
 				string millisElapsed;

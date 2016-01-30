@@ -8,7 +8,7 @@ namespace Sq1.Gui.Singletons {
 			InitializeComponent();
 		}
 
-		public void Initialize(RepositoryJsonDataSource dataSourceRepository) {
+		public void Initialize(RepositoryJsonDataSources dataSourceRepository) {
 			DataSourcesForm.Instance.DataSourcesTreeControl.Initialize(dataSourceRepository);
 		}
 	}

@@ -18,6 +18,7 @@ using Sq1.Core.Support;
 
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
+using Sq1.Widgets.DataSourceEditor;
 
 namespace Sq1.Gui {
 	public partial class MainForm : Form {
@@ -64,19 +65,21 @@ namespace Sq1.Gui {
 			try {
 				Assembler.InstanceUninitialized.Initialize(this as IStatusReporter);
 				this.GuiDataSnapshotSerializer = new Serializer<GuiDataSnapshot>();
+
+				Assembler assemblerInstanceInitialized = Assembler.InstanceInitialized;
+				DataSourceEditorControl dataSourceEditorControlInstance = DataSourceEditorForm.Instance.DataSourceEditorControl;
+				dataSourceEditorControlInstance.InitializeContext(
+					assemblerInstanceInitialized.RepositoryDllStreamingAdapters	.CloneableInstanceByClassName,
+					assemblerInstanceInitialized.RepositoryDllBrokerAdapters	.CloneableInstanceByClassName,
+					assemblerInstanceInitialized.RepositoryJsonDataSources,
+					assemblerInstanceInitialized.RepositoryMarketInfos,
+					assemblerInstanceInitialized.OrderProcessor);
 	
-				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeContext(
-					Assembler.InstanceInitialized.RepositoryDllStreamingAdapter	.CloneableInstanceByClassName,
-					Assembler.InstanceInitialized.RepositoryDllBrokerAdapter	.CloneableInstanceByClassName,
-					Assembler.InstanceInitialized.RepositoryJsonDataSource,
-					Assembler.InstanceInitialized.RepositoryMarketInfo,
-					Assembler.InstanceInitialized.OrderProcessor);
-	
-				DataSourcesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
-				StrategiesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
+				DataSourcesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSources);
+				StrategiesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategies);
 				ExecutionForm				.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor);
-				CsvImporterForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
-				SymbolInfoEditorForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositorySymbolInfo, Assembler.InstanceInitialized.RepositoryJsonDataSource);
+				CsvImporterForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSources);
+				SymbolInfoEditorForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositorySymbolInfos, Assembler.InstanceInitialized.RepositoryJsonDataSources);
 
 				this.WorkspacesManager = new MainFormWorkspacesManager(this, Assembler.InstanceInitialized.WorkspacesRepository);
 			} catch (Exception ex) {
@@ -418,8 +421,8 @@ namespace Sq1.Gui {
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnSymbolInfoEditorClicked		+= this.MainFormEventManager.DataSourcesTree_OnSymbolInfoEditorClicked;
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceEditClicked			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceEditClicked;
 			//DataSourcesForm.Instance.DataSourcesTree.OnDataSourceDeleteClicked			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceDeletedClicked;
-			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnItemCanBeRemoved		+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSource_OnDataSourceCanBeRemoved);
-			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnItemRemovedDone		+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSource_OnDataSourceRemoved);
+			Assembler.InstanceInitialized.RepositoryJsonDataSources.OnItemCanBeRemoved		+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSources_OnDataSourceCanBeRemoved);
+			Assembler.InstanceInitialized.RepositoryJsonDataSources.OnItemRemovedDone		+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSources_OnDataSourceRemoved);
 			//DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceNewClicked		+= this.MainFormEventManager.DataSourcesTree_OnDataSourceNewClicked;
 
 			// TYPE_MANGLING_INSIDE_WARNING NOTICE_THAT_BOTH_PARAMETER_SCRIPT_AND_INDICATOR_VALUE_CHANGED_EVENTS_ARE_HANDLED_BY_SINGLE_HANDLER

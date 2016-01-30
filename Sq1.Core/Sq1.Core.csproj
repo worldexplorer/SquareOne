@@ -112,10 +112,19 @@
     <Compile Include="Livesim\LivesimBroker.Paranoid.cs">
       <DependentUpon>LivesimBroker.cs</DependentUpon>
     </Compile>
+    <Compile Include="Livesim\LivesimBrokerEditorEmpty.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Livesim\LivesimBrokerSpoiler.cs" />
+    <Compile Include="Livesim\LivesimStreamingEditorEmpty.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Livesim\LivesimStreamingSpoiler.cs" />
     <Compile Include="Livesim\LivesimStreaming.Paranoid.cs">
       <DependentUpon>LivesimStreaming.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repositories\RepositoryDllScanner.ChildrenDebug.cs">
+      <DependentUpon>RepositoryDllScanner.cs</DependentUpon>
     </Compile>
     <Compile Include="Sequencing\SequencerSnapshot.cs" />
     <Compile Include="Correlation\KPIsAveraged.cs" />
@@ -239,25 +248,25 @@
     <Compile Include="Repositories\RepositoryBarsFile.cs" />
     <Compile Include="Repositories\RepositoryBarsSameScaleInterval.cs" />
     <Compile Include="Repositories\RepositoryJsonDataSource.DynamicProperties.cs">
-      <DependentUpon>RepositoryJsonDataSource.cs</DependentUpon>
+      <DependentUpon>RepositoryJsonDataSources.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\RepositoryJsonDataSource.EventGenerator.cs">
-      <DependentUpon>RepositoryJsonDataSource.cs</DependentUpon>
+      <DependentUpon>RepositoryJsonDataSources.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\RepositoryJsonsInFolder.cs" />
     <Compile Include="Repositories\RepositoryJsonsInFolder.EventGenerator.cs">
       <DependentUpon>RepositoryJsonsInFolder.cs</DependentUpon>
     </Compile>
-    <Compile Include="Repositories\RepositorySerializerMarketInfo.cs" />
-    <Compile Include="Repositories\RepositorySerializerSymbolInfo.cs" />
-    <Compile Include="Repositories\RepositoryDllBrokerProvider.cs" />
-    <Compile Include="Repositories\RepositoryDllJsonStrategy.cs" />
+    <Compile Include="Repositories\RepositorySerializerMarketInfos.cs" />
+    <Compile Include="Repositories\RepositorySerializerSymbolInfos.cs" />
+    <Compile Include="Repositories\RepositoryDllBrokerAdapters.cs" />
+    <Compile Include="Repositories\RepositoryDllJsonStrategies.cs" />
     <Compile Include="Repositories\RepositoryDllReporters.cs" />
     <Compile Include="Repositories\RepositoryDllScanner.cs" />
-    <Compile Include="Repositories\RepositoryDllStreamingProvider.cs" />
+    <Compile Include="Repositories\RepositoryDllStreamingAdapters.cs" />
     <Compile Include="Repositories\RepositoryFoldersNoJson.cs" />
-    <Compile Include="Repositories\RepositoryJsonDataSource.cs" />
-    <Compile Include="Repositories\RepositoryDllScript.cs" />
+    <Compile Include="Repositories\RepositoryJsonDataSources.cs" />
+    <Compile Include="Repositories\RepositoryDllScripts.cs" />
     <Compile Include="Serializers\SerializerLogrotate.cs" />
     <Compile Include="Serializers\SerializerLogrotatePeriodic.cs" />
     <Compile Include="Serializers\Serializer.cs" />

@@ -14,13 +14,13 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core {
 	public class Assembler {
-		public	RepositorySerializerSymbolInfo			RepositorySymbolInfo;
-		public	RepositorySerializerMarketInfo			RepositoryMarketInfo;
-		public	RepositoryDllJsonStrategy				RepositoryDllJsonStrategy;
-		public	RepositoryJsonDataSource				RepositoryJsonDataSource;
+		public	RepositorySerializerSymbolInfos			RepositorySymbolInfos;
+		public	RepositorySerializerMarketInfos			RepositoryMarketInfos;
+		public	RepositoryDllJsonStrategies				RepositoryDllJsonStrategies;
+		public	RepositoryJsonDataSources				RepositoryJsonDataSources;
 
-		public	RepositoryDllStreamingAdapter			RepositoryDllStreamingAdapter;
-		public	RepositoryDllBrokerAdapter				RepositoryDllBrokerAdapter;
+		public	RepositoryDllStreamingAdapters			RepositoryDllStreamingAdapters;
+		public	RepositoryDllBrokerAdapters				RepositoryDllBrokerAdapters;
 		public	RepositoryDllReporters					RepositoryDllReporters;
 
 		public	RepositoryFoldersNoJson					WorkspacesRepository;
@@ -74,10 +74,10 @@ namespace Sq1.Core {
 			} }
 		public	List<Exception>							ExceptionsWhileInstantiating { get {
 				List<Exception> ret = new List<Exception>();
-				ret.AddRange(this.RepositoryDllStreamingAdapter.ExceptionsWhileScanning);
-				ret.AddRange(this.RepositoryDllBrokerAdapter.ExceptionsWhileScanning);
+				ret.AddRange(this.RepositoryDllStreamingAdapters.ExceptionsWhileScanning);
+				ret.AddRange(this.RepositoryDllBrokerAdapters.ExceptionsWhileScanning);
 				ret.AddRange(this.RepositoryDllReporters.ExceptionsWhileScanning);
-				ret.AddRange(this.RepositoryDllJsonStrategy.ExceptionsWhileInstantiating);
+				ret.AddRange(this.RepositoryDllJsonStrategies.ExceptionsWhileInstantiating);
 				return ret;
 			} }
 #if DEBUG
@@ -124,13 +124,13 @@ namespace Sq1.Core {
 		//    } }
 		
 		public Assembler() {
-			RepositorySymbolInfo					= new RepositorySerializerSymbolInfo();
-			RepositoryMarketInfo					= new RepositorySerializerMarketInfo();
-			RepositoryDllJsonStrategy				= new RepositoryDllJsonStrategy();
-			RepositoryJsonDataSource				= new RepositoryJsonDataSource();
+			RepositorySymbolInfos					= new RepositorySerializerSymbolInfos();
+			RepositoryMarketInfos					= new RepositorySerializerMarketInfos();
+			RepositoryDllJsonStrategies				= new RepositoryDllJsonStrategies();
+			RepositoryJsonDataSources				= new RepositoryJsonDataSources();
 
-			RepositoryDllStreamingAdapter			= new RepositoryDllStreamingAdapter();
-			RepositoryDllBrokerAdapter				= new RepositoryDllBrokerAdapter();
+			RepositoryDllStreamingAdapters			= new RepositoryDllStreamingAdapters();
+			RepositoryDllBrokerAdapters				= new RepositoryDllBrokerAdapters();
 			RepositoryDllReporters					= new RepositoryDllReporters();
 			
 			WorkspacesRepository					= new RepositoryFoldersNoJson();
@@ -158,19 +158,19 @@ namespace Sq1.Core {
 			this.StatusReporter = mainForm;
 			if (usedOnlyToPopupExceptions_NPEunsafe) return Assembler.InstanceInitialized;
 			
-			bool createdNewFile = this.RepositorySymbolInfo.Initialize(this.AppDataPath, "SymbolInfo.json", "", null);
+			bool createdNewFile = this.RepositorySymbolInfos.Initialize(this.AppDataPath, "SymbolInfo.json", "", null);
 
 			//v1  this.RepositorySymbolInfo		.DeserializeAndSort();
 			//v2 SORTED_IN_SymbolInfoEditorControl()_BY_this.toolStripItemComboBox1.ComboBox.Sorted=true;
-			this.RepositorySymbolInfo			.Deserialize();
+			this.RepositorySymbolInfos			.Deserialize();
 			
-			createdNewFile = this.RepositoryMarketInfo.Initialize(this.AppDataPath, "MarketInfo.json", "", null);
-			this.RepositoryMarketInfo			.Deserialize();
+			createdNewFile = this.RepositoryMarketInfos.Initialize(this.AppDataPath, "MarketInfo.json", "", null);
+			this.RepositoryMarketInfos			.Deserialize();
 			
-			this.RepositoryDllJsonStrategy		.Initialize(this.AppDataPath, this.AppStartupPath);
+			this.RepositoryDllJsonStrategies		.Initialize(this.AppDataPath, this.AppStartupPath);
 
-			this.RepositoryDllStreamingAdapter	.InitializeAndScan(this.AppStartupPath);
-			this.RepositoryDllBrokerAdapter		.InitializeAndScan(this.AppStartupPath);
+			this.RepositoryDllStreamingAdapters	.InitializeAndScan(this.AppStartupPath);
+			this.RepositoryDllBrokerAdapters		.InitializeAndScan(this.AppStartupPath);
 			this.RepositoryDllReporters			.InitializeAndScan(this.AppStartupPath);
 			
 			this.WorkspacesRepository			.Initialize(this.AppDataPath, "Workspaces");
@@ -181,8 +181,8 @@ namespace Sq1.Core {
 			//v1 this.RepositoryJsonDataSource	.Initialize(this.AppDataPath);
 			//v1 this.RepositoryJsonDataSource	.DataSourcesDeserialize(this.MarketInfoRepository, this.OrderProcessor, this.StatusReporter);
 			
-			this.RepositoryJsonDataSource		.Initialize(this.AppDataPath, "DataSources", this.RepositoryMarketInfo, this.OrderProcessor);
-			this.RepositoryJsonDataSource		.DeserializeJsonsInFolder();
+			this.RepositoryJsonDataSources		.Initialize(this.AppDataPath, "DataSources", this.RepositoryMarketInfos, this.OrderProcessor);
+			this.RepositoryJsonDataSources		.DeserializeJsonsInFolder();
 			//SNAP_IS_NOT_SERIALIZED_ANYMORE this.RepositoryJsonDataSource		.ReattachDataSnaphotsToOwnersStreamingAdapters();
 			
 			createdNewFile = this.AssemblerDataSnapshotSerializer.Initialize(this.AppDataPath, "AssemblerDataSnapshot.json", "", null);

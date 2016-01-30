@@ -17,7 +17,7 @@ namespace Sq1.Widgets.CsvImporter {
 		string btnImportOriginalMessage;
 		CsvImporterDataSnapshot dataSnapshot;
 		Serializer<CsvImporterDataSnapshot> dataSnapshotSerializer;
-		RepositoryJsonDataSource DataSourceRepository;
+		RepositoryJsonDataSources DataSourceRepository;
 
 		private string targetSymbolClicked;
 		private DataSource targetDataSource;
@@ -32,7 +32,7 @@ namespace Sq1.Widgets.CsvImporter {
 			link.LinkData = "http://www.finam.ru/analysis/profile0000300007/";
 			this.lnkDownload.Links.Add(link);				
 		}
-		public void Initialize(RepositoryJsonDataSource dataSourceRepository) {
+		public void Initialize(RepositoryJsonDataSources dataSourceRepository) {
 			this.DataSourceRepository = dataSourceRepository;
 			bool createdNewFile = this.dataSnapshotSerializer.Initialize(this.DataSourceRepository.RootPath,
 												   "Sq1.Widgets.CsvImporter.CsvImporterDataSnapshot.json", "Workspaces",

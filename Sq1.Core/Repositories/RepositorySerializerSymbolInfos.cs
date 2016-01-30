@@ -8,8 +8,8 @@ using Sq1.Core.Serializers;
 using Newtonsoft.Json;
 
 namespace Sq1.Core.Repositories {
-	public class RepositorySerializerSymbolInfo : Serializer<SymbolInfoList> {
-		public RepositorySerializerSymbolInfo() : base() {}
+	public class RepositorySerializerSymbolInfos : Serializer<SymbolInfoList> {
+		public RepositorySerializerSymbolInfos() : base() {}
 
 		public SymbolInfoList SymbolInfos { get { return base.EntityDeserialized; } }
 

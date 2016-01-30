@@ -15,7 +15,7 @@ using Sq1.Core.Charting;
 
 namespace Sq1.Widgets.DataSourcesTree {
 	public partial class DataSourcesTreeControl : UserControl {
-				RepositoryJsonDataSource				dataSourceRepository;
+				RepositoryJsonDataSources				dataSourceRepository;
 				Dictionary<Type, int>					imageIndexByStreamingAdapterType = new Dictionary<Type, int>();
 
 		public	DataSource								DataSourceSelected	{ get; private set; }
@@ -35,7 +35,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 
 		public List<ToolStripMenuItem> DataSourcesAsMniList { get {
 			List<ToolStripMenuItem> ret = new List<ToolStripMenuItem>();
-			foreach (DataSource ds in Assembler.InstanceInitialized.RepositoryJsonDataSource.ItemsAsList) {
+			foreach (DataSource ds in Assembler.InstanceInitialized.RepositoryJsonDataSources.ItemsAsList) {
 				ToolStripMenuItem mni = new ToolStripMenuItem();
 				mni.Text = ds.Name;
 				mni.Tag = ds;
@@ -55,7 +55,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = true;
 			this.mniSymbolCopyToAnotherDataSource.DropDownItems.Add("CAUSING_SUBMENU_TRIANGLE_TO_APPEAR__WILL_BE_CLEARED_ON_OPENING");
 		}
-		public void Initialize(RepositoryJsonDataSource dataSourceRepository) {
+		public void Initialize(RepositoryJsonDataSources dataSourceRepository) {
 			this.dataSourceRepository = dataSourceRepository;
 
 			try {

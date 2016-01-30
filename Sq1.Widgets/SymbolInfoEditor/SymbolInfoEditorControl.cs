@@ -11,8 +11,8 @@ namespace Sq1.Widgets.SymbolEditor {
 		const string					noSymbolSelected_symbol = "SELECT_SYMBOL";
 		SymbolInfo						noSymbolSelected_symbolInfo;
 
-		RepositorySerializerSymbolInfo	repositorySerializerSymbolInfo;
-		RepositoryJsonDataSource		repositoryJsonDataSource;
+		RepositorySerializerSymbolInfos	repositorySerializerSymbolInfo;
+		RepositoryJsonDataSources		repositoryJsonDataSource;
 		SymbolInfo						symbolInfoSelectedNullUnsafe { get { return this.tsiCbxSymbols.ComboBox.SelectedItem as SymbolInfo; } }
 		bool							rebuildingDropdown;
 		bool							openDropDownAfterSelected;
@@ -30,7 +30,7 @@ namespace Sq1.Widgets.SymbolEditor {
 			this.noSymbolSelected_symbolInfo = new SymbolInfo();
 			this.noSymbolSelected_symbolInfo.Symbol = noSymbolSelected_symbol;
 		}
-		public void Initialize(RepositorySerializerSymbolInfo repositorySerializerSymbolInfo, RepositoryJsonDataSource repositoryJsonDataSource) {
+		public void Initialize(RepositorySerializerSymbolInfos repositorySerializerSymbolInfo, RepositoryJsonDataSources repositoryJsonDataSource) {
 			this.repositorySerializerSymbolInfo = repositorySerializerSymbolInfo;
 			this.repositoryJsonDataSource = repositoryJsonDataSource;
 			this.rebuildDropdown();

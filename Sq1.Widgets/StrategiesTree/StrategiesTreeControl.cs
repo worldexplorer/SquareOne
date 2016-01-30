@@ -11,7 +11,7 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Widgets.StrategiesTree {
 	public partial class StrategiesTreeControl {
-		RepositoryDllJsonStrategy strategyRepository;
+		RepositoryDllJsonStrategies strategyRepository;
 
 		public string FolderSelected;
 		public Strategy StrategySelected;
@@ -29,7 +29,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.tree.Collapsed += new EventHandler<TreeBranchCollapsedEventArgs>(tree_Collapsed);
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = true;
 		}
-		public void Initialize(RepositoryDllJsonStrategy strategyRepository) {
+		public void Initialize(RepositoryDllJsonStrategies strategyRepository) {
 			this.strategyRepository = strategyRepository;
 			
 			bool createdNewFile = this.dataSnapshotSerializer.Initialize(this.strategyRepository.RootPath,
@@ -106,7 +106,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		}
 		List<ToolStripItem> CreateMnisForFolders(string excludeStrategysOwnFolder) {
 			var ret = new List<ToolStripItem>();
-			foreach (string folderPurelyJson in Assembler.InstanceInitialized.RepositoryDllJsonStrategy.FoldersPurelyJson) {
+			foreach (string folderPurelyJson in Assembler.InstanceInitialized.RepositoryDllJsonStrategies.FoldersPurelyJson) {
 				var mni = new ToolStripMenuItem(folderPurelyJson, null, this.mniStrategyMoveToAnotherFolder_Click, "mni" + folderPurelyJson);
 				if (string.IsNullOrEmpty(excludeStrategysOwnFolder) == false && excludeStrategysOwnFolder == folderPurelyJson) {
 					mni.Enabled = false;
@@ -127,7 +127,7 @@ namespace Sq1.Widgets.StrategiesTree {
 				return;
 			}
 			
-			if (Assembler.InstanceInitialized.RepositoryDllJsonStrategy.AllStrategiesAvailable.Contains(strategy) == false) {
+			if (Assembler.InstanceInitialized.RepositoryDllJsonStrategies.AllStrategiesAvailable.Contains(strategy) == false) {
 				string msg = "you may have removed {strategy[" + strategy+ "]"
 					+ "from tree before application restart"
 					+ ", but an open chart with this strategy became Active and requests SelectStrategy()";

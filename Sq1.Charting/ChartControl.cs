@@ -293,8 +293,8 @@ namespace Sq1.Charting {
 
 			if (Assembler.IsInitialized == false) return;	// ChartForm: avoiding Designer's complains about Assembler.Initialized==false
 			if (this.Bars.DataSource is LivesimDataSource) return;
-			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRemovedDone -= new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolRemoved_clearChart);
-			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRemovedDone += new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolRemoved_clearChart);
+			Assembler.InstanceInitialized.RepositoryJsonDataSources.OnSymbolRemovedDone -= new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSources_OnSymbolRemoved_clearChart);
+			Assembler.InstanceInitialized.RepositoryJsonDataSources.OnSymbolRemovedDone += new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSources_OnSymbolRemoved_clearChart);
 		}
 		void barEventsDetach() {
 			if (this.Bars == null) {

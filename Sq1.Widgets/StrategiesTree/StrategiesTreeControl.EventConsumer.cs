@@ -45,7 +45,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			if (mayBeFolder != null) {
 				bool folderWasSelectedOrExpandedOrCollapsed = true;
 				// it's more expensive to provide notification sync from Repository to here, than just get the list 
-				List<string> folderPurelyJson = Assembler.InstanceInitialized.RepositoryDllJsonStrategy.FoldersPurelyJson;
+				List<string> folderPurelyJson = Assembler.InstanceInitialized.RepositoryDllJsonStrategies.FoldersPurelyJson;
 				folderWasSelectedOrExpandedOrCollapsed = folderPurelyJson.Contains(mayBeFolder);
 
 				if (folderWasSelectedOrExpandedOrCollapsed) {
