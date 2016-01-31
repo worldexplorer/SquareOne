@@ -8,19 +8,33 @@
   ],
   "ScaleInterval": {
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-    "Scale": 3,
     "Interval": 5,
+    "Scale": 3,
+    "AsString_cached": "5-Minute",
     "IsIntraday": true,
     "AsTimeSpanInSeconds": 300,
-    "AsTimeSpan": "00:05:00"
+    "AsTimeSpan": "00:05:00",
+    "AsStringShortest_cached": "5m",
+    "AsStringShort_cached": "5min"
   },
-  "StaticProvider": null,
-  "StreamingAdapter": null,
-  "BrokerAdapter": null,
+  "StreamingAdapter": {
+    "$type": "Sq1.Core.Livesim.LivesimStreamingDefault, Sq1.Core",
+    "Level2RefreshRateMs": 200,
+    "UpstreamConnected": false
+  },
+  "BrokerAdapter": {
+    "$type": "Sq1.Core.Livesim.LivesimBrokerDefault, Sq1.Core",
+    "Account": {
+      "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
+      "AccountNumber": "LIVESIM_ACCOUNT",
+      "CashAvailable": -1000.0,
+      "AccountValueTimeStamp": "0001-01-01T00:00:00"
+    },
+    "UpstreamConnected": false
+  },
   "MarketName": "MOCK",
   "Name": "STATIC",
-  "StaticProviderName": "STATIC_PROVIDER_NOT_INITIALIZED",
-  "StreamingAdapterName": "STREAMING_PROVIDER_NOT_INITIALIZED",
-  "BrokerAdapterName": "BROKER_PROVIDER_NOT_INITIALIZED",
-  "DataSourceAbspath": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\STATIC"
+  "StreamingAdapterName": "LivesimStreamingDefault",
+  "BrokerAdapterName": "LivesimBrokerDefault",
+  "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\STATIC"
 }

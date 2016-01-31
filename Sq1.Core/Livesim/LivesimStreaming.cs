@@ -14,7 +14,7 @@ using Sq1.Core.Streaming;
 
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
-	public partial class LivesimStreaming : BacktestStreaming, IDisposable {
+	public abstract partial class LivesimStreaming : BacktestStreaming, IDisposable {
 		// without [JsonIgnore] Livesim children will have these properties in JSON
 		[JsonIgnore]	public		ManualResetEvent			UnpausedMre					{ get; private set; }
 		//[JsonIgnore]				ChartShadow					chartShadow_notUsed;
@@ -30,16 +30,17 @@ namespace Sq1.Core.Livesim {
 		[JsonIgnore]	protected	LivesimStreamingSpoiler		LivesimStreamingSpoiler;
 
 		[JsonIgnore]	public		bool						IsDisposed					{ get; private set; }
-		[JsonIgnore]	public		StreamingAdapter			StreamingOriginal	{ get; private set; }
+		[JsonIgnore]	public		StreamingAdapter			StreamingOriginal			{ get; private set; }
 
-		protected LivesimStreaming() : base() {
-		    string msg = "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
-		        + "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_STREAMING_ADAPTERS_FOUND"
-		        + " example:QuikLivesimStreaming()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
-			base.Name = "LivesimStreaming-child_ACTIVATOR_DLL-SCANNED";
-		}
-		public LivesimStreaming(bool IamNotAdummy) : base() {
-			base.Name						= "LivesimStreaming";
+		//protected LivesimStreaming() : base("DLL_SCANNER_INSTANTIATES_DUMMY_STREAMING") {
+		//    string msg = "IM_HERE_WHEN_DLL_SCANNER_INSTANTIATES_DUMMY_STREAMING"
+		//        //+ "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
+		//        + "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_STREAMING_ADAPTERS_FOUND"
+		//        + " example:QuikLivesimStreaming()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
+		//    base.Name = "LivesimStreaming-child_ACTIVATOR_DLL-SCANNED";
+		//}
+		public LivesimStreaming(string reasonToExist) : base(reasonToExist) {
+			base.Name						= "LivesimStreaming-NOT_ATTACHED_TO_DATASOURCE_INVOKE-InitializeDataSource_inverse()";
 			base.StreamingSolidifier		= null;
 			base.QuotePumpSeparatePushingThreadEnabled = false;
 			this.UnpausedMre				= new ManualResetEvent(true);
@@ -61,6 +62,12 @@ namespace Sq1.Core.Livesim {
 			} else {
 				string msg = "WHERE_AM_I?";
 			}
+		}
+		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
+			LivesimStreamingEditorEmpty emptyEditor = new LivesimStreamingEditorEmpty();
+			emptyEditor.Initialize(this, dataSourceEditor);
+			this.StreamingEditorInstance = emptyEditor;
+			return emptyEditor;
 		}
 
 		// invoked after LivesimFormShow(), but must have meaning "Executor.Bars changed"...
@@ -105,8 +112,9 @@ namespace Sq1.Core.Livesim {
 		}
 
 		#region DISABLING_SOLIDIFIER__NOT_REALLY_USED_WHEN_STREAMING_ADAPTER_PROVIDES_ITS_OWN_LIVESIM_STREAMING
-		public override void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {
+		public override void InitializeDataSource_inverse(DataSource dataSource, bool subscribeSolidifier = true) {
 			base.InitializeFromDataSource(dataSource);
+			base.Name						= "LivesimStreaming_IAM_ABSTRACT_ALWAYS_OVERRIDE_IN_CHILDREN";
 			if (subscribeSolidifier) {
 				string msg = "RELAX_IM_NOT_FORWARING_IT_TO_BASE_BUT_I_HANDLE_InitializeDataSource()_IN_LivesimStreaming";
 			}

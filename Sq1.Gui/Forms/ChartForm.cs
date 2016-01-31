@@ -15,13 +15,14 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.DataFeed;
 
+using Sq1.Widgets;
 using Sq1.Widgets.RangeBar;
 using Sq1.Widgets.LabeledTextBox;
 
 using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui.Forms {
-	public partial class ChartForm {
+	public partial class ChartForm : DockContentImproved {
 		public	ChartFormManager	ChartFormManager;
 
 				List<string>		GroupScaleLabeledTextboxes;
@@ -158,7 +159,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			if (quote == null) {
-				this.btnStreamingTriggersScript.Text = this.ChartFormManager.StreamingButtonIdent;
+				this.BtnStreamingTriggersScript.Text = this.ChartFormManager.StreamingButtonIdent;
 				return;
 			}
 			StringBuilder sb = new StringBuilder(this.ChartFormManager.StreamingButtonIdent);
@@ -181,18 +182,20 @@ namespace Sq1.Gui.Forms {
 				sb.Append(" ");
 				sb.Append(new DateTime(timeLeft.Ticks).ToString(format));
 			}
-			this.btnStreamingTriggersScript.Text = sb.ToString();
+			this.BtnStreamingTriggersScript.Text = sb.ToString();
 		}
 		public void PopulateBtnStreamingTriggersScript_afterBarsLoaded() {
 			DataSource ds = this.ChartFormManager.Executor.DataSource_fromBars;
 			if (ds.StreamingAdapter == null) {
-				this.btnStreamingTriggersScript.Text = "DataSource[" + ds + "]:Streaming[" + StreamingAdapter.NO_STREAMING_ADAPTER + "]";
-				this.btnStreamingTriggersScript.Enabled = false;
+				//TOO_LONG_TITLE_MAKES_BUTTON_DISAPPEAR this.BtnStreamingTriggersScript.Text = "DataSource[" + ds + "]:Streaming[" + StreamingAdapter.NO_STREAMING_ADAPTER + "]";
+				this.BtnStreamingTriggersScript.Text = this.ChartFormManager.StreamingButtonIdent;
+
+				//LIVESIM_WILL_USE_IT_DONT_DISABLE this.BtnStreamingTriggersScript.Enabled = false;
 				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT Subscribed: edit DataSource > attach StreamingAdapter";
-				this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = false;
+				//LIVESIM_WILL_USE_IT_DONT_DISABLE this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = false;
 			} else {
-				this.btnStreamingTriggersScript.Enabled = true;
-				this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = true;
+				//LIVESIM_WILL_USE_IT_DONT_DISABLE this.BtnStreamingTriggersScript.Enabled = true;
+				//LIVESIM_WILL_USE_IT_DONT_DISABLE this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = true;
 				//v1 AVOIDING_NPE_quote.IntraBarSerno
 				this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
 				//v2
@@ -208,22 +211,22 @@ namespace Sq1.Gui.Forms {
 			this.populateCtxMniBars_streamingConnectionState_orange();
 		}
 		void populateCtxMniBars_streamingConnectionState_orange() {
-			if (this.ChartFormManager.ContextCurrentChartOrStrategy.DownstreamSubscribed == false) {
-				this.mniSubscribedToStreamingAdapterQuotesBars.Checked = false;
-				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = Color.LightSalmon;
-				this.DdbBars.BackColor = Color.LightSalmon;
-
-				DataSource dataSource = this.ChartFormManager.Executor.DataSource_fromBars;
-				string mniSubscribedText = "NOT Subscribed to [" + dataSource.StreamingAdapterName + "]";
-				mniSubscribedText += dataSource.StreamingAdapter != null ? "[" + dataSource.StreamingAdapter.UpstreamConnectionState + "]" : "[StreamingAdapter_NULL]";
-				this.mniSubscribedToStreamingAdapterQuotesBars.Text = mniSubscribedText;
-			} else {
+			if (this.ChartFormManager.ContextCurrentChartOrStrategy.DownstreamSubscribed) {
 				this.mniSubscribedToStreamingAdapterQuotesBars.Checked = true;
 				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = SystemColors.Control;
 				this.DdbBars.BackColor = SystemColors.Control;
 
 				DataSource dataSource = this.ChartFormManager.Executor.DataSource_fromBars;
 				string mniSubscribedText = "Subscribed to [" + dataSource.StreamingAdapterName + "]";
+				mniSubscribedText += dataSource.StreamingAdapter != null ? "[" + dataSource.StreamingAdapter.UpstreamConnectionState + "]" : "[StreamingAdapter_NULL]";
+				this.mniSubscribedToStreamingAdapterQuotesBars.Text = mniSubscribedText;
+			} else {
+				this.mniSubscribedToStreamingAdapterQuotesBars.Checked = false;
+				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = Color.LightSalmon;
+				this.DdbBars.BackColor = Color.LightSalmon;
+
+				DataSource dataSource = this.ChartFormManager.Executor.DataSource_fromBars;
+				string mniSubscribedText = "NOT Subscribed to [" + dataSource.StreamingAdapterName + "]";
 				mniSubscribedText += dataSource.StreamingAdapter != null ? "[" + dataSource.StreamingAdapter.UpstreamConnectionState + "]" : "[StreamingAdapter_NULL]";
 				this.mniSubscribedToStreamingAdapterQuotesBars.Text = mniSubscribedText;
 			}
@@ -237,7 +240,7 @@ namespace Sq1.Gui.Forms {
 
 			StreamingAdapter streaming = this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter;
 			Bitmap iconCanBeNull = streaming != null ? streaming.Icon : null;
-			this.btnStreamingTriggersScript.Image = iconCanBeNull; 			// NO_I_WANT_ABSENCE_OF_STREAMING_TO_CLEAR_PREVIOUS_BARS_IN_CHART_AFTER_CHANGING_SYMBOL_FOR_CHART if (iconCanBeNull != null) {
+			this.BtnStreamingTriggersScript.Image = iconCanBeNull; 			// NO_I_WANT_ABSENCE_OF_STREAMING_TO_CLEAR_PREVIOUS_BARS_IN_CHART_AFTER_CHANGING_SYMBOL_FOR_CHART if (iconCanBeNull != null) {
 
 			Bars barsClickedUpstack = this.ChartFormManager.Executor.Bars;
 			this.mniBarsStoredScaleInterval.Text = barsClickedUpstack != null
@@ -247,6 +250,7 @@ namespace Sq1.Gui.Forms {
 
 			// WAS_METHOD_PARAMETER_BUT_ACCESSIBLE_LIKE_THIS__NULL_CHECK_DONE_UPSTACK
 			ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
+			this.ChartControl.CtxChart = ctxChart;
 			
 			if (ctxChart.ShowRangeBar) {
 				this.ChartControl.RangeBarCollapsed = false; 
@@ -258,7 +262,7 @@ namespace Sq1.Gui.Forms {
 
 			this.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 
-			this.btnStreamingTriggersScript.Checked = ctxChart.StreamingIsTriggeringScript;
+			this.BtnStreamingTriggersScript.Checked = ctxChart.StreamingIsTriggeringScript;
 
 			ContextScript ctxScript = ctxChart as ContextScript;
 			if (ctxScript == null) {
@@ -266,17 +270,17 @@ namespace Sq1.Gui.Forms {
 				this.mniBacktestOnDataSourceSaved								.Checked = false;
 				this.mniBacktestOnRestart										.Checked = false;
 				this.mniBacktestOnSelectorsChange								.Checked = false;
-				this.btnStrategyEmittingOrders									.Checked = false;
+				this.BtnStrategyEmittingOrders									.Checked = false;
 				this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Checked = false;
 
 				this.mniBacktestOnTriggeringYesWhenNotSubscribed				.Enabled = false;
 				this.mniBacktestOnDataSourceSaved								.Enabled = false;
 				this.mniBacktestOnRestart										.Enabled = false;
 				this.mniBacktestOnSelectorsChange								.Enabled = false;
-				this.btnStrategyEmittingOrders									.Enabled = false;
+				this.BtnStrategyEmittingOrders									.Enabled = false;
 				this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Enabled = false;
 				
-				this.btnStreamingTriggersScript									.Enabled = false;
+				this.BtnStreamingTriggersScript									.Enabled = false;
 				return;
 			}
 			
@@ -284,17 +288,17 @@ namespace Sq1.Gui.Forms {
 			this.mniBacktestOnDataSourceSaved								.Checked = ctxScript.BacktestOnDataSourceSaved;	// looks redundant here
 			this.mniBacktestOnRestart										.Checked = ctxScript.BacktestOnRestart;
 			this.mniBacktestOnSelectorsChange								.Checked = ctxScript.BacktestOnSelectorsChange;
-			this.btnStrategyEmittingOrders									.Checked = ctxScript.StrategyEmittingOrders;
+			this.BtnStrategyEmittingOrders									.Checked = ctxScript.StrategyEmittingOrders;
 			this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Checked = ctxScript.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
 
 			this.mniBacktestOnTriggeringYesWhenNotSubscribed				.Enabled = true;
 			this.mniBacktestOnDataSourceSaved								.Enabled = true;
 			this.mniBacktestOnRestart										.Enabled = true;
 			this.mniBacktestOnSelectorsChange								.Enabled = true;
-			this.btnStrategyEmittingOrders									.Enabled = true;
+			this.BtnStrategyEmittingOrders									.Enabled = true;
 			this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Enabled = true;
 
-			this.btnStreamingTriggersScript									.Enabled = true;
+			this.BtnStreamingTriggersScript									.Enabled = true;
 			this.PropagateContextScriptToLTB(ctxScript);
 		}
 		

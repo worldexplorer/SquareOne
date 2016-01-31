@@ -12,10 +12,11 @@ using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Backtesting;
 using Sq1.Core.DataTypes;
+using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Livesim {
-	[SkipInstantiationAt(Startup = true)]
-	public partial class LivesimBroker : BrokerAdapter, IDisposable {
+	// I_WANT_LIVESIM_STREAMING_BROKER_BE_AUTOASSIGNED_AND_VISIBLE_IN_DATASOURCE_EDITOR [SkipInstantiationAt(Startup = true)]
+	public abstract  partial class LivesimBroker : BacktestBroker, IDisposable {
 		[JsonIgnore]	public		List<Order>					OrdersSubmittedForOneLivesimBacktest	{ get; private set; }
 		[JsonIgnore]	protected	LivesimDataSource			LivesimDataSource;
 		[JsonIgnore]	internal	LivesimBrokerSettings		LivesimBrokerSettings					{ get { return this.LivesimDataSource.Executor.Strategy.LivesimBrokerSettings; } }
@@ -25,23 +26,31 @@ namespace Sq1.Core.Livesim {
 
 		[JsonIgnore]	public		bool						IsDisposed								{ get; private set; }
 
-		protected LivesimBroker() {
-		    string msg = "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
-		        + "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_BROKER_ADAPTERS_FOUND"
-		        + " example:QuikBrokerLivesim()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
-		    base.Name = "LivesimBroker-child_ACTIVATOR_DLL-SCANNED";
-		}
-		public LivesimBroker(bool IamNotAdummy) : base() {
-			base.Name = "LivesimBroker";
-			base.AccountAutoPropagate = new Account("LIVESIM_ACCOUNT", -1000);
+		//protected LivesimBroker() : base("DLL_SCANNER_INSTANTIATES_DUMMY_STREAMING") {
+		//    string msg = "IM_HERE_WHEN_DLL_SCANNER_INSTANTIATES_DUMMY_BROKER"
+		//        //+ "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
+		//        + "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_BROKER_ADAPTERS_FOUND"
+		//        + " example:QuikBrokerLivesim()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
+		//    base.Name = "LivesimBroker-child_ACTIVATOR_DLL-SCANNED";
+		//}
+		public LivesimBroker(string reasonToExist) : base(reasonToExist) {
+			base.Name									= "LivesimBroker";
+			base.AccountAutoPropagate					= new Account("LIVESIM_ACCOUNT", -1000);
 			base.AccountAutoPropagate.Initialize(this);
 			this.OrdersSubmittedForOneLivesimBacktest	= new List<Order>();
 			this.threadEntryLockToHaveQuoteSentToThread	= new object();
 			this.LivesimBrokerSpoiler					= new LivesimBrokerSpoiler(this);
 		}
 		public virtual void Initialize(LivesimDataSource livesimDataSource) {
+			base.Name									= "LivesimBroker";
 			this.LivesimDataSource						= livesimDataSource;
 			this.DataSnapshot							= new LivesimBrokerDataSnapshot(this.LivesimDataSource);
+		}
+		public override BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
+			LivesimBrokerEditorEmpty emptyEditor = new LivesimBrokerEditorEmpty();
+			emptyEditor.Initialize(this, dataSourceEditor);
+			this.BrokerEditorInstance = emptyEditor;
+			return emptyEditor;
 		}
 
 		public override void OrderSubmit(Order order) {

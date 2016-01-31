@@ -8,6 +8,8 @@ using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Indicators;
+using Sq1.Core.Streaming;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
@@ -15,8 +17,11 @@ namespace Sq1.Core.StrategyBase {
 		DataSource	preDataSource;
 		bool		preBacktestIsStreaming;
 		internal void BacktestContextInitialize(Bars barsEmptyButWillGrow) {
-			if (this.DataSource_fromBars.StreamingAdapter != null) {
-				if (this.DataSource_fromBars.StreamingAdapter.DataDistributorsAreReplacedByLivesim_dontPauseNeighborsOnBacktestContextInitRestore == false) {
+			StreamingAdapter livesimDefaultOrOtherChild = this.DataSource_fromBars.StreamingAdapter;
+			if (livesimDefaultOrOtherChild != null) {
+				bool runningOnDefault = livesimDefaultOrOtherChild is LivesimStreamingDefault;
+				bool livesimReplacedFromDefault = this.DataSource_fromBars.StreamingAdapter.DataDistributorsAreReplacedByLivesim_dontPauseNeighborsOnBacktestContextInitRestore == false;
+				if (runningOnDefault == false && livesimReplacedFromDefault == true) {
 					bool thereWereNeighbours = this.DataSource_fromBars.PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(this, this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow);
 				} else {
 					string msg = "NOT_PAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextInitialize(" + barsEmptyButWillGrow + ")";

@@ -42,6 +42,7 @@ namespace Sq1.Core.Charting {
 		public	ChartStreamingConsumer	ChartStreamingConsumer	{ get; private set; }
 
 		public	Color					ColorBackground_inDataSourceTree;
+		public	ContextChart			CtxChart;
 
 		public ChartShadow() : base() {
 			paintAllowed = new ManualResetEvent(true);
@@ -179,6 +180,36 @@ namespace Sq1.Core.Charting {
 		public virtual void InvalidateAllPanels() { }
 		//public virtual void RefreshAllPanelsNonBlockingRefreshNotYetStarted() { }
 		#endregion
+
+
+		public override string ToString() {
+			//v1
+			//string ret = "NO_PARENT_INFO for " + this.Name;
+			//if (base.InvokeRequired) {
+			//    ret = "AVOIDING_CROSS_THREAD_EXCEPTION " + this.Name;
+			//    return ret;
+			//}
+			//Form parentForm = this.Parent as Form;
+			//if (parentForm != null) {
+			//    ret = parentForm.Text;
+			//} else {
+			//    if (this.Parent != null) ret = "Parent[" + this.Parent.ToString() + "]";
+			//}
+			//v2
+			string ret = null;
+			if (this.Executor != null) {
+				if (this.Executor.Strategy != null) {
+					ret = this.Executor.Strategy.NameAndDll;
+				} else {
+					if (this.CtxChart != null) {
+						ret = this.CtxChart.ToString();
+					}
+				}
+			}
+			if (string.IsNullOrEmpty(ret)) ret = base.Name;
+			return ret;
+		}
+
 
 
 

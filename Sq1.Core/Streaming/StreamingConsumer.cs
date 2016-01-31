@@ -67,12 +67,12 @@ namespace Sq1.Core.Streaming {
 			} }
 		protected 		StreamingAdapter StreamingAdapter_nullReported { get {
 				StreamingAdapter ret = this.DataSource_nullReported.StreamingAdapter;
-				this.ActionForNullPointer(ret, "this.Executor.DataSource[" + this.DataSource_nullReported + "].StreamingAdapter=null STREAMING_ADAPDER_NOT_ASSIGNED_IN_DATASOURCE");
+				this.ActionForNullPointer(ret, "STREAMING_ADAPDER_NOT_ASSIGNED_IN_DATASOURCE this.Executor.DataSource[" + this.DataSource_nullReported + "].StreamingAdapter=null");
 				return ret;
 			} }
 		protected 		StreamingSolidifier StreamingSolidifierDeep { get {
 				var ret = this.StreamingAdapter_nullReported.StreamingSolidifier;
-				this.ActionForNullPointer(ret, "this.Executor.DataSource[" + this.DataSource_nullReported + "].StreamingAdapter.StreamingSolidifier=null");
+				this.ActionForNullPointer(ret, "SOLIDIFIER_NULL_IN_STREAMING this.Executor.DataSource[" + this.DataSource_nullReported.Name + "].StreamingAdapter[" + this.DataSource_nullReported.StreamingAdapterName + "].StreamingSolidifier=null");
 				return ret;
 			} }
 
@@ -105,7 +105,7 @@ namespace Sq1.Core.Streaming {
 				var scaleIntervalSafe	= this.ScaleInterval_nullReported;
 
 				bool quote	= streamingSafe.DataDistributor_replacedForLivesim.ConsumerQuoteIsSubscribed(	symbolSafe, scaleIntervalSafe, this);
-				bool bar	= streamingSafe.DataDistributor_replacedForLivesim.ConsumerBarIsSubscribed(	symbolSafe, scaleIntervalSafe, this);
+				bool bar	= streamingSafe.DataDistributor_replacedForLivesim.ConsumerBarIsSubscribed(		symbolSafe, scaleIntervalSafe, this);
 				bool ret = quote & bar;
 				return ret;
 			}}

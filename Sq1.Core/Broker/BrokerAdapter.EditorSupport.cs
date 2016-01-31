@@ -5,15 +5,15 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Broker {
 	public partial class BrokerAdapter {
-		[JsonIgnore]	protected		IDataSourceEditor	dataSourceEditor;
-		[JsonIgnore]	protected		BrokerEditor		brokerEditorInstance;
-		[JsonIgnore]	public virtual	bool				EditorInstanceInitialized { get { return (brokerEditorInstance != null); } }
+		[JsonIgnore]					IDataSourceEditor	dataSourceEditor;
+		[JsonIgnore]	protected		BrokerEditor		BrokerEditorInstance;
+		[JsonIgnore]	public virtual	bool				EditorInstanceInitialized { get { return (this.BrokerEditorInstance != null); } }
 		[JsonIgnore]	public virtual	BrokerEditor		EditorInstance { get {
-				if (brokerEditorInstance == null) {
+				if (this.BrokerEditorInstance == null) {
 					string msg = "you didn't invoke BrokerEditorInitialize() prior to accessing EditorInstance property";
 					throw new Exception(msg);
 				}
-				return brokerEditorInstance;
+				return this.BrokerEditorInstance;
 			} }
 
 		[JsonIgnore]	public			string				NameWithVersion						{ get {
@@ -30,13 +30,13 @@ namespace Sq1.Core.Broker {
 				+ " 1) use base.BrokerEditorInitializeHelper()"
 				+ " 2) do base.BrokerEditorInstance=new FoobarBrokerEditor()");
 		}
-		public void BrokerEditorInitializeHelper(IDataSourceEditor dataSourceEditor) {
-			if (this.dataSourceEditor != null) {
-				if (this.dataSourceEditor == dataSourceEditor) return;
-				string msg = "this.dataSourceEditor!=null, already initialized; should I overwrite it with another instance you provided?...";
-				throw new Exception(msg);
-			}
-			this.dataSourceEditor = dataSourceEditor;
-		}
+		//public void BrokerEditorInitializeHelper(IDataSourceEditor dataSourceEditor) {
+		//    if (this.DataSourceEditor != null) {
+		//        if (this.DataSourceEditor == dataSourceEditor) return;
+		//        string msg = "this.dataSourceEditor!=null, already initialized; should I overwrite it with another instance you provided?...";
+		//        throw new Exception(msg);
+		//    }
+		//    this.DataSourceEditor = dataSourceEditor;
+		//}
 	}
 }

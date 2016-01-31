@@ -755,9 +755,11 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public override string ToString() {
 			string ret = this.StrategyName;
-			if (this.Strategy == null) return ret;
-			if (this.Strategy.ScriptContextCurrent == null) return ret;
-			ret += " @ " + this.Strategy.ScriptContextCurrent.ToString();
+			if (this.Strategy != null) {
+				if (this.Strategy.Name == null) return ret;
+				ret += " @ " + this.Strategy.ScriptContextCurrent.ToString();
+			} else {
+			}
 			return ret;
 		}
 		public string ToStringWithCurrentParameters() {

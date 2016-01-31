@@ -12,11 +12,7 @@ namespace Sq1.Core.Backtesting {
 		[JsonIgnore] public BacktestSpreadModeler SpreadModeler;
 		[JsonIgnore] public const double PERCENTAGE_DEFAULT= 0.005;
 
-//		public BacktestStreamingAdapter() {
-//			string msg = "We should never be here; skip instantiation by Activator in MainModule::InitializeProviders()";
-//			//throw new Exception(msg);
-//		}
-		public BacktestStreaming() : base() {
+		public BacktestStreaming(string reasonToExist) : base(reasonToExist) {
 			base.Name = "BacktestStreamingAdapter";
 //			this.InitializeSpreadModelerPercentage(PERCENTAGE_DEFAULT);
 //		}
@@ -47,10 +43,14 @@ namespace Sq1.Core.Backtesting {
 			return base.UpstreamIsSubscribedRegistryHelper(symbol);
 		}
 
-		public override string ToString() {
-			string dataSourceAsString = this.DataSource != null ? this.DataSource.ToString() : "NOT_INITIALIZED_YET";
-			return this.Name + ": DataSource[" + dataSourceAsString + "]";
-		}
+		//public override string ToString() {
+		//	string dataSourceAsString = this.DataSource != null ? this.DataSource.ToString() : "NOT_INITIALIZED_YET";
+		//	string ret = this.Name + ": "
+		//		//+ "DataSource[" + dataSourceAsString + "]"
+		//		+ base.ToString()
+		//		;
+		//	return ret;
+		//}
 
 	}
 }

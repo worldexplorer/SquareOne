@@ -43,10 +43,10 @@ namespace Sq1.Gui.Forms {
 				btnPauseResume.Checked = false;
 
 				// VERBOSE_LIVESIM_PART1/2_BTN_STREAMING_DISPLAYS_QUOTE_DETAILS-ACTIVATE
-				this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Enabled = false;
-				this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = true;
-				this.chartFormManager.ChartForm.btnStreamingTriggersScript.Enabled = false;
-				this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = true;
+				//this.chartFormManager.ChartForm.BtnStrategyEmittingOrders.Enabled = false;
+				//this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = true;
+				this.chartFormManager.ChartForm.BtnStreamingTriggersScript.Enabled = false;
+				//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = true;
 			} else {
 				btnStartStop.Text = "Stopping";
 				btnStartStop.Enabled = false;

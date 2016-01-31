@@ -11,10 +11,8 @@ using Sq1.Core.Livesim;
 namespace Sq1.Core.Streaming {
 	// TODO: it's not an abstract class because....
 	public partial class StreamingAdapter {
-		[JsonIgnore]	public const string					NO_STREAMING_ADAPTER = "--- No Streaming Adapter ---";
-		
 		[JsonIgnore]	public		string					Name								{ get; protected set; }
-		[JsonIgnore]	public		string					Description							{ get; protected set; }
+		[JsonIgnore]	public		string					ReasonToExist						{ get; protected set; }
 		[JsonIgnore]	public		Bitmap					Icon								{ get; protected set; }
 		[JsonIgnore]	public		StreamingSolidifier		StreamingSolidifier					{ get; protected set; }
 		[JsonIgnore]	public		DataSource				DataSource;
@@ -53,7 +51,7 @@ namespace Sq1.Core.Streaming {
 		[JsonProperty]	public		bool					UpstreamConnected					{ get {
 			bool ret = false;
 			switch (this.UpstreamConnectionState) {
-				case ConnectionState.Unknown:											ret = false;	break;
+				case ConnectionState.UnknownConnectionState:											ret = false;	break;
 				case ConnectionState.JustInitialized_solidifiersUnsubscribed:			ret = false;	break;
 				case ConnectionState.JustInitialized_solidifiersSubscribed:				ret = false;	break;
 				case ConnectionState.DisconnectedJustConstructed:						ret = false;	break;
@@ -83,16 +81,18 @@ namespace Sq1.Core.Streaming {
 			}
 			return ret;
 		} }
-
-		[JsonProperty]	public int						Level2RefreshRateMs;
-
-		[JsonIgnore]	public bool						QuotePumpSeparatePushingThreadEnabled { get; protected set; }
-
-		[JsonIgnore]	public LivesimStreaming			LivesimStreaming					{ get; protected set; }
-
+		[JsonProperty]	public		int						Level2RefreshRateMs;
+		[JsonIgnore]	public		bool					QuotePumpSeparatePushingThreadEnabled	{ get; protected set; }
+		[JsonIgnore]	public		LivesimStreaming		LivesimStreaming_ownImplementation		{ get; protected set; }
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public StreamingAdapter() {
+		    string msg = "We should never be here; skip instantiation by Activator in MainModule::InitializeProviders()";
+		    //throw new Exception(msg);
+		}
+
+		public StreamingAdapter(string reasonToExist) {
+			ReasonToExist									= reasonToExist;
 			SymbolsSubscribedLock							= new object();
 			SymbolsUpstreamSubscribed						= new List<string>();
 			DataDistributor_replacedForLivesim				= new DataDistributorCharts(this);
@@ -102,9 +102,9 @@ namespace Sq1.Core.Streaming {
 			QuotePumpSeparatePushingThreadEnabled			= true;
 			Level2RefreshRateMs								= 200;
 			if (this is LivesimStreaming) return;
-			LivesimStreaming								= new LivesimStreaming(true);	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
+			//NULL_UNTIL_QUIK_PROVIDES_OWN_DDE_REDIRECTOR LivesimStreamingImplementation					= new LivesimStreamingDefault(true, "USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_STREAMING");	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
 		}
-		public virtual void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {	//, bool imRestoringSolidifierAfterLivesimTerminatedAborted = false) {
+		public virtual void InitializeDataSource_inverse(DataSource dataSource, bool subscribeSolidifier = true) {	//, bool imRestoringSolidifierAfterLivesimTerminatedAborted = false) {
 			//if (subscribeSolidifier == false) {
 			//    string msg = "UNSUBSCRIBING_SOLIDIFICATION_OF_ORIGINAL_STREAMING_PRIOR_TO_LIVESIM SYMBOL_AND_INTERVAL_WILL_BE_REPLACED_TO_SIMULATING_NEXT_LINE";
 			//    Assembler.PopupException(msg, null, false);
@@ -137,7 +137,7 @@ namespace Sq1.Core.Streaming {
 		//public void SolidifierSubscribeOneSymbol_iFinishedLivesimming(string symbol = null) {
 		void solidifierSubscribeOneSymbol(string symbol = null) {
 			if (symbol == null) {
-				symbol  = this.LivesimStreaming.DataSource.Symbols[0];
+				symbol  = this.LivesimStreaming_ownImplementation.DataSource.Symbols[0];
 			}
 
 			this.DataDistributorSolidifiers_replacedForLivesim.ConsumerBarSubscribe(symbol,
@@ -168,7 +168,7 @@ namespace Sq1.Core.Streaming {
 		//public void SolidifierUnsubscribeOneSymbol_imLivesimming(string symbol = null) {
 		void solidifierUnsubscribeOneSymbol(string symbol = null) {
 			if (symbol == null) {
-				symbol  = this.LivesimStreaming.DataSource.Symbols[0];
+				symbol  = this.LivesimStreaming_ownImplementation.DataSource.Symbols[0];
 			}
 
 			if (this.DataDistributorSolidifiers_replacedForLivesim.ConsumerBarIsSubscribed(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier, false)) {
@@ -260,10 +260,10 @@ namespace Sq1.Core.Streaming {
 			
 			if (this.DataDistributor_replacedForLivesim.DistributionChannels.Count == 0) {
 				string msg = "I_REFUSE_TO_PUSH_QUOTE NO_SOLIDIFIER_NOR_CHARTS_SUBSCRIBED";
-				if (		this.LivesimStreaming != null
-						 && this.LivesimStreaming.Livesimulator != null
-						 && this.LivesimStreaming.Livesimulator.IsBacktestingLivesimNow) {
-					this.LivesimStreaming.Livesimulator.AbortRunningBacktestWaitAborted(msg, 0);
+				if (		this.LivesimStreaming_ownImplementation != null
+						 && this.LivesimStreaming_ownImplementation.Livesimulator != null
+						 && this.LivesimStreaming_ownImplementation.Livesimulator.IsBacktestingLivesimNow) {
+					this.LivesimStreaming_ownImplementation.Livesimulator.AbortRunningBacktestWaitAborted(msg, 0);
 				}
 				Assembler.PopupException(msg);
 				return;
@@ -424,7 +424,13 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public override string ToString() {
-			return this.Name + "/[" + this.UpstreamConnectionState + "]: UpstreamSymbols[" + this.SymbolsUpstreamSubscribedAsString + "]";
+			string dataSourceAsString = this.DataSource != null ? this.DataSource.ToString() : "NOT_INITIALIZED_YET";
+			string ret = this.Name + "/[" + this.UpstreamConnectionState + "]"
+				+ ": UpstreamSymbols[" + this.SymbolsUpstreamSubscribedAsString + "]"
+				//+ "DataSource[" + dataSourceAsString + "]"
+				+ " (" + this.ReasonToExist + ")"
+				;
+			return ret;
 		}
 
 		internal void AbsorbStreamingBarFactoryFromBacktestComplete(StreamingAdapter streamingBacktest, string symbol, BarScaleInterval barScaleInterval) {

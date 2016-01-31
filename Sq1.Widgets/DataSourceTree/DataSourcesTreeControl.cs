@@ -138,6 +138,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 			}
 
 			if (adapter.Icon == null) {
+				string streamingFullName = adapter.GetType().FullName;
+				if (streamingFullName == "Sq1.Core.Livesim.LivesimStreamingDefault") return;
 				string msg = "ds.StreamingAdapter[" + adapter + "].Icon==null";
 				Assembler.PopupException(msg + msig);
 				return;

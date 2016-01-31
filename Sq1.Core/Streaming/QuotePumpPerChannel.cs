@@ -165,22 +165,22 @@ namespace Sq1.Core.Streaming {
 					}
 
 					//DEBUGGING_100%CPU#1
-					//Stopwatch mustBeHeartBeatInterval = new Stopwatch();
-					//mustBeHeartBeatInterval.Start();
+					Stopwatch mustBeHeartBeatInterval = new Stopwatch();
+					mustBeHeartBeatInterval.Start();
 
 					bool gotQuoteTrue_pausingUnpausingAbortingTrue_heartBeatExpiredFalse = this.hasQuoteToPush_blockingAtHeartBeatRate;
 
 					//DEBUGGING_100%CPU#2
-					//mustBeHeartBeatInterval.Stop();
-					//bool waitedLessThanHalfInterval = mustBeHeartBeatInterval.ElapsedMilliseconds < this.heartbeatTimeout / 2;
-					//if (waitedLessThanHalfInterval
-					//        && livesimThread
-					//    ) {
-					//    string msg = "I_MUST_BE_IN_LIVESIM_OR_REAL"
-					//        + " mustBeHeartBeatInterval.ElapsedMilliseconds[" + mustBeHeartBeatInterval.ElapsedMilliseconds + "]"
-					//        + " this.heartbeatTimeout[" + this.heartbeatTimeout + "]";
-					//    //Assembler.PopupException(msg, null, false);
-					//}
+					mustBeHeartBeatInterval.Stop();
+					bool waitedLessThanHalfInterval = mustBeHeartBeatInterval.ElapsedMilliseconds < this.heartbeatTimeout / 2;
+					if (waitedLessThanHalfInterval
+					        //&& livesimThread
+					    ) {
+					    string msg = "I_MUST_BE_IN_LIVESIM_OR_REAL"
+					        + " mustBeHeartBeatInterval.ElapsedMilliseconds[" + mustBeHeartBeatInterval.ElapsedMilliseconds + "]"
+					        + " this.heartbeatTimeout[" + this.heartbeatTimeout + "]";
+					    //Assembler.PopupException(msg, null, false);
+					}
 
 					if (this.exitPushingThreadRequested) {
 						string msg = "ABORTING_PUMP_AFTER_SeparatePushingThreadEnabled=false_OR_ IDisposable.Dispose()";
@@ -340,7 +340,7 @@ namespace Sq1.Core.Streaming {
 					this.confirmPaused.Set();
 					this.confirmUnpaused.Reset();
 					string msg = "PUSHER_THREAD_PAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION";
-					Assembler.PopupException(msg + msig);
+					//Assembler.PopupException(msg + msig);
 				} else {
 					string msg2 = "PUSHER_THREAD_PAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION";
 					Assembler.PopupException(msg2 + msig);
@@ -384,7 +384,7 @@ namespace Sq1.Core.Streaming {
 						//+ " added since BrokerMock.SubmitOrder was waiting for 2 minutes after someone has already unpaused"
 						//+ " ; I have to notify waiters can proceed via WaitUntilUnpaused, even if noone is WaitingOne()"
 						;
-					Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg, null, false);
 				} else {
 					string msg2 = "UNPAUSED_EARLIER__WRONG_USAGE";
 					Assembler.PopupException(msg2 + msig);

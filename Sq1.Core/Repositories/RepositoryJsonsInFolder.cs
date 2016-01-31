@@ -126,7 +126,11 @@ namespace Sq1.Core.Repositories {
 			return ret;
 		}
 		public virtual void SerializeSingle(DATASOURCE itemStored, string jsonRelname = null) {
-			if (string.IsNullOrEmpty(itemStored.NameImStoredUnder_asUniqueKeyForRename) == false) {
+			bool shouldRenameAndSave =
+				string.IsNullOrEmpty(	  itemStored.NameImStoredUnder_asUniqueKeyForRename) == false
+					&& itemStored.Name != itemStored.NameImStoredUnder_asUniqueKeyForRename;
+
+			if (shouldRenameAndSave) {
 				string newName = itemStored.Name;
 				itemStored.Name = itemStored.NameImStoredUnder_asUniqueKeyForRename;
 				itemStored.NameImStoredUnder_asUniqueKeyForRename = null;

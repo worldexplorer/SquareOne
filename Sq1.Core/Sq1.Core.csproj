@@ -107,6 +107,7 @@
     <Compile Include="Correlation\KPIsCalculator.cs" />
     <Compile Include="Correlation\MomentumsCalculator.cs" />
     <Compile Include="Correlation\KPIsMomentum.cs" />
+    <Compile Include="Livesim\LivesimBrokerDefault.cs" />
     <Compile Include="DataFeed\SymbolOfDataSource.cs" />
     <Compile Include="Livesim\LevelTwoGenerator.cs" />
     <Compile Include="Livesim\LivesimBroker.Paranoid.cs">
@@ -116,6 +117,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Livesim\LivesimBrokerSpoiler.cs" />
+    <Compile Include="Livesim\LivesimStreamingDefault.cs" />
     <Compile Include="Livesim\LivesimStreamingEditorEmpty.cs">
       <SubType>UserControl</SubType>
     </Compile>

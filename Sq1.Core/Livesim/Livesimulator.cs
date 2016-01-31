@@ -23,7 +23,7 @@ namespace Sq1.Core.Livesim {
 			+ " AND OTHER INTERNALS AT 1000 QUOTES/SECOND WOULD BE CONSIDERED A HUGE SUCCESS";
 
 		public	Backtester				BacktesterBackup				{ get; private set; }
-		public	LivesimDataSource		DataSourceAsLivesimNullUnsafe	{ get { return base.BacktestDataSource as LivesimDataSource; } }
+		public	LivesimDataSource		DataSourceAsLivesim_nullUnsafe	{ get { return base.BacktestDataSource as LivesimDataSource; } }
 
 				ToolStripButton			btnStartStop;
 				ToolStripButton			btnPauseResume;
@@ -34,7 +34,7 @@ namespace Sq1.Core.Livesim {
 
 		public Livesimulator(ScriptExecutor executor) : base(executor) {
 			base.BacktestDataSource			= new LivesimDataSource(executor);
-			this.DataSourceAsLivesimNullUnsafe.Initialize(Assembler.InstanceInitialized.OrderProcessor);
+			this.DataSourceAsLivesim_nullUnsafe.Initialize(Assembler.InstanceInitialized.OrderProcessor);
 			//base.SeparatePushingThreadEnabled = false;
 			this.livesimQuoteBarConsumer	= new LivesimQuoteBarConsumer(this);
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_YOU_THEN!!! base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
@@ -81,28 +81,28 @@ namespace Sq1.Core.Livesim {
 				//LivesimStreaming streamingAsLivesimChild = this.DataSourceAsLivesimNullUnsafe.StreamingAdapter_instantiatedForLivesim;
 				//LivesimBroker		brokerAsLivesimChild = this.DataSourceAsLivesimNullUnsafe.BrokerAdapter_instantiatedForLivesim;
 				//this.RedirectDataSource_reactivateLivesimsWithLivesimDataSource(streamingAsLivesimChild, brokerAsLivesimChild);
-				this.DataSourceAsLivesimNullUnsafe.PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource();	// no need to restore (this.DataSourceAsLivesimNullUnsafe will be re-initialized at next Livesim)
+				this.DataSourceAsLivesim_nullUnsafe.PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource();	// no need to restore (this.DataSourceAsLivesimNullUnsafe will be re-initialized at next Livesim)
 				// NO!!! KEEP_THEM_TO_ORIGINAL_DATASOURCE_BECAUSE_DDE_SERVER_DELIVERS_LEVEL2_TO_ORIGINAL_DATA_SNAPSHOT base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;	// will need to restore (base.BarsSimulating is not needed after Livesim is done)
-				this.DataSourceAsLivesimNullUnsafe.Initialize(base.BarsSimulating, spreadModeler);
+				this.DataSourceAsLivesim_nullUnsafe.Initialize(base.BarsSimulating, spreadModeler);
 				//DURING_LIVESIM_I_LEFT_STREAMING_EXACTLY_THE_SAME_AS_FOR_LIVE_TRADING_TO_TEST_IT!!! this.StreamingOriginal = this.Executor.DataSource.StreamingAdapter;		// will have to restore
 				
-				if (this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe != null) {
+				if (this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe != null) {
 					string msg = "LivesimStreaming_HAS_REFERENCE_TO_LivesimDataSource_SHOULD_BE_NO_NPE_IN_eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree";
 					Assembler.PopupException(msg, null, false);
 				}
 				// now I have those two assigned from Streaming/Broker-own-implemented instantiated adapters
 
-				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.InitializeLivesim	(
-					this.DataSourceAsLivesimNullUnsafe, this.Executor.DataSource_fromBars.StreamingAdapter, base.BarsSimulating.Symbol);
-				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.UpstreamConnect_LivesimStarting();
+				this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe	.InitializeLivesim	(
+					this.DataSourceAsLivesim_nullUnsafe, this.Executor.DataSource_fromBars.StreamingAdapter, base.BarsSimulating.Symbol);
+				this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe	.UpstreamConnect_LivesimStarting();
 
 				#region OLD_SCHOOL_LIVESIM_NO_REAL_STREAMING_CONFIGURED
 				if (this.Executor.DataSource_fromBars.StreamingAdapter == null) {	// LivesimWithoutStreaming configured for DataSource
 					// will allow to reach DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol()
 					// in PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread()
-					base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;	// may not need to restore (base.BarsSimulating is not needed after Livesim is done)
+					base.BarsSimulating.DataSource = this.DataSourceAsLivesim_nullUnsafe;	// may not need to restore (base.BarsSimulating is not needed after Livesim is done)
 
-					DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor_replacedForLivesim;
+					DataDistributor distr = this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor_replacedForLivesim;
 					bool livesimIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count > 0;
 					if (livesimIsSubscribed_toBarsSimulated == false) {
 						bool willPumpInNewThread = true;	// false led to deadlock on BeginInvoke both in DDE Server and in my GuiThread
@@ -146,7 +146,7 @@ namespace Sq1.Core.Livesim {
 				}
 				#endregion
 
-				this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	.Initialize			(this.DataSourceAsLivesimNullUnsafe);
+				this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesimNullUnsafe	.Initialize			(this.DataSourceAsLivesim_nullUnsafe);
 
 				base.Executor.BacktestContextInitialize(base.BarsSimulating);
 
@@ -177,8 +177,8 @@ namespace Sq1.Core.Livesim {
 				}
 				#endregion
 
-				if (this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe != null) {
-					this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.PushSymbolInfoToLevel2generator(this.Executor.Bars.SymbolInfo);
+				if (this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesimNullUnsafe != null) {
+					this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe.PushSymbolInfoToLevel2generator(this.Executor.Bars.SymbolInfo);
 				} else {
 					string msg = "Livesim/noStreaming was still generating LevelTwo directly in the StreamingDataSnapshot";
 				}
@@ -218,7 +218,7 @@ namespace Sq1.Core.Livesim {
 
 				#region OLD_SCHOOL_LIVESIM_NO_REAL_STREAMING_CONFIGURED
 				if (this.Executor.DataSource_fromBars.StreamingAdapter == null) {	// LivesimWithoutStreaming configured for DataSource
-					DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor_replacedForLivesim;
+					DataDistributor distr = this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor_replacedForLivesim;
 					bool livesimIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count == 1;
 					if (livesimIsSubscribed_toBarsSimulated) {
 						distr.ConsumerQuoteUnsubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
@@ -230,7 +230,7 @@ namespace Sq1.Core.Livesim {
 				}
 				#endregion
 
-				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.UpstreamDisconnect_LivesimTerminatedOrAborted();
+				this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe	.UpstreamDisconnect_LivesimTerminatedOrAborted();
 				//DURING_LIVESIM_I_LEFT_STREAMING_EXACTLY_THE_SAME_AS_FOR_LIVE_TRADING_TO_TEST_IT!!! this.Executor.DataSource.StreamingAdapter = this.StreamingOriginal;
 
 				//if (this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.settings.DelayBetweenSerialQuotesEnabled) {
@@ -262,18 +262,18 @@ namespace Sq1.Core.Livesim {
 			base.Executor.BacktesterOrLivesimulator = this;
 
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_IT_THEN_INAPPROPRIETLY!!!  WITHOUT_UNSUBSCRIPTON_I_WAS_GETTING_MANY_INVOCATIONS_BAD
-			base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 -= new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
-			base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
+			base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 -= new EventHandler<EventArgs>(executor_OnBacktesterContextInitialized_step2of4);
+			base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_OnBacktesterContextInitialized_step2of4);
 	
 			base.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
 		}
 
-		void executor_BacktesterContextInitializedStep2of4(object sender, EventArgs e) {
+		void executor_OnBacktesterContextInitialized_step2of4(object sender, EventArgs e) {
 			if (this.chartShadow.InvokeRequired) {
 				// will always InvokeRequied since we RaiseOnBacktesterSimulationContextInitialized_step2of4
 				// from a just started thread with a new Backtest BacktesterRunSimulation_threadEntry_exceptionCatcher() SEE_CALL_STACK_NOW
 				// too late to do it in GUI thread; switch takes a tons of time; do gui-unrelated preparations NOW
-				List<Order> ordersStale = this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe.OrdersSubmittedForOneLivesimBacktest;
+				List<Order> ordersStale = this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesimNullUnsafe.OrdersSubmittedForOneLivesimBacktest;
 				if (ordersStale.Count > 0) {
 					int beforeCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll.Count;
 					this.Executor.OrderProcessor.DataSnapshot.OrdersRemove(ordersStale);
@@ -287,7 +287,7 @@ namespace Sq1.Core.Livesim {
 				//base.Stopwatch.Restart();
 				var alreadyStartedUpstack = base.Stopwatch;
 
-				this.chartShadow.BeginInvoke((MethodInvoker)delegate { this.executor_BacktesterContextInitializedStep2of4(sender, e); });
+				this.chartShadow.BeginInvoke((MethodInvoker)delegate { this.executor_OnBacktesterContextInitialized_step2of4(sender, e); });
 				return;
 			}
 			this.chartShadow.Initialize(base.Executor.Bars, base.Executor.StrategyName, false, true);
@@ -327,9 +327,9 @@ namespace Sq1.Core.Livesim {
 				return;
 			}
 			try {
-				if (this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.QuotePumpSeparatePushingThreadEnabled) {
+				if (this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe.QuotePumpSeparatePushingThreadEnabled) {
 					string msg = "YOU_STOPPED_PAUSED_LIVESIM_FROM_GUI UNPAUSED_LIVESIM_QUOTE_PUMP__WOZU???_ORIGINAL_BARS_SOLIDIFIER_STILL_RUNNING_IN_ITS_THREAD";
-					ManualResetEvent unpausedMre = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UnpausedMre;
+					ManualResetEvent unpausedMre = this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe.UnpausedMre;
 					bool isUnpaused = unpausedMre.WaitOne(0);
 					if (isUnpaused == false) {
 						msg = "AVOIDING_TO_WAIT_FOREVER: LivesimStreaming.GeneratedQuoteEnrichSymmetricallyAndPush() " + msg;
@@ -346,12 +346,12 @@ namespace Sq1.Core.Livesim {
 		}
 
 		public void Pause_inGuiThread() {
-			this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UnpausedMre.Reset();
-			string msg = "AlertsScheduledForDelayedFill.Count=" + this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe.DataSnapshot.AlertsScheduledForDelayedFill.Count  + " LEAKED_HANDLES_HUNTER";
+			this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe.UnpausedMre.Reset();
+			string msg = "AlertsScheduledForDelayedFill.Count=" + this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesimNullUnsafe.DataSnapshot.AlertsScheduledForDelayedFill.Count  + " LEAKED_HANDLES_HUNTER";
 			//Assembler.PopupException(msg);
 		}
 		public void Unpause_inGuiThread() {
-			this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UnpausedMre.Set();
+			this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe.UnpausedMre.Set();
 		}
 		public const string TO_STRING_PREFIX = "LIVESIMULATOR_FOR_";
 		public bool LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;

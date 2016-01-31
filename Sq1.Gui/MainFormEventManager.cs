@@ -273,11 +273,11 @@ namespace Sq1.Gui {
 		}
 		internal void DataSourcesTree_OnDataSourceDeletedClicked(object sender, DataSourceEventArgs e) {
 		}
-		internal void RepositoryJsonDataSource_OnDataSourceCanBeRemoved(object sender, NamedObjectJsonEventArgs<DataSource> e) {
+		internal void RepositoryJsonDataSources_OnDataSourceCanBeRemoved(object sender, NamedObjectJsonEventArgs<DataSource> e) {
 			int a = 1;
 			// ask them before deleting using another event and check if DataSourceEventArgs.DoNotDeleteThisDataSourceBecauseItsUsedElsewhere
 		}
-		internal void RepositoryJsonDataSource_OnDataSourceRemoved(object sender, NamedObjectJsonEventArgs<DataSource> e) {
+		internal void RepositoryJsonDataSources_OnDataSourceRemoved(object sender, NamedObjectJsonEventArgs<DataSource> e) {
 			int a = 1;
 			//if a running sequencer / backtester / streaming chart had DataSource, possibly shut them down?
 		}

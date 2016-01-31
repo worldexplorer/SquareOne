@@ -21,8 +21,8 @@ namespace Sq1.Core.Charting {
 			var scaleIntervalSafe		= base.ScaleInterval_nullReported;
 			var streaming_nullReported	= this.StreamingAdapter_nullReported;
 
-			bool downstreamSubscribed = this.DownstreamSubscribed;
-			if (downstreamSubscribed == false) {
+			bool downstream_mustBeSubscribed = this.DownstreamSubscribed == false;
+			if (downstream_mustBeSubscribed) {
 				string msg = "CHART_STREAMING_ALREADY_UNSUBSCRIBED_QUOTES_AND_BARS";
 				Assembler.PopupException(msg + base.MsigForNpExceptions, null, false);
 				// RESET_IsStreaming=subscribed return;
@@ -32,9 +32,9 @@ namespace Sq1.Core.Charting {
 				string branch = " DATA_SOURCE_HAS_STREAMING_ASSIGNED_1/2";
 				streaming_nullReported.UnsubscribeChart(symbolSafe, scaleIntervalSafe, this, branch + base.MsigForNpExceptions);
 
-				//re-reading to be 100% sure
-				downstreamSubscribed = this.DownstreamSubscribed;
-				if (downstreamSubscribed) {
+				//
+				bool downstreamMustBeUnSubscribed_reReadingToBe100sure = this.DownstreamSubscribed == false;
+				if (downstreamMustBeUnSubscribed_reReadingToBe100sure == false) {
 					string msg = "ERROR_CHART_STREAMING_STILL_SUBSCRIBED_QUOTES_OR_BARS";
 					Assembler.PopupException(msg + base.MsigForNpExceptions);
 					return;
@@ -44,10 +44,10 @@ namespace Sq1.Core.Charting {
 				Assembler.PopupException(msg);
 			}
 
-			this.ContextCurrentChartOrStrategy_nullReported.DownstreamSubscribed = downstreamSubscribed;
+			this.ContextCurrentChartOrStrategy_nullReported.DownstreamSubscribed = false;
 			this.Strategy_nullReported.Serialize();
 
-			string msg2 = "CHART_STREAMING_UNSUBSCRIBED[" + downstreamSubscribed + "] due to [" + reason + "]";
+			string msg2 = "CHART_STREAMING_UNSUBSCRIBED[" + downstream_mustBeSubscribed + "] due to [" + reason + "]";
 			Assembler.PopupException(msg2 + base.MsigForNpExceptions, null, false);
 
 			// TUNNELLED_TO_CHART_CONTROL base.ChartShadow_nullReported.ChartControl.ScriptExecutorObjects.QuoteLast = null;
@@ -65,10 +65,11 @@ namespace Sq1.Core.Charting {
 			var streaming_nullReported		= this.StreamingAdapter_nullReported;
 			var streamingBarSafeCloneSafe	= this.StreamingBarSafeClone_nullReported;
 
-			bool downstreamSubscribed = this.DownstreamSubscribed;
-			if (downstreamSubscribed) {
+			bool downstreamMustBeUnSubscribed = this.DownstreamSubscribed;
+			if (downstreamMustBeUnSubscribed
+						&& Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == true) {
 				string msg = "CHART_STREAMING_ALREADY_SUBSCRIBED_OR_FORGOT_TO_DISCONNECT REMOVE_INVOCATION_UPSTACK";
-				Assembler.PopupException(msg + base.MsigForNpExceptions, null, false);
+				Assembler.PopupException(msg + base.MsigForNpExceptions);
 				// RESET_IsStreaming=subscribed return;
 			}
 
@@ -87,9 +88,8 @@ namespace Sq1.Core.Charting {
 
 				streaming_nullReported.SubscribeChart(symbolSafe, scaleIntervalSafe, this, branch + base.MsigForNpExceptions);
 
-				//re-reading to be 100% sure
-				downstreamSubscribed = this.DownstreamSubscribed;
-				if (downstreamSubscribed == false) {
+				bool downstreamMustBeSubscribed_reReadingToBe100sure = this.DownstreamSubscribed == true;
+				if (downstreamMustBeSubscribed_reReadingToBe100sure == false) {
 					string msg = "CHART_STREAMING_FAILED_SUBSCRIBE_BAR_OR_QUOTE_OR_BOTH StreamingAdapter[" + streaming_nullReported.ToString() + "]";
 					Assembler.PopupException(msg + base.MsigForNpExceptions);
 					return;
@@ -99,10 +99,10 @@ namespace Sq1.Core.Charting {
 				Assembler.PopupException(msg);
 			}
 
-			this.ContextCurrentChartOrStrategy_nullReported.DownstreamSubscribed = downstreamSubscribed;
+			this.ContextCurrentChartOrStrategy_nullReported.DownstreamSubscribed = true;
 			this.Strategy_nullReported.Serialize();
 
-			string msg2 = "CHART_STREAMING_SUBSCRIBED[" + downstreamSubscribed + "] due to [" + reason + "]";
+			string msg2 = "CHART_STREAMING_SUBSCRIBED[" + downstreamMustBeUnSubscribed + "] due to [" + reason + "]";
 			Assembler.PopupException(msg2 + base.MsigForNpExceptions, null, false);
 		}
 
@@ -281,24 +281,31 @@ namespace Sq1.Core.Charting {
 
 		public override string ToString() {
 			var symbolSafe			= base.Symbol_nullReported;
-			var chartShadowSafe		= base.ChartShadow_nullReported;
+			ChartShadow chartShadowSafe		= base.ChartShadow_nullReported;
 			var scaleIntervalSafe	= base.ScaleInterval_nullReported;
 			string ret = "ChartShadow.Symbol[" + symbolSafe + "](" + scaleIntervalSafe + ")";
 
 			//HANGS_ON_STARTUP__#D_STACK_IS_BLANK__VS2010_HINTED_IM_ACCESSING_this.ChartForm.Text_FROM_DDE_QUOTE_GENERATOR (!?!?!)
-			if (chartShadowSafe.InvokeRequired == false) {
+			if (chartShadowSafe.InvokeRequired == false && string.IsNullOrEmpty(chartShadowSafe.Text) == false) {
 				ret += " CHART.TEXT[" + chartShadowSafe.Text + "]";
 			} else {
-//				ChartFormDataSnapshot snap = this.chartFormManager.DataSnapshot;
-//				if (snap == null) {
-//					Assembler.PopupException(null);
-//				}
-//				ContextChart ctx = this.chartFormManager.DataSnapshot.ContextChart;
+				//v1
+				//ChartFormDataSnapshot snap = this.chartFormManager.DataSnapshot;
+				//if (snap == null) {
+				//    Assembler.PopupException(null);
+				//}
+				//ContextChart ctx = this.chartFormManager.DataSnapshot.ContextChart;
+				//v2
+				//ret += (base.Executor_nullReported.Strategy != null)
+				//    ? " ScriptContextCurrent[" + base.Executor_nullReported.Strategy.ScriptContextCurrent.ToString() + "]"
+				//    //: " ContextChart[" + this.chartFormManager.DataSnapshot.ContextChart.ToString() + "]"
+				//    : " ContextChart[UNACCESSIBLE]"
+				//    ;
+				//v3
 				ret += (base.Executor_nullReported.Strategy != null)
-					? " ScriptContextCurrent[" + base.Executor_nullReported.Strategy.ScriptContextCurrent.ToString() + "]"
-					//: " ContextChart[" + this.chartFormManager.DataSnapshot.ContextChart.ToString() + "]"
-					: " ContextChart[UNACCESSIBLE]"
-					;
+					? " [" + base.Executor_nullReported.Strategy.WindowTitle + "]"
+				    : " base.Executor_nullReported[NULL]"
+				    ;
 			}
 
 			return "{" + ret + "}";

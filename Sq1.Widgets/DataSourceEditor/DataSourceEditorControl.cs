@@ -24,8 +24,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 		public	Dictionary<string, StreamingAdapter>	StreamingAdaptersByName			{ get; private set; }
 		public	Dictionary<string, BrokerAdapter>		BrokerAdaptersByName			{ get; private set; }
 
-				RepositoryJsonDataSource				repositoryJsonDataSource;
-				RepositorySerializerMarketInfo			repositoryMarketInfo;
+				RepositoryJsonDataSources				repositoryJsonDataSource;
+				RepositorySerializerMarketInfos			repositoryMarketInfo;
 				OrderProcessor							orderProcessor;
 				DataSource								dataSourceIamEditing;
 
@@ -36,8 +36,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 		public void InitializeContext(
 				Dictionary<string, StreamingAdapter>	streamingAdaptersByName,
 				Dictionary<string, BrokerAdapter>		brokerAdaptersByName,
-				RepositoryJsonDataSource				repositoryJsonDataSourcePassed,
-				RepositorySerializerMarketInfo			repositorySerializerMarketInfoPassed,
+				RepositoryJsonDataSources				repositoryJsonDataSourcePassed,
+				RepositorySerializerMarketInfos			repositorySerializerMarketInfoPassed,
 				OrderProcessor							orderProcessorPassed
 			) {
 			this.StreamingAdaptersByName			= streamingAdaptersByName;
@@ -68,20 +68,20 @@ namespace Sq1.Widgets.DataSourceEditor {
 
 			if (this.dataSourceIamEditing.StreamingAdapter != null) {
 				this.highlightStreamingByName(this.dataSourceIamEditing.StreamingAdapter.GetType().Name);
-			} else {
-				this.highlightStreamingByName(StreamingAdapter.NO_STREAMING_ADAPTER);
+			//} else {
+			//	this.highlightStreamingByName(StreamingAdapter.NO_STREAMING_ADAPTER);
 			}
 
 			if (this.dataSourceIamEditing.BrokerAdapter != null) {
 				this.highlightBrokerByName(this.dataSourceIamEditing.BrokerAdapter.GetType().Name);
-			} else {
-				this.highlightBrokerByName(BrokerAdapter.NO_BROKER_ADAPTER);
+			//} else {
+			//	this.highlightBrokerByName(BrokerAdapter.NO_BROKER_ADAPTER);
 			}
 
 			this.marketInfoEditor.Initialize(dataSourceIamEditing, this.repositoryJsonDataSource, this.repositoryMarketInfo);
 
 
-			RepositoryJsonDataSource dsRepo = this.repositoryJsonDataSource;
+			RepositoryJsonDataSources dsRepo = this.repositoryJsonDataSource;
 			dsRepo.OnItemRemovedDone -= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(repositoryJsonDataSource_OnDataSourceDeleted_closeDataSourceEditor);
 			dsRepo.OnItemRemovedDone += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(repositoryJsonDataSource_OnDataSourceDeleted_closeDataSourceEditor);
 
@@ -132,20 +132,25 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 			
 			this.lvStreamingAdapters.Items.Clear();
-			ListViewItem lviAbsentStreaming = new ListViewItem() {
-				Text = StreamingAdapter.NO_STREAMING_ADAPTER,
-				Name = StreamingAdapter.NO_STREAMING_ADAPTER,
-			};
-			this.lvStreamingAdapters.Items.Add(lviAbsentStreaming);
-			foreach (StreamingAdapter streamingAdapterPrototype in StreamingAdaptersByName.Values) {
+			//ListViewItem lviAbsentStreaming = new ListViewItem() {
+			//	Text = StreamingAdapter.NO_STREAMING_ADAPTER,
+			//	Name = StreamingAdapter.NO_STREAMING_ADAPTER,
+			//};
+			//this.lvStreamingAdapters.Items.Add(lviAbsentStreaming);
+			foreach (StreamingAdapter streamingAdapterPrototype in this.StreamingAdaptersByName.Values) {
 				try {
 					StreamingAdapter streamingAdapterInstance = null;	// streamingAdapterPrototype;
-					if (dataSourceIamEditing.StreamingAdapter != null && dataSourceIamEditing.StreamingAdapter.GetType().FullName == streamingAdapterPrototype.GetType().FullName) {
-						streamingAdapterInstance = dataSourceIamEditing.StreamingAdapter;
+					if (dataSourceIamEditing.StreamingAdapter != null) {
+						bool streamingForCurrentDatasource = dataSourceIamEditing.StreamingAdapter.GetType().FullName == streamingAdapterPrototype.GetType().FullName;
+						if (streamingForCurrentDatasource) {
+							streamingAdapterInstance = dataSourceIamEditing.StreamingAdapter;
+						}
 					}
 					// I still want to get a new instance, so if user choses it, I'll Initialize() it and put into serialize-able DataSource
 					if (streamingAdapterInstance == null) {
 						streamingAdapterInstance = (StreamingAdapter)Activator.CreateInstance(streamingAdapterPrototype.GetType());
+						string msg = "INITIALIZED_streamingAdapterInstance[" + streamingAdapterInstance + "]";
+						Assembler.PopupException(msg, null, false);
 					}
 
 					if (streamingAdapterInstance.EditorInstanceInitialized == false) {
@@ -161,7 +166,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 					ListViewItem lvi = new ListViewItem() {
 						Text = streamingAdapterInstance.Name,
 						Name = streamingAdapterInstance.GetType().Name,
-						Tag = streamingAdapterInstance
+						Tag  = streamingAdapterInstance
 					};
 					if (streamingAdapterInstance.Icon != null) {
 						this.imglStreamingAdapters.Images.Add(streamingAdapterInstance.Icon);
@@ -175,11 +180,11 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 
 			this.lvBrokerAdapters.Items.Clear();
-			ListViewItem lviAbsentBroker = new ListViewItem() {
-				Text = BrokerAdapter.NO_BROKER_ADAPTER,
-				Name = BrokerAdapter.NO_BROKER_ADAPTER,
-			};
-			this.lvBrokerAdapters.Items.Add(lviAbsentBroker);
+			//ListViewItem lviAbsentBroker = new ListViewItem() {
+			//	Text = BrokerAdapter.NO_BROKER_ADAPTER,
+			//	Name = BrokerAdapter.NO_BROKER_ADAPTER,
+			//};
+			//this.lvBrokerAdapters.Items.Add(lviAbsentBroker);
 			foreach (BrokerAdapter brokerAdapterPrototype in BrokerAdaptersByName.Values) {
 				try {
 					BrokerAdapter brokerAdapterInstance = null;	// brokerAdapterPrototype;

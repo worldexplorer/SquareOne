@@ -12,6 +12,7 @@ using Sq1.Core.Repositories;
 using Sq1.Core.Streaming;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Charting;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.DataFeed {
 	public partial class DataSource : NamedObjectJsonSerializable {
@@ -20,7 +21,7 @@ namespace Sq1.Core.DataFeed {
 		[JsonProperty]	public List<string>			Symbols;
 		[JsonIgnore]	public string				SymbolsCSV			{ get {
 				StringBuilder stringBuilder = new StringBuilder();
-				foreach (string current in Symbols) {
+				foreach (string current in this.Symbols) {
 					if (stringBuilder.Length > 0) stringBuilder.Append(",");
 					stringBuilder.Append(current);
 				}
@@ -38,12 +39,14 @@ namespace Sq1.Core.DataFeed {
 				MarketName = value.Name;
 			} }
 		[JsonProperty]	public string				StreamingAdapterName	{ get {
-				if (StreamingAdapter == null) return "PLEASE_ATTACH_AND_CONFIGURE_STREAMING_ADAPDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT";
-				return StreamingAdapter.Name;
+				//if (this.StreamingAdapter == null) return "PLEASE_ATTACH_AND_CONFIGURE_STREAMING_ADAPDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT";
+				if (this.StreamingAdapter == null) return "NO_STREAMING";
+				return this.StreamingAdapter.Name;
 			} }
 		[JsonProperty]	public string				BrokerAdapterName		{ get {
-				if (BrokerAdapter == null) return "PLEASE_ATTACH_AND_CONFIGURE_BROKER_ADAPDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT";
-				return BrokerAdapter.Name;
+				//if (this.BrokerAdapter == null) return "PLEASE_ATTACH_AND_CONFIGURE_BROKER_ADAPDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT";
+				if (this.BrokerAdapter == null) return "NO_BROKER";
+				return this.BrokerAdapter.Name;
 			} }
 		[JsonIgnore]	public bool					IsIntraday				{ get { return this.ScaleInterval.IsIntraday; } }
 		[JsonIgnore]	public RepositoryBarsSameScaleInterval	BarsRepository	{ get; protected set; }
@@ -80,7 +83,7 @@ namespace Sq1.Core.DataFeed {
 			}
 			this.ScaleInterval = scaleInterval; 
 			if (marketInfo == null) {
-				marketInfo = Assembler.InstanceInitialized.RepositoryMarketInfo.FindMarketInfoOrNew("MOCK"); 
+				marketInfo = Assembler.InstanceInitialized.RepositoryMarketInfos.FindMarketInfoOrNew("MOCK"); 
 			}
 			this.MarketInfo = marketInfo; 
 		}
@@ -109,10 +112,20 @@ namespace Sq1.Core.DataFeed {
 		}
 		public void Initialize(OrderProcessor orderProcessor) {
 			// works only for deserialized adapters; for a newDataSource they are NULLs to be assigned in DataSourceEditor 
-			if (this.StreamingAdapter == null) return;
-			this.StreamingAdapter.InitializeDataSource(this);
-			if (this.BrokerAdapter == null) return;
-			this.BrokerAdapter.Initialize(this, this.StreamingAdapter, orderProcessor);
+			if (this.StreamingAdapter == null) {
+				//v1 return;
+				string reasonToBeCreated = "NEW_DATASOURCE_IS_AUTOMATICALLY_SERVED_BY_LivesimStreamingDefault";
+				this.StreamingAdapter = new LivesimStreamingDefault(reasonToBeCreated);
+				Assembler.PopupException(reasonToBeCreated, null, false);
+			}
+			this.StreamingAdapter.InitializeDataSource_inverse(this);
+			if (this.BrokerAdapter == null) {
+				//v1 return;
+				string reasonToBeCreated = "NEW_DATASOURCE_IS_AUTOMATICALLY_SERVED_BY_LivesimBrokerDefault";
+				this.BrokerAdapter = new LivesimBrokerDefault(reasonToBeCreated);
+				Assembler.PopupException(reasonToBeCreated, null, false);
+			}
+			this.BrokerAdapter.InitializeDataSource_inverse(this, this.StreamingAdapter, orderProcessor);
 		}
 		public override string ToString() {
 			return this.Name + "(" + this.ScaleInterval.ToString() + ")" + this.SymbolsCSV
@@ -348,7 +361,7 @@ namespace Sq1.Core.DataFeed {
 			}
 			barsOriginal.DataSource = this;
 			barsOriginal.MarketInfo = this.MarketInfo;
-			barsOriginal.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(barsOriginal.Symbol);
+			barsOriginal.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(barsOriginal.Symbol);
 
 			millisElapsed = "BarsLoadAndCompress[" + barsOriginal.Symbol + ":" + barsOriginal.ScaleInterval + "]["
 				+ barsOriginal.Count + "]bars[" + readAllTimer.ElapsedMilliseconds + "]msRead";

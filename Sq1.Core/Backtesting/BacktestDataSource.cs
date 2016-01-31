@@ -8,8 +8,8 @@ namespace Sq1.Core.Backtesting {
 
 		public BacktestDataSource() {
 			base.Name = "BacktestDataSource";
-			base.StreamingAdapter = new BacktestStreaming();
-			base.BrokerAdapter = new BacktestBroker();
+			base.StreamingAdapter	= new BacktestStreaming	("USED_FOR_BACKTESTS__CHARTLESS_NO_ORDEREXEC");
+			base.BrokerAdapter		= new BacktestBroker	("USED_FOR_BACKTESTS__CHARTLESS_NO_ORDEREXEC");
 		}
 		public void Initialize(Bars bars, BacktestSpreadModeler spreadModeler) {
 			base.MarketInfo = bars.MarketInfo;
@@ -18,7 +18,7 @@ namespace Sq1.Core.Backtesting {
 			base.Symbols.Add(bars.Symbol);
 			base.StreamingAdapter.InitializeFromDataSource(this);
 			this.StreamingAsBacktestNullUnsafe.SpreadModeler = spreadModeler;
-			//base.BrokerAdapter.Initialize(this, base.StreamingAdapter, null, base.StatusReporter);
+			base.BrokerAdapter.InitializeDataSource_inverse(this, base.StreamingAdapter, null);
 		}
 
 		public override string ToString() {

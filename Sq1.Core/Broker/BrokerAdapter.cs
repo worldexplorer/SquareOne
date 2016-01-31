@@ -4,27 +4,27 @@ using System.Drawing;
 using System.Threading;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.Accounting;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
 using Sq1.Core.Livesim;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Broker {
 	public partial class BrokerAdapter {
-		public const string NO_BROKER_ADAPTER = "--- No Broker Adapter ---";
-
-		[JsonIgnore]		   object				lockSubmitOrders;
-		[JsonIgnore]	public string				Name				{ get; protected set; }
-		[JsonIgnore]	public bool					HasMockInName		{ get { return Name.Contains("Mock"); } }
-		[JsonIgnore]	public bool					HasBacktestInName	{ get { return Name.Contains("Backtest"); } }
-		[JsonIgnore]	public Bitmap				Icon				{ get; protected set; }
-		[JsonIgnore]	public DataSource			DataSource			{ get; protected set; }
-		[JsonIgnore]	public OrderProcessor		OrderProcessor		{ get; protected set; }
-		[JsonIgnore]	public StreamingAdapter	StreamingAdapter	{ get; protected set; }
-//		[JsonIgnore]	public List<Account>		Accounts			{ get; protected set; }
-		[JsonProperty]	public Account				Account;
-		[JsonIgnore]	public Account				AccountAutoPropagate {
+		[JsonIgnore]				object				lockSubmitOrders;
+		[JsonIgnore]	public		string				Name				{ get; protected set; }
+		[JsonIgnore]	public		string				ReasonToExist		{ get; protected set; }
+		[JsonIgnore]	public		bool				HasBacktestInName	{ get { return Name.Contains("Backtest"); } }
+		[JsonIgnore]	public		Bitmap				Icon				{ get; protected set; }
+		[JsonIgnore]	public		DataSource			DataSource			{ get; protected set; }
+		[JsonIgnore]	public		OrderProcessor		OrderProcessor		{ get; protected set; }
+		[JsonIgnore]	public		StreamingAdapter	StreamingAdapter	{ get; protected set; }
+//		[JsonIgnore]	public		List<Account>		Accounts			{ get; protected set; }
+		[JsonProperty]	public		Account				Account;
+		[JsonIgnore]	public		Account				AccountAutoPropagate {
 			get { return this.Account; }
 			set {
 				this.Account = value;
@@ -46,21 +46,83 @@ namespace Sq1.Core.Broker {
 		[JsonIgnore]	public OrderCallbackDupesChecker OrderCallbackDupesChecker { get; protected set; }
 		[JsonIgnore]	public bool SignalToTerminateAllOrderTryFillLoopsInAllMocks = false;
 
-		[JsonIgnore]	public LivesimBroker			LivesimBroker			{ get; protected set; }
-
-		public BrokerAdapter() {
-			//Accounts = new List<Account>();
-			this.lockSubmitOrders = new object();
-			this.AccountAutoPropagate = new Account("ACCTNR_NOT_SET", -1000);
-			this.OrderCallbackDupesChecker = new OrderCallbackDupesCheckerTransparent(this);
+		[JsonIgnore]				ConnectionState			upstreamConnectionState;
+		[JsonIgnore]	public		ConnectionState			UpstreamConnectionState	{
+			get { return this.upstreamConnectionState; }
+			protected set {
+				if (this.upstreamConnectionState == value) return;	//don't invoke StateChanged if it didn't change
+				if (this.upstreamConnectionState == ConnectionState.UpstreamConnected_downstreamSubscribedAll
+								&& value == ConnectionState.JustInitialized_solidifiersUnsubscribed) {
+					Assembler.PopupException("YOU_ARE_RESETTING_ORIGINAL_DATASOURCE_WITH_LIVESIM_DATASOURCE", null, false);
+				}
+				if (this.upstreamConnectionState == ConnectionState.UpstreamConnected_downstreamUnsubscribed
+								&& value == ConnectionState.JustInitialized_solidifiersSubscribed) {
+					Assembler.PopupException("WHAT_DID_YOU_INITIALIZE? IT_WAS_ALREADY_INITIALIZED_AND_UPSTREAM_CONNECTED", null, false);
+				}
+				this.upstreamConnectionState = value;
+				//copypaste from StreamingAdapter this.RaiseOnConnectionStateChanged();
+			}
 		}
-		public virtual void Initialize(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
-			this.DataSource = dataSource;
-			this.StreamingAdapter = streamingAdapter;
-			this.OrderProcessor = orderProcessor;
+		[JsonProperty]	public		bool					UpstreamConnected					{ get {
+			bool ret = false;
+			//copypaste from StreamingAdapter
+			//switch (this.UpstreamConnectionState) {
+			//    case ConnectionState.UnknownConnectionState:											ret = false;	break;
+			//    case ConnectionState.JustInitialized_solidifiersUnsubscribed:			ret = false;	break;
+			//    case ConnectionState.JustInitialized_solidifiersSubscribed:				ret = false;	break;
+			//    case ConnectionState.DisconnectedJustConstructed:						ret = false;	break;
+
+			//    // used in QuikStreamingAdapter
+			//    case ConnectionState.UpstreamConnected_downstreamUnsubscribed:			ret = true;		break;
+			//    case ConnectionState.UpstreamConnected_downstreamSubscribed:			ret = true;		break;
+			//    case ConnectionState.UpstreamConnected_downstreamSubscribedAll:			ret = true;		break;
+			//    case ConnectionState.UpstreamConnected_downstreamUnsubscribedAll:		ret = true;		break;
+			//    case ConnectionState.UpstreamDisconnected_downstreamSubscribed:			ret = false;	break;
+			//    case ConnectionState.UpstreamDisconnected_downstreamUnsubscribed:		ret = false;	break;
+
+			//    // used in QuikBrokerAdapter
+			//    case ConnectionState.SymbolSubscribed:					ret = true;		break;
+			//    case ConnectionState.SymbolUnsubscribed:				ret = true;		break;
+			//    case ConnectionState.ErrorConnectingNoRetriesAnymore:	ret = false;	break;
+
+			//    // used in QuikLivesimStreaming
+
+			//    case ConnectionState.ConnectFailed:						ret = false;	break;
+			//    case ConnectionState.DisconnectFailed:					ret = false;	break;		// can still be connected but by saying NotConnected I prevent other attempt to subscribe symbols; use "Connect" button to resolve
+
+			//    default:
+			//        Assembler.PopupException("ADD_HANDLER_FOR_NEW_ENUM_VALUE this.ConnectionState[" + this.UpstreamConnectionState + "]");
+			//        ret = false;
+			//        break;
+			//}
+			return ret;
+		} }
+		[JsonIgnore]	public LivesimBroker			LivesimBroker_ownImplementation			{ get; protected set; }
+
+		// public for assemblyLoader: Streaming-derived.CreateInstance();
+		public BrokerAdapter() {
+		    string msg = "We should never be here; skip instantiation by Activator in MainModule::InitializeProviders()";
+		    //throw new Exception(msg);
+		}
+
+		public BrokerAdapter(string reasonToExist) {
+			ReasonToExist									= reasonToExist;
+			//Accounts = new List<Account>();
+			this.lockSubmitOrders			= new object();
+			this.AccountAutoPropagate		= new Account("ACCTNR_NOT_SET", -1000);
+			this.OrderCallbackDupesChecker	= new OrderCallbackDupesCheckerTransparent(this);
+		}
+		public virtual void InitializeDataSource_inverse(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
+			this.InitializeFromDataSource(dataSource);
+			this.StreamingAdapter	= streamingAdapter;
+			this.OrderProcessor		= orderProcessor;
 			this.AccountAutoPropagate.Initialize(this);
-			this.LivesimBroker		= new LivesimBroker(true);
+			//NULL_UNTIL_QUIK_PROVIDES_OWN_DDE_REDIRECTOR this.LivesimBroker_ownImplementation		= new LivesimBrokerDefault(true);
 			//this.LivesimBroker.Initialize(dataSource);
+			this.UpstreamConnectionState = ConnectionState.UnknownConnectionState;
+		}
+		public virtual void InitializeFromDataSource(DataSource dataSource) {
+			this.DataSource			= dataSource;
 		}
 		public virtual void Connect() {
 			throw new Exception("please override BrokerAdapter::Connect() for BrokerAdapter.Name=[" + Name + "]");
@@ -527,6 +589,15 @@ namespace Sq1.Core.Broker {
 			// broker adapters might put some additional order processing,
 			// but they must call OrderProcessor.MoveStopLoss() or imitate similar mechanism
 			this.OrderProcessor.MoveTakeProfit(proto, newTakeProfitPositiveOffset);
+		}
+		public override string ToString() {
+			string dataSourceAsString = this.DataSource != null ? this.DataSource.ToString() : "NOT_INITIALIZED_YET";
+			string ret = this.Name + "/[" + this.UpstreamConnectionState + "]"
+				//+ ": UpstreamSymbols[" + this.SymbolsUpstreamSubscribedAsString + "]"
+				//+ "DataSource[" + dataSourceAsString + "]"
+				+ " (" + this.ReasonToExist + ")"
+				;
+			return ret;
 		}
 	}
 }

@@ -143,7 +143,7 @@ namespace Sq1.Gui.Forms {
 		void btnStreamingWillTriggerScript_Click(object sender, EventArgs e) {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnStreaming.CheckOnClick=True this.BtnStreaming.Checked = !this.BtnStreaming.Checked;
 			try {
-				if (this.btnStreamingTriggersScript.Checked) {
+				if (this.BtnStreamingTriggersScript.Checked) {
 					this.ChartControl.ChartStreamingConsumer.StreamingTriggeringScriptStart();
 					// same idea as in mniSubscribedToStreamingAdapterQuotesBars_Click();
 					ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
@@ -171,7 +171,7 @@ namespace Sq1.Gui.Forms {
 		}
 		void btnStrategyEmittingOrders_Click(object sender, EventArgs e) {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnAutoSubmit.CheckOnClick=True this.BtnAutoSubmit.Checked = !this.BtnAutoSubmit.Checked;;
-			this.ChartFormManager.Executor.IsStrategyEmittingOrders = this.btnStrategyEmittingOrders.Checked;
+			this.ChartFormManager.Executor.IsStrategyEmittingOrders = this.BtnStrategyEmittingOrders.Checked;
 			this.ChartFormManager.Strategy.Serialize();
 		}
 
