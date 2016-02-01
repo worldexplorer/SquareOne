@@ -10,7 +10,7 @@ using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
 	// TODO: it's not an abstract class because....
-	public partial class StreamingAdapter {
+	public abstract partial class StreamingAdapter {
 		[JsonIgnore]	public		string					Name								{ get; protected set; }
 		[JsonIgnore]	public		string					ReasonToExist						{ get; protected set; }
 		[JsonIgnore]	public		Bitmap					Icon								{ get; protected set; }
@@ -189,7 +189,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			channel.QuoteQueue_onlyWhenBacktesting.PusherPause();
+			channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.PusherPause();
 		}
 
 		#region the essence#1 of streaming adapter
@@ -265,7 +265,8 @@ namespace Sq1.Core.Streaming {
 						 && this.LivesimStreaming_ownImplementation.Livesimulator.IsBacktestingLivesimNow) {
 					this.LivesimStreaming_ownImplementation.Livesimulator.AbortRunningBacktestWaitAborted(msg, 0);
 				}
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
+				//NO_TOO_MANY_CHANGES_TO_LOOSEN_ALL_CHECKS GO_AND_DO_IT__I_WILL_SEE_ORANGE_BACKGROUNG_IN_DATASOURCE_TREE
 				return;
 			}
 

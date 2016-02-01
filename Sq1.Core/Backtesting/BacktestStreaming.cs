@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
+using Sq1.Core.DataTypes;
+using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Backtesting {
 	[SkipInstantiationAt(Startup = true)]
@@ -43,14 +45,26 @@ namespace Sq1.Core.Backtesting {
 			return base.UpstreamIsSubscribedRegistryHelper(symbol);
 		}
 
-		//public override string ToString() {
-		//	string dataSourceAsString = this.DataSource != null ? this.DataSource.ToString() : "NOT_INITIALIZED_YET";
-		//	string ret = this.Name + ": "
-		//		//+ "DataSource[" + dataSourceAsString + "]"
-		//		+ base.ToString()
-		//		;
-		//	return ret;
-		//}
+		public virtual bool BacktestContextInitialize_pauseQueueForBacktest_leavePumpUnpausedForLivesimDefault_overrideable(ScriptExecutor executor, Bars barsEmptyButWillGrow) {
+			//return false;	// NOTHING_WAS_DONE, nooneGotPaused
+			bool thereWereNeighbours = this.DataSource
+				.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(
+					executor, false);
+#if DEBUG
+			//Debugger.Break();	// CONFIRM_THAT_LIVESIM_QUIK_IS_OKAY_BETWEEN_HERE
+#endif
+			return thereWereNeighbours;
+		}
 
+		public virtual bool BacktestContextRestore_unpauseQueueForBacktest_leavePumpUnPausedForLivesimDefault_overrideable(ScriptExecutor executor) {
+			//return false;	// NOTHING_WAS_DONE, nooneGotUnPaused
+			bool thereWereNeighbours = this.DataSource
+				.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(
+					executor, false);
+#if DEBUG
+			//Debugger.Break();	// CONFIRM_THAT_LIVESIM_QUIK_IS_OKAY_BETWEEN_HERE
+#endif
+			return thereWereNeighbours;
+		}
 	}
 }

@@ -4,6 +4,9 @@ using Sq1.Core.Streaming;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Execution;
+using Sq1.Core.Livesim;
+using Sq1.Core.Backtesting;
+using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Charting {
 	public class ChartStreamingConsumer : StreamingConsumer {
@@ -159,13 +162,19 @@ namespace Sq1.Core.Charting {
 
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
 				try {
-					bool wrongUsagePopup = executorSafe.Livesimulator.IsBacktestingNoLivesimNow;
-					bool thereWereNeighbours = dataSourceSafe.PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe, wrongUsagePopup);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					//v1
+					//bool wrongUsagePopup = executorSafe.Livesimulator.IsBacktestingNoLivesimNow;
+					//bool thereWereNeighbours = dataSourceSafe.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe, wrongUsagePopup);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					bool thereWereNeighbours = dataSourceSafe
+						.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe, barsSafe);
+
 					// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
 					ReporterPokeUnit pokeUnitNullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
 					//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 				} finally {
-					bool thereWereNeighbours = dataSourceSafe.PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING
+					//v1 bool thereWereNeighbours = dataSourceSafe.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING
+					bool thereWereNeighbours = dataSourceSafe
+						.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe);
 				}
 			}
 
@@ -214,10 +223,10 @@ namespace Sq1.Core.Charting {
 			}
 			#endif	// TEST_INLINE_END
 
-			var streamingSafe	= this.StreamingAdapter_nullReported;
-			var chartFormSafe	= base.ChartShadow_nullReported;
-			var executorSafe	= base.Executor_nullReported;
-			var dataSourceSafe	= this.DataSource_nullReported;
+			StreamingAdapter	streamingSafe	= this.StreamingAdapter_nullReported;
+			var					chartFormSafe	= base.ChartShadow_nullReported;
+			ScriptExecutor		executorSafe	= base.Executor_nullReported;
+			DataSource			dataSourceSafe	= this.DataSource_nullReported;
 
 			// STREAMING_BAR_IS_ALREADY_MERGED_IN_EARLY_BINDER_WITH_QUOTE_RECIPROCALLY
 			//try {
@@ -239,13 +248,21 @@ namespace Sq1.Core.Charting {
 			if (executorSafe.Strategy != null) {
 				if (executorSafe.IsStreamingTriggeringScript) {
 					try {
-						bool wrongUsagePopup = executorSafe.Livesimulator.IsBacktestingNoLivesimNow;
-						bool thereWereNeighbours = dataSourceSafe.PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe, wrongUsagePopup);		// NOW_FOR_LIVE_MOCK_BUFFERING
+						//v1
+						//bool wrongUsagePopup = executorSafe.Livesimulator.IsBacktestingNoLivesimNow;
+						//bool thereWereNeighbours = dataSourceSafe.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe, wrongUsagePopup);		// NOW_FOR_LIVE_MOCK_BUFFERING
+						//v2
+						bool thereWereNeighbours = dataSourceSafe
+							.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe, barsSafe);
+
 						// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
 						ReporterPokeUnit pokeUnitNullUnsafe1 = executorSafe.ExecuteOnNewBarOrNewQuote(quote, true);
 						//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 					} finally {
-						bool thereWereNeighbours = dataSourceSafe.PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING
+						//v1 bool thereWereNeighbours = dataSourceSafe.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING
+						//v2
+						bool thereWereNeighbours = dataSourceSafe
+							.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe);
 					}
 				} else {
 					// UPDATE_REPORTS_OPEN_POSITIONS_WITH_EACH_QUOTE_DESPITE_STRATEGY_IS_NOT_TRIGGERED

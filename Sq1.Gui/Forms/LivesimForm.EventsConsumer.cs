@@ -21,6 +21,7 @@ namespace Sq1.Gui.Forms {
 			ToolStripButton btnStartStop = this.LivesimControl.TssBtnStartStop;
 			bool clickedStart = btnStartStop.Text.Contains("Start");
 			if (clickedStart) {
+				//NO_TOO_MANY_CHANGES_TO_LOOSEN_ALL_CHECKS GO_AND_DO_IT__I_WILL_SEE_ORANGE_BACKGROUNG_IN_DATASOURCE_TREE
 				ScriptExecutor executor = this.chartFormManager.Executor;
 				StreamingAdapter streamingAdapter = executor.DataSource_fromBars.StreamingAdapter;
 				if (streamingAdapter != null) {

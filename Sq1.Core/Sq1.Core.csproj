@@ -117,6 +117,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Livesim\LivesimBrokerSpoiler.cs" />
+    <Compile Include="Livesim\LivesimQuoteBarConsumer.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Livesim\LivesimStreamingDefault.cs" />
     <Compile Include="Livesim\LivesimStreamingEditorEmpty.cs">
       <SubType>UserControl</SubType>
@@ -196,9 +199,6 @@
     <Compile Include="Livesim\LivesimBroker.cs" />
     <Compile Include="Livesim\LivesimDataSource.cs" />
     <Compile Include="Livesim\LevelTwoGeneratorLivesim.cs" />
-    <Compile Include="Livesim\LivesimQuoteBarConsumer.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Livesim\LivesimStreaming.cs" />
     <Compile Include="Livesim\LivesimBrokerEditor.cs">
       <SubType>UserControl</SubType>
@@ -314,12 +314,12 @@
     <Compile Include="Streaming\LevelTwoAndLastQuote.cs" />
     <Compile Include="Streaming\LevelTwoHalf.cs" />
     <Compile Include="Streaming\LevelTwoHalfSortedFrozen.cs" />
+    <Compile Include="Streaming\StreamingAdapter.ReplaceDistributorsForLivesim.cs">
+      <DependentUpon>StreamingAdapter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Streaming\QuotePumpPerChannel.cs" />
     <Compile Include="Streaming\QuoteQueuePerChannel.cs" />
     <Compile Include="Streaming\StreamingAdapter.EventDistributor.cs">
-      <DependentUpon>StreamingAdapter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Streaming\StreamingAdapter.LivesimSupport.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />

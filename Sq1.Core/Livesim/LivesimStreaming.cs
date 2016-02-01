@@ -11,6 +11,8 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
@@ -149,5 +151,156 @@ namespace Sq1.Core.Livesim {
 		protected void				SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor() {
 			this.StreamingOriginal.	SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor();
 		}
+
+		//mandantory DataSource.Streaming=LivesimStreamingDefault allowed Streaming implementors to play with BarsOriginal
+		//1. BacktesterStreaming will
+		//2. LivesimStreamingDefault will not pause anything and will follow the QuotesDelay user specified in LivesimControl
+		//3. LivesimQuik will 
+		public override bool BacktestContextInitialize_pauseQueueForBacktest_leavePumpUnpausedForLivesimDefault_overrideable(ScriptExecutor executor, Bars barsEmptyButWillGrow) {
+			return false;
+
+			//v1
+			//bool runningOnDefaultLivesim = this.DataSource_fromBars.StreamingAdapter is LivesimStreamingDefault;
+			//bool pauseIfFalse = this.DataSource_fromBars.StreamingAdapter
+			//    .DataDistributorsAreReplacedByLivesim_ifYesDontPauseNeighborsOnBacktestContextInitRestore;
+			//if (runningOnDefaultLivesim == false && pauseIfFalse == false) {
+			//v2
+			//bool runningBacktest = this.DataSource_fromBars.StreamingAdapter is BacktestStreaming;
+			//if (runningBacktest == false) {
+//                bool thereWereNeighbours = this.DataSource
+//                    .QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(
+//                        executor, false);
+//#if DEBUG
+//                Debugger.Break();	// CONFIRM_THAT_LIVESIM_QUIK_IS_OKAY_BETWEEN_HERE
+//#endif
+//                return thereWereNeighbours;
+			//} else {
+			//	string msg = "STREAMING_CHILDREN_(EXCEPT_FOR_BACKTEST)_ARE_ENFORCED_TO_PAUSE StreamingAdapter[" + this.DataSource_fromBars.StreamingAdapter + "]";
+			//	Assembler.PopupException(msg + msig, null, false);
+			//}
+		}
+
+		public override bool BacktestContextRestore_unpauseQueueForBacktest_leavePumpUnPausedForLivesimDefault_overrideable(ScriptExecutor executor) {
+			return false;
+
+			//v1
+			//StreamingAdapter asLivesimDefaultOrOtherChild = this.DataSource_fromBars.StreamingAdapter as LivesimStreaming;
+			//bool runningOnDefault = asLivesimDefaultOrOtherChild is LivesimStreamingDefault;
+			//bool unPauseIfFalse = this.DataSource_fromBars.StreamingAdapter
+			//    .DataDistributorsAreReplacedByLivesim_ifYesDontPauseNeighborsOnBacktestContextInitRestore;
+			//if (asLivesimDefaultOrOtherChild != null) {
+			//if (runningOnDefault == false && unPauseIfFalse == false) {
+			//v2
+			//bool runningBacktest = this.DataSource_fromBars.StreamingAdapter is BacktestStreaming;
+			//if (runningBacktest == false) {
+//                bool thereWereNeighbours = this.DataSource
+//                    .QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(
+//                        executor, false);
+//#if DEBUG
+//                Debugger.Break();	// CONFIRM_THAT_LIVESIM_QUIK_IS_OKAY_BETWEEN_HERE
+//#endif
+//                return thereWereNeighbours;
+			//} else {
+			//    string msg = "STREAMING_CHILDREN_(EXCEPT_FOR_BACKTEST)_ARE_ENFORCED_TO_UNPAUSE StreamingAdapter[" + this.DataSource_fromBars.StreamingAdapter + "]";
+			//    Assembler.PopupException(msg + msig, null, false);
+			//    // WHO_NEEDS_IT? channel.QuotePump.PushConsumersPaused = false;
+			//}
+		}
+
+
+		//public void SubscribeLivesimQuoteBarConsumer_toDataDistributor_replacedForLivesim(Livesimulator livesimulator) {
+		//    if (base.DataDistributorsAreReplacedByLivesim_ifYesDontPauseNeighborsOnBacktestContextInitRestore == false) return;
+
+		//    bool runningOnLivesimStreamingDefault = this.StreamingOriginal is LivesimStreamingDefault;
+		//         runningOnLivesimStreamingDefault = false;
+		//    if (runningOnLivesimStreamingDefault) return;
+	
+		//    // will allow to reach DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol()
+		//    // in PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread()
+
+		//    // DONT_DELETE NOT_A_GARBAGE
+		//    livesimulator.BarsSimulating.DataSource = livesimulator.DataSourceAsLivesim_nullUnsafe;	// may not need to restore (base.BarsSimulating is not needed after Livesim is done)
+		//    // DONT_DELETE NOT_A_GARBAGE
+
+			
+		//    string					symbol			= livesimulator.BarsSimulating.Symbol;
+		//    BarScaleInterval		scaleInterval	= livesimulator.BarsSimulating.ScaleInterval;
+		//    StreamingConsumer		chartless		= livesimulator.LivesimQuoteBarConsumer;
+		//    ScriptExecutor			executor		= livesimulator.Executor;
+
+		//    //DataDistributor distr = livesimulator.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor_replacedForLivesim;
+		//    DataDistributor distr = base.DataDistributor_replacedForLivesim;
+		//    bool livesimIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count > 0;
+		//    if (livesimIsSubscribed_toBarsSimulated == false) {
+		//        bool willPumpInNewThread = true;	// false led to deadlock on BeginInvoke both in DDE Server and in my GuiThread
+		//        distr.ConsumerQuoteSubscribe(symbol, scaleInterval, chartless, willPumpInNewThread);
+		//        distr.ConsumerBarSubscribe	(symbol, scaleInterval, chartless, willPumpInNewThread);
+		//        distr.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(symbol, scaleInterval);
+		//    } else {
+		//        string msg1 = " USER_SUBSCRIBED_CHART_TO_QUOTES&BARS"
+		//            + " 1) DID_YOU_INVOKE_ALREADY_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()"
+		//            + " 2) DUPLICATE_CALL_TO_SimulationPreBarsSubstitute_overrideable()";
+		//        Assembler.PopupException(msg1, null, false);
+		//    }
+		//    #region PARANOID
+		//    if (symbol != executor.Bars.Symbol) {
+		//        string msg1 = "WHEN_ARE_SYMBOLS_DIFFERENT??..";
+		//        Assembler.PopupException(msg1);
+		//    }
+		//    List<SymbolScaleDistributionChannel> mustBeOneTimeframe = distr.GetDistributionChannels_allScaleIntervals_forSymbol(symbol);
+		//    if (mustBeOneTimeframe.Count != 1) {
+		//        string msg1 = "BAD_JOB#1_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()";
+		//        Assembler.PopupException(msg1);
+		//    } else {
+		//        SymbolScaleDistributionChannel mustBeChartSubscribedToQuotesAndBars = mustBeOneTimeframe[0];
+		//        if (mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteCount != 1) {
+		//            string msg1 = "BAD_JOB#2_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
+		//            Assembler.PopupException(msg1);
+		//        } else {
+		//            bool mustBeChartSubscribedToQuotes = mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteContains(chartless);
+		//            if (mustBeChartSubscribedToQuotes == false) {
+		//                string msg1 = "BAD_JOB#3_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
+		//                Assembler.PopupException(msg1);
+		//            }
+		//        }
+
+		//        if (mustBeChartSubscribedToQuotesAndBars.ConsumersBarCount != 1) {
+		//            string msg1 = "BAD_JOB#4_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
+		//            Assembler.PopupException(msg1);
+		//        } else {
+		//            bool mustBeChartSubscribedToBars = mustBeChartSubscribedToQuotesAndBars.ConsumersBarContains(chartless);
+		//            if (mustBeChartSubscribedToBars == false) {
+		//                string msg1 = "BAD_JOB#5_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
+		//                Assembler.PopupException(msg1);
+		//            }
+		//        }
+		//    }
+		//    #endregion
+		//}
+
+		//public void UnSubscribeLivesimQuoteBarConsumer_fromDataDistributor_replacedForLivesim(Livesimulator livesimulator) {
+		//    if (base.DataDistributorsAreReplacedByLivesim_ifYesDontPauseNeighborsOnBacktestContextInitRestore == false) return;
+
+		//    bool runningOnLivesimStreamingDefault = this.StreamingOriginal is LivesimStreamingDefault;
+		//         runningOnLivesimStreamingDefault = false;
+		//    if (runningOnLivesimStreamingDefault) return;
+
+
+		//    //DataDistributor distr = this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor_replacedForLivesim;
+		//    DataDistributor distr = base.DataDistributor_replacedForLivesim;
+		//    bool livesimIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count == 1;
+		//    if (livesimIsSubscribed_toBarsSimulated) {
+		//        string					symbol			= livesimulator.BarsSimulating.Symbol;
+		//        BarScaleInterval		scaleInterval	= livesimulator.BarsSimulating.ScaleInterval;
+		//        StreamingConsumer		chartless		= livesimulator.LivesimQuoteBarConsumer;
+
+		//        distr.ConsumerQuoteUnsubscribe	(symbol, scaleInterval, chartless);
+		//        distr.ConsumerBarUnsubscribe	(symbol, scaleInterval, chartless);
+		//    } else {
+		//        string msg1 = "WHO_UNSUBSCRIBED_LIVESIM.STREAMING_TO_BARS_SIMULATING??? DUPLICATE_CALL_TO_SimulationPostBarsRestore_overrideable()";
+		//        Assembler.PopupException(msg1);
+		//    }
+	
+		//}
 	}
 }

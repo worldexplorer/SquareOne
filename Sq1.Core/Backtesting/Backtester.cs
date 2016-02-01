@@ -99,6 +99,7 @@ namespace Sq1.Core.Backtesting {
 
 			int repaintableChunk = (int)(this.BarsOriginal.Count / 10);
 			if (repaintableChunk <= 0) repaintableChunk = 1;
+			if (this is Livesimulator) repaintableChunk = 1;
 				
 			int excludeLastBarStreamingWillTriggerIt = this.BarsOriginal.Count - 1;
 			for (int barNo = 0; barNo <= excludeLastBarStreamingWillTriggerIt; barNo++) {
@@ -222,11 +223,11 @@ namespace Sq1.Core.Backtesting {
 				//WONT_BE_RESET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
 				if (this.Executor.ChartShadow != null) this.Executor.ChartShadow.PaintAllowedDuringLivesimOrAfterBacktestFinished = false;
 
+				#region candidate for this.BacktestDataSourceBuildFromUserSelection()
 				this.BarsOriginal = this.Executor.Bars;
 				this.BarsSimulating = this.Executor.Bars.CloneNoBars(BARS_BACKTEST_CLONE_PREFIX + this.BarsOriginal);
 				this.Executor.EventGenerator.RaiseOnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4();
 				
-				#region candidate for this.BacktestDataSourceBuildFromUserSelection()
 				BacktestSpreadModeler spreadModeler;
 				// kept it on the surface and didn't pass ScriptContextCurrent.SpreadModelerPercent to "new BacktestDataSource()" because later BacktestDataSource:
 				// 1) will support different SpreadModelers with not only 1 parameter like SpreadModelerPercentage;
@@ -249,9 +250,9 @@ namespace Sq1.Core.Backtesting {
 						spreadModeler = new BacktestSpreadModelerPercentage(this.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
 						break;
 				}
-				this.BacktestDataSource.Initialize(this.BarsSimulating, spreadModeler);
 				#endregion
 
+				this.BacktestDataSource.Initialize(this.BarsSimulating, spreadModeler);
 				this.BarsSimulating.DataSource = this.BacktestDataSource;
 
 				StreamingAdapter streaming = this.BacktestDataSource.StreamingAdapter;
@@ -262,6 +263,7 @@ namespace Sq1.Core.Backtesting {
 				
 				this.Executor.BacktestContextInitialize(this.BarsSimulating);
 
+				#region PARANOID
 				if (this.BarsOriginal == null) {
 					string msg = "consumers will expect this.BarsOriginal != null";
 					Assembler.PopupException(msg);
@@ -286,6 +288,7 @@ namespace Sq1.Core.Backtesting {
 					string msg = "consumers will expect this.Bars.Count = 0";
 					Assembler.PopupException(msg);
 				}
+				#endregion
 
 				//ALREADY_RAISED_INSIDE_CONTEXT_INITIALIZE() this.Executor.EventGenerator.RaiseOnBacktesterSimulationContextInitialized_step2of4();
 			} catch (Exception ex) {
@@ -424,7 +427,7 @@ namespace Sq1.Core.Backtesting {
 
 				int pendingsLeftAfterInjected = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 
-				this.BacktestDataSource.StreamingAsBacktestNullUnsafe.PushQuoteGenerated(quote);
+				this.BacktestDataSource.StreamingAsBacktest_nullUnsafe.PushQuoteGenerated(quote);
 
 				//nothing poductive below, only breakpoint placeholders
 				#if DEBUG //TEST_EMEDDED

@@ -10,25 +10,33 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.Indicators;
 using Sq1.Core.Streaming;
 using Sq1.Core.Livesim;
+using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
 		Bars		preBacktestBars;
 		DataSource	preDataSource;
 		bool		preBacktestIsStreaming;
+
 		internal void BacktestContextInitialize(Bars barsEmptyButWillGrow) {
-			StreamingAdapter livesimDefaultOrOtherChild = this.DataSource_fromBars.StreamingAdapter;
-			if (livesimDefaultOrOtherChild != null) {
-				bool runningOnDefault = livesimDefaultOrOtherChild is LivesimStreamingDefault;
-				bool livesimReplacedFromDefault = this.DataSource_fromBars.StreamingAdapter.DataDistributorsAreReplacedByLivesim_dontPauseNeighborsOnBacktestContextInitRestore == false;
-				if (runningOnDefault == false && livesimReplacedFromDefault == true) {
-					bool thereWereNeighbours = this.DataSource_fromBars.PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(this, this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow);
-				} else {
-					string msg = "NOT_PAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextInitialize(" + barsEmptyButWillGrow + ")";
-					Assembler.PopupException(msg, null, false);
-				}
+			string msig = " //BacktestContextInitialize(" + barsEmptyButWillGrow + ")";
+
+			DataSource dataSourceFromBars = this.DataSource_fromBars;
+			if (dataSourceFromBars == null) {
+				string msg = "MUST_NEVER_BE_NULL DataSource_fromBars[" + dataSourceFromBars + "]";
+				Assembler.PopupException(msg + msig);
+				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
+				return;
 			}
-	
+			if (dataSourceFromBars.StreamingAsBacktest_nullUnsafe == null) {
+				string msg = "MUST_NEVER_BE_NULL DataSource_fromBars.StreamingAsBacktest_nullUnsafe[" + dataSourceFromBars.StreamingAsBacktest_nullUnsafe + "]";
+				Assembler.PopupException(msg + msig);
+				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
+				return;
+			}
+
+			dataSourceFromBars.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(this, barsEmptyButWillGrow);
+
 			this.preBacktestBars = this.Bars;	// this.preBacktestBars != null will help ignore this.IsStreaming saving IsStreaming state to json
 			this.preDataSource = this.DataSource_fromBars;
 			this.preBacktestIsStreaming = this.IsStreamingTriggeringScript;
@@ -61,11 +69,12 @@ namespace Sq1.Core.StrategyBase {
 		}
 		internal void BacktestContextRestore() {
 			this.Bars = this.preBacktestBars;
+			string msig = " //BacktestContextRestore(" + this.Bars + ")";
 			foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
 				if (indicator.OwnValuesCalculated.Count != this.Bars.Count) {
 					string state = "MA.OwnValues.Count=499, MA.BarsEffective.Count=500[0...499], MA.BarsEffective.BarStreaming=null <= that's why indicator has 1 less";
 					string msg = "YOU_ABORTED_LIVESIM_BUT_DIDNT_RECALCULATE_INDICATORS? REMOVE_HOLES_IN_INDICATOR " + indicator;
-					Assembler.PopupException(msg, null, false);
+					Assembler.PopupException(msg + msig, null, false);
 				}
 				indicator.BacktestContextRestoreSwitchToOriginalBarsContinueToLiveNorecalculate();
 			}
@@ -75,15 +84,22 @@ namespace Sq1.Core.StrategyBase {
 			// MOVED_HERE_AFTER_ASSIGNING_IS_STREAMING_TO"avoiding saving strategy each backtest due to streaming simulation switch on/off"
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 
-			if (this.DataSource_fromBars.StreamingAdapter != null) {
-				if (this.DataSource_fromBars.StreamingAdapter.DataDistributorsAreReplacedByLivesim_dontPauseNeighborsOnBacktestContextInitRestore == false) {
-					bool thereWereNeighbours = this.DataSource_fromBars.PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(this, this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow);
-				} else {
-					string msg = "NOT_UNPAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextRestore(" + this.Bars + ")";
-					Assembler.PopupException(msg, null, false);
-					// WHO_NEEDS_IT? channel.QuotePump.PushConsumersPaused = false;
-				}
+			DataSource dataSourceFromBars = this.DataSource_fromBars;
+			if (dataSourceFromBars == null) {
+				string msg = "MUST_NEVER_BE_NULL DataSource_fromBars[" + dataSourceFromBars + "]";
+				Assembler.PopupException(msg + msig);
+				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
+				return;
 			}
+			if (dataSourceFromBars.StreamingAsBacktest_nullUnsafe == null) {
+				string msg = "MUST_NEVER_BE_NULL BacktestDataSource_fromBars_nullUnsafe.StreamingAsBacktest_nullUnsafe[" + this.DataSource_fromBars.StreamingAsBacktest_nullUnsafe + "]";
+				Assembler.PopupException(msg + msig);
+				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
+				return;
+			}
+
+			dataSourceFromBars.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(this);
+
 			this.EventGenerator.RaiseOnBacktesterContextRestoredAfterExecutingAllBars_step4of4(null);
 		}
 		public void BacktesterAbortIfRunningRestoreContext() {

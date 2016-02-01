@@ -15,7 +15,7 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	DataDistributor		dataDistributorSolidifiers_preLivesimForSymbolLivesimming;
 		[JsonIgnore]	LivesimStreaming	livesimStreamingForWhomDataDistributorsAreReplaced;
 
-		[JsonIgnore]	public bool			DataDistributorsAreReplacedByLivesim_dontPauseNeighborsOnBacktestContextInitRestore {
+		[JsonIgnore]	public bool			DataDistributorsAreReplacedByLivesim_ifYesDontPauseNeighborsOnBacktestContextInitRestore {
 			get { return this.livesimStreamingForWhomDataDistributorsAreReplaced != null; } }
 
 		internal void SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(LivesimStreaming livesimStreaming) {

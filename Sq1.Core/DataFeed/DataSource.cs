@@ -13,6 +13,7 @@ using Sq1.Core.Streaming;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Charting;
 using Sq1.Core.Livesim;
+using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.DataFeed {
 	public partial class DataSource : NamedObjectJsonSerializable {
@@ -29,6 +30,9 @@ namespace Sq1.Core.DataFeed {
 			} }
 		[JsonProperty]	public BarScaleInterval		ScaleInterval;
 		[JsonProperty]	public StreamingAdapter		StreamingAdapter;
+		[JsonIgnore]	public BacktestStreaming	StreamingAsBacktest_nullUnsafe	{ get { return this.StreamingAdapter as BacktestStreaming; } }
+		[JsonIgnore]	public LivesimStreaming		StreamingAsLivesim_nullUnsafe	{ get { return this.StreamingAdapter as LivesimStreaming; } }
+
 		[JsonProperty]	public BrokerAdapter		BrokerAdapter;
 		[JsonProperty]	public string				MarketName;
 		[JsonIgnore]	public MarketInfo			marketInfo;
@@ -391,32 +395,30 @@ namespace Sq1.Core.DataFeed {
 
 			return barsCompressed;
 		}
-		public bool PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executor, bool wrongUsagePopup = true) {
+		public bool QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executorImBacktesting, bool wrongUsagePopup = true) {
 			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
-				.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
-			string msig = " //PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executor + ")";
+				.GetDistributionChannelFor_nullUnsafe(executorImBacktesting.Bars.Symbol, executorImBacktesting.Bars.ScaleInterval);
+			string msig = " //QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executorImBacktesting + ")";
 			if (channel == null) {
 				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
 					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
 					;
-				//Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				return false;
 			}
-			if (channel.QuoteQueue_onlyWhenBacktesting == null) {
-				return false;
-			}
-			if (channel.QuoteQueue_onlyWhenBacktesting.HasSeparatePushingThread == false) {
+			if (channel.ImQueueNotPump_trueOnlyForBacktest == false ||
+				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == true) {
 				if (wrongUsagePopup == true) {
-					string msg = "WILL_PAUSE_DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
+					string msg = "WILL_NOT_PAUSE_PUMP DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
 					Assembler.PopupException(msg + msig);
 				}
 				return false;
 			}
-			channel.PumpPause_addBacktesterLaunchingScript_eachQuote(executor.BacktesterOrLivesimulator);
+			channel.QueueOrPumpPause_addBacktesterLaunchingScript_eachQuote(executorImBacktesting.BacktesterOrLivesimulator);
 			return true;
 		}
-		public bool PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executor, bool wrongUsagePopup = true) {
-			string msig = " //PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executor + ")";
+		public bool QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executorImBacktesting, bool wrongUsagePopup = true) {
+			string msig = " //QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executorImBacktesting + ")";
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
 				string msg = "I_REFUSE_TO_RESUME_PUMP_BECAUSE_IT_LEADS_TO_DEADLOCK IM_CLOSING_MAINFORM_WHILE_LIVESIM_IS_RUNNING";
 				Assembler.PopupException(msg + msig, null, false);
@@ -424,26 +426,80 @@ namespace Sq1.Core.DataFeed {
 			}
 
 			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
-				.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
+				.GetDistributionChannelFor_nullUnsafe(executorImBacktesting.Bars.Symbol, executorImBacktesting.Bars.ScaleInterval);
 			if (channel == null) {
 				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
 					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
 					;
-				//Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				return false;
 			}
 
-			if (channel.QuoteQueue_onlyWhenBacktesting.HasSeparatePushingThread == false) {
+			if (channel.ImQueueNotPump_trueOnlyForBacktest == false ||
+				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == true) {
 				if (wrongUsagePopup == true) {
-					string msg = "WILL_UNPAUSE_DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
+					string msg = "WILL_NOT_UNPAUSE_PUMP DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
 					Assembler.PopupException(msg + msig, null, false);
 				}
 				return false;
 			}
-			channel.PumpResume_removeBacktesterFinishedScript_eachQuote(executor.BacktesterOrLivesimulator);
+			channel.QueueOrPumpResume_removeBacktesterFinishedScript_eachQuote(executorImBacktesting.BacktesterOrLivesimulator);
 			return true;
 		}
 
+
+
+		public bool OwnLivesimPumpHelper_PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
+			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
+				.GetDistributionChannelFor_nullUnsafe(executorImLivesimming.Bars.Symbol, executorImLivesimming.Bars.ScaleInterval);
+			string msig = " //OwnLivesimPumpHelper_PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executorImLivesimming + ")";
+			if (channel == null) {
+				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
+					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
+					;
+				Assembler.PopupException(msg + msig);
+				return false;
+			}
+			if (channel.ImQueueNotPump_trueOnlyForBacktest == true ||
+				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == false) {
+				if (wrongUsagePopup == true) {
+					string msg = "WILL_PAUSE DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
+					Assembler.PopupException(msg + msig);
+				}
+				//return false;
+			}
+			channel.QueueOrPumpPause_addBacktesterLaunchingScript_eachQuote(executorImLivesimming.BacktesterOrLivesimulator);
+			return true;
+		}
+		public bool OwnLivesimHelper_PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
+			string msig = " //OwnLivesimHelper_PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executorImLivesimming + ")";
+			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
+				string msg = "I_REFUSE_TO_RESUME_PUMP_BECAUSE_IT_LEADS_TO_DEADLOCK IM_CLOSING_MAINFORM_WHILE_LIVESIM_IS_RUNNING";
+				Assembler.PopupException(msg + msig, null, false);
+				return false;
+			}
+
+			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
+				.GetDistributionChannelFor_nullUnsafe(executorImLivesimming.Bars.Symbol, executorImLivesimming.Bars.ScaleInterval);
+			if (channel == null) {
+				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
+					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
+					;
+				Assembler.PopupException(msg + msig);
+				return false;
+			}
+
+			if (channel.ImQueueNotPump_trueOnlyForBacktest == true ||
+				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == false) {
+				if (wrongUsagePopup == true) {
+					string msg = "WILL_UNPAUSE DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
+					Assembler.PopupException(msg + msig, null, false);
+				}
+				//return false;
+			}
+			channel.QueueOrPumpResume_removeBacktesterFinishedScript_eachQuote(executorImLivesimming.BacktesterOrLivesimulator);
+			return true;
+		}
 		//public bool PumpingPausedGet(Bars bars) {
 		//    DataDistributor distr = this.StreamingAdapter.DataDistributor;
 		//    SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
@@ -459,8 +515,37 @@ namespace Sq1.Core.DataFeed {
 		public bool PumpingWaitUntilPaused(Bars bars, int maxWaitingMillis = 1000) {
 			DataDistributor distr = this.StreamingAdapter.DataDistributor_replacedForLivesim;
 			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
-			bool paused = channel.QuoteQueue_onlyWhenBacktesting.WaitUntilPaused(maxWaitingMillis);
+			bool paused = channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.WaitUntilPaused(maxWaitingMillis);
 			return paused;
 		}
+
+		internal bool QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(ScriptExecutor executor, Bars barsEmptyButWillGrow) {
+			bool someoneGotPaused = false;
+			if (this.StreamingAdapter is LivesimStreaming) {
+				someoneGotPaused = this.StreamingAsLivesim_nullUnsafe
+					.BacktestContextInitialize_pauseQueueForBacktest_leavePumpUnpausedForLivesimDefault_overrideable(executor, barsEmptyButWillGrow);
+			} else {
+				if (this.StreamingAdapter is BacktestStreaming) {
+					someoneGotPaused = this.StreamingAsBacktest_nullUnsafe
+						.BacktestContextInitialize_pauseQueueForBacktest_leavePumpUnpausedForLivesimDefault_overrideable(executor, barsEmptyButWillGrow);
+				}
+			}
+			return someoneGotPaused;
+		}
+
+		internal bool QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(ScriptExecutor executor) {
+			bool someoneGotUnPaused = false;
+			if (this.StreamingAdapter is LivesimStreaming) {
+				someoneGotUnPaused = this.StreamingAsLivesim_nullUnsafe
+					.BacktestContextRestore_unpauseQueueForBacktest_leavePumpUnPausedForLivesimDefault_overrideable(executor);
+			} else {
+				if (this.StreamingAdapter is BacktestStreaming) {
+					someoneGotUnPaused = this.StreamingAsBacktest_nullUnsafe
+						.BacktestContextRestore_unpauseQueueForBacktest_leavePumpUnPausedForLivesimDefault_overrideable(executor);
+				}
+			}
+			return someoneGotUnPaused;
+		}
+
 	}
 }
