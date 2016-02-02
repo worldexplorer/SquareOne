@@ -225,7 +225,7 @@ namespace Sq1.Core.Backtesting {
 
 				#region candidate for this.BacktestDataSourceBuildFromUserSelection()
 				this.BarsOriginal = this.Executor.Bars;
-				this.BarsSimulating = this.Executor.Bars.CloneNoBars(BARS_BACKTEST_CLONE_PREFIX + this.BarsOriginal);
+				this.BarsSimulating = this.Executor.Bars.CloneNoBars(BARS_BACKTEST_CLONE_PREFIX);	// + this.BarsOriginal
 				this.Executor.EventGenerator.RaiseOnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4();
 				
 				BacktestSpreadModeler spreadModeler;
@@ -251,6 +251,15 @@ namespace Sq1.Core.Backtesting {
 						break;
 				}
 				#endregion
+
+				try {
+					if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) {
+						Thread.CurrentThread.Name = "BACKTESTING " + this.Executor.Strategy.WindowTitle + " " + this.BarsSimulating.InstanceScaleCount;
+					}
+				} catch (Exception ex) {
+					string msg = "LIVESIM_FAILED_TO_SET_THREAD_NAME OR_NPE";
+					Assembler.PopupException(msg, ex);
+				}
 
 				this.BacktestDataSource.Initialize(this.BarsSimulating, spreadModeler);
 				this.BarsSimulating.DataSource = this.BacktestDataSource;
@@ -488,11 +497,11 @@ namespace Sq1.Core.Backtesting {
 			}
 			this.RequestingBacktestAbortMre	.Dispose();
 			this.BacktestAbortedMre			.Dispose();
-			this.BacktestIsRunningMre			.Dispose();
+			this.BacktestIsRunningMre		.Dispose();
 
 			this.RequestingBacktestAbortMre	= null;
 			this.BacktestAbortedMre			= null;
-			this.BacktestIsRunningMre			= null;
+			this.BacktestIsRunningMre		= null;
 			this.IsDisposed = true;
 		}
 		public bool IsDisposed { get; private set; }

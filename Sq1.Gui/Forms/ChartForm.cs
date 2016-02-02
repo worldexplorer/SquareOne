@@ -270,6 +270,7 @@ namespace Sq1.Gui.Forms {
 				this.mniBacktestOnDataSourceSaved								.Checked = false;
 				this.mniBacktestOnRestart										.Checked = false;
 				this.mniBacktestOnSelectorsChange								.Checked = false;
+				this.mniBacktestAfterSubscribed									.Checked = false;
 				this.BtnStrategyEmittingOrders									.Checked = false;
 				this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Checked = false;
 
@@ -277,6 +278,7 @@ namespace Sq1.Gui.Forms {
 				this.mniBacktestOnDataSourceSaved								.Enabled = false;
 				this.mniBacktestOnRestart										.Enabled = false;
 				this.mniBacktestOnSelectorsChange								.Enabled = false;
+				this.mniBacktestAfterSubscribed									.Enabled = false;
 				this.BtnStrategyEmittingOrders									.Enabled = false;
 				this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Enabled = false;
 				
@@ -288,6 +290,7 @@ namespace Sq1.Gui.Forms {
 			this.mniBacktestOnDataSourceSaved								.Checked = ctxScript.BacktestOnDataSourceSaved;	// looks redundant here
 			this.mniBacktestOnRestart										.Checked = ctxScript.BacktestOnRestart;
 			this.mniBacktestOnSelectorsChange								.Checked = ctxScript.BacktestOnSelectorsChange;
+			this.mniBacktestAfterSubscribed									.Checked = ctxScript.BacktestAfterSubscribed;
 			this.BtnStrategyEmittingOrders									.Checked = ctxScript.StrategyEmittingOrders;
 			this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Checked = ctxScript.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
 
@@ -295,11 +298,13 @@ namespace Sq1.Gui.Forms {
 			this.mniBacktestOnDataSourceSaved								.Enabled = true;
 			this.mniBacktestOnRestart										.Enabled = true;
 			this.mniBacktestOnSelectorsChange								.Enabled = true;
+			this.mniBacktestAfterSubscribed									.Enabled = true;
 			this.BtnStrategyEmittingOrders									.Enabled = true;
 			this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Enabled = true;
 
 			this.BtnStreamingTriggersScript									.Enabled = true;
 			this.PropagateContextScriptToLTB(ctxScript);
+			this.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 		}
 		
 		public void PropagateContextScriptToLTB(ContextScript ctxScript) {

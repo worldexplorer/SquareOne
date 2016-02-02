@@ -6,8 +6,6 @@ using Sq1.Core.StrategyBase;
 namespace Sq1.Core.Livesim {
 	public class LivesimDataSource : BacktestDataSource, IDisposable {
 		public ScriptExecutor		Executor						{ get; private set; }
-		public LivesimStreaming		StreamingAsLivesimNullUnsafe	{ get { return base.StreamingAdapter	as LivesimStreaming; } }
-		public LivesimBroker		BrokerAsLivesimNullUnsafe		{ get { return base.BrokerAdapter		as LivesimBroker; } }
 
 		LivesimDataSource() {
 			base.Name				= "LivesimDataSource";
@@ -20,24 +18,30 @@ namespace Sq1.Core.Livesim {
 		}
 
 		public void PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource() {
-			string msig = " //PushPreInstantiatedLivesimAdaptersToLivesimDataSource() [" + this.ToString() + "]";
+			string msig = " //PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource() [" + this.ToString() + "]";
 			if (this.Executor.DataSource_fromBars.StreamingAdapter.LivesimStreaming_ownImplementation != null) {
 				base.StreamingAdapter = this.Executor.DataSource_fromBars.StreamingAdapter.LivesimStreaming_ownImplementation;
 			    string msg1 = "STREAMING_SUBSTITUTED_FOR_LIVESIM_DATASOURCE";
 			    Assembler.PopupException(msg1 + msig, null, false);
 			} else {
-				if (this.StreamingAsLivesimNullUnsafe == null) {
+				if (base.StreamingAsLivesim_nullUnsafe == null) {
 					if (this.Executor.DataSource_fromBars.StreamingAdapter is LivesimStreamingDefault) {
-						base.StreamingAdapter = this.Executor.DataSource_fromBars.StreamingAdapter;
+						if (base.StreamingAdapter != this.Executor.DataSource_fromBars.StreamingAdapter) {
+							base.StreamingAdapter  = this.Executor.DataSource_fromBars.StreamingAdapter;
+						}
 					}
 				}
-				if (this.StreamingAsLivesimNullUnsafe == null) {
+				if (base.StreamingAsLivesim_nullUnsafe == null) {
 					string msg1 = "I_REFUSE_TO_RUN_LIVESIM_WITHOUT_LIVESIMSTREAMING"
 						+ " LivesimDataSource.ctor() should have created its own basic LivesimStreaming<=BacktestStreaming, now NULL";
 					Assembler.PopupException(msg1);
 				} else {
-					string msg1 = "USING_LivesimStreaming (no streaming chosen in DataSourceEditor), will use QuoteGen=>Pump straight;"
-						+ " StreamingAsLivesimNullUnsafe[" + this.StreamingAsLivesimNullUnsafe + "]";
+					string msg1 = "WILL_LIVESIM_VIA"
+						+ " StreamingAsLivesim_nullUnsafe[" + base.StreamingAsLivesim_nullUnsafe + "]"
+						+ ".DataDistributor_replacedForLivesim[" + base.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim.ReasonIwasCreated + "]"
+						//+ " (LivesimStreamingDefault was probably chosen in DataSourceEditor which QuoteGen=>Pumps)"
+						;
+					Assembler.PopupException(msg1 + msig, null, false);
 				}
 			}
 			if (this.Executor.DataSource_fromBars.BrokerAdapter.LivesimBroker_ownImplementation != null) {
@@ -45,18 +49,22 @@ namespace Sq1.Core.Livesim {
 			    string msg1 = "BROKER_SUBSTITUTED_FOR_LIVESIM_DATASOURCE";
 			    Assembler.PopupException(msg1 + msig, null, false);
 			} else {
-				if (this.BrokerAsLivesimNullUnsafe == null) {
+				if (this.BrokerAsLivesim_nullUnsafe == null) {
 					if (this.Executor.DataSource_fromBars.BrokerAdapter is LivesimBrokerDefault) {
-						base.BrokerAdapter = this.Executor.DataSource_fromBars.BrokerAdapter;
+						if (base.BrokerAdapter != this.Executor.DataSource_fromBars.BrokerAdapter) {
+							base.BrokerAdapter  = this.Executor.DataSource_fromBars.BrokerAdapter;
+						}
 					}
 				}
-				if (this.BrokerAsLivesimNullUnsafe == null) {
+				if (this.BrokerAsLivesim_nullUnsafe == null) {
 					string msg2 = "I_REFUSE_TO_RUN_LIVESIM_WITHOUT_LIVESIMBROKER"
 						+ " LivesimDataSource.ctor() should have created its own basic LivesimBroker<=BacktestBroker, now NULL";
 					Assembler.PopupException(msg2);
 				} else {
-					string msg1 = "USING_LivesimBroker (no broker chosen in DataSourceEditor), will use OrderProcessor straight;"
-						+ " BrokerAsLivesimNullUnsafe[" + this.BrokerAsLivesimNullUnsafe + "]";
+					string msg1 = "WILL_LIVESIM_VIA"
+						+ " BrokerAsLivesim_nullUnsafe[" + base.BrokerAsLivesim_nullUnsafe + "]"
+						;
+					Assembler.PopupException(msg1 + msig, null, false);
 				}
 			}
 		}
@@ -67,12 +75,12 @@ namespace Sq1.Core.Livesim {
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.StreamingAsLivesimNullUnsafe != null) {
-				this.StreamingAsLivesimNullUnsafe.Dispose();
+			if (base.StreamingAsLivesim_nullUnsafe != null) {
+				base.StreamingAsLivesim_nullUnsafe.Dispose();
 				base.StreamingAdapter = null;
 			}
-			if (this.BrokerAsLivesimNullUnsafe != null) {
-				this.BrokerAsLivesimNullUnsafe.Dispose();
+			if (this.BrokerAsLivesim_nullUnsafe != null) {
+				this.BrokerAsLivesim_nullUnsafe.Dispose();
 				base.BrokerAdapter = null;
 			}
 			this.IsDisposed = true;

@@ -84,7 +84,7 @@ namespace Sq1.Gui {
 					//v2 CANCELLING_THIS_CLOSE_EVENT_COMLETELY,WAITING_LIVESIM(s)_TO_STOP_AND_GENERATING_ANOTHER_CLOSE_EVENT_AGAIN THIS_WAY_I_LET_DDE_RUN
 					Task t = new Task(delegate() {
 						livesimRunning.AbortRunningBacktestWaitAborted(msig, 60 * 1000);
-						int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor_replacedForLivesim.DistributionChannels.Count;
+						int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim.DistributionChannels.Count;
 						if (mustBeZero_AbortedOk != 0) {
 						    string msg = "mustBeZero_AbortedOk[" + mustBeZero_AbortedOk + "]";
 						    Assembler.PopupException(msg, null, false);

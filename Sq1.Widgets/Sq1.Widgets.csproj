@@ -52,8 +52,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Correlation\CorrelatorControl.EventConsumer.cs">
@@ -397,6 +399,15 @@
     <Compile Include="ToolStripWidgets\ToolStripItemComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="VersionsCredits\MenuItemVersionsCredits.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="VersionsCredits\VersionsCreditsUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="VersionsCredits\VersionsCreditsUserControl.Designer.cs">
+      <DependentUpon>VersionsCreditsUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="WalkForward\WalkForwardControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -477,6 +488,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SymbolInfoEditor\SymbolInfoEditorControl.resx">
       <DependentUpon>SymbolInfoEditorControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VersionsCredits\VersionsCreditsUserControl.resx">
+      <DependentUpon>VersionsCreditsUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WalkForward\WalkForwardControl.resx">
       <DependentUpon>WalkForwardControl.cs</DependentUpon>

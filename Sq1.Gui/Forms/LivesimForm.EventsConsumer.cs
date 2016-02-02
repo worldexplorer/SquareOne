@@ -28,7 +28,7 @@ namespace Sq1.Gui.Forms {
 					string reasonWhyLivesimCanNotBeStartedForSymbol = streamingAdapter.ReasonWhyLivesimCanNotBeStartedForSymbol(executor.Bars.Symbol, executor.ChartShadow);
 					if (string.IsNullOrEmpty(reasonWhyLivesimCanNotBeStartedForSymbol) == false) {
 						string msg = "I_REFUSE_TO_START_LIVESIM_FOR[" + this.chartFormManager.WhoImServing_moveMeToExecutor + "]: " + reasonWhyLivesimCanNotBeStartedForSymbol;
-						Assembler.PopupException(msg);
+						Assembler.PopupException(msg, null, false);
 						btnStartStop.Checked = false;
 						return;
 					}

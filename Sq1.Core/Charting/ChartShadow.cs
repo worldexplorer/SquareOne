@@ -206,7 +206,7 @@ namespace Sq1.Core.Charting {
 					}
 				}
 			}
-			if (string.IsNullOrEmpty(ret)) ret = base.Name;
+			if (string.IsNullOrEmpty(ret) && base.InvokeRequired == false) ret = base.Name;
 			return ret;
 		}
 

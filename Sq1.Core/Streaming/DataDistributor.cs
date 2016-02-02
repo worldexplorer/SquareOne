@@ -23,10 +23,10 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public virtual bool ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval,
-				StreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled) { lock (this.lockConsumersBySymbol) {
+				StreamingConsumer quoteConsumer, bool quotePumpSeparatePushingThreadEnabled) { lock (this.lockConsumersBySymbol) {
 			if (this.DistributionChannels.ContainsKey(symbol) == false) {
 				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled, this.ReasonIwasCreated);
-				newChannel.ConsumersQuoteAdd(consumer);
+				newChannel.ConsumersQuoteAdd(quoteConsumer);
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> newScaleChannels = new Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>();
 				newScaleChannels.Add(scaleInterval, newChannel);
 				this.DistributionChannels.Add(symbol, newScaleChannels);
@@ -39,21 +39,21 @@ namespace Sq1.Core.Streaming {
 			Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> channels = this.DistributionChannels[symbol];
 			if (channels.ContainsKey(scaleInterval) == false) {
 				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled, this.ReasonIwasCreated);
-				newChannel.ConsumersQuoteAdd(consumer);
+				newChannel.ConsumersQuoteAdd(quoteConsumer);
 				channels.Add(scaleInterval, newChannel);
 				return true;
 			}
 			SymbolScaleDistributionChannel channel = channels[scaleInterval];
-			if (channel.ConsumersQuoteContains(consumer) == false) {
-				channel.ConsumersQuoteAdd(consumer);
+			if (channel.ConsumersQuoteContains(quoteConsumer) == false) {
+				channel.ConsumersQuoteAdd(quoteConsumer);
 				return true;
 			}
-			Assembler.PopupException("QuoteConsumer [" + consumer + "] already registered for [" + channel + "]; returning");
+			Assembler.PopupException("quoteConsumer[" + quoteConsumer + "] already registered for [" + channel + "]; returning");
 			return false;
 		} }
-		public virtual bool ConsumerQuoteUnsubscribe(string symbol, BarScaleInterval scaleInterval, StreamingConsumer consumer) { lock (this.lockConsumersBySymbol) {
+		public virtual bool ConsumerQuoteUnsubscribe(string symbol, BarScaleInterval scaleInterval, StreamingConsumer quoteConsumer) { lock (this.lockConsumersBySymbol) {
 			if (this.DistributionChannels.ContainsKey(symbol) == false) {
-				string msg = "Can't unregister QuoteConsumer [" + consumer + "]: symbol[" + symbol + "] is not registered for any consumers; returning";
+				string msg = "Can't unregister quoteConsumer[" + quoteConsumer + "]: symbol[" + symbol + "] is not registered for any consumers; returning";
 				Assembler.PopupException(msg);
 				return true;
 			}
@@ -62,17 +62,17 @@ namespace Sq1.Core.Streaming {
 				string symbolDistributorsAsString = "";
 				foreach (SymbolScaleDistributionChannel d in channels.Values) symbolDistributorsAsString += d + ",";
 				symbolDistributorsAsString.TrimEnd(',');
-				string msg = "Can't unregister QuoteConsumer [" + consumer + "]: scaleInterval[" + scaleInterval + "] not found among distributors [" + symbolDistributorsAsString + "]; returning";
+				string msg = "Can't unregister quoteConsumer[" + quoteConsumer + "]: scaleInterval[" + scaleInterval + "] not found among distributors [" + symbolDistributorsAsString + "]; returning";
 				Assembler.PopupException(msg);
 				return false;
 			}
 			SymbolScaleDistributionChannel channel = channels[scaleInterval];
-			if (channel.ConsumersQuoteContains(consumer) == false) {
-				string msg = "Can't unregister QuoteConsumer [" + consumer + "]: consumer not found in [" + channel.ConsumersQuoteAsString + "]; returning";
+			if (channel.ConsumersQuoteContains(quoteConsumer) == false) {
+				string msg = "Can't unregister quoteConsumer[" + quoteConsumer + "]: consumer not found in [" + channel.ConsumersQuoteAsString + "]; returning";
 				Assembler.PopupException(msg);
 				return false;
 			}
-			channel.ConsumersQuoteRemove(consumer);
+			channel.ConsumersQuoteRemove(quoteConsumer);
 			if (channel.ConsumersBarCount == 0 && channel.ConsumersQuoteCount == 0) {
 				//Assembler.PopupException("QuoteConsumer [" + consumer + "] was the last one using [" + symbol + "][" + scaleInterval + "]; removing QuoteBarDistributor[" + channel + "]");
 				if (channel.QuotePump_nullUnsafe != null) channel.QuotePump_nullUnsafe.PushingThreadStop();
@@ -105,10 +105,15 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public virtual bool ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval,
-										StreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled) { lock (this.lockConsumersBySymbol) {
+										StreamingConsumer barConsumer, bool quotePumpSeparatePushingThreadEnabled) { lock (this.lockConsumersBySymbol) {
+			Bar barStaticLast = barConsumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe;
+			if (barStaticLast == null) {
+				string msg = "YOUR_BAR_CONSUMER_SHOULD_HAVE_BarStaticLast_NON_NULL MOST_LIKELY_YOU_WILL_GET_MESSAGE__THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
+				//Assembler.PopupException(msg, null, false);
+			}
 			if (this.DistributionChannels.ContainsKey(symbol) == false) {
 				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled, this.ReasonIwasCreated);
-				newChannel.ConsumersBarAdd(consumer);
+				newChannel.ConsumersBarAdd(barConsumer);
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> newScaleChannels = new Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>();
 				newScaleChannels.Add(scaleInterval, newChannel);
 				this.DistributionChannels.Add(symbol, newScaleChannels);
@@ -121,22 +126,22 @@ namespace Sq1.Core.Streaming {
 			Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> channels = this.DistributionChannels[symbol];
 			if (channels.ContainsKey(scaleInterval) == false) {
 				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled, this.ReasonIwasCreated);
-				newChannel.ConsumersBarAdd(consumer);
+				newChannel.ConsumersBarAdd(barConsumer);
 				channels.Add(scaleInterval, newChannel);
 				return true;
 			}
 			SymbolScaleDistributionChannel channel = channels[scaleInterval];
-			if (channel.ConsumersBarContains(consumer) == false) {
-				channel.ConsumersBarAdd(consumer);
+			if (channel.ConsumersBarContains(barConsumer) == false) {
+				channel.ConsumersBarAdd(barConsumer);
 				return true;
 			}
-			Assembler.PopupException("BarConsumer [" + consumer + "] already registered for [" + channel + "]; returning");
+			Assembler.PopupException("BarConsumer [" + barConsumer + "] already registered for [" + channel + "]; returning");
 			return false;
 		} }
 		public virtual bool ConsumerBarUnsubscribe(string symbol, BarScaleInterval scaleInterval,
-										StreamingConsumer consumer) { lock (this.lockConsumersBySymbol) {
+										StreamingConsumer quoteConsumer) { lock (this.lockConsumersBySymbol) {
 			if (this.DistributionChannels.ContainsKey(symbol) == false) {
-				string msg = "Can't unregister BarConsumer [" + consumer + "]: symbol[" + symbol + "] is not registered for any consumers; returning";
+				string msg = "Can't unregister quoteConsumer[" + quoteConsumer + "]: symbol[" + symbol + "] is not registered for any consumers; returning";
 				Assembler.PopupException(msg);
 				return false;
 			}
@@ -145,17 +150,17 @@ namespace Sq1.Core.Streaming {
 				string symbolDistributorsAsString = "";
 				foreach (SymbolScaleDistributionChannel d in channelsByScaleInterval.Values) symbolDistributorsAsString += d + ",";
 				symbolDistributorsAsString.TrimEnd(',');
-				string msg = "Can't unregister BarConsumer [" + consumer + "]: scaleInterval[" + scaleInterval + "] not found among distributors [" + symbolDistributorsAsString + "]; returning";
+				string msg = "Can't unregister quoteConsumer[" + quoteConsumer + "]: scaleInterval[" + scaleInterval + "] not found among distributors [" + symbolDistributorsAsString + "]; returning";
 				Assembler.PopupException(msg);
 				return false;
 			}
 			SymbolScaleDistributionChannel channel = channelsByScaleInterval[scaleInterval];
-			if (channel.ConsumersBarContains(consumer) == false) {
-				string msg = "Can't unregister BarConsumer [" + consumer + "]: consumer not found in [" + channel.ConsumersBarAsString + "]; returning";
+			if (channel.ConsumersBarContains(quoteConsumer) == false) {
+				string msg = "Can't unregister quoteConsumer[" + quoteConsumer + "]: consumer not found in [" + channel.ConsumersBarAsString + "]; returning";
 				Assembler.PopupException(msg);
 				return false;
 			}
-			channel.ConsumersBarRemove(consumer);
+			channel.ConsumersBarRemove(quoteConsumer);
 			if (channel.ConsumersBarCount == 0 && channel.ConsumersQuoteCount == 0) {
 				//Assembler.PopupException("BarConsumer [" + consumer + "] was the last one using [" + symbol + "][" + scaleInterval + "]; removing QuoteBarDistributor[" + distributor + "]");
 				if (channel.QuotePump_nullUnsafe != null) channel.QuotePump_nullUnsafe.PushingThreadStop();
@@ -172,9 +177,9 @@ namespace Sq1.Core.Streaming {
 			return false;
 		} }
 		public virtual bool ConsumerBarIsSubscribed(string symbol, BarScaleInterval scaleInterval_nullForAny,
-										StreamingConsumer consumer, bool addingTrue_checkingFalse = false) {
+										StreamingConsumer barConsumer, bool addingTrue_checkingFalse = false) {
 			bool ret = false;
-			Dictionary<string, List<BarScaleInterval>> symbolsScaleIntervals = this.SymbolsScaleIntervals_BarConsumerIsRegisteredFor(consumer, addingTrue_checkingFalse);
+			Dictionary<string, List<BarScaleInterval>> symbolsScaleIntervals = this.SymbolsScaleIntervals_BarConsumerIsRegisteredFor(barConsumer, addingTrue_checkingFalse);
 			if (symbolsScaleIntervals == null) return ret;
 			if (symbolsScaleIntervals.ContainsKey(symbol)) {
 				if (scaleInterval_nullForAny == null) {
@@ -189,13 +194,13 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public Dictionary<string, List<BarScaleInterval>> SymbolsScaleIntervals_QuoteConsumerIsRegisteredFor(
-										StreamingConsumer consumer, bool addingTrue_checkingFalse = false) {
+										StreamingConsumer quoteConsumer, bool addingTrue_checkingFalse = false) {
 			Dictionary<string, List<BarScaleInterval>> ret = null;
 			foreach (string symbol in this.DistributionChannels.Keys) {
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> consumersByScaleInterval = this.DistributionChannels[symbol];
 				foreach (BarScaleInterval scaleInterval in consumersByScaleInterval.Keys) {
 					SymbolScaleDistributionChannel consumers = consumersByScaleInterval[scaleInterval];
-					if (consumers.ConsumersQuoteContains(consumer) == false) continue;
+					if (consumers.ConsumersQuoteContains(quoteConsumer) == false) continue;
 					if (ret == null) ret = new Dictionary<string, List<BarScaleInterval>>();
 					if (addingTrue_checkingFalse) continue;
 					if (ret.ContainsKey(symbol) == false) ret.Add(symbol, new List<BarScaleInterval>());
@@ -205,13 +210,13 @@ namespace Sq1.Core.Streaming {
 			return ret;
 		}
 		public Dictionary<string, List<BarScaleInterval>> SymbolsScaleIntervals_BarConsumerIsRegisteredFor(
-										StreamingConsumer consumer, bool addingTrue_checkingFalse = true) {
+										StreamingConsumer barConsumer, bool addingTrue_checkingFalse = true) {
 			Dictionary<string, List<BarScaleInterval>> ret = null;
 			foreach (string symbol in this.DistributionChannels.Keys) {
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> consumersByScaleInterval = this.DistributionChannels[symbol];
 				foreach (BarScaleInterval scaleInterval in consumersByScaleInterval.Keys) {
 					SymbolScaleDistributionChannel consumers = consumersByScaleInterval[scaleInterval];
-					if (consumers.ConsumersBarContains(consumer) == false) continue;
+					if (consumers.ConsumersBarContains(barConsumer) == false) continue;
 					if (ret == null) ret = new Dictionary<string, List<BarScaleInterval>>();
 					if (addingTrue_checkingFalse) continue;
 					if (ret.ContainsKey(symbol) == false) ret.Add(symbol, new List<BarScaleInterval>());
@@ -300,15 +305,16 @@ namespace Sq1.Core.Streaming {
 		} }
 
 		internal void AllQuotePumps_Pause(string livesimCausingPauseName) {
+			string msig = " //AllQuotePumps_Pause(" + livesimCausingPauseName + ") DATADISTRIBUTOR[" + this.ReasonIwasCreated + "]";
 			string msg = "";
 			foreach(SymbolScaleDistributionChannel eachChannel in this.flattenDistributionChannels()) {
 				if (eachChannel.QuotePump_nullUnsafe == null) {
 					string msg1 = "CHANNEL_IS_A_QUEUE_NOT_PUMP__CAN_NOT_PAUSE eachChannel=[" + eachChannel + "]";
-					Assembler.PopupException(msg1);
+					Assembler.PopupException(msg1 + msig);
 				}
 				if (eachChannel.QuotePump_nullUnsafe.Paused == true) {
 					string msg1 = "PUMP_ALREADY_PAUSED livesimCausingPauseName=[" + livesimCausingPauseName + "]";
-					Assembler.PopupException(msg1, null, false);
+					Assembler.PopupException(msg1 + msig, null, false);
 				} else {
 					eachChannel.QuotePump_nullUnsafe.PusherPause();
 				}
@@ -316,23 +322,24 @@ namespace Sq1.Core.Streaming {
 				msg += "[" + eachChannel.ToStringShort + "]";
 			}
 			if (string.IsNullOrEmpty(msg)) {
-				msg = "";
+				msg = "NO_QUOTE_PUMPS_PAUSED";
 			} else {
-				msg = "QUOTE_PUMPS_PAUSED_INSIDE_REPLACED_DATADISTRIBUTOR [" + this.ReasonIwasCreated + "] livesimCausingPause[" + livesimCausingPauseName + "]: " + msg;
+				msg = "QUOTE_PUMPS_PAUSED_INSIDE_REPLACED_DATADISTRIBUTOR " + msg;
 			}
-			Assembler.PopupException(msg, null, false);
+			Assembler.PopupException(msg + msig, null, false);
 		}
 
 		internal void AllQuotePumps_Unpause(string livesimCausedPauseName) {
+			string msig = " //AllQuotePumps_Unpause(" + livesimCausedPauseName + ") DATADISTRIBUTOR[" + this.ReasonIwasCreated + "]";
 			string msg = "";
 			foreach(SymbolScaleDistributionChannel eachChannel in this.flattenDistributionChannels()) {
 				if (eachChannel.QuotePump_nullUnsafe == null) {
 					string msg1 = "CHANNEL_IS_A_QUEUE_NOT_PUMP__CAN_NOT_PAUSE eachChannel=[" + eachChannel + "]";
-					Assembler.PopupException(msg1);
+					Assembler.PopupException(msg1 + msig);
 				}
 				if (eachChannel.QuotePump_nullUnsafe.Paused == false) {
 					string msg1 = "PUMP_ALREADY_UNPAUSED livesimCausedPauseName=[" + livesimCausedPauseName + "]";
-					Assembler.PopupException(msg1);
+					Assembler.PopupException(msg1 + msig);
 				} else {
 					eachChannel.QuotePump_nullUnsafe.PusherUnpause();
 				}
@@ -340,21 +347,22 @@ namespace Sq1.Core.Streaming {
 				msg += "[" + eachChannel.ToStringShort + "]";
 			}
 			if (string.IsNullOrEmpty(msg)) {
-				msg = "";
+				msg = "NO_QUOTE_PUMPS_UNPAUSED";
 			} else {
-				msg = "QUOTE_PUMPS_UNPAUSED_INSIDE_RESTORED_DATADISTRIBUTOR [" + this.ReasonIwasCreated + "] livesimCausedPauseName[" + livesimCausedPauseName + "]: " + msg;
+				msg = "QUOTE_PUMPS_UNPAUSED_INSIDE_RESTORED_DATADISTRIBUTOR " + msg;
 			}
-			Assembler.PopupException(msg, null, false);
+			Assembler.PopupException(msg + msig, null, false);
 		}
 
 
 		internal void AllQuotePumps_Stop(string livesimCausedPauseName) {
+			string msig = " //AllQuotePumps_Stop(" + livesimCausedPauseName + ") DATADISTRIBUTOR[" + this.ReasonIwasCreated + "]";
 			string msg = "";
 			foreach(SymbolScaleDistributionChannel eachChannel in this.flattenDistributionChannels()) {
 				//v1 if (eachChannel.QuoteQueue.HasSeparatePushingThread == false) {
 				if (eachChannel.QuotePump_nullUnsafe == null) {
 					string msg1 = "QUOTE_PUMP_IS_A_QUEUE_MUST_BE_PUMP livesimCausedPauseName=[" + livesimCausedPauseName + "]";
-					Assembler.PopupException(msg1);
+					Assembler.PopupException(msg1 + msig);
 					continue;
 				}
 				eachChannel.QuotePump_nullUnsafe.PushingThreadStop();
@@ -362,11 +370,12 @@ namespace Sq1.Core.Streaming {
 				msg += "[" + eachChannel.ToStringShort + "]";
 			}
 			if (string.IsNullOrEmpty(msg)) {
-				msg = "";
+				msg = "NO_QUOTE_PUMPS_STOPPED_THEIR_THREADS";
 			} else {
-				msg = "LIVESIM_RECEIVING_PUMPS_STOPPED_INSIDE_REPLACED_DATADISTRIBUTOR [" + this.ReasonIwasCreated + "] livesimCausedPauseName[" + livesimCausedPauseName + "]: " + msg;
+				msg = "LIVESIM_RECEIVING_PUMPS_STOPPED_INSIDE_REPLACED " + msg;
 			}
-			Assembler.PopupException(msg, null, false);		}
+			Assembler.PopupException(msg + msig, null, false);
+		}
 
 		internal void SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(string symbol, BarScaleInterval barScaleInterval) {
 			SymbolScaleDistributionChannel channel = this.GetDistributionChannelFor_nullUnsafe(symbol, barScaleInterval);

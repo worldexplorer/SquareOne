@@ -44,7 +44,7 @@ namespace Sq1.Charting {
 			// hScrollBar
 			// 
 			this.hScrollBar.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.hScrollBar.Location = new System.Drawing.Point(0, 303);
+			this.hScrollBar.Location = new System.Drawing.Point(0, 323);
 			this.hScrollBar.Name = "hScrollBar";
 			this.hScrollBar.Size = new System.Drawing.Size(840, 17);
 			this.hScrollBar.TabIndex = 0;
@@ -75,8 +75,8 @@ namespace Sq1.Charting {
 			// splitContainerChartVsRange.Panel2
 			// 
 			this.splitContainerChartVsRange.Panel2.Controls.Add(this.RangeBar);
-			this.splitContainerChartVsRange.Size = new System.Drawing.Size(840, 303);
-			this.splitContainerChartVsRange.SplitterDistance = 246;
+			this.splitContainerChartVsRange.Size = new System.Drawing.Size(840, 323);
+			this.splitContainerChartVsRange.SplitterDistance = 266;
 			this.splitContainerChartVsRange.TabIndex = 0;
 			this.splitContainerChartVsRange.TabStop = false;
 			// 
@@ -196,7 +196,7 @@ namespace Sq1.Charting {
 			this.Controls.Add(this.hScrollBar);
 			this.Controls.Add(this.splitContainerChartVsRange);
 			this.Name = "ChartControl";
-			this.Size = new System.Drawing.Size(840, 320);
+			this.Size = new System.Drawing.Size(840, 340);
 			this.splitContainerChartVsRange.Panel1.ResumeLayout(false);
 			this.splitContainerChartVsRange.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerChartVsRange)).EndInit();

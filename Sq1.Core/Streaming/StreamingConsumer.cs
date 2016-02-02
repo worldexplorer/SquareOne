@@ -31,9 +31,9 @@ namespace Sq1.Core.Streaming {
 				return ret;
 			} }
 		protected 		ContextChart ContextCurrentChartOrStrategy_nullReported { get {
-				var ret = this.Strategy_nullReported.ScriptContextCurrent;
-				this.ActionForNullPointer(ret, "this.Executor.Strategy.ScriptContextCurrent=null");
-				return ret;
+				return (this.Strategy_nullReported != null)
+					? this.Strategy_nullReported.ScriptContextCurrent as ContextChart
+					: this.ChartShadow_nullReported.CtxChart;
 			} }
 		protected 		string Symbol_nullReported { get {
 				string symbol = (this.Executor_nullReported.Strategy == null) ? this.Executor_nullReported.Bars.Symbol : this.ContextCurrentChartOrStrategy_nullReported.Symbol;

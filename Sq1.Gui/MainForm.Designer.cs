@@ -30,6 +30,11 @@
 			WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient6 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
 			WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient7 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
 			this.ctxTools = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.mniVersionsAndCredits = new System.Windows.Forms.ToolStripMenuItem();
+			this.ctxVersionsCredits = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.menuItemVersionsCredits = new Sq1.Widgets.VersionsCredits.MenuItemVersionsCredits();
+			this.mniSaveScreenshot = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniBarsEditor = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniChartSettingsEditor = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniSymbolInfoEditor = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,7 +63,9 @@
 			this.MniWorkspacesToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.MniltbWorklspaceNewBlank = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.MniWorkspaceDelete = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.ctxTools.SuspendLayout();
+			this.ctxVersionsCredits.SuspendLayout();
 			this.mainFormStatusStrip.SuspendLayout();
 			this.CtxWorkspacesModify.SuspendLayout();
 			this.SuspendLayout();
@@ -66,6 +73,9 @@
 			// ctxTools
 			// 
 			this.ctxTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mniVersionsAndCredits,
+            this.mniSaveScreenshot,
+            this.toolStripSeparator4,
             this.mniBarsEditor,
             this.mniChartSettingsEditor,
             this.mniSymbolInfoEditor,
@@ -79,39 +89,76 @@
             this.toolStripSeparator1,
             this.mniExit});
 			this.ctxTools.Name = "ctxmsTools";
-			this.ctxTools.OwnerItem = this.mniMainMenu;
-			this.ctxTools.Size = new System.Drawing.Size(186, 236);
+			this.ctxTools.Size = new System.Drawing.Size(230, 308);
+			// 
+			// mniVersionsAndCredits
+			// 
+			this.mniVersionsAndCredits.DropDown = this.ctxVersionsCredits;
+			this.mniVersionsAndCredits.Name = "mniVersionsAndCredits";
+			this.mniVersionsAndCredits.Size = new System.Drawing.Size(229, 22);
+			this.mniVersionsAndCredits.Text = "Versions and Credits";
+			// 
+			// ctxVersionsCredits
+			// 
+			this.ctxVersionsCredits.AutoSize = false;
+			this.ctxVersionsCredits.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.ctxVersionsCredits.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemVersionsCredits});
+			this.ctxVersionsCredits.Name = "ctxVersionsCredits";
+			this.ctxVersionsCredits.ShowImageMargin = false;
+			this.ctxVersionsCredits.Size = new System.Drawing.Size(816, 306);
+			// 
+			// menuItemVersionsCredits
+			// 
+			this.menuItemVersionsCredits.AutoSize = false;
+			this.menuItemVersionsCredits.Name = "menuItemVersionsCredits";
+			this.menuItemVersionsCredits.Padding = new System.Windows.Forms.Padding(0, 10, 0, 0);
+			this.menuItemVersionsCredits.Size = new System.Drawing.Size(800, 300);
+			this.menuItemVersionsCredits.Text = "menuItemVersionsCredits";
+			// 
+			// mniSaveScreenshot
+			// 
+			this.mniSaveScreenshot.Enabled = false;
+			this.mniSaveScreenshot.Name = "mniSaveScreenshot";
+			this.mniSaveScreenshot.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Pause)));
+			this.mniSaveScreenshot.Size = new System.Drawing.Size(229, 22);
+			this.mniSaveScreenshot.Text = "Save Screenshot...";
+			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			this.toolStripSeparator4.Size = new System.Drawing.Size(226, 6);
 			// 
 			// mniBarsEditor
 			// 
 			this.mniBarsEditor.Enabled = false;
 			this.mniBarsEditor.Name = "mniBarsEditor";
-			this.mniBarsEditor.Size = new System.Drawing.Size(185, 22);
+			this.mniBarsEditor.Size = new System.Drawing.Size(229, 22);
 			this.mniBarsEditor.Text = "Bars Editor";
 			// 
 			// mniChartSettingsEditor
 			// 
 			this.mniChartSettingsEditor.Name = "mniChartSettingsEditor";
-			this.mniChartSettingsEditor.Size = new System.Drawing.Size(185, 22);
+			this.mniChartSettingsEditor.Size = new System.Drawing.Size(229, 22);
 			this.mniChartSettingsEditor.Text = "Chart Settings Editor";
 			this.mniChartSettingsEditor.Click += new System.EventHandler(this.mniChartSettingsEditor_Click);
 			// 
 			// mniSymbolInfoEditor
 			// 
 			this.mniSymbolInfoEditor.Name = "mniSymbolInfoEditor";
-			this.mniSymbolInfoEditor.Size = new System.Drawing.Size(185, 22);
+			this.mniSymbolInfoEditor.Size = new System.Drawing.Size(229, 22);
 			this.mniSymbolInfoEditor.Text = "Symbol Info Editor";
 			this.mniSymbolInfoEditor.Click += new System.EventHandler(this.mniSymbolInfoEditor_Click);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(182, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(226, 6);
 			// 
 			// mniCsvImporter
 			// 
 			this.mniCsvImporter.Name = "mniCsvImporter";
-			this.mniCsvImporter.Size = new System.Drawing.Size(185, 22);
+			this.mniCsvImporter.Size = new System.Drawing.Size(229, 22);
 			this.mniCsvImporter.Text = "CSV Importer";
 			this.mniCsvImporter.Click += new System.EventHandler(this.mniCsvImporter_Click);
 			// 
@@ -119,7 +166,7 @@
 			// 
 			this.mniExecution.Name = "mniExecution";
 			this.mniExecution.ShortcutKeys = System.Windows.Forms.Keys.F3;
-			this.mniExecution.Size = new System.Drawing.Size(185, 22);
+			this.mniExecution.Size = new System.Drawing.Size(229, 22);
 			this.mniExecution.Text = "Order Execution";
 			this.mniExecution.Click += new System.EventHandler(this.mniExecution_Click);
 			// 
@@ -127,7 +174,7 @@
 			// 
 			this.mniSliders.Name = "mniSliders";
 			this.mniSliders.ShortcutKeys = System.Windows.Forms.Keys.F2;
-			this.mniSliders.Size = new System.Drawing.Size(185, 22);
+			this.mniSliders.Size = new System.Drawing.Size(229, 22);
 			this.mniSliders.Text = "Script Parameters";
 			this.mniSliders.Click += new System.EventHandler(this.mniSliders_Click);
 			// 
@@ -135,35 +182,35 @@
 			// 
 			this.mniStrategies.Name = "mniStrategies";
 			this.mniStrategies.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.mniStrategies.Size = new System.Drawing.Size(185, 22);
+			this.mniStrategies.Size = new System.Drawing.Size(229, 22);
 			this.mniStrategies.Text = "Strategies";
 			this.mniStrategies.Click += new System.EventHandler(this.mniStrategies_Click);
 			// 
 			// mniDataSources
 			// 
 			this.mniDataSources.Name = "mniDataSources";
-			this.mniDataSources.Size = new System.Drawing.Size(185, 22);
+			this.mniDataSources.Size = new System.Drawing.Size(229, 22);
 			this.mniDataSources.Text = "Data Sources";
 			this.mniDataSources.Click += new System.EventHandler(this.mniSymbols_Click);
 			// 
 			// mniExceptions
 			// 
 			this.mniExceptions.Name = "mniExceptions";
-			this.mniExceptions.Size = new System.Drawing.Size(185, 22);
+			this.mniExceptions.Size = new System.Drawing.Size(229, 22);
 			this.mniExceptions.Text = "Exceptions";
 			this.mniExceptions.Click += new System.EventHandler(this.mniExceptions_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(182, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(226, 6);
 			// 
 			// mniExit
 			// 
 			this.mniExit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.mniExit.Name = "mniExit";
 			this.mniExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.mniExit.Size = new System.Drawing.Size(185, 22);
+			this.mniExit.Size = new System.Drawing.Size(229, 22);
 			this.mniExit.Text = "Exit";
 			this.mniExit.Click += new System.EventHandler(this.mniExit_Click);
 			// 
@@ -267,7 +314,6 @@
 			// ctxWindows
 			// 
 			this.ctxWindows.Name = "ctxWindows";
-			this.ctxWindows.OwnerItem = this.mniWindows;
 			this.ctxWindows.ShowImageMargin = false;
 			this.ctxWindows.Size = new System.Drawing.Size(36, 4);
 			this.ctxWindows.Opening += new System.ComponentModel.CancelEventHandler(this.ctxWindowsOpening);
@@ -286,8 +332,7 @@
 			// CtxWorkspaces
 			// 
 			this.CtxWorkspaces.Name = "ctxWorkspaces";
-			this.CtxWorkspaces.OwnerItem = this.mniWorkSpaces;
-			this.CtxWorkspaces.Size = new System.Drawing.Size(153, 26);
+			this.CtxWorkspaces.Size = new System.Drawing.Size(61, 4);
 			// 
 			// btnFullScreen
 			// 
@@ -318,72 +363,86 @@
             this.MniltbWorklspaceNewBlank,
             this.MniWorkspaceDelete});
 			this.CtxWorkspacesModify.Name = "ctxWorkspacesModify";
-			this.CtxWorkspacesModify.Size = new System.Drawing.Size(309, 101);
+			this.CtxWorkspacesModify.Size = new System.Drawing.Size(311, 101);
 			// 
 			// MniltbWorklspaceDuplicateTo
 			// 
 			this.MniltbWorklspaceDuplicateTo.BackColor = System.Drawing.Color.Transparent;
 			this.MniltbWorklspaceDuplicateTo.InputFieldAlignedRight = false;
+			this.MniltbWorklspaceDuplicateTo.InputFieldBackColor = System.Drawing.SystemColors.Info;
 			this.MniltbWorklspaceDuplicateTo.InputFieldEditable = true;
+			this.MniltbWorklspaceDuplicateTo.InputFieldMultiline = true;
 			this.MniltbWorklspaceDuplicateTo.InputFieldOffsetX = 80;
 			this.MniltbWorklspaceDuplicateTo.InputFieldValue = "";
 			this.MniltbWorklspaceDuplicateTo.InputFieldWidth = 160;
 			this.MniltbWorklspaceDuplicateTo.Name = "MniltbWorklspaceDuplicateTo";
-			this.MniltbWorklspaceDuplicateTo.Size = new System.Drawing.Size(248, 20);
+			this.MniltbWorklspaceDuplicateTo.OffsetTop = 0;
+			this.MniltbWorklspaceDuplicateTo.Size = new System.Drawing.Size(250, 20);
 			this.MniltbWorklspaceDuplicateTo.TextLeft = "Duplicate To:";
 			this.MniltbWorklspaceDuplicateTo.TextLeftOffsetX = 0;
 			this.MniltbWorklspaceDuplicateTo.TextLeftWidth = 79;
 			this.MniltbWorklspaceDuplicateTo.TextRed = false;
 			this.MniltbWorklspaceDuplicateTo.TextRight = "";
 			this.MniltbWorklspaceDuplicateTo.TextRightOffsetX = 243;
-			this.MniltbWorklspaceDuplicateTo.TextRightWidth = 2;
+			this.MniltbWorklspaceDuplicateTo.TextRightWidth = 4;
 			// 
 			// MniltbWorklspaceRenameTo
 			// 
 			this.MniltbWorklspaceRenameTo.BackColor = System.Drawing.Color.Transparent;
 			this.MniltbWorklspaceRenameTo.InputFieldAlignedRight = false;
+			this.MniltbWorklspaceRenameTo.InputFieldBackColor = System.Drawing.SystemColors.Info;
 			this.MniltbWorklspaceRenameTo.InputFieldEditable = true;
+			this.MniltbWorklspaceRenameTo.InputFieldMultiline = true;
 			this.MniltbWorklspaceRenameTo.InputFieldOffsetX = 80;
 			this.MniltbWorklspaceRenameTo.InputFieldValue = "";
 			this.MniltbWorklspaceRenameTo.InputFieldWidth = 160;
 			this.MniltbWorklspaceRenameTo.Name = "MniltbWorklspaceRenameTo";
-			this.MniltbWorklspaceRenameTo.Size = new System.Drawing.Size(248, 20);
+			this.MniltbWorklspaceRenameTo.OffsetTop = 0;
+			this.MniltbWorklspaceRenameTo.Size = new System.Drawing.Size(250, 20);
 			this.MniltbWorklspaceRenameTo.TextLeft = "Rename To:";
 			this.MniltbWorklspaceRenameTo.TextLeftOffsetX = 0;
 			this.MniltbWorklspaceRenameTo.TextLeftWidth = 72;
 			this.MniltbWorklspaceRenameTo.TextRed = false;
 			this.MniltbWorklspaceRenameTo.TextRight = "";
 			this.MniltbWorklspaceRenameTo.TextRightOffsetX = 243;
-			this.MniltbWorklspaceRenameTo.TextRightWidth = 2;
+			this.MniltbWorklspaceRenameTo.TextRightWidth = 4;
 			// 
 			// MniWorkspacesToolStripSeparator
 			// 
 			this.MniWorkspacesToolStripSeparator.Name = "MniWorkspacesToolStripSeparator";
-			this.MniWorkspacesToolStripSeparator.Size = new System.Drawing.Size(305, 6);
+			this.MniWorkspacesToolStripSeparator.Size = new System.Drawing.Size(307, 6);
 			// 
 			// MniltbWorklspaceNewBlank
 			// 
 			this.MniltbWorklspaceNewBlank.BackColor = System.Drawing.Color.Transparent;
 			this.MniltbWorklspaceNewBlank.InputFieldAlignedRight = false;
+			this.MniltbWorklspaceNewBlank.InputFieldBackColor = System.Drawing.SystemColors.Info;
 			this.MniltbWorklspaceNewBlank.InputFieldEditable = true;
+			this.MniltbWorklspaceNewBlank.InputFieldMultiline = true;
 			this.MniltbWorklspaceNewBlank.InputFieldOffsetX = 80;
 			this.MniltbWorklspaceNewBlank.InputFieldValue = "";
 			this.MniltbWorklspaceNewBlank.InputFieldWidth = 160;
 			this.MniltbWorklspaceNewBlank.Name = "MniltbWorklspaceNewBlank";
-			this.MniltbWorklspaceNewBlank.Size = new System.Drawing.Size(248, 20);
+			this.MniltbWorklspaceNewBlank.OffsetTop = 0;
+			this.MniltbWorklspaceNewBlank.Size = new System.Drawing.Size(250, 20);
 			this.MniltbWorklspaceNewBlank.TextLeft = "New Blank:";
 			this.MniltbWorklspaceNewBlank.TextLeftOffsetX = 0;
 			this.MniltbWorklspaceNewBlank.TextLeftWidth = 68;
 			this.MniltbWorklspaceNewBlank.TextRed = false;
 			this.MniltbWorklspaceNewBlank.TextRight = "";
 			this.MniltbWorklspaceNewBlank.TextRightOffsetX = 243;
-			this.MniltbWorklspaceNewBlank.TextRightWidth = 2;
+			this.MniltbWorklspaceNewBlank.TextRightWidth = 4;
 			// 
 			// MniWorkspaceDelete
 			// 
 			this.MniWorkspaceDelete.Name = "MniWorkspaceDelete";
-			this.MniWorkspaceDelete.Size = new System.Drawing.Size(308, 22);
+			this.MniWorkspaceDelete.Size = new System.Drawing.Size(310, 22);
 			this.MniWorkspaceDelete.Text = "Delete [TO_BE_REPLACED]";
+			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(182, 6);
 			// 
 			// MainForm
 			// 
@@ -401,6 +460,7 @@
 			this.ResizeEnd += new System.EventHandler(this.mainForm_ResizeEnd);
 			this.LocationChanged += new System.EventHandler(this.mainForm_LocationChanged);
 			this.ctxTools.ResumeLayout(false);
+			this.ctxVersionsCredits.ResumeLayout(false);
 			this.mainFormStatusStrip.ResumeLayout(false);
 			this.mainFormStatusStrip.PerformLayout();
 			this.CtxWorkspacesModify.ResumeLayout(false);
@@ -439,5 +499,11 @@
 		public System.Windows.Forms.ToolStripSeparator MniWorkspacesToolStripSeparator;
 		public Widgets.LabeledTextBox.MenuItemLabeledTextBox MniltbWorklspaceNewBlank;
 		public System.Windows.Forms.ToolStripMenuItem MniWorkspaceDelete;
+		private System.Windows.Forms.ToolStripMenuItem mniVersionsAndCredits;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+		private System.Windows.Forms.ContextMenuStrip ctxVersionsCredits;
+		private Widgets.VersionsCredits.MenuItemVersionsCredits menuItemVersionsCredits;
+		private System.Windows.Forms.ToolStripMenuItem mniSaveScreenshot;
 	}
 }

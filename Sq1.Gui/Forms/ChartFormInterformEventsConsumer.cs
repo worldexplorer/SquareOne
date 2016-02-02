@@ -155,6 +155,7 @@ namespace Sq1.Gui.Forms {
 			//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
 			this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreaming_forCurrentChart();
 			// CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END
+			this.chartFormManager.ChartForm.AbsorbContextBarsToGui();
 		}
 		internal void Executor_BacktesterChunkSimulated_step3of4(object sender, EventArgs e) {
 			string msig = " //Executor_BacktesterChunkSimulated_step3of4() " + this.chartFormManager.ToString();
@@ -233,6 +234,7 @@ namespace Sq1.Gui.Forms {
 			//this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = true;
 			//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = true;
 			this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreaming_forCurrentChart();
+			this.chartFormManager.ChartForm.AbsorbContextBarsToGui();
 
 			this.chartFormManager.OnBacktestedOrLivesimmed();
 		}

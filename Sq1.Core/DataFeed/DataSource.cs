@@ -29,11 +29,15 @@ namespace Sq1.Core.DataFeed {
 				return stringBuilder.ToString();
 			} }
 		[JsonProperty]	public BarScaleInterval		ScaleInterval;
+
 		[JsonProperty]	public StreamingAdapter		StreamingAdapter;
 		[JsonIgnore]	public BacktestStreaming	StreamingAsBacktest_nullUnsafe	{ get { return this.StreamingAdapter as BacktestStreaming; } }
 		[JsonIgnore]	public LivesimStreaming		StreamingAsLivesim_nullUnsafe	{ get { return this.StreamingAdapter as LivesimStreaming; } }
 
 		[JsonProperty]	public BrokerAdapter		BrokerAdapter;
+		[JsonIgnore]	public BacktestBroker		BrokerAsBacktest_nullUnsafe		{ get { return this.BrokerAdapter	as BacktestBroker; } }
+		[JsonIgnore]	public LivesimBroker		BrokerAsLivesim_nullUnsafe		{ get { return this.BrokerAdapter	as LivesimBroker; } }
+
 		[JsonProperty]	public string				MarketName;
 		[JsonIgnore]	public MarketInfo			marketInfo;
 		[JsonIgnore]	public MarketInfo			MarketInfo {

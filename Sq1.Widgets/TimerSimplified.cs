@@ -10,6 +10,7 @@ namespace Sq1.Widgets {
 				ManualResetEvent	expiredMre;
 				int					forever;
 				int					immediately;
+				int					tooSoon;
 				Control				guiInvoker;
 		
 				bool				continueSelfScheduling;
@@ -41,8 +42,14 @@ namespace Sq1.Widgets {
 				else this.expiredMre.Reset();
 			}
 		}
-		public void Expired_waitForever_lockOnceReceived() {
+		public void WaitForever_forTimerExpired() {
 			try {
+				bool notPausedTest = this.expiredMre.WaitOne(this.tooSoon);
+				if (notPausedTest == true) {
+					string msg = "SIGNALLED_TOO_QUIK LOOKS_LIKE_TIMER_WASNT_SCHEDULED FIXME_HERE_TO_AVOID_100%_CPU";
+					Assembler.PopupException(msg, null, false);
+					return;
+				}
 				bool signalledTrue_expiredFalse = this.expiredMre.WaitOne(this.forever);
 			} catch (Exception ex) {
 				Assembler.PopupException("DISPOSED_WHILE_WAITING_FOREVER", ex);
@@ -55,6 +62,7 @@ namespace Sq1.Widgets {
 			SelfReschedule	= false;		// not running by default; start it by SelfReschedule=true (you'll never catch Expired externally) or ScheduleOnce() (you'll catch Expired externally and reschedule again)
 			forever			= -1;
 			immediately		= 0;
+			tooSoon			= 1;
 			guiInvoker		= guiInvokerPassed;
 			Delay			= delayInitial;
 			timer			= new System.Windows.Forms.Timer();

@@ -32,7 +32,7 @@ namespace Sq1.Charting {
 					}
 					try {
 						while(this.timerUnblink.IsDisposed == false) {
-							this.timerUnblink.Expired_waitForever_lockOnceReceived();
+							this.timerUnblink.WaitForever_forTimerExpired();
 							base.ColorBackground_inDataSourceTree = ChartControl.colorBackgroundWhite;
 							this.switchToGui_executeCodeLinkingTwoUnrelatedDlls(refreshDataSourceTree);
 						}

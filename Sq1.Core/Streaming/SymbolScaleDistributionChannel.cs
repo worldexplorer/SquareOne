@@ -239,10 +239,10 @@ namespace Sq1.Core.Streaming {
 				}
 
 				try {
-					Bar barStaticLast	= barConsumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe;
+					Bar barStaticLast = barConsumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe;
 					if (barStaticLast == null) {
 						string msg = "THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
-						Assembler.PopupException(msg);
+						Assembler.PopupException(msg, null, false);
 						continue;
 					}
 					barConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStaticLast, quoteWithStreamingBarBound);

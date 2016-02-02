@@ -11,8 +11,6 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
-using System.Diagnostics;
-using System.Collections.Generic;
 
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
@@ -25,8 +23,8 @@ namespace Sq1.Core.Livesim {
 		[JsonIgnore]	internal	LivesimStreamingSettings	LivesimStreamingSettings	{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
 
 		//v2 HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2
-		[JsonIgnore]	protected	LivesimBroker				LivesimBroker				{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe; } }
-		[JsonIgnore]	protected	LivesimBrokerDataSnapshot	LivesimBrokerSnap			{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe.DataSnapshot; } }
+		[JsonIgnore]	protected	LivesimBroker				LivesimBroker				{ get { return this.livesimDataSource.BrokerAsLivesim_nullUnsafe; } }
+		[JsonIgnore]	protected	LivesimBrokerDataSnapshot	LivesimBrokerSnap			{ get { return this.livesimDataSource.BrokerAsLivesim_nullUnsafe.DataSnapshot; } }
 
 		[JsonIgnore]	protected	LevelTwoGenerator			LevelTwoGenerator;
 		[JsonIgnore]	protected	LivesimStreamingSpoiler		LivesimStreamingSpoiler;
@@ -44,7 +42,7 @@ namespace Sq1.Core.Livesim {
 		public LivesimStreaming(string reasonToExist) : base(reasonToExist) {
 			base.Name						= "LivesimStreaming-NOT_ATTACHED_TO_DATASOURCE_INVOKE-InitializeDataSource_inverse()";
 			base.StreamingSolidifier		= null;
-			base.QuotePumpSeparatePushingThreadEnabled = false;
+			base.QuotePumpSeparatePushingThreadEnabled = true;
 			this.UnpausedMre				= new ManualResetEvent(true);
 			this.LevelTwoGenerator			= new LevelTwoGeneratorLivesim(this);
 			this.LivesimStreamingSpoiler	= new LivesimStreamingSpoiler(this);
@@ -158,55 +156,11 @@ namespace Sq1.Core.Livesim {
 		//3. LivesimQuik will 
 		public override bool BacktestContextInitialize_pauseQueueForBacktest_leavePumpUnpausedForLivesimDefault_overrideable(ScriptExecutor executor, Bars barsEmptyButWillGrow) {
 			return false;
-
-			//v1
-			//bool runningOnDefaultLivesim = this.DataSource_fromBars.StreamingAdapter is LivesimStreamingDefault;
-			//bool pauseIfFalse = this.DataSource_fromBars.StreamingAdapter
-			//    .DataDistributorsAreReplacedByLivesim_ifYesDontPauseNeighborsOnBacktestContextInitRestore;
-			//if (runningOnDefaultLivesim == false && pauseIfFalse == false) {
-			//v2
-			//bool runningBacktest = this.DataSource_fromBars.StreamingAdapter is BacktestStreaming;
-			//if (runningBacktest == false) {
-//                bool thereWereNeighbours = this.DataSource
-//                    .QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(
-//                        executor, false);
-//#if DEBUG
-//                Debugger.Break();	// CONFIRM_THAT_LIVESIM_QUIK_IS_OKAY_BETWEEN_HERE
-//#endif
-//                return thereWereNeighbours;
-			//} else {
-			//	string msg = "STREAMING_CHILDREN_(EXCEPT_FOR_BACKTEST)_ARE_ENFORCED_TO_PAUSE StreamingAdapter[" + this.DataSource_fromBars.StreamingAdapter + "]";
-			//	Assembler.PopupException(msg + msig, null, false);
-			//}
 		}
 
 		public override bool BacktestContextRestore_unpauseQueueForBacktest_leavePumpUnPausedForLivesimDefault_overrideable(ScriptExecutor executor) {
 			return false;
-
-			//v1
-			//StreamingAdapter asLivesimDefaultOrOtherChild = this.DataSource_fromBars.StreamingAdapter as LivesimStreaming;
-			//bool runningOnDefault = asLivesimDefaultOrOtherChild is LivesimStreamingDefault;
-			//bool unPauseIfFalse = this.DataSource_fromBars.StreamingAdapter
-			//    .DataDistributorsAreReplacedByLivesim_ifYesDontPauseNeighborsOnBacktestContextInitRestore;
-			//if (asLivesimDefaultOrOtherChild != null) {
-			//if (runningOnDefault == false && unPauseIfFalse == false) {
-			//v2
-			//bool runningBacktest = this.DataSource_fromBars.StreamingAdapter is BacktestStreaming;
-			//if (runningBacktest == false) {
-//                bool thereWereNeighbours = this.DataSource
-//                    .QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(
-//                        executor, false);
-//#if DEBUG
-//                Debugger.Break();	// CONFIRM_THAT_LIVESIM_QUIK_IS_OKAY_BETWEEN_HERE
-//#endif
-//                return thereWereNeighbours;
-			//} else {
-			//    string msg = "STREAMING_CHILDREN_(EXCEPT_FOR_BACKTEST)_ARE_ENFORCED_TO_UNPAUSE StreamingAdapter[" + this.DataSource_fromBars.StreamingAdapter + "]";
-			//    Assembler.PopupException(msg + msig, null, false);
-			//    // WHO_NEEDS_IT? channel.QuotePump.PushConsumersPaused = false;
-			//}
 		}
-
 
 		//public void SubscribeLivesimQuoteBarConsumer_toDataDistributor_replacedForLivesim(Livesimulator livesimulator) {
 		//    if (base.DataDistributorsAreReplacedByLivesim_ifYesDontPauseNeighborsOnBacktestContextInitRestore == false) return;
@@ -242,40 +196,6 @@ namespace Sq1.Core.Livesim {
 		//            + " 2) DUPLICATE_CALL_TO_SimulationPreBarsSubstitute_overrideable()";
 		//        Assembler.PopupException(msg1, null, false);
 		//    }
-		//    #region PARANOID
-		//    if (symbol != executor.Bars.Symbol) {
-		//        string msg1 = "WHEN_ARE_SYMBOLS_DIFFERENT??..";
-		//        Assembler.PopupException(msg1);
-		//    }
-		//    List<SymbolScaleDistributionChannel> mustBeOneTimeframe = distr.GetDistributionChannels_allScaleIntervals_forSymbol(symbol);
-		//    if (mustBeOneTimeframe.Count != 1) {
-		//        string msg1 = "BAD_JOB#1_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()";
-		//        Assembler.PopupException(msg1);
-		//    } else {
-		//        SymbolScaleDistributionChannel mustBeChartSubscribedToQuotesAndBars = mustBeOneTimeframe[0];
-		//        if (mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteCount != 1) {
-		//            string msg1 = "BAD_JOB#2_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
-		//            Assembler.PopupException(msg1);
-		//        } else {
-		//            bool mustBeChartSubscribedToQuotes = mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteContains(chartless);
-		//            if (mustBeChartSubscribedToQuotes == false) {
-		//                string msg1 = "BAD_JOB#3_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
-		//                Assembler.PopupException(msg1);
-		//            }
-		//        }
-
-		//        if (mustBeChartSubscribedToQuotesAndBars.ConsumersBarCount != 1) {
-		//            string msg1 = "BAD_JOB#4_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
-		//            Assembler.PopupException(msg1);
-		//        } else {
-		//            bool mustBeChartSubscribedToBars = mustBeChartSubscribedToQuotesAndBars.ConsumersBarContains(chartless);
-		//            if (mustBeChartSubscribedToBars == false) {
-		//                string msg1 = "BAD_JOB#5_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
-		//                Assembler.PopupException(msg1);
-		//            }
-		//        }
-		//    }
-		//    #endregion
 		//}
 
 		//public void UnSubscribeLivesimQuoteBarConsumer_fromDataDistributor_replacedForLivesim(Livesimulator livesimulator) {

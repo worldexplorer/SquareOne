@@ -175,7 +175,7 @@ namespace Sq1.Gui.Forms {
 			this.ChartFormManager.Strategy.Serialize();
 		}
 
-		void mniBacktestOnEveryChange_Click(object sender, System.EventArgs e) {
+		void mniBacktestOnAnyChange_Click(object sender, System.EventArgs e) {
 			try {
 				Strategy strategy = this.ChartFormManager.Executor.Strategy;
 				if (strategy == null) return;
@@ -183,6 +183,7 @@ namespace Sq1.Gui.Forms {
 				strategy.ScriptContextCurrent.BacktestOnSelectorsChange					= this.mniBacktestOnSelectorsChange.Checked;
 				strategy.ScriptContextCurrent.BacktestOnDataSourceSaved					= this.mniBacktestOnDataSourceSaved.Checked;
 				strategy.ScriptContextCurrent.BacktestOnRestart							= this.mniBacktestOnRestart.Checked;
+				strategy.ScriptContextCurrent.BacktestAfterSubscribed					= this.mniBacktestAfterSubscribed.Checked;
 				strategy.Serialize();
 
 				this.ctxBacktest.Visible = true;
@@ -414,7 +415,8 @@ namespace Sq1.Gui.Forms {
 					this.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
 					if (this.ChartFormManager.Strategy != null
 							// GET_IT_FROM_SCRIPT_NOT_CHART_ALTHOUGH_SAME_POINTER && ctxChart.IsStreamingTriggeringScript
-							&& this.ChartFormManager.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript
+							//&& this.ChartFormManager.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript
+							&& this.ChartFormManager.Strategy.ScriptContextCurrent.BacktestAfterSubscribed
 						) {
 						// without backtest here, Indicators aren't calculated if there was no "Backtest Now" or "Backtest on App Restart"
 						// better duplicated backtest but synced, than streaming starts without prior bars are processed by the strategy

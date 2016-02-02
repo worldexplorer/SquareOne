@@ -43,6 +43,8 @@ namespace Sq1.Gui.Forms {
 			this.MniShowCorrelator = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctxStrategy = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniStrategyContextLoad = new System.Windows.Forms.ToolStripMenuItem();
+			this.MniShowSprintMonitor = new System.Windows.Forms.ToolStripMenuItem();
+			this.MniShowExecution = new System.Windows.Forms.ToolStripMenuItem();
 			this.DdbStrategy = new System.Windows.Forms.ToolStripDropDownButton();
 			this.TssReportersBelowMe = new System.Windows.Forms.ToolStripSeparator();
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
@@ -52,6 +54,7 @@ namespace Sq1.Gui.Forms {
 			this.mniBarsStoredScaleInterval = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniSubscribedToStreamingAdapterQuotesBars = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniBacktestAfterSubscribed = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnitlbYearly = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mnitlbMonthly = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
@@ -66,8 +69,8 @@ namespace Sq1.Gui.Forms {
 			this.BtnStreamingTriggersScript = new System.Windows.Forms.ToolStripButton();
 			this.BtnStrategyEmittingOrders = new System.Windows.Forms.ToolStripButton();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-			this.ChartControl = new Sq1.Charting.ChartControl();
 			this.toolTip_fixToShowAbortOnProgressBar = new System.Windows.Forms.ToolTip(this.components);
+			this.ChartControl = new Sq1.Charting.ChartControl();
 			this.ctxBacktest.SuspendLayout();
 			this.ctxStrategy.SuspendLayout();
 			this.statusStrip.SuspendLayout();
@@ -91,15 +94,14 @@ namespace Sq1.Gui.Forms {
             this.mnitlbPositionSizeSharesConstantEachTrade,
             this.mnitlbPositionSizeDollarsEachTradeConstant});
 			this.ctxBacktest.Name = "ctxBacktest";
-			this.ctxBacktest.OwnerItem = this.DdbBacktest;
-			this.ctxBacktest.Size = new System.Drawing.Size(381, 248);
+			this.ctxBacktest.Size = new System.Drawing.Size(429, 270);
 			this.ctxBacktest.Opening += new System.ComponentModel.CancelEventHandler(this.ctxBacktest_Opening);
 			// 
 			// mniStrokes
 			// 
 			this.mniStrokes.DropDown = this.ctxStrokesForQuoteGenerator;
 			this.mniStrokes.Name = "mniStrokes";
-			this.mniStrokes.Size = new System.Drawing.Size(380, 22);
+			this.mniStrokes.Size = new System.Drawing.Size(428, 22);
 			this.mniStrokes.Text = "QuotesGenerator: [4strokesOHLC]";
 			// 
 			// ctxStrokesForQuoteGenerator
@@ -111,7 +113,7 @@ namespace Sq1.Gui.Forms {
 			// toolStripSeparator8
 			// 
 			this.toolStripSeparator8.Name = "toolStripSeparator8";
-			this.toolStripSeparator8.Size = new System.Drawing.Size(377, 6);
+			this.toolStripSeparator8.Size = new System.Drawing.Size(425, 6);
 			// 
 			// mnitlbSpreadGeneratorPct
 			// 
@@ -125,7 +127,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbSpreadGeneratorPct.InputFieldWidth = 60;
 			this.mnitlbSpreadGeneratorPct.Name = "mnitlbSpreadGeneratorPct";
 			this.mnitlbSpreadGeneratorPct.OffsetTop = 0;
-			this.mnitlbSpreadGeneratorPct.Size = new System.Drawing.Size(230, 21);
+			this.mnitlbSpreadGeneratorPct.Size = new System.Drawing.Size(236, 21);
 			this.mnitlbSpreadGeneratorPct.TextLeft = "Spread %price";
 			this.mnitlbSpreadGeneratorPct.TextLeftOffsetX = 0;
 			this.mnitlbSpreadGeneratorPct.TextLeftWidth = 84;
@@ -139,14 +141,14 @@ namespace Sq1.Gui.Forms {
 			// 
 			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.CheckOnClick = true;
 			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Name = "mniFillOutsideQuoteSpreadParanoidCheckThrow";
-			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Size = new System.Drawing.Size(380, 22);
+			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Size = new System.Drawing.Size(428, 22);
 			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Text = "OutsiteQuote Fills Reported";
 			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Click += new System.EventHandler(this.mniOutsideQuoteFillCheckThrow_Click);
 			// 
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(377, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(425, 6);
 			// 
 			// mniBacktestOnTriggeringYesWhenNotSubscribed
 			// 
@@ -154,9 +156,9 @@ namespace Sq1.Gui.Forms {
 			this.mniBacktestOnTriggeringYesWhenNotSubscribed.CheckOnClick = true;
 			this.mniBacktestOnTriggeringYesWhenNotSubscribed.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mniBacktestOnTriggeringYesWhenNotSubscribed.Name = "mniBacktestOnTriggeringYesWhenNotSubscribed";
-			this.mniBacktestOnTriggeringYesWhenNotSubscribed.Size = new System.Drawing.Size(380, 22);
-			this.mniBacktestOnTriggeringYesWhenNotSubscribed.Text = "Backtest On Triggering=>Yes when Bars=>NotSubscribed";
-			this.mniBacktestOnTriggeringYesWhenNotSubscribed.Click += new System.EventHandler(this.mniBacktestOnEveryChange_Click);
+			this.mniBacktestOnTriggeringYesWhenNotSubscribed.Size = new System.Drawing.Size(428, 22);
+			this.mniBacktestOnTriggeringYesWhenNotSubscribed.Text = "Re-Backtest On TriggeringScript=>Yes when Bars=>NotSubscribed";
+			this.mniBacktestOnTriggeringYesWhenNotSubscribed.Click += new System.EventHandler(this.mniBacktestOnAnyChange_Click);
 			// 
 			// mniBacktestOnDataSourceSaved
 			// 
@@ -164,9 +166,9 @@ namespace Sq1.Gui.Forms {
 			this.mniBacktestOnDataSourceSaved.CheckOnClick = true;
 			this.mniBacktestOnDataSourceSaved.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mniBacktestOnDataSourceSaved.Name = "mniBacktestOnDataSourceSaved";
-			this.mniBacktestOnDataSourceSaved.Size = new System.Drawing.Size(380, 22);
-			this.mniBacktestOnDataSourceSaved.Text = "Backtest On DataSource Saved";
-			this.mniBacktestOnDataSourceSaved.Click += new System.EventHandler(this.mniBacktestOnEveryChange_Click);
+			this.mniBacktestOnDataSourceSaved.Size = new System.Drawing.Size(428, 22);
+			this.mniBacktestOnDataSourceSaved.Text = "Re-Backtest On DataSource Saved";
+			this.mniBacktestOnDataSourceSaved.Click += new System.EventHandler(this.mniBacktestOnAnyChange_Click);
 			// 
 			// mniBacktestOnRestart
 			// 
@@ -174,9 +176,9 @@ namespace Sq1.Gui.Forms {
 			this.mniBacktestOnRestart.CheckOnClick = true;
 			this.mniBacktestOnRestart.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mniBacktestOnRestart.Name = "mniBacktestOnRestart";
-			this.mniBacktestOnRestart.Size = new System.Drawing.Size(380, 22);
-			this.mniBacktestOnRestart.Text = "Backtest On Application Restart";
-			this.mniBacktestOnRestart.Click += new System.EventHandler(this.mniBacktestOnEveryChange_Click);
+			this.mniBacktestOnRestart.Size = new System.Drawing.Size(428, 22);
+			this.mniBacktestOnRestart.Text = "Re-Backtest On Application Restart";
+			this.mniBacktestOnRestart.Click += new System.EventHandler(this.mniBacktestOnAnyChange_Click);
 			// 
 			// mniBacktestOnSelectorsChange
 			// 
@@ -184,22 +186,22 @@ namespace Sq1.Gui.Forms {
 			this.mniBacktestOnSelectorsChange.CheckOnClick = true;
 			this.mniBacktestOnSelectorsChange.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mniBacktestOnSelectorsChange.Name = "mniBacktestOnSelectorsChange";
-			this.mniBacktestOnSelectorsChange.Size = new System.Drawing.Size(380, 22);
-			this.mniBacktestOnSelectorsChange.Text = "Backtest On BarsRange/ScriptParameters Changed";
-			this.mniBacktestOnSelectorsChange.Click += new System.EventHandler(this.mniBacktestOnEveryChange_Click);
+			this.mniBacktestOnSelectorsChange.Size = new System.Drawing.Size(428, 22);
+			this.mniBacktestOnSelectorsChange.Text = "Re-Backtest On BarsRange/ScriptParameters Changed";
+			this.mniBacktestOnSelectorsChange.Click += new System.EventHandler(this.mniBacktestOnAnyChange_Click);
 			// 
 			// mniBacktestNow
 			// 
 			this.mniBacktestNow.Name = "mniBacktestNow";
 			this.mniBacktestNow.ShortcutKeys = System.Windows.Forms.Keys.F5;
-			this.mniBacktestNow.Size = new System.Drawing.Size(380, 22);
+			this.mniBacktestNow.Size = new System.Drawing.Size(428, 22);
 			this.mniBacktestNow.Text = "Backtest Now";
 			this.mniBacktestNow.Click += new System.EventHandler(this.mniBacktestNow_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(377, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(425, 6);
 			// 
 			// mnitlbPositionSizeSharesConstantEachTrade
 			// 
@@ -213,7 +215,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldWidth = 85;
 			this.mnitlbPositionSizeSharesConstantEachTrade.Name = "mnitlbPositionSizeSharesConstantEachTrade";
 			this.mnitlbPositionSizeSharesConstantEachTrade.OffsetTop = 0;
-			this.mnitlbPositionSizeSharesConstantEachTrade.Size = new System.Drawing.Size(235, 21);
+			this.mnitlbPositionSizeSharesConstantEachTrade.Size = new System.Drawing.Size(241, 21);
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextLeft = "Shares";
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextLeftOffsetX = 0;
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextLeftWidth = 43;
@@ -235,7 +237,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldWidth = 85;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.Name = "mnitlbPositionSizeDollarsEachTradeConstant";
 			this.mnitlbPositionSizeDollarsEachTradeConstant.OffsetTop = 0;
-			this.mnitlbPositionSizeDollarsEachTradeConstant.Size = new System.Drawing.Size(235, 21);
+			this.mnitlbPositionSizeDollarsEachTradeConstant.Size = new System.Drawing.Size(241, 21);
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextLeft = "$$ Each Trade";
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextLeftOffsetX = 0;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextLeftWidth = 82;
@@ -338,13 +340,15 @@ namespace Sq1.Gui.Forms {
             this.mniStrategyContextLoad,
             this.mniStrategyRemove,
             this.toolStripSeparator3,
+            this.MniShowSprintMonitor,
+            this.MniShowExecution,
             this.MniShowLivesim,
             this.MniShowCorrelator,
             this.MniShowSequencer,
             this.MniShowSourceCodeEditor});
 			this.ctxStrategy.Name = "ctxPositionSize";
 			this.ctxStrategy.OwnerItem = this.DdbStrategy;
-			this.ctxStrategy.Size = new System.Drawing.Size(284, 170);
+			this.ctxStrategy.Size = new System.Drawing.Size(284, 214);
 			this.ctxStrategy.Opening += new System.ComponentModel.CancelEventHandler(this.ctxStrategy_Opening);
 			// 
 			// mniStrategyContextLoad
@@ -353,6 +357,20 @@ namespace Sq1.Gui.Forms {
 			this.mniStrategyContextLoad.Name = "mniStrategyContextLoad";
 			this.mniStrategyContextLoad.Size = new System.Drawing.Size(283, 22);
 			this.mniStrategyContextLoad.Text = "NYI Load Script Context...";
+			// 
+			// MniShowSprintMonitor
+			// 
+			this.MniShowSprintMonitor.Enabled = false;
+			this.MniShowSprintMonitor.Name = "MniShowSprintMonitor";
+			this.MniShowSprintMonitor.Size = new System.Drawing.Size(283, 22);
+			this.MniShowSprintMonitor.Text = "Show Sprint Monitor";
+			// 
+			// MniShowExecution
+			// 
+			this.MniShowExecution.Enabled = false;
+			this.MniShowExecution.Name = "MniShowExecution";
+			this.MniShowExecution.Size = new System.Drawing.Size(283, 22);
+			this.MniShowExecution.Text = "Show Order Execution";
 			// 
 			// DdbStrategy
 			// 
@@ -379,7 +397,7 @@ namespace Sq1.Gui.Forms {
 			this.statusStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
 			this.statusStrip.Location = new System.Drawing.Point(0, 318);
 			this.statusStrip.Name = "statusStrip";
-			this.statusStrip.Size = new System.Drawing.Size(841, 22);
+			this.statusStrip.Size = new System.Drawing.Size(840, 22);
 			this.statusStrip.SizingGrip = false;
 			this.statusStrip.TabIndex = 4;
 			this.statusStrip.Text = "statusStrip1";
@@ -400,6 +418,7 @@ namespace Sq1.Gui.Forms {
             this.mniBarsStoredScaleInterval,
             this.toolStripSeparator2,
             this.mniSubscribedToStreamingAdapterQuotesBars,
+            this.mniBacktestAfterSubscribed,
             this.toolStripSeparator6,
             this.mnitlbYearly,
             this.mnitlbMonthly,
@@ -412,7 +431,7 @@ namespace Sq1.Gui.Forms {
             this.mniShowBarRange});
 			this.ctxBars.Name = "ctxScaleInterval";
 			this.ctxBars.OwnerItem = this.DdbBars;
-			this.ctxBars.Size = new System.Drawing.Size(252, 278);
+			this.ctxBars.Size = new System.Drawing.Size(252, 300);
 			this.ctxBars.Opening += new System.ComponentModel.CancelEventHandler(this.ctxBars_Opening);
 			// 
 			// mniBarsSymbolDataSource
@@ -445,6 +464,16 @@ namespace Sq1.Gui.Forms {
 			this.mniSubscribedToStreamingAdapterQuotesBars.Size = new System.Drawing.Size(251, 22);
 			this.mniSubscribedToStreamingAdapterQuotesBars.Text = "Subscribed to [StreamingDerived]";
 			this.mniSubscribedToStreamingAdapterQuotesBars.Click += new System.EventHandler(this.mniSubscribedToStreamingAdapterQuotesBars_Click);
+			// 
+			// mniBacktestAfterSubscribed
+			// 
+			this.mniBacktestAfterSubscribed.Checked = true;
+			this.mniBacktestAfterSubscribed.CheckOnClick = true;
+			this.mniBacktestAfterSubscribed.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.mniBacktestAfterSubscribed.Name = "mniBacktestAfterSubscribed";
+			this.mniBacktestAfterSubscribed.Size = new System.Drawing.Size(251, 22);
+			this.mniBacktestAfterSubscribed.Text = "Re-Backtest after Subscribed";
+			this.mniBacktestAfterSubscribed.Click += new System.EventHandler(this.mniBacktestOnAnyChange_Click);
 			// 
 			// toolStripSeparator6
 			// 
@@ -665,8 +694,15 @@ namespace Sq1.Gui.Forms {
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
 			this.toolStripMenuItem1.Size = new System.Drawing.Size(307, 22);
 			// 
+			// toolTip_fixToShowAbortOnProgressBar
+			// 
+			this.toolTip_fixToShowAbortOnProgressBar.AutomaticDelay = 100;
+			this.toolTip_fixToShowAbortOnProgressBar.UseAnimation = false;
+			this.toolTip_fixToShowAbortOnProgressBar.UseFading = false;
+			// 
 			// ChartControl
 			// 
+			this.ChartControl.BackColor = System.Drawing.SystemColors.Info;
 			this.ChartControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ChartControl.Location = new System.Drawing.Point(0, 0);
 			this.ChartControl.Margin = new System.Windows.Forms.Padding(0);
@@ -674,20 +710,14 @@ namespace Sq1.Gui.Forms {
 			this.ChartControl.Padding = new System.Windows.Forms.Padding(0, 0, 0, 22);
 			this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished = true;
 			this.ChartControl.RangeBarCollapsed = false;
-			this.ChartControl.Size = new System.Drawing.Size(841, 340);
+			this.ChartControl.Size = new System.Drawing.Size(840, 340);
 			this.ChartControl.TabIndex = 0;
-			// 
-			// toolTip_fixToShowAbortOnProgressBar
-			// 
-			this.toolTip_fixToShowAbortOnProgressBar.AutomaticDelay = 100;
-			this.toolTip_fixToShowAbortOnProgressBar.UseAnimation = false;
-			this.toolTip_fixToShowAbortOnProgressBar.UseFading = false;
 			// 
 			// ChartForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(841, 340);
+			this.ClientSize = new System.Drawing.Size(840, 340);
 			this.Controls.Add(this.statusStrip);
 			this.Controls.Add(this.ChartControl);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -759,5 +789,8 @@ namespace Sq1.Gui.Forms {
 		private System.Windows.Forms.ToolTip toolTip_fixToShowAbortOnProgressBar;
 		public  System.Windows.Forms.ToolStripButton BtnStrategyEmittingOrders;
 		public  System.Windows.Forms.ToolStripButton BtnStreamingTriggersScript;
+		private System.Windows.Forms.ToolStripMenuItem mniBacktestAfterSubscribed;
+		public System.Windows.Forms.ToolStripMenuItem MniShowExecution;
+		public System.Windows.Forms.ToolStripMenuItem MniShowSprintMonitor;
 	}
 }

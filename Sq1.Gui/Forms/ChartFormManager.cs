@@ -476,7 +476,7 @@ namespace Sq1.Gui.Forms {
 				string strategyName = this.Strategy == null ? "CHART_ONLY" : this.Strategy.Name;
 				this.ChartForm.ChartControl.Initialize(barsClicked, strategyName, loadNewBars, invalidateAllPanels);
 				//SCROLL_TO_SNAPSHOTTED_BAR this.ChartForm.ChartControl.ScrollToLastBarRight();
-				this.ChartForm.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
+				//this.ChartForm.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 			}
 
 			// set original Streaming Icon before we lost in simulationPreBarsSubstitute() and launched backtester in another thread

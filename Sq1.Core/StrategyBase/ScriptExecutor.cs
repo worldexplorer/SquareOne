@@ -754,13 +754,14 @@ namespace Sq1.Core.StrategyBase {
 			return ret;
 		}
 		public override string ToString() {
-			string ret = this.StrategyName;
-			if (this.Strategy != null) {
-				if (this.Strategy.Name == null) return ret;
-				ret += " @ " + this.Strategy.ScriptContextCurrent.ToString();
-			} else {
-			}
-			return ret;
+			//string ret = this.StrategyName;
+			//if (this.Strategy != null) {
+			//    if (this.Strategy.Name == null) return ret;
+			//    ret += " @ " + this.Strategy.ScriptContextCurrent.ToString();
+			//} else {
+			//}
+			//return ret;
+			return this.Strategy.WindowTitle;
 		}
 		public string ToStringWithCurrentParameters() {
 			string ret = "";
@@ -778,7 +779,7 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 			this.ExecutionDataSnapshot					.Dispose();
-			this.BacktesterOrLivesimulator								.Dispose();
+			this.BacktesterOrLivesimulator				.Dispose();
 			this.Sequencer								.Dispose();
 			this.Livesimulator							.Dispose();
 			this.ScriptIsRunningCantAlterInternalLists	.Dispose();
@@ -786,7 +787,7 @@ namespace Sq1.Core.StrategyBase {
 			// ALREADY_DISPOSED_IN_ChartFormsManager.Dispose_workspaceReloading() this.ChartShadow							.Dispose();
 
 			this.ExecutionDataSnapshot					= null;
-			this.BacktesterOrLivesimulator								= null;
+			this.BacktesterOrLivesimulator				= null;
 			this.Sequencer								= null;
 			this.Livesimulator							= null;
 			this.ScriptIsRunningCantAlterInternalLists	= null;
