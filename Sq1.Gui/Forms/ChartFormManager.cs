@@ -41,8 +41,8 @@ namespace Sq1.Gui.Forms {
 				DockPanel							dockPanel								{ get { return this.MainForm.DockPanel; } }
 				ScriptEditorFormFactory				scriptEditorFormFactory;
 				
-		public ScriptEditorForm						ScriptEditorForm;
-		public ScriptEditorForm						ScriptEditorFormConditionalInstance		{ get {
+		public	ScriptEditorForm					ScriptEditorForm;
+		public	ScriptEditorForm					ScriptEditorFormConditionalInstance		{ get {
 				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm)) {
 					if (this.Strategy == null) return null;
 					if (this.Strategy.ActivatedFromDll == true) return null;
@@ -213,10 +213,13 @@ namespace Sq1.Gui.Forms {
 		// all the above should be subscribed in Livesim_pre()
 		void eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree(object sender, QuoteEventArgs e) {
 			TreeListView olvTree = DataSourcesForm.Instance.DataSourcesTreeControl.OlvTree;
-			Action linkingTwoUnrelatedDlls = new Action(delegate {
+			Action linkingTwoUnrelatedDlls_invokedInGuiThread = new Action(delegate {
+					if (olvTree.SelectedIndex != -1 && olvTree.SelectedObject == this.ChartForm.ChartControl) {
+						olvTree.SelectedObject = this.Executor.DataSource_fromBars;
+					}
 					olvTree.RefreshObject(this.ChartForm.ChartControl);
 				});
-			this.ChartForm.ChartControl.OnStrategyExecutedOneQuote_unblinkDataSourceTree(linkingTwoUnrelatedDlls);
+			this.ChartForm.ChartControl.OnStrategyExecutedOneQuote_unblinkDataSourceTree(linkingTwoUnrelatedDlls_invokedInGuiThread);
 		}
 
 		public ChartFormManager(MainForm mainForm, int charSernoDeserialized = -1) : this() {
@@ -962,7 +965,7 @@ namespace Sq1.Gui.Forms {
 			//v1: NullRef return "Strategy[" + this.Strategy.Name + "], Chart [" + this.ChartForm.ToString() + "]";
 			return this.StreamingButtonIdent;
 		}
-		public void PopulateMainFormSymbolStrategyTreesScriptParameters() {
+		public void PopulateThroughMainForm_symbolStrategyTree_andSliders() {
 			ContextChart ctxScript = this.ContextCurrentChartOrStrategy;
 			if (ctxScript == null) {
 				string msg = "DONT_INVOKE_ME this.ContextCurrentChartOrStrategy=NULL //PopulateMainFormSymbolStrategyTreesScriptParameters()";
@@ -972,7 +975,7 @@ namespace Sq1.Gui.Forms {
 
 			//v1 DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
 			//v2
-			DataSourcesForm.Instance.DataSourcesTreeControl.ChartShadow_Select(this.ChartForm.ChartControl);
+			DataSourcesForm.Instance.DataSourcesTreeControl.ChartShadow_Select_HideSelectionFalse(this.ChartForm.ChartControl);
 
 			if (SymbolInfoEditorForm.Instance.IsShown) {
 				DataSourcesForm.Instance.DataSourcesTreeControl.RaiseOnSymbolInfoEditorClicked();

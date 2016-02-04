@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 
 using Sq1.Core.DataTypes;
+using System.Collections.Generic;
 
 namespace Sq1.Core.Streaming {
 	// REASON_TO_EXIST: allows to store temporarily incoming streaming quotes to backtest while streaming is on;
@@ -333,11 +334,15 @@ namespace Sq1.Core.Streaming {
 					bool pausedConfirmed = this.confirmPaused.WaitOne(-1);
 					string msg2 = pausedConfirmed ? "PUSHER_THREAD_PAUSED_PUMPING" : "PUSHER_THREAD_PAUSED_PUMPING_BUT_NOT_CONFIRMED";
 					Assembler.PopupException(msg2 + msig, null, false);
+
+					//even for a LivesimStreamingDefault-based no-strategy Chart I wanna see "PAUSED" added to ChartForm.Text
+					this.notifyConsumers_pumpWasPaused();
 					return;
 				}
 				bool pausedNow = this.confirmPaused.WaitOne(0);
 				if (pausedNow == false) {
 					this.confirmPaused.Set();
+					this.notifyConsumers_pumpWasPaused();
 					this.confirmUnpaused.Reset();
 					string msg = "PUSHER_THREAD_PAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION";
 					//Assembler.PopupException(msg + msig);
@@ -373,12 +378,16 @@ namespace Sq1.Core.Streaming {
 					bool unPausedConfirmed = this.confirmUnpaused.WaitOne(-1);
 					string msg = unPausedConfirmed ? "PUSHER_THREAD_UNPAUSED_PUMPING" : "PUSHER_THREAD_UNPAUSED_PUMPING_BUT_NOT_CONFIRMED";
 					Assembler.PopupException(msg + msig, null, false);
+
+					//even for a LivesimStreamingDefault-based no-strategy Chart I wanna see "PAUSED" removed to ChartForm.Text
+					this.notifyConsumers_pumpWasUnPaused();
 					return;
 				}
 				this.confirmUnpaused.Reset();
 				bool unPausedNow = this.confirmUnpaused.WaitOne(0);
 				if (unPausedNow == false) {
 					this.confirmUnpaused.Set();
+					this.notifyConsumers_pumpWasUnPaused();
 					this.confirmPaused.Reset();
 						string msg = "PUSHER_THREAD_UNPAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION"
 						//+ " added since BrokerMock.SubmitOrder was waiting for 2 minutes after someone has already unpaused"
@@ -402,6 +411,30 @@ namespace Sq1.Core.Streaming {
 			bool paused = this.confirmPaused.WaitOne(maxWaitingMillis);
 			return paused;
 		}
+
+		void notifyConsumers_pumpWasPaused() {
+			List<StreamingConsumer> consumersMerged = new List<StreamingConsumer>();
+			consumersMerged.AddRange(this.Channel.ConsumersBar);
+			consumersMerged.AddRange(this.Channel.ConsumersQuote);
+			List<StreamingConsumer> alreadyNotified = new List<StreamingConsumer>();
+			foreach (StreamingConsumer consumer in consumersMerged) {
+				if (alreadyNotified.Contains(consumer)) continue;
+				consumer.PumpPaused_notification_overrideMe_switchLivesimmingThreadToGui();
+				alreadyNotified.Add(consumer);
+			}
+		}
+		void notifyConsumers_pumpWasUnPaused() {
+			List<StreamingConsumer> consumersMerged = new List<StreamingConsumer>();
+			consumersMerged.AddRange(this.Channel.ConsumersBar);
+			consumersMerged.AddRange(this.Channel.ConsumersQuote);
+			List<StreamingConsumer> alreadyNotified = new List<StreamingConsumer>();
+			foreach (StreamingConsumer consumer in consumersMerged) {
+				if (alreadyNotified.Contains(consumer)) continue;
+				consumer.PumpUnPaused_notification_overrideMe_switchLivesimmingThreadToGui();
+				alreadyNotified.Add(consumer);
+			}
+		}
+
 		public override string ToString() { return THREAD_PREFIX + this.Channel.ConsumerNames; }
 	}
 }

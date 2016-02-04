@@ -22,6 +22,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			} else {
 				this.RaiseOnDataSourceSelected();
 			}
+			this.OlvTree.RebuildAll(true);		// needed for Chart to get removed from old Symbol and move to the Symbol clicked; not needed without level3
 		}
 		void tree_CellRightClick(object sender, CellRightClickEventArgs e) {
 			if (e.RowIndex == -1) { // 1) empty tree, no datasources added yet; 2) clicked on blank area of some tree

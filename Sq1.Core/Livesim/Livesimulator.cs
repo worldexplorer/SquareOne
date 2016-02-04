@@ -128,7 +128,7 @@ namespace Sq1.Core.Livesim {
 
 				base.Executor.BacktestContextInitialize(base.BarsSimulating);
 
-				#region looks like {new LivesimulatorDataSource().SeparatePushingThreadEnabled=true} actually SOLVES__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM, not waiting for the chart to set Bars...
+				#region looks like {new LivesimulatorDataSource().SeparatePushingThreadEnabled=true} actually SOLVES__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM; still waiting for the chart to set Bars, otherwize white overstriked ChartControl for a second
 				int waitForGuiToSetBars_maxMillis = 5000;
 				bool barsAreSetInGui = this.barsAreSetInGuiThread.WaitOne(waitForGuiToSetBars_maxMillis);		// SOLVES__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM
 				if (barsAreSetInGui == false) {
@@ -388,6 +388,11 @@ namespace Sq1.Core.Livesim {
 		}
 
 		public void Pause_inGuiThread() {
+			if (this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe == null) {
+				string msg1 = "YOU_DIDNT_START_LIVESIM_CANT_PAUSE add this.TssBtnPauseResume.Enabled=false into LiveSimControl.Designer.cs";
+				Assembler.PopupException(msg1, null, false);
+				return;
+			}
 			this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.UnpausedMre.Reset();
 			string msg = "AlertsScheduledForDelayedFill.Count=" + this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesim_nullUnsafe.DataSnapshot.AlertsScheduledForDelayedFill.Count  + " LEAKED_HANDLES_HUNTER";
 			//Assembler.PopupException(msg);

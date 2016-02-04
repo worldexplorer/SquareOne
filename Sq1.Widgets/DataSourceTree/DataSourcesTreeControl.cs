@@ -295,10 +295,49 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.SymbolSelected = symbol;
 		}
 
-		public void ChartShadow_Select(ChartShadow chartControl) {
+		public void ChartShadow_Select_HideSelectionFalse(ChartShadow chartControl) {
+			int indexFoundForSelectObject = this.OlvTree.VirtualListDataSource.GetObjectIndex(chartControl);
+
+			//if (indexFoundForSelectObject == -1) {
+			//    //Sq1.Core.DataSource has to notify Sq1.Widgets.DataSourcesTreeControl about a new chart added;
+			//    //I'm lazy to loop it through JsonRepository like OnDataSourceAdded / OnSymbolAdded
+			//    //so I'm just rebuilding the list making this.OlvTree.ChildrenGetter to DataSource.ChartsOpenForSymbol.FindContentsOf_NullUnsafe(symbol)
+			//    //var model = this.OlvTree.TreeModel;
+			//    this.OlvTree.RebuildAll(true);		// without Rebuild, OlvTree.SelectObject(chartControl) will also find index=-1
+			//    this.OlvTree.Expand(chartControl.SymbolOfDataSource);
+			//    this.OlvTree.Expand(chartControl);
+			//    this.OlvTree.EnsureModelVisible(chartControl);
+			//    indexFoundForSelectObject = this.OlvTree.VirtualListDataSource.GetObjectIndex(chartControl);
+			//    //var model2 = this.OlvTree.TreeModel;
+			//    //var lvi = this.OlvTree.ModelToItem(chartControl);
+			//}
+
+			//MUST_BE_HERE_ALL_3_LINES__WILL_100%_EXPAND
 			this.OlvTree.Expand(chartControl.SymbolOfDataSource);
-			this.OlvTree.SelectObject(chartControl, true);
-			this.OlvTree.RebuildAll(true);
+			this.OlvTree.Expand(chartControl);
+			this.OlvTree.EnsureModelVisible(chartControl);
+
+			//this.OlvTree.RefreshObject(chartControl);		// REQUESTS_this.OlvTree.ChildrenGetter
+
+			//this.OlvTree.SelectedIndex = -1;
+			this.OlvTree.SelectedObject = chartControl;		//this.OlvTree.SelectObject(chartControl, true);
+			//this.OlvTree.RefreshSelectedObjects();
+
+			//HideSelection=FALSE FIXED_IT_NOW_STAYS_SELECTED
+			//HideSelection=FALSE FIXED_IT_NOW_STAYS_SELECTED
+			//HideSelection=FALSE FIXED_IT_NOW_STAYS_SELECTED (you may need to get the DocumentPane focused upstack, and this one will be pale blue)
+			//this.OlvTree.Focus();	// DIDNT_FIX_IT
+			//HideSelection=FALSE FIXED_IT_NOW_STAYS_SELECTED
+			//HideSelection=FALSE FIXED_IT_NOW_STAYS_SELECTED
+			//HideSelection=FALSE FIXED_IT_NOW_STAYS_SELECTED
+
+			//if (this.OlvTree.SelectedIndex == -1) {
+			//    string msg = "TRY_HARDER#1";
+			//}
+			//object selectedObject = this.OlvTree.GetSelectedObject();
+			//if (selectedObject != chartControl) {
+			//    string msg = "TRY_HARDER#2";
+			//}
 		}
 	}
 }

@@ -38,7 +38,7 @@ namespace Sq1.Core.Serializers {
 					bool createNonExistingPath = true, bool createNonExistingFile = true) {
 			
 			bool createdNewEmptyFile = false;
-			string msig = " Serializer<" + OfWhat + ">::Initialize("
+			string msig = " //" + this.ToString() + ".Initialize("
 					+ "rootPath=[" + rootPath + "], subfolder=[" + subfolder + "],"
 					+ " workspaceName=[" + workspaceName + "], relFname=[" + relFname + "],"
 					+ " createNonExistingPath=[" + createNonExistingPath + "],"
@@ -100,7 +100,7 @@ namespace Sq1.Core.Serializers {
 				if (this.EntityDeserialized == null) this.EntityDeserialized = new T();
 				if (this.ActionAfterDeserialized != null) this.ActionAfterDeserialized(this.EntityDeserialized);
 			} catch (Exception ex) {
-				string msig = " Serializer<" + OfWhat + ">::Deserialize(): ";
+				string msig = " //" + this.ToString() + ".Deserialize";
 				string msg = "FAILED_Deserialize_WITH_this.JsonAbsFile[" + this.JsonAbsFile + "]";
 				Assembler.PopupException(msg + msig, ex);
 			}
@@ -115,7 +115,7 @@ namespace Sq1.Core.Serializers {
 					});
 				File.WriteAllText(this.JsonAbsFile, json);
 			} catch (Exception ex) {
-				string msig = " Serializer<" + OfWhat + ">::Serialize(): ";
+				string msig = " //" + this.ToString() + ".Serialize()";
 				string msg = "FAILED_Serialize";
 				if (this.AbsPath != null) msg += "_WITH_this.JsonAbsFile[" + this.JsonAbsFile + "]";
 				Assembler.PopupException(msg + msig, ex);
@@ -125,10 +125,14 @@ namespace Sq1.Core.Serializers {
 			try {
 				File.Delete(this.JsonAbsFile);
 			} catch (Exception ex) {
-				string msig = " Serializer<" + OfWhat + ">::DeleteJsonFile(): ";
+				string msig = " //" + this.ToString() + ".DeleteJsonFile()";
 				string msg = "FAILED_DELETE_JSON_FILE_WITH_this.JsonAbsFile[" + this.JsonAbsFile + "]";
 				Assembler.PopupException(msg + msig, ex);
 			}
+		}
+
+		public override string ToString() {
+			return "Serializer<" + this.OfWhat + ">";
 		}
 	}
 }

@@ -53,7 +53,9 @@ namespace Sq1.Gui.Forms {
 		internal void DataSourcesTree_OnSymbolSelected(object sender, DataSourceSymbolEventArgs e) {
 			string msig = " //DataSourcesTree_OnSymbolSelected(" + e.Symbol + ")";
 
-			if (this.chartFormManager.Executor.DataSource_fromBars.StreamingAdapter != null && this.chartFormManager.Executor.IsStreamingTriggeringScript) {
+			if (	this.chartFormManager.Executor.DataSource_fromBars.StreamingAdapter != null
+				 && this.chartFormManager.Executor.Strategy != null
+				 && this.chartFormManager.Executor.IsStreamingTriggeringScript) {
 				string msg = "I_REFUSE_CHANGE_SYMBOL__CURRENT_CHART_HAS_STRATEGY_RUNNING_ON_STREAMING click [" + this.chartFormManager.StreamingButtonIdent + "] button on ChartForm to unsubscribe";
 				Assembler.PopupException(msg + msig, null, false);
 				return;

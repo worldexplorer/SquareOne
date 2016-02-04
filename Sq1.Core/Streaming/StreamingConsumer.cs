@@ -31,19 +31,31 @@ namespace Sq1.Core.Streaming {
 				return ret;
 			} }
 		protected 		ContextChart ContextCurrentChartOrStrategy_nullReported { get {
-				return (this.Strategy_nullReported != null)
-					? this.Strategy_nullReported.ScriptContextCurrent as ContextChart
-					: this.ChartShadow_nullReported.CtxChart;
+				string msg = "";
+				Strategy strategy_nullUnsafe = this.Strategy_nullReported;
+				if (strategy_nullUnsafe != null) {
+					return strategy_nullUnsafe.ScriptContextCurrent;
+				}
+				msg += "NOT_STRATEGY";
+				ChartShadow chartShadow_nullUnsafe = this.ChartShadow_nullReported;
+				if (chartShadow_nullUnsafe != null) {
+					return chartShadow_nullUnsafe.CtxChart;
+				}
+				msg += " AND_ChartShadow.CtxChart_WAS_NOT_INITIALIZED_YET";
+				Assembler.PopupException(msg);
+				return null;
 			} }
 		protected 		string Symbol_nullReported { get {
-				string symbol = (this.Executor_nullReported.Strategy == null) ? this.Executor_nullReported.Bars.Symbol : this.ContextCurrentChartOrStrategy_nullReported.Symbol;
+				ScriptExecutor executor_nullUnsafe = this.Executor_nullReported;
+				string symbol = (executor_nullUnsafe.Strategy == null) ? executor_nullUnsafe.Bars.Symbol : this.ContextCurrentChartOrStrategy_nullReported.Symbol;
 				if (String.IsNullOrEmpty(symbol)) {
 					this.Action("this.Executor.Strategy.ScriptContextCurrent.Symbol IsNullOrEmpty");
 				}
 				return symbol;
 			} }
 		protected 		BarScaleInterval ScaleInterval_nullReported { get {
-				var ret = (this.Executor_nullReported.Strategy == null) ? this.Executor_nullReported.Bars.ScaleInterval : this.ContextCurrentChartOrStrategy_nullReported.ScaleInterval;
+				ScriptExecutor executor_nullUnsafe = this.Executor_nullReported;
+				var ret = (executor_nullUnsafe.Strategy == null) ? executor_nullUnsafe.Bars.ScaleInterval : this.ContextCurrentChartOrStrategy_nullReported.ScaleInterval;
 				this.ActionForNullPointer(ret, "this.Executor.Strategy.ScriptContextCurrent.ScaleInterval=null");
 				return ret;
 			} }
@@ -77,6 +89,8 @@ namespace Sq1.Core.Streaming {
 			} }
 
 		protected 		ChartShadow ChartShadow_nullReported { get {
+				ChartStreamingConsumer thisAsChartConsumer = this as ChartStreamingConsumer;
+				if (thisAsChartConsumer != null) return thisAsChartConsumer.ChartShadow;
 				var ret = this.Executor_nullReported.ChartShadow;
 				this.ActionForNullPointer(ret, "this.Executor.ChartShadow=null");
 				return ret;
@@ -135,5 +149,9 @@ namespace Sq1.Core.Streaming {
 			//throw new Exception(msg);
 		}
 
+		public virtual void PumpPaused_notification_overrideMe_switchLivesimmingThreadToGui() {
+		}
+		public virtual void PumpUnPaused_notification_overrideMe_switchLivesimmingThreadToGui() {
+		}
 	}
 }

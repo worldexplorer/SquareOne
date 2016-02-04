@@ -53,7 +53,7 @@ namespace Sq1.Gui {
 		}
 		internal void StrategiesTree_OnStrategyLoadClicked(object sender, StrategyEventArgs e) {
 			Strategy strategy = e.Strategy;
-			ChartForm active = this.mainForm.ChartFormActiveNullUnsafe;
+			ChartForm active = this.mainForm.ChartFormActive_nullUnsafe;
 			if (active == null) {
 				ChartFormManager msg = this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
 				active = msg.ChartForm;
@@ -190,7 +190,7 @@ namespace Sq1.Gui {
 				//} else {
 				//	StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(chartFormClicked.ChartFormManager.Strategy);
 				//}
-				chartFormClicked.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
+				chartFormClicked.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
 				//chartFormClicked.Activate();	// I_GUESS_ITS_ALREADY_ACTIVE
 				chartFormClicked.Focus();		// FLOATING_FORM_CANT_BE_RESIZED_WITHOUT_FOCUS FOCUS_WAS_PROBABLY_STOLEN_BY_SOME_OTHER_FORM(MAIN?)_LAZY_TO_DEBUG
 				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(chartFormClicked.ChartControl.ChartSettings);
@@ -253,7 +253,7 @@ namespace Sq1.Gui {
 				//v1 this.mainForm.GuiDataSnapshotSerializer.Serialize();
 				//v2
 				this.mainForm.MainFormSerialize();
-				chartFormClicked.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
+				chartFormClicked.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
 			} catch (Exception ex) {
 				Assembler.PopupException("DockPanel_ActiveContentChanged()", ex);
 			}
@@ -312,7 +312,7 @@ namespace Sq1.Gui {
 					return;
 				}
 				// mainForm.ChartFormActive will already throw if Documents have no Charts selected; no need to check
-				this.mainForm.ChartFormActiveNullUnsafe.ChartFormManager.InterformEventsConsumer.DataSourcesTree_OnSymbolSelected(sender, e);
+				this.mainForm.ChartFormActive_nullUnsafe.ChartFormManager.InterformEventsConsumer.DataSourcesTree_OnSymbolSelected(sender, e);
 			} catch (Exception ex) {
 				Assembler.PopupException(null, ex);
 			}
@@ -327,7 +327,7 @@ namespace Sq1.Gui {
 			//v1 SlidersForm.Instance.PopulateFormTitle(strategy);
 			//v2 WILLBEDONE_BY_PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy() SlidersForm.Instance.Initialize(strategy);
 			try {
-				this.mainForm.ChartFormActiveNullUnsafe.ChartFormManager
+				this.mainForm.ChartFormActive_nullUnsafe.ChartFormManager
 					.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("StrategiesTree_OnScriptContextLoadClicked()");
 			} catch (Exception ex) {
 				Assembler.PopupException("StrategiesTree_OnScriptContextLoadClicked()", ex);
@@ -340,7 +340,7 @@ namespace Sq1.Gui {
 		}
 		// TYPE_MANGLING_INSIDE_WARNING NOTICE_THAT_BOTH_PARAMETER_SCRIPT_AND_INDICATOR_VALUE_CHANGED_EVENTS_ARE_HANDLED_BY_SINGLE_HANDLER
 		internal void SlidersAutoGrow_SliderValueChanged(object sender, IndicatorParameterEventArgs indicatorParamChangedArg) {
-			ChartForm chartFormActive = this.mainForm.ChartFormActiveNullUnsafe;
+			ChartForm chartFormActive = this.mainForm.ChartFormActive_nullUnsafe;
 			if (chartFormActive == null) {
 				string msg = "DRAG_CHART_INTO_DOCUMENT_AREA";
 				Assembler.PopupException(msg);

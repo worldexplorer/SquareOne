@@ -21,18 +21,19 @@ namespace Sq1.Gui.Forms {
 			ToolStripButton btnStartStop = this.LivesimControl.TssBtnStartStop;
 			bool clickedStart = btnStartStop.Text.Contains("Start");
 			if (clickedStart) {
+				// LivesimStreamingDefault is a default one; I can pause everything now; and that's what any real-world Streaming would experience;
 				//NO_TOO_MANY_CHANGES_TO_LOOSEN_ALL_CHECKS GO_AND_DO_IT__I_WILL_SEE_ORANGE_BACKGROUNG_IN_DATASOURCE_TREE
-				ScriptExecutor executor = this.chartFormManager.Executor;
-				StreamingAdapter streamingAdapter = executor.DataSource_fromBars.StreamingAdapter;
-				if (streamingAdapter != null) {
-					string reasonWhyLivesimCanNotBeStartedForSymbol = streamingAdapter.ReasonWhyLivesimCanNotBeStartedForSymbol(executor.Bars.Symbol, executor.ChartShadow);
-					if (string.IsNullOrEmpty(reasonWhyLivesimCanNotBeStartedForSymbol) == false) {
-						string msg = "I_REFUSE_TO_START_LIVESIM_FOR[" + this.chartFormManager.WhoImServing_moveMeToExecutor + "]: " + reasonWhyLivesimCanNotBeStartedForSymbol;
-						Assembler.PopupException(msg, null, false);
-						btnStartStop.Checked = false;
-						return;
-					}
-				}
+				//ScriptExecutor executor = this.chartFormManager.Executor;
+				//StreamingAdapter streamingAdapter = executor.DataSource_fromBars.StreamingAdapter;
+				//if (streamingAdapter != null) {
+				//    string reasonWhyLivesimCanNotBeStartedForSymbol = streamingAdapter.ReasonWhyLivesimCanNotBeStartedForSymbol(executor.Bars.Symbol, executor.ChartShadow);
+				//    if (string.IsNullOrEmpty(reasonWhyLivesimCanNotBeStartedForSymbol) == false) {
+				//        string msg = "I_REFUSE_TO_START_LIVESIM_FOR[" + this.chartFormManager.WhoImServing_moveMeToExecutor + "]: " + reasonWhyLivesimCanNotBeStartedForSymbol;
+				//        Assembler.PopupException(msg, null, false);
+				//        //btnStartStop.Checked = false;
+				//        //return;
+				//    }
+				//}
 
 				btnStartStop.Text = "Starting";
 				btnStartStop.Enabled = false;

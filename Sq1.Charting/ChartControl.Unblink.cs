@@ -19,7 +19,7 @@ namespace Sq1.Charting {
 		TimerSimplified timerUnblink;
 		Task			TaskWaitingForTimerExpire_toRevertToWhite;
 		
-		public void OnStrategyExecutedOneQuote_unblinkDataSourceTree(Action refreshDataSourceTree) {
+		public void OnStrategyExecutedOneQuote_unblinkDataSourceTree(Action refreshDataSourceTree_invokedInGuiThread) {
 			if (this.timerUnblink == null) this.timerUnblink = new TimerSimplified(this, 200);	// not started by default
 			if (this.TaskWaitingForTimerExpire_toRevertToWhite == null) {
 				this.TaskWaitingForTimerExpire_toRevertToWhite = new Task(delegate {
@@ -34,7 +34,7 @@ namespace Sq1.Charting {
 						while(this.timerUnblink.IsDisposed == false) {
 							this.timerUnblink.WaitForever_forTimerExpired();
 							base.ColorBackground_inDataSourceTree = ChartControl.colorBackgroundWhite;
-							this.switchToGui_executeCodeLinkingTwoUnrelatedDlls(refreshDataSourceTree);
+							this.switchToGui_executeCodeLinkingTwoUnrelatedDlls(refreshDataSourceTree_invokedInGuiThread);
 						}
 					} catch (Exception ex) {
 						string msg = "LOOP_THREW";
@@ -51,16 +51,16 @@ namespace Sq1.Charting {
 				: ChartControl.colorBackgroundRed_barsSubscribed_scriptNotTriggering;
 			//.Scheduled made reliable after .Stop() in timer_expired() if (base.ColorBackground_inDataSourceTree == colorize) return;
 				base.ColorBackground_inDataSourceTree =  colorize;
-			this.switchToGui_executeCodeLinkingTwoUnrelatedDlls(refreshDataSourceTree);
+			this.switchToGui_executeCodeLinkingTwoUnrelatedDlls(refreshDataSourceTree_invokedInGuiThread);
 			this.timerUnblink.ScheduleOnce();
 		}
 
-		void switchToGui_executeCodeLinkingTwoUnrelatedDlls(Action refreshDataSourceTree) {
+		void switchToGui_executeCodeLinkingTwoUnrelatedDlls(Action refreshDataSourceTree_invokedInGuiThread) {
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { switchToGui_executeCodeLinkingTwoUnrelatedDlls(refreshDataSourceTree); });
+				base.BeginInvoke((MethodInvoker)delegate { switchToGui_executeCodeLinkingTwoUnrelatedDlls(refreshDataSourceTree_invokedInGuiThread); });
 				return;
 			}
-			refreshDataSourceTree();
+			refreshDataSourceTree_invokedInGuiThread();
 		}
 	}
 }

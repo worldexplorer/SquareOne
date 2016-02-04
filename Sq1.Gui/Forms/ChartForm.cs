@@ -249,10 +249,10 @@ namespace Sq1.Gui.Forms {
 			this.mniBarsSymbolDataSource.Text = barsClickedUpstack.SymbolAndDataSource;
 
 			// WAS_METHOD_PARAMETER_BUT_ACCESSIBLE_LIKE_THIS__NULL_CHECK_DONE_UPSTACK
-			ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
-			this.ChartControl.CtxChart = ctxChart;
+			ContextChart ctxChartOrScript = this.ChartFormManager.ContextCurrentChartOrStrategy;
+			this.ChartControl.CtxChart = ctxChartOrScript;
 			
-			if (ctxChart.ShowRangeBar) {
+			if (ctxChartOrScript.ShowRangeBar) {
 				this.ChartControl.RangeBarCollapsed = false; 
 				this.mniShowBarRange.Checked = true;
 			} else {
@@ -262,10 +262,28 @@ namespace Sq1.Gui.Forms {
 
 			this.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 
-			this.BtnStreamingTriggersScript.Checked = ctxChart.StreamingIsTriggeringScript;
+			this.BtnStreamingTriggersScript.Checked = ctxChartOrScript.StreamingIsTriggeringScript;
 
-			ContextScript ctxScript = ctxChart as ContextScript;
-			if (ctxScript == null) {
+			ContextScript ctxScript = ctxChartOrScript as ContextScript;
+			if (ctxScript != null) {
+				this.mniBacktestOnTriggeringYesWhenNotSubscribed				.Checked = ctxScript.BacktestOnTriggeringYesWhenNotSubscribed;
+				this.mniBacktestOnDataSourceSaved								.Checked = ctxScript.BacktestOnDataSourceSaved;	// looks redundant here
+				this.mniBacktestOnRestart										.Checked = ctxScript.BacktestOnRestart;
+				this.mniBacktestOnSelectorsChange								.Checked = ctxScript.BacktestOnSelectorsChange;
+				this.mniBacktestAfterSubscribed									.Checked = ctxScript.BacktestAfterSubscribed;
+				this.BtnStrategyEmittingOrders									.Checked = ctxScript.StrategyEmittingOrders;
+				this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Checked = ctxScript.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
+
+				this.mniBacktestOnTriggeringYesWhenNotSubscribed				.Enabled = true;
+				this.mniBacktestOnDataSourceSaved								.Enabled = true;
+				this.mniBacktestOnRestart										.Enabled = true;
+				this.mniBacktestOnSelectorsChange								.Enabled = true;
+				this.mniBacktestAfterSubscribed									.Enabled = true;
+				this.BtnStrategyEmittingOrders									.Enabled = true;
+				this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Enabled = true;
+
+				this.BtnStreamingTriggersScript									.Enabled = true;
+			} else {
 				this.mniBacktestOnTriggeringYesWhenNotSubscribed				.Checked = false;
 				this.mniBacktestOnDataSourceSaved								.Checked = false;
 				this.mniBacktestOnRestart										.Checked = false;
@@ -283,31 +301,13 @@ namespace Sq1.Gui.Forms {
 				this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Enabled = false;
 				
 				this.BtnStreamingTriggersScript									.Enabled = false;
-				return;
 			}
-			
-			this.mniBacktestOnTriggeringYesWhenNotSubscribed				.Checked = ctxScript.BacktestOnTriggeringYesWhenNotSubscribed;
-			this.mniBacktestOnDataSourceSaved								.Checked = ctxScript.BacktestOnDataSourceSaved;	// looks redundant here
-			this.mniBacktestOnRestart										.Checked = ctxScript.BacktestOnRestart;
-			this.mniBacktestOnSelectorsChange								.Checked = ctxScript.BacktestOnSelectorsChange;
-			this.mniBacktestAfterSubscribed									.Checked = ctxScript.BacktestAfterSubscribed;
-			this.BtnStrategyEmittingOrders									.Checked = ctxScript.StrategyEmittingOrders;
-			this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Checked = ctxScript.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
 
-			this.mniBacktestOnTriggeringYesWhenNotSubscribed				.Enabled = true;
-			this.mniBacktestOnDataSourceSaved								.Enabled = true;
-			this.mniBacktestOnRestart										.Enabled = true;
-			this.mniBacktestOnSelectorsChange								.Enabled = true;
-			this.mniBacktestAfterSubscribed									.Enabled = true;
-			this.BtnStrategyEmittingOrders									.Enabled = true;
-			this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Enabled = true;
-
-			this.BtnStreamingTriggersScript									.Enabled = true;
-			this.PropagateContextScriptToLTB(ctxScript);
+			this.Propagate_contextChartOrScript_toLTB(ctxChartOrScript);
 			this.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 		}
 		
-		public void PropagateContextScriptToLTB(ContextScript ctxScript) {
+		public void Propagate_contextChartOrScript_toLTB(ContextChart ctxChartOrScript) {
 			this.mnitlbMinutes	.InputFieldValue = "";	// otherwize it holds "0.0005" initialized in MenuItemLabeledTextBox.ctor()
 			this.mnitlbDaily	.InputFieldValue = "";	// otherwize it holds "0.0005" initialized in MenuItemLabeledTextBox.ctor()
 			this.mnitlbHourly	.InputFieldValue = "";	// otherwize it holds "0.0005" initialized in MenuItemLabeledTextBox.ctor()
@@ -317,7 +317,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbYearly	.InputFieldValue = "";	// otherwize it holds "0.0005" initialized in MenuItemLabeledTextBox.ctor()
 
 			MenuItemLabeledTextBox mnitlbForScale = null;
-			switch (ctxScript.ScaleInterval.Scale) {
+			switch (ctxChartOrScript.ScaleInterval.Scale) {
 				case BarScale.Minute:		mnitlbForScale = this.mnitlbMinutes; break; 
 				case BarScale.Hour:			mnitlbForScale = this.mnitlbDaily; break; 
 				case BarScale.Daily:		mnitlbForScale = this.mnitlbHourly; break; 
@@ -327,82 +327,84 @@ namespace Sq1.Gui.Forms {
 				case BarScale.Yearly:		mnitlbForScale = this.mnitlbYearly; break;
 				case BarScale.Unknown: 
 					string msg = "TODO: figure out why deserialized / userSelected strategyClicked[" + this.ChartFormManager.Executor.Strategy
-						+ "].ScriptContextCurrent.ScaleInterval[" + ctxScript.ScaleInterval + "] has BarScale.Unknown #4";
+						+ "].ScriptContextCurrent.ScaleInterval[" + ctxChartOrScript.ScaleInterval + "] has BarScale.Unknown #4";
 					Assembler.PopupException(msg);
 					break;
 				default:
-					string msg2 = "SCALE_UNHANDLED_NO_TEXTBOX_TO_POPULATE " + ctxScript.ScaleInterval.Scale;
+					string msg2 = "SCALE_UNHANDLED_NO_TEXTBOX_TO_POPULATE " + ctxChartOrScript.ScaleInterval.Scale;
 					Assembler.PopupException(msg2);
 					break;
 			}
 				
 			if (mnitlbForScale != null) {
-				mnitlbForScale.InputFieldValue = ctxScript.ScaleInterval.Interval.ToString();
+				mnitlbForScale.InputFieldValue = ctxChartOrScript.ScaleInterval.Interval.ToString();
 				mnitlbForScale.BackColor = Color.Gainsboro;
 			}
 
-			this.mniShowBarRange.Checked = ctxScript.ShowRangeBar;
-			switch (ctxScript.DataRange.Range) {
+			this.mniShowBarRange.Checked = ctxChartOrScript.ShowRangeBar;
+			switch (ctxChartOrScript.DataRange.Range) {
 				case BarRange.AllData:
 					this.mnitlbShowLastBars.InputFieldValue = "";
 					this.mnitlbShowLastBars.BackColor = Color.White;
 					break;
 				case BarRange.DateRange:
-					this.ChartControl.RangeBar.ValueMin = ctxScript.DataRange.DateFrom; 
-					this.ChartControl.RangeBar.ValueMax = ctxScript.DataRange.DateTill; 
+					this.ChartControl.RangeBar.ValueMin = ctxChartOrScript.DataRange.DateFrom; 
+					this.ChartControl.RangeBar.ValueMax = ctxChartOrScript.DataRange.DateTill; 
 					this.mnitlbShowLastBars.InputFieldValue = "";
 					this.mnitlbShowLastBars.BackColor = Color.White;
 					break;
 				case BarRange.RecentBars:
-					this.mnitlbShowLastBars.InputFieldValue = ctxScript.DataRange.RecentBars.ToString();
+					this.mnitlbShowLastBars.InputFieldValue = ctxChartOrScript.DataRange.RecentBars.ToString();
 					this.mnitlbShowLastBars.BackColor = Color.Gainsboro;
 					//this.mniShowBarRange.Checked = false;
 					break;
 				default:
-					string msg = "DATE_RANGE_UNHANDLED_RECENT_TIMEUNITS_NYI " + ctxScript.DataRange;
+					string msg = "DATE_RANGE_UNHANDLED_RECENT_TIMEUNITS_NYI " + ctxChartOrScript.DataRange;
 					Assembler.PopupException(msg);
 					break;
 			}
-			this.ChartControl.RangeBarCollapsed = !this.mniShowBarRange.Checked; 
+			this.ChartControl.RangeBarCollapsed = !this.mniShowBarRange.Checked;
 
-
-			if (ctxScript.PositionSize.Mode == PositionSizeMode.Unknown) {
-				ctxScript.PositionSize = new PositionSize(PositionSizeMode.SharesConstantEachTrade, 1);
-				string msg = "FIXED_POSITIONSIZE_TO_SHARE_1 strategy[" + this.ChartFormManager.Executor.Strategy
-					+ "].ScriptContextsByName[" + ctxScript.Name + "] had PositionSize.Mode=Unknown";
-				Assembler.PopupException(msg);
-			}
-
-			switch (ctxScript.PositionSize.Mode) {
-				case PositionSizeMode.SharesConstantEachTrade:
-					this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldValue = ctxScript.PositionSize.SharesConstantEachTrade.ToString();
-					this.mnitlbPositionSizeSharesConstantEachTrade.BackColor = Color.Gainsboro;
-					this.mnitlbPositionSizeDollarsEachTradeConstant.BackColor = Color.White;
-					break;
-				case PositionSizeMode.DollarsConstantForEachTrade:
-					this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldValue = ctxScript.PositionSize.DollarsConstantEachTrade.ToString();
-					this.mnitlbPositionSizeDollarsEachTradeConstant.BackColor = Color.Gainsboro;
-					this.mnitlbPositionSizeSharesConstantEachTrade.BackColor = Color.White;
-					break;
-				default:
-					string msg = "POSITION_SIZE_UNHANDLED_NYI " + ctxScript.PositionSize.Mode;
+			ContextScript ctxScript = ctxChartOrScript as ContextScript;
+			if (ctxScript != null) {
+				if (ctxScript.PositionSize.Mode == PositionSizeMode.Unknown) {
+					ctxScript.PositionSize = new PositionSize(PositionSizeMode.SharesConstantEachTrade, 1);
+					string msg = "FIXED_POSITIONSIZE_TO_SHARE_1 strategy[" + this.ChartFormManager.Executor.Strategy
+						+ "].ScriptContextsByName[" + ctxScript.Name + "] had PositionSize.Mode=Unknown";
 					Assembler.PopupException(msg);
-					break;
-			}
+				}
+
+				switch (ctxScript.PositionSize.Mode) {
+					case PositionSizeMode.SharesConstantEachTrade:
+						this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldValue = ctxScript.PositionSize.SharesConstantEachTrade.ToString();
+						this.mnitlbPositionSizeSharesConstantEachTrade.BackColor = Color.Gainsboro;
+						this.mnitlbPositionSizeDollarsEachTradeConstant.BackColor = Color.White;
+						break;
+					case PositionSizeMode.DollarsConstantForEachTrade:
+						this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldValue = ctxScript.PositionSize.DollarsConstantEachTrade.ToString();
+						this.mnitlbPositionSizeDollarsEachTradeConstant.BackColor = Color.Gainsboro;
+						this.mnitlbPositionSizeSharesConstantEachTrade.BackColor = Color.White;
+						break;
+					default:
+						string msg = "POSITION_SIZE_UNHANDLED_NYI " + ctxScript.PositionSize.Mode;
+						Assembler.PopupException(msg);
+						break;
+				}
 			
-			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Checked = ctxScript.FillOutsideQuoteSpreadParanoidCheckThrow;
-			this.mnitlbSpreadGeneratorPct.InputFieldValue = ctxScript.SpreadModelerPercent.ToString();
-			this.mnitlbSpreadGeneratorPct.TextRight = this.ChartFormManager.Executor.SpreadPips + " pips";
+				this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Checked = ctxScript.FillOutsideQuoteSpreadParanoidCheckThrow;
+				this.mnitlbSpreadGeneratorPct.InputFieldValue = ctxScript.SpreadModelerPercent.ToString();
+				this.mnitlbSpreadGeneratorPct.TextRight = this.ChartFormManager.Executor.SpreadPips + " pips";
 
-			if (this.ChartFormManager.MainForm.DockPanel.ActiveDocument == null) {
-				string msg = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET";
-				#if DEBUG_HEAVY
-				Assembler.PopupException(msg, null, false);
-				#endif
-				return;
+				if (this.ChartFormManager.MainForm.DockPanel.ActiveDocument == null) {
+					string msg = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET";
+					#if DEBUG_HEAVY
+					Assembler.PopupException(msg, null, false);
+					#endif
+					return;
+				}
 			}
 
-			ChartForm chartFormNullUnsafe = this.ChartFormManager.MainForm.ChartFormActiveNullUnsafe;
+			ChartForm chartFormNullUnsafe = this.ChartFormManager.MainForm.ChartFormActive_nullUnsafe;
 			if (chartFormNullUnsafe == null) {
 				string msg2 = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET WE_ARE_HERE_WHEN_I_SWITCH_ACTIVE_DOCUMENT_TAB_FROM_DataSourceEditor_TO_ChartForm";
 				#if DEBUG_HEAVY
@@ -416,7 +418,7 @@ namespace Sq1.Gui.Forms {
 				}
 				#endif
 			}
-			this.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
+			this.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
 			this.PropagateSelectorsDisabledIfStreaming_forCurrentChart();
 		}
 		public void PropagateSelectorsDisabledIfStreaming_forCurrentChart() {

@@ -74,7 +74,7 @@ namespace Sq1.Core.StrategyBase {
 			get {
 				if (this.Strategy == null) {
 					//v1 return this.isStreamingWhenNoStrategyLoaded
-					string msg = "IsStreamingTriggeringScript__get: CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_STREAMING";
+					string msg = "IsStreamingTriggeringScript__get: CHART_WITHOUT_STRATEGY_CAN_STREAM/NOT_BUT_NEVER_TRIGGERS_THE_SCRIPT(NO_SCRIPT_WITHOUT_STRATEGY)";
 					Assembler.PopupException(msg);
 					return false;
 				}

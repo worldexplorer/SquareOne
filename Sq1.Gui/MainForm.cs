@@ -31,10 +31,10 @@ namespace Sq1.Gui {
 		public	bool							MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad;
 		public	bool							dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace { get; private set; }
 
-		public ChartForm ChartFormActiveNullUnsafe { get {
+		public ChartForm ChartFormActive_nullUnsafe { get {
 				if (this.DockPanel.ActiveDocument == null) {
 					string msg = "MainForm.DockPanel.ActiveDocument is not a ChartForm; no charts open or drag your chart into DOCUMENT docking area";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
 					return null;
 				}
 
@@ -198,8 +198,8 @@ namespace Sq1.Gui {
 	
 				//this.PropagateSelectorsForCurrentChart();
 				//WHY???this.MainFormEventManager.DockPanel_ActiveDocumentChanged(this, EventArgs.Empty);
-				if (this.ChartFormActiveNullUnsafe != null) {
-					this.ChartFormActiveNullUnsafe.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
+				if (this.ChartFormActive_nullUnsafe != null) {
+					this.ChartFormActive_nullUnsafe.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
 					// onStartup, current chart is blank - MAY_FAIL when PANEL_HEIGHT_MUST_BE_POSITIVE but works otherwize
 					//this.ChartFormActiveNullUnsafe.Invalidate();
 					//BARS_ARE_STILL_NOT_PAINTER_ON_APPRESTART__MOVED_TO_SECOND_CFMGR_LOOP_180_LINES_BELOW this.ChartFormActiveNullUnsafe.ChartControl.InvalidateAllPanels();
@@ -373,9 +373,9 @@ namespace Sq1.Gui {
 
 				cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
 			}
-			if (this.ChartFormActiveNullUnsafe != null) {
+			if (this.ChartFormActive_nullUnsafe != null) {
 				//+ainFrom.Deserializer on apprestart, Document.Active (ChartForm) doesn't paint Bars
-				this.ChartFormActiveNullUnsafe.ChartControl.InvalidateAllPanels();
+				this.ChartFormActive_nullUnsafe.ChartControl.InvalidateAllPanels();
 			}
 			try {
 				if (ExecutionForm.Instance.IsShown) {
@@ -390,6 +390,9 @@ namespace Sq1.Gui {
 					string dsNameToSelect = DataSourceEditorForm.Instance.DataSourceEditorControl.DataSourceName;
 					DataSourcesForm.Instance.DataSourcesTreeControl.SelectDatasource(dsNameToSelect);
 				}
+
+				//DOESNT_WORK trigger DataSourceTree to select the ActiveChart via full handler DockPanel_ActiveDocumentChanged();
+				this.ChartFormActive_nullUnsafe.DockHandler.Pane.Activate();
 			} catch (Exception ex) {
 				Assembler.PopupException("WorkspaceLoad#2()", ex);
 			}

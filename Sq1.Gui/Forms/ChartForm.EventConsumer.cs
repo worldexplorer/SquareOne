@@ -186,7 +186,11 @@ namespace Sq1.Gui.Forms {
 				strategy.ScriptContextCurrent.BacktestAfterSubscribed					= this.mniBacktestAfterSubscribed.Checked;
 				strategy.Serialize();
 
-				this.ctxBacktest.Visible = true;
+				if (sender == this.mniBacktestAfterSubscribed) {
+					this.ctxBars.Visible = true;
+				} else {
+					this.ctxBacktest.Visible = true;
+				}
 			} catch (Exception ex) {
 				Assembler.PopupException("mniBacktestOnEveryChange_Click()", ex);
 			}

@@ -122,6 +122,7 @@ namespace Sq1.Widgets.Livesim
 			this.TssBtnPauseResume.Name = "TssBtnPauseResume";
 			this.TssBtnPauseResume.Size = new System.Drawing.Size(42, 20);
 			this.TssBtnPauseResume.Text = "Pause";
+			this.TssBtnPauseResume.Enabled = false;
 			// 
 			// TssLblStrategyAsString
 			// 

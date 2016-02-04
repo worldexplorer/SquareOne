@@ -13,14 +13,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 30
+        "PanelHeight": 43
       },
       "PanelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 36,
+        "Distance": 49,
         "SplitterHeight": 6,
-        "PanelHeight": 177
+        "PanelHeight": 132
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -30,14 +30,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 259
+        "PanelHeight": 263
       },
       "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 265,
+        "Distance": 269,
         "SplitterHeight": 6,
-        "PanelHeight": 258
+        "PanelHeight": 247
       }
     },
     "Name": "Default",
@@ -84,7 +84,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 93,
+    "ScrollPositionAtBarIndex": 142,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
