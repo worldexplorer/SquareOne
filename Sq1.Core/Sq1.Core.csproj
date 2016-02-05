@@ -42,7 +42,7 @@
     <StartAction>Project</StartAction>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\Sq1.Gui\bin\Release\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
@@ -51,10 +51,12 @@
     <DefineConstants>VERBOSE_STRINGS_SLOW_disabled</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DefineConstants>DEBUG;DEBUG_STREAMING_disabled;NON_DOUBLE_BUFFERED_disabled;VERBOSE_STRINGS_SLOW_disabled;TEST_COMPATIBILITY_disabled;USE_CUSTOM_ROUNDING_disabled</DefineConstants>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <OutputPath>..\Sq1.Gui\bin\Debug\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -481,6 +483,11 @@
     <EmbeddedResource Include="Support\UserControlResizeable.resx">
       <DependentUpon>UserControlResizeable.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Sq1.Core-LICENSE.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

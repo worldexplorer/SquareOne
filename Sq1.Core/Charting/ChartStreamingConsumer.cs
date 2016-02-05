@@ -173,8 +173,8 @@ namespace Sq1.Core.Charting {
 			}
 			base.MsigForNpExceptions = " //ChartStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(" + barLastFormed.ToString() + ")";
 
-			#if DEBUG	// TEST_INLINE
 			var barsSafe = this.Bars_nullReported;
+			#if DEBUG	// TEST_INLINE
 			if (barsSafe.ScaleInterval != barLastFormed.ScaleInterval) {
 				string msg = "SCALEINTERVAL_RECEIVED_DOESNT_MATCH_CHARTS ChartForm[" + base.ChartShadow_nullReported.Text + "]"
 					+ " bars[" + barsSafe.ScaleInterval + "] barLastFormed[" + barLastFormed.ScaleInterval + "]";
@@ -232,8 +232,8 @@ namespace Sq1.Core.Charting {
 		public override void ConsumeQuoteOfStreamingBar(Quote quote) {
 			base.MsigForNpExceptions = " //ChartStreamingConsumer.ConsumeQuoteOfStreamingBar(" + quote.ToString() + ")";
 
-			#if DEBUG	// TEST_INLINE_BEGIN
 			var barsSafe = this.Bars_nullReported;
+			#if DEBUG	// TEST_INLINE_BEGIN
 			if (barsSafe.ScaleInterval != quote.ParentBarStreaming.ScaleInterval) {
 				string msg = "SCALEINTERVAL_RECEIVED_DOESNT_MATCH_CHARTS ChartForm[" + base.ChartShadow_nullReported.Text + "]"
 					+ " bars[" + barsSafe.ScaleInterval + "] quote.ParentStreamingBar[" + quote.ParentBarStreaming.ScaleInterval + "]";
