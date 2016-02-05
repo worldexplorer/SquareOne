@@ -26,11 +26,11 @@ namespace Sq1.Charting {
 				int physicalMax = this.hScrollBar.Maximum - this.hScrollBar.LargeChange + 1;
 				if (physicalMax <= 0) {
 					string msg = "ALL_BARS_CAN_FIT_WITHOUT_SCROLLING ex: 10bars on FullScreen";
-					this.hScrollBar.Visible = false;	// LAZY if u change this.hScrollBar.Visible u must trigger Resize() once again (ReLayout somehow otherwize MultiSplitter doesn't get the space freed)  
+					this.hScrollBar.Enabled = false;	// LAZY if u change this.hScrollBar.Visible u must trigger Resize() once again (ReLayout somehow otherwize MultiSplitter doesn't get the space freed)  
 					return this.Bars.Count - 1;
 				}
 				string msg2 = "FIRST_BAR_THAT_DOESNT_FIT__WATCH_SCROLL_LOCK_NOW";
-				this.hScrollBar.Visible = true;			// LAZY when u change this.hScrollBar.Visible u must trigger Resize() once again
+				this.hScrollBar.Enabled = true;			// LAZY when u change this.hScrollBar.Visible u must trigger Resize() once again
 				float part0to1 = this.hScrollBar.Value / (float)physicalMax;	// I_HATE_DIVISION_OF_TWO_INTEGERS_IN_C#!!!!!
 				if (part0to1 > 1) {
 					part0to1 = 1;

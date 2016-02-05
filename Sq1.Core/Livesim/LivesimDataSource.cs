@@ -10,7 +10,7 @@ namespace Sq1.Core.Livesim {
 		LivesimDataSource() {
 			base.Name				= "LivesimDataSource";
 			//base.StreamingAdapter	= new LivesimStreamingDefault("WILL_BE_OVERWRITTEN_FROM_REAL_DATASOURCE");	//USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_STREAMING
-			//base.BrokerAdapter		= new LivesimStreamingDefault("WILL_BE_OVERWRITTEN_FROM_REAL_DATASOURCE");	//USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_BROKER
+			//base.BrokerAdapter		= new LivesimBrokerDefault	 ("WILL_BE_OVERWRITTEN_FROM_REAL_DATASOURCE");	//USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_BROKER
 		}
 
 		public LivesimDataSource(ScriptExecutor executor) : this() {

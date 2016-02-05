@@ -101,32 +101,22 @@ namespace Sq1.Core.Streaming {
 			StreamingSolidifier								= new StreamingSolidifier();
 			QuotePumpSeparatePushingThreadEnabled			= true;
 			Level2RefreshRateMs								= 200;
-			if (this is LivesimStreaming) return;
+			//if (this is LivesimStreaming) return;
 			//NULL_UNTIL_QUIK_PROVIDES_OWN_DDE_REDIRECTOR LivesimStreamingImplementation					= new LivesimStreamingDefault(true, "USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_STREAMING");	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
 		}
-		public virtual void InitializeDataSource_inverse(DataSource dataSource, bool subscribeSolidifier = true) {	//, bool imRestoringSolidifierAfterLivesimTerminatedAborted = false) {
-			//if (subscribeSolidifier == false) {
-			//    string msg = "UNSUBSCRIBING_SOLIDIFICATION_OF_ORIGINAL_STREAMING_PRIOR_TO_LIVESIM SYMBOL_AND_INTERVAL_WILL_BE_REPLACED_TO_SIMULATING_NEXT_LINE";
-			//    Assembler.PopupException(msg, null, false);
-			//    this.SolidifierUnsubscribe(false);
-			//}
+		public virtual void InitializeDataSource_inverse(DataSource dataSource, bool subscribeSolidifier = true) {
 			this.InitializeFromDataSource(dataSource);
-			//if (imRestoringSolidifierAfterLivesimTerminatedAborted) {
-			//    string msg = "LIVESIM_TERMINATED/ABORTED_SUBSCRIBING_SOLIDIFIER";
-			//    Assembler.PopupException(msg, null, false);
-			//} else {
-				string msg = "SUBSCRIBING_SOLIDIFIER_APPRESTART " + this.DataSource.Name;
-				Assembler.PopupException(msg, null, false);
-			//}
 			if (subscribeSolidifier == false) return;
-			this.SolidifierAllSymbolsSubscribe();
+			this.SolidifierAllSymbolsSubscribe_onAppRestart();
 		}
 		public virtual void InitializeFromDataSource(DataSource dataSource) {
 			this.DataSource = dataSource;
 			this.StreamingDataSnapshot.InitializeLastQuoteReceived(this.DataSource.Symbols);
 			this.UpstreamConnectionState = ConnectionState.JustInitialized_solidifiersUnsubscribed;
 		}
-		protected virtual void SolidifierAllSymbolsSubscribe() {
+		protected virtual void SolidifierAllSymbolsSubscribe_onAppRestart() {
+			string msg = "SUBSCRIBING_SOLIDIFIER_APPRESTART " + this.DataSource.Name;
+			Assembler.PopupException(msg, null, false);
 			this.StreamingSolidifier.Initialize(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
 				this.solidifierSubscribeOneSymbol(symbol);
@@ -522,7 +512,6 @@ namespace Sq1.Core.Streaming {
 			    this.DataDistributor_replacedForLivesim.ConsumerBarUnsubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer);
 			}
 		}
-
 		internal void SubscribeChart(string symbolSafe, BarScaleInterval scaleIntervalSafe, Charting.ChartStreamingConsumer chartStreamingConsumer, string msigForNpExceptions) {
 			bool iWantChartToConsumeQuotesInSeparateThreadToLetStreamingGoWithoutWaitingForStrategyToFinish = true;
 

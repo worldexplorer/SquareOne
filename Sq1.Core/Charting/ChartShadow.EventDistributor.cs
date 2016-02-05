@@ -9,6 +9,9 @@ namespace Sq1.Core.Charting {
 
 		public event EventHandler<BarEventArgs> BarStreamingUpdatedMerged;
 
+		public event EventHandler<EventArgs> OnPumpPaused;
+		public event EventHandler<EventArgs> OnPumpUnPaused;
+
 		public void RaiseBarStreamingUpdatedMerged(BarEventArgs e) {
 			if (this.BarStreamingUpdatedMerged == null) return;
 			try {
@@ -35,6 +38,26 @@ namespace Sq1.Core.Charting {
 				Assembler.PopupException("RaiseContextScriptChangedContainerShouldSerialize()", ex);
 			}
 		}
-		
+
+		void raiseOnPumpPaused() {
+			if (this.OnPumpPaused == null) return;
+			try {
+				this.OnPumpPaused(this, null);
+			} catch (Exception ex) {
+				string msg = "RaiseOnPumpPaused()";
+				Assembler.PopupException(msg, ex, false);
+			}
+		}
+
+		void raiseOnPumpUnPaused() {
+			if (this.OnPumpUnPaused == null) return;
+			try {
+				this.OnPumpUnPaused(this, null);
+			} catch (Exception ex) {
+				string msg = "RaiseOnPumpUnPaused()";
+				Assembler.PopupException(msg, ex, false);
+			}
+		}
+
 	}
 }

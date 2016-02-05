@@ -100,13 +100,18 @@ namespace Sq1.Gui.Forms {
 			this.ChartControl.RangeBar.ValuesMinAndMaxChanged				+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
 			this.ChartControl.ChartSettingsChangedContainerShouldSerialize	+= new EventHandler<EventArgs>(ChartControl_ChartSettingsChangedContainerShouldSerialize);
 			this.ChartControl.ContextScriptChangedContainerShouldSerialize	+= new EventHandler<EventArgs>(ChartControl_ContextScriptChangedContainerShouldSerialize);
+			this.ChartControl.OnPumpPaused									+= new EventHandler<EventArgs>(ChartControl_OnPumpPaused);
+			this.ChartControl.OnPumpUnPaused								+= new EventHandler<EventArgs>(ChartControl_OnPumpUnPaused);
 		}
+
 		public void ChartFormEventsToChartFormManagerDetach() {
 			this.ChartControl.RangeBar.ValueMinChanged						-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
 			this.ChartControl.RangeBar.ValueMaxChanged						-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
 			this.ChartControl.RangeBar.ValuesMinAndMaxChanged				-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
 			this.ChartControl.ChartSettingsChangedContainerShouldSerialize	-= new EventHandler<EventArgs>(ChartControl_ChartSettingsChangedContainerShouldSerialize);
 			this.ChartControl.ContextScriptChangedContainerShouldSerialize	-= new EventHandler<EventArgs>(ChartControl_ContextScriptChangedContainerShouldSerialize);
+			this.ChartControl.OnPumpPaused									-= new EventHandler<EventArgs>(ChartControl_OnPumpPaused);
+			this.ChartControl.OnPumpUnPaused								-= new EventHandler<EventArgs>(ChartControl_OnPumpUnPaused);
 		}
 
 		void ChartControl_ContextScriptChangedContainerShouldSerialize(object sender, EventArgs e) {
@@ -404,19 +409,21 @@ namespace Sq1.Gui.Forms {
 				}
 			}
 
-			ChartForm chartFormNullUnsafe = this.ChartFormManager.MainForm.ChartFormActive_nullUnsafe;
-			if (chartFormNullUnsafe == null) {
-				string msg2 = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET WE_ARE_HERE_WHEN_I_SWITCH_ACTIVE_DOCUMENT_TAB_FROM_DataSourceEditor_TO_ChartForm";
-				#if DEBUG_HEAVY
-				Assembler.PopupException(msg2, null, false);
-				#endif
-			} else {
-				#if DEBUG	// PARANOID TEST
-				if (chartFormNullUnsafe != this) {
-					string msg = "WHY___WE_ARE_HERE_WHEN_WE_CHANGE_TIMEFRAME_OF_CHART";
-					Assembler.PopupException(msg, null, false);
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete) {
+				ChartForm chartFormNullUnsafe = this.ChartFormManager.MainForm.ChartFormActive_nullUnsafe;
+				if (chartFormNullUnsafe == null) {
+					string msg2 = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET WE_ARE_HERE_WHEN_I_SWITCH_ACTIVE_DOCUMENT_TAB_FROM_DataSourceEditor_TO_ChartForm";
+					//#if DEBUG_HEAVY
+					Assembler.PopupException(msg2, null, false);
+					//#endif
+				} else {
+					#if DEBUG	// PARANOID TEST
+					if (chartFormNullUnsafe != this) {
+						string msg = "WHY___WE_ARE_HERE_WHEN_WE_CHANGE_TIMEFRAME_OF_CHART I_STARTED_LIVESIM_FOR_NON_ACTIVE_CHART";
+						Assembler.PopupException(msg, null, false);
+					}
+					#endif
 				}
-				#endif
 			}
 			this.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
 			this.PropagateSelectorsDisabledIfStreaming_forCurrentChart();

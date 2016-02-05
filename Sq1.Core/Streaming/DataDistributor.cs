@@ -30,6 +30,7 @@ namespace Sq1.Core.Streaming {
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> newScaleChannels = new Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>();
 				newScaleChannels.Add(scaleInterval, newChannel);
 				this.DistributionChannels.Add(symbol, newScaleChannels);
+				// first-deserialized: Strategy on RIM3_5-minutes => Pump/Thread should be started as well
 				if (newChannel.QuotePump_nullUnsafe != null && newChannel.QuotePump_nullUnsafe.Paused) newChannel.QuotePump_nullUnsafe.PusherUnpause();
 				if (this.StreamingAdapter.UpstreamIsSubscribed(symbol) == false) {
 					this.StreamingAdapter.UpstreamSubscribe(symbol);
@@ -41,6 +42,11 @@ namespace Sq1.Core.Streaming {
 				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled, this.ReasonIwasCreated);
 				newChannel.ConsumersQuoteAdd(quoteConsumer);
 				channels.Add(scaleInterval, newChannel);
+				// second-deserialized: chartNoStrategy on RIM3_20-minutes => Pump/Thread should be started as well
+				if (newChannel.QuotePump_nullUnsafe != null && newChannel.QuotePump_nullUnsafe.Paused) newChannel.QuotePump_nullUnsafe.PusherUnpause();
+				if (this.StreamingAdapter.UpstreamIsSubscribed(symbol) == false) {
+					this.StreamingAdapter.UpstreamSubscribe(symbol);
+				}
 				return true;
 			}
 			SymbolScaleDistributionChannel channel = channels[scaleInterval];
@@ -117,6 +123,7 @@ namespace Sq1.Core.Streaming {
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> newScaleChannels = new Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>();
 				newScaleChannels.Add(scaleInterval, newChannel);
 				this.DistributionChannels.Add(symbol, newScaleChannels);
+				// first-deserialized: Strategy on RIM3_5-minutes => Pump/Thread should be started as well
 				if (newChannel.QuotePump_nullUnsafe != null && newChannel.QuotePump_nullUnsafe.Paused) newChannel.QuotePump_nullUnsafe.PusherUnpause();
 				if (this.StreamingAdapter.UpstreamIsSubscribed(symbol) == false) {
 					this.StreamingAdapter.UpstreamSubscribe(symbol);
@@ -128,6 +135,11 @@ namespace Sq1.Core.Streaming {
 				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled, this.ReasonIwasCreated);
 				newChannel.ConsumersBarAdd(barConsumer);
 				channels.Add(scaleInterval, newChannel);
+				// second-deserialized: chartNoStrategy on RIM3_20-minutes => Pump/Thread should be started as well
+				if (newChannel.QuotePump_nullUnsafe != null && newChannel.QuotePump_nullUnsafe.Paused) newChannel.QuotePump_nullUnsafe.PusherUnpause();
+				if (this.StreamingAdapter.UpstreamIsSubscribed(symbol) == false) {
+					this.StreamingAdapter.UpstreamSubscribe(symbol);
+				}
 				return true;
 			}
 			SymbolScaleDistributionChannel channel = channels[scaleInterval];

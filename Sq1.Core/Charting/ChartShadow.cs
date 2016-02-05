@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
+using System.Windows.Forms;
 
 #if NON_DOUBLE_BUFFERED	//_reverted_to_compulsory_UserControl_no_buffering
 using System.Windows.Forms;
@@ -183,19 +184,6 @@ namespace Sq1.Core.Charting {
 
 
 		public override string ToString() {
-			//v1
-			//string ret = "NO_PARENT_INFO for " + this.Name;
-			//if (base.InvokeRequired) {
-			//    ret = "AVOIDING_CROSS_THREAD_EXCEPTION " + this.Name;
-			//    return ret;
-			//}
-			//Form parentForm = this.Parent as Form;
-			//if (parentForm != null) {
-			//    ret = parentForm.Text;
-			//} else {
-			//    if (this.Parent != null) ret = "Parent[" + this.Parent.ToString() + "]";
-			//}
-			//v2
 			string ret = null;
 			if (this.Executor != null) {
 				if (this.Executor.Strategy != null) {
@@ -228,6 +216,43 @@ namespace Sq1.Core.Charting {
 			this.ChartShadowResourcesDisposed = true;
 		}
 		public bool ChartShadowResourcesDisposed { get; private set; }
+
+
+
+		string prePauseWindowsTitle = "";
+		internal void PumpPaused_notification_switchLivesimmingThreadToGui() {
+			if (base.ParentForm == null) {
+				string msg = "CANT_SET_CHARTFORM_WINDOW_TITLE //PumpPaused_notification()";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (base.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker) delegate { this.PumpPaused_notification_switchLivesimmingThreadToGui(); } );
+				return;
+			}
+			if (base.ParentForm.Text.Contains("PAUSED")) {
+				string msg = "1) DID_UNDUPLICATION_WORK? 2) DONT_NOTIFY_CHART_IM_LIVESIMMING_YOU_PAUSED_REPLACED_DISTRIBUTOR";
+				Assembler.PopupException(msg);
+			}
+			this.prePauseWindowsTitle = base.ParentForm.Text;
+			base.ParentForm.Text = "PAUSED " + this.prePauseWindowsTitle;
+			this.raiseOnPumpPaused();
+		}
+		internal void PumpUnPaused_notification_switchLivesimmingThreadToGui() {
+			if (this.prePauseWindowsTitle == "") return;	// I wasn't paused from brother livesimming and I don't wanna reset my title
+			if (base.ParentForm == null) {
+				string msg = "CANT_SET_CHARTFORM_WINDOW_TITLE //PumpUnPaused_notification()";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (base.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker) delegate { this.PumpUnPaused_notification_switchLivesimmingThreadToGui(); } );
+				return;
+			}
+			base.ParentForm.Text = this.prePauseWindowsTitle;
+			this.prePauseWindowsTitle = "";
+			this.raiseOnPumpUnPaused();
+		}
 
 	}
 }

@@ -106,23 +106,20 @@ namespace Sq1.Core.Broker {
 		}
 
 		public BrokerAdapter(string reasonToExist) {
-			ReasonToExist									= reasonToExist;
+			ReasonToExist					= reasonToExist;
 			//Accounts = new List<Account>();
 			this.lockSubmitOrders			= new object();
 			this.AccountAutoPropagate		= new Account("ACCTNR_NOT_SET", -1000);
 			this.OrderCallbackDupesChecker	= new OrderCallbackDupesCheckerTransparent(this);
 		}
 		public virtual void InitializeDataSource_inverse(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
-			this.InitializeFromDataSource(dataSource);
+			this.DataSource			= dataSource;
 			this.StreamingAdapter	= streamingAdapter;
 			this.OrderProcessor		= orderProcessor;
 			this.AccountAutoPropagate.Initialize(this);
 			//NULL_UNTIL_QUIK_PROVIDES_OWN_DDE_REDIRECTOR this.LivesimBroker_ownImplementation		= new LivesimBrokerDefault(true);
 			//this.LivesimBroker.Initialize(dataSource);
 			this.UpstreamConnectionState = ConnectionState.UnknownConnectionState;
-		}
-		public virtual void InitializeFromDataSource(DataSource dataSource) {
-			this.DataSource			= dataSource;
 		}
 		public virtual void Connect() {
 			throw new Exception("please override BrokerAdapter::Connect() for BrokerAdapter.Name=[" + Name + "]");

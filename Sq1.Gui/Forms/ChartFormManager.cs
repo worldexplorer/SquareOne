@@ -297,8 +297,8 @@ namespace Sq1.Gui.Forms {
 			this.ChartForm.Initialize();
 
 			try {
-				string msg = "WHAT_SELECTORS???__IS_THAT_THE_WAY_TO_CLEAR_SLIDERS_AFTER_REMOVING_STRATEGY_FROM_THE_CHART???";
-				Assembler.PopupException(msg, null, false);
+				//string msg = "MUST_BE_AN_OLD_BUG WHAT_SELECTORS???__IS_THAT_THE_WAY_TO_CLEAR_SLIDERS_AFTER_REMOVING_STRATEGY_FROM_THE_CHART???";
+				//Assembler.PopupException(msg, null, false);
 				bool loadNewBars = true;
 				bool skipBacktest = true;
 				bool saveStrategyRequired = false;
@@ -433,10 +433,10 @@ namespace Sq1.Gui.Forms {
 			//}
 			
 			//v2: I closed opened the app while streaming from StreamingMock and I want it streaming after app restart!!!
-			if (context.DownstreamSubscribed && context.StreamingIsTriggeringScript && saveStrategyRequired == true) {	// saveStrategyRequired=true for all user-clicked GUI events
-				string msg = "NOT_AN_ERROR__I_REFUSE_TO_STOP_STREAMING__DISABLE_GUI_CONTROLS_THAT_TRIGGER_RELOADING_BARS";
-				Assembler.PopupException(msg + msig, null, false);
-			}
+			//if (context.DownstreamSubscribed && context.StreamingIsTriggeringScript && saveStrategyRequired == true) {	// saveStrategyRequired=true for all user-clicked GUI events
+			//    string msg = "I_SWITCHED_QUOTE_GENERATOR_DURING_LIVESIM I_REFUSE_TO_STOP_STREAMING__DISABLE_GUI_CONTROLS_THAT_TRIGGER_RELOADING_BARS";
+			//    Assembler.PopupException(msg + msig, null, false);
+			//}
 			
 			if (context.ScaleInterval.Scale == BarScale.Unknown) {
 				if (dataSource.ScaleInterval.Scale == BarScale.Unknown) {

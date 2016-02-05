@@ -4,6 +4,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Charting;
 using Sq1.Core.DataFeed;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
 	public abstract class StreamingConsumer {
@@ -32,9 +33,9 @@ namespace Sq1.Core.Streaming {
 			} }
 		protected 		ContextChart ContextCurrentChartOrStrategy_nullReported { get {
 				string msg = "";
-				Strategy strategy_nullUnsafe = this.Strategy_nullReported;
-				if (strategy_nullUnsafe != null) {
-					return strategy_nullUnsafe.ScriptContextCurrent;
+				Strategy strategy = this.Executor.Strategy;
+				if (strategy != null) {
+					return strategy.ScriptContextCurrent;
 				}
 				msg += "NOT_STRATEGY";
 				ChartShadow chartShadow_nullUnsafe = this.ChartShadow_nullReported;
@@ -83,6 +84,9 @@ namespace Sq1.Core.Streaming {
 				return ret;
 			} }
 		protected 		StreamingSolidifier StreamingSolidifierDeep { get {
+				if (this.StreamingAdapter_nullReported is LivesimStreamingDefault) {
+					return null;
+				}
 				var ret = this.StreamingAdapter_nullReported.StreamingSolidifier;
 				this.ActionForNullPointer(ret, "SOLIDIFIER_NULL_IN_STREAMING this.Executor.DataSource[" + this.DataSource_nullReported.Name + "].StreamingAdapter[" + this.DataSource_nullReported.StreamingAdapterName + "].StreamingSolidifier=null");
 				return ret;
@@ -112,7 +116,7 @@ namespace Sq1.Core.Streaming {
 				return ret;
 			} }
 		public bool DownstreamSubscribed { get {
-				if (this.CanSubscribeToStreamingAdapter() == false) return false;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
+				if (this.NPEs_handled() == false) return false;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
 
 				var streamingSafe		= this.StreamingAdapter_nullReported;
 				var symbolSafe			= this.Symbol_nullReported;
@@ -125,7 +129,7 @@ namespace Sq1.Core.Streaming {
 			}}
 
 	
-		protected bool CanSubscribeToStreamingAdapter() {
+		protected bool NPEs_handled() {
 			try {
 				var symbolSafe		= this.Symbol_nullReported;
 				var scaleSafe		= this.Scale_nullReported;
@@ -144,8 +148,7 @@ namespace Sq1.Core.Streaming {
 			this.Action(msgIfNull);
 		}
 		public void Action(string msgIfNull) {
-			string msg = MsigForNpExceptions + msgIfNull;
-			Assembler.PopupException(msg, null, false);
+			Assembler.PopupException(msgIfNull + this.MsigForNpExceptions, null, false);
 			//throw new Exception(msg);
 		}
 

@@ -16,9 +16,10 @@ using Sq1.Core.Streaming;
 using Sq1.Core.Livesim;
 using Sq1.Core.Support;
 
+using Sq1.Widgets.DataSourceEditor;
+
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
-using Sq1.Widgets.DataSourceEditor;
 
 namespace Sq1.Gui {
 	public partial class MainForm : Form {

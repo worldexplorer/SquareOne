@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 
 using Sq1.Core.Streaming;
 using Sq1.Core.DataTypes;
@@ -60,32 +59,35 @@ namespace Sq1.Core.Charting {
 				ctxChartOrStrategy.DownstreamSubscribed = false;
 				// did you find it? now you have to save it :(
 				if (strategy_nullUnsafe != null) {
-					strategy_nullUnsafe.Serialize();
+					//strategy_nullUnsafe.Serialize();
+					this.ChartShadow.RaiseContextScriptChangedContainerShouldSerialize();
 					serialized = true;
 				} else {
-					string msg = "RAISE_EVEN_SO_THAT_MAIN_FORM_SAVES_CHART_CONTEXT_WITHOUT_STRATEGY";
-					Assembler.PopupException(msg, null, false);
-					//serialized = true;
+					//string msg = "RAISE_EVENT_SO_THAT_MAIN_FORM_SAVES_CHART_CONTEXT_WITHOUT_STRATEGY";
+					//Assembler.PopupException(msg, null, false);
+					this.ChartShadow.RaiseChartSettingsChangedContainerShouldSerialize();
+					serialized = true;
 				}
 			}
 
 			string msg2 = "CHART_STREAMING_UNSUBSCRIBED[" + downstream_mustBeSubscribed + "] due to [" + reason + "]";
+#if DEBUG_STREAMING
 			Assembler.PopupException(msg2 + base.MsigForNpExceptions, null, false);
+#endif
 
 			// TUNNELLED_TO_CHART_CONTROL base.ChartShadow_nullReported.ChartControl.ScriptExecutorObjects.QuoteLast = null;
 		}
 		public void StreamingSubscribe(string reason = "NO_REASON_FOR_STREAMING_SUBSCRIBE") {
 			base.ReasonToExist = "Chart[" + base.Symbol_nullReported + "]";
-			if (this.Strategy_nullReported != null) this.ReasonToExist += "[" + this.Strategy_nullReported.Name + "]";
+			if (this.Executor.Strategy != null) this.ReasonToExist += "[" + this.Executor.StrategyName + "]";
 
-			if (this.CanSubscribeToStreamingAdapter() == false) return;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
+			if (this.NPEs_handled() == false) return;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
 			base.MsigForNpExceptions = " //ChartStreamingConsumer.StreamingSubscribe(" + this.ToString() + ")";
 
 			var executorSafe			= base.Executor_nullReported;
 			var symbolSafe				= base.Symbol_nullReported;
 			var scaleIntervalSafe		= base.ScaleInterval_nullReported;
 			var streaming_nullReported	= this.StreamingAdapter_nullReported;
-			var strategy_nullUnsafe		= this.Strategy_nullReported;
 
 			bool downstreamBeforeWeStarted_mustBeUnSubscribed = this.DownstreamSubscribed;
 			if (downstreamBeforeWeStarted_mustBeUnSubscribed
@@ -127,19 +129,23 @@ namespace Sq1.Core.Charting {
 			if (ctxChartOrStrategy != null) {
 				ctxChartOrStrategy.DownstreamSubscribed = true;
 				// did you find it? now you have to save it :(
-				if (strategy_nullUnsafe != null) {
-					strategy_nullUnsafe.Serialize();
+				if (this.Executor.Strategy != null) {
+					//strategy_nullUnsafe.Serialize();
+					this.ChartShadow.RaiseContextScriptChangedContainerShouldSerialize();
 					serialized = true;
 				} else {
-					string msg = "RAISE_EVEN_SO_THAT_MAIN_FORM_SAVES_CHART_CONTEXT_WITHOUT_STRATEGY";
-					Assembler.PopupException(msg, null, false);
-					//serialized = true;
+					//string msg = "RAISE_EVENT_SO_THAT_MAIN_FORM_SAVES_CHART_CONTEXT_WITHOUT_STRATEGY";
+					//Assembler.PopupException(msg, null, false);
+					this.ChartShadow.RaiseChartSettingsChangedContainerShouldSerialize();
+					serialized = true;
 				}
 			}
 
 			string msg2 = "CHART_STREAMING_SUBSCRIBED[" + downstreamAfterWeAttemptedToSubscribe_mustBeSubscribed
 				+ "] SAVED_FOR_APPRESTART[" + serialized + "] due to [" + reason + "]";
+#if DEBUG_STREAMING
 			Assembler.PopupException(msg2 + base.MsigForNpExceptions, null, false);
+#endif
 		}
 
 		public void StreamingTriggeringScriptStart() {
@@ -329,37 +335,11 @@ namespace Sq1.Core.Charting {
 		}
 		#endregion
 
-		string prePauseWindowsTitle = "";
 		public override void PumpPaused_notification_overrideMe_switchLivesimmingThreadToGui() {
-			if (this.ChartShadow.ParentForm == null) {
-				string msg = "CANT_SET_CHARTFORM_WINDOW_TITLE //PumpPaused_notification()";
-				Assembler.PopupException(msg);
-				return;
-			}
-			if (this.ChartShadow.InvokeRequired) {
-				this.ChartShadow.BeginInvoke((MethodInvoker) delegate { this.PumpPaused_notification_overrideMe_switchLivesimmingThreadToGui(); } );
-				return;
-			}
-			if (this.ChartShadow.ParentForm.Text.Contains("PAUSED")) {
-				string msg = "1) DID_UNDUPLICATION_WORK? 2) DONT_NOTIFY_CHART_IM_LIVESIMMING_YOU_PAUSED_REPLACED_DISTRIBUTOR";
-				Assembler.PopupException(msg);
-			}
-			this.prePauseWindowsTitle = this.ChartShadow.ParentForm.Text;
-			this.ChartShadow.ParentForm.Text = "PAUSED " + this.prePauseWindowsTitle;
+			this.ChartShadow.PumpPaused_notification_switchLivesimmingThreadToGui();
 		}
 		public override void PumpUnPaused_notification_overrideMe_switchLivesimmingThreadToGui() {
-			if (this.prePauseWindowsTitle == "") return;	// I wasn't paused from brother livesimming and I don't wanna reset my title
-			if (this.ChartShadow.ParentForm == null) {
-				string msg = "CANT_SET_CHARTFORM_WINDOW_TITLE //PumpUnPaused_notification()";
-				Assembler.PopupException(msg);
-				return;
-			}
-			if (this.ChartShadow.InvokeRequired) {
-				this.ChartShadow.BeginInvoke((MethodInvoker) delegate { this.PumpUnPaused_notification_overrideMe_switchLivesimmingThreadToGui(); } );
-				return;
-			}
-			this.ChartShadow.ParentForm.Text = this.prePauseWindowsTitle;
-			this.prePauseWindowsTitle = "";
+			this.ChartShadow.PumpUnPaused_notification_switchLivesimmingThreadToGui();
 		}
 	
 		public override string ToString() {

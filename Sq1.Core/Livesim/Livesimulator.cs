@@ -179,7 +179,7 @@ namespace Sq1.Core.Livesim {
 					string msg = "Livesim/noStreaming was still generating LevelTwo directly in the StreamingDataSnapshot";
 				}
 			} catch (Exception ex) {
-				string msg = "PreBarsSubstitute(): Backtester caught a long beard...";
+				string msg = "SimulationPreBarsSubstitute_overrideable(): Livesimulator caught a long beard...";
 				base.Executor.PopupException(msg, ex);
 			} finally {
 				base.BarsSimulatedSoFar = 0;

@@ -10,14 +10,14 @@
     "DataSourceName": "MOCK",
     "ScaleInterval": {
       "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-      "Interval": 20,
+      "Interval": 10,
       "Scale": 3,
-      "AsString_cached": "20-Minute",
+      "AsString_cached": "10-Minute",
       "IsIntraday": true,
-      "AsTimeSpanInSeconds": 1200,
-      "AsTimeSpan": "00:20:00",
-      "AsStringShortest_cached": "20m",
-      "AsStringShort_cached": "20min"
+      "AsTimeSpanInSeconds": 600,
+      "AsTimeSpan": "00:10:00",
+      "AsStringShortest_cached": "10m",
+      "AsStringShort_cached": "10min"
     },
     "DataRange": {
       "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
@@ -29,7 +29,7 @@
     },
     "StreamingIsTriggeringScript": false,
     "ShowRangeBar": false,
-    "DownstreamSubscribed": false
+    "DownstreamSubscribed": true
   },
   "ChartSettings": {
     "$type": "Sq1.Core.Charting.ChartSettings, Sq1.Core",
@@ -40,14 +40,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 28
+        "PanelHeight": 15
       },
       "PanelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 34,
+        "Distance": 21,
         "SplitterHeight": 6,
-        "PanelHeight": 147
+        "PanelHeight": 103
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -57,14 +57,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 342
+        "PanelHeight": 766
       },
       "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 348,
+        "Distance": 772,
         "SplitterHeight": 6,
-        "PanelHeight": 209
+        "PanelHeight": 311
       }
     },
     "Name": "Default",
@@ -164,7 +164,7 @@
     "LevelTwoAskColorContour": "205, 180, 180",
     "LevelTwoBidColorBackground": "230, 255, 230",
     "LevelTwoBidColorContour": "180, 205, 180",
-    "LevelTwoMinimumPriceLevelThicknessRendered": 14,
+    "LevelTwoMinimumPriceLevelThicknessRendered": -1,
     "LevelTwoLotDrawString": true,
     "LevelTwoLotFont": "Microsoft Sans Serif, 8.25pt",
     "LevelTwoLotColor": "Black",

@@ -220,9 +220,9 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextLeftOffsetX = 0;
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextLeftWidth = 43;
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextRed = false;
-			this.mnitlbPositionSizeSharesConstantEachTrade.TextRight = "~= 121pips";
+			this.mnitlbPositionSizeSharesConstantEachTrade.TextRight = "";
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextRightOffsetX = 168;
-			this.mnitlbPositionSizeSharesConstantEachTrade.TextRightWidth = 70;
+			this.mnitlbPositionSizeSharesConstantEachTrade.TextRightWidth = 4;
 			this.mnitlbPositionSizeSharesConstantEachTrade.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbPositionSizeSharesConstantEachTrade_UserTyped);
 			// 
 			// mnitlbPositionSizeDollarsEachTradeConstant
@@ -242,9 +242,9 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextLeftOffsetX = 0;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextLeftWidth = 82;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextRed = false;
-			this.mnitlbPositionSizeDollarsEachTradeConstant.TextRight = "~= 121pips";
+			this.mnitlbPositionSizeDollarsEachTradeConstant.TextRight = "";
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextRightOffsetX = 168;
-			this.mnitlbPositionSizeDollarsEachTradeConstant.TextRightWidth = 70;
+			this.mnitlbPositionSizeDollarsEachTradeConstant.TextRightWidth = 4;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbPositionSizeDollarsConstantEachTrade_UserTyped);
 			// 
 			// DdbBacktest

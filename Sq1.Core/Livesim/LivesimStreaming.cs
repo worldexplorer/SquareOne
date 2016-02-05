@@ -119,7 +119,7 @@ namespace Sq1.Core.Livesim {
 				string msg = "RELAX_IM_NOT_FORWARING_IT_TO_BASE_BUT_I_HANDLE_InitializeDataSource()_IN_LivesimStreaming";
 			}
 		}
-		protected override void SolidifierAllSymbolsSubscribe() {
+		protected override void SolidifierAllSymbolsSubscribe_onAppRestart() {
 			return;
 		}
 		#endregion

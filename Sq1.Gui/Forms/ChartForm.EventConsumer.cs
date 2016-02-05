@@ -520,5 +520,12 @@ namespace Sq1.Gui.Forms {
 			if (guiHasTime == false) return;
 			this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
 		}
+
+		void ChartControl_OnPumpPaused(object sender, EventArgs e) {
+			this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = false;
+		}
+		void ChartControl_OnPumpUnPaused(object sender, EventArgs e) {
+			this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = true;
+		}
 	}
 }

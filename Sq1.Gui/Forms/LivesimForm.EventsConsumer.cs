@@ -47,7 +47,7 @@ namespace Sq1.Gui.Forms {
 				// VERBOSE_LIVESIM_PART1/2_BTN_STREAMING_DISPLAYS_QUOTE_DETAILS-ACTIVATE
 				//this.chartFormManager.ChartForm.BtnStrategyEmittingOrders.Enabled = false;
 				//this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = true;
-				this.chartFormManager.ChartForm.BtnStreamingTriggersScript.Enabled = false;
+				//LIVESIM_WILL_USE_IT_DONT_DISABLE this.chartFormManager.ChartForm.BtnStreamingTriggersScript.Enabled = false;
 				//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = true;
 			} else {
 				btnStartStop.Text = "Stopping";

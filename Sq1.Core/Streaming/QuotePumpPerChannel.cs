@@ -82,12 +82,14 @@ namespace Sq1.Core.Streaming {
 			this.pushingThreadStart();
 			if (this.Paused) {
 				string msg = "PUSHER_THREAD_STARTED__DONT_FORGET_UNPAUSE " + this.ToString();
+#if DEBUG_STREAMING
 				Assembler.PopupException(msg, null, false);
+#endif
 			}
 		}
 
 		public void PushingThreadStop() {
-			string msig = " //PushingThreadStop[" + this.isPushingThreadStarted + "]=>[" + false + "] " + this.ToString();
+			string msig = " //PushingThreadStop isPushingThreadStarted[" + this.isPushingThreadStarted + "]=>[" + false + "] " + this.ToString();
 			if (this.isPushingThreadStarted == false) {
 				// this.simulationPreBarsSubstitute() waits for 10 seconds
 				// you'll be waiting for confirmThreadExited.WaitOne(1000) because there was no running thread to confirm its own exit
@@ -96,6 +98,7 @@ namespace Sq1.Core.Streaming {
 			try {
 				this.confirmThreadExited.Reset();
 				this.exitPushingThreadRequested = true;
+				this.signalTo_pauseUnpauseAbort();
 				bool exitConfirmed = this.confirmThreadExited.WaitOne(this.heartbeatTimeout * 2);
 				string msg = exitConfirmed ? "THREAD_EXITED__" : "EXITING_THREAD_DIDNT_CONFIRM_ITS_OWN_EXIT__";
 				Assembler.PopupException(msg + msig, null, false);
@@ -106,7 +109,7 @@ namespace Sq1.Core.Streaming {
 			this.isPushingThreadStarted = false;
 		}
 		void pushingThreadStart() {
-			string msig = " //PushingThreadStart[" + this.isPushingThreadStarted + "]=>[" + true + "] " + this.ToString();
+			string msig = " //pushingThreadStart isPushingThreadStarted[" + this.isPushingThreadStarted + "]=>[" + true + "] " + this.ToString();
 			if (this.isPushingThreadStarted == true) {
 				// this.simulationPreBarsSubstitute() waits for 10 seconds
 				// you'll be waiting for confirmThreadExited.WaitOne(1000) because there was no running thread to confirm its own exit
@@ -333,7 +336,9 @@ namespace Sq1.Core.Streaming {
 					//bool pausedConfirmed = this.confirmPaused.WaitOne(this.heartbeatTimeout * 2);
 					bool pausedConfirmed = this.confirmPaused.WaitOne(-1);
 					string msg2 = pausedConfirmed ? "PUSHER_THREAD_PAUSED_PUMPING" : "PUSHER_THREAD_PAUSED_PUMPING_BUT_NOT_CONFIRMED";
+#if DEBUG_STREAMING
 					Assembler.PopupException(msg2 + msig, null, false);
+#endif
 
 					//even for a LivesimStreamingDefault-based no-strategy Chart I wanna see "PAUSED" added to ChartForm.Text
 					this.notifyConsumers_pumpWasPaused();
@@ -345,10 +350,14 @@ namespace Sq1.Core.Streaming {
 					this.notifyConsumers_pumpWasPaused();
 					this.confirmUnpaused.Reset();
 					string msg = "PUSHER_THREAD_PAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION";
+#if DEBUG_STREAMING
 					//Assembler.PopupException(msg + msig);
+#endif
 				} else {
 					string msg2 = "PUSHER_THREAD_PAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION";
+#if DEBUG_STREAMING
 					Assembler.PopupException(msg2 + msig);
+#endif
 				}
 			} catch (Exception ex) {
 				string msg = "IMPOSSIBLE_HAPPENED_WHILE_UNPAUSING";
@@ -377,7 +386,9 @@ namespace Sq1.Core.Streaming {
 					//bool unPausedConfirmed = this.confirmUnpaused.WaitOne(this.heartbeatTimeout * 2);
 					bool unPausedConfirmed = this.confirmUnpaused.WaitOne(-1);
 					string msg = unPausedConfirmed ? "PUSHER_THREAD_UNPAUSED_PUMPING" : "PUSHER_THREAD_UNPAUSED_PUMPING_BUT_NOT_CONFIRMED";
+#if DEBUG_STREAMING
 					Assembler.PopupException(msg + msig, null, false);
+#endif
 
 					//even for a LivesimStreamingDefault-based no-strategy Chart I wanna see "PAUSED" removed to ChartForm.Text
 					this.notifyConsumers_pumpWasUnPaused();
@@ -389,11 +400,13 @@ namespace Sq1.Core.Streaming {
 					this.confirmUnpaused.Set();
 					this.notifyConsumers_pumpWasUnPaused();
 					this.confirmPaused.Reset();
-						string msg = "PUSHER_THREAD_UNPAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION"
+					string msg = "PUSHER_THREAD_UNPAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION"
 						//+ " added since BrokerMock.SubmitOrder was waiting for 2 minutes after someone has already unpaused"
 						//+ " ; I have to notify waiters can proceed via WaitUntilUnpaused, even if noone is WaitingOne()"
 						;
+#if DEBUG_STREAMING
 					//Assembler.PopupException(msg, null, false);
+#endif
 				} else {
 					string msg2 = "UNPAUSED_EARLIER__WRONG_USAGE";
 					Assembler.PopupException(msg2 + msig);

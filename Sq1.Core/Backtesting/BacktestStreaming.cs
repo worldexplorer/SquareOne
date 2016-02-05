@@ -6,6 +6,7 @@ using Sq1.Core.Streaming;
 using Sq1.Core.Support;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Backtesting {
 	[SkipInstantiationAt(Startup = true)]
@@ -66,5 +67,20 @@ namespace Sq1.Core.Backtesting {
 #endif
 			return thereWereNeighbours;
 		}
+
+		// Livesimulator.ctor() when instantiating LivesimDS with its own dummy LivesimStreaming/BrokerDefaults does not make ChartShadows PAUSED
+		// base.BacktestDataSource			= new LivesimDataSource(executor);
+		#region DISABLING_SOLIDIFIER__NOT_REALLY_USED_WHEN_STREAMING_ADAPTER_PROVIDES_ITS_OWN_LIVESIM_STREAMING
+		public override void InitializeDataSource_inverse(DataSource dataSource, bool subscribeSolidifier = true) {
+			base.InitializeFromDataSource(dataSource);
+			base.Name						= "LivesimStreaming_IAM_ABSTRACT_ALWAYS_OVERRIDE_IN_CHILDREN";
+			if (subscribeSolidifier) {
+				string msg = "RELAX_IM_NOT_FORWARING_IT_TO_BASE_BUT_I_HANDLE_InitializeDataSource()_IN_LivesimStreaming";
+			}
+		}
+		protected override void SolidifierAllSymbolsSubscribe_onAppRestart() {
+			return;
+		}
+		#endregion
 	}
 }
