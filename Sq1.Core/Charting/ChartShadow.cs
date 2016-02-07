@@ -68,19 +68,21 @@ namespace Sq1.Core.Charting {
 		    // 4) LIVESIM_END Livesimulator.afterBacktesterComplete()
 
 		    if (removeChartShadowFromOldSymbolAndAddToLoadingBars && this.Bars != null)	this.ChartShadow_RemoveFromDataSource();
-		    this.Bars = barsNotNull;
+			if (this.Bars != null) {
+				this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
+			}
+
+			this.Bars = barsNotNull;
 		    if (removeChartShadowFromOldSymbolAndAddToLoadingBars)						this.ChartShadow_AddToDataSource();
 		    #endregion
 
 		    // ChartForm wants to update last received quote datetime; FOR_NON_CORE_CONSUMERS_ONLY CORE_DEFINED_CONSUMERS_IMPLEMENT_IStreamingConsumer.ConsumeQuoteOfStreamingBar()
-		    this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged);
-		    this.Bars.BarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged);
+		    this.Bars.BarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
 		}
-		
-		void bars_BarStreamingUpdatedMerged(object sender, BarEventArgs e) {
+		void bars_BarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm(object sender, BarEventArgs e) {
 			this.RaiseBarStreamingUpdatedMerged(e);
 		}
-
+		
 		public virtual bool SelectPosition(Position position) {
 			string msg = "ChartShadow::SelectPosition() TODO: implement HIGHLIGHTING for a position[" + position + "]; chart[" + this + "]";
 			Assembler.PopupException(msg);
@@ -187,7 +189,7 @@ namespace Sq1.Core.Charting {
 			string ret = null;
 			if (this.Executor != null) {
 				if (this.Executor.Strategy != null) {
-					ret = this.Executor.Strategy.NameAndDll;
+					ret = this.Executor.Strategy.ToString();
 				} else {
 					if (this.CtxChart != null) {
 						ret = this.CtxChart.ToString();

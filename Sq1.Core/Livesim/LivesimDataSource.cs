@@ -2,6 +2,8 @@
 
 using Sq1.Core.Backtesting;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.DataTypes;
+using Sq1.Core.Broker;
 
 namespace Sq1.Core.Livesim {
 	public class LivesimDataSource : BacktestDataSource, IDisposable {
@@ -9,8 +11,8 @@ namespace Sq1.Core.Livesim {
 
 		LivesimDataSource() {
 			base.Name				= "LivesimDataSource";
-			//base.StreamingAdapter	= new LivesimStreamingDefault("WILL_BE_OVERWRITTEN_FROM_REAL_DATASOURCE");	//USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_STREAMING
-			//base.BrokerAdapter		= new LivesimBrokerDefault	 ("WILL_BE_OVERWRITTEN_FROM_REAL_DATASOURCE");	//USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_BROKER
+			base.StreamingAdapter	= new LivesimStreamingDefault("WILL_BE_OVERWRITTEN_FROM_REAL_DATASOURCE");	//USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_STREAMING
+			base.BrokerAdapter		= new LivesimBrokerDefault	 ("WILL_BE_OVERWRITTEN_FROM_REAL_DATASOURCE");	//USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_BROKER
 		}
 
 		public LivesimDataSource(ScriptExecutor executor) : this() {
@@ -86,5 +88,10 @@ namespace Sq1.Core.Livesim {
 			this.IsDisposed = true;
 		}
 		public bool IsDisposed { get; private set; }
+
+		internal void InitializeLivesim(string executorImServing, Bars bars, BacktestSpreadModeler spreadModeler) {
+			base.InitializeBacktest(executorImServing, bars, spreadModeler);
+		}
+
 	}
 }

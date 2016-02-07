@@ -203,6 +203,11 @@ namespace Sq1.Gui.Forms {
 
 		void eventGenerator_OnStrategyPreExecuteOneQuote_updateBtnStreamingText(object sender, QuoteEventArgs e) {
 			this.ChartForm.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(e.Quote);
+
+			if (this.Executor.Strategy != null) return;
+			//if (this.ChartForm.ChartControl.ChartIsSubscribed_toOwnNonNullBars_expensiveForEachQuote_useCtxChartDownstreamSubscribed) return;
+			if (this.ChartForm.ChartControl.CtxChart.DownstreamSubscribed) return;
+			this.eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree(sender, e);
 		}
 
 
@@ -213,13 +218,15 @@ namespace Sq1.Gui.Forms {
 		// all the above should be subscribed in Livesim_pre()
 		void eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree(object sender, QuoteEventArgs e) {
 			TreeListView olvTree = DataSourcesForm.Instance.DataSourcesTreeControl.OlvTree;
-			Action linkingTwoUnrelatedDlls_invokedInGuiThread = new Action(delegate {
+			Action refreshDataSourceTree_invokedInGuiThread_afterTimerExpired = new Action(delegate {
 					if (olvTree.SelectedIndex != -1 && olvTree.SelectedObject == this.ChartForm.ChartControl) {
 						olvTree.SelectedObject = this.Executor.DataSource_fromBars;
 					}
 					olvTree.RefreshObject(this.ChartForm.ChartControl);
+
+					this.ChartForm.BtnStreamingTriggersScript.BackColor = this.ChartForm.ChartControl.ColorBackground_inDataSourceTree;
 				});
-			this.ChartForm.ChartControl.OnStrategyExecutedOneQuote_unblinkDataSourceTree(linkingTwoUnrelatedDlls_invokedInGuiThread);
+			this.ChartForm.ChartControl.OnStrategyExecutedOneQuote_unblinkDataSourceTree(refreshDataSourceTree_invokedInGuiThread_afterTimerExpired);
 		}
 
 		public ChartFormManager(MainForm mainForm, int charSernoDeserialized = -1) : this() {

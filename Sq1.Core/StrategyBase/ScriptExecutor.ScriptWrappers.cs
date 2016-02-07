@@ -21,7 +21,7 @@ namespace Sq1.Core.StrategyBase {
 			Alert alert = null;
 			// real-time streaming should create its own Position after an Order gets filled
 			if (this.IsStreamingTriggeringScript) {
-				alert = this.MarketLive.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
+				alert = this.AlertGenerator.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
 														 direction, entryMarketLimitStop);
 			} else {
 				//string msg = "YOU_DONT_EMIT_ORDERS_THEN_CONTINUE_BACKTEST_BASED_ON_LIVE_QUOTES";
@@ -64,7 +64,7 @@ namespace Sq1.Core.StrategyBase {
 			if (position.Prototype != null) {
 				if (signalName.Contains("protoTakeProfitExit")
 					&& position.Prototype.TakeProfitAlertForAnnihilation != null
-					&& this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) {
+					&& this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
 					string msg = "I won't create another protoTakeProfitExit because"
 						+ " position.Prototype.TakeProfitAlertForAnnihilation != null"
 						+ " position[" + position + "]";
@@ -73,7 +73,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				if (signalName.Contains("protoStopLossExit")
 					&& position.Prototype.StopLossAlertForAnnihilation != null
-					&& this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) {
+					&& this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
 					string msg = "I won't create another protoStopLossExit because"
 						+ " position.Prototype.StopLossAlertForAnnihilation != null"
 						+ " position[" + position + "]";
@@ -100,7 +100,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (this.IsStreamingTriggeringScript) {
-				alert = this.MarketLive.ExitAlertCreate(exitBar, position, stopOrLimitPrice, signalName,
+				alert = this.AlertGenerator.ExitAlertCreate(exitBar, position, stopOrLimitPrice, signalName,
 														direction, exitMarketLimitStop);
 			} else {
 				//string msg = "YOU_DONT_EMIT_ORDERS_THEN_CONTINUE_BACKTEST_BASED_ON_LIVE_QUOTES";
@@ -137,27 +137,33 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 			bool killed = false;
-			if (this.IsStreamingTriggeringScript) {
-				if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == true) {
-					killed = this.MarketsimBacktest.AnnihilateCounterpartyAlert(alert);
-					//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
-				} else {
-					killed = this.MarketLive.AnnihilateCounterpartyAlert(alert);
-				}
-			} else {
+			if (this.IsStreamingTriggeringScript == false) {
 				//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
 				string msg = "NYI_FOR IsStreamingTriggeringScript=false //AnnihilateCounterpartyAlertDispatched()";
 				Assembler.PopupException(msg);
+				return killed;
 			}
+			//v1 ScriptExecutor trying be too smart
+			//if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == true) {
+			//    killed = this.MarketsimBacktest.AnnihilateCounterpartyAlert(alert);
+			//    //killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
+			//} else {
+			//    killed = this.AlertGenerator.AnnihilateCounterpartyAlert(alert);
+			//}
+			//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
+			killed = this.DataSource_fromBars.BrokerAdapter.AnnihilateCounterpartyAlert(alert);
 			return killed;
 		}
 		public void AlertKillPending(Alert alert) {
-			//if (this.Backtester.IsBacktestingNow) {
-			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
-				this.MarketsimBacktest.SimulateAlertKillPending(alert);
-			} else {
-				this.MarketLive.AlertKillPending(alert);
-			}
+			//v1 ScriptExecutor trying be too smart
+			////if (this.Backtester.IsBacktestingNow) {
+			//if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+			//    this.MarketsimBacktest.SimulateAlertKillPending(alert);
+			//} else {
+			//    this.AlertGenerator.AlertKillPending(alert);
+			//}
+			//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
+			this.DataSource_fromBars.BrokerAdapter.AlertKillPending(alert);
 		}
 	}
 }

@@ -142,8 +142,9 @@ namespace Sq1.Core.Livesim {
 			this.IsDisposed = true;
 		}
 
-		protected void				SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor() {
-			this.StreamingOriginal.	SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(this);
+		//, this.Executor.Strategy.ScriptContextCurrent.DownstreamSubscribed
+		protected void				SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(bool chartBarsSubscribeSelected) {
+			this.StreamingOriginal.	SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(this, chartBarsSubscribeSelected);
 		}
 
 		protected void				SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor() {

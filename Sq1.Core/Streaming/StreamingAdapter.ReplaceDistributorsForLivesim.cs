@@ -18,7 +18,7 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public bool			DataDistributorsAreReplacedByLivesim_ifYesDontPauseNeighborsOnBacktestContextInitRestore {
 			get { return this.livesimStreamingForWhomDataDistributorsAreReplaced != null; } }
 
-		internal void SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(LivesimStreaming livesimStreaming) {
+		internal void SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(LivesimStreaming livesimStreaming, bool chartBarsSubscribeSelected) {
 			this.livesimStreamingForWhomDataDistributorsAreReplaced = livesimStreaming;
 
 			ScriptExecutor executor = this.livesimStreamingForWhomDataDistributorsAreReplaced.Livesimulator.Executor;
@@ -33,33 +33,35 @@ namespace Sq1.Core.Streaming {
 			this.dataDistributor_preLivesimForSymbolLivesimming.AllQuotePumps_Pause(reasonForNewDistributor);
 			this.DataDistributor_replacedForLivesim = new DataDistributor(this, reasonForNewDistributor);
 
-			string symbol					= livesimStreaming.Livesimulator.BarsSimulating.Symbol;
-			BarScaleInterval scaleInterval	= livesimStreaming.Livesimulator.BarsSimulating.ScaleInterval;
-			string symbolIntervalScale		= livesimStreaming.Livesimulator.BarsSimulating.SymbolIntervalScale;
-			//StreamingConsumer chartShadow	= livesimStreaming.Livesimulator.Executor.ChartShadow.ChartStreamingConsumer;
-			StreamingConsumer chartLess		= livesimStreaming.Livesimulator.LivesimQuoteBarConsumer;
+			if (chartBarsSubscribeSelected) {
+				string symbol					= livesimStreaming.Livesimulator.BarsSimulating.Symbol;
+				BarScaleInterval scaleInterval	= livesimStreaming.Livesimulator.BarsSimulating.ScaleInterval;
+				string symbolIntervalScale		= livesimStreaming.Livesimulator.BarsSimulating.SymbolIntervalScale;
+				//StreamingConsumer chartShadow	= livesimStreaming.Livesimulator.Executor.ChartShadow.ChartStreamingConsumer;
+				StreamingConsumer chartLess		= livesimStreaming.Livesimulator.LivesimQuoteBarConsumer;
 
-			bool willPushUsingPumpInSeparateThread = true;	// I wanna know which thread is going to be used; if DDE-client then cool; YES_IT_WAS_DDE_THREAD
-			//bool willPushUsingPumpInSeparateThread = true;			// and now I wanna Livesim just like it will be working with Real Quik
-			//if (this.distributorCharts_preLivesimForSymbolLivesimming.ConsumerQuoteIsSubscribed(symbol, scaleInterval, chartShadow) == false) {
-			//    string msg = "EXECUTOR'S_CHART_SHADOW_WASNT_QUOTECONSUMING_WHAT_YOU_GONNA_LIVESIM NONSENSE " + symbolIntervalScale;
-			//    Assembler.PopupException(msg, null, false);
-			//}
-			// the chart will be subscribed twice to the same Symbol+ScaleInterval, yes! but the original distributor is backed up and PushQuoteReceived will only push to the new DataDistributor(this) with one chart only
-			this.DataDistributor_replacedForLivesim.ConsumerQuoteSubscribe(symbol, scaleInterval, chartLess, willPushUsingPumpInSeparateThread);
+				bool willPushUsingPumpInSeparateThread = true;	// I wanna know which thread is going to be used; if DDE-client then cool; YES_IT_WAS_DDE_THREAD
+				//bool willPushUsingPumpInSeparateThread = true;			// and now I wanna Livesim just like it will be working with Real Quik
+				//if (this.distributorCharts_preLivesimForSymbolLivesimming.ConsumerQuoteIsSubscribed(symbol, scaleInterval, chartShadow) == false) {
+				//    string msg = "EXECUTOR'S_CHART_SHADOW_WASNT_QUOTECONSUMING_WHAT_YOU_GONNA_LIVESIM NONSENSE " + symbolIntervalScale;
+				//    Assembler.PopupException(msg, null, false);
+				//}
+				// the chart will be subscribed twice to the same Symbol+ScaleInterval, yes! but the original distributor is backed up and PushQuoteReceived will only push to the new DataDistributor(this) with one chart only
+				this.DataDistributor_replacedForLivesim.ConsumerQuoteSubscribe(symbol, scaleInterval, chartLess, willPushUsingPumpInSeparateThread);
 
-			//if (this.distributorCharts_preLivesimForSymbolLivesimming.ConsumerBarIsSubscribed(symbol, scaleInterval, chartShadow) == false) {
-			//    string msg = "EXECUTOR'S_CHART_SHADOW_WASNT_BARCONSUMING_WHAT_YOU_GONNA_LIVESIM NONSENSE " + symbolIntervalScale;
-			//    Assembler.PopupException(msg, null, false);
-			//}
-			// the chart will be subscribed twice to the same Symbol+ScaleInterval, yes! but the original distributor is backed up and PushBarReceived will only push to the new DataDistributor(this) with one chart only
-			this.DataDistributor_replacedForLivesim.ConsumerBarSubscribe(symbol, scaleInterval, chartLess, willPushUsingPumpInSeparateThread);
+				//if (this.distributorCharts_preLivesimForSymbolLivesimming.ConsumerBarIsSubscribed(symbol, scaleInterval, chartShadow) == false) {
+				//    string msg = "EXECUTOR'S_CHART_SHADOW_WASNT_BARCONSUMING_WHAT_YOU_GONNA_LIVESIM NONSENSE " + symbolIntervalScale;
+				//    Assembler.PopupException(msg, null, false);
+				//}
+				// the chart will be subscribed twice to the same Symbol+ScaleInterval, yes! but the original distributor is backed up and PushBarReceived will only push to the new DataDistributor(this) with one chart only
+				this.DataDistributor_replacedForLivesim.ConsumerBarSubscribe(symbol, scaleInterval, chartLess, willPushUsingPumpInSeparateThread);
+
+				this.DataDistributor_replacedForLivesim.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(symbol, scaleInterval);
+			}
 
 			this.dataDistributorSolidifiers_preLivesimForSymbolLivesimming = this.DataDistributorSolidifiers_replacedForLivesim;
 			this.dataDistributorSolidifiers_preLivesimForSymbolLivesimming.AllQuotePumps_Pause(reasonForNewDistributor);
 			this.DataDistributorSolidifiers_replacedForLivesim = new DataDistributor(this, reasonForNewDistributor);		// EMPTY!!! exactly what I wanted
-
-			this.DataDistributor_replacedForLivesim.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(symbol, scaleInterval);
 
 			string msg1 = "THESE_STREAMING_CONSUMERS_LOST_INCOMING_QUOTES_FOR_THE_DURATION_OF_LIVESIM: ";
 			string msg2= this.dataDistributor_preLivesimForSymbolLivesimming.ToString();

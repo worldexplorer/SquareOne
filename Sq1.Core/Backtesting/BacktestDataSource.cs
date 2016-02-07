@@ -3,15 +3,16 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Backtesting {
 	public class BacktestDataSource : DataSource {
-		public BacktestStreaming	StreamingAsBacktest_nullUnsafe	{ get { return base.StreamingAdapter	as BacktestStreaming; } }
-		public BacktestBroker	    BrokerAsBacktest_nullUnsafe		{ get { return base   .BrokerAdapter	as BacktestBroker; } }
+		//public BacktestStreaming	StreamingAsBacktest_nullUnsafe	{ get { return base.StreamingAdapter	as BacktestStreaming; } }
+		//public BacktestBroker	    BrokerAsBacktest_nullUnsafe		{ get { return base   .BrokerAdapter	as BacktestBroker; } }
 
 		public BacktestDataSource() {
 			base.Name = "BacktestDataSource";
 			base.StreamingAdapter	= new BacktestStreaming	("USED_FOR_BACKTESTS__CHARTLESS_NO_ORDEREXEC");
 			base.BrokerAdapter		= new BacktestBroker	("USED_FOR_BACKTESTS__CHARTLESS_NO_ORDEREXEC");
 		}
-		public void Initialize(Bars bars, BacktestSpreadModeler spreadModeler) {
+		public void InitializeBacktest(string executorImServing, Bars bars, BacktestSpreadModeler spreadModeler) {
+			base.Name += " FOR_EXECUTOR:" + executorImServing;
 			base.MarketInfo = bars.MarketInfo;
 			base.ScaleInterval = bars.ScaleInterval;
 			base.Symbols.Clear();

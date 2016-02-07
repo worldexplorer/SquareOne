@@ -22,10 +22,10 @@ namespace Sq1.Core.Livesim {
 			base.Name						= "LivesimBrokerDefault_WILL_BE_RENAMED_IN-InitializeDataSource_inverse()";
 		}
 
-		public override void InitializeDataSource_inverse(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
-			base.InitializeDataSource_inverse(dataSource, streamingAdapter, orderProcessor);
+		public override void InitializeLivesim(LivesimDataSource livesimDataSource, OrderProcessor orderProcessor) {
 			base.Name						= "LivesimBrokerDefault";
 			base.ReasonToExist				= "USED_FOR_LIVESIMMING_INITED_FROM_DATASOURCE";
+			base.InitializeLivesim(livesimDataSource, orderProcessor);
 		}
 	}
 }

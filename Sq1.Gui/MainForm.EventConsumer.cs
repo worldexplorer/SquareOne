@@ -66,7 +66,7 @@ namespace Sq1.Gui {
 				if (streaming == null) continue;
 
 				Livesimulator livesimRunning =  eachChartManager.Executor.Livesimulator;
-				if (streaming is LivesimStreaming && livesimRunning.IsBacktestingLivesimNow) {
+				if (streaming is LivesimStreaming && livesimRunning.ImRunningLivesim) {
 					// NEVER_DO_THIS  LETS_WAIT_UNTIL_LIVESIM_RESTORES_CONTEXT continue;
 					//v1 WE_ARE_BLOCKED,MAINFORM_STAYS_OPEN_WAITING_FOREVER_FOR QuikLivesim.XlDdeTableGenerator.syncContext.Invoke(method, args) to wait while this methods returns (WindowsMessageQueue-related)
 					//v1 livesimRunning.AbortRunningBacktestWaitAborted(msig, 60 * 1000);

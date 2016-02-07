@@ -25,7 +25,7 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public		virtual string			SymbolsUpstreamSubscribedAsString 	{ get {
 				string ret = "";
 				lock (SymbolsSubscribedLock) {
-					foreach (string symbol in SymbolsUpstreamSubscribed) ret += symbol + ",";
+					foreach (string symbol in this.SymbolsUpstreamSubscribed) ret += symbol + ",";
 				}
 				ret = ret.TrimEnd(',');
 				return ret;
@@ -104,11 +104,6 @@ namespace Sq1.Core.Streaming {
 			//if (this is LivesimStreaming) return;
 			//NULL_UNTIL_QUIK_PROVIDES_OWN_DDE_REDIRECTOR LivesimStreamingImplementation					= new LivesimStreamingDefault(true, "USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_STREAMING");	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
 		}
-		public virtual void InitializeDataSource_inverse(DataSource dataSource, bool subscribeSolidifier = true) {
-			this.InitializeFromDataSource(dataSource);
-			if (subscribeSolidifier == false) return;
-			this.SolidifierAllSymbolsSubscribe_onAppRestart();
-		}
 		public virtual void InitializeFromDataSource(DataSource dataSource) {
 			this.DataSource = dataSource;
 			this.StreamingDataSnapshot.InitializeLastQuoteReceived(this.DataSource.Symbols);
@@ -182,32 +177,6 @@ namespace Sq1.Core.Streaming {
 			channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.PusherPause();
 		}
 
-		#region the essence#1 of streaming adapter
-		public virtual void UpstreamConnect() {
-			//StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorConnecting, 0, "ConnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
-			Assembler.DisplayStatus("ConnectStreaming(): NOT_OVERRIDEN_IN_CHILD " + this.ToString());
-		}
-		public virtual void UpstreamDisconnect() {
-			//StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorDisconnecting, 0, "DisconnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
-			Assembler.DisplayStatus("DisconnectStreaming(): NOT_OVERRIDEN_IN_CHILD " + this.ToString());
-		}
-		#endregion
-
-		#region the essence#2 of streaming adapter
-		public virtual void UpstreamSubscribe(string symbol) {
-			throw new Exception("please override StreamingAdapter::UpstreamSubscribe()");
-			//CHILDREN_TEMPLATE: base.UpstreamSubscribeRegistryHelper(symbol);
-		}
-		public virtual void UpstreamUnSubscribe(string symbol) {
-			throw new Exception("please override StreamingAdapter::UpstreamUnSubscribe()");
-			//CHILDREN_TEMPLATE: base.UpstreamUnSubscribeRegistryHelper(symbol);
-		}
-		public virtual bool UpstreamIsSubscribed(string symbol) {
-			throw new Exception("please override StreamingAdapter::UpstreamIsSubscribed()");
-			//CHILDREN_TEMPLATE: return base.UpstreamIsSubscribedRegistryHelper(symbol);
-		}
-		#endregion
-
 		public void UpstreamSubscribeRegistryHelper(string symbol) {
 			if (String.IsNullOrEmpty(symbol)) {
 				string msg = "symbol[" + symbol + "]=IsNullOrEmpty, can't UpstreamSubscribeRegistryHelper()";
@@ -240,24 +209,26 @@ namespace Sq1.Core.Streaming {
 				throw new Exception(msg);
 			}
 			lock (this.SymbolsSubscribedLock) {
-				return SymbolsUpstreamSubscribed.Contains(symbol);
+				return this.SymbolsUpstreamSubscribed.Contains(symbol);
 			}
 		}
-
 
 		public virtual void PushQuoteReceived(Quote quote) {
 			string msig = " //StreamingAdapter.PushQuoteReceived()" + this.ToString();
 			
 			if (this.DataDistributor_replacedForLivesim.DistributionChannels.Count == 0) {
-				string msg = "I_REFUSE_TO_PUSH_QUOTE NO_SOLIDIFIER_NOR_CHARTS_SUBSCRIBED";
-				if (		this.LivesimStreaming_ownImplementation != null
-						 && this.LivesimStreaming_ownImplementation.Livesimulator != null
-						 && this.LivesimStreaming_ownImplementation.Livesimulator.IsBacktestingLivesimNow) {
-					this.LivesimStreaming_ownImplementation.Livesimulator.AbortRunningBacktestWaitAborted(msg, 0);
-				}
-				Assembler.PopupException(msg, null, false);
-				//NO_TOO_MANY_CHANGES_TO_LOOSEN_ALL_CHECKS GO_AND_DO_IT__I_WILL_SEE_ORANGE_BACKGROUNG_IN_DATASOURCE_TREE
-				return;
+				this.RaiseOnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange(quote);
+
+			    string msg = "I_REFUSE_TO_PUSH_QUOTE NO_SOLIDIFIER_NOR_CHARTS_SUBSCRIBED";
+			    if (		this.LivesimStreaming_ownImplementation != null
+			             && this.LivesimStreaming_ownImplementation.Livesimulator != null
+			             && this.LivesimStreaming_ownImplementation.Livesimulator.ImRunningLivesim) {
+			        this.LivesimStreaming_ownImplementation.Livesimulator.AbortRunningBacktestWaitAborted(msg, 0);
+			    }
+			    if (this is LivesimStreaming) return;	//already reported "USER_DIDNT_CLICK_CHART>BARS>SUBSCRIBE"
+			    Assembler.PopupException(msg, null, false);
+			    //NO_TOO_MANY_CHANGES_TO_LOOSEN_ALL_CHECKS GO_AND_DO_IT__I_WILL_SEE_ORANGE_BACKGROUNG_IN_DATASOURCE_TREE
+			    return;
 			}
 
 			if (quote.ServerTime == DateTime.MinValue) {
@@ -410,10 +381,6 @@ namespace Sq1.Core.Streaming {
 			string msg1 = "StreamingOHLCV Overwritten: Bars.StreamingBar[" + chartBars.BarStreamingNullUnsafeCloneReadonly + "] taken from streamingBar[" + streamingBar + "]";
 			//Assembler.PopupException(msg1, null, false);
 		}
-		public virtual void EnrichQuoteWithStreamingDependantDataSnapshot(Quote quote) {
-			// in Market-dependant StreamingAdapters, put in the Quote-derived quote anything like QuikQuote.FortsDepositBuy ;
-		}
-
 		public override string ToString() {
 			string dataSourceAsString = this.DataSource != null ? this.DataSource.ToString() : "NOT_INITIALIZED_YET";
 			string ret = this.Name + "/[" + this.UpstreamConnectionState + "]"

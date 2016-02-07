@@ -110,17 +110,17 @@ namespace Sq1.Core.Execution {
 		[JsonIgnore]	public	bool				IsBacktestRunning_FalseIfNoBacktester		{ get {
 				Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
 				if (backtester == null) return false;
-				return backtester.IsBacktestRunning;
+				return backtester.ImBacktestingOrLivesimming;
 			} }
 		[JsonIgnore]	public	bool				IsBacktestingNoLivesimNow_FalseIfNoBacktester		{ get {
 		        Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
 		        if (backtester == null) return false;
-		        return backtester.IsBacktestingNoLivesimNow;
+		        return backtester.ImRunningChartlessBacktesting;
 		    } }
 		[JsonIgnore]	public	bool				IsBacktestingLivesimNow_FalseIfNoBacktester		{ get {
 		        Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
 		        if (backtester == null) return false;
-		        return this.Strategy.Script.Executor.BacktesterOrLivesimulator.IsBacktestingLivesimNow;
+		        return this.Strategy.Script.Executor.BacktesterOrLivesimulator.ImRunningLivesim;
 		    }
 		}
 		[JsonProperty]	public	BarScaleInterval	BarsScaleInterval				{ get; protected set; }

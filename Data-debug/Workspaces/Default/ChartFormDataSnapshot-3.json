@@ -40,31 +40,31 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 15
+        "PanelHeight": 26
       },
       "PanelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 21,
+        "Distance": 32,
         "SplitterHeight": 6,
-        "PanelHeight": 103
+        "PanelHeight": 84
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
       "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "multiSplitRowsVolumePrice": {
+      "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 766
+        "PanelHeight": 41
       },
-      "panelLevel2": {
+      "multiSplitRowsVolumePrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 772,
+        "Distance": 47,
         "SplitterHeight": 6,
-        "PanelHeight": 311
+        "PanelHeight": 156
       }
     },
     "Name": "Default",

@@ -78,8 +78,8 @@ namespace Sq1.Core.Charting {
 			// TUNNELLED_TO_CHART_CONTROL base.ChartShadow_nullReported.ChartControl.ScriptExecutorObjects.QuoteLast = null;
 		}
 		public void StreamingSubscribe(string reason = "NO_REASON_FOR_STREAMING_SUBSCRIBE") {
-			base.ReasonToExist = "Chart[" + base.Symbol_nullReported + "]";
-			if (this.Executor.Strategy != null) this.ReasonToExist += "[" + this.Executor.StrategyName + "]";
+			base.ReasonToExist = "Chart";
+			this.ReasonToExist += (this.Executor.Strategy != null) ? "[" + this.Executor.ToString() + "]" : "[" + base.Symbol_nullReported + "]";
 
 			if (this.NPEs_handled() == false) return;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
 			base.MsigForNpExceptions = " //ChartStreamingConsumer.StreamingSubscribe(" + this.ToString() + ")";
@@ -218,7 +218,7 @@ namespace Sq1.Core.Charting {
 			}
 
 			#if DEBUG
-			if (base.Executor_nullReported.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+			if (base.Executor_nullReported.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
 				string msg = "SHOULD_NEVER_HAPPEN IsBacktestingNoLivesimNow[true] //ChartStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
 				Assembler.PopupException(msg);
 				return;

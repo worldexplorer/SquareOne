@@ -54,6 +54,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>DEBUG;DATACONSISTENCYTEST</DefineConstants>
     <DebugType>Full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>

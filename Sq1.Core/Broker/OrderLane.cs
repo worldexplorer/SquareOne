@@ -145,7 +145,7 @@ namespace Sq1.Core.Broker {
 					break;
 				}
 			}
-			if (iDontNeedSuggestionsHere == false) suggestLanePopupException(found);
+			if (iDontNeedSuggestionsHere == false) this.suggestLanePopupException(found);
 			return found;
 		}
 		public Order ScanRecentForGUID(string orderGUID, bool iDontNeedSuggestionsHere = false) { lock (this.OrdersLock) {
@@ -156,13 +156,13 @@ namespace Sq1.Core.Broker {
 				break;
 			}
 			if (found == null) return found;
-			if (iDontNeedSuggestionsHere == false) suggestLanePopupException(found);
+			if (iDontNeedSuggestionsHere == false) this.suggestLanePopupException(found);
 			return found;
 		} }
 
 		public Order FindMatchingForAlert(Alert alert, bool iDontNeedSuggestionsHere = false) { lock (this.OrdersLock) {
 			Order found = null;
-			if (iDontNeedSuggestionsHere == false) suggestLanePopupException(alert.OrderFollowed);
+			if (iDontNeedSuggestionsHere == false) this.suggestLanePopupException(alert.OrderFollowed);
 			// replace with a property if (alert.IsSameBarExit) return null;
 			foreach (Order order in this.InnerOrderList) {
 				if (order.Alert == null) {
@@ -180,12 +180,12 @@ namespace Sq1.Core.Broker {
 					found = order; break;
 				}
 			}
-			if (iDontNeedSuggestionsHere == false) suggestLanePopupException(found);
+			if (iDontNeedSuggestionsHere == false) this.suggestLanePopupException(found);
 			return found;
 		} }
 		public Order ScanRecentForSimilarNotSamePendingOrder(Order order, bool iDontNeedSuggestionsHere = false) { lock (this.OrdersLock) {
 			Order found = null;
-			if (iDontNeedSuggestionsHere == false) suggestLanePopupException(order);
+			if (iDontNeedSuggestionsHere == false) this.suggestLanePopupException(order);
 			//if (OrdersPendingBrokerCallbackStore == false) return null;
 			foreach (Order orderSimilar in this.InnerOrderList) {
 				if (orderSimilar.Alert == null) continue;	// orders deserialized might have no alerts attached
@@ -194,7 +194,7 @@ namespace Sq1.Core.Broker {
 				found = orderSimilar;
 				break;
 			}
-			if (iDontNeedSuggestionsHere == false) suggestLanePopupException(found);
+			if (iDontNeedSuggestionsHere == false) this.suggestLanePopupException(found);
 			return found;
 		} }
 		public List<Order> ScanRecentFindAllForAccount(string acctNum, bool ignoreExpectingCallbackFromBroker = false, bool iDontNeedSuggestionsHere = false) {

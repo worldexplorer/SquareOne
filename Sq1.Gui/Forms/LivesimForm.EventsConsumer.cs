@@ -7,70 +7,38 @@ using Sq1.Core.Streaming;
 
 namespace Sq1.Gui.Forms {
 	public partial class LivesimForm {
-		// ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
-		//void livesimForm_StrategyExecutedOneQuoteOrBarOrdersEmitted(object sender, EventArgs e) {
-		//	ChartControl chartControl = this.chartFormManager.ChartForm.ChartControl;
-		//	//v1 SKIPS_REPAINTING_KOZ_NOW_BACKTEST=TRUE chartControl.InvalidateAllPanels();
-		//	//chartControl.RefreshAllPanelsNonBlockingRefreshNotYetStarted();
-		//}
-
 		void btnStartStop_Click(object sender, EventArgs e) {
-			//Button btnPauseResume = this.LivesimControl.BtnPauseResume;
-			//Button btnStartStop = this.LivesimControl.BtnStartStop;
 			ToolStripButton btnPauseResume = this.LivesimControl.TssBtnPauseResume;
 			ToolStripButton btnStartStop = this.LivesimControl.TssBtnStartStop;
 			bool clickedStart = btnStartStop.Text.Contains("Start");
 			if (clickedStart) {
-				// LivesimStreamingDefault is a default one; I can pause everything now; and that's what any real-world Streaming would experience;
-				//NO_TOO_MANY_CHANGES_TO_LOOSEN_ALL_CHECKS GO_AND_DO_IT__I_WILL_SEE_ORANGE_BACKGROUNG_IN_DATASOURCE_TREE
-				//ScriptExecutor executor = this.chartFormManager.Executor;
-				//StreamingAdapter streamingAdapter = executor.DataSource_fromBars.StreamingAdapter;
-				//if (streamingAdapter != null) {
-				//    string reasonWhyLivesimCanNotBeStartedForSymbol = streamingAdapter.ReasonWhyLivesimCanNotBeStartedForSymbol(executor.Bars.Symbol, executor.ChartShadow);
-				//    if (string.IsNullOrEmpty(reasonWhyLivesimCanNotBeStartedForSymbol) == false) {
-				//        string msg = "I_REFUSE_TO_START_LIVESIM_FOR[" + this.chartFormManager.WhoImServing_moveMeToExecutor + "]: " + reasonWhyLivesimCanNotBeStartedForSymbol;
-				//        Assembler.PopupException(msg, null, false);
-				//        //btnStartStop.Checked = false;
-				//        //return;
-				//    }
-				//}
-
 				btnStartStop.Text = "Starting";
 				btnStartStop.Enabled = false;
 				this.chartFormManager.LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters();
-				this.chartFormManager.Executor.Livesimulator.Start_inGuiThread(btnStartStop, btnPauseResume, this.chartFormManager.ChartForm.ChartControl);
+				this.chartFormManager.Executor.Livesimulator.Start_invokedFromGuiThread(btnStartStop, btnPauseResume, this.chartFormManager.ChartForm.ChartControl);
 				btnStartStop.Text = "Stop";
 				btnStartStop.Enabled = true;
 				btnPauseResume.Enabled = true;
 				btnPauseResume.Checked = false;
-
-				// VERBOSE_LIVESIM_PART1/2_BTN_STREAMING_DISPLAYS_QUOTE_DETAILS-ACTIVATE
-				//this.chartFormManager.ChartForm.BtnStrategyEmittingOrders.Enabled = false;
-				//this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = true;
-				//LIVESIM_WILL_USE_IT_DONT_DISABLE this.chartFormManager.ChartForm.BtnStreamingTriggersScript.Enabled = false;
-				//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = true;
 			} else {
 				btnStartStop.Text = "Stopping";
 				btnStartStop.Enabled = false;
-				this.chartFormManager.Executor.Livesimulator.Stop_inGuiThread();
+				this.chartFormManager.Executor.Livesimulator.Stop_invokedFromGuiThread();
 				this.chartFormManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters();
 				btnStartStop.Text = "Start";
 				btnStartStop.Enabled = true;
 				btnPauseResume.Enabled = false;
 				btnPauseResume.Checked = false;
-
-				// VERBOSE_LIVESIM_PART1/2_BTN_STREAMING_DISPLAYS_QUOTE_DETAILS-RESTORE
 				this.chartFormManager.ChartForm.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 			}
 		}
 		void btnPauseResume_Click(object sender, EventArgs e) {
-			//Button btnPauseResume = this.LivesimControl.BtnPauseResume;
 			ToolStripButton btnPauseResume = this.LivesimControl.TssBtnPauseResume;
 			bool clickedPause = btnPauseResume.Text.Contains("Pause");
 			if (clickedPause) {
 				btnPauseResume.Text = "Pausing";
 				btnPauseResume.Enabled = false;
-				this.chartFormManager.Executor.Livesimulator.Pause_inGuiThread();
+				this.chartFormManager.Executor.Livesimulator.Pause_invokedFromGuiThread();
 				this.chartFormManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters();
 				this.chartFormManager.ReportersFormsManager.RebuildingFullReportForced_onLivesimPaused();
 				btnPauseResume.Text = "Resume";
@@ -95,8 +63,8 @@ namespace Sq1.Gui.Forms {
 		//	this.chartFormManager.MainForm.MainFormSerialize();
 		//}
 		void livesimForm_FormClosing(object sender, FormClosingEventArgs e) {
-			if (this.chartFormManager.Executor.Livesimulator.IsBacktestingLivesimNow) {
-				this.chartFormManager.Executor.Livesimulator.Stop_inGuiThread();
+			if (this.chartFormManager.Executor.Livesimulator.ImRunningLivesim) {
+				this.chartFormManager.Executor.Livesimulator.Stop_invokedFromGuiThread();
 			}
 
 			// only when user closed => allow scriptEditorForm_FormClosed() to serialize

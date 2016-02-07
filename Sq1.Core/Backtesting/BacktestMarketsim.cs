@@ -4,20 +4,22 @@ using System.Diagnostics;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.StrategyBase;
 
-namespace Sq1.Core.StrategyBase {
-	public class MarketsimBacktest {
-		ScriptExecutor executor;
-		List<Alert> stopLossesActivatedOnPreviousQuotes;
-		public bool FillOutsideQuoteSpreadParanoidCheckThrow { get; private set; }
+namespace Sq1.Core.Backtesting {
+	public class BacktestMarketsim {
+				List<Alert> stopLossesActivatedOnPreviousQuotes;
+				BacktestBroker backtestBroker;
 
-		public MarketsimBacktest(ScriptExecutor executor) {
-			this.executor = executor;
+		BacktestMarketsim() {
 			this.stopLossesActivatedOnPreviousQuotes = new List<Alert>();
 		}
+		public BacktestMarketsim(BacktestBroker backtestBroker) : this() {
+			this.backtestBroker = backtestBroker;
+		}
+
 		public void Initialize(bool fillOutsideQuoteSpreadParanoidCheckThrow = false) {
 			this.stopLossesActivatedOnPreviousQuotes.Clear();
-			this.FillOutsideQuoteSpreadParanoidCheckThrow = fillOutsideQuoteSpreadParanoidCheckThrow;
 		}
 		public bool CheckAlertWillBeFilledByQuote(Alert alert, Quote quote, out double entryPriceOut, out double entrySlippageOutNotUsed) {
 			return alert.IsEntryAlert
@@ -31,24 +33,24 @@ namespace Sq1.Core.StrategyBase {
 
 			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
 			//v1
-			double entryPriceOut1 = this.executor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryAlert.PriceScript, true,
+			double entryPriceOut1 = this.backtestBroker.ScriptExecutor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryAlert.PriceScript, true,
 				entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
 			if (entryPriceOut1 != entryAlert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
 				Debugger.Break();
 			} else {
-				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
+				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT this.backtestBroker.ScriptExecutor.AlignAlertPriceToPriceLevel()";
 			}
 			#endif
 
 			entrySlippageOutNotUsed = 0;
 			//Direction directionPositionClose = MarketConverter.ExitDirectionFromLongShort(alert.PositionLongShortFromDirection);
-			//double slippageLimit = this.executor.getSlippage(
-			//	alert.PriceScript, alert.Direction, 0, this.executor.IsStreaming, true);
-			//double slippageNonLimit = this.executor.getSlippage(
-			//	alert.PriceScript, alert.Direction, 0, this.executor.IsStreaming, false);
-			//double slippageMarketForClosingPosition = this.executor.getSlippage(
-			//	alert.PriceScript, directionPositionClose, 0, this.executor.IsStreaming, false);
+			//double slippageLimit = this.backtestBroker.ScriptExecutor.getSlippage(
+			//	alert.PriceScript, alert.Direction, 0, this.backtestBroker.ScriptExecutor.IsStreaming, true);
+			//double slippageNonLimit = this.backtestBroker.ScriptExecutor.getSlippage(
+			//	alert.PriceScript, alert.Direction, 0, this.backtestBroker.ScriptExecutor.IsStreaming, false);
+			//double slippageMarketForClosingPosition = this.backtestBroker.ScriptExecutor.getSlippage(
+			//	alert.PriceScript, directionPositionClose, 0, this.backtestBroker.ScriptExecutor.IsStreaming, false);
 
 			int barIndexTested = entryAlert.Bars.Count - 1;
 			switch (entryAlert.MarketLimitStop) {
@@ -89,11 +91,11 @@ namespace Sq1.Core.StrategyBase {
 							#endif
 							throw new Exception("NYI: direction[" + entryAlert.Direction + "] is not Long or Short");
 					}
-					//entryPriceOut = this.executor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryPriceOut, true,
+					//entryPriceOut = this.backtestBroker.ScriptExecutor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryPriceOut, true,
 					//	entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
 					break;
 				case MarketLimitStop.Market:
-				case MarketLimitStop.AtClose:
+				//MUST_DIE case MarketLimitStop.AtClose:
 					switch (entryAlert.Direction) {
 						case Direction.Buy:
 							if (entryPriceOut > quote.Ask) {
@@ -132,7 +134,7 @@ namespace Sq1.Core.StrategyBase {
 					#endif
 					throw new Exception("NYI: marketLimitStop[" + entryAlert.MarketLimitStop + "] is not Limit or Stop");
 			}
-			//entryPriceOut = this.executor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryPriceOut, true,
+			//entryPriceOut = this.backtestBroker.ScriptExecutor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryPriceOut, true,
 			//	entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
 			if (entryPriceOut <= 0) {
 				string msg = "entryPrice[" + entryPriceOut + "]<=0 what do you mean??? get Bars.LastBar.Close for Market...";
@@ -159,12 +161,12 @@ namespace Sq1.Core.StrategyBase {
 			
 			if (quote.PriceBetweenBidAsk(entryPriceOut) == false) {
 				string msig = " MUST_BE_BETWEEN: [" + quote.Bid + "] < [" + entryPriceOut + "] < [" + quote.Ask + "]";
-				if (this.executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+				if (this.backtestBroker.ScriptExecutor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
 					string msg = "OBSOLETE I_DONT_UNDERSTAND_HOW_I_DIDNT_DROP_THIS_QUOTE_BEFORE_BUT_I_HAVE_TO_DROP_IT_NOW";
-					Assembler.PopupException(msg + msig, null, false);
+					Assembler.PopupException(msg + msig);
 				} else {
 					string msg = "QuikTerminalMock uses MarketSim.SimulateFill() for live-simulated mode => no surprise here";
-					//Assembler.PopupException(msg + msig, null);
+					//Assembler.PopupException(msg + msig);
 				}
 				return false;
 			}
@@ -178,22 +180,22 @@ namespace Sq1.Core.StrategyBase {
 
 			//v1
 			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
-			double exitPriceOut1 = this.executor.AlignAlertPriceToPriceLevel(
+			double exitPriceOut1 = this.backtestBroker.ScriptExecutor.AlignAlertPriceToPriceLevel(
 				exitAlert.Bars, exitAlert.PriceScript, false,
 				exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
 			if (exitPriceOut1 != exitAlert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
 				Debugger.Break();
 			} else {
-				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
+				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT this.backtestBroker.ScriptExecutor.AlignAlertPriceToPriceLevel()";
 			}
 			#endif
 			
 			exitSlippageOut = 0;
-			//double slippageLimit = this.executor.getSlippage(exitAlert.PriceScript
-			//	, exitAlert.Direction, 0, this.executor.IsStreaming, true);
-			//double slippageNonLimit = this.executor.getSlippage(exitAlert.PriceScript
-			//	, exitAlert.Direction, 0, this.executor.IsStreaming, false);
+			//double slippageLimit = this.backtestBroker.ScriptExecutor.getSlippage(exitAlert.PriceScript
+			//	, exitAlert.Direction, 0, this.backtestBroker.ScriptExecutor.IsStreaming, true);
+			//double slippageNonLimit = this.backtestBroker.ScriptExecutor.getSlippage(exitAlert.PriceScript
+			//	, exitAlert.Direction, 0, this.backtestBroker.ScriptExecutor.IsStreaming, false);
 
 			int exitBarToTestOn = exitAlert.Bars.Count;
 			Bar bar = exitAlert.Bars[exitBarToTestOn];
@@ -248,14 +250,14 @@ namespace Sq1.Core.StrategyBase {
 					//v1
 					#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
 					// we aligned priceStopActivation before we stored it in exitAlert  
-					double priceStopActivationAligned1 = this.executor.AlignAlertPriceToPriceLevel(
+					double priceStopActivationAligned1 = this.backtestBroker.ScriptExecutor.AlignAlertPriceToPriceLevel(
 						exitAlert.Bars, exitAlert.PriceStopLimitActivation, false,
 						exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
 					if (priceStopActivationAligned1 != exitAlert.PriceStopLimitActivationAligned) {
 						string msg = "FIX_Alert.PriceStopLimitActivation";
 						Debugger.Break();
 					} else {
-						string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
+						string msg = "GET_RID_OF_COMPLEX_ALIGNMENT this.backtestBroker.ScriptExecutor.AlignAlertPriceToPriceLevel()";
 					}
 					#endif
 
@@ -341,12 +343,12 @@ namespace Sq1.Core.StrategyBase {
 							throw new Exception("CheckExit() NYI direction[" + exitAlert.Direction + "] for [" + exitAlert + "]");
 					}
 					break;
+				//MUST_DIE case MarketLimitStop.AtClose:
 				case MarketLimitStop.Market:
-				case MarketLimitStop.AtClose:
 					// WHY (IsBacktestingNow == true): market orders during LIVE could be filled at virtually ANY price
-					if (quote.PriceBetweenBidAsk(exitPriceOut) == false && this.executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == true) {
-						string msg = "this isn't enough: market orders are still executed outside the bar; we'll need to generate one more quote onTheWayTo exitPriceOut";
-						Assembler.PopupException(msg, null, false);
+					if (quote.PriceBetweenBidAsk(exitPriceOut) == false && this.backtestBroker.ScriptExecutor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == true) {
+						string msg = "exitPriceOut[" + exitPriceOut + "] must be inside the bar; we'll need to generate one more quote onTheWayTo exitPriceOut";
+						Assembler.PopupException(msg);
 						return false;
 					}
 					switch (exitAlert.Direction) {
@@ -360,7 +362,7 @@ namespace Sq1.Core.StrategyBase {
 							#if DEBUG
 							Debugger.Break();
 							#endif
-							throw new Exception("CheckExit() NYI direction[" + exitAlert.Direction + "] for [" + exitAlert + "]");
+							throw new Exception("CheckExitAlertWillBeFilledByQuote() NYI direction[" + exitAlert.Direction + "] for [" + exitAlert + "]");
 					}
 					break;
 				default:
@@ -370,7 +372,7 @@ namespace Sq1.Core.StrategyBase {
 					throw new Exception("NYI marketLimitStop[" + exitAlert.MarketLimitStop + "]");
 			}
 
-			//exitPriceOut = this.executor.AlignAlertPriceToPriceLevel(exitAlert.Bars, exitPriceOut, false,
+			//exitPriceOut = this.backtestBroker.ScriptExecutor.AlignAlertPriceToPriceLevel(exitAlert.Bars, exitPriceOut, false,
 			//	exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
 			if (exitPriceOut <= 0) {
 				string msg = "exitPriceOut[" + exitPriceOut + "]<=0 what do you mean??? get Bars.LastBar.Close for Market...";
@@ -379,26 +381,11 @@ namespace Sq1.Core.StrategyBase {
 				#endif
 				throw new Exception(msg);
 			}
-			// v1 BarStreaming with 1 quote (=> 0px height) won't contain any price you may check here;
-			// v1 REMOVED because MarketLimitStop.Market haven't been filled immediately and behaved like stop/limit entries/exits;
-			// v1 for Stop/Limit you already hit "return false" above; market should get whatever crazy bid/ask and get the fill at first attempt now
-			// v1 INAPPROPRIATE_BECAUSE_MARKET_SIM_SHOULNT_KNOW_ANYTHING_ABOUT_ORIGINAL_SIMULATED_BAR_AND_STREAMING_IS_IN_PROGRESS
-			// v1 CHECK_IF_QUOTE_ISNT_BEYOND_BAR_EARLIER_UPSTACK alternative implementation: GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK
-			//if (exitAlert.Bars.BarStreaming.ContainsPrice(exitPriceOut) == false) {		// earlier version of same checkup as Position.FillEntryWith() 
-			//	string msg = "QUOTE_GENERATED_UNFILLABLE_ON_BAR_STREAMING quote[" + quote + "] => exitPriceOut["
-			//		+ exitPriceOut + "] at exitAlert.Bars.BarStreaming[" + exitAlert.Bars.BarStreaming + "]";
-			//	//throw new Exception(msg);
-			//	#if DEBUG
-			//	Debugger.Break();
-			//	#endif
-			//	return false;
-			//}
-			// /v1
-			
+
 			return true;
 		}
 
-		public int SimulateFillAllPendingAlerts(Quote quote, Action<Alert, double, double> executeAfterAlertFilled = null) {
+		public int SimulateFillAllPendingAlerts(Quote quote, Action<Alert, double, double> action_afterAlertFilled_beforeMovedAround = null) {
 			this.checkThrowRealtimePendingQuote(quote);
 			// there is no userlevel API to kill orders; in your Script, you operate SellAt/BuyAt; protoActivator.StopMove
 			// killing orders is the privilege of Realtime: OrderManager kills orders by
@@ -408,7 +395,7 @@ namespace Sq1.Core.StrategyBase {
 			int exitsFilled = 0;
 			int entriesFilled = 0;
 
-			List<Alert> alertsPendingSafeCopy = this.executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "SimulateFillAllPendingAlerts(WAIT)");
+			List<Alert> alertsPendingSafeCopy = this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "SimulateFillAllPendingAlerts(WAIT)");
 			foreach (Alert alert in alertsPendingSafeCopy) {
 				if (alert.IsFilled && alert.IsExitAlert && alert.PositionAffected.Prototype != null) {
 					bool thisAlertWasAnnihilated = false;
@@ -424,11 +411,11 @@ namespace Sq1.Core.StrategyBase {
 				}
 				string reasonRefuseTryFill = this.checkAlertFillable(alert);
 				if (string.IsNullOrEmpty(reasonRefuseTryFill) == false) {
-					this.executor.PopupException(reasonRefuseTryFill);
+					this.backtestBroker.ScriptExecutor.PopupException(reasonRefuseTryFill);
 					continue;
 				}
 
-				bool filled = this.SimulateFillPendingAlert(alert, quote, executeAfterAlertFilled);
+				bool filled = this.SimulateFillPendingAlert(alert, quote, action_afterAlertFilled_beforeMovedAround);
 				if (filled) {
 					if (alert.IsEntryAlert)	entriesFilled++;
 					else					exitsFilled++;
@@ -443,37 +430,42 @@ namespace Sq1.Core.StrategyBase {
 			return filledTotal;
 		}
 
-		public bool SimulateFillPendingAlert(Alert alert, Quote quote, Action<Alert, double, double> executeAfterAlertFilled = null) {
+		public bool SimulateFillPendingAlert(Alert alert, Quote quote, Action<Alert, double, double> action_afterAlertFilled_beforeMovedAround = null) {
+			string msig = " //SimulateFillPendingAlert(alert[" + alert + "], quote[" + quote + "])";
+
 			bool filled = false;
 			if (alert.IsEntryAlert) {
-				filled = this.simulatePendingFillEntry(alert, quote, executeAfterAlertFilled);
+				filled = this.simulatePendingFillEntry(alert, quote, action_afterAlertFilled_beforeMovedAround);
 			} else {
-				filled = this.simulatePendingFillExit(alert, quote, executeAfterAlertFilled);
+				filled = this.simulatePendingFillExit(alert, quote, action_afterAlertFilled_beforeMovedAround);
 			}
 			if (filled == false) return filled;
 			
-			//if (this.executor.Backtester.IsBacktestingNow == false) {
-			if (this.executor.BacktesterOrLivesimulator.IsBacktestRunning == false) {
+			//if (this.backtestBroker.ScriptExecutor.Backtester.IsBacktestingNow == false) {
+			if (this.backtestBroker.ScriptExecutor.BacktesterOrLivesimulator.ImBacktestingOrLivesimming == false) {
 				string msg = "OrderProcessor.PostProcessOrderState() will invoke CallbackAlertFilledMoveAroundInvokeScript() for filled orders";
 				return filled;
 			}
 			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded"
 				+ " logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
 			
-			if (this.executor.ExecutionDataSnapshot.AlertsPending.Contains(alert, this, "SimulateFillPendingAlert(WAIT)") == true) {
+			if (this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Contains(alert, this, "SimulateFillPendingAlert(WAIT)") == true) {
+				bool removedForcibly = this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "SimulateFillPendingAlert(WAIT)");
 				string msg = "ALERT_MUST_HAVE_BEEN_REMOVED_FROM_PENDINGS_AFTER_FILL"
-					+ "; normally, the filled alert should be already removed here by CallbackAlertFilledMoveAroundInvokeScript()"
-					+ "; AlertsPending.Contains(" + alert + ")=true";
-				bool removed = this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "SimulateFillPendingAlert(WAIT)");
-				Assembler.PopupException(msg + " SimulatePendingFill(" + quote + ")");
+					//+ "; normally, the filled alert should be already removed here by CallbackAlertFilledMoveAroundInvokeScript()"
+					//+ "; AlertsPending.Contains(" + alert + ")=true"
+					+ " removedForcibly[" + removedForcibly + "]"
+					;
+				Assembler.PopupException(msg + msig, null, false);
 			} else {
 				//Debugger.Break();
 			}
-			if (this.FillOutsideQuoteSpreadParanoidCheckThrow == true && this.executor.BacktesterOrLivesimulator.IsLivesim == false) {
+			if (	this.backtestBroker.ScriptExecutor.Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow == true
+				 && this.backtestBroker.ScriptExecutor.BacktesterOrLivesimulator.ImLivesimulator == false) {
 				string msg = "";
-				if (alert.IsFilledOutsideQuote_DEBUG_CHECK)				msg += "ALERT_FILLED_OUSIDE_QUOTE " + quote;
+				if (alert.IsFilledOutsideQuote_DEBUG_CHECK)				msg += "ALERT_FILLED_OUSIDE_QUOTE ";
 				if (alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK) msg += "ALERT_FILLED_OUSIDE_BAR " + quote.ParentBarStreaming;
-				if (string.IsNullOrEmpty(msg) == false) Assembler.PopupException(msg + " " + alert);
+				if (string.IsNullOrEmpty(msg) == false) Assembler.PopupException(msg + msig);
 			}
 			return filled;
 		}
@@ -524,16 +516,23 @@ namespace Sq1.Core.StrategyBase {
 			return msg;
 		}
 		void checkThrowRealtimePendingQuote(Quote quote) {
-			if (this.executor.BacktesterOrLivesimulator.IsBacktestRunning == false && this.executor.BacktesterOrLivesimulator.WasBacktestAborted == false) {
-				string msg = "SimulateFill*() should not be used for RealTime BrokerAdapters and RealTime Mocks!"
-					+ " make sure you invoked executor.CallbackAlertFilledInvokeScript() from where you are now";
+			if (this.backtestBroker.ScriptExecutor == null) {
+				string msg = "YOU_DIDNT_INVOKE_this.BacktesterOrLivesimulator.BacktestDataSource.BrokerAsBacktest_nullUnsafe.InitializeBacktestBroker(this)_FROM_ScriptExecutor.Initialize()";
 				#if DEBUG
 				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 			}
-			if (this.executor.ExecutionDataSnapshot.AlertsPending.Count == 0) {
-				string msg = "Before you call me, Please check executor.ExecutionDataSnapshot.AlertsPending.Count!=0";
+			if (this.backtestBroker.ScriptExecutor.BacktesterOrLivesimulator.ImBacktestingOrLivesimming == false && this.backtestBroker.ScriptExecutor.BacktesterOrLivesimulator.WasBacktestAborted == false) {
+				string msg = "SimulateFill*() should not be used for RealTime BrokerAdapters and RealTime Mocks!"
+					+ " make sure you invoked this.backtestBroker.ScriptExecutor.CallbackAlertFilledInvokeScript() from where you are now";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
+			}
+			if (this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Count == 0) {
+				string msg = "Before you call me, Please check this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Count!=0";
 				#if DEBUG
 				Debugger.Break();
 				#endif
@@ -547,16 +546,17 @@ namespace Sq1.Core.StrategyBase {
 				#endif
 				throw new Exception(msg);
 			}
-			if (this.executor.BacktesterOrLivesimulator.IsLivesim == false && quote.ParentBarStreaming.ParentBarsIndex != this.executor.Bars.Count - 1) {
+			if (this.backtestBroker.ScriptExecutor.BacktesterOrLivesimulator.ImLivesimulator == false && quote.ParentBarStreaming.ParentBarsIndex != this.backtestBroker.ScriptExecutor.Bars.Count - 1) {
 				string msg = "I refuse to serve this quoteToReach.ParentStreamingBar.ParentBarsIndex["
-					+ quote.ParentBarStreaming.ParentBarsIndex + "] != this.executor.Bars.Count-1[" + (this.executor.Bars.Count - 1) + "]";
+					+ quote.ParentBarStreaming.ParentBarsIndex + "] != this.backtestBroker.ScriptExecutor.Bars.Count-1[" + (this.backtestBroker.ScriptExecutor.Bars.Count - 1) + "]";
 				#if DEBUG
 				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 			}
 		}
-		bool simulatePendingFillEntry(Alert alert, Quote quote, Action<Alert, double, double> executeAfterAlertFilled = null) {
+		bool simulatePendingFillEntry(Alert alert, Quote quote, Action<Alert, double, double> action_afterAlertFilled_beforeMovedAround = null) {
+			string msig = " //simulatePendingFillEntry(alert[" + alert + "], quote[" + quote + "]) " + this.backtestBroker.ScriptExecutor;
 			double priceFill = -1;
 			double slippageFill = -1;
 			bool filled = this.CheckEntryAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
@@ -565,97 +565,108 @@ namespace Sq1.Core.StrategyBase {
 			int entryBarToTestOn = quote.ParentBarStreaming.ParentBarsIndex;
 			if (entryBarToTestOn == -1) {
 				string msg = "AVOIDING_ALL_SORT_OF_MOVE_AROUND_ERRORS MUST_BE_POSITIVE_GOT_-1_quote.ParentStreamingBar.ParentBarsIndex";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg + msig);
 				return filled;
 			}
 			// making a derived quoteToReach look like "dedicated" specifically to the filled alertToBeKilled
 			if (quote.IamInjectedToFillPendingAlerts) {
 				quote.Size = alert.Qty;
 			}
-			double entryCommission = this.executor.OrderCommissionCalculate(alert.Direction,
+			double entryCommission = this.backtestBroker.ScriptExecutor.OrderCommissionCalculate(alert.Direction,
 				alert.MarketLimitStop, priceFill, alert.Qty, alert.Bars);
 			
-			//if (this.executor.Backtester.IsBacktestingNow == false) {
-			if (this.executor.BacktesterOrLivesimulator.IsBacktestRunning == false) {
+			//if (this.backtestBroker.ScriptExecutor.Backtester.IsBacktestingNow == false) {
+			if (this.backtestBroker.ScriptExecutor.BacktesterOrLivesimulator.ImBacktestingOrLivesimming == false) {
 				string msg = "OrderProcessor.PostProcessOrderState() will invoke CallbackAlertFilledMoveAroundInvokeScript() for filled orders";
 				return filled;
 			}
 			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime multithreaded"
 				+ " logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
-			if (this.executor.BacktesterOrLivesimulator.IsLivesim) {
-				if (executeAfterAlertFilled != null && alert.OrderFollowed != null) {
-					executeAfterAlertFilled(alert, priceFill, alert.Qty);
-				} else {
-					Assembler.PopupException("NOT_INVOKING_LIVESIM_BROKER_ON_ALERT_FILLED_ACTION");
+			//if (this.backtestBroker.ScriptExecutor.BacktesterOrLivesimulator.ImLivesimulator) {
+			if (this.backtestBroker.ImLivesimBroker) {		// LivesimBrokerDefault and any other BrokerOwnLivesimImplementation
+				if (alert.OrderFollowed == null) {
+					string msg = "ON_ALERT_FILLED__LIVESIM_BROKER__NOT_INVOKING_EMIT_BUTTON_OFF";
+					//Assembler.PopupException(msg + msig, null, false);
+					return filled;
 				}
+				if (action_afterAlertFilled_beforeMovedAround == null) {
+					string msg = "ON_ALERT_FILLED__LIVESIM_BROKER__NOT_INVOKING_ACTION_NULL";
+					Assembler.PopupException(msg + msig, null, false);
+					return filled;
+				}
+				action_afterAlertFilled_beforeMovedAround(alert, priceFill, alert.Qty);
 				return filled;
 			}
-			this.executor.CallbackAlertFilledMoveAroundInvokeScriptNonReenterably(alert, quote,
+			this.backtestBroker.ScriptExecutor.CallbackAlertFilled_moveAround_invokeScriptNonReenterably(alert, quote,
 				priceFill, alert.Qty, slippageFill, entryCommission);
 			return filled;
 		}
 		bool simulatePendingFillExit(Alert alert, Quote quote, Action<Alert, double, double> executeAfterAlertFilled = null) {
+			string msig = " //simulatePendingFillExit(alert[" + alert + "], quote[" + quote + "]) " + this.backtestBroker.ScriptExecutor;
+
 			double priceFill = -1;
 			double slippageFill = 1;
 			bool filled = this.CheckExitAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
 			if (filled == false) return filled;
 
-			double exitCommission = this.executor.OrderCommissionCalculate(alert.Direction,
+			double exitCommission = this.backtestBroker.ScriptExecutor.OrderCommissionCalculate(alert.Direction,
 				alert.MarketLimitStop, priceFill, alert.Qty, alert.Bars);
 			if (quote.ParentBarStreaming.ParentBarsIndex == -1) {
 				string msg = "AVOIDING_ALL_SORT_OF_MOVE_AROUND_ERRORS MUST_BE_POSITIVE_GOT_-1_quote.ParentStreamingBar.ParentBarsIndex";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg + msig);
 				return filled;
 			}
 			
-			//if (this.executor.Backtester.IsBacktestingNow == false) {
-			if (this.executor.BacktesterOrLivesimulator.IsBacktestRunning == false) {
+			//if (this.backtestBroker.ScriptExecutor.Backtester.IsBacktestingNow == false) {
+			if (this.backtestBroker.ScriptExecutor.BacktesterOrLivesimulator.ImBacktestingOrLivesimming == false) {
 				string msg = "OrderProcessor.PostProcessOrderState() will invoke CallbackAlertFilledMoveAroundInvokeScript() for filled orders";
 				return filled;
 			}
 			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
-			if (this.executor.BacktesterOrLivesimulator.IsLivesim) {
+			//if (this.backtestBroker.ScriptExecutor.BacktesterOrLivesimulator.ImLivesimulator) {
+			if (this.backtestBroker.ImLivesimBroker) {		// LivesimBrokerDefault and any other BrokerOwnLivesimImplementation
 				if (executeAfterAlertFilled != null) {
 					executeAfterAlertFilled(alert, priceFill, alert.Qty);
 				} else {
-					Assembler.PopupException("NOT_INVOKING_LIVESIM_BROKER_ON_ALERT_FILLED_ACTION");
+					string msg = "ON_ALERT_FILLED__LIVESIM_BROKER__NOT_INVOKING_ACTION_NULL";
+					Assembler.PopupException(msg + msig);
 				}
 				return filled;
 			}
-			this.executor.CallbackAlertFilledMoveAroundInvokeScriptNonReenterably(alert, quote,
+			this.backtestBroker.ScriptExecutor.CallbackAlertFilled_moveAround_invokeScriptNonReenterably(alert, quote,
 				priceFill, alert.Qty, slippageFill, exitCommission);
 			return filled;
 		}
 
 		public void SimulateStopLossMoved(Alert alertToBeKilled) {
-			Alert replacement = executor.PositionPrototypeActivator.CreateStopLossFromPositionPrototype(alertToBeKilled.PositionAffected);
-			bool removed = executor.ExecutionDataSnapshot.AlertsPending.Remove(alertToBeKilled, this, "SimulateStopLossMoved(WAIT)");
+			Alert replacement = this.backtestBroker.ScriptExecutor.PositionPrototypeActivator.CreateStopLossFromPositionPrototype(alertToBeKilled.PositionAffected);
+			bool removed = this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Remove(alertToBeKilled, this, "SimulateStopLossMoved(WAIT)");
 			//ALREADY_ADDED_BY AlertEnrichedRegister
-			// executor.ExecutionDataSnapshot.AlertsPending.ByBarExpectedFillAddNoDupe(alertToBeKilled);
-			// executor.ExecutionDataSnapshot.AlertsPending.AddNoDupe(replacement);
+			// this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.ByBarExpectedFillAddNoDupe(alertToBeKilled);
+			// this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.AddNoDupe(replacement);
 		}
 		public void SimulateTakeProfitMoved(Alert alertToBeKilled) {
-			Alert replacement = executor.PositionPrototypeActivator.CreateTakeProfitFromPositionPrototype(alertToBeKilled.PositionAffected);
-			bool removed = executor.ExecutionDataSnapshot.AlertsPending.Remove(alertToBeKilled, this, "SimulateTakeProfitMoved(WAIT)");
+			Alert replacement = this.backtestBroker.ScriptExecutor.PositionPrototypeActivator.CreateTakeProfitFromPositionPrototype(alertToBeKilled.PositionAffected);
+			bool removed = this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Remove(alertToBeKilled, this, "SimulateTakeProfitMoved(WAIT)");
 			//ALREADY_ADDED_BY AlertEnrichedRegister
-			// executor.ExecutionDataSnapshot.AlertsPending.ByBarExpectedFillAddNoDupe(alertToBeKilled);
-			// executor.ExecutionDataSnapshot.AlertsPending.AddNoDupe(replacement);
+			// this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.ByBarExpectedFillAddNoDupe(alertToBeKilled);
+			// this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.AddNoDupe(replacement);
 		}
 		public bool AnnihilateCounterpartyAlert(Alert alert) {
-			if (this.executor.ExecutionDataSnapshot.AlertsPending.Contains(alert, this, "AnnihilateCounterpartyAlert(WAIT)") == false) {
+			if (this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Contains(alert, this, "AnnihilateCounterpartyAlert(WAIT)") == false) {
 				string msg = "ANNIHILATE_COUNTERPARTY_ALREADY_REMOVED " + alert;	//ExecSnap.AlertsPending not synchronized: already removed
 				throw new Exception(msg);
 				//return false;
 			}
-			bool removed = this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "AnnihilateCounterpartyAlert(WAIT)");
+			bool removed = this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "AnnihilateCounterpartyAlert(WAIT)");
 			// no alert.OrderFollowed here!
-			//this.executor.RemovePendingAlertClosePosition(alert, "MarketSim:AnnihilateCounterparty(): ");
+			//this.backtestBroker.ScriptExecutor.RemovePendingAlertClosePosition(alert, "MarketSim:AnnihilateCounterparty(): ");
 			return true;
 		}
 		
 		public void SimulateAlertKillPending(Alert alert) {
 			alert.IsKilled = true;
-			this.executor.CallbackAlertKilledInvokeScriptNonReenterably(alert);
+			this.backtestBroker.ScriptExecutor.CallbackAlertKilledInvokeScriptNonReenterably(alert);
 		}
 	}
 }

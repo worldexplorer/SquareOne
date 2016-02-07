@@ -511,7 +511,7 @@ namespace Sq1.Gui.Forms {
 		}
 
 		void chartControl_BarStreamingUpdatedMerged(object sender, BarEventArgs e) {
-			if (this.ChartFormManager.Executor.BacktesterOrLivesimulator.IsBacktestingLivesimNow == false) {
+			if (this.ChartFormManager.Executor.BacktesterOrLivesimulator.ImRunningLivesim == false) {
 				string msg = "NON_LIVESIM_STREAMING_SEEMS_TO_HAVE_ChartFormStreamingConsumer_HANDLING_QUOTE_TIMESTAMP_ON_BTN";
 				//Assembler.PopupException(msg, null, false);
 				//return;

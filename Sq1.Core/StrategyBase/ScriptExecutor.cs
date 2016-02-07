@@ -24,8 +24,7 @@ namespace Sq1.Core.StrategyBase {
 		public	SystemPerformance				PerformanceAfterBacktest	{ get; protected set; }
 		public	Backtester						BacktesterOrLivesimulator;					//{ get; private set; }
 		public	PositionPrototypeActivator		PositionPrototypeActivator	{ get; protected set; }
-		public	MarketLive						MarketLive					{ get; protected set; }
-		public	MarketsimBacktest				MarketsimBacktest			{ get; protected set; }
+		public	AlertGenerator					AlertGenerator				{ get; protected set; }
 		public	ScriptExecutorEventGenerator	EventGenerator				{ get; protected set; }
 		public	CommissionCalculator			CommissionCalculator;
 		public	Sequencer						Sequencer					{ get; protected set; }
@@ -68,7 +67,7 @@ namespace Sq1.Core.StrategyBase {
 		#endregion
 
 		//bool isStreamingWhenNoStrategyLoaded;
-		bool isEmittingOrdersWhenNoStrategyLoaded;
+		//bool isEmittingOrdersWhenNoStrategyLoaded;
 
 		public bool IsStreamingTriggeringScript {
 			get {
@@ -182,28 +181,28 @@ namespace Sq1.Core.StrategyBase {
 				return ret;
 			} }
 		
-		bool willEmit { get {
-			// will emit for livestreaming (it is a backtest!) only if
-			bool willEmit = true;
-			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
-				string msg = "will NOT emit for static backtests";
-				willEmit = false;
-			} else {
-				if (this.OrderProcessor == null) {
-					willEmit = false;
-					string msg = "SHOULD_NEVER_HAPPEN__LIVESIMULATOR_SHOULD_HAVE_ORDER_PROCESSOR_NON_NULL";
-					Assembler.PopupException(msg, null, false);
-				} else {
-					if (this.BacktesterOrLivesimulator.IsBacktestingLivesimNow) {
-						willEmit = true;
-					} else {
-						string msg3 = "REALTIME_LIVE_DEPENDS_ON_CHARTFORM_BUTTON";
-						willEmit = this.IsStrategyEmittingOrders;
-					}
-				}
-			}
-			return willEmit;
-		} }
+		//bool willEmit { get {
+		//    // will emit for livestreaming (it is a backtest!) only if
+		//    bool ret = true;
+		//    if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+		//        string msg = "will NOT emit for static backtests";
+		//        ret = false;
+		//    } else {
+		//        if (this.OrderProcessor == null) {
+		//            ret = false;
+		//            string msg = "SHOULD_NEVER_HAPPEN__LIVESIMULATOR_SHOULD_HAVE_ORDER_PROCESSOR_NON_NULL";
+		//            Assembler.PopupException(msg, null, false);
+		//        } else {
+		//            if (this.BacktesterOrLivesimulator.IsBacktestingLivesimNow) {
+		//                ret = true;
+		//            } else {
+		//                string msg3 = "REALTIME_LIVE_DEPENDS_ON_CHARTFORM_BUTTON";
+		//                ret = this.IsStrategyEmittingOrders;
+		//            }
+		//        }
+		//    }
+		//    return ret;
+		//} }
 
 
 		public ScriptExecutor(string reasonToExist) {
@@ -212,10 +211,9 @@ namespace Sq1.Core.StrategyBase {
 
 			ReasonToExist				= reasonToExist;
 			ExecutionDataSnapshot		= new ExecutionDataSnapshot(this);
-			BacktesterOrLivesimulator					= new Backtester(this);
+			BacktesterOrLivesimulator	= new Backtester(this);
 			PositionPrototypeActivator	= new PositionPrototypeActivator(this);
-			MarketLive					= new MarketLive(this);
-			MarketsimBacktest			= new MarketsimBacktest(this);
+			AlertGenerator				= new AlertGenerator(this);
 			EventGenerator				= new ScriptExecutorEventGenerator(this);
 			CommissionCalculator		= new CommissionCalculatorZero(this);
 			Sequencer					= new Sequencer(this);
@@ -303,7 +301,10 @@ namespace Sq1.Core.StrategyBase {
 				// here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference
 				this.Sequencer.Initialize();	//otherwize this.Sequencer.InitializedProperly = false; => can't optimize anything
 			}
-			this.MarketsimBacktest.Initialize(this.Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
+			//v1 dynamically taken now in BacktestMarketsim.cs:476 this.MarketsimBacktest.Initialize(this.Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
+			//v2
+			this.BacktesterOrLivesimulator.BacktestDataSource.BrokerAsBacktest_nullUnsafe.InitializeBacktestBroker(this);
+
 			//v1, ATTACHED_TO_BARS.DATASOURCE.SYMBOLRENAMED_INSTEAD_OF_DATASOURCE_REPOSITORY
 			// if I listen to DataSourceRepository, all ScriptExecutors receive same notification including irrelated to my Bars
 			// Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRenamed +=
@@ -336,7 +337,7 @@ namespace Sq1.Core.StrategyBase {
 						return null;
 					}
 				} else {
-					if (this.BacktesterOrLivesimulator.IsBacktestRunning == false) {
+					if (this.BacktesterOrLivesimulator.ImBacktestingOrLivesimming == false) {
 						string msg4 = "IM_AT_APPRESTART_BACKTEST_PRIOR_TO_LIVE__HERE_I_SHOULD_HAVE_EXECUTED_ON_LASTBAR__DID_SO_AT_BRO_THIS_IS_NONSENSE!!!FINALLY";
 					}
 				}
@@ -353,7 +354,9 @@ namespace Sq1.Core.StrategyBase {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnNewQuoteNonBlockingRead = true;
 						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnNewQuoteOfStreamingBarCallback(WAIT)");
-						this.Strategy.Script.OnNewQuoteOfStreamingBarCallback(quoteForAlertsCreated);
+						if (this.IsStreamingTriggeringScript) {
+							this.Strategy.Script.OnNewQuoteOfStreamingBarCallback(quoteForAlertsCreated);
+						}
 					} finally {
 						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this);
 						this.ExecutionDataSnapshot.IsScriptRunningOnNewQuoteNonBlockingRead = false;
@@ -462,21 +465,32 @@ namespace Sq1.Core.StrategyBase {
 
 			if (alertsNewAfterExecSafeCopy.Count > 0) {
 				this.enrichAlertsWithQuoteCreated(alertsNewAfterExecSafeCopy, quoteForAlertsCreated);
-				bool willEmit = this.willEmit;
-				bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
-				if (willEmit) {
-					string msg3 = "Breakpoint";
-					//Debugger.Break();
-					//#D_FREEZE Assembler.PopupException(msg3, null, false);
+				//bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
+				//if (this.willEmit) {
+
+				// for backtest only => btnEmirOrders.Checked isn't analyzed at all
+				if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+					this.ChartShadow.AlertsPlacedRealtimeAdd(alertsNewAfterExecSafeCopy);
+					this.ExecutionDataSnapshot.AlertsNewAfterExec.Clear(this, "ExecuteOnNewBarOrNewQuote(WAIT)");
+					return null;
 				}
 
-				if (willEmit) {
+				// for 1) LivesimStreamingDefault + DONT_Emit, 2) LivesimStreamingQuik + DONT_Emit
+				if (this.BacktesterOrLivesimulator.ImRunningLivesim && this.IsStrategyEmittingOrders == false) {
+					this.ChartShadow.AlertsPlacedRealtimeAdd(alertsNewAfterExecSafeCopy);
+					this.ExecutionDataSnapshot.AlertsNewAfterExec.Clear(this, "ExecuteOnNewBarOrNewQuote(WAIT)");
+					return null;
+				}
+
+				// for LivesimStreamingDefault + EMIT, LivesimStreamingQuik + EMIT, Live with/without EMIT => goes here
+				if (this.IsStrategyEmittingOrders) {
 					string msg2 = "Breakpoint";
 					//#D_FREEZE Assembler.PopupException(msg2);
 					//Debugger.Break();
 					ContextScript ctx = this.Strategy.ScriptContextCurrent;
 
-					bool noNeedToUnpauseLivesimKozItsNeverPaused = this.Bars.DataSource is LivesimDataSource;
+					//bool noNeedToUnpauseLivesimKozItsNeverPaused = this.Bars.DataSource is LivesimDataSource;
+					bool noNeedToUnpauseLivesimKozItsNeverPaused = this.DataSource_fromBars.BrokerAsLivesim_nullUnsafe != null;
 					if (noNeedToUnpauseLivesimKozItsNeverPaused == false) {
 						//MOVED_TO_ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
 						// ^^^ this.DataSource.PausePumpingFor(this.Bars, true);		// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
@@ -488,7 +502,9 @@ namespace Sq1.Core.StrategyBase {
 							//Assembler.PopupException(msg3, null, false);
 						}
 					}
-					ordersEmitted = this.OrderProcessor.CreateOrdersSubmitToBrokerAdapterInNewThreads(alertsNewAfterExecSafeCopy, setStatusSubmitting, true);
+					ordersEmitted = this.OrderProcessor.CreateOrders_submitToBrokerAdapter_inNewThreads(alertsNewAfterExecSafeCopy
+						, true // setStatusSubmitting
+						, true);
 					//MOVED_TO_ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
 					// ^^^ this.DataSource.UnPausePumpingFor(this.Bars, true);	// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
 
@@ -500,20 +516,21 @@ namespace Sq1.Core.StrategyBase {
 							Assembler.PopupException(msg3);
 						}
 					}
+					this.ChartShadow.AlertsPlacedRealtimeAdd(alertsNewAfterExecSafeCopy);
 				}
-				this.ChartShadow.AlertsPlacedRealtimeAdd(alertsNewAfterExecSafeCopy);
+
 			}
 
 			if (this.BacktesterOrLivesimulator.WasBacktestAborted) return null;
-			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) return null;
+			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) return null;
 			
 			
 			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteForAlertsCreated,
-												this.ExecutionDataSnapshot.AlertsNewAfterExec.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
-												this.ExecutionDataSnapshot.PositionsOpenedAfterExec.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
-												this.ExecutionDataSnapshot.PositionsClosedAfterExec.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
-												this.ExecutionDataSnapshot.PositionsOpenNow.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)")
-												);
+												this.ExecutionDataSnapshot.AlertsNewAfterExec		.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
+												this.ExecutionDataSnapshot.PositionsOpenedAfterExec	.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
+												this.ExecutionDataSnapshot.PositionsClosedAfterExec	.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
+												this.ExecutionDataSnapshot.PositionsOpenNow			.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)") );
+
 			//MOVED_UPSTACK_TO_LivesimQuoteBarConsumer
 			//if (this.Backtester.IsBacktestRunning && this.Backtester.IsLivesimRunning) {
 			//	// FROM_ChartFormStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
@@ -605,7 +622,7 @@ namespace Sq1.Core.StrategyBase {
 				msg = "CANT_BE_REMOVED " + orderState + " isn't Pending alert[" + alert + "] ";
 			}
 			if (alert.OrderFollowed == null) {
-				if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) {
+				if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
 					msg = "RealTime alerts should NOT have OrderFollowed=null; " + msg;
 					#if DEBUG
 					Debugger.Break();
@@ -660,7 +677,7 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Bars == barsClicked) {
 				string msg = "DONT_SET_SAME_BARS";
 			}
-			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
 				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted("CLICKED_ON_OTHER_BARS_WHILE_BACKTESTING");
 			}
 
@@ -761,7 +778,8 @@ namespace Sq1.Core.StrategyBase {
 			//} else {
 			//}
 			//return ret;
-			return this.Strategy.WindowTitle;
+			//return this.Strategy.WindowTitle;
+			return (this.Strategy != null) ? this.Strategy.WindowTitle : "CHART_ONLY [" + this.Bars.ToString() + "]";
 		}
 		public string ToStringWithCurrentParameters() {
 			string ret = "";

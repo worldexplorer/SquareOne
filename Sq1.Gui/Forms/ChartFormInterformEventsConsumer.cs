@@ -30,7 +30,14 @@ namespace Sq1.Gui.Forms {
 			this.chartFormManager.Executor.EventGenerator.OnBacktesterSimulatedChunk_step3of4 += this.Executor_BacktesterChunkSimulated_step3of4;
 			this.chartFormManager.Executor.EventGenerator.OnBacktesterContextRestoredAfterExecutingAllBars_step4of4 += this.Executor_BacktesterSimulatedAllBars_step4of4;
 			//this.chartFormsManager.Executor.EventGenerator.OnBacktesterBarsChanged += this.Executor_BacktesterChangedQuotesWillGenerate;
+
+			this.chartFormManager.Executor.EventGenerator.OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_tunnelToInterChartForm -= new EventHandler<QuoteEventArgs>(eventGenerator_OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_tunnelToInterChartForm);
+			this.chartFormManager.Executor.EventGenerator.OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_tunnelToInterChartForm += new EventHandler<QuoteEventArgs>(eventGenerator_OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_tunnelToInterChartForm);
 		}
+		void eventGenerator_OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_tunnelToInterChartForm(object sender, QuoteEventArgs e) {
+			string msg = "DEAD_END DataSourceTree.olvTree_FormatRow() gets BackColor from ChartControl; if there is no ChartControl I have no way to transfer it; unblinker should be there, too";
+		}
+
 		void ChartForm_FormClosing(object sender, FormClosingEventArgs e) {
 			this.chartFormManager.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 -= this.Executor_BacktesterContextInitialized_step2of4;
 			this.chartFormManager.Executor.EventGenerator.OnBacktesterSimulatedChunk_step3of4 -= this.Executor_BacktesterChunkSimulated_step3of4;

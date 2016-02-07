@@ -77,10 +77,11 @@ namespace Sq1.Core.Broker {
 			return exitOrderHasNoErrors;
 		}
 		Order createPropagateOrderFromAlert(Alert alert, bool setStatusSubmitting, bool emittedByScript) {
-			if (alert.MarketLimitStop == MarketLimitStop.AtClose) {
-				string msg = "NYI: alert.OrderType= OrderType.AtClose [" + alert + "]";
-				throw new Exception(msg);
-			}
+			//MUST_DIE
+			//if (alert.MarketLimitStop == MarketLimitStop.AtClose) {
+			//    string msg = "NYI: alert.OrderType= OrderType.AtClose [" + alert + "]";
+			//    throw new Exception(msg);
+			//}
 			Order newborn = new Order(alert, emittedByScript, false);
 			try {
 				newborn.Alert.DataSource.BrokerAdapter.ModifyOrderTypeAccordingToMarketOrderAs(newborn);
@@ -126,7 +127,7 @@ namespace Sq1.Core.Broker {
 			this.DataSnapshot.OrderInsertNotifyGuiAsync(newborn);
 			return newborn;
 		}
-		public List<Order> CreateOrdersSubmitToBrokerAdapterInNewThreads(List<Alert> alertsBatch, bool setStatusSubmitting, bool emittedByScript) {
+		public List<Order> CreateOrders_submitToBrokerAdapter_inNewThreads(List<Alert> alertsBatch, bool setStatusSubmitting, bool emittedByScript) {
 			if (alertsBatch.Count == 0) {
 				string msg = "no alerts to Add; why did you call me? make sure you invoke using a synchronized Queue";
 				Assembler.PopupException(msg);
@@ -144,7 +145,7 @@ namespace Sq1.Core.Broker {
 			BrokerAdapter broker = null;
 			foreach (Alert alert in alertsBatch) {
 				// I only needed alert.OrderFollowed=newOrder... mb even CreatePropagateOrderFromAlert() should be reduced for backtest
-				if (alert.Strategy.Script.Executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+				if (alert.Strategy.Script.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
 					string msg = "BACKTEST_DOES_NOT_SUBMIT_ORDERS__CHECK_QUIK_MOCK_FOR_LIVE_SIMULATION";
 					Assembler.PopupException(msg);
 					alert.Strategy.Script.Executor.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg);
@@ -274,12 +275,14 @@ namespace Sq1.Core.Broker {
 		}
 
 		public void SubmitToBrokerAdapter_inNewThreadOrStraight(List<Order> orders, BrokerAdapter broker) {
-			bool brokerIsLivesim = (broker as LivesimBroker) != null;
-			if (brokerIsLivesim) {
-				//broker.SubmitOrdersThreadEntry(new object[] { orders });
-				broker.SubmitOrders(orders);
-				return;
-			}
+			// !!!THERE_MUST_BE_NO_DIFFERENCE_BETWEEN_LIVEISIMBROKER_AND_LIVEBROKER!!!
+			//bool brokerIsLivesim = (broker as LivesimBroker) != null;
+			//if (brokerIsLivesim) {
+			//    //broker.SubmitOrdersThreadEntry(new object[] { orders });
+			//    broker.SubmitOrders(orders);
+			//    return;
+			//}
+			// !!!THERE_MUST_BE_NO_DIFFERENCE_BETWEEN_LIVEISIMBROKER_AND_LIVEBROKER!!!
 			ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { orders });
 		}
 		BrokerAdapter extractSameBrokerAdapterThrowIfDifferent(List<Order> orders, string callerMethod) {
@@ -348,7 +351,7 @@ namespace Sq1.Core.Broker {
 		public Order UpdateOrderStateByGuidNoPostProcess(string orderGUID, OrderState orderState, string message) {
 			Order orderFound = this.DataSnapshot.OrdersSubmitting.ScanRecentForGUID(orderGUID);
 			if (orderFound == null) {
-				 orderFound = this.DataSnapshot.OrdersAll.ScanRecentForGUID(orderGUID);
+				 orderFound = this.DataSnapshot.OrdersAll.ScanRecentForGUID(orderGUID, true);
 			}
 			if (orderFound == null) {
 				string msg = "order[" + orderGUID + "] wasn't found; OrderProcessorDataSnapshot.OrderCount=[" + this.DataSnapshot.OrderCount + "]";
@@ -359,7 +362,7 @@ namespace Sq1.Core.Broker {
 			OrderState orderStateAbsorbed = (orderState == OrderState.LeaveTheSame) ? orderFound.State : orderState;
 			if (orderStateAbsorbed != orderFound.State) {
 				OrderStateMessage osm = new OrderStateMessage(orderFound, orderStateAbsorbed, message);
-				UpdateOrderStateDontPostProcess(orderFound, osm);
+				this.UpdateOrderStateDontPostProcess(orderFound, osm);
 			} else {
 				this.AppendOrderMessageAndPropagateCheckThrowOrderNull(orderFound, message);
 			}
@@ -628,7 +631,7 @@ namespace Sq1.Core.Broker {
 					}
 					this.OPPsequencer.OrderFilledUnlockSequenceSubmitOpening(order);
 					try {
-						order.Alert.Strategy.Script.Executor.CallbackAlertFilledMoveAroundInvokeScriptNonReenterably(order.Alert, null,
+						order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptNonReenterably(order.Alert, null,
 							order.PriceFill, order.QtyFill, order.SlippageFill, order.CommissionFill);
 					} catch (Exception ex) {
 						string msg3 = "PostProcessOrderState caught from CallbackAlertFilledMoveAroundInvokeScript() ";

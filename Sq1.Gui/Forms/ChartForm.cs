@@ -141,6 +141,14 @@ namespace Sq1.Gui.Forms {
 			return ret;
 		}
 		public void PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(Quote quote) {
+			if (base.InvokeRequired) {
+				//DEADLOCK#1 - happens when DdeMessagePump thread wants to switch to GUI thread; switching to GUI thread via trampoline Task releases this method from held in GuiMessageQueue
+				//Task deadlockOtherwize = new Task(delegate {
+					base.BeginInvoke((MethodInvoker)delegate { this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(quote); });
+				//});
+				//deadlockOtherwize.Start();
+				return;
+			}
 			if (quote == null) {
 				if (this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter == null) {
 					string msg = "I_REFUSE_TO_PRINT_QUOTE_TIMESTAMP this.ChartFormManager.Executor.DataSource.StreamingAdapter==null";
@@ -154,64 +162,19 @@ namespace Sq1.Gui.Forms {
 				}
 				quote = this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(this.ChartFormManager.Executor.Bars.Symbol);
 			}
-
-			//DEADLOCK#1 - happens when DdeMessagePump thread wants to switch to GUI thread; switching to GUI thread via trampoline Task releases this method from held in GuiMessageQueue
-			if (base.InvokeRequired) {
-				Task deadlockOtherwize = new Task(delegate {
-					base.BeginInvoke((MethodInvoker)delegate { this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(quote); });
-				});
-				deadlockOtherwize.Start();
-				return;
-			}
-			if (quote == null) {
-				this.BtnStreamingTriggersScript.Text = this.ChartFormManager.StreamingButtonIdent;
-				return;
-			}
-			StringBuilder sb = new StringBuilder(this.ChartFormManager.StreamingButtonIdent);
-			sb.Append(" #");
-			sb.Append(quote.IntraBarSerno.ToString("000"));
-			sb.Append(" ");
-			sb.Append(quote.ServerTime.ToString("HH:mm:ss.fff"));
-			bool quoteTimesDifferMoreThanOneMicroSecond = quote.ServerTime.ToString("HH:mm:ss.f") != quote.LocalTimeCreated.ToString("HH:mm:ss.f");
-			if (quoteTimesDifferMoreThanOneMicroSecond) {
-				sb.Append(" :: ");
-				sb.Append(quote.LocalTimeCreated.ToString("HH:mm:ss.fff"));
-			}
-			if (quote.HasParentBar) {
-				TimeSpan timeLeft = (quote.ParentBarStreaming.DateTimeNextBarOpenUnconditional > quote.ServerTime)
-					? quote.ParentBarStreaming.DateTimeNextBarOpenUnconditional.Subtract(quote.ServerTime)
-					: quote.ServerTime.Subtract(quote.ParentBarStreaming.DateTimeNextBarOpenUnconditional);
-				string format = "mm:ss";
-				if (timeLeft.Minutes > 0) format = "mm:ss";
-				if (timeLeft.Hours > 0) format = "HH:mm:ss";
-				sb.Append(" ");
-				sb.Append(new DateTime(timeLeft.Ticks).ToString(format));
-			}
-			this.BtnStreamingTriggersScript.Text = sb.ToString();
+			string btnText = this.ChartFormManager.StreamingButtonIdent;
+			if (quote != null) btnText += quote.StreamingButtonIdent;
+			this.BtnStreamingTriggersScript.Text = btnText;
 		}
 		public void PopulateBtnStreamingTriggersScript_afterBarsLoaded() {
 			DataSource ds = this.ChartFormManager.Executor.DataSource_fromBars;
 			if (ds.StreamingAdapter == null) {
 				//TOO_LONG_TITLE_MAKES_BUTTON_DISAPPEAR this.BtnStreamingTriggersScript.Text = "DataSource[" + ds + "]:Streaming[" + StreamingAdapter.NO_STREAMING_ADAPTER + "]";
 				this.BtnStreamingTriggersScript.Text = this.ChartFormManager.StreamingButtonIdent;
-
-				//LIVESIM_WILL_USE_IT_DONT_DISABLE this.BtnStreamingTriggersScript.Enabled = false;
 				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT Subscribed: edit DataSource > attach StreamingAdapter";
-				//LIVESIM_WILL_USE_IT_DONT_DISABLE this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = false;
 			} else {
-				//LIVESIM_WILL_USE_IT_DONT_DISABLE this.BtnStreamingTriggersScript.Enabled = true;
-				//LIVESIM_WILL_USE_IT_DONT_DISABLE this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = true;
-				//v1 AVOIDING_NPE_quote.IntraBarSerno
 				this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
-				//v2
-				//string btnText = this.ChartFormManager.StreamingButtonIdent;
-				////if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreamingTriggeringScript) {
-				////    string msg = "POTENTIALLY_NEVER_HAPPENS__WANTED_TO_SAY_NotSubscribed_WITHOUT_ZERO_TIME";
-				////    btnText += " 00:00:00.000";
-				////}
-				////this.btnStreamingTriggersScript.Text = btnText;
 			}
-
 			// "AfterBarsLoaded" implies Executor.SetBars() has already initialized this.ChartFormManager.Executor.DataSource
 			this.populateCtxMniBars_streamingConnectionState_orange();
 		}

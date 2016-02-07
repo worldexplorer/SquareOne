@@ -16,7 +16,7 @@ namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
 		Bars		preBacktestBars;
 		DataSource	preDataSource;
-		bool		preBacktestIsStreaming;
+		//LEAVE_IT_AS_USER_SELECTED	bool		preBacktestIsStreaming;
 
 		internal void BacktestContextInitialize(Bars barsEmptyButWillGrow) {
 			string msig = " //BacktestContextInitialize(" + barsEmptyButWillGrow + ")";
@@ -39,7 +39,7 @@ namespace Sq1.Core.StrategyBase {
 
 			this.preBacktestBars = this.Bars;	// this.preBacktestBars != null will help ignore this.IsStreaming saving IsStreaming state to json
 			this.preDataSource = this.DataSource_fromBars;
-			this.preBacktestIsStreaming = this.IsStreamingTriggeringScript;
+			// LEAVE_IT_AS_USER_SELECTED this.preBacktestIsStreaming = this.IsStreamingTriggeringScript;
 
 			if (this.Bars == barsEmptyButWillGrow) {
 				string msg = "LIFECYCLE_INCONSISTENT__BARS_ALREADY_INITIALIZED " + this.Bars;
@@ -56,13 +56,14 @@ namespace Sq1.Core.StrategyBase {
 					throw new Exception(msg);
 				}
 			}
-			//this.DataSource = bars.DataSource;
-			if (this.preBacktestBars != null) {
-				string msg = "NOT_SAVING_IsStreamingTriggeringScript=ON_FOR_BACKTEST"
-					+ " preBacktestIsStreaming[" + this.preBacktestIsStreaming + "] preBacktestBars[" + this.preBacktestBars + "]";
-				//Assembler.PopupException(msg, null, false);
-			}
-			this.IsStreamingTriggeringScript = true;
+			// LEAVE_IT_AS_USER_SELECTED
+			//if (this.preBacktestBars != null) {
+			//    string msg = "NOT_SAVING_IsStreamingTriggeringScript=ON_FOR_BACKTEST"
+			//        + " preBacktestIsStreaming[" + this.preBacktestIsStreaming + "] preBacktestBars[" + this.preBacktestBars + "]";
+			//    //Assembler.PopupException(msg, null, false);
+			//}
+			//this.IsStreamingTriggeringScript = true;
+
 			//this.Strategy.ScriptBase.Initialize(this);
 
 			this.EventGenerator.RaiseOnBacktesterSimulationContextInitialized_step2of4();
@@ -80,7 +81,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			//this.DataSource = this.preDataSource;
-			this.IsStreamingTriggeringScript = preBacktestIsStreaming;
+			// LEAVE_IT_AS_USER_SELECTED this.IsStreamingTriggeringScript = preBacktestIsStreaming;
 			// MOVED_HERE_AFTER_ASSIGNING_IS_STREAMING_TO"avoiding saving strategy each backtest due to streaming simulation switch on/off"
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 
@@ -103,7 +104,7 @@ namespace Sq1.Core.StrategyBase {
 			this.EventGenerator.RaiseOnBacktesterContextRestoredAfterExecutingAllBars_step4of4(null);
 		}
 		public void BacktesterAbortIfRunningRestoreContext() {
-			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) return;
+			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) return;
 			// TODO INTRODUCE_NEW_MANUAL_RESET_SO_THAT_NEW_BACKTEST_WAITS_UNTIL_TERMINATION_OF_THIS_METHOD_TO_AVOID_BROKEN_DISTRIBUTION_CHANNELS
 			this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted("USER_CHANGED_SELECTORS_IN_GUI_NEW_BACKTEST_IS_ALMOST_TASK.SCHEDULED");
 			//ALREADY_RESTORED_BY_simulationPostBarsRestore() this.BacktestContextRestore();
@@ -126,7 +127,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			
 			if (backtestException == null) {
-				if (this.BacktesterOrLivesimulator.IsBacktestingLivesimNow == false) {		// && this.WasBacktestAborted
+				if (this.BacktesterOrLivesimulator.ImRunningLivesim == false) {		// && this.WasBacktestAborted
 					try {
 						this.PerformanceAfterBacktest.BuildStatsOnBacktestFinished();
 					} catch (Exception exPerformance) {
@@ -170,7 +171,7 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 
-			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
 				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted("ALREADY_BACKTESTING_this.Backtester.IsBacktestingNow");
 			}
 

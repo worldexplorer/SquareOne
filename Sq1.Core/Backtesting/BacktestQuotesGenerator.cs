@@ -173,7 +173,7 @@ namespace Sq1.Core.Backtesting {
 				if (pendingsToFillInitially != pendingAfterInjected) {
 					string msg = " it looks like the quoteInjected triggered something";
 					//Assembler.PopupException(msg, null, false);
-					if (this.backtester.IsLivesim && this.backtester.Executor.Strategy.LivesimBrokerSettings.DelayBeforeFillEnabled) {
+					if (this.backtester.ImLivesimulator && this.backtester.Executor.Strategy.LivesimBrokerSettings.DelayBeforeFillEnabled) {
 						msg = "SEPARATE_MARKET_MODEL_WOULD_HELP_LAZY NO_ORDER_MUST_HAVE_BEEN_FILLED_WHILE_INJECTING__KOZ_LIVESIM_BROKER_EXECUTION_IS_DELAYED" + msg;
 						// NOTHING_WRONG_WITH_ALERT_FILLED_DURING_LIVESIM Assembler.PopupException(msg, null, false);
 					}
@@ -507,7 +507,7 @@ namespace Sq1.Core.Backtesting {
 						+ "; pass SLActivation=0 to PositionPrototypeActivator so that it generates STOP instead of STOPLOSS which I can't generate yet";
 					Assembler.PopupException(msg2 + msig, null, false);
 					break;
-				case MarketLimitStop.AtClose:
+				//MUST_DIE case MarketLimitStop.AtClose:
 				default:
 					throw new Exception("ALERT_TYPE_UNKNOWN MarketLimitStop[" + alert.MarketLimitStop + "] is not Market/Limit/Stop modelQuoteThatCouldFillAlert()");
 			}

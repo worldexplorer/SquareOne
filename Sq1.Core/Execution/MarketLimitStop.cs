@@ -43,6 +43,6 @@
 		Limit = 2,
 		Stop = 3,
 		StopLimit = 4,
-		AtClose = 5
+//MUST_DIE 		AtClose = 5
 	}
 }

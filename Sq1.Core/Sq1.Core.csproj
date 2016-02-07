@@ -80,6 +80,9 @@
     <Compile Include="Broker\BrokerAdapter.EditorSupport.cs">
       <DependentUpon>BrokerAdapter.cs</DependentUpon>
     </Compile>
+    <Compile Include="Broker\BrokerAdapter.OverrideMe.cs">
+      <DependentUpon>BrokerAdapter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
     <Compile Include="Broker\OrderProcessor.EventGenerator.cs">
       <DependentUpon>OrderProcessor.cs</DependentUpon>
@@ -129,6 +132,12 @@
     <Compile Include="Livesim\LivesimStreamingSpoiler.cs" />
     <Compile Include="Livesim\LivesimStreaming.Paranoid.cs">
       <DependentUpon>LivesimStreaming.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Livesim\Livesimulator.EventConsumer.cs">
+      <DependentUpon>Livesimulator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Livesim\Livesimulator.EventGenerator.cs">
+      <DependentUpon>Livesimulator.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\RepositoryDllScanner.ChildrenDebug.cs">
       <DependentUpon>RepositoryDllScanner.cs</DependentUpon>
@@ -279,6 +288,9 @@
     <Compile Include="Livesim\LivesimBrokerSettings.cs" />
     <Compile Include="Livesim\LivesimStreamingSettings.cs" />
     <Compile Include="StrategyBase\KPIs.cs" />
+    <Compile Include="Backtesting\BacktestMarketsim.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="StrategyBase\Script.ReusableExecutorChecks.cs">
       <DependentUpon>Script.cs</DependentUpon>
     </Compile>
@@ -316,6 +328,9 @@
     <Compile Include="Streaming\LevelTwoAndLastQuote.cs" />
     <Compile Include="Streaming\LevelTwoHalf.cs" />
     <Compile Include="Streaming\LevelTwoHalfSortedFrozen.cs" />
+    <Compile Include="Streaming\StreamingAdapter.OverrideMe.cs">
+      <DependentUpon>StreamingAdapter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Streaming\StreamingAdapter.ReplaceDistributorsForLivesim.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
@@ -372,7 +387,6 @@
     <Compile Include="Execution\ExecutionDataSnapshot.cs" />
     <Compile Include="Execution\AlertEventArgs.cs" />
     <Compile Include="Execution\ReporterPokeUnitEventArgs.cs" />
-    <Compile Include="StrategyBase\MarketsimBacktest.cs" />
     <Compile Include="Execution\PositionEventArgs.cs" />
     <Compile Include="StrategyBase\PerformanceEventArg.cs" />
     <Compile Include="StrategyBase\PositionPrototypeActivator.cs" />
@@ -455,7 +469,7 @@
     <Compile Include="Execution\Direction.cs" />
     <Compile Include="StrategyBase\Script.cs" />
     <Compile Include="StrategyBase\ScriptCompiler.cs" />
-    <Compile Include="StrategyBase\MarketLive.cs" />
+    <Compile Include="StrategyBase\AlertGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">

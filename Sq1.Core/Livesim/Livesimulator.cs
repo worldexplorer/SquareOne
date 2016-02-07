@@ -11,9 +11,10 @@ using Sq1.Core.Backtesting;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.Execution;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Livesim {
-	public class Livesimulator : Backtester, IDisposable {
+	public partial class Livesimulator : Backtester, IDisposable {
 		const string REASON_TO_EXIST = "VISUALLY CONFIRM THAT CORE CAN COPE WITH FOUR THREADS SIMULTANEOUSLY:"
 			+ " 1) STREAMING_ADAPTER"
 			+ " 2) ITS QUOTE_PUMP INVOKING SCRIPT.OVERRIDES"
@@ -93,7 +94,7 @@ namespace Sq1.Core.Livesim {
 				//this.RedirectDataSource_reactivateLivesimsWithLivesimDataSource(streamingAsLivesimChild, brokerAsLivesimChild);
 				this.DataSourceAsLivesim_nullUnsafe.PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource();	// no need to restore (this.DataSourceAsLivesimNullUnsafe will be re-initialized at next Livesim)
 				// NO!!! KEEP_THEM_TO_ORIGINAL_DATASOURCE_BECAUSE_DDE_SERVER_DELIVERS_LEVEL2_TO_ORIGINAL_DATA_SNAPSHOT base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;	// will need to restore (base.BarsSimulating is not needed after Livesim is done)
-				this.DataSourceAsLivesim_nullUnsafe.Initialize(base.BarsSimulating, spreadModeler);
+				this.DataSourceAsLivesim_nullUnsafe.InitializeLivesim(base.Executor.ToString(), base.BarsSimulating, spreadModeler);
 				base.BarsSimulating.DataSource = this.DataSourceAsLivesim_nullUnsafe;
 				//DURING_LIVESIM_I_LEFT_STREAMING_EXACTLY_THE_SAME_AS_FOR_LIVE_TRADING_TO_TEST_IT!!! this.StreamingOriginal = this.Executor.DataSource.StreamingAdapter;		// will have to restore
 				
@@ -119,7 +120,8 @@ namespace Sq1.Core.Livesim {
 
 				//FIRST_LINES_OF_QuikStreamingLivesim.UpstreamConnect_LivesimStarting()_MAKE_SENSE_FOR_OTHERS
 				//livesimming without DataDistributor replacement routes to wrong Bars and creates problems with ChartMultisplitter
-				livesimStreaming.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(livesimStreaming);
+				livesimStreaming.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(
+					livesimStreaming, this.Executor.Strategy.ScriptContextCurrent.DownstreamSubscribed);
 				//LivesimDataSource is now having LivesimBacktester and no-solidifier DataDistributor
 
 				this.CheckSubscribed_LivesimQuoteBarConsumer_toDataDistributor_replacedForLivesim();
@@ -144,7 +146,7 @@ namespace Sq1.Core.Livesim {
 					//Assembler.PopupException(msg, null, false);
 				}
 
-				this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesim_nullUnsafe	.Initialize			(this.DataSourceAsLivesim_nullUnsafe);
+				this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesim_nullUnsafe	.InitializeLivesim			(this.DataSourceAsLivesim_nullUnsafe, base.Executor.OrderProcessor);
 
 				#region PARANOID
 				if (base.BarsOriginal == null) {
@@ -187,7 +189,7 @@ namespace Sq1.Core.Livesim {
 				base.BacktestAbortedMre.Reset();
 				base.RequestingBacktestAbortMre.Reset();
 				base.BacktestIsRunningMre.Set();
-				if (this.IsBacktestRunning == false) {
+				if (this.ImBacktestingOrLivesimming == false) {
 					string msg = "IN_ORDER_TO_SIGNAL_UNFLAGGED_I_HAVE_TO_RESET_INSTEAD_OF_SET";
 					Assembler.PopupException(msg);
 				}
@@ -260,8 +262,10 @@ namespace Sq1.Core.Livesim {
 		    }
 		    List<SymbolScaleDistributionChannel> mustBeOneTimeframe = distr.GetDistributionChannels_allScaleIntervals_forSymbol(symbol);
 		    if (mustBeOneTimeframe.Count != 1) {
-		        string msg1 = "BAD_JOB#1_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()";
-		        Assembler.PopupException(msg1);
+		        string msg1 = "USER_DIDNT_CLICK_CHART>BARS>SUBSCRIBE [" + symbol + "] STARTING_LIVESIM_FOR:" + executor.ToString()
+					//+ " BAD_JOB#1_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()"
+					;
+		        Assembler.PopupException(msg1, null, false);
 		    } else {
 		        SymbolScaleDistributionChannel mustBeChartSubscribedToQuotesAndBars = mustBeOneTimeframe[0];
 		        if (mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteCount != 1) {
@@ -290,53 +294,25 @@ namespace Sq1.Core.Livesim {
 
 
 		//v1 public void Start_inGuiThread(Button btnStartStop, Button btnPauseResume, ChartShadow chartShadow) {
-		public void Start_inGuiThread(ToolStripButton btnStartStopPassed, ToolStripButton btnPauseResumePassed, ChartShadow chartShadow) {
+		public void Start_invokedFromGuiThread(ToolStripButton btnStartStopPassed, ToolStripButton btnPauseResumePassed, ChartShadow chartShadow) {
 			this.btnStartStop = btnStartStopPassed;
 			this.btnPauseResume = btnPauseResumePassed;
 			this.chartShadow = chartShadow;
 			this.chartShadow.RangeBarCollapseToAccelerateLivesim();
 			this.BacktesterBackup = base.Executor.BacktesterOrLivesimulator;
 			base.Executor.BacktesterOrLivesimulator = this;
+			this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesim_nullUnsafe.InitializeBacktestBroker(base.Executor);
 
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_IT_THEN_INAPPROPRIETLY!!!  WITHOUT_UNSUBSCRIPTON_I_WAS_GETTING_MANY_INVOCATIONS_BAD
 			base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 -= new EventHandler<EventArgs>(executor_OnBacktesterContextInitialized_step2of4);
 			base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_OnBacktesterContextInitialized_step2of4);
-	
+
+			this.OnQuoteReceived_zeroSubscribers_blinkDataSourceTreeWithOrange -= new EventHandler<QuoteEventArgs>(livesimulator_OnQuoteReceived_zeroSubscribers_blinkDataSourceTreeWithOrange);
+			this.OnQuoteReceived_zeroSubscribers_blinkDataSourceTreeWithOrange += new EventHandler<QuoteEventArgs>(livesimulator_OnQuoteReceived_zeroSubscribers_blinkDataSourceTreeWithOrange);
+
 			base.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
 		}
 
-		ManualResetEvent barsAreSetInGuiThread = new ManualResetEvent(false);	// SOLVES__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM
-		void executor_OnBacktesterContextInitialized_step2of4(object sender, EventArgs e) {
-			barsAreSetInGuiThread.Reset();	// SOLVES__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM
-			if (this.chartShadow.InvokeRequired) {
-				// will always InvokeRequied since we RaiseOnBacktesterSimulationContextInitialized_step2of4
-				// from a just started thread with a new Backtest BacktesterRunSimulation_threadEntry_exceptionCatcher() SEE_CALL_STACK_NOW
-				// too late to do it in GUI thread; switch takes a tons of time; do gui-unrelated preparations NOW
-				List<Order> ordersStale = this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesim_nullUnsafe.OrdersSubmittedForOneLivesimBacktest;
-				if (ordersStale.Count > 0) {
-					int beforeCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll.Count;
-					this.Executor.OrderProcessor.DataSnapshot.OrdersRemove(ordersStale);
-					int afterCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll.Count;
-					if (beforeCleanup > 0 && beforeCleanup <= afterCleanup)  {
-						string msg = "STALE_ORDER_CLEANUP_DOESNT_WORK__LIVESIM";
-						Assembler.PopupException(msg);
-					}
-					ordersStale.Clear();
-				}
-				//base.Stopwatch.Restart();
-				var alreadyStartedUpstack = base.Stopwatch;
-
-				this.chartShadow.BeginInvoke((MethodInvoker)delegate { this.executor_OnBacktesterContextInitialized_step2of4(sender, e); });
-				return;
-			}
-			this.chartShadow.Initialize(base.Executor.Bars, base.Executor.StrategyName, false, true);
-
-			barsAreSetInGuiThread.Set();		// SOLVES__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM release the thread that waits to start livesim (second livesim throws LastBarNullUnsafe == null)
-			barsAreSetInGuiThread.Reset();		// SOLVES__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM and close the gate again - you should not wait!!! I don't trust AutoResetEvent
-
-			this.btnPauseResume.Enabled = true;
-			this.btnPauseResume.Text = "Pause";
-		}
 		void afterBacktesterComplete(ScriptExecutor executorCompletePooled) {
 			string msig = " //Livesimulator.afterBacktesterComplete()";
 
@@ -362,9 +338,9 @@ namespace Sq1.Core.Livesim {
 			});
 		}
 
-		public void  Stop_inGuiThread() {
+		public void  Stop_invokedFromGuiThread() {
 			string msig = " //Livesimulator.Stop_inGuiThread()";
-			if (this.IsBacktestingLivesimNow == false) {
+			if (this.ImRunningLivesim == false) {
 				Assembler.PopupException("WHY_DID_YOU_INVOKE_ME? LIVESIM_IS_NOT_RUNNING_NOW" + msig);
 				return;
 			}
@@ -387,7 +363,7 @@ namespace Sq1.Core.Livesim {
 			}
 		}
 
-		public void Pause_inGuiThread() {
+		public void Pause_invokedFromGuiThread() {
 			if (this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe == null) {
 				string msg1 = "YOU_DIDNT_START_LIVESIM_CANT_PAUSE add this.TssBtnPauseResume.Enabled=false into LiveSimControl.Designer.cs";
 				Assembler.PopupException(msg1, null, false);

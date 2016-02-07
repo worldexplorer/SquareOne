@@ -371,7 +371,7 @@ namespace Sq1.Core.Streaming {
 				ret += reasonOrFullDump;
 			}
 			if (ret == "") ret = "NO_CONSUMERS";
-			ret = this.ReasonIwasCreated_propagatedFromDistributor + ":" + ret;
+			ret = this.ReasonIwasCreated_propagatedFromDistributor + " :: " + ret;
 			ret += this.SymbolScaleInterval;
 			return ret;
 		} }

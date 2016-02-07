@@ -133,7 +133,6 @@ namespace Sq1.Widgets.Execution {
 			this.OrdersTreeOLV.IncludeHiddenColumnsInDataTransfer = true;
 			this.OrdersTreeOLV.Location = new System.Drawing.Point(0, 0);
 			this.OrdersTreeOLV.Name = "OrdersTreeOLV";
-			this.OrdersTreeOLV.OwnerDraw = true;
 			this.OrdersTreeOLV.ShowCommandMenuOnRightClick = true;
 			this.OrdersTreeOLV.ShowGroups = false;
 			this.OrdersTreeOLV.ShowItemToolTips = true;

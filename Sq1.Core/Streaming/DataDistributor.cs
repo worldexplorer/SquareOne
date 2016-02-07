@@ -266,8 +266,11 @@ namespace Sq1.Core.Streaming {
 		public List<SymbolScaleDistributionChannel> GetDistributionChannels_allScaleIntervals_forSymbol(string symbol) { lock (this.lockConsumersBySymbol) {
 			List<SymbolScaleDistributionChannel> channels = new List<SymbolScaleDistributionChannel>();
 			if (this.DistributionChannels.ContainsKey(symbol) == false) {
-				string msg = "YOU_DIDNT_SUBSCRIBE_AFTER_DISTRIBUTION_CHANNELS_CLEAR symbol[" + symbol + "] MOST_LIKELY_YOU_ABORTED_BACKTEST_BY_CHANGING_SELECTORS_IN_GUI_FIX_HANDLERS";
-				Assembler.PopupException(msg);
+				string msg = "STARTING_LIVESIM:CLICK_CHART>BARS>SUBSCRIBE symbol[" + symbol + "]"
+					//+ " YOU_DIDNT_SUBSCRIBE_AFTER_DISTRIBUTION_CHANNELS_CLEAR"
+					//+ " MOST_LIKELY_YOU_ABORTED_BACKTEST_BY_CHANGING_SELECTORS_IN_GUI_FIX_HANDLERS"
+					;
+				Assembler.PopupException(msg, null, false);
 				return channels;
 			}
 			channels = new List<SymbolScaleDistributionChannel>(this.DistributionChannels[symbol].Values);

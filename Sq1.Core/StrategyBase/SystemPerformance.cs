@@ -161,7 +161,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 		internal void BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(Position position) {
-			if (this.Executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
 				string msg = "DONT_INVOKE_ME_DURING_BACKTEST__BuildStatsOnBacktestFinished()_ALREADY_DID_THIS_JOB";
 				Assembler.PopupException(msg);
 				return;

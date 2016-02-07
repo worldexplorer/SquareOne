@@ -61,7 +61,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 
-		public void CallbackAlertFilledMoveAroundInvokeScriptNonReenterably(Alert alertFilled, Quote quoteFilledThisAlertNullForLive,
+		public void CallbackAlertFilled_moveAround_invokeScriptNonReenterably(Alert alertFilled, Quote quoteFilledThisAlertNullForLive,
 																			double priceFill, double qtyFill, double slippageFill, double commissionFill) {
 			//SLOW string msig = " CallbackAlertFilledMoveAroundInvokeScript(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
 
@@ -259,14 +259,14 @@ namespace Sq1.Core.StrategyBase {
 					}
 					#endregion
 
-					bool willEmit = this.willEmit;
-					if (willEmit) {
+					//if (this.willEmit) {
+					if (this.IsStrategyEmittingOrders) {
 						Quote quoteHackForLive = quoteFilledThisAlertNullForLive;
 						if (quoteHackForLive == null) {
 							quoteHackForLive = alertFilled.QuoteLastWhenThisAlertFilled;	// unconditionally filled 130 lines above
 						}
 						this.enrichAlertsWithQuoteCreated(alertsNewAfterExecSafeCopy, quoteHackForLive);
-						this.OrderProcessor.CreateOrdersSubmitToBrokerAdapterInNewThreads(alertsNewAfterExecSafeCopy, setStatusSubmitting, true);
+						this.OrderProcessor.CreateOrders_submitToBrokerAdapter_inNewThreads(alertsNewAfterExecSafeCopy, setStatusSubmitting, true);
 	
 						// 3. Script using proto might move SL and TP which require ORDERS to be moved, not NULLs
 						int twoMinutes = 120000;
@@ -317,7 +317,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 
-			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
 				string msg = "AFTER_BACKTEST_HOOK_INVOKES_Performance.BuildStatsOnBacktestFinished()_AND_ReportersFormsManager.BuildReportFullOnBacktestFinished()";
 				return;
 			}
