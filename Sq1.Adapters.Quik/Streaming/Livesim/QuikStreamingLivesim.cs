@@ -32,7 +32,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		// (lazy to dig in; google for ppl complaining on NDde sync'ed to GuiThread - but what else should it be locked onto?... Dde is MessageQueue-based data transfer, if I sync on my own thread there is no reliable BeginPoke/EndPoke)
 		[JsonIgnore]	public	bool						DdePokerShouldSyncWaitForDdeServerToReceiveMessage_falseToAvoidDeadlocks	{ get; private set; }
 
-		public QuikStreamingLivesim() : base(true) {
+		public QuikStreamingLivesim(string reasonToExist) : base(reasonToExist) {
 			base.Name = "QuikStreamingLivesim";
 			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Streaming.Livesim.Properties.Resources.imgQuikStreamingLivesim;
 			// true is preferred; true/false both are not causing a deadlock after QuotePumpPerChannel turns HasQuote=false after pause/unpause (last commit)
@@ -44,7 +44,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			base.LevelTwoGenerator = new LevelTwoGenerator();		// this one has it's own LevelTwoAsks,LevelTwoBids NOT_REDIRECTED to StreamingDatasnapshot => sending Level2 via DDE to QuikStreaming.StreamingDatasnapshot
 		}
 
-		protected override void SolidifierAllSymbolsSubscribe() {
+		protected override void SolidifierAllSymbolsSubscribe_onAppRestart() {
 			string msg = "OTHERWIZE_BASE_WILL_SUBSCRIBE_SOLIDIFIER LIVESIM_MUST_NOT_SAVE_ANY_BARS";
 		}
 
@@ -53,9 +53,10 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 
 			this.upstreamWasSubscribed_preLivesim = this.QuikStreamingOriginal.UpstreamConnected;
 
+
 			base.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor();
 			//LivesimDataSource is now having LivesimBacktester and no-solidifier DataDistributor
-			this.QuikStreamingOriginal.InitializeDataSource(base.Livesimulator.DataSourceAsLivesimNullUnsafe, false);
+			this.QuikStreamingOriginal.InitializeDataSource_inverse(base.Livesimulator.DataSourceAsLivesim_nullUnsafe, false);
 	
 			//if (this.upstreamWasSubscribed_preLivesim == false) {
 				this.QuikStreamingOriginal.UpstreamConnect();

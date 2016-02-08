@@ -20,22 +20,21 @@ namespace Sq1.Adapters.Quik.Broker.Livesim {
 				QuikBrokerLivesimSettings	settings { get { return base.LivesimDataSource.Executor.Strategy.LivesimBrokerSettings as QuikBrokerLivesimSettings; } }
 				object						threadEntryLockToHaveQuoteSentToThread;
 
-		public QuikBrokerLivesim() : base() {
+		public QuikBrokerLivesim(string reasonToExist) : base(reasonToExist) {
 			base.Name = "QuikBrokerLivesim-DllFound";
 			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Broker.Livesim.Properties.Resources.imgQuikBrokerLivesim;
 		}
 
-		public override void Initialize(LivesimDataSource livesimDataSource) {
-			base.Initialize(livesimDataSource);
+		public override void InitializeLivesim(LivesimDataSource livesimDataSource, OrderProcessor orderProcessor) {
 			base.Name = "QuikBrokerLivesim-recreatedWithLDSpointer";
-			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Broker.Livesim.Properties.Resources.imgQuikBrokerLivesim;
+			base.InitializeDataSource_inverse(livesimDataSource, this.LivesimDataSource.StreamingAsLivesim_nullUnsafe,  orderProcessor);
 		}
 
 		
 		public override BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.BrokerEditorInitializeHelper(dataSourceEditor);
-			base.brokerEditorInstance = new QuikBrokerLivesimEditor(this, dataSourceEditor);
-			return base.brokerEditorInstance;
+			base.BrokerEditorInstance = new QuikBrokerLivesimEditor(this, dataSourceEditor);
+			return base.BrokerEditorInstance;
 		}
 
 		//public override void OrderSubmit(Order order) {

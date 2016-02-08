@@ -229,6 +229,9 @@
   <ItemGroup>
     <Content Include="Resources\imgQuikStaticProvider.bmp" />
     <Content Include="Resources\imgQuikStreamingProvider.bmp" />
+    <Content Include="Sq1.Adapters.Quik-LICENSE.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Broker\Terminal\TRANS2QUIK-1.1.0.10.dll.copy" />
   </ItemGroup>
   <ItemGroup />

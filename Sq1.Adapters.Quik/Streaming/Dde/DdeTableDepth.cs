@@ -22,7 +22,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 		public DdeTableDepth(string topic, QuikStreaming quikStreaming, List<XlColumn> columns, string symbol) : base(topic, quikStreaming, columns) {
 			this.symbol = symbol;
-			this.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(symbol);
+			this.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(symbol);
 
 			this.levelTwoAsks = base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks_getForSymbol(this.symbol);
 			this.levelTwoBids = base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids_getForSymbol(this.symbol);

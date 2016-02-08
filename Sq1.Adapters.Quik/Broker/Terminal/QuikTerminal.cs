@@ -69,7 +69,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 
 					ret = Trans2Quik.SET_CONNECTION_STATUS_CALLBACK(this.callbackConnectionStatus, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 					if (ret != Trans2Quik.Result.SUCCESS) {
-						BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.Unknown, this.callbackErrorMsg.ToString());
+						BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.UnknownConnectionState, this.callbackErrorMsg.ToString());
 						msg = "1/5 FAILED: SET_CONNECTION_STATUS_CALLBACK(): error[" + error + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
 						Assembler.PopupException(msg);
 						//throw new Exception(msg);
@@ -78,7 +78,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 
 					ret = Trans2Quik.SET_TRANSACTIONS_REPLY_CALLBACK(this.CallbackTransactionReply, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 					if (ret != Trans2Quik.Result.SUCCESS) {
-						BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.Unknown, this.callbackErrorMsg.ToString());
+						BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.UnknownConnectionState, this.callbackErrorMsg.ToString());
 						msg = "2/5 FAILED: SET_TRANSACTIONS_REPLY_CALLBACK(): error[" + error + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
 						Assembler.PopupException(msg);
 						//throw new Exception(msg);
@@ -87,7 +87,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 
 					ret = Trans2Quik.CONNECT(BrokerQuik.QuikFolder, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 					if (ret != Trans2Quik.Result.SUCCESS && ret != Trans2Quik.Result.ALREADY_CONNECTED_TO_QUIK) {
-						BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.Unknown, this.callbackErrorMsg.ToString());
+						BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.UnknownConnectionState, this.callbackErrorMsg.ToString());
 						msg = "3/5 FAILED: CONNECT(" + BrokerQuik.QuikFolder + "): error[" + error + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
 						Assembler.PopupException(msg);
 						//throw new Exception(msg);

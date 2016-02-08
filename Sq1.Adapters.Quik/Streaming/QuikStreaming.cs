@@ -89,9 +89,11 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.DdeMonitorRefreshRateMs	= 200;
 			base.StreamingDataSnapshot		= new QuikStreamingDataSnapshot(this);
 			this.UpstreamConnectionState	= ConnectionState.DisconnectedJustConstructed;
-			base.LivesimStreaming			= new QuikStreamingLivesim();
+
+			base.LivesimStreaming_ownImplementation		= new QuikStreamingLivesim("USED_FOR_DATASOURCE_EDITOR_DUMMY");
 		}
-		public override void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {
+
+		public override void InitializeDataSource_inverse(DataSource dataSource, bool subscribeSolidifier = true) {
 			base.Name			= "QuikStreaming";
 			if (this.DdeServer == null) {
 				this.DdeServer		= new XlDdeServer(this.DdeServiceName);	// MOVED_FROM_CTOR_TO_HAVE_QuikStreamingPuppet_PREFIX_SERVICE_AND_TOPICS DUMMY_STREAMING_ISNT_INITIALIZED_WITH_DATASOURCE_SO_IN_CTOR_IT_WOULD_HAVE_OCCUPIED_SERVICE_NAME_FOR_NO_USE
@@ -107,7 +109,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 				string msg = "QUIK_STREAMING_INITIALIZING_WITH_LIVESIM_DATASOURCE_AND_UNSUBSCRIBING_SOLIDIFIER__OR_RESTORING_BACK_AND_SUBSCRIBING";
 				Assembler.PopupException(msg, null, false);
 			}
-			base.InitializeDataSource(dataSource, subscribeSolidifier);
+			base.InitializeDataSource_inverse(dataSource, subscribeSolidifier);
 			//MOVED_TO_MainForm.WorkspaceLoad() this.Connect();
 			// here definitely this Streaming was fully deserialized and LevelTwo hasn't started yet (at least after apprestart)
 			base.Level2RefreshRateMs		= this.DdeMonitorRefreshRateMs;

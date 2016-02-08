@@ -60,7 +60,7 @@ namespace Sq1.Adapters.Quik.Broker {
 				this.txtCashAvailableMicex.Text = value.CashAvailable.ToString();
 			}
 		}
-		QuikBroker BrokerQuik { get { return base.brokerAdapter as QuikBroker; } }
+		QuikBroker BrokerQuik { get { return base.BrokerAdapter as QuikBroker; } }
 
 		// Designer will call this
 		public BrokerQuikEditor() {
@@ -80,7 +80,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			//QuikClientCode = SettingsEditor.QuikClientCode;
 		}
 		public override void PushEditedSettingsToBrokerAdapter() {
-			if (base.ignoreEditorFieldChangesWhileInitializingEditor) return;
+			if (base.IgnoreEditorFieldChangesWhileInitializingEditor) return;
 			this.BrokerQuik.AccountAutoPropagate = this.Account;
 			// quik-specific
 			this.BrokerQuik.AccountMicexAutoPopulated = this.AccountMicex;

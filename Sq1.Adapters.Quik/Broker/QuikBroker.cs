@@ -41,8 +41,8 @@ namespace Sq1.Adapters.Quik.Broker {
 			this.AccountMicexAutoPopulated = new Account("QUIK_MICEX_ACCTNR_NOT_SET", -1001);
 			base.OrderCallbackDupesChecker = new OrderCallbackDupesCheckerQuik(this);
 		}
-		public override void Initialize(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
-			base.Initialize(dataSource, streamingAdapter, orderProcessor);
+		public override void InitializeDataSource_inverse(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
+			base.InitializeDataSource_inverse(dataSource, streamingAdapter, orderProcessor);
 			base.Name = "Quik Broker";
 
 			if (String.IsNullOrEmpty(this.QuikFolder)) return;
@@ -61,8 +61,8 @@ namespace Sq1.Adapters.Quik.Broker {
 		}
 		public override BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.BrokerEditorInitializeHelper(dataSourceEditor);
-			base.brokerEditorInstance = new BrokerQuikEditor(this, dataSourceEditor);
-			return base.brokerEditorInstance;
+			base.BrokerEditorInstance = new BrokerQuikEditor(this, dataSourceEditor);
+			return base.BrokerEditorInstance;
 		}
 		public override void Connect() { QuikTerminal.ConnectDll(); }
 		public override void Disconnect() { QuikTerminal.DisconnectDll(); }
@@ -161,11 +161,11 @@ namespace Sq1.Adapters.Quik.Broker {
 		}
 
 		//[JsonIgnore]	[JsonIgnore]	[JsonIgnore]	
-		ConnectionState previousConnectionState = ConnectionState.Unknown;
+		ConnectionState previousConnectionState = ConnectionState.UnknownConnectionState;
 		int identicalConnectionStatesReported = 0;
 		int identicalConnectionStatesReportedLimit = 3;
 		public void callbackTerminalConnectionStateUpdated(ConnectionState state, string message) {
-			if (this.previousConnectionState == ConnectionState.Unknown) {
+			if (this.previousConnectionState == ConnectionState.UnknownConnectionState) {
 				this.previousConnectionState = state;
 			}
 			if (this.previousConnectionState != state) {

@@ -32,7 +32,7 @@
     <DebugSymbols>true</DebugSymbols>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\Sq1.Gui\bin\Debug\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <StartAction>Project</StartAction>
     <BaseAddress>4194304</BaseAddress>
