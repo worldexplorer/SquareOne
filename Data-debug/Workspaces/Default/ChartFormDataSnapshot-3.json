@@ -10,14 +10,14 @@
     "DataSourceName": "MOCK",
     "ScaleInterval": {
       "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-      "Interval": 10,
+      "Interval": 5,
       "Scale": 3,
-      "AsString_cached": "10-Minute",
+      "AsString_cached": "5-Minute",
       "IsIntraday": true,
-      "AsTimeSpanInSeconds": 600,
-      "AsTimeSpan": "00:10:00",
-      "AsStringShortest_cached": "10m",
-      "AsStringShort_cached": "10min"
+      "AsTimeSpanInSeconds": 300,
+      "AsTimeSpan": "00:05:00",
+      "AsStringShortest_cached": "5m",
+      "AsStringShort_cached": "5min"
     },
     "DataRange": {
       "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
@@ -40,14 +40,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 26
+        "PanelHeight": 40
       },
       "PanelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 32,
+        "Distance": 46,
         "SplitterHeight": 6,
-        "PanelHeight": 84
+        "PanelHeight": 141
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -57,14 +57,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 41
+        "PanelHeight": 65
       },
       "multiSplitRowsVolumePrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 47,
+        "Distance": 71,
         "SplitterHeight": 6,
-        "PanelHeight": 156
+        "PanelHeight": 246
       }
     },
     "Name": "Default",

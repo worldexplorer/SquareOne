@@ -30,7 +30,7 @@ namespace Sq1.Core.Streaming {
 				;
 
 			this.dataDistributor_preLivesimForSymbolLivesimming = this.DataDistributor_replacedForLivesim;
-			this.dataDistributor_preLivesimForSymbolLivesimming.AllQuotePumps_Pause(reasonForNewDistributor);
+			// ZERO_CONSUMERS?_MOVED_UPSTACK this.dataDistributor_preLivesimForSymbolLivesimming.AllQuotePumps_Pause(reasonForNewDistributor);
 			this.DataDistributor_replacedForLivesim = new DataDistributor(this, reasonForNewDistributor);
 
 			if (chartBarsSubscribeSelected) {

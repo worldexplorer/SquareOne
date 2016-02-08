@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Drawing;
-using Sq1.Core.DataTypes;
-using Sq1.Core.Execution;
 using System.Diagnostics;
 using System.Collections.Generic;
+
+using Sq1.Core.DataTypes;
+using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
@@ -235,7 +236,6 @@ namespace Sq1.Core.StrategyBase {
 					}
 				}
 
-				//v1 bool willEmit = this.Backtester.IsBacktestingNoLivesimNow == false && this.OrderProcessor != null && this.IsStrategyEmittingOrders;
 				if (alertsNewAfterAlertFilled.Count > 0) {
 					List<Alert> alertsNewAfterExecSafeCopy = alertsNewAfterAlertFilled.SafeCopy(this, "//callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
 
@@ -259,7 +259,6 @@ namespace Sq1.Core.StrategyBase {
 					}
 					#endregion
 
-					//if (this.willEmit) {
 					if (this.IsStrategyEmittingOrders) {
 						Quote quoteHackForLive = quoteFilledThisAlertNullForLive;
 						if (quoteHackForLive == null) {

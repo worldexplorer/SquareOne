@@ -24,7 +24,7 @@ namespace Sq1.Core.StrategyBase {
 		public	SystemPerformance				PerformanceAfterBacktest	{ get; protected set; }
 		public	Backtester						BacktesterOrLivesimulator;					//{ get; private set; }
 		public	PositionPrototypeActivator		PositionPrototypeActivator	{ get; protected set; }
-		public	AlertGenerator					AlertGenerator				{ get; protected set; }
+		public	AlertFactory					AlertFactory				{ get; protected set; }
 		public	ScriptExecutorEventGenerator	EventGenerator				{ get; protected set; }
 		public	CommissionCalculator			CommissionCalculator;
 		public	Sequencer						Sequencer					{ get; protected set; }
@@ -65,9 +65,6 @@ namespace Sq1.Core.StrategyBase {
 				return this.Bars.DataSource;
 			} }
 		#endregion
-
-		//bool isStreamingWhenNoStrategyLoaded;
-		//bool isEmittingOrdersWhenNoStrategyLoaded;
 
 		public bool IsStreamingTriggeringScript {
 			get {
@@ -180,40 +177,13 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return ret;
 			} }
-		
-		//bool willEmit { get {
-		//    // will emit for livestreaming (it is a backtest!) only if
-		//    bool ret = true;
-		//    if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
-		//        string msg = "will NOT emit for static backtests";
-		//        ret = false;
-		//    } else {
-		//        if (this.OrderProcessor == null) {
-		//            ret = false;
-		//            string msg = "SHOULD_NEVER_HAPPEN__LIVESIMULATOR_SHOULD_HAVE_ORDER_PROCESSOR_NON_NULL";
-		//            Assembler.PopupException(msg, null, false);
-		//        } else {
-		//            if (this.BacktesterOrLivesimulator.IsBacktestingLivesimNow) {
-		//                ret = true;
-		//            } else {
-		//                string msg3 = "REALTIME_LIVE_DEPENDS_ON_CHARTFORM_BUTTON";
-		//                ret = this.IsStrategyEmittingOrders;
-		//            }
-		//        }
-		//    }
-		//    return ret;
-		//} }
-
 
 		public ScriptExecutor(string reasonToExist) {
-			// CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_STREAMING				this.IsStreamingTriggeringScript = false;
-			// CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_EMITTING_MOUSE_ORDERS	this.IsStrategyEmittingOrders = false;
-
 			ReasonToExist				= reasonToExist;
 			ExecutionDataSnapshot		= new ExecutionDataSnapshot(this);
 			BacktesterOrLivesimulator	= new Backtester(this);
 			PositionPrototypeActivator	= new PositionPrototypeActivator(this);
-			AlertGenerator				= new AlertGenerator(this);
+			AlertFactory				= new AlertFactory(this);
 			EventGenerator				= new ScriptExecutorEventGenerator(this);
 			CommissionCalculator		= new CommissionCalculatorZero(this);
 			Sequencer					= new Sequencer(this);
@@ -466,7 +436,6 @@ namespace Sq1.Core.StrategyBase {
 			if (alertsNewAfterExecSafeCopy.Count > 0) {
 				this.enrichAlertsWithQuoteCreated(alertsNewAfterExecSafeCopy, quoteForAlertsCreated);
 				//bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
-				//if (this.willEmit) {
 
 				// for backtest only => btnEmirOrders.Checked isn't analyzed at all
 				if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
@@ -585,29 +554,6 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return ret;
 		}
-		//public double getSlippageOld(double priceAligned, bool isLimitOrder) {
-		//    if (this.Strategy.ScriptContextCurrent.EnableSlippage == false) return 0.0;
-		//    if (isLimitOrder && this.Strategy.ScriptContextCurrent.LimitOrderSlippage == false) return 0.0;
-		//    if (this.Bars.SymbolInfo.SecurityType == SecurityType.Futures) {
-		//        return (double)this.Strategy.ScriptContextCurrent.SlippageTicks * this.Bars.SymbolInfo.PriceStepFromDecimal;
-		//    }
-		//    double ret = 0.01 * this.Strategy.ScriptContextCurrent.SlippageUnits * priceAligned;
-		//    //if (direction == Direction.Short || direction == Direction.Sell) ret = -ret;
-		//    return ret;
-		//}
-		//public double getSlippage(double priceAligned, Direction direction, int slippageIndex, bool isStreaming, bool isLimitOrder) {
-		//    if (isStreaming == false && this.Bars.SymbolInfo.UseFirstSlippageForBacktest == false) {
-		//        return getSlippageOld(priceAligned, isLimitOrder);
-		//    }
-		//    double slippageValue = 0;
-		//    try {
-		//        slippageValue = this.Bars.SymbolInfo.getSlippage(priceAligned, direction, slippageIndex, isStreaming, isLimitOrder);
-		//    } catch (Exception ex) {
-		//        Assembler.PopupException("getSlippage()", ex);
-		//        return getSlippageOld(priceAligned, isLimitOrder);
-		//    }
-		//    return slippageValue;
-		//}
 
 		//NOW_INLINE void invokeScriptEvents(Alert alertFilled) {}
 		void removePendingExitAlert(Alert alert, string msig) {

@@ -1,19 +1,18 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 
 using Newtonsoft.Json;
 
-using Sq1.Core.Broker;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Repositories;
-using Sq1.Core.Streaming;
-using Sq1.Core.StrategyBase;
 using Sq1.Core.Charting;
-using Sq1.Core.Livesim;
+using Sq1.Core.Broker;
 using Sq1.Core.Backtesting;
+using Sq1.Core.Streaming;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.DataFeed {
 	public partial class DataSource : NamedObjectJsonSerializable {
@@ -140,91 +139,6 @@ namespace Sq1.Core.DataFeed {
 				+ " {" + this.StreamingAdapterName + ":" + this.BrokerAdapterName + "}";
 		}
 
-		// internal => use only RepositoryJsonDataSource.SymbolAdd() which will notify subscribers about add operation
-		internal void SymbolAdd(string symbolToAdd) {
-			if (this.Symbols.Contains(symbolToAdd)) {
-				throw new Exception("ALREADY_EXISTS[" + symbolToAdd + "]");
-			}
-			this.BarsRepository.SymbolDataFileAdd(symbolToAdd);
-			this.Symbols.Add(symbolToAdd);
-			//NOPE_POSTPONED_AS_ATOMIC_KEY+FIRST_CONTENT this.ChartsOpenForSymbol.Add(symbolToAdd, new List<ChartShadow>());
-			// RepositoryJsonDataSource.RaiseOnSymbolAdded()_WILL_NOTIFY_DATASOURCE_TREE_UPSTACK this.DataSourceEdited_treeShouldRebuild(this);
-		}
-		internal void SymbolCopyOrCompressFrom(DataSource dataSourceFrom, string symbolToCopy, DataSource dataSourceTo) {
-			string msig = " // DataSource[" + this.Name + "].SymbolCopyOrCompressFrom(" + dataSourceFrom.Name + ", " + symbolToCopy + ") ";
-			if (this.Symbols.Contains(symbolToCopy)) {
-				throw new Exception("ALREADY_EXISTS[" + symbolToCopy + "]" + msig);
-			}
-			if (dataSourceFrom.ScaleInterval.CanConvertTo(dataSourceTo.ScaleInterval) == false) {
-				throw new Exception("CANT_CONVERT_TIMEFRAMES_TO_MORE_GRANULAR " + dataSourceFrom.Name + "[" + dataSourceFrom.ScaleInterval + "]=> " + dataSourceTo.Name + "[" + dataSourceTo.ScaleInterval + "]" + msig);
-			}
-			if (dataSourceFrom.ScaleInterval.AsTimeSpanInSeconds == dataSourceTo.ScaleInterval.AsTimeSpanInSeconds) {
-				string abspathSource = dataSourceFrom.BarsRepository.AbspathForSymbol(symbolToCopy);
-				this.BarsRepository.SymbolDataFileCopy(symbolToCopy, abspathSource);
-				RepositoryBarsFile filePickedUp = this.BarsRepository.DataFileForSymbol(symbolToCopy);
-				Assembler.PopupException("BARS_SAVED_UNCOMPRESSED: " + filePickedUp.BarsLoadAllNullUnsafeThreadSafe().Count + msig, null, false);
-			} else {
-				string millisElapsedLoadCompress;
-				Bars barsCompressed = dataSourceFrom.BarsLoadAndCompress(symbolToCopy, dataSourceTo.ScaleInterval, out millisElapsedLoadCompress);
-				this.BarsRepository.SymbolDataFileAdd(symbolToCopy, true);
-				RepositoryBarsFile fileToSaveTo = this.BarsRepository.DataFileForSymbol(symbolToCopy);
-				int barsSaved = fileToSaveTo.BarsSaveThreadSafe(barsCompressed);
-				Assembler.PopupException("BARS_SAVED_COMPRESSED: " + barsSaved + msig + millisElapsedLoadCompress, null, false);
-			}
-			this.Symbols.Add(symbolToCopy);
-		}
-		// internal => use only RepositoryJsonDataSource.SymbolRename() which will notify subscribers about rename operation
-		internal void SymbolRename(string oldSymbolName, string newSymbolName) {
-			if (this.Symbols.Contains(oldSymbolName) == false) {
-				throw new Exception("OLD_SYMBOL_DOESNT_EXIST[" + oldSymbolName + "] in [" + this.Name + "]");
-			}
-			if (this.Symbols.Contains(newSymbolName)) {
-				throw new Exception("NEW_SYMBOL_ALREADY_EXISTS[" + newSymbolName + "] in [" + this.Name + "]");
-			}
-
-			try {
-				bool executorProhibitedRenaming = this.RaiseSymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars(oldSymbolName, newSymbolName);
-				if (executorProhibitedRenaming) return;	// event handlers are responsible to Assembler.PopupException(), I reported MY errors above
-	
-				this.BarsRepository.SymbolDataFileRename(oldSymbolName, newSymbolName);
-
-				// DUMB_AND_ERROR_PRONE
-				//List<ChartShadow> chartsForOldSymbol = this.ChartsOpenForSymbol[oldSymbolName];
-				//this.ChartsOpenForSymbol.Add(newSymbolName, chartsForOldSymbol);
-				//this.ChartsOpenForSymbol.Remove(oldSymbolName);
-				SymbolOfDataSource oldSymbolOfDataSource = this.ChartsOpenForSymbol.FindSimilarKey(new SymbolOfDataSource(oldSymbolName, this));
-				if (oldSymbolOfDataSource != null) {
-					this.ChartsOpenForSymbol.RenameKey(oldSymbolOfDataSource, new SymbolOfDataSource(newSymbolName, this));
-				}
-				// RepositoryJsonDataSource.RaiseOnSymbolRenamed()_WILL_NOTIFY_DATASOURCE_TREE_UPSTACK this.DataSourceEdited_treeShouldRebuild(this);
-			} catch (Exception ex) {
-				Assembler.PopupException("DataSource.SymbolRename(" + oldSymbolName + "=>" + newSymbolName + ")", ex);
-			}
-
-			// outside the try{} block to keep UI with latest changes
-			this.Symbols = this.BarsRepository.SymbolsInScaleIntervalSubFolder;
-		}
-		public void SymbolsRebuildReadDataSourceSubFolderAfterDeserialization() {
-			this.Symbols = this.BarsRepository.SymbolsInScaleIntervalSubFolder;
-		}
-		// internal => use only RepositoryJsonDataSource.SymbolRemove() which will notify subscribers about remove operation
-		internal void SymbolRemove(string symbolToDelete) {
-			if (this.Symbols.Contains(symbolToDelete) == false) {
-				throw new Exception("ALREADY_DELETED[" + symbolToDelete + "] in [" + this.Name + "]");
-			}
-			this.Symbols.Remove(symbolToDelete);
-			this.BarsRepository.SymbolDataFileDelete(symbolToDelete);
-
-			List<ChartShadow> chartsForOldSymbol = this.ChartsOpenForSymbol.FindContentsForSimilarKey_NullUnsafe(new SymbolOfDataSource(symbolToDelete, this));
-			if (chartsForOldSymbol != null) {
-				string msg = "SHOULD_I_CLOSE_THE_CHARTS_OPEN_WITH_SYMBOL? symbolToDelete[" + symbolToDelete + "]";
-				Assembler.PopupException(msg);
-			} else {
-				//this.ChartsOpenForSymbol.Remove(symbolToDelete);
-				this.ChartsOpenForSymbol.UnRegisterSimilar(new SymbolOfDataSource(symbolToDelete, this));
-				// RepositoryJsonDataSource.RaiseOnSymbolRemovedDone()_WILL_NOTIFY_DATASOURCE_TREE_UPSTACK this.DataSourceEdited_treeShouldRebuild(this);
-			}
-		}
 		internal int BarAppendOrReplaceLast(Bar barLastFormed, out string millisElapsed) {
 			int ret = -1;
 			millisElapsed = "BAR_WASNT_SAVED";
@@ -275,77 +189,6 @@ namespace Sq1.Core.DataFeed {
 			return barsSaved;
 		}
 
-		// Initialize() creates the folder, now create empty files for non-file-existing-symbols
-		internal int CreateDeleteBarFilesToSymbolsDeserialized() {
-			foreach (string symbolToAdd in this.Symbols) {
-				if (this.BarsRepository.DataFileExistsForSymbol(symbolToAdd)) continue;
-				this.BarsRepository.SymbolDataFileAdd(symbolToAdd);
-			}
-			List<string> symbolsToDelete = new List<string>();
-			foreach (string symbolWhateverCase in this.BarsRepository.SymbolsInScaleIntervalSubFolder) {
-				string symbol = symbolWhateverCase.ToUpper();
-				if (this.Symbols.Contains(symbol)) continue;
-				symbolsToDelete.Add(symbol);
-			}
-			foreach (string symbolToDelete in symbolsToDelete) {
-				this.BarsRepository.SymbolDataFileDelete(symbolToDelete);
-			}
-			return symbolsToDelete.Count;
-		}
-		internal void DataSourceFolderDeleteWithSymbols() {
-			if (this.BarsRepository == null) {
-				string msg = "DATASOURCE_INITIALIZE_NOT_INVOKED_YET //DataSourceFolderDeleteWithSymbols()";
-				Assembler.PopupException(msg);
-			}
-			this.BarsRepository.DeleteAllDataFilesAllSymbols();
-			Directory.Delete(this.DataSourceAbspath);
-		}
-		internal bool DataSourceFolderRename(string newName) {
-			bool ret = false;
-			string msig = " DataSourceFolderRename(" + this.Name + "=>" + newName + ")";
-			if (Directory.Exists(this.DataSourceAbspath) == false) {
-				throw new Exception("DATASOURCE_OLD_FOLDER_DOESNT_EXIST this.FolderForBarDataStore[" + this.DataSourceAbspath + "]" + msig);
-			}
-			string abspathNewFolderName = Path.Combine(this.DataSourcesAbspath, newName);
-			if (Directory.Exists(abspathNewFolderName)) {
-				string abspathNewRandomFolderName = Path.Combine(this.DataSourcesAbspath, newName + "-OutOfMyWay-" + new Random().Next(1000000, 9999999));
-				int newNameGenTrialsDone = 0;
-				int newNameGenTrialsLimit = 1000;
-				while (Directory.Exists(abspathNewRandomFolderName)) {
-					abspathNewRandomFolderName = Path.Combine(this.DataSourcesAbspath, newName + "-OutOfMyWay-" + new Random().Next(1000000, 9999999));
-					newNameGenTrialsDone++;
-					if (newNameGenTrialsDone >= newNameGenTrialsLimit) {
-						string fatal = "CHECK_YOUR_FOLDER_IT_HAS_WAY_TOO_MANY_-OutOfMyWay-_FOLDERS LAST_EXISTING[" + abspathNewRandomFolderName + "]"
-							+ " newNameGenTrialsDone[" + newNameGenTrialsDone + "] >= newNameGenTrialsLimit[" +  newNameGenTrialsLimit + "]";
-						//throw new Exception(fatal + msig);
-						Assembler.PopupException(fatal + msig);
-						return ret;
-					}
-				}
-				string msg = "DATASOURCE_NEW_FOLDER_ALREADY_EXISTS abspathNewFolderName[" + abspathNewFolderName + "]=>renamingToRandom[" + abspathNewRandomFolderName + "] TO_GET_CLEAR_WAY";
-				try {
-					Directory.Move(abspathNewFolderName, abspathNewRandomFolderName);
-					Assembler.PopupException(msg + msig);
-				} catch (Exception ex) {
-					msg = "RENAME_FAILED__GRANT_YOURSELF_FULL_CONTROL_TO_FOLDER this.DataSourcesAbspath[" + this.DataSourcesAbspath + "] " + msg;
-					Assembler.PopupException(msg + msig, ex);
-					return ret;
-				}
-			}
-			try {
-				Directory.Move(this.DataSourceAbspath, abspathNewFolderName);
-			} catch (Exception ex) {
-				string msg = "RENAME_FAILED__GRANT_YOURSELF_FULL_CONTROL_TO_FOLDER this.DataSourcesAbspath[" + this.DataSourcesAbspath + "] "
-					+ " Directory.Move(" + this.DataSourceAbspath + "=>" + abspathNewFolderName + ")";
-				Assembler.PopupException(msg + msig, ex);
-				return ret;
-			}
-			this.Name = newName;
-			this.DataSourceAbspath = abspathNewFolderName;
-			this.BarsRepository = new RepositoryBarsSameScaleInterval(this.DataSourceAbspath, this.ScaleInterval, true);
-			ret = true;
-			return ret;
-		}
 		public Bars BarsLoadAndCompress(string symbolRq, BarScaleInterval scaleIntervalRq, out string millisElapsed) {
 			millisElapsed = "WASNT_LOADED";
 
@@ -399,157 +242,5 @@ namespace Sq1.Core.DataFeed {
 
 			return barsCompressed;
 		}
-		public bool QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executorImBacktesting, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
-				.GetDistributionChannelFor_nullUnsafe(executorImBacktesting.Bars.Symbol, executorImBacktesting.Bars.ScaleInterval);
-			string msig = " //QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executorImBacktesting + ")";
-			if (channel == null) {
-				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
-					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
-					;
-				Assembler.PopupException(msg + msig);
-				return false;
-			}
-			if (channel.ImQueueNotPump_trueOnlyForBacktest == false ||
-				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == true) {
-				if (wrongUsagePopup == true) {
-					string msg = "WILL_NOT_PAUSE_PUMP DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
-					Assembler.PopupException(msg + msig);
-				}
-				return false;
-			}
-			channel.QueueOrPumpPause_addBacktesterLaunchingScript_eachQuote(executorImBacktesting.BacktesterOrLivesimulator);
-			return true;
-		}
-		public bool QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executorImBacktesting, bool wrongUsagePopup = true) {
-			string msig = " //QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executorImBacktesting + ")";
-			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
-				string msg = "I_REFUSE_TO_RESUME_PUMP_BECAUSE_IT_LEADS_TO_DEADLOCK IM_CLOSING_MAINFORM_WHILE_LIVESIM_IS_RUNNING";
-				Assembler.PopupException(msg + msig, null, false);
-				return false;
-			}
-
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
-				.GetDistributionChannelFor_nullUnsafe(executorImBacktesting.Bars.Symbol, executorImBacktesting.Bars.ScaleInterval);
-			if (channel == null) {
-				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
-					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
-					;
-				Assembler.PopupException(msg + msig);
-				return false;
-			}
-
-			if (channel.ImQueueNotPump_trueOnlyForBacktest == false ||
-				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == true) {
-				if (wrongUsagePopup == true) {
-					string msg = "WILL_NOT_UNPAUSE_PUMP DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
-					Assembler.PopupException(msg + msig, null, false);
-				}
-				return false;
-			}
-			channel.QueueOrPumpResume_removeBacktesterFinishedScript_eachQuote(executorImBacktesting.BacktesterOrLivesimulator);
-			return true;
-		}
-
-
-
-		public bool OwnLivesimPumpHelper_PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
-				.GetDistributionChannelFor_nullUnsafe(executorImLivesimming.Bars.Symbol, executorImLivesimming.Bars.ScaleInterval);
-			string msig = " //OwnLivesimPumpHelper_PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executorImLivesimming + ")";
-			if (channel == null) {
-				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
-					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
-					;
-				Assembler.PopupException(msg + msig);
-				return false;
-			}
-			if (channel.ImQueueNotPump_trueOnlyForBacktest == true ||
-				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == false) {
-				if (wrongUsagePopup == true) {
-					string msg = "WILL_PAUSE DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
-					Assembler.PopupException(msg + msig);
-				}
-				//return false;
-			}
-			channel.QueueOrPumpPause_addBacktesterLaunchingScript_eachQuote(executorImLivesimming.BacktesterOrLivesimulator);
-			return true;
-		}
-		public bool OwnLivesimHelper_PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
-			string msig = " //OwnLivesimHelper_PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executorImLivesimming + ")";
-			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
-				string msg = "I_REFUSE_TO_RESUME_PUMP_BECAUSE_IT_LEADS_TO_DEADLOCK IM_CLOSING_MAINFORM_WHILE_LIVESIM_IS_RUNNING";
-				Assembler.PopupException(msg + msig, null, false);
-				return false;
-			}
-
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
-				.GetDistributionChannelFor_nullUnsafe(executorImLivesimming.Bars.Symbol, executorImLivesimming.Bars.ScaleInterval);
-			if (channel == null) {
-				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
-					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
-					;
-				Assembler.PopupException(msg + msig);
-				return false;
-			}
-
-			if (channel.ImQueueNotPump_trueOnlyForBacktest == true ||
-				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == false) {
-				if (wrongUsagePopup == true) {
-					string msg = "WILL_UNPAUSE DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
-					Assembler.PopupException(msg + msig, null, false);
-				}
-				//return false;
-			}
-			channel.QueueOrPumpResume_removeBacktesterFinishedScript_eachQuote(executorImLivesimming.BacktesterOrLivesimulator);
-			return true;
-		}
-		//public bool PumpingPausedGet(Bars bars) {
-		//    DataDistributor distr = this.StreamingAdapter.DataDistributor;
-		//    SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
-		//    bool paused = channel.QuotePump.Paused;
-		//    return paused;
-		//}
-		//public bool PumpingWaitUntilUnpaused(Bars bars, int maxWaitingMillis = 1000) {
-		//    DataDistributor distr = this.StreamingAdapter.DataDistributor;
-		//    SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
-		//    bool unpaused = channel.QuotePump.WaitUntilUnpaused(maxWaitingMillis);
-		//    return unpaused;
-		//}
-		public bool PumpingWaitUntilPaused(Bars bars, int maxWaitingMillis = 1000) {
-			DataDistributor distr = this.StreamingAdapter.DataDistributor_replacedForLivesim;
-			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
-			bool paused = channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.WaitUntilPaused(maxWaitingMillis);
-			return paused;
-		}
-
-		internal bool QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(ScriptExecutor executor, Bars barsEmptyButWillGrow) {
-			bool someoneGotPaused = false;
-			if (this.StreamingAdapter is LivesimStreaming) {
-				someoneGotPaused = this.StreamingAsLivesim_nullUnsafe
-					.BacktestContextInitialize_pauseQueueForBacktest_leavePumpUnpausedForLivesimDefault_overrideable(executor, barsEmptyButWillGrow);
-			} else {
-				if (this.StreamingAdapter is BacktestStreaming) {
-					someoneGotPaused = this.StreamingAsBacktest_nullUnsafe
-						.BacktestContextInitialize_pauseQueueForBacktest_leavePumpUnpausedForLivesimDefault_overrideable(executor, barsEmptyButWillGrow);
-				}
-			}
-			return someoneGotPaused;
-		}
-
-		internal bool QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(ScriptExecutor executor) {
-			bool someoneGotUnPaused = false;
-			if (this.StreamingAdapter is LivesimStreaming) {
-				someoneGotUnPaused = this.StreamingAsLivesim_nullUnsafe
-					.BacktestContextRestore_unpauseQueueForBacktest_leavePumpUnPausedForLivesimDefault_overrideable(executor);
-			} else {
-				if (this.StreamingAdapter is BacktestStreaming) {
-					someoneGotUnPaused = this.StreamingAsBacktest_nullUnsafe
-						.BacktestContextRestore_unpauseQueueForBacktest_leavePumpUnPausedForLivesimDefault_overrideable(executor);
-				}
-			}
-			return someoneGotUnPaused;
-		}
-
 	}
 }

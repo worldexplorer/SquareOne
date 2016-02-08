@@ -88,10 +88,10 @@ namespace Sq1.Core.Livesim {
 					Assembler.PopupException(msg, ex);
 				}
 
-				// each time I change bars on chart switching to 
-				//LivesimStreaming streamingAsLivesimChild = this.DataSourceAsLivesimNullUnsafe.StreamingAdapter_instantiatedForLivesim;
-				//LivesimBroker		brokerAsLivesimChild = this.DataSourceAsLivesimNullUnsafe.BrokerAdapter_instantiatedForLivesim;
-				//this.RedirectDataSource_reactivateLivesimsWithLivesimDataSource(streamingAsLivesimChild, brokerAsLivesimChild);
+				//string reasonToPauseSymbol = "SYMBOL_PAUSED_LIVESIMMING-" + this.Executor.ToString();
+				//this.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim.AllQuotePumps_Pause(reasonToPauseSymbol);
+				this.Executor.DataSource_fromBars.LivesimStreamingDefault_PumpPause_freezeOtherConsumers_forSameSymbolScale(this.Executor);
+
 				this.DataSourceAsLivesim_nullUnsafe.PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource();	// no need to restore (this.DataSourceAsLivesimNullUnsafe will be re-initialized at next Livesim)
 				// NO!!! KEEP_THEM_TO_ORIGINAL_DATASOURCE_BECAUSE_DDE_SERVER_DELIVERS_LEVEL2_TO_ORIGINAL_DATA_SNAPSHOT base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;	// will need to restore (base.BarsSimulating is not needed after Livesim is done)
 				this.DataSourceAsLivesim_nullUnsafe.InitializeLivesim(base.Executor.ToString(), base.BarsSimulating, spreadModeler);
@@ -231,6 +231,10 @@ namespace Sq1.Core.Livesim {
 
 				//LAST_LINE_OF_QuikStreamingLivesim.UpstreamConnect_LivesimStarting()_MAKES_SENSE_FOR_OTHERS
 				livesimStreaming.SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor();
+
+				//string reasonToUnPauseSymbol = "SYMBOL_UNPAUSED_LIVESIMMING-" + this.Executor.ToString();
+				//this.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim.AllQuotePumps_Unpause(reasonToUnPauseSymbol);
+				this.Executor.DataSource_fromBars.LivesimStreamingDefault_PumpResume_unfreezeOtherConsumers_forSameSymbolScale(this.Executor);
 
 				//if (this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.settings.DelayBetweenSerialQuotesEnabled) {
 				if (base.Executor.Strategy.LivesimStreamingSettings.DelayBetweenSerialQuotesEnabled == false) {

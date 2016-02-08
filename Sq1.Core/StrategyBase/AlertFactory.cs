@@ -5,10 +5,10 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
-	public class AlertGenerator {
+	public class AlertFactory {
 		ScriptExecutor executor;
 
-		public AlertGenerator(ScriptExecutor executor) {
+		public AlertFactory(ScriptExecutor executor) {
 			this.executor = executor;
 		}
 

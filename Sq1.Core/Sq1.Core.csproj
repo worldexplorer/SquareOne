@@ -112,6 +112,12 @@
     <Compile Include="Correlation\KPIsCalculator.cs" />
     <Compile Include="Correlation\MomentumsCalculator.cs" />
     <Compile Include="Correlation\KPIsMomentum.cs" />
+    <Compile Include="DataFeed\DataSource.PauseUnpause.cs">
+      <DependentUpon>DataSource.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataFeed\DataSource.RepositoryExposed.cs">
+      <DependentUpon>DataSource.cs</DependentUpon>
+    </Compile>
     <Compile Include="Livesim\LivesimBrokerDefault.cs" />
     <Compile Include="DataFeed\SymbolOfDataSource.cs" />
     <Compile Include="Livesim\LevelTwoGenerator.cs" />
@@ -469,7 +475,7 @@
     <Compile Include="Execution\Direction.cs" />
     <Compile Include="StrategyBase\Script.cs" />
     <Compile Include="StrategyBase\ScriptCompiler.cs" />
-    <Compile Include="StrategyBase\AlertGenerator.cs" />
+    <Compile Include="StrategyBase\AlertFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">
