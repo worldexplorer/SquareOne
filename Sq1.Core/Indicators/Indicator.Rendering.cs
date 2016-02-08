@@ -26,7 +26,7 @@ namespace Sq1.Core.Indicators {
 					//Assembler.PopupException(msg);
 					return indicatorLegDrawn;
 				}
-				if (this.Executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+				if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
 					return indicatorLegDrawn;		// DONT_DELETE_ME
 				}
 				if (this.Executor.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false) {

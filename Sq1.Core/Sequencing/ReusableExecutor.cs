@@ -26,27 +26,6 @@ namespace Sq1.Core.Sequencing {
 			this.ChartShadow.SetExecutor(this);
 		}
 
-// using default instead, for ScriptExecutor, not this one for DisposableExecutor
-//		DisposableExecutor(string reasonToExist, DisposableExecutor disposableExecutor) : base(reasonToExist) {
-//			if (base.Livesimulator != null) {
-//				string msg = "I_WANTED_TO_AVOID_BASE_NORMAL_ScripExecutor.ctor()_AND_REPLACED_IT_WITH_DisposableExecutor()";
-//				//Assembler.PopupException(msg);
-//				//base.MarketLive		= null;
-//				base.Sequencer		= null;
-//				base.Livesimulator	= null;
-//				base.OrderProcessor	= null;
-//			}
-//
-//			base.Sequencer = disposableExecutor.Sequencer;
-//			//NOPE_I_NEED_SEQUENCER_FOR_EXECUTOR_ETHALON WILL_BE_CLONED_FOR_EACH_TO_HAVE_FRESH_SCRIPT_AND_EMPTY_CURRENT_CONTEXT
-//			base.Strategy	= disposableExecutor.Strategy.CloneMinimalForEachThread_forEachDisposableExecutorInSequencerPool();
-//			base.SetBars(disposableExecutor.Bars.SafeCopy_oneCopyForEachDisposableExecutors(reasonToExist));	// frozen, streamingBar detached
-//
-//			// dummy empty one instance for all spawned
-//			this.ChartShadow = new ChartShadow();
-//			this.ChartShadow.SetExecutor(this);
-//		}
-
 		// invoked many times in DisposableExecutorsPool.spawnToReachTotalNr(int threadsToUse) to spawn executorToBeSpawned and add to this.executorsIdlingNow
 		internal ReusableExecutor SpawnEthalonForEachThread_forEachDisposableExecutorInSequencerPool(string reasonToExist) {
 			//v1 I_DONT_WANT_TO_RESET_AGAIN_base.Livesimulator=null
@@ -63,7 +42,10 @@ namespace Sq1.Core.Sequencing {
 			base.PerformanceAfterBacktest = new SystemPerformance(this);
 			base.PerformanceAfterBacktest.Initialize();
 
-			base.MarketsimBacktest.Initialize(base.Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
+			//v1 dynamically taken now in BacktestMarketsim.cs:476 base.MarketsimBacktest.Initialize(base.Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
+			//v2
+			this.BacktesterOrLivesimulator.BacktestDataSource.BrokerAsBacktest_nullUnsafe.InitializeBacktestBroker(this);
+
 			base.Strategy.ScriptContextCurrent.AbsorbOnlyScriptAndIndicatorParameterCurrentValues_toDisposableFromSequencer(ctxNext);
 
 			// MOVING_1_LINE_UP_WILL_INDUCE_SEQUENCER_INITPARAMSxCORE_BUG pushes Strategy.ScriptContextCurrent => Strategy.Script

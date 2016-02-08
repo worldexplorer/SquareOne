@@ -74,8 +74,8 @@ namespace Sq1.Core.Indicators {
 				Assembler.PopupException(msg);
 			}
 			if (this.smaSeries.Count == 0) {
-				string msg = "INTERNAL_SMA_MUST_NOT_BE_EMPTY_OR_FRESHLY_CONSTRUCTED__OTHERWIZE_checkPopupOnResetAndSync()_WILL_THROW";
-				Assembler.PopupException(msg);
+				string msg = "I_ABORTED_BACKTEST_ON_FIRST_BAR INTERNAL_SMA_MUST_NOT_BE_EMPTY_OR_FRESHLY_CONSTRUCTED__OTHERWIZE_checkPopupOnResetAndSync()_WILL_THROW";
+				Assembler.PopupException(msg, null, false);
 			}
 			// WHATS_THE_POINT? this.checkPopupOnResetAndSync(msig);
 		}

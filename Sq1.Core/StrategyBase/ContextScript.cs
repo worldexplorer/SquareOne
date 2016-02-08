@@ -24,6 +24,8 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public bool							BacktestOnRestart;
 		[JsonProperty]	public bool							BacktestOnSelectorsChange;
 		[JsonProperty]	public bool							BacktestOnDataSourceSaved;
+		[JsonProperty]	public bool							BacktestAfterSubscribed;
+
 		[JsonProperty]	public Dictionary<string, object>	ReportersSnapshots;
 		
 		[JsonProperty]	public bool							ApplyCommission;
@@ -112,6 +114,7 @@ namespace Sq1.Core.StrategyBase {
 			BacktestOnRestart						= false;
 			BacktestOnSelectorsChange				= true;
 			BacktestOnDataSourceSaved				= true;
+			BacktestAfterSubscribed					= true;
 			
 			ReporterShortNamesUserInvokedJSONcheck	= new List<string>();
 			ReportersSnapshots						= new Dictionary<string, object>();

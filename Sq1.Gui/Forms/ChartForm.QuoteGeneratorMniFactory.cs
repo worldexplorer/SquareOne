@@ -77,6 +77,11 @@ namespace Sq1.Gui.Forms {
 				BacktestQuotesGenerator clone = BacktestQuotesGenerator.CreateForQuotesPerBarAndInitialize(generatorStrokeAmount, backtester);
 				backtester.SetQuoteGeneratorAndConditionallyRebacktest_invokedInGuiThread(clone);
 				this.ctxStrokesPopulateOrSelectCurrent();
+				if (backtester.ImRunningLivesim) {
+					string msg = "EVEN_IF_PREV_GENERATOR_DIDNT_FINISH_GENERATING__NEXT_BAR_WILL_BE_GENERATED_BY_THE_NEW_ONE PAUSING_QUOTE_PUMP_IS_NOT_REQUIRED";
+					Assembler.PopupException(msg, null, false);
+					return;
+				}
 				// to inform SequencerControl of new strokes selected
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("ChartForm_OnBacktestStrokesClicked");
 				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();

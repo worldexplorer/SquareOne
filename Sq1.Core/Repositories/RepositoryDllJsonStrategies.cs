@@ -8,7 +8,7 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Repositories {
 	// TODO: inherit from RepositoryDllScanner<Strategy>
-	public class RepositoryDllJsonStrategy {
+	public class RepositoryDllJsonStrategies {
 		public Dictionary<string, List<Strategy>>	StrategiesInFolders			{ get; private set; }
 		public Dictionary<string, List<Script>>		ScriptsInDlls				{ get; private set; }
 		public List<Strategy>						AllStrategiesAvailable		{ get {
@@ -62,17 +62,17 @@ namespace Sq1.Core.Repositories {
 				return ret;
 			} }
 
-		public RepositoryDllScript					ScriptRepositoryFoundInFolderDataStrategies;
-		public RepositoryDllScript					ScriptRepositoryFoundInFolderAppStartup;
+		public RepositoryDllScripts					ScriptRepositoryFoundInFolderDataStrategies;
+		public RepositoryDllScripts					ScriptRepositoryFoundInFolderAppStartup;
 				string								AppStartupPath;
 
-		public RepositoryDllJsonStrategy() {
+		public RepositoryDllJsonStrategies() {
 			this.Subfolder = "Strategies" + Path.DirectorySeparatorChar + "";
 			this.PathMask = "*.dll";
 			this.StrategiesInFolders = new Dictionary<string, List<Strategy>>();
 			this.ScriptsInDlls = new Dictionary<string, List<Script>>();
-			this.ScriptRepositoryFoundInFolderDataStrategies = new RepositoryDllScript();
-			this.ScriptRepositoryFoundInFolderAppStartup = new RepositoryDllScript();
+			this.ScriptRepositoryFoundInFolderDataStrategies = new RepositoryDllScripts();
+			this.ScriptRepositoryFoundInFolderAppStartup = new RepositoryDllScripts();
 		}
 		public void RootPathCheckThrow(string rootPath) {
 			if (string.IsNullOrEmpty(rootPath)) {
@@ -148,7 +148,7 @@ namespace Sq1.Core.Repositories {
 			return ret;
 		}
 		protected Dictionary<Assembly, List<Script>> StrategiesScanDllsInitDeserialized(string dataOrStartupPath) {
-			RepositoryDllScript repo = new RepositoryDllScript();
+			RepositoryDllScripts repo = new RepositoryDllScripts();
 			repo.InitializeAndScan(dataOrStartupPath);
 			Dictionary<Assembly, List<Script>> ret = repo.CloneableInstancesByAssemblies;
 			foreach (Assembly assembly in ret.Keys) {

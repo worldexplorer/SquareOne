@@ -5,10 +5,10 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
-	public class MarketLive {
+	public class AlertFactory {
 		ScriptExecutor executor;
 
-		public MarketLive(ScriptExecutor executor) {
+		public AlertFactory(ScriptExecutor executor) {
 			this.executor = executor;
 		}
 
@@ -149,13 +149,14 @@ namespace Sq1.Core.StrategyBase {
 						.GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(
 							this.executor.Bars.Symbol, direction, out priceSpreadSide, false);
 					break;
-				case MarketLimitStop.AtClose:
-					string msg = "[" + direction + "]At[" + entryMarketLimitStop + "]"
-						+ " when LastBar[" + (this.executor.Bars.Count - 1) + "]; No way I can bring you a future price,"
-						+ " even by executing your order right now"
-						+ "; can't do inequivalent repacement to LastBar.Close";
-					throw new Exception(msg);
-					//break;
+				//MUST_DIE
+				//case MarketLimitStop.AtClose:
+				//    string msg = "[" + direction + "]At[" + entryMarketLimitStop + "]"
+				//        + " when LastBar[" + (this.executor.Bars.Count - 1) + "]; No way I can bring you a future price,"
+				//        + " even by executing your order right now"
+				//        + "; can't do inequivalent repacement to LastBar.Close";
+				//    throw new Exception(msg);
+				//    //break;
 				case MarketLimitStop.Stop:
 				case MarketLimitStop.Limit:
 				case MarketLimitStop.StopLimit:
@@ -209,96 +210,96 @@ namespace Sq1.Core.StrategyBase {
 			return false;
 		}
 		
-		public bool AlertTryFillUsingBacktest(Alert alert, out bool abortTryFill, out string abortTryFillReason) {
-			abortTryFill = false;
-			abortTryFillReason = "NO_REASON_TO_ABORT_TRY_FILL";
-			if (this.executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
-				string msg = "WAIT_UNTIL_QUOTE_PUMP_RESUMES__DONT_INVOKE_ME_DURING_THE_BACKTEST AlertTryFillUsingBacktest() was designed for Sq1.Adapters.QuikMock.Terminal.QuikTerminalMock";
-				Assembler.PopupException(msg, null, false);
-				return false;
-			}
-			if (alert.DataSource.BrokerAdapterName.Contains("Mock") == false) {
-				string msg = "AlertTryFillUsingBacktest() should be called only from BrokerAdaptersName.Contains(Mock)"
-					+ "; here you have MOCK Realtime Streaming and Broker,"
-					+ " it's not a time-insensitive QuotesFromBar-generated Streaming Backtest"
-					+ " (both are routed to here, MarketSim, hypothetical order execution)";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
-			}
+		//public bool AlertTryFillUsingBacktest(Alert alert, out bool abortTryFill, out string abortTryFillReason) {
+		//    abortTryFill = false;
+		//    abortTryFillReason = "NO_REASON_TO_ABORT_TRY_FILL";
+		//    if (this.executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+		//        string msg = "WAIT_UNTIL_QUOTE_PUMP_RESUMES__DONT_INVOKE_ME_DURING_THE_BACKTEST AlertTryFillUsingBacktest() was designed for Sq1.Adapters.QuikMock.Terminal.QuikTerminalMock";
+		//        Assembler.PopupException(msg, null, false);
+		//        return false;
+		//    }
+		//    if (alert.DataSource.BrokerAdapterName.Contains("Mock") == false) {
+		//        string msg = "AlertTryFillUsingBacktest() should be called only from BrokerAdaptersName.Contains(Mock)"
+		//            + "; here you have MOCK Realtime Streaming and Broker,"
+		//            + " it's not a time-insensitive QuotesFromBar-generated Streaming Backtest"
+		//            + " (both are routed to here, MarketSim, hypothetical order execution)";
+		//        #if DEBUG
+		//        Debugger.Break();
+		//        #endif
+		//        throw new Exception(msg);
+		//    }
 
-			if (alert.PositionAffected == null) {
-				string msg = "alertToBeKilled always has a PositionAffected, even for OnChartManual Buy/Short Market/Stop/Limit";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
-			}
+		//    if (alert.PositionAffected == null) {
+		//        string msg = "alertToBeKilled always has a PositionAffected, even for OnChartManual Buy/Short Market/Stop/Limit";
+		//        #if DEBUG
+		//        Debugger.Break();
+		//        #endif
+		//        throw new Exception(msg);
+		//    }
 
-			bool filled = false;
-			Quote quoteLast = this.executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alert.Symbol).Clone();
-			if (quoteLast == null) {
-				string msg = "MAKE_YOUR_STREAMING_SAVE_LAST_QUOTE_TO_SNAP LastQuoteGetForSymbol("
-					+ alert.Symbol + ")=null StreamingAdapter[" + this.executor.DataSource_fromBars.StreamingAdapter + "]"
-					+ " MARKET_SIM_NEEDS_QUOTE_TO_TRY_FILL_AND_SAY_IF_FILLED";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
-			}
+		//    bool filled = false;
+		//    Quote quoteLast = this.executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alert.Symbol).Clone();
+		//    if (quoteLast == null) {
+		//        string msg = "MAKE_YOUR_STREAMING_SAVE_LAST_QUOTE_TO_SNAP LastQuoteGetForSymbol("
+		//            + alert.Symbol + ")=null StreamingAdapter[" + this.executor.DataSource_fromBars.StreamingAdapter + "]"
+		//            + " MARKET_SIM_NEEDS_QUOTE_TO_TRY_FILL_AND_SAY_IF_FILLED";
+		//        #if DEBUG
+		//        Debugger.Break();
+		//        #endif
+		//        throw new Exception(msg);
+		//    }
 
-			quoteLast.SetParentBarStreaming(alert.Bars.BarStreamingNullUnsafe.Clone());
-			if (quoteLast.ParentBarStreaming.ParentBarsIndex == -1) {
-				string msg = "EARLY_BINDER_DIDNT_DO_ITS_JOB#1 quote.ParentStreamingBar.ParentBarsIndex=-1 ";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
-			}
+		//    quoteLast.SetParentBarStreaming(alert.Bars.BarStreamingNullUnsafe.Clone());
+		//    if (quoteLast.ParentBarStreaming.ParentBarsIndex == -1) {
+		//        string msg = "EARLY_BINDER_DIDNT_DO_ITS_JOB#1 quote.ParentStreamingBar.ParentBarsIndex=-1 ";
+		//        #if DEBUG
+		//        Debugger.Break();
+		//        #endif
+		//        throw new Exception(msg);
+		//    }
 
-			if (alert.IsEntryAlert) {
-				if (alert.PositionAffected.IsEntryFilled) {
-					string msg = "WONT_FILL_ENTRY_TWICE PositionAffected.EntryFilled => did you create many threads in your QuikTerminalMock?";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					throw new Exception(msg);
-				}
-				//filled = this.CheckEntryAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
-				filled = this.executor.MarketsimBacktest.SimulateFillPendingAlert(alert, quoteLast);
-			} else {
-				if (alert.PositionAffected.IsEntryFilled == false) {
-					string msg = "WONT_FILL_EXIT_TWICE I refuse to tryFill an ExitOrder because ExitOrder.Alert.PositionAffected.EntryFilled=false";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					throw new Exception(msg);
-				}
-				if (alert.PositionAffected.IsExitFilled) {
-					string msg = null;
-					if (alert.PositionAffected.IsExitFilledWithPrototypedAlert) {
-						msg = "ExitAlert already filled and Counterparty.Status=["
-							+ alert.PositionAffected.PrototypedExitCounterpartyAlert.OrderFollowed.State + "] (does it look OK for you?)";
-					} else {
-						msg = "I refuse to tryFill non-Prototype based ExitOrder having PositionAffected.IsExitFilled=true";
-					}
-					abortTryFill = true;
-					abortTryFillReason = msg;
-					// abortTryFillReason goes to the order.Message inside the caller
-					//this.executor.ThrowPopup(new Exception(msg));
-					return false;
-				}
-				try {
-					//filled = this.CheckExitAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
-					filled = this.executor.MarketsimBacktest.SimulateFillPendingAlert(alert, quoteLast);
-				} catch (Exception ex) {
-					string msig = " //AlertTryFillUsingBacktest(" + alert + ", " + abortTryFill + ", " + abortTryFillReason + ")";
-					string msg = "THROWN_INSIDE_executor.MarketsimBacktest.SimulateFillPendingAlert(" + alert + ", " + quoteLast + ")";
-					Assembler.PopupException(msg + msig, ex);
-				}
-			}
-			return filled;
-		}
+		//    if (alert.IsEntryAlert) {
+		//        if (alert.PositionAffected.IsEntryFilled) {
+		//            string msg = "WONT_FILL_ENTRY_TWICE PositionAffected.EntryFilled => did you create many threads in your QuikTerminalMock?";
+		//            #if DEBUG
+		//            Debugger.Break();
+		//            #endif
+		//            throw new Exception(msg);
+		//        }
+		//        //filled = this.CheckEntryAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
+		//        filled = this.executor.MarketsimBacktest.SimulateFillPendingAlert(alert, quoteLast);
+		//    } else {
+		//        if (alert.PositionAffected.IsEntryFilled == false) {
+		//            string msg = "WONT_FILL_EXIT_TWICE I refuse to tryFill an ExitOrder because ExitOrder.Alert.PositionAffected.EntryFilled=false";
+		//            #if DEBUG
+		//            Debugger.Break();
+		//            #endif
+		//            throw new Exception(msg);
+		//        }
+		//        if (alert.PositionAffected.IsExitFilled) {
+		//            string msg = null;
+		//            if (alert.PositionAffected.IsExitFilledWithPrototypedAlert) {
+		//                msg = "ExitAlert already filled and Counterparty.Status=["
+		//                    + alert.PositionAffected.PrototypedExitCounterpartyAlert.OrderFollowed.State + "] (does it look OK for you?)";
+		//            } else {
+		//                msg = "I refuse to tryFill non-Prototype based ExitOrder having PositionAffected.IsExitFilled=true";
+		//            }
+		//            abortTryFill = true;
+		//            abortTryFillReason = msg;
+		//            // abortTryFillReason goes to the order.Message inside the caller
+		//            //this.executor.ThrowPopup(new Exception(msg));
+		//            return false;
+		//        }
+		//        try {
+		//            //filled = this.CheckExitAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
+		//            filled = this.executor.MarketsimBacktest.SimulateFillPendingAlert(alert, quoteLast);
+		//        } catch (Exception ex) {
+		//            string msig = " //AlertTryFillUsingBacktest(" + alert + ", " + abortTryFill + ", " + abortTryFillReason + ")";
+		//            string msg = "THROWN_INSIDE_executor.MarketsimBacktest.SimulateFillPendingAlert(" + alert + ", " + quoteLast + ")";
+		//            Assembler.PopupException(msg + msig, ex);
+		//        }
+		//    }
+		//    return filled;
+		//}
 	}
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
+using System.Windows.Forms;
 
 #if NON_DOUBLE_BUFFERED	//_reverted_to_compulsory_UserControl_no_buffering
 using System.Windows.Forms;
@@ -42,6 +43,7 @@ namespace Sq1.Core.Charting {
 		public	ChartStreamingConsumer	ChartStreamingConsumer	{ get; private set; }
 
 		public	Color					ColorBackground_inDataSourceTree;
+		public	ContextChart			CtxChart;
 
 		public ChartShadow() : base() {
 			paintAllowed = new ManualResetEvent(true);
@@ -66,19 +68,21 @@ namespace Sq1.Core.Charting {
 		    // 4) LIVESIM_END Livesimulator.afterBacktesterComplete()
 
 		    if (removeChartShadowFromOldSymbolAndAddToLoadingBars && this.Bars != null)	this.ChartShadow_RemoveFromDataSource();
-		    this.Bars = barsNotNull;
+			if (this.Bars != null) {
+				this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
+			}
+
+			this.Bars = barsNotNull;
 		    if (removeChartShadowFromOldSymbolAndAddToLoadingBars)						this.ChartShadow_AddToDataSource();
 		    #endregion
 
 		    // ChartForm wants to update last received quote datetime; FOR_NON_CORE_CONSUMERS_ONLY CORE_DEFINED_CONSUMERS_IMPLEMENT_IStreamingConsumer.ConsumeQuoteOfStreamingBar()
-		    this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged);
-		    this.Bars.BarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged);
+		    this.Bars.BarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
 		}
-		
-		void bars_BarStreamingUpdatedMerged(object sender, BarEventArgs e) {
+		void bars_BarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm(object sender, BarEventArgs e) {
 			this.RaiseBarStreamingUpdatedMerged(e);
 		}
-
+		
 		public virtual bool SelectPosition(Position position) {
 			string msg = "ChartShadow::SelectPosition() TODO: implement HIGHLIGHTING for a position[" + position + "]; chart[" + this + "]";
 			Assembler.PopupException(msg);
@@ -181,6 +185,23 @@ namespace Sq1.Core.Charting {
 		#endregion
 
 
+		public override string ToString() {
+			string ret = null;
+			if (this.Executor != null) {
+				if (this.Executor.Strategy != null) {
+					ret = this.Executor.Strategy.ToString();
+				} else {
+					if (this.CtxChart != null) {
+						ret = this.CtxChart.ToString();
+					}
+				}
+			}
+			if (string.IsNullOrEmpty(ret) && base.InvokeRequired == false) ret = base.Name;
+			return ret;
+		}
+
+
+
 
 		protected override void Dispose(bool disposing) {
 			//this.Dispose();
@@ -197,6 +218,43 @@ namespace Sq1.Core.Charting {
 			this.ChartShadowResourcesDisposed = true;
 		}
 		public bool ChartShadowResourcesDisposed { get; private set; }
+
+
+
+		string prePauseWindowsTitle = "";
+		internal void PumpPaused_notification_switchLivesimmingThreadToGui() {
+			if (base.ParentForm == null) {
+				string msg = "CANT_SET_CHARTFORM_WINDOW_TITLE //PumpPaused_notification()";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (base.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker) delegate { this.PumpPaused_notification_switchLivesimmingThreadToGui(); } );
+				return;
+			}
+			if (base.ParentForm.Text.Contains("PAUSED")) {
+				string msg = "1) DID_UNDUPLICATION_WORK? 2) DONT_NOTIFY_CHART_IM_LIVESIMMING_YOU_PAUSED_REPLACED_DISTRIBUTOR";
+				Assembler.PopupException(msg);
+			}
+			this.prePauseWindowsTitle = base.ParentForm.Text;
+			base.ParentForm.Text = "PAUSED " + this.prePauseWindowsTitle;
+			this.raiseOnPumpPaused();
+		}
+		internal void PumpUnPaused_notification_switchLivesimmingThreadToGui() {
+			if (this.prePauseWindowsTitle == "") return;	// I wasn't paused from brother livesimming and I don't wanna reset my title
+			if (base.ParentForm == null) {
+				string msg = "CANT_SET_CHARTFORM_WINDOW_TITLE //PumpUnPaused_notification()";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (base.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker) delegate { this.PumpUnPaused_notification_switchLivesimmingThreadToGui(); } );
+				return;
+			}
+			base.ParentForm.Text = this.prePauseWindowsTitle;
+			this.prePauseWindowsTitle = "";
+			this.raiseOnPumpUnPaused();
+		}
 
 	}
 }

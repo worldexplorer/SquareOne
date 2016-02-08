@@ -22,6 +22,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			} else {
 				this.RaiseOnDataSourceSelected();
 			}
+			this.OlvTree.RebuildAll(true);		// needed for Chart to get removed from old Symbol and move to the Symbol clicked; not needed without level3
 		}
 		void tree_CellRightClick(object sender, CellRightClickEventArgs e) {
 			if (e.RowIndex == -1) { // 1) empty tree, no datasources added yet; 2) clicked on blank area of some tree
@@ -265,14 +266,14 @@ namespace Sq1.Widgets.DataSourcesTree {
 
 				bool renameSymbolInfoKozNoOtherDataSourceHasSameSymbol = numberOfDataSourcesHavingSymbolToBeRenamed == 1;
 
-				SymbolInfo sourceSymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoNullUnsafe(sourceSymbol);
-				SymbolInfo targetSymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoNullUnsafe(targetSymbol);
+				SymbolInfo sourceSymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoNullUnsafe(sourceSymbol);
+				SymbolInfo targetSymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoNullUnsafe(targetSymbol);
 
 				if (targetSymbolInfo == null) {
 					if (renameSymbolInfoKozNoOtherDataSourceHasSameSymbol) {
-						Assembler.InstanceInitialized.RepositorySymbolInfo.Rename(sourceSymbolInfo, targetSymbol);
+						Assembler.InstanceInitialized.RepositorySymbolInfos.Rename(sourceSymbolInfo, targetSymbol);
 					} else {
-						Assembler.InstanceInitialized.RepositorySymbolInfo.Duplicate(targetSymbolInfo, targetSymbol);	// targetSymbolInfoAlreadyExists
+						Assembler.InstanceInitialized.RepositorySymbolInfos.Duplicate(targetSymbolInfo, targetSymbol);	// targetSymbolInfoAlreadyExists
 					}
 				}
 
@@ -472,7 +473,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				Assembler.PopupException(msg);
 				return;
 			}
-			Assembler.InstanceInitialized.RepositoryJsonDataSource.SymbolCopyOrCompressFrom(this.DataSourceSelected, this.SymbolSelected, dsDestination, this);
+			Assembler.InstanceInitialized.RepositoryJsonDataSources.SymbolCopyOrCompressFrom(this.DataSourceSelected, this.SymbolSelected, dsDestination, this);
 			this.populateDataSourcesIntoTreeListView();
 		}
 	}

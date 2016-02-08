@@ -8,7 +8,7 @@ namespace Sq1.Gui.Singletons {
 			InitializeComponent();
 			base.FloatWindowRecommendedSize = base.Size;
 		}
-		public void Initialize(RepositoryJsonDataSource dataSourceRepository) {
+		public void Initialize(RepositoryJsonDataSources dataSourceRepository) {
 			this.csvImporterControl.Initialize(dataSourceRepository);
 		}
 	}

@@ -16,6 +16,8 @@ using Sq1.Core.Streaming;
 using Sq1.Core.Livesim;
 using Sq1.Core.Support;
 
+using Sq1.Widgets.DataSourceEditor;
+
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 
@@ -30,10 +32,10 @@ namespace Sq1.Gui {
 		public	bool							MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad;
 		public	bool							dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace { get; private set; }
 
-		public ChartForm ChartFormActiveNullUnsafe { get {
+		public ChartForm ChartFormActive_nullUnsafe { get {
 				if (this.DockPanel.ActiveDocument == null) {
 					string msg = "MainForm.DockPanel.ActiveDocument is not a ChartForm; no charts open or drag your chart into DOCUMENT docking area";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
 					return null;
 				}
 
@@ -64,19 +66,21 @@ namespace Sq1.Gui {
 			try {
 				Assembler.InstanceUninitialized.Initialize(this as IStatusReporter);
 				this.GuiDataSnapshotSerializer = new Serializer<GuiDataSnapshot>();
+
+				Assembler assemblerInstanceInitialized = Assembler.InstanceInitialized;
+				DataSourceEditorControl dataSourceEditorControlInstance = DataSourceEditorForm.Instance.DataSourceEditorControl;
+				dataSourceEditorControlInstance.InitializeContext(
+					assemblerInstanceInitialized.RepositoryDllStreamingAdapters	.CloneableInstanceByClassName,
+					assemblerInstanceInitialized.RepositoryDllBrokerAdapters	.CloneableInstanceByClassName,
+					assemblerInstanceInitialized.RepositoryJsonDataSources,
+					assemblerInstanceInitialized.RepositoryMarketInfos,
+					assemblerInstanceInitialized.OrderProcessor);
 	
-				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeContext(
-					Assembler.InstanceInitialized.RepositoryDllStreamingAdapter	.CloneableInstanceByClassName,
-					Assembler.InstanceInitialized.RepositoryDllBrokerAdapter	.CloneableInstanceByClassName,
-					Assembler.InstanceInitialized.RepositoryJsonDataSource,
-					Assembler.InstanceInitialized.RepositoryMarketInfo,
-					Assembler.InstanceInitialized.OrderProcessor);
-	
-				DataSourcesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
-				StrategiesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
+				DataSourcesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSources);
+				StrategiesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategies);
 				ExecutionForm				.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor);
-				CsvImporterForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
-				SymbolInfoEditorForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositorySymbolInfo, Assembler.InstanceInitialized.RepositoryJsonDataSource);
+				CsvImporterForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSources);
+				SymbolInfoEditorForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositorySymbolInfos, Assembler.InstanceInitialized.RepositoryJsonDataSources);
 
 				this.WorkspacesManager = new MainFormWorkspacesManager(this, Assembler.InstanceInitialized.WorkspacesRepository);
 			} catch (Exception ex) {
@@ -195,8 +199,8 @@ namespace Sq1.Gui {
 	
 				//this.PropagateSelectorsForCurrentChart();
 				//WHY???this.MainFormEventManager.DockPanel_ActiveDocumentChanged(this, EventArgs.Empty);
-				if (this.ChartFormActiveNullUnsafe != null) {
-					this.ChartFormActiveNullUnsafe.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
+				if (this.ChartFormActive_nullUnsafe != null) {
+					this.ChartFormActive_nullUnsafe.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
 					// onStartup, current chart is blank - MAY_FAIL when PANEL_HEIGHT_MUST_BE_POSITIVE but works otherwize
 					//this.ChartFormActiveNullUnsafe.Invalidate();
 					//BARS_ARE_STILL_NOT_PAINTER_ON_APPRESTART__MOVED_TO_SECOND_CFMGR_LOOP_180_LINES_BELOW this.ChartFormActiveNullUnsafe.ChartControl.InvalidateAllPanels();
@@ -370,9 +374,9 @@ namespace Sq1.Gui {
 
 				cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
 			}
-			if (this.ChartFormActiveNullUnsafe != null) {
+			if (this.ChartFormActive_nullUnsafe != null) {
 				//+ainFrom.Deserializer on apprestart, Document.Active (ChartForm) doesn't paint Bars
-				this.ChartFormActiveNullUnsafe.ChartControl.InvalidateAllPanels();
+				this.ChartFormActive_nullUnsafe.ChartControl.InvalidateAllPanels();
 			}
 			try {
 				if (ExecutionForm.Instance.IsShown) {
@@ -387,6 +391,9 @@ namespace Sq1.Gui {
 					string dsNameToSelect = DataSourceEditorForm.Instance.DataSourceEditorControl.DataSourceName;
 					DataSourcesForm.Instance.DataSourcesTreeControl.SelectDatasource(dsNameToSelect);
 				}
+
+				//DOESNT_WORK trigger DataSourceTree to select the ActiveChart via full handler DockPanel_ActiveDocumentChanged();
+				this.ChartFormActive_nullUnsafe.DockHandler.Pane.Activate();
 			} catch (Exception ex) {
 				Assembler.PopupException("WorkspaceLoad#2()", ex);
 			}
@@ -418,8 +425,8 @@ namespace Sq1.Gui {
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnSymbolInfoEditorClicked		+= this.MainFormEventManager.DataSourcesTree_OnSymbolInfoEditorClicked;
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceEditClicked			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceEditClicked;
 			//DataSourcesForm.Instance.DataSourcesTree.OnDataSourceDeleteClicked			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceDeletedClicked;
-			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnItemCanBeRemoved		+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSource_OnDataSourceCanBeRemoved);
-			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnItemRemovedDone		+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSource_OnDataSourceRemoved);
+			Assembler.InstanceInitialized.RepositoryJsonDataSources.OnItemCanBeRemoved		+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSources_OnDataSourceCanBeRemoved);
+			Assembler.InstanceInitialized.RepositoryJsonDataSources.OnItemRemovedDone		+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSources_OnDataSourceRemoved);
 			//DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceNewClicked		+= this.MainFormEventManager.DataSourcesTree_OnDataSourceNewClicked;
 
 			// TYPE_MANGLING_INSIDE_WARNING NOTICE_THAT_BOTH_PARAMETER_SCRIPT_AND_INDICATOR_VALUE_CHANGED_EVENTS_ARE_HANDLED_BY_SINGLE_HANDLER

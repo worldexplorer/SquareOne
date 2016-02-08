@@ -132,7 +132,11 @@ namespace Sq1.Charting {
 			this.InvalidateAllPanels();
 		}
 		void chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline(object sender, BarEventArgs e) {
-			if (this.Executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) return;
+			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+				string msg = "FOR_CHARTLESS_BACKTEST__THIS_CHART_SHOULD_HAVE_NOT_BEEN_SUBSCRIBED_TO__BARS_SIMULATING";
+				Assembler.PopupException(msg);
+				return;
+			}
 
 			// if I was designing events for WinForms, I would switch to GUI thread automatically
 			if (base.InvokeRequired == true) {
@@ -207,7 +211,7 @@ namespace Sq1.Charting {
 			this.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 
-		void repositoryJsonDataSource_OnSymbolRemoved_clearChart(object sender, DataSourceSymbolEventArgs e) {
+		void repositoryJsonDataSources_OnSymbolRemoved_clearChart(object sender, DataSourceSymbolEventArgs e) {
 			string msig = " //repositoryJsonDataSource_OnSymbolRemoved_clearChart(" + e.Symbol + ") chart[" + this.ToString() + "]";
 			if (this.Bars.DataSource != e.DataSource) {
 				string msg = "IGNORING_DELETION_OTHER_DATASOURCE_NOT_IM_ACTUALLY_DISPLAYING"

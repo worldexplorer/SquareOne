@@ -6,15 +6,15 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Streaming {
 	public partial class StreamingAdapter {
-		[JsonIgnore]	protected		IDataSourceEditor	dataSourceEditor;
-		[JsonIgnore]	protected		StreamingEditor		streamingEditorInstance;
-		[JsonIgnore]	public virtual	bool				EditorInstanceInitialized	{ get { return (streamingEditorInstance != null); } }
+		[JsonIgnore]					IDataSourceEditor	dataSourceEditor;
+		[JsonIgnore]	protected		StreamingEditor		StreamingEditorInstance;
+		[JsonIgnore]	public virtual	bool				EditorInstanceInitialized	{ get { return (this.StreamingEditorInstance != null); } }
 		[JsonIgnore]	public virtual	StreamingEditor		EditorInstance				{ get {
-				if (streamingEditorInstance == null) {
+				if (this.StreamingEditorInstance == null) {
 					string msg = "you didn't invoke StreamingEditorInitialize() prior to accessing EditorInstance property";
 					throw new Exception(msg);
 				}
-				return streamingEditorInstance;
+				return this.StreamingEditorInstance;
 			} }
 
 		[JsonIgnore]	public			string				NameWithVersion						{ get {

@@ -293,8 +293,8 @@ namespace Sq1.Charting {
 
 			if (Assembler.IsInitialized == false) return;	// ChartForm: avoiding Designer's complains about Assembler.Initialized==false
 			if (this.Bars.DataSource is LivesimDataSource) return;
-			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRemovedDone -= new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolRemoved_clearChart);
-			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRemovedDone += new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolRemoved_clearChart);
+			Assembler.InstanceInitialized.RepositoryJsonDataSources.OnSymbolRemovedDone -= new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSources_OnSymbolRemoved_clearChart);
+			Assembler.InstanceInitialized.RepositoryJsonDataSources.OnSymbolRemovedDone += new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSources_OnSymbolRemoved_clearChart);
 		}
 		void barEventsDetach() {
 			if (this.Bars == null) {
@@ -556,26 +556,11 @@ namespace Sq1.Charting {
 				ret = arrowNullIfNotDisplayed.BarIndexFilled;
 				return ret;
 			} }
-//		public Rectangle TooltipPriceClientRectangleOrEmptyIfInvisible { get {
-//				Rectangle ret = Rectangle.Empty;
-//				if (this.tooltipPrice.Visible == false) return ret;
-//				return this.tooltipPrice.ClientRectangle;
-//			} }
-		public override string ToString() {
-			string ret = "NO_PARENT_INFO for " + this.Name;
-			if (base.InvokeRequired) {
-				ret = "AVOIDING_CROSS_THREAD_EXCEPTION " + this.Name;
-				return ret;
-			}
-			Form parentForm = this.Parent as Form;
-			if (parentForm != null) {
-				ret = parentForm.Text;
-			} else {
-				if (this.Parent != null) ret = "Parent[" + this.Parent.ToString() + "]";
-			}
-			return ret;
-		}
-
+		//public Rectangle TooltipPriceClientRectangleOrEmptyIfInvisible { get {
+		//        Rectangle ret = Rectangle.Empty;
+		//        if (this.tooltipPrice.Visible == false) return ret;
+		//        return this.tooltipPrice.ClientRectangle;
+		//    } }
 		public override void RangeBarCollapseToAccelerateLivesim() {
 			this.splitContainerChartVsRange.Panel2Collapsed = true;
 		}

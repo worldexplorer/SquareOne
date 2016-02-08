@@ -16,11 +16,12 @@ namespace Sq1.Core.Streaming {
 		protected	bool				IgnoreEditorFieldChangesWhileInitializingEditor;
 
 		public StreamingEditor() {	/* used in Design Mode for the descendands */ }
-		public virtual void Initialize(StreamingAdapter streamingAdapter, IDataSourceEditor dataSourceEditor) {
-			this.StreamingAdapter = streamingAdapter;
+
+		public virtual void Initialize(StreamingAdapter streamingAdapterPassed, IDataSourceEditor dataSourceEditor) {
+			this.StreamingAdapter = streamingAdapterPassed;
 			this.DataSourceEditor = dataSourceEditor;
-			this.InitializeEditorFields();
-			this.StreamingAdapter.OnConnectionStateChanged += new EventHandler<EventArgs>(StreamingAdapter_OnConnectionStateChanged);
+			this.initializeEditorFields();
+			this.StreamingAdapter.OnConnectionStateChanged += new EventHandler<EventArgs>(this.StreamingAdapter_OnConnectionStateChanged);
 		}
 
 		// was intended to be abstract but has implementation for Designer to be able to instantiate StreamingEditor
@@ -32,7 +33,7 @@ namespace Sq1.Core.Streaming {
 			throw new Exception("please override BrokerAdapter::PushEditedSettingsToStreamingAdapter() for streamingAdapter=[" + this.StreamingAdapter + "]");
 		}
 
-		public void InitializeEditorFields() {
+		void initializeEditorFields() {
 			this.IgnoreEditorFieldChangesWhileInitializingEditor = true;
 			this.PopulateStreamingAdapterSettingsToEditor();
 			this.IgnoreEditorFieldChangesWhileInitializingEditor = false;

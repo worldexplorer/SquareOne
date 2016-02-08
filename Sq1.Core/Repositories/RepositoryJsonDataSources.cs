@@ -7,16 +7,16 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Repositories {
 	// the hackiest class in the whole solution :(
-	public partial class RepositoryJsonDataSource : RepositoryJsonsInFolder<DataSource> {
-		public RepositorySerializerMarketInfo	MarketInfoRepository;
+	public partial class RepositoryJsonDataSources : RepositoryJsonsInFolder<DataSource> {
+		public RepositorySerializerMarketInfos	MarketInfoRepository;
 		public OrderProcessor					OrderProcessor;
 
-		public RepositoryJsonDataSource() : base() {
+		public RepositoryJsonDataSources() : base() {
 			base.CheckIfValidAndShouldBeAddedAfterDeserialized = this.dataSourceDeserializedInitializePriorToAdding;
 		}
 		
 		public void Initialize(string rootPath, string subfolder,
-				RepositorySerializerMarketInfo marketInfoRepository, OrderProcessor orderProcessor) {
+				RepositorySerializerMarketInfos marketInfoRepository, OrderProcessor orderProcessor) {
 			base.Initialize(rootPath, subfolder, this.dataSourceDeserializedInitializePriorToAdding);
 			this.MarketInfoRepository = marketInfoRepository;
 			this.OrderProcessor = orderProcessor;

@@ -40,7 +40,7 @@
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\Sq1.Gui\bin\Release\</OutputPath>
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
@@ -49,11 +49,18 @@
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <OutputPath>..\Sq1.Gui\bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Correlation\CorrelatorControl.EventConsumer.cs">
@@ -335,6 +342,7 @@
     <Compile Include="SteppingSlider\SteppingSliderComboControl.Designer.cs">
       <DependentUpon>SteppingSliderComboControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="TimerSimplified.cs" />
     <Compile Include="ToolStripWidgets\ToolStripItemLabeledTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -395,6 +403,15 @@
     </Compile>
     <Compile Include="ToolStripWidgets\ToolStripItemComboBox.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="VersionsCredits\MenuItemVersionsCredits.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="VersionsCredits\VersionsCreditsUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="VersionsCredits\VersionsCreditsUserControl.Designer.cs">
+      <DependentUpon>VersionsCreditsUserControl.cs</DependentUpon>
     </Compile>
     <Compile Include="WalkForward\WalkForwardControl.cs">
       <SubType>UserControl</SubType>
@@ -477,6 +494,9 @@
     <EmbeddedResource Include="SymbolInfoEditor\SymbolInfoEditorControl.resx">
       <DependentUpon>SymbolInfoEditorControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="VersionsCredits\VersionsCreditsUserControl.resx">
+      <DependentUpon>VersionsCreditsUserControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="WalkForward\WalkForwardControl.resx">
       <DependentUpon>WalkForwardControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -522,6 +542,10 @@
   <ItemGroup>
     <None Include="Resources\TextFile.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Sq1.Widgets-LICENSE.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

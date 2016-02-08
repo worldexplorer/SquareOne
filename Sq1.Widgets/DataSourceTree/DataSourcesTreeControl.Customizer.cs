@@ -4,6 +4,8 @@ using System.Drawing;
 
 using BrightIdeasSoftware;
 
+using Sq1.Core;
+
 using Sq1.Core.DataFeed;
 using Sq1.Core.Charting;
 
@@ -38,6 +40,15 @@ namespace Sq1.Widgets.DataSourcesTree {
 					List<ChartShadow> charts = symbol.DataSource.ChartsOpenForSymbol.FindContentsOf_NullUnsafe(symbol);
 					return charts;
 				}
+
+				ChartShadow chartShadow = o as ChartShadow;
+				if (chartShadow != null) {
+					return null;	// no children for 4th level; only DataSource => Symbols => Charts
+				}
+
+				string msig = " //DataSourcesTreeControl.OlvTree.ChildrenGetter()";
+				string msg = "SHOULD_CONTAIN_ONLY_THREE_TYPES:DataSource,SymbolOfDataSource,ChartShadow";
+				Assembler.PopupException(msg + msig);
 
 				return null;
 			};

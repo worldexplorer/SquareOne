@@ -14,8 +14,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 	public partial class MarketInfoEditor : UserControl {
 		bool ignoreSelectionEventDuringPopulate;
 		DataSource dataSource;
-		RepositorySerializerMarketInfo marketInfoRepository;
-		RepositoryJsonDataSource dataSourceRepository;
+		RepositorySerializerMarketInfos marketInfoRepository;
+		RepositoryJsonDataSources dataSourceRepository;
 		public MarketInfoEditor() {
 			this.ignoreSelectionEventDuringPopulate = true;
 			this.InitializeComponent();
@@ -28,7 +28,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.populateMarketFromDataSource();
 			this.dgMarketName.SelectionChanged += new System.EventHandler(this.dgMarketName_SelectionChanged);
 		}
-		public void Initialize(DataSource dataSource, RepositoryJsonDataSource dataSourceRepository, RepositorySerializerMarketInfo marketInfoRepository) {
+		public void Initialize(DataSource dataSource, RepositoryJsonDataSources dataSourceRepository, RepositorySerializerMarketInfos marketInfoRepository) {
 			if (base.DesignMode) return;
 			this.dataSource = dataSource;
 			this.dataSourceRepository = dataSourceRepository;

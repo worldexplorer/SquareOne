@@ -113,7 +113,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 					break;
 				case "colClearingTimespansDaysOfWeek":
 					try {
-						List<DayOfWeek> dowsParsed = RepositorySerializerMarketInfo.ParseDaysOfWeekCsv(cellValueAsString, ", ");
+						List<DayOfWeek> dowsParsed = RepositorySerializerMarketInfos.ParseDaysOfWeekCsv(cellValueAsString, ", ");
 						clearingTimespan.DaysOfWeekWhenClearingHappens = dowsParsed;
 					} catch (Exception ex) {
 						errormsg = columnNameChanged + ": cellValueAsString[" + cellValueAsString + "] " + ex.Message
@@ -172,7 +172,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.ignoreSelectionEventDuringPopulate = true;
 			string cellValueAsString = this.txtMarketDaysOfWeek.Text;
 			try {
-				List<DayOfWeek> dowsParsed = RepositorySerializerMarketInfo.ParseDaysOfWeekCsv(cellValueAsString, ", ");
+				List<DayOfWeek> dowsParsed = RepositorySerializerMarketInfos.ParseDaysOfWeekCsv(cellValueAsString, ", ");
 				this.dataSource.MarketInfo.DaysOfWeekOpen = dowsParsed;
 			} catch (Exception ex) {
 				string errormsg = "InputAsString[" + cellValueAsString + "] " + ex.Message

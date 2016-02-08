@@ -42,7 +42,7 @@
     <StartAction>Project</StartAction>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\Sq1.Gui\bin\Release\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
@@ -51,10 +51,12 @@
     <DefineConstants>VERBOSE_STRINGS_SLOW_disabled</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED_disabled;VERBOSE_STRINGS_SLOW_disabled;TEST_COMPATIBILITY_disabled;USE_CUSTOM_ROUNDING_disabled</DefineConstants>
+    <DefineConstants>DEBUG;DEBUG_STREAMING_disabled;NON_DOUBLE_BUFFERED_disabled;VERBOSE_STRINGS_SLOW_disabled;TEST_COMPATIBILITY_disabled;USE_CUSTOM_ROUNDING_disabled</DefineConstants>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <OutputPath>..\Sq1.Gui\bin\Debug\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -76,6 +78,9 @@
     <Compile Include="Backtesting\BacktestQuotesGeneratorSixteenStroke.cs" />
     <Compile Include="Backtesting\QuoteGenerated.cs" />
     <Compile Include="Broker\BrokerAdapter.EditorSupport.cs">
+      <DependentUpon>BrokerAdapter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Broker\BrokerAdapter.OverrideMe.cs">
       <DependentUpon>BrokerAdapter.cs</DependentUpon>
     </Compile>
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
@@ -107,15 +112,41 @@
     <Compile Include="Correlation\KPIsCalculator.cs" />
     <Compile Include="Correlation\MomentumsCalculator.cs" />
     <Compile Include="Correlation\KPIsMomentum.cs" />
+    <Compile Include="DataFeed\DataSource.PauseUnpause.cs">
+      <DependentUpon>DataSource.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataFeed\DataSource.RepositoryExposed.cs">
+      <DependentUpon>DataSource.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Livesim\LivesimBrokerDefault.cs" />
     <Compile Include="DataFeed\SymbolOfDataSource.cs" />
     <Compile Include="Livesim\LevelTwoGenerator.cs" />
     <Compile Include="Livesim\LivesimBroker.Paranoid.cs">
       <DependentUpon>LivesimBroker.cs</DependentUpon>
     </Compile>
+    <Compile Include="Livesim\LivesimBrokerEditorEmpty.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Livesim\LivesimBrokerSpoiler.cs" />
+    <Compile Include="Livesim\LivesimQuoteBarConsumer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Livesim\LivesimStreamingDefault.cs" />
+    <Compile Include="Livesim\LivesimStreamingEditorEmpty.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Livesim\LivesimStreamingSpoiler.cs" />
     <Compile Include="Livesim\LivesimStreaming.Paranoid.cs">
       <DependentUpon>LivesimStreaming.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Livesim\Livesimulator.EventConsumer.cs">
+      <DependentUpon>Livesimulator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Livesim\Livesimulator.EventGenerator.cs">
+      <DependentUpon>Livesimulator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repositories\RepositoryDllScanner.ChildrenDebug.cs">
+      <DependentUpon>RepositoryDllScanner.cs</DependentUpon>
     </Compile>
     <Compile Include="Sequencing\SequencerSnapshot.cs" />
     <Compile Include="Correlation\KPIsAveraged.cs" />
@@ -185,9 +216,6 @@
     <Compile Include="Livesim\LivesimBroker.cs" />
     <Compile Include="Livesim\LivesimDataSource.cs" />
     <Compile Include="Livesim\LevelTwoGeneratorLivesim.cs" />
-    <Compile Include="Livesim\LivesimQuoteBarConsumer.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Livesim\LivesimStreaming.cs" />
     <Compile Include="Livesim\LivesimBrokerEditor.cs">
       <SubType>UserControl</SubType>
@@ -239,25 +267,25 @@
     <Compile Include="Repositories\RepositoryBarsFile.cs" />
     <Compile Include="Repositories\RepositoryBarsSameScaleInterval.cs" />
     <Compile Include="Repositories\RepositoryJsonDataSource.DynamicProperties.cs">
-      <DependentUpon>RepositoryJsonDataSource.cs</DependentUpon>
+      <DependentUpon>RepositoryJsonDataSources.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\RepositoryJsonDataSource.EventGenerator.cs">
-      <DependentUpon>RepositoryJsonDataSource.cs</DependentUpon>
+      <DependentUpon>RepositoryJsonDataSources.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\RepositoryJsonsInFolder.cs" />
     <Compile Include="Repositories\RepositoryJsonsInFolder.EventGenerator.cs">
       <DependentUpon>RepositoryJsonsInFolder.cs</DependentUpon>
     </Compile>
-    <Compile Include="Repositories\RepositorySerializerMarketInfo.cs" />
-    <Compile Include="Repositories\RepositorySerializerSymbolInfo.cs" />
-    <Compile Include="Repositories\RepositoryDllBrokerProvider.cs" />
-    <Compile Include="Repositories\RepositoryDllJsonStrategy.cs" />
+    <Compile Include="Repositories\RepositorySerializerMarketInfos.cs" />
+    <Compile Include="Repositories\RepositorySerializerSymbolInfos.cs" />
+    <Compile Include="Repositories\RepositoryDllBrokerAdapters.cs" />
+    <Compile Include="Repositories\RepositoryDllJsonStrategies.cs" />
     <Compile Include="Repositories\RepositoryDllReporters.cs" />
     <Compile Include="Repositories\RepositoryDllScanner.cs" />
-    <Compile Include="Repositories\RepositoryDllStreamingProvider.cs" />
+    <Compile Include="Repositories\RepositoryDllStreamingAdapters.cs" />
     <Compile Include="Repositories\RepositoryFoldersNoJson.cs" />
-    <Compile Include="Repositories\RepositoryJsonDataSource.cs" />
-    <Compile Include="Repositories\RepositoryDllScript.cs" />
+    <Compile Include="Repositories\RepositoryJsonDataSources.cs" />
+    <Compile Include="Repositories\RepositoryDllScripts.cs" />
     <Compile Include="Serializers\SerializerLogrotate.cs" />
     <Compile Include="Serializers\SerializerLogrotatePeriodic.cs" />
     <Compile Include="Serializers\Serializer.cs" />
@@ -266,8 +294,20 @@
     <Compile Include="Livesim\LivesimBrokerSettings.cs" />
     <Compile Include="Livesim\LivesimStreamingSettings.cs" />
     <Compile Include="StrategyBase\KPIs.cs" />
+    <Compile Include="Backtesting\BacktestMarketsim.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="StrategyBase\Script.ReusableExecutorChecks.cs">
       <DependentUpon>Script.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategyBase\ScriptExecutor.BacktestLauncher.cs">
+      <DependentUpon>ScriptExecutor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategyBase\ScriptExecutor.OrderWrappers.cs">
+      <DependentUpon>ScriptExecutor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategyBase\ScriptExecutor.ScriptWrappers.cs">
+      <DependentUpon>ScriptExecutor.cs</DependentUpon>
     </Compile>
     <Compile Include="StrategyBase\SystemPerformancePositionsTracking.cs" />
     <Compile Include="StrategyBase\Reporter.cs">
@@ -294,12 +334,15 @@
     <Compile Include="Streaming\LevelTwoAndLastQuote.cs" />
     <Compile Include="Streaming\LevelTwoHalf.cs" />
     <Compile Include="Streaming\LevelTwoHalfSortedFrozen.cs" />
+    <Compile Include="Streaming\StreamingAdapter.OverrideMe.cs">
+      <DependentUpon>StreamingAdapter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\StreamingAdapter.ReplaceDistributorsForLivesim.cs">
+      <DependentUpon>StreamingAdapter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Streaming\QuotePumpPerChannel.cs" />
     <Compile Include="Streaming\QuoteQueuePerChannel.cs" />
     <Compile Include="Streaming\StreamingAdapter.EventDistributor.cs">
-      <DependentUpon>StreamingAdapter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Streaming\StreamingAdapter.LivesimSupport.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
@@ -350,7 +393,6 @@
     <Compile Include="Execution\ExecutionDataSnapshot.cs" />
     <Compile Include="Execution\AlertEventArgs.cs" />
     <Compile Include="Execution\ReporterPokeUnitEventArgs.cs" />
-    <Compile Include="StrategyBase\MarketsimBacktest.cs" />
     <Compile Include="Execution\PositionEventArgs.cs" />
     <Compile Include="StrategyBase\PerformanceEventArg.cs" />
     <Compile Include="StrategyBase\PositionPrototypeActivator.cs" />
@@ -433,7 +475,7 @@
     <Compile Include="Execution\Direction.cs" />
     <Compile Include="StrategyBase\Script.cs" />
     <Compile Include="StrategyBase\ScriptCompiler.cs" />
-    <Compile Include="StrategyBase\MarketLive.cs" />
+    <Compile Include="StrategyBase\AlertFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">
@@ -461,6 +503,11 @@
     <EmbeddedResource Include="Support\UserControlResizeable.resx">
       <DependentUpon>UserControlResizeable.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Sq1.Core-LICENSE.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

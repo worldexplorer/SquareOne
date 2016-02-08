@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 
 using Sq1.Core.DataTypes;
+using System.Collections.Generic;
 
 namespace Sq1.Core.Streaming {
 	// REASON_TO_EXIST: allows to store temporarily incoming streaming quotes to backtest while streaming is on;
@@ -81,12 +82,14 @@ namespace Sq1.Core.Streaming {
 			this.pushingThreadStart();
 			if (this.Paused) {
 				string msg = "PUSHER_THREAD_STARTED__DONT_FORGET_UNPAUSE " + this.ToString();
+#if DEBUG_STREAMING
 				Assembler.PopupException(msg, null, false);
+#endif
 			}
 		}
 
 		public void PushingThreadStop() {
-			string msig = " //PushingThreadStop[" + this.isPushingThreadStarted + "]=>[" + false + "] " + this.ToString();
+			string msig = " //PushingThreadStop isPushingThreadStarted[" + this.isPushingThreadStarted + "]=>[" + false + "] " + this.ToString();
 			if (this.isPushingThreadStarted == false) {
 				// this.simulationPreBarsSubstitute() waits for 10 seconds
 				// you'll be waiting for confirmThreadExited.WaitOne(1000) because there was no running thread to confirm its own exit
@@ -95,6 +98,7 @@ namespace Sq1.Core.Streaming {
 			try {
 				this.confirmThreadExited.Reset();
 				this.exitPushingThreadRequested = true;
+				this.signalTo_pauseUnpauseAbort();
 				bool exitConfirmed = this.confirmThreadExited.WaitOne(this.heartbeatTimeout * 2);
 				string msg = exitConfirmed ? "THREAD_EXITED__" : "EXITING_THREAD_DIDNT_CONFIRM_ITS_OWN_EXIT__";
 				Assembler.PopupException(msg + msig, null, false);
@@ -105,7 +109,7 @@ namespace Sq1.Core.Streaming {
 			this.isPushingThreadStarted = false;
 		}
 		void pushingThreadStart() {
-			string msig = " //PushingThreadStart[" + this.isPushingThreadStarted + "]=>[" + true + "] " + this.ToString();
+			string msig = " //pushingThreadStart isPushingThreadStarted[" + this.isPushingThreadStarted + "]=>[" + true + "] " + this.ToString();
 			if (this.isPushingThreadStarted == true) {
 				// this.simulationPreBarsSubstitute() waits for 10 seconds
 				// you'll be waiting for confirmThreadExited.WaitOne(1000) because there was no running thread to confirm its own exit
@@ -165,22 +169,22 @@ namespace Sq1.Core.Streaming {
 					}
 
 					//DEBUGGING_100%CPU#1
-					//Stopwatch mustBeHeartBeatInterval = new Stopwatch();
-					//mustBeHeartBeatInterval.Start();
+					Stopwatch mustBeHeartBeatInterval = new Stopwatch();
+					mustBeHeartBeatInterval.Start();
 
 					bool gotQuoteTrue_pausingUnpausingAbortingTrue_heartBeatExpiredFalse = this.hasQuoteToPush_blockingAtHeartBeatRate;
 
 					//DEBUGGING_100%CPU#2
-					//mustBeHeartBeatInterval.Stop();
-					//bool waitedLessThanHalfInterval = mustBeHeartBeatInterval.ElapsedMilliseconds < this.heartbeatTimeout / 2;
-					//if (waitedLessThanHalfInterval
-					//        && livesimThread
-					//    ) {
-					//    string msg = "I_MUST_BE_IN_LIVESIM_OR_REAL"
-					//        + " mustBeHeartBeatInterval.ElapsedMilliseconds[" + mustBeHeartBeatInterval.ElapsedMilliseconds + "]"
-					//        + " this.heartbeatTimeout[" + this.heartbeatTimeout + "]";
-					//    //Assembler.PopupException(msg, null, false);
-					//}
+					mustBeHeartBeatInterval.Stop();
+					bool waitedLessThanHalfInterval = mustBeHeartBeatInterval.ElapsedMilliseconds < this.heartbeatTimeout / 2;
+					if (waitedLessThanHalfInterval
+					        //&& livesimThread
+					    ) {
+					    string msg = "I_MUST_BE_IN_LIVESIM_OR_REAL"
+					        + " mustBeHeartBeatInterval.ElapsedMilliseconds[" + mustBeHeartBeatInterval.ElapsedMilliseconds + "]"
+					        + " this.heartbeatTimeout[" + this.heartbeatTimeout + "]";
+					    //Assembler.PopupException(msg, null, false);
+					}
 
 					if (this.exitPushingThreadRequested) {
 						string msg = "ABORTING_PUMP_AFTER_SeparatePushingThreadEnabled=false_OR_ IDisposable.Dispose()";
@@ -332,18 +336,28 @@ namespace Sq1.Core.Streaming {
 					//bool pausedConfirmed = this.confirmPaused.WaitOne(this.heartbeatTimeout * 2);
 					bool pausedConfirmed = this.confirmPaused.WaitOne(-1);
 					string msg2 = pausedConfirmed ? "PUSHER_THREAD_PAUSED_PUMPING" : "PUSHER_THREAD_PAUSED_PUMPING_BUT_NOT_CONFIRMED";
+#if DEBUG_STREAMING
 					Assembler.PopupException(msg2 + msig, null, false);
+#endif
+
+					//even for a LivesimStreamingDefault-based no-strategy Chart I wanna see "PAUSED" added to ChartForm.Text
+					this.notifyConsumers_pumpWasPaused();
 					return;
 				}
 				bool pausedNow = this.confirmPaused.WaitOne(0);
 				if (pausedNow == false) {
 					this.confirmPaused.Set();
+					this.notifyConsumers_pumpWasPaused();
 					this.confirmUnpaused.Reset();
 					string msg = "PUSHER_THREAD_PAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION";
-					Assembler.PopupException(msg + msig);
+#if DEBUG_STREAMING
+					//Assembler.PopupException(msg + msig);
+#endif
 				} else {
 					string msg2 = "PUSHER_THREAD_PAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION";
+#if DEBUG_STREAMING
 					Assembler.PopupException(msg2 + msig);
+#endif
 				}
 			} catch (Exception ex) {
 				string msg = "IMPOSSIBLE_HAPPENED_WHILE_UNPAUSING";
@@ -372,19 +386,27 @@ namespace Sq1.Core.Streaming {
 					//bool unPausedConfirmed = this.confirmUnpaused.WaitOne(this.heartbeatTimeout * 2);
 					bool unPausedConfirmed = this.confirmUnpaused.WaitOne(-1);
 					string msg = unPausedConfirmed ? "PUSHER_THREAD_UNPAUSED_PUMPING" : "PUSHER_THREAD_UNPAUSED_PUMPING_BUT_NOT_CONFIRMED";
+#if DEBUG_STREAMING
 					Assembler.PopupException(msg + msig, null, false);
+#endif
+
+					//even for a LivesimStreamingDefault-based no-strategy Chart I wanna see "PAUSED" removed to ChartForm.Text
+					this.notifyConsumers_pumpWasUnPaused();
 					return;
 				}
 				this.confirmUnpaused.Reset();
 				bool unPausedNow = this.confirmUnpaused.WaitOne(0);
 				if (unPausedNow == false) {
 					this.confirmUnpaused.Set();
+					this.notifyConsumers_pumpWasUnPaused();
 					this.confirmPaused.Reset();
-						string msg = "PUSHER_THREAD_UNPAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION"
+					string msg = "PUSHER_THREAD_UNPAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION"
 						//+ " added since BrokerMock.SubmitOrder was waiting for 2 minutes after someone has already unpaused"
 						//+ " ; I have to notify waiters can proceed via WaitUntilUnpaused, even if noone is WaitingOne()"
 						;
-					Assembler.PopupException(msg, null, false);
+#if DEBUG_STREAMING
+					//Assembler.PopupException(msg, null, false);
+#endif
 				} else {
 					string msg2 = "UNPAUSED_EARLIER__WRONG_USAGE";
 					Assembler.PopupException(msg2 + msig);
@@ -402,6 +424,30 @@ namespace Sq1.Core.Streaming {
 			bool paused = this.confirmPaused.WaitOne(maxWaitingMillis);
 			return paused;
 		}
+
+		void notifyConsumers_pumpWasPaused() {
+			List<StreamingConsumer> consumersMerged = new List<StreamingConsumer>();
+			consumersMerged.AddRange(this.Channel.ConsumersBar);
+			consumersMerged.AddRange(this.Channel.ConsumersQuote);
+			List<StreamingConsumer> alreadyNotified = new List<StreamingConsumer>();
+			foreach (StreamingConsumer consumer in consumersMerged) {
+				if (alreadyNotified.Contains(consumer)) continue;
+				consumer.PumpPaused_notification_overrideMe_switchLivesimmingThreadToGui();
+				alreadyNotified.Add(consumer);
+			}
+		}
+		void notifyConsumers_pumpWasUnPaused() {
+			List<StreamingConsumer> consumersMerged = new List<StreamingConsumer>();
+			consumersMerged.AddRange(this.Channel.ConsumersBar);
+			consumersMerged.AddRange(this.Channel.ConsumersQuote);
+			List<StreamingConsumer> alreadyNotified = new List<StreamingConsumer>();
+			foreach (StreamingConsumer consumer in consumersMerged) {
+				if (alreadyNotified.Contains(consumer)) continue;
+				consumer.PumpUnPaused_notification_overrideMe_switchLivesimmingThreadToGui();
+				alreadyNotified.Add(consumer);
+			}
+		}
+
 		public override string ToString() { return THREAD_PREFIX + this.Channel.ConsumerNames; }
 	}
 }

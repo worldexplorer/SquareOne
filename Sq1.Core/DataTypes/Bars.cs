@@ -9,20 +9,21 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public static int InstanceAbsno = 0;
 		
 		[JsonIgnore]	public	string				SymbolHumanReadable;
-		[JsonIgnore]	public	string				SymbolAndDataSource { get {
+		[JsonIgnore]	public	string				SymbolAndDataSource		{ get {
 			string ret = this.Symbol;
 			if (this.DataSource != null) ret += " :: " + this.DataSource.Name;
 			return ret;
 		} }
-		[JsonIgnore]	public	BarScaleInterval	ScaleInterval { get; private set; }
+		[JsonIgnore]	public	BarScaleInterval	ScaleInterval			{ get; private set; }
 
 		[JsonIgnore]	public	MarketInfo			MarketInfo;
 		[JsonIgnore]	public	DataSource			DataSource;
 
-		[JsonIgnore]	public	bool				IsIntraday { get { return this.ScaleInterval.IsIntraday; } }
-		[JsonIgnore]	public	string				SymbolIntervalScale { get { return "[" + this.Symbol + " " + this.ScaleInterval.ToString() + "]"; } }
+		[JsonIgnore]	public	bool				IsIntraday				{ get { return this.ScaleInterval.IsIntraday; } }
+		[JsonIgnore]	public	string				SymbolIntervalScale		{ get { return "[" + this.Symbol + " " + this.ScaleInterval.ToString() + "]"; } }
+		[JsonIgnore]	public	string				IntervalScaleCount		{ get { return "[" + this.ScaleInterval + "][" + base.Count + "]bars"; } }
 
-		[JsonIgnore]	public	Bar					BarStreamingNullUnsafe { get; private set; }
+		[JsonIgnore]	public	Bar					BarStreamingNullUnsafe	{ get; private set; }
 		[JsonIgnore]	public	Bar					BarStreamingNullUnsafeCloneReadonly { get {
 				//v1
 //				Bar lastStatic = this.BarStaticLast;
@@ -43,6 +44,22 @@ namespace Sq1.Core.DataTypes {
 				return this.BarStreamingNullUnsafe.Clone();
 			} }
 
+		[JsonIgnore]	public	int					MyInstance					{ get; private set; }
+		[JsonIgnore]	public	string				MyInstanceAsString			{ get { return " //Instance#" + this.MyInstance; } }
+		[JsonIgnore]	public	string				InstanceScaleCount			{ get {
+			string ret = this.MyInstanceAsString;
+			//if (string.IsNullOrEmpty(base.ReasonToExist) == false) ret += ":" + base.ReasonToExist;
+			ret += this.IntervalScaleCount;
+			return ret;
+		} }
+
+		[JsonIgnore]	public	string				ClonedFromInstance			{ get; private set; }
+		[JsonIgnore]	public	string				InstanceAndReasonForClone	{ get {
+			string ret = this.MyInstanceAsString;
+			if (string.IsNullOrEmpty(this.ClonedFromInstance) == false) ret += ":" + this.ClonedFromInstance;
+			return ret;
+		} }
+
 		public Bars SafeCopy_oneCopyForEachDisposableExecutors(string reasonToExist) { lock (base.BarsLock) {
 			Bars ret = new Bars(this.Symbol, this.ScaleInterval, "SafeToUseOneCopyForAllDisposableExecutors");
 			foreach (Bar each in this.BarsList) {
@@ -58,7 +75,7 @@ namespace Sq1.Core.DataTypes {
 		Bars(string symbol, string reasonToExist = "NOREASON") : base(symbol, reasonToExist) {
 			ScaleInterval = new BarScaleInterval(BarScale.Unknown, 0);
 			SymbolHumanReadable = "";
-			InstanceAbsno++;
+			MyInstance = ++InstanceAbsno;
 		}
 		public Bars(string symbol, BarScaleInterval scaleInterval, string reasonToExist) : this(symbol, reasonToExist) {
 			this.ScaleInterval = scaleInterval;
@@ -70,11 +87,13 @@ namespace Sq1.Core.DataTypes {
 		public Bars CloneNoBars(string reasonToExist = null, BarScaleInterval scaleIntervalConvertingTo = null) {
 			if (scaleIntervalConvertingTo == null) scaleIntervalConvertingTo = this.ScaleInterval;
 			if (string.IsNullOrEmpty(reasonToExist)) reasonToExist = "InitializedFrom(" + this.ReasonToExist + ")";
+			reasonToExist += this.InstanceScaleCount;
 			Bars ret = new Bars(this.Symbol, scaleIntervalConvertingTo, reasonToExist);
 			ret.SymbolHumanReadable = this.SymbolHumanReadable;
 			ret.MarketInfo = this.MarketInfo;
 			ret.SymbolInfo = this.SymbolInfo;
 			ret.DataSource = this.DataSource;
+			ret.ClonedFromInstance = this.InstanceScaleCount;
 			return ret;
 		}
 		public Bar BarStreamingCreateNewOrAbsorb(Bar barToMergeToStreaming) { lock (base.BarsLock) {
@@ -164,7 +183,7 @@ namespace Sq1.Core.DataTypes {
 			this.RaiseBarStreamingUpdated(this.BarStreamingNullUnsafeCloneReadonly);
 		}
 		public override string ToString() {
-			string ret = this.SymbolIntervalScale + base.Count + "bars";
+			string ret = this.IntervalScaleCount + this.MyInstanceAsString;
 			if (base.Count > 0) {
 				//try {
 					string barLastStaticAsString = "BAR_STATIC_NULL";
@@ -187,8 +206,7 @@ namespace Sq1.Core.DataTypes {
 				//	ret += " BARS_STREAMING[" + base.Count + "]_EXCEPTION";
 				//}
 			}
-			ret += " //Instance#" + InstanceAbsno;
-			if (string.IsNullOrEmpty(ReasonToExist) == false) ret += ":" + ReasonToExist;
+			ret += " " + this.ReasonToExist;
 
 			return ret;
 		}
@@ -256,7 +274,9 @@ namespace Sq1.Core.DataTypes {
 			dataRangeRq.FillStartEndDate(out startDate, out endDate);
 			if (startDate == DateTime.MinValue && endDate == DateTime.MaxValue && dataRangeRq.RecentBars == 0) return this;
 
-			Bars ret = this.CloneNoBars(this.ReasonToExist + " [" + dataRangeRq.ToString() + "]", this.ScaleInterval);
+			//v1 string reasonForClone = this.ReasonToExist + " [" + dataRangeRq.ToString() + "]";
+			string reasonForClone = "RANGE_SELECTED[" + dataRangeRq.ToString() + "]";
+			Bars ret = this.CloneNoBars(reasonForClone, this.ScaleInterval);
 			int recentIndexStart = 0;
 			if (dataRangeRq.RecentBars > 0) recentIndexStart = this.Count - dataRangeRq.RecentBars;  
 			for (int i=0; i<this.Count; i++) {
@@ -285,7 +305,9 @@ namespace Sq1.Core.DataTypes {
 			if (this.ScaleInterval == scaleIntervalTo) return this;
 			this.checkThrowCanConvert(scaleIntervalTo);
 
-			Bars barsConverted = this.CloneNoBars(this.ReasonToExist + "=>[" + scaleIntervalTo + "]", scaleIntervalTo);
+			//v1 string reasonForClone = this.ReasonToExist + "=>[" + scaleIntervalTo + "]";
+			string reasonForClone = "COMPRESSED_CLONE_OF_" + this.IntervalScaleCount + "=>[" + scaleIntervalTo + "]";
+			Bars barsConverted = this.CloneNoBars(reasonForClone, scaleIntervalTo);
 			if (this.Count == 0) return barsConverted;
 			
 			Bar barFromFirst = this[0];

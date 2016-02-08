@@ -14,7 +14,7 @@ namespace Sq1.Core.StrategyBase {
 		public string TempFolderAbsPath { get {
 			string ret = null;
 			if (string.IsNullOrEmpty(this.TempFolderInAppData)) return ret;
-			ret = Path.Combine(Assembler.InstanceInitialized.RepositoryDllJsonStrategy.RootPath, this.TempFolderInAppData);
+			ret = Path.Combine(Assembler.InstanceInitialized.RepositoryDllJsonStrategies.RootPath, this.TempFolderInAppData);
 			return ret;
 		} }
 		object avoidingMessIfInstantiatedInAssembler;
@@ -77,7 +77,7 @@ namespace Sq1.Core.StrategyBase {
 			if (string.IsNullOrWhiteSpace(this.TempFolderInAppData) == false) {
 				// http://stackoverflow.com/questions/875723/how-to-debug-break-in-codedom-compiled-code
 				compilerParameters.GenerateInMemory = false;
-				string tmpAbsPath = Path.Combine(Assembler.InstanceInitialized.RepositoryDllJsonStrategy.RootPath, this.TempFolderInAppData);
+				string tmpAbsPath = Path.Combine(Assembler.InstanceInitialized.RepositoryDllJsonStrategies.RootPath, this.TempFolderInAppData);
 				compilerParameters.TempFiles = new TempFileCollection(tmpAbsPath, true);
 				compilerParameters.IncludeDebugInformation = true;
 			}

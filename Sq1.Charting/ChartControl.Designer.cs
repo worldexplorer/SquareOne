@@ -37,13 +37,14 @@ namespace Sq1.Charting {
 			this.RangeBar = new Sq1.Widgets.RangeBar.RangeBarDateTime();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerChartVsRange)).BeginInit();
 			this.splitContainerChartVsRange.Panel1.SuspendLayout();
+			this.splitContainerChartVsRange.Panel2.SuspendLayout();
 			this.splitContainerChartVsRange.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// hScrollBar
 			// 
 			this.hScrollBar.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.hScrollBar.Location = new System.Drawing.Point(0, 303);
+			this.hScrollBar.Location = new System.Drawing.Point(0, 323);
 			this.hScrollBar.Name = "hScrollBar";
 			this.hScrollBar.Size = new System.Drawing.Size(840, 17);
 			this.hScrollBar.TabIndex = 0;
@@ -54,6 +55,7 @@ namespace Sq1.Charting {
 			this.splitContainerChartVsRange.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.splitContainerChartVsRange.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainerChartVsRange.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
 			this.splitContainerChartVsRange.Location = new System.Drawing.Point(0, 0);
 			this.splitContainerChartVsRange.Name = "splitContainerChartVsRange";
@@ -69,9 +71,12 @@ namespace Sq1.Charting {
 			this.splitContainerChartVsRange.Panel1.Controls.Add(this.multiSplitRowsVolumePrice);
 			this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelVolume);
 			this.splitContainerChartVsRange.Panel1.Controls.Add(this.PanelPrice);
+			// 
+			// splitContainerChartVsRange.Panel2
+			// 
 			this.splitContainerChartVsRange.Panel2.Controls.Add(this.RangeBar);
-			this.splitContainerChartVsRange.Size = new System.Drawing.Size(840, 303);
-			this.splitContainerChartVsRange.SplitterDistance = 246;
+			this.splitContainerChartVsRange.Size = new System.Drawing.Size(840, 323);
+			this.splitContainerChartVsRange.SplitterDistance = 266;
 			this.splitContainerChartVsRange.TabIndex = 0;
 			this.splitContainerChartVsRange.TabStop = false;
 			// 
@@ -177,7 +182,7 @@ namespace Sq1.Charting {
 			this.RangeBar.RangeMin = new System.DateTime(2010, 5, 12, 0, 0, 0, 0);
 			this.RangeBar.RangeScaleLabelDistancePx = 0;
 			this.RangeBar.ScalePenWidth = 1F;
-			this.RangeBar.Size = new System.Drawing.Size(811, 53);
+			this.RangeBar.Size = new System.Drawing.Size(840, 53);
 			this.RangeBar.TabIndex = 0;
 			this.RangeBar.ValueFormat = "dd-MMM-yy";
 			this.RangeBar.ValueMax = new System.DateTime(2012, 5, 12, 0, 0, 0, 0);
@@ -187,11 +192,13 @@ namespace Sq1.Charting {
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.SystemColors.Info;
 			this.Controls.Add(this.hScrollBar);
 			this.Controls.Add(this.splitContainerChartVsRange);
 			this.Name = "ChartControl";
-			this.Size = new System.Drawing.Size(840, 320);
+			this.Size = new System.Drawing.Size(840, 340);
 			this.splitContainerChartVsRange.Panel1.ResumeLayout(false);
+			this.splitContainerChartVsRange.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerChartVsRange)).EndInit();
 			this.splitContainerChartVsRange.ResumeLayout(false);
 			this.ResumeLayout(false);

@@ -4,27 +4,27 @@ using System.Drawing;
 using System.Threading;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.Accounting;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
 using Sq1.Core.Livesim;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Broker {
 	public partial class BrokerAdapter {
-		public const string NO_BROKER_ADAPTER = "--- No Broker Adapter ---";
-
-		[JsonIgnore]		   object				lockSubmitOrders;
-		[JsonIgnore]	public string				Name				{ get; protected set; }
-		[JsonIgnore]	public bool					HasMockInName		{ get { return Name.Contains("Mock"); } }
-		[JsonIgnore]	public bool					HasBacktestInName	{ get { return Name.Contains("Backtest"); } }
-		[JsonIgnore]	public Bitmap				Icon				{ get; protected set; }
-		[JsonIgnore]	public DataSource			DataSource			{ get; protected set; }
-		[JsonIgnore]	public OrderProcessor		OrderProcessor		{ get; protected set; }
-		[JsonIgnore]	public StreamingAdapter	StreamingAdapter	{ get; protected set; }
-//		[JsonIgnore]	public List<Account>		Accounts			{ get; protected set; }
-		[JsonProperty]	public Account				Account;
-		[JsonIgnore]	public Account				AccountAutoPropagate {
+		[JsonIgnore]				object				lockSubmitOrders;
+		[JsonIgnore]	public		string				Name				{ get; protected set; }
+		[JsonIgnore]	public		string				ReasonToExist		{ get; protected set; }
+		[JsonIgnore]	public		bool				HasBacktestInName	{ get { return Name.Contains("Backtest"); } }
+		[JsonIgnore]	public		Bitmap				Icon				{ get; protected set; }
+		[JsonIgnore]	public		DataSource			DataSource			{ get; protected set; }
+		[JsonIgnore]	public		OrderProcessor		OrderProcessor		{ get; protected set; }
+		[JsonIgnore]	public		StreamingAdapter	StreamingAdapter	{ get; protected set; }
+//		[JsonIgnore]	public		List<Account>		Accounts			{ get; protected set; }
+		[JsonProperty]	public		Account				Account;
+		[JsonIgnore]	public		Account				AccountAutoPropagate {
 			get { return this.Account; }
 			set {
 				this.Account = value;
@@ -46,28 +46,83 @@ namespace Sq1.Core.Broker {
 		[JsonIgnore]	public OrderCallbackDupesChecker OrderCallbackDupesChecker { get; protected set; }
 		[JsonIgnore]	public bool SignalToTerminateAllOrderTryFillLoopsInAllMocks = false;
 
-		[JsonIgnore]	public LivesimBroker			LivesimBroker			{ get; protected set; }
+		[JsonIgnore]				ConnectionState			upstreamConnectionState;
+		[JsonIgnore]	public		ConnectionState			UpstreamConnectionState	{
+			get { return this.upstreamConnectionState; }
+			protected set {
+				if (this.upstreamConnectionState == value) return;	//don't invoke StateChanged if it didn't change
+				if (this.upstreamConnectionState == ConnectionState.UpstreamConnected_downstreamSubscribedAll
+								&& value == ConnectionState.JustInitialized_solidifiersUnsubscribed) {
+					Assembler.PopupException("YOU_ARE_RESETTING_ORIGINAL_DATASOURCE_WITH_LIVESIM_DATASOURCE", null, false);
+				}
+				if (this.upstreamConnectionState == ConnectionState.UpstreamConnected_downstreamUnsubscribed
+								&& value == ConnectionState.JustInitialized_solidifiersSubscribed) {
+					Assembler.PopupException("WHAT_DID_YOU_INITIALIZE? IT_WAS_ALREADY_INITIALIZED_AND_UPSTREAM_CONNECTED", null, false);
+				}
+				this.upstreamConnectionState = value;
+				//copypaste from StreamingAdapter this.RaiseOnConnectionStateChanged();
+			}
+		}
+		[JsonProperty]	public		bool					UpstreamConnected					{ get {
+			bool ret = false;
+#region copypaste from StreamingAdapter
+			//switch (this.UpstreamConnectionState) {
+			//    case ConnectionState.UnknownConnectionState:											ret = false;	break;
+			//    case ConnectionState.JustInitialized_solidifiersUnsubscribed:			ret = false;	break;
+			//    case ConnectionState.JustInitialized_solidifiersSubscribed:				ret = false;	break;
+			//    case ConnectionState.DisconnectedJustConstructed:						ret = false;	break;
 
+			//    // used in QuikStreamingAdapter
+			//    case ConnectionState.UpstreamConnected_downstreamUnsubscribed:			ret = true;		break;
+			//    case ConnectionState.UpstreamConnected_downstreamSubscribed:			ret = true;		break;
+			//    case ConnectionState.UpstreamConnected_downstreamSubscribedAll:			ret = true;		break;
+			//    case ConnectionState.UpstreamConnected_downstreamUnsubscribedAll:		ret = true;		break;
+			//    case ConnectionState.UpstreamDisconnected_downstreamSubscribed:			ret = false;	break;
+			//    case ConnectionState.UpstreamDisconnected_downstreamUnsubscribed:		ret = false;	break;
+
+			//    // used in QuikBrokerAdapter
+			//    case ConnectionState.SymbolSubscribed:					ret = true;		break;
+			//    case ConnectionState.SymbolUnsubscribed:				ret = true;		break;
+			//    case ConnectionState.ErrorConnectingNoRetriesAnymore:	ret = false;	break;
+
+			//    // used in QuikLivesimStreaming
+
+			//    case ConnectionState.ConnectFailed:						ret = false;	break;
+			//    case ConnectionState.DisconnectFailed:					ret = false;	break;		// can still be connected but by saying NotConnected I prevent other attempt to subscribe symbols; use "Connect" button to resolve
+
+			//    default:
+			//        Assembler.PopupException("ADD_HANDLER_FOR_NEW_ENUM_VALUE this.ConnectionState[" + this.UpstreamConnectionState + "]");
+			//        ret = false;
+			//        break;
+			//}
+#endregion
+			return ret;
+		} }
+		[JsonIgnore]	public LivesimBroker			LivesimBroker_ownImplementation			{ get; protected set; }
+
+		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public BrokerAdapter() {
+		    string msg = "We should never be here; skip instantiation by Activator in MainModule::InitializeProviders()";
+		    //throw new Exception(msg);
+		}
+
+		public BrokerAdapter(string reasonToExist) {
+			ReasonToExist					= reasonToExist;
 			//Accounts = new List<Account>();
-			this.lockSubmitOrders = new object();
-			this.AccountAutoPropagate = new Account("ACCTNR_NOT_SET", -1000);
-			this.OrderCallbackDupesChecker = new OrderCallbackDupesCheckerTransparent(this);
+			this.lockSubmitOrders			= new object();
+			this.AccountAutoPropagate		= new Account("ACCTNR_NOT_SET", -1000);
+			this.OrderCallbackDupesChecker	= new OrderCallbackDupesCheckerTransparent(this);
 		}
-		public virtual void Initialize(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
-			this.DataSource = dataSource;
-			this.StreamingAdapter = streamingAdapter;
-			this.OrderProcessor = orderProcessor;
+		public virtual void InitializeDataSource_inverse(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
+			this.DataSource			= dataSource;
+			this.StreamingAdapter	= streamingAdapter;
+			this.OrderProcessor		= orderProcessor;
 			this.AccountAutoPropagate.Initialize(this);
-			this.LivesimBroker		= new LivesimBroker(true);
+			//NULL_UNTIL_QUIK_PROVIDES_OWN_DDE_REDIRECTOR this.LivesimBroker_ownImplementation		= new LivesimBrokerDefault(true);
 			//this.LivesimBroker.Initialize(dataSource);
+			this.UpstreamConnectionState = ConnectionState.UnknownConnectionState;
 		}
-		public virtual void Connect() {
-			throw new Exception("please override BrokerAdapter::Connect() for BrokerAdapter.Name=[" + Name + "]");
-		}
-		public virtual void Disconnect() {
-			throw new Exception("please override BrokerAdapter::Connect() for BrokerAdapter.Name=[" + Name + "]");
-		}
+
 		protected void checkOrderThrowInvalid(Order orderToCheck) {
 			if (orderToCheck.Alert == null) {
 				throw new Exception("order[" + orderToCheck + "].Alert == Null");
@@ -122,7 +177,7 @@ namespace Sq1.Core.Broker {
 				}
 				Order firstOrder = ordersFromAlerts[0];
 				try {
-					if (Thread.CurrentThread.Name != firstOrder.ToString()) Thread.CurrentThread.Name = firstOrder.ToString();
+					if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) Thread.CurrentThread.Name = firstOrder.ToString();
 				} catch (Exception e) {
 					Assembler.PopupException("can not set Thread.CurrentThread.Name=[" + firstOrder + "]", e);
 				}
@@ -132,30 +187,29 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException(msg, e);
 			}
 		}
-		public virtual void SubmitOrders(IList<Order> orders) {
-			string msig = this.Name + "::SubmitOrders(): ";
-			List<Order> ordersToExecute = new List<Order>();
-			foreach (Order order in orders) {
-				if (order.Alert.IsBacktestingNoLivesimNow_FalseIfNoBacktester == true || this.HasBacktestInName) {
-					string msg = "Backtesting orders should not be routed to AnyBrokerAdapters, but simulated using MarketSim; order=[" + order + "]";
-					throw new Exception(msg);
+		public virtual void SubmitOrders(IList<Order> orders) { lock (this.lockSubmitOrders) {
+				string msig = this.Name + "::SubmitOrders(): ";
+				List<Order> ordersToExecute = new List<Order>();
+				foreach (Order order in orders) {
+					if (order.Alert.IsBacktestingNoLivesimNow_FalseIfNoBacktester == true || this.HasBacktestInName) {
+						string msg = "Backtesting orders should not be routed to AnyBrokerAdapters, but simulated using MarketSim; order=[" + order + "]";
+						throw new Exception(msg);
+					}
+					if (String.IsNullOrEmpty(order.Alert.AccountNumber)) {
+						string msg = "IsNullOrEmpty(order.Alert.AccountNumber): order=[" + order + "]";
+						throw new Exception(msg);
+					}
+					if (order.Alert.AccountNumber.StartsWith("Paper")) {
+						string msg = "NO_PAPER_ORDERS_ALLOWED: order=[" + order + "]";
+						throw new Exception(msg);
+					}
+					if (ordersToExecute.Contains(order)) {
+						string msg = "ORDER_DUPLICATE_IN_NEW: order=[" + order + "]";
+						Assembler.PopupException(msg, null, false);
+						continue;
+					}
+					ordersToExecute.Add(order);
 				}
-				if (String.IsNullOrEmpty(order.Alert.AccountNumber)) {
-					string msg = "IsNullOrEmpty(order.Alert.AccountNumber): order=[" + order + "]";
-					throw new Exception(msg);
-				}
-				if (order.Alert.AccountNumber.StartsWith("Paper")) {
-					string msg = "NO_PAPER_ORDERS_ALLOWED: order=[" + order + "]";
-					throw new Exception(msg);
-				}
-				if (ordersToExecute.Contains(order)) {
-					string msg = "ORDER_DUPLICATE_IN_NEW: order=[" + order + "]";
-					Assembler.PopupException(msg, null, false);
-					continue;
-				}
-				ordersToExecute.Add(order);
-			}
-			lock (this.lockSubmitOrders) {
 				foreach (Order order in ordersToExecute) {
 					string msg = "Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
 						+ " SernoSession[" + order.SernoSession + "]";
@@ -185,14 +239,8 @@ namespace Sq1.Core.Broker {
 					//this.OrderProcessor.DataSnapshot.MoveAlongStateLists(order);
 					this.OrderSubmit(order);
 				}
-			}
-		}
-		public virtual void OrderSubmit(Order order) {
-			throw new Exception("please override BrokerAdapter::SubmitOrder() for BrokerAdapter.Name=[" + Name + "]");
-		}
-		public virtual void CancelReplace(Order order, Order newOrder) {
-			throw new Exception("please override BrokerAdapter::CancelReplace() for BrokerAdapter.Name=[" + Name + "]");
-		}
+			} }
+
 		public virtual void KillSelectedOrders(IList<Order> victimOrders) {
 			foreach (Order victimOrder in victimOrders) {
 				if (victimOrder.Alert.IsBacktestingNoLivesimNow_FalseIfNoBacktester == true) {
@@ -202,39 +250,7 @@ namespace Sq1.Core.Broker {
 				this.OrderKillSubmit(victimOrder);
 			}
 		}
-		//public virtual void KillAll(IList<Order> victimOrders) {
-		//	foreach (Order victimOrder in victimOrders) {
-		//		this.SubmitKillOrder(victimOrder);
-		//	}
-		//}
-		public virtual void OrderKillSubmit(Order victimOrder) {
-			throw new Exception("please override BrokerAdapter::OrderKillSubmit() for BrokerAdapter.Name=[" + Name + "]");
-		}
-		public virtual void OrderPendingKillWithoutKillerSubmit(Order victimOrder) {
-			throw new Exception("please override BrokerAdapter::OrderPendingKillSubmit() for BrokerAdapter.Name=[" + Name + "]");
-		}
-		public virtual void OrderKillSubmitUsingKillerOrder(Order killerOrder) {
-//TEMPLATE_BEGIN__DONT_WANT_ANOTHER_PROTECTED_CHECKTHROW
-//			if (string.IsNullOrEmpty(killerOrder.VictimGUID)) {
-//				throw new Exception("killerOrder.KillerForGUID=EMPTY");
-//			}
-//			if (killerOrder.VictimToBeKilled == null) {
-//				throw new Exception("killerOrder.VictimToBeKilled=null");
-//			}
-//
-//			string msg = "State[" + killerOrder.State + "]"
-//				+ " [" + killerOrder.Alert.Symbol + "/" + killerOrder.Alert.SymbolClass + "]"
-//				+ " VictimToBeKilled.SernoExchange[" + killerOrder.VictimToBeKilled.SernoExchange + "]";
-//			msg = Name + "::UsingKillerOrder(): " + msg;
-//			Assembler.PopupException(msg);
-//			OrderStateMessage omsgKiller = new OrderStateMessage(killerOrder, OrderState.KillerPreSubmit, msg);
-//			this.OrderProcessor.UpdateOrderStateAndPostProcess(killerOrder, omsgKiller);
-//TEMPLATE_END__DONT_WANT_ANOTHER_PROTECTED_CHECKTHROW
-			throw new Exception("please override BrokerAdapter::OrderKillSubmitUsingKillerOrder() for BrokerAdapter.Name=[" + Name + "]");
-		}
 
-		public virtual void OrderPreSubmitEnrichBrokerSpecificInjection(Order order) {
-		}
 		public virtual void OrderPreSubmitEnrichCheckThrow(Order order) {
 			string msg = Name + "::OrderPreSubmitChecker():"
 				+ " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
@@ -275,10 +291,6 @@ namespace Sq1.Core.Broker {
 					throw new Exception(msg);
 				}
 			}
-		}
-
-		public virtual string ModifyOrderTypeAccordingToMarketOrderAsBrokerSpecificInjection(Order order) {
-			return "";
 		}
 		public virtual void ModifyOrderTypeAccordingToMarketOrderAs(Order order) {
 			string msig = " //" + Name + "::ModifyOrderTypeAccordingToMarketOrderAs():"
@@ -408,74 +420,6 @@ namespace Sq1.Core.Broker {
 			order.AppendMessage(msg + msig);
 		}
 
-// NOT_USED_AND_DONT_STEAL_THE_JOB_FROM_ORDER_PROCESSOR
-//		public void CallbackOrderStateReceived(Order orderWithNewState) {
-//			string msig = "BrokerAdapter::CallbackOrderStateReceived(): orderExecuted.State=[" + orderWithNewState.State + "]: ";
-//			string msg = "";
-//			try {
-//				switch (orderWithNewState.State) {
-//					case OrderState.WaitingBrokerFill:
-//						Order mustBeSame = this.OrderProcessor.DataSnapshot.OrdersPending.ScanRecentForSimilarNotSamePendingOrder(orderWithNewState);
-//						//Order mustBeSame = this.OrderProcessor.DataSnapshot.OrdersAll.FindSimilarNotSamePendingOrder(orderWithNewState);
-//						if (mustBeSame == null) break;
-//						bool identical = mustBeSame.Alert.IsIdenticalOrderlessPriceless(orderWithNewState.Alert);
-//						if (identical == false) {
-//							msg += "PENDING_MISSING: How come it wasn't added in OrderSubmit()??? orderExecuted["
-//								+ orderWithNewState + "] mustBeSame[" + mustBeSame + "]";
-//							//orderExecuted.AppendMessage(msig + msg);
-//							//Assembler.PopupException(msg);
-//						} else {
-//							msg += "SECOND_PENDING_ADDED_OK";
-//							//orderExecuted.AppendMessage(msig + msg);
-//							//Assembler.PopupException(msg);
-//						}
-//						break;
-//					case OrderState.KilledPending:
-//						//DONT_STEAL_JOB_FROM_ORDER_PROCESSOR this.removeOrdersPendingOnFilledCallback(orderWithNewState, msig);
-//						this.OrderProcessor.PostKillWithoutKiller_removeAlertsPendingFromExecutorDataSnapshot(orderWithNewState, msig);
-//						break;
-//					case OrderState.KillerDone:
-//						this.OrderProcessor.PostKillUsingKiller_forBothKillerAndVictim_removeAlertsPendingFromExecutorDataSnapshot(orderWithNewState, msig);
-//						break;
-//					case OrderState.Rejected:
-//					case OrderState.SLAnnihilated:
-//					case OrderState.TPAnnihilated:
-//					case OrderState.FilledPartially:
-//					case OrderState.Filled:
-//						//this.RemoveOrdersPendingOnFilledCallback(orderWithNewState, msig);
-//						break;
-//					default:
-//						msg += "STATE_UNEXPECTED";
-//						orderWithNewState.AppendMessage(msig + msg);
-//						break;
-//				}
-//			} catch (Exception e) {
-//				Assembler.PopupException(msig, e);
-//			}
-//			try {
-//				this.OrderProcessor.InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter(orderWithNewState);
-//			} catch (Exception e) {
-//				Assembler.PopupException("InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter()" + msig, e);
-//			}
-//		}
-// NOT_USED_AND_DONT_STEAL_THE_JOB_FROM_ORDER_PROCESSOR 
-//		void removeOrdersPendingOnFilledCallback(Order orderExecuted, string msig) {
-//			msig = "RemoveOrdersPendingOnFilledCallback(): ";
-//			//if (OrderStatesCollections.CemeteryHealthy.OrderStates.Contains(orderExecuted.State) == false) return;
-//
-//			//string msg = this.OrderProcessor.DataSnapshot.OrdersPending.ToStringSummary();
-//			//bool removed = this.OrderProcessor.DataSnapshot.OrdersPending.Remove(orderExecuted);
-//			//msg += " ...REMOVED(" + removed + ")=> " + this.OrderProcessor.DataSnapshot.OrdersPending.ToStringSummary();
-//			OrderLaneByState lane = this.OrderProcessor.DataSnapshot.SuggestLaneByOrderStateNullUnsafe(orderExecuted.State);
-//			string msg = (lane != null) ? lane.ToString() : "NO_SUGGESTION_FOR[" + orderExecuted.State + "]";
-//
-//			if (orderExecuted.Alert.IsExitAlert && orderExecuted.Alert.PositionAffected.IsExitFilled == false) {
-//				msg = "WARNING_POSITION_STILL_OPEN "
-//					//+ " Alert.isExitAlert && PositionAffected.IsExitFilled=false"
-//					+ msg;
-//			}
-//			orderExecuted.AppendMessage(msig + msg);
-//		}
 		public Order ScanEvidentLanesForGuidNullUnsafe(string GUID, List<OrderLane> orderLanes = null, char separator = ';') {
 			string msig = " //" + this.Name;
 			string orderLanesSearchedAsString = "";
@@ -518,15 +462,14 @@ namespace Sq1.Core.Broker {
 			return orderFound;
 		}
 
-		public virtual void MoveStopLossOverrideable(PositionPrototype proto, double newActivationOffset, double newStopLossNegativeOffset) {
-			// broker adapters might put some additional order processing,
-			// but they must call OrderProcessor.MoveStopLoss() or imitate similar mechanism
-			this.OrderProcessor.MoveStopLoss(proto, newActivationOffset, newStopLossNegativeOffset);
-		}
-		public void MoveTakeProfitOverrideable(PositionPrototype proto, double newTakeProfitPositiveOffset) {
-			// broker adapters might put some additional order processing,
-			// but they must call OrderProcessor.MoveStopLoss() or imitate similar mechanism
-			this.OrderProcessor.MoveTakeProfit(proto, newTakeProfitPositiveOffset);
+		public override string ToString() {
+			string dataSourceAsString = this.DataSource != null ? this.DataSource.ToString() : "NOT_INITIALIZED_YET";
+			string ret = this.Name + "/[" + this.UpstreamConnectionState + "]"
+				//+ ": UpstreamSymbols[" + this.SymbolsUpstreamSubscribedAsString + "]"
+				//+ "DataSource[" + dataSourceAsString + "]"
+				+ " (" + this.ReasonToExist + ")"
+				;
+			return ret;
 		}
 	}
 }

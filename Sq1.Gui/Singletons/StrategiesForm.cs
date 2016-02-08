@@ -16,7 +16,7 @@ namespace Sq1.Gui.Singletons {
 			InitializeComponent();
 		}
 
-		public void Initialize(RepositoryDllJsonStrategy strategyRepository) {
+		public void Initialize(RepositoryDllJsonStrategies strategyRepository) {
 			StrategiesForm.Instance.StrategiesTreeControl.Initialize(strategyRepository);
 		}
 	}

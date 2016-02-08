@@ -42,7 +42,7 @@
     <StartAction>Project</StartAction>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\Sq1.Gui\bin\Release\</OutputPath>
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
@@ -53,9 +53,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DefineConstants>TRACE;DEBUG;NON_DOUBLE_BUFFERE_disabled;DEBUG_HEAVY_disabled;TEST_COMPATIBILITY_disabled;USE_DATASERIES_MINMAX_disabled</DefineConstants>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <OutputPath>..\Sq1.Gui\bin\Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>
@@ -81,6 +84,10 @@
       <DependentUpon>ChartControl.cs</DependentUpon>
     </Compile>
     <Compile Include="ChartControl.EventConsumer.cs">
+      <DependentUpon>ChartControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ChartControl.Unblink.cs">
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
@@ -333,6 +340,10 @@
   <ItemGroup>
     <None Include="icons\45degrees3-ShortEntryUnknown.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Sq1.Charting-LICENSE.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

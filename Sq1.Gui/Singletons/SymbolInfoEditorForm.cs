@@ -12,7 +12,7 @@ namespace Sq1.Gui.Singletons {
 		public SymbolInfoEditorForm() {
 			InitializeComponent();
 		}
-		public void Initialize(RepositorySerializerSymbolInfo repositorySerializerSymbolInfo, RepositoryJsonDataSource repositoryJsonDataSource) {
+		public void Initialize(RepositorySerializerSymbolInfos repositorySerializerSymbolInfo, RepositoryJsonDataSources repositoryJsonDataSource) {
 			this.SymbolEditorControl.Initialize(repositorySerializerSymbolInfo, repositoryJsonDataSource);
 		}
 	}

@@ -4,6 +4,7 @@ using System.Diagnostics;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Backtesting;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Execution {
 	public partial class Position : IDisposable {
@@ -362,6 +363,12 @@ namespace Sq1.Core.Execution {
 			if (exitBar.ParentBars != this.EntryBar.ParentBars) {
 				bool skipWhenRemovingPendingAlertBacktestLeftOpen = this.EntryBar.ParentBars.ReasonToExist.Contains(Backtester.BARS_BACKTEST_CLONE_PREFIX)
 					&& exitBar.ParentBars.ReasonToExist.Contains(Backtester.BARS_BACKTEST_CLONE_PREFIX) == false;
+
+				if (skipWhenRemovingPendingAlertBacktestLeftOpen == false) {
+					skipWhenRemovingPendingAlertBacktestLeftOpen = this.EntryBar.ParentBars.ReasonToExist.Contains(Livesimulator.BARS_LIVESIM_CLONE_PREFIX)
+						&& exitBar.ParentBars.ReasonToExist.Contains(Livesimulator.BARS_LIVESIM_CLONE_PREFIX) == false;
+				}
+
 				if (skipWhenRemovingPendingAlertBacktestLeftOpen) {
 					string msg = "NOW_LOOK_AT_CALLSTACK__3_LEVELS_LOWER_YOU_SHOULD_SEE__ScriptExecutor.RemovePendingExitAlertPastDueClosePosition()";
 				} else {

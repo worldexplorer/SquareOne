@@ -34,7 +34,7 @@ namespace Sq1.Widgets.Correlation {
 			}
 			if (this.sequencedOriginal != null && this.sequencedOriginal.ToString() == originalSequencedBacktests.ToString()) return;
 
-			RepositorySerializerSymbolInfo symbolInfoRep = Assembler.InstanceInitialized.RepositorySymbolInfo;
+			RepositorySerializerSymbolInfos symbolInfoRep = Assembler.InstanceInitialized.RepositorySymbolInfos;
 			if (this.sequencedOriginal != null) {
 				SymbolInfo symbolInfoOld = symbolInfoRep.FindSymbolInfoNullUnsafe(this.sequencedOriginal.Symbol);
 				if (symbolInfoOld != null) {
@@ -74,7 +74,7 @@ namespace Sq1.Widgets.Correlation {
 					Assembler.PopupException(msg);
 				} else {
 					if (string.IsNullOrEmpty(this.PriceFormat)) {
-						this.PriceFormat = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(symbolFound).PriceFormat;
+						this.PriceFormat = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(symbolFound).PriceFormat;
 					}
 				}
 			}

@@ -23,11 +23,11 @@ namespace Sq1.Core.StrategyBase {
 			//bool a = this.executor.Backtester.IsBacktestingNow;
 
 			Position posWithAlert = executor.BuyOrShortAlertCreateRegister (
-				executor.Bars.BarStreamingNullUnsafe, proto.PriceEntry,
+				this.executor.Bars.BarStreamingNullUnsafe, proto.PriceEntry,
 				proto.SignalEntry + "protoEntry@" + proto.PriceEntry,
 				MarketConverter.EntryDirectionFromLongShort(proto.LongShort),
 				MarketConverter.EntryMarketLimitStopFromDirection(
-					executor.Bars.BarStreamingNullUnsafeCloneReadonly.Close, proto.PriceEntry, proto.LongShort)
+					this.executor.Bars.BarStreamingNullUnsafeCloneReadonly.Close, proto.PriceEntry, proto.LongShort)
 				);
 			if (posWithAlert == null) {
 				string msg = "man I don't understand this null; out-of-bar limit should still leave a pending Alert.PositionAffected";
@@ -113,7 +113,7 @@ namespace Sq1.Core.StrategyBase {
 				proto.PriceEntryAbsorb(position.EntryFilledPrice);
 			}
 			Alert alertStopLoss = executor.SellOrCoverAlertCreateDontRegisterInNew (
-				executor.Bars.BarStreamingNullUnsafe,
+				this.executor.Bars.BarStreamingNullUnsafe,
 				position, proto.PriceStopLoss,
 				proto.SignalStopLoss + "protoStopLossExit:" + proto.StopLossActivationNegativeOffset
 					+ "@" + proto.StopLossNegativeOffset + " for " + position.EntrySignal,
@@ -128,7 +128,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			alertStopLoss.PriceStopLimitActivation = 0;
 			if (proto.StopLossActivationNegativeOffset < 0) alertStopLoss.PriceStopLimitActivation = proto.PriceStopLossActivation;
-			if (proto.StopLossAlertForAnnihilation != null && this.executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) {
+			if (proto.StopLossAlertForAnnihilation != null && this.executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
 				string msg = "CLEANUP: I was trying to catch MoveStopLoss::if(proto.StopLossAlertForAnnihilation==null)"
 					+ " so I thought there is a new prototype assigned to a position,"
 					+ " since we never put null directly proto.StopLossAlertForAnnihilation";
@@ -150,7 +150,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			Alert alertTakeProfit = executor.SellOrCoverAlertCreateDontRegisterInNew (
-				executor.Bars.BarStreamingNullUnsafe,
+				this.executor.Bars.BarStreamingNullUnsafe,
 				position, proto.PriceTakeProfit,
 				proto.SignalTakeProfit + "protoTakeProfitExit:" + proto.TakeProfitPositiveOffset
 					+ "@" + proto.PriceTakeProfit + " for " + position.EntrySignal,
@@ -191,7 +191,7 @@ namespace Sq1.Core.StrategyBase {
 					throw new Exception(msg);
 				}
 				killed = executor.AnnihilateCounterpartyAlertDispatched(position.Prototype.StopLossAlertForAnnihilation);
-				if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) {
+				if (executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
 					string msg = "killed[" + killed + "] counterParty [" + position.Prototype.StopLossAlertForAnnihilation + "]";
 					this.appendMessageToTakeProfitOrder(position, msg);
 				}
@@ -213,7 +213,7 @@ namespace Sq1.Core.StrategyBase {
 					throw new Exception(msg);
 				}
 				killed = executor.AnnihilateCounterpartyAlertDispatched(position.Prototype.TakeProfitAlertForAnnihilation);
-				if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) {
+				if (executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
 					string msg = "killed[" + killed + "] counterParty [" + position.Prototype.TakeProfitAlertForAnnihilation + "]";
 					this.appendMessageToStopLossOrder(position, msg);
 				}
@@ -290,28 +290,34 @@ namespace Sq1.Core.StrategyBase {
 			switch (proto.StopLossAlertForAnnihilation.MarketLimitStop) {
 				case MarketLimitStop.StopLimit:
 					#region StopLimit are considered NYI in Backtester.QuoteGenerator; switched to Stops since they do SL job perfectly;
+					//v1 ScriptExecutor trying be too smart
 					//proto.checkOffsetsThrowBeforeAbsorbing(proto.TakeProfitPositiveOffset, newStopLossNegativeOffset, newActivationOffset);
-					if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
-						// NOPE!!! I WANT ALL ALERTS TO STAY IN HISTORY!!! just move SL in Alert, change Prices immediately; no orderKill/newOrder for StopLoss (Alerts don't have OrdersFollowed)
-						// PositionPrototypeActivator.checkThrowNewPriceMakesSense() made sure Alert!=null
-						// SL_WILL_BE_KILLED proto.StopLossAlertForAnnihilation.PriceScript = proto.OffsetToPrice(newStopLossNegativeOffset);
-						// SL_WILL_BE_KILLED proto.StopLossAlertForAnnihilation.PriceStopLimitActivation = proto.OffsetToPrice(newActivationOffset);
-						proto.SetNewStopLossOffsets(newStopLossNegativeOffset, newActivationOffset);
-						// TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
-						executor.MarketsimBacktest.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
-					} else {
-						executor.DataSource_fromBars.BrokerAdapter.MoveStopLossOverrideable(proto, newActivationOffset, newStopLossNegativeOffset);
-					}
+					//if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+					//    // NOPE!!! I WANT ALL ALERTS TO STAY IN HISTORY!!! just move SL in Alert, change Prices immediately; no orderKill/newOrder for StopLoss (Alerts don't have OrdersFollowed)
+					//    // PositionPrototypeActivator.checkThrowNewPriceMakesSense() made sure Alert!=null
+					//    // SL_WILL_BE_KILLED proto.StopLossAlertForAnnihilation.PriceScript = proto.OffsetToPrice(newStopLossNegativeOffset);
+					//    // SL_WILL_BE_KILLED proto.StopLossAlertForAnnihilation.PriceStopLimitActivation = proto.OffsetToPrice(newActivationOffset);
+					//    proto.SetNewStopLossOffsets(newStopLossNegativeOffset, newActivationOffset);
+					//    // TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
+					//    executor.BacktesterOrLivesimulator.BacktestDataSource.BrokerAsBacktest_nullUnsafe.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
+					//} else {
+					//	this.executor.DataSource_fromBars.BrokerAdapter.MoveStopLossOverrideable(proto, newActivationOffset, newStopLossNegativeOffset);
+					//}
+					//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
+					this.executor.DataSource_fromBars.BrokerAdapter.MoveStopLossOverrideable(proto, newActivationOffset, newStopLossNegativeOffset);
 					break;
 					#endregion
 				case MarketLimitStop.Stop:
-					if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
-						proto.SetNewStopLossOffsets(newStopLossNegativeOffset, 0);
-						// TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
-						executor.MarketsimBacktest.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
-					} else {
-						executor.DataSource_fromBars.BrokerAdapter.MoveStopLossOverrideable(proto, 0, newStopLossNegativeOffset);
-					}
+					//v1 ScriptExecutor trying be too smart
+					//if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+					//    proto.SetNewStopLossOffsets(newStopLossNegativeOffset, 0);
+					//    // TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
+					//    executor.MarketsimBacktest.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
+					//} else {
+					//    executor.DataSource_fromBars.BrokerAdapter.MoveStopLossOverrideable(proto, 0, newStopLossNegativeOffset);
+					//}
+					//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
+					this.executor.DataSource_fromBars.BrokerAdapter.MoveStopLossOverrideable(proto, 0, newStopLossNegativeOffset);
 					break;
 				default:
 					string msg = "UNSUPPORTED_STOP_LOSS_CANT_MOVE [" + proto.StopLossAlertForAnnihilation.MarketLimitStop
@@ -333,16 +339,20 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.checkThrowNewTakeProfitOffsetMakesSense(position, newTakeProfitPositiveOffset);
 			//proto.checkOffsetsThrowBeforeAbsorbing(newTakeProfitPositiveOffset, proto.StopLossNegativeOffset, proto.StopLossActivationNegativeOffset);
-			if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
-				// NOPE!!! I WANT ALL ALERTS TO STAY IN HISTORY!!! just move TP in Alert, change Prices immediately; no orderKill/newOrder for TakeProfit (Alerts don't have OrdersFollowed)
-				// PositionPrototypeActivator.checkThrowNewPriceMakesSense() made sure Alert!=null
-				// TP_WILL_BE_KILLED proto.TakeProfitAlertForAnnihilation.PriceScript = proto.OffsetToPrice(newTakeProfitPositiveOffset);
-				proto.SetNewTakeProfitOffset(newTakeProfitPositiveOffset);
-				// TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
-				executor.MarketsimBacktest.SimulateTakeProfitMoved(proto.TakeProfitAlertForAnnihilation);
-			} else {
-				executor.DataSource_fromBars.BrokerAdapter.MoveTakeProfitOverrideable(proto, newTakeProfitPositiveOffset);
-			}
+
+			//v1 ScriptExecutor trying be too smart
+			//if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+			//    // NOPE!!! I WANT ALL ALERTS TO STAY IN HISTORY!!! just move TP in Alert, change Prices immediately; no orderKill/newOrder for TakeProfit (Alerts don't have OrdersFollowed)
+			//    // PositionPrototypeActivator.checkThrowNewPriceMakesSense() made sure Alert!=null
+			//    // TP_WILL_BE_KILLED proto.TakeProfitAlertForAnnihilation.PriceScript = proto.OffsetToPrice(newTakeProfitPositiveOffset);
+			//    proto.SetNewTakeProfitOffset(newTakeProfitPositiveOffset);
+			//    // TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
+			//    this.executor.MarketsimBacktest.SimulateTakeProfitMoved(proto.TakeProfitAlertForAnnihilation);
+			//} else {
+			//    this.executor.DataSource_fromBars.BrokerAdapter.MoveTakeProfitOverrideable(proto, newTakeProfitPositiveOffset);
+			//}
+			//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
+			this.executor.DataSource_fromBars.BrokerAdapter.MoveTakeProfitOverrideable(proto, newTakeProfitPositiveOffset);
 		}
 		void checkThrowPlacingProtoMakesSense(PositionPrototype proto) {
 			string msg = this.ReasonWhyPlacingProtoDoesntMakeSense(proto);
@@ -378,7 +388,7 @@ namespace Sq1.Core.StrategyBase {
 			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
 			bool willBeExecutedImmediately = false;
 			MarketLimitStop planningEntryUsing = MarketConverter.EntryMarketLimitStopFromDirection(
-				executor.Bars.BarStreamingNullUnsafeCloneReadonly.Close, proto.PriceEntry, proto.LongShort);
+				this.executor.Bars.BarStreamingNullUnsafeCloneReadonly.Close, proto.PriceEntry, proto.LongShort);
 
 			string msg = "";
 			Direction dir = MarketConverter.EntryDirectionFromLongShort(proto.LongShort);
@@ -571,24 +581,5 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return SLalert.PriceScriptAligned;
 		}
-		//[Obsolete("USELESS & UNTESTED")]
-		//public double StopLossCurrentNegativeOffsetGetNaNunsafe(PositionPrototype proto) {
-		//	double SL = this.StopLossCurrentGetNaNunsafe(proto);
-		//	if (double.IsNaN(SL)) return SL;
-
-		//	Bar bar = this.executor.Bars.BarStreamingCloneReadonly;
-		//	if (bar == null) {
-		//		string msg = "WHEN?";
-		//		#if DEBUG
-		//		Debugger.Break();
-		//		#endif
-		//		return double.NaN;
-		//	}
-		//	// long has SLalert.PriceScriptAligned < bar.Close; we need NEGATIVE
-		//	double ret = SL - bar.Close;
-		//	Alert SLalert = proto.StopLossAlertForAnnihilation;
-		//	if (SLalert.Direction == Direction.Cover) ret = -ret;
-		//	return ret;
-		//}
 	}
 }

@@ -41,8 +41,8 @@ namespace Sq1.Gui.Forms {
 				DockPanel							dockPanel								{ get { return this.MainForm.DockPanel; } }
 				ScriptEditorFormFactory				scriptEditorFormFactory;
 				
-		public ScriptEditorForm						ScriptEditorForm;
-		public ScriptEditorForm						ScriptEditorFormConditionalInstance		{ get {
+		public	ScriptEditorForm					ScriptEditorForm;
+		public	ScriptEditorForm					ScriptEditorFormConditionalInstance		{ get {
 				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm)) {
 					if (this.Strategy == null) return null;
 					if (this.Strategy.ActivatedFromDll == true) return null;
@@ -180,9 +180,6 @@ namespace Sq1.Gui.Forms {
 			return ret;
 		} }
 
-		System.Threading.Timer timerUnblink;
-		const int timerUnblinkInterval = 200;
-
 
 		// WHATTTTT???? I dont want it "internal" when "private" is omitted
 		ChartFormManager() {
@@ -194,12 +191,6 @@ namespace Sq1.Gui.Forms {
 			this.Executor.EventGenerator.OnStrategyPreExecuteOneQuote	+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyPreExecuteOneQuote_updateBtnStreamingText);
 			this.Executor.EventGenerator.OnStrategyExecutedOneQuote		+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree);
 
-			this.timerUnblink				= new System.Threading.Timer(new TimerCallback(this.timerUnblink_IntervalElapsed), null, Timeout.Infinite, Timeout.Infinite);
-
-			this.colorBackgroundOrange_barsNotSubscribed				= Color.LightSalmon;
-			this.colorBackgroundRed_barsSubscribed_scriptNotTriggering	= Color.FromArgb(255, 230, 230);
-			this.colorBackgroundGreen_barsSubscribed_scriptIsTriggering	= Color.FromArgb(230, 255, 230);
-
 			this.ReportersFormsManager		= new ReportersFormsManager(this);
 
 			// never used in CHART_ONLY, but we have "Open In Current Chart" for Strategies
@@ -210,12 +201,13 @@ namespace Sq1.Gui.Forms {
 			this.DataSnapshotSerializer		= new Serializer<ChartFormDataSnapshot>();
 		}
 
-		Color colorBackgroundOrange_barsNotSubscribed;
-		Color colorBackgroundRed_barsSubscribed_scriptNotTriggering;
-		Color colorBackgroundGreen_barsSubscribed_scriptIsTriggering;
-
 		void eventGenerator_OnStrategyPreExecuteOneQuote_updateBtnStreamingText(object sender, QuoteEventArgs e) {
 			this.ChartForm.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(e.Quote);
+
+			if (this.Executor.Strategy != null) return;
+			//if (this.ChartForm.ChartControl.ChartIsSubscribed_toOwnNonNullBars_expensiveForEachQuote_useCtxChartDownstreamSubscribed) return;
+			if (this.ChartForm.ChartControl.CtxChart.DownstreamSubscribed) return;
+			this.eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree(sender, e);
 		}
 
 
@@ -225,65 +217,16 @@ namespace Sq1.Gui.Forms {
 		// 4. Executor.EventGenerator generates OnStrategyExecutedOneQuote => consumed in GuiThread (here) to unblink Strategy<=Symbol<=DataSource
 		// all the above should be subscribed in Livesim_pre()
 		void eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree(object sender, QuoteEventArgs e) {
-			return;
-			
-			
-			//TODO unblinkDataSourceTree makes the UI laggy
-
-			string symbol = e.Quote.ParentBarStreaming.Symbol;
-			DataSource originalBarsDataSource_evenForLivesimmed = e.Quote.ParentBarStreaming.ParentBars.DataSource;
-
-			if (this.Executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) return;
-
-			// in the future, one chart can be subscribed to many symbols, so executing a Script.OnQuote has to use DataSource+Symbol supplied
-			//NOT_FOR_LIVESIM if (this.ContextCurrentChartOrStrategy.IsStreaming == false) {
-			LivesimStreaming streamingAsLivesimNullUnsafe = this.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe;
-			if (streamingAsLivesimNullUnsafe == null) {
-				string msg = "LivesimDataSource_MUST_BE_INITIALIZED_WITH_ITS_LivesimStreamingQuik_FIXME_IN_SimulationPreBarsSubstitute_overrideable()";
-				Assembler.PopupException(msg, null, false);
-				return;
-			}
 			TreeListView olvTree = DataSourcesForm.Instance.DataSourcesTreeControl.OlvTree;
-			//this.timerUnblink.Change(ChartFormManager.timerUnblinkInterval, Timeout.Infinite);
-			//olvTree.DeselectAll();
-			//DEADLOCK#2 - happens when DdeMessagePump thread wants to switch to GUI thread; switching to GUI thread via trampoline Task releases this method from held in GuiMessageQueue
-			if (olvTree.InvokeRequired) {
-				Task deadlockOtherwize = new Task(delegate {
-					// WRONG_COLOR__QUIKSTREAMINGLIVESIM_HAS_NO_SUBSCRIBERS_AND_DOESNT_PUSH_TO_DISTRIBUTOR__ONLY_SENDS_OVER_DDE
-					//if (streamingAsLivesimNullUnsafe.DataDistributor.DistributionChannels.Count == 0) {
-					//    this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = colorBackgroundOrange_barsNotSubscribed;
-					//} else {
-						this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = this.Executor.IsStreamingTriggeringScript
-							? this.colorBackgroundGreen_barsSubscribed_scriptIsTriggering
-							: this.colorBackgroundRed_barsSubscribed_scriptNotTriggering;
-					//}
-					olvTree.BeginInvoke((MethodInvoker)delegate { olvTree.RefreshObject(this.ChartForm.ChartControl); });
-					if (this.timerUnblink_skipUntilExpires) return;
-					this.timerUnblink_skipUntilExpires = true;
-					this.timerUnblink.Change(ChartFormManager.timerUnblinkInterval, Timeout.Infinite);
+			Action refreshDataSourceTree_invokedInGuiThread_afterTimerExpired = new Action(delegate {
+					if (olvTree.SelectedIndex != -1 && olvTree.SelectedObject == this.ChartForm.ChartControl) {
+						olvTree.SelectedObject = this.Executor.DataSource_fromBars;
+					}
+					olvTree.RefreshObject(this.ChartForm.ChartControl);
+
+					this.ChartForm.BtnStreamingTriggersScript.BackColor = this.ChartForm.ChartControl.ColorBackground_inDataSourceTree;
 				});
-				deadlockOtherwize.Start();
-				return;
-			}
-		}
-		void timerUnblink_IntervalElapsed(object state) {
-			if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) {
-				Thread.CurrentThread.Name = "timerUnblink_IntervalElapsed[" + this.WhoImServing_moveMeToExecutor + "]";
-			}
-			if (this.ChartForm.InvokeRequired) {
-			    this.ChartForm.BeginInvoke(new MethodInvoker(delegate { this.timerUnblink_IntervalElapsed(state); }));
-			    return;
-			}
-			// create an illusion for System.Threading.Timer to wake up in GUI thread, just because we will have to go to GUI thread anyway to unblink
-			this.timerUnblink_IntervalElapsed(null, null);
-		}
-		bool timerUnblink_skipUntilExpires;
-		void timerUnblink_IntervalElapsed(object sender, EventArgs e) {
-			if (this.IsDisposed) return;
-			this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = Color.White;
-			TreeListView olvTree = DataSourcesForm.Instance.DataSourcesTreeControl.OlvTree;
-			olvTree.RefreshObject(this.ChartForm.ChartControl);
-			this.timerUnblink_skipUntilExpires = false;
+			this.ChartForm.ChartControl.OnStrategyExecutedOneQuote_unblinkDataSourceTree(refreshDataSourceTree_invokedInGuiThread_afterTimerExpired);
 		}
 
 		public ChartFormManager(MainForm mainForm, int charSernoDeserialized = -1) : this() {
@@ -361,8 +304,8 @@ namespace Sq1.Gui.Forms {
 			this.ChartForm.Initialize();
 
 			try {
-				string msg = "WHAT_SELECTORS???__IS_THAT_THE_WAY_TO_CLEAR_SLIDERS_AFTER_REMOVING_STRATEGY_FROM_THE_CHART???";
-				Assembler.PopupException(msg, null, false);
+				//string msg = "MUST_BE_AN_OLD_BUG WHAT_SELECTORS???__IS_THAT_THE_WAY_TO_CLEAR_SLIDERS_AFTER_REMOVING_STRATEGY_FROM_THE_CHART???";
+				//Assembler.PopupException(msg, null, false);
 				bool loadNewBars = true;
 				bool skipBacktest = true;
 				bool saveStrategyRequired = false;
@@ -473,7 +416,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			DataSource dataSource = Assembler.InstanceInitialized.RepositoryJsonDataSource.DataSourceFindNullUnsafe(context.DataSourceName);
+			DataSource dataSource = Assembler.InstanceInitialized.RepositoryJsonDataSources.DataSourceFindNullUnsafe(context.DataSourceName);
 			if (dataSource == null) {
 				string msg = "DataSourceName[" + context.DataSourceName + "] not found; WILL_NOT_INITIALIZE Executor.Init(Strategy->BarsLoaded)";
 				Assembler.PopupException(msg + msig);
@@ -497,10 +440,10 @@ namespace Sq1.Gui.Forms {
 			//}
 			
 			//v2: I closed opened the app while streaming from StreamingMock and I want it streaming after app restart!!!
-			if (context.DownstreamSubscribed && context.StreamingIsTriggeringScript && saveStrategyRequired == true) {	// saveStrategyRequired=true for all user-clicked GUI events
-				string msg = "NOT_AN_ERROR__I_REFUSE_TO_STOP_STREAMING__DISABLE_GUI_CONTROLS_THAT_TRIGGER_RELOADING_BARS";
-				Assembler.PopupException(msg + msig, null, false);
-			}
+			//if (context.DownstreamSubscribed && context.StreamingIsTriggeringScript && saveStrategyRequired == true) {	// saveStrategyRequired=true for all user-clicked GUI events
+			//    string msg = "I_SWITCHED_QUOTE_GENERATOR_DURING_LIVESIM I_REFUSE_TO_STOP_STREAMING__DISABLE_GUI_CONTROLS_THAT_TRIGGER_RELOADING_BARS";
+			//    Assembler.PopupException(msg + msig, null, false);
+			//}
 			
 			if (context.ScaleInterval.Scale == BarScale.Unknown) {
 				if (dataSource.ScaleInterval.Scale == BarScale.Unknown) {
@@ -543,7 +486,7 @@ namespace Sq1.Gui.Forms {
 				string strategyName = this.Strategy == null ? "CHART_ONLY" : this.Strategy.Name;
 				this.ChartForm.ChartControl.Initialize(barsClicked, strategyName, loadNewBars, invalidateAllPanels);
 				//SCROLL_TO_SNAPSHOTTED_BAR this.ChartForm.ChartControl.ScrollToLastBarRight();
-				this.ChartForm.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
+				//this.ChartForm.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 			}
 
 			// set original Streaming Icon before we lost in simulationPreBarsSubstitute() and launched backtester in another thread
@@ -691,7 +634,7 @@ namespace Sq1.Gui.Forms {
 			this.StrategyFoundDuringDeserialization = false;
 			Strategy strategyFound = null;
 			if (String.IsNullOrEmpty(strategyGuid) == false) {
-				strategyFound = Assembler.InstanceInitialized.RepositoryDllJsonStrategy.LookupByGuid(strategyGuid); 	// can return NULL here
+				strategyFound = Assembler.InstanceInitialized.RepositoryDllJsonStrategies.LookupByGuid(strategyGuid); 	// can return NULL here
 			}
 			if (strategyFound == null) {
 				string msg = "STRATEGY_NOT_FOUND: RepositoryDllJsonStrategy.LookupByGuid(strategyGuid=" + strategyGuid + ")";
@@ -1029,7 +972,7 @@ namespace Sq1.Gui.Forms {
 			//v1: NullRef return "Strategy[" + this.Strategy.Name + "], Chart [" + this.ChartForm.ToString() + "]";
 			return this.StreamingButtonIdent;
 		}
-		public void PopulateMainFormSymbolStrategyTreesScriptParameters() {
+		public void PopulateThroughMainForm_symbolStrategyTree_andSliders() {
 			ContextChart ctxScript = this.ContextCurrentChartOrStrategy;
 			if (ctxScript == null) {
 				string msg = "DONT_INVOKE_ME this.ContextCurrentChartOrStrategy=NULL //PopulateMainFormSymbolStrategyTreesScriptParameters()";
@@ -1039,7 +982,7 @@ namespace Sq1.Gui.Forms {
 
 			//v1 DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
 			//v2
-			DataSourcesForm.Instance.DataSourcesTreeControl.ChartShadow_Select(this.ChartForm.ChartControl);
+			DataSourcesForm.Instance.DataSourcesTreeControl.ChartShadow_Select_HideSelectionFalse(this.ChartForm.ChartControl);
 
 			if (SymbolInfoEditorForm.Instance.IsShown) {
 				DataSourcesForm.Instance.DataSourcesTreeControl.RaiseOnSymbolInfoEditorClicked();

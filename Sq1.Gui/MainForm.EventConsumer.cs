@@ -66,7 +66,7 @@ namespace Sq1.Gui {
 				if (streaming == null) continue;
 
 				Livesimulator livesimRunning =  eachChartManager.Executor.Livesimulator;
-				if (streaming is LivesimStreaming && livesimRunning.IsBacktestingLivesimNow) {
+				if (streaming is LivesimStreaming && livesimRunning.ImRunningLivesim) {
 					// NEVER_DO_THIS  LETS_WAIT_UNTIL_LIVESIM_RESTORES_CONTEXT continue;
 					//v1 WE_ARE_BLOCKED,MAINFORM_STAYS_OPEN_WAITING_FOREVER_FOR QuikLivesim.XlDdeTableGenerator.syncContext.Invoke(method, args) to wait while this methods returns (WindowsMessageQueue-related)
 					//v1 livesimRunning.AbortRunningBacktestWaitAborted(msig, 60 * 1000);
@@ -84,7 +84,7 @@ namespace Sq1.Gui {
 					//v2 CANCELLING_THIS_CLOSE_EVENT_COMLETELY,WAITING_LIVESIM(s)_TO_STOP_AND_GENERATING_ANOTHER_CLOSE_EVENT_AGAIN THIS_WAY_I_LET_DDE_RUN
 					Task t = new Task(delegate() {
 						livesimRunning.AbortRunningBacktestWaitAborted(msig, 60 * 1000);
-						int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor_replacedForLivesim.DistributionChannels.Count;
+						int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim.DistributionChannels.Count;
 						if (mustBeZero_AbortedOk != 0) {
 						    string msg = "mustBeZero_AbortedOk[" + mustBeZero_AbortedOk + "]";
 						    Assembler.PopupException(msg, null, false);

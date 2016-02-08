@@ -162,7 +162,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 		public void Serialize() {
-			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+			Assembler.InstanceInitialized.RepositoryDllJsonStrategies.StrategySave(this);
 		}
 
 		public int ScriptAndIndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(bool saveStrategyFalseForDisposedExecutorsInSequencer = false) {

@@ -4,13 +4,16 @@ using Sq1.Core.Streaming;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Execution;
+using Sq1.Core.Livesim;
+using Sq1.Core.Backtesting;
+using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Charting {
 	public class ChartStreamingConsumer : StreamingConsumer {
-				ChartShadow chartShadow;
+		public	ChartShadow ChartShadow	{ get; private set; }
 
 		public ChartStreamingConsumer(ChartShadow chartShadow) {
-			this.chartShadow = chartShadow;
+			this.ChartShadow = chartShadow;
 		}
 
 		public void StreamingUnsubscribe(string reason = "NO_REASON_FOR_STREAMING_UNSUBSCRIBE") {
@@ -20,9 +23,10 @@ namespace Sq1.Core.Charting {
 			var symbolSafe				= base.Symbol_nullReported;
 			var scaleIntervalSafe		= base.ScaleInterval_nullReported;
 			var streaming_nullReported	= this.StreamingAdapter_nullReported;
+			var strategy_nullUnsafe		= this.Strategy_nullReported;
 
-			bool downstreamSubscribed = this.DownstreamSubscribed;
-			if (downstreamSubscribed == false) {
+			bool downstream_mustBeSubscribed = this.DownstreamSubscribed == false;
+			if (downstream_mustBeSubscribed) {
 				string msg = "CHART_STREAMING_ALREADY_UNSUBSCRIBED_QUOTES_AND_BARS";
 				Assembler.PopupException(msg + base.MsigForNpExceptions, null, false);
 				// RESET_IsStreaming=subscribed return;
@@ -32,9 +36,9 @@ namespace Sq1.Core.Charting {
 				string branch = " DATA_SOURCE_HAS_STREAMING_ASSIGNED_1/2";
 				streaming_nullReported.UnsubscribeChart(symbolSafe, scaleIntervalSafe, this, branch + base.MsigForNpExceptions);
 
-				//re-reading to be 100% sure
-				downstreamSubscribed = this.DownstreamSubscribed;
-				if (downstreamSubscribed) {
+				//
+				bool downstreamMustBeUnSubscribed_reReadingToBe100sure = this.DownstreamSubscribed == false;
+				if (downstreamMustBeUnSubscribed_reReadingToBe100sure == false) {
 					string msg = "ERROR_CHART_STREAMING_STILL_SUBSCRIBED_QUOTES_OR_BARS";
 					Assembler.PopupException(msg + base.MsigForNpExceptions);
 					return;
@@ -44,34 +48,56 @@ namespace Sq1.Core.Charting {
 				Assembler.PopupException(msg);
 			}
 
-			this.ContextCurrentChartOrStrategy_nullReported.DownstreamSubscribed = downstreamSubscribed;
-			this.Strategy_nullReported.Serialize();
+			this.ContextCurrentChartOrStrategy_nullReported.DownstreamSubscribed = false;
 
-			string msg2 = "CHART_STREAMING_UNSUBSCRIBED[" + downstreamSubscribed + "] due to [" + reason + "]";
+			//v1
+			//this.Strategy_nullReported.Serialize();
+			//v2
+			bool serialized = false;
+			ContextChart ctxChartOrStrategy = this.ContextCurrentChartOrStrategy_nullReported;
+			if (ctxChartOrStrategy != null) {
+				ctxChartOrStrategy.DownstreamSubscribed = false;
+				// did you find it? now you have to save it :(
+				if (strategy_nullUnsafe != null) {
+					//strategy_nullUnsafe.Serialize();
+					this.ChartShadow.RaiseContextScriptChangedContainerShouldSerialize();
+					serialized = true;
+				} else {
+					//string msg = "RAISE_EVENT_SO_THAT_MAIN_FORM_SAVES_CHART_CONTEXT_WITHOUT_STRATEGY";
+					//Assembler.PopupException(msg, null, false);
+					this.ChartShadow.RaiseChartSettingsChangedContainerShouldSerialize();
+					serialized = true;
+				}
+			}
+
+			string msg2 = "CHART_STREAMING_UNSUBSCRIBED[" + downstream_mustBeSubscribed + "] due to [" + reason + "]";
+#if DEBUG_STREAMING
 			Assembler.PopupException(msg2 + base.MsigForNpExceptions, null, false);
+#endif
 
 			// TUNNELLED_TO_CHART_CONTROL base.ChartShadow_nullReported.ChartControl.ScriptExecutorObjects.QuoteLast = null;
 		}
 		public void StreamingSubscribe(string reason = "NO_REASON_FOR_STREAMING_SUBSCRIBE") {
-			base.ReasonToExist = "Chart[" + base.Symbol_nullReported + "]";
-			if (this.Strategy_nullReported != null) this.ReasonToExist += "[" + this.Strategy_nullReported.Name + "]";
+			base.ReasonToExist = "Chart";
+			this.ReasonToExist += (this.Executor.Strategy != null) ? "[" + this.Executor.ToString() + "]" : "[" + base.Symbol_nullReported + "]";
 
-			if (this.CanSubscribeToStreamingAdapter() == false) return;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
+			if (this.NPEs_handled() == false) return;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
 			base.MsigForNpExceptions = " //ChartStreamingConsumer.StreamingSubscribe(" + this.ToString() + ")";
 
-			var executorSafe				= base.Executor_nullReported;
-			var symbolSafe					= base.Symbol_nullReported;
-			var scaleIntervalSafe			= base.ScaleInterval_nullReported;
-			var streaming_nullReported		= this.StreamingAdapter_nullReported;
-			var streamingBarSafeCloneSafe	= this.StreamingBarSafeClone_nullReported;
+			var executorSafe			= base.Executor_nullReported;
+			var symbolSafe				= base.Symbol_nullReported;
+			var scaleIntervalSafe		= base.ScaleInterval_nullReported;
+			var streaming_nullReported	= this.StreamingAdapter_nullReported;
 
-			bool downstreamSubscribed = this.DownstreamSubscribed;
-			if (downstreamSubscribed) {
+			bool downstreamBeforeWeStarted_mustBeUnSubscribed = this.DownstreamSubscribed;
+			if (downstreamBeforeWeStarted_mustBeUnSubscribed
+						&& Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == true) {
 				string msg = "CHART_STREAMING_ALREADY_SUBSCRIBED_OR_FORGOT_TO_DISCONNECT REMOVE_INVOCATION_UPSTACK";
-				Assembler.PopupException(msg + base.MsigForNpExceptions, null, false);
+				Assembler.PopupException(msg + base.MsigForNpExceptions);
 				// RESET_IsStreaming=subscribed return;
 			}
 
+			bool downstreamAfterWeAttemptedToSubscribe_mustBeSubscribed = false;
 			if (streaming_nullReported != null) {
 				string branch = " DATA_SOURCE_HAS_STREAMING_ASSIGNED_1/2";
 
@@ -87,9 +113,8 @@ namespace Sq1.Core.Charting {
 
 				streaming_nullReported.SubscribeChart(symbolSafe, scaleIntervalSafe, this, branch + base.MsigForNpExceptions);
 
-				//re-reading to be 100% sure
-				downstreamSubscribed = this.DownstreamSubscribed;
-				if (downstreamSubscribed == false) {
+				downstreamAfterWeAttemptedToSubscribe_mustBeSubscribed = this.DownstreamSubscribed == true;	// reReadingToBe100sure => will go to final msg2
+				if (downstreamAfterWeAttemptedToSubscribe_mustBeSubscribed == false) {
 					string msg = "CHART_STREAMING_FAILED_SUBSCRIBE_BAR_OR_QUOTE_OR_BOTH StreamingAdapter[" + streaming_nullReported.ToString() + "]";
 					Assembler.PopupException(msg + base.MsigForNpExceptions);
 					return;
@@ -99,11 +124,28 @@ namespace Sq1.Core.Charting {
 				Assembler.PopupException(msg);
 			}
 
-			this.ContextCurrentChartOrStrategy_nullReported.DownstreamSubscribed = downstreamSubscribed;
-			this.Strategy_nullReported.Serialize();
+			bool serialized = false;
+			ContextChart ctxChartOrStrategy = this.ContextCurrentChartOrStrategy_nullReported;
+			if (ctxChartOrStrategy != null) {
+				ctxChartOrStrategy.DownstreamSubscribed = true;
+				// did you find it? now you have to save it :(
+				if (this.Executor.Strategy != null) {
+					//strategy_nullUnsafe.Serialize();
+					this.ChartShadow.RaiseContextScriptChangedContainerShouldSerialize();
+					serialized = true;
+				} else {
+					//string msg = "RAISE_EVENT_SO_THAT_MAIN_FORM_SAVES_CHART_CONTEXT_WITHOUT_STRATEGY";
+					//Assembler.PopupException(msg, null, false);
+					this.ChartShadow.RaiseChartSettingsChangedContainerShouldSerialize();
+					serialized = true;
+				}
+			}
 
-			string msg2 = "CHART_STREAMING_SUBSCRIBED[" + downstreamSubscribed + "] due to [" + reason + "]";
+			string msg2 = "CHART_STREAMING_SUBSCRIBED[" + downstreamAfterWeAttemptedToSubscribe_mustBeSubscribed
+				+ "] SAVED_FOR_APPRESTART[" + serialized + "] due to [" + reason + "]";
+#if DEBUG_STREAMING
 			Assembler.PopupException(msg2 + base.MsigForNpExceptions, null, false);
+#endif
 		}
 
 		public void StreamingTriggeringScriptStart() {
@@ -115,7 +157,7 @@ namespace Sq1.Core.Charting {
 
 		#region StreamingConsumer
 		public	override ScriptExecutor	Executor			{ get {
-				var ret = this.chartShadow.Executor;
+				var ret = this.ChartShadow.Executor;
 				base.ActionForNullPointer(ret, "this.chartShadow.Executor=null");
 				return ret;
 			} }
@@ -131,8 +173,8 @@ namespace Sq1.Core.Charting {
 			}
 			base.MsigForNpExceptions = " //ChartStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(" + barLastFormed.ToString() + ")";
 
-			#if DEBUG	// TEST_INLINE
 			var barsSafe = this.Bars_nullReported;
+			#if DEBUG	// TEST_INLINE
 			if (barsSafe.ScaleInterval != barLastFormed.ScaleInterval) {
 				string msg = "SCALEINTERVAL_RECEIVED_DOESNT_MATCH_CHARTS ChartForm[" + base.ChartShadow_nullReported.Text + "]"
 					+ " bars[" + barsSafe.ScaleInterval + "] barLastFormed[" + barLastFormed.ScaleInterval + "]";
@@ -159,18 +201,24 @@ namespace Sq1.Core.Charting {
 
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
 				try {
-					bool wrongUsagePopup = executorSafe.Livesimulator.IsBacktestingNoLivesimNow;
-					bool thereWereNeighbours = dataSourceSafe.PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe, wrongUsagePopup);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					//v1
+					//bool wrongUsagePopup = executorSafe.Livesimulator.IsBacktestingNoLivesimNow;
+					//bool thereWereNeighbours = dataSourceSafe.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe, wrongUsagePopup);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					bool thereWereNeighbours = dataSourceSafe
+						.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe, barsSafe);
+
 					// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
 					ReporterPokeUnit pokeUnitNullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
 					//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 				} finally {
-					bool thereWereNeighbours = dataSourceSafe.PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING
+					//v1 bool thereWereNeighbours = dataSourceSafe.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING
+					bool thereWereNeighbours = dataSourceSafe
+						.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe);
 				}
 			}
 
 			#if DEBUG
-			if (base.Executor_nullReported.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+			if (base.Executor_nullReported.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
 				string msg = "SHOULD_NEVER_HAPPEN IsBacktestingNoLivesimNow[true] //ChartStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
 				Assembler.PopupException(msg);
 				return;
@@ -184,8 +232,8 @@ namespace Sq1.Core.Charting {
 		public override void ConsumeQuoteOfStreamingBar(Quote quote) {
 			base.MsigForNpExceptions = " //ChartStreamingConsumer.ConsumeQuoteOfStreamingBar(" + quote.ToString() + ")";
 
-			#if DEBUG	// TEST_INLINE_BEGIN
 			var barsSafe = this.Bars_nullReported;
+			#if DEBUG	// TEST_INLINE_BEGIN
 			if (barsSafe.ScaleInterval != quote.ParentBarStreaming.ScaleInterval) {
 				string msg = "SCALEINTERVAL_RECEIVED_DOESNT_MATCH_CHARTS ChartForm[" + base.ChartShadow_nullReported.Text + "]"
 					+ " bars[" + barsSafe.ScaleInterval + "] quote.ParentStreamingBar[" + quote.ParentBarStreaming.ScaleInterval + "]";
@@ -214,10 +262,10 @@ namespace Sq1.Core.Charting {
 			}
 			#endif	// TEST_INLINE_END
 
-			var streamingSafe	= this.StreamingAdapter_nullReported;
-			var chartFormSafe	= base.ChartShadow_nullReported;
-			var executorSafe	= base.Executor_nullReported;
-			var dataSourceSafe	= this.DataSource_nullReported;
+			StreamingAdapter	streamingSafe	= this.StreamingAdapter_nullReported;
+			var					chartFormSafe	= base.ChartShadow_nullReported;
+			ScriptExecutor		executorSafe	= base.Executor_nullReported;
+			DataSource			dataSourceSafe	= this.DataSource_nullReported;
 
 			// STREAMING_BAR_IS_ALREADY_MERGED_IN_EARLY_BINDER_WITH_QUOTE_RECIPROCALLY
 			//try {
@@ -239,13 +287,21 @@ namespace Sq1.Core.Charting {
 			if (executorSafe.Strategy != null) {
 				if (executorSafe.IsStreamingTriggeringScript) {
 					try {
-						bool wrongUsagePopup = executorSafe.Livesimulator.IsBacktestingNoLivesimNow;
-						bool thereWereNeighbours = dataSourceSafe.PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe, wrongUsagePopup);		// NOW_FOR_LIVE_MOCK_BUFFERING
+						//v1
+						//bool wrongUsagePopup = executorSafe.Livesimulator.IsBacktestingNoLivesimNow;
+						//bool thereWereNeighbours = dataSourceSafe.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe, wrongUsagePopup);		// NOW_FOR_LIVE_MOCK_BUFFERING
+						//v2
+						bool thereWereNeighbours = dataSourceSafe
+							.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe, barsSafe);
+
 						// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
 						ReporterPokeUnit pokeUnitNullUnsafe1 = executorSafe.ExecuteOnNewBarOrNewQuote(quote, true);
 						//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 					} finally {
-						bool thereWereNeighbours = dataSourceSafe.PumpResume_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING
+						//v1 bool thereWereNeighbours = dataSourceSafe.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING
+						//v2
+						bool thereWereNeighbours = dataSourceSafe
+							.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe);
 					}
 				} else {
 					// UPDATE_REPORTS_OPEN_POSITIONS_WITH_EACH_QUOTE_DESPITE_STRATEGY_IS_NOT_TRIGGERED
@@ -279,28 +335,16 @@ namespace Sq1.Core.Charting {
 		}
 		#endregion
 
+		public override void PumpPaused_notification_overrideMe_switchLivesimmingThreadToGui() {
+			this.ChartShadow.PumpPaused_notification_switchLivesimmingThreadToGui();
+		}
+		public override void PumpUnPaused_notification_overrideMe_switchLivesimmingThreadToGui() {
+			this.ChartShadow.PumpUnPaused_notification_switchLivesimmingThreadToGui();
+		}
+	
 		public override string ToString() {
-			var symbolSafe			= base.Symbol_nullReported;
-			var chartShadowSafe		= base.ChartShadow_nullReported;
-			var scaleIntervalSafe	= base.ScaleInterval_nullReported;
-			string ret = "ChartShadow.Symbol[" + symbolSafe + "](" + scaleIntervalSafe + ")";
-
-			//HANGS_ON_STARTUP__#D_STACK_IS_BLANK__VS2010_HINTED_IM_ACCESSING_this.ChartForm.Text_FROM_DDE_QUOTE_GENERATOR (!?!?!)
-			if (chartShadowSafe.InvokeRequired == false) {
-				ret += " CHART.TEXT[" + chartShadowSafe.Text + "]";
-			} else {
-//				ChartFormDataSnapshot snap = this.chartFormManager.DataSnapshot;
-//				if (snap == null) {
-//					Assembler.PopupException(null);
-//				}
-//				ContextChart ctx = this.chartFormManager.DataSnapshot.ContextChart;
-				ret += (base.Executor_nullReported.Strategy != null)
-					? " ScriptContextCurrent[" + base.Executor_nullReported.Strategy.ScriptContextCurrent.ToString() + "]"
-					//: " ContextChart[" + this.chartFormManager.DataSnapshot.ContextChart.ToString() + "]"
-					: " ContextChart[UNACCESSIBLE]"
-					;
-			}
-
+			ChartShadow			chartShadowSafe		= base.ChartShadow_nullReported;
+			string ret = chartShadowSafe != null ? chartShadowSafe.ToString() : "base.ChartShadow_nullReported=NULL";
 			return "{" + ret + "}";
 		}
 	}

@@ -21,6 +21,8 @@ namespace Sq1.Core.StrategyBase {
 		public event EventHandler<ReporterPokeUnitEventArgs>	OnOpenPositionsUpdatedDueToStreamingNewQuote_step2of3;
 		public event EventHandler<ReporterPokeUnitEventArgs>	OnBrokerFilledAlertsClosingForPositions_step3of3;
 
+		public event EventHandler<QuoteEventArgs>	OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_tunnelToInterChartForm;
+
 		private ScriptExecutor scriptExecutor;
 
 		public ScriptExecutorEventGenerator(ScriptExecutor scriptExecutor) {
@@ -98,5 +100,16 @@ namespace Sq1.Core.StrategyBase {
 			if (this.OnStrategyExecutedOneQuoteOrBarOrdersEmitted == null) return;
 			this.OnStrategyExecutedOneQuoteOrBarOrdersEmitted(this, new OrdersListEventArgs(ordersEmitted));
 		}
+
+		public void RaiseOnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_tunnelToInterChartForm(Quote quote) {
+			if (this.OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_tunnelToInterChartForm == null) return;
+			try {
+				this.OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_tunnelToInterChartForm(this, new QuoteEventArgs(quote));
+			} catch (Exception e) {
+				string msg = "EVENT_CONSUMER(USED_ONLY_FOR_LIVE_SIMULATOR)_THROWN //ScriptExecutorEventGenerator.OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers(" + quote + ")";
+				Assembler.PopupException(msg, e);
+			}
+		}
+
 	}
 }

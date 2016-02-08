@@ -55,7 +55,7 @@ namespace Sq1.Core.Backtesting {
 			ret.ParentBarSimulated = barSimulated;
 			//v1 ret.PriceLastDeal = price;
 
-			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler;
+			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.SpreadModeler;
 			switch (bidOrAsk) {
 				case BidOrAsk.Bid:
 					ret.Bid = priceFromAlignedBar;
@@ -165,7 +165,7 @@ namespace Sq1.Core.Backtesting {
 
 				//v1 "Received" is for Quik/InteractiveBrokers; "Generated" is for Backtest/Livesim  this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.PushQuoteReceived(closestOnOurWay);
 				//v2 1) LivesimBroker will push it delayed; 2) register closestOnOurWay as Streaming.LastQuoteReceived[Symbol]
-				this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.PushQuoteGenerated(closestOnOurWay);
+				this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.PushQuoteGenerated(closestOnOurWay);
 
 				injectedPushed.Add(closestOnOurWay);
 
@@ -173,7 +173,7 @@ namespace Sq1.Core.Backtesting {
 				if (pendingsToFillInitially != pendingAfterInjected) {
 					string msg = " it looks like the quoteInjected triggered something";
 					//Assembler.PopupException(msg, null, false);
-					if (this.backtester.IsLivesim && this.backtester.Executor.Strategy.LivesimBrokerSettings.DelayBeforeFillEnabled) {
+					if (this.backtester.ImLivesimulator && this.backtester.Executor.Strategy.LivesimBrokerSettings.DelayBeforeFillEnabled) {
 						msg = "SEPARATE_MARKET_MODEL_WOULD_HELP_LAZY NO_ORDER_MUST_HAVE_BEEN_FILLED_WHILE_INJECTING__KOZ_LIVESIM_BROKER_EXECUTION_IS_DELAYED" + msg;
 						// NOTHING_WRONG_WITH_ALERT_FILLED_DURING_LIVESIM Assembler.PopupException(msg, null, false);
 					}
@@ -203,7 +203,7 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			Quote quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde =
-				this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.StreamingDataSnapshot
+				this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
 					.LastQuoteCloneGetForSymbol(quoteToReach.Symbol);
 
 			if (quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde == null) {
@@ -415,7 +415,7 @@ namespace Sq1.Core.Backtesting {
 
 			//v2
 			Quote quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde =
-				this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.StreamingDataSnapshot
+				this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
 					.LastQuoteCloneGetForSymbol(alert.Symbol);
 			QuoteGenerated quotePrev = quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
 			if (quotePrev == null) {
@@ -424,7 +424,7 @@ namespace Sq1.Core.Backtesting {
 				quotePrev = new QuoteGenerated(quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde, bar2simulate);
 			}
 
-			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler;
+			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.SpreadModeler;
 			switch (alert.MarketLimitStop) {
 				case MarketLimitStop.Limit:
 					switch (alert.Direction) {
@@ -507,7 +507,7 @@ namespace Sq1.Core.Backtesting {
 						+ "; pass SLActivation=0 to PositionPrototypeActivator so that it generates STOP instead of STOPLOSS which I can't generate yet";
 					Assembler.PopupException(msg2 + msig, null, false);
 					break;
-				case MarketLimitStop.AtClose:
+				//MUST_DIE case MarketLimitStop.AtClose:
 				default:
 					throw new Exception("ALERT_TYPE_UNKNOWN MarketLimitStop[" + alert.MarketLimitStop + "] is not Market/Limit/Stop modelQuoteThatCouldFillAlert()");
 			}

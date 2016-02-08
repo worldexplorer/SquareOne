@@ -12,12 +12,13 @@ using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Backtesting;
 using Sq1.Core.DataTypes;
+using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Livesim {
-	[SkipInstantiationAt(Startup = true)]
-	public partial class LivesimBroker : BrokerAdapter, IDisposable {
+	// I_WANT_LIVESIM_STREAMING_BROKER_BE_AUTOASSIGNED_AND_VISIBLE_IN_DATASOURCE_EDITOR [SkipInstantiationAt(Startup = true)]
+	public abstract  partial class LivesimBroker : BacktestBroker, IDisposable {
 		[JsonIgnore]	public		List<Order>					OrdersSubmittedForOneLivesimBacktest	{ get; private set; }
-		[JsonIgnore]	protected	LivesimDataSource			LivesimDataSource;
+		[JsonIgnore]	protected	LivesimDataSource			LivesimDataSource						{ get { return base.DataSource as LivesimDataSource; } }
 		[JsonIgnore]	internal	LivesimBrokerSettings		LivesimBrokerSettings					{ get { return this.LivesimDataSource.Executor.Strategy.LivesimBrokerSettings; } }
 		[JsonIgnore]				object						threadEntryLockToHaveQuoteSentToThread;
 		[JsonIgnore]	public		LivesimBrokerDataSnapshot	DataSnapshot;
@@ -25,23 +26,31 @@ namespace Sq1.Core.Livesim {
 
 		[JsonIgnore]	public		bool						IsDisposed								{ get; private set; }
 
-		protected LivesimBroker() {
-		    string msg = "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
-		        + "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_BROKER_ADAPTERS_FOUND"
-		        + " example:QuikBrokerLivesim()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
-		    base.Name = "LivesimBroker-child_ACTIVATOR_DLL-SCANNED";
-		}
-		public LivesimBroker(bool IamNotAdummy) : base() {
-			base.Name = "LivesimBroker";
-			base.AccountAutoPropagate = new Account("LIVESIM_ACCOUNT", -1000);
+		//protected LivesimBroker() : base("DLL_SCANNER_INSTANTIATES_DUMMY_STREAMING") {
+		//    string msg = "IM_HERE_WHEN_DLL_SCANNER_INSTANTIATES_DUMMY_BROKER"
+		//        //+ "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
+		//        + "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_BROKER_ADAPTERS_FOUND"
+		//        + " example:QuikBrokerLivesim()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
+		//    base.Name = "LivesimBroker-child_ACTIVATOR_DLL-SCANNED";
+		//}
+		public LivesimBroker(string reasonToExist) : base(reasonToExist) {
+			base.Name									= "LivesimBroker";
+			base.AccountAutoPropagate					= new Account("LIVESIM_ACCOUNT", -1000);
 			base.AccountAutoPropagate.Initialize(this);
 			this.OrdersSubmittedForOneLivesimBacktest	= new List<Order>();
 			this.threadEntryLockToHaveQuoteSentToThread	= new object();
 			this.LivesimBrokerSpoiler					= new LivesimBrokerSpoiler(this);
 		}
-		public virtual void Initialize(LivesimDataSource livesimDataSource) {
-			this.LivesimDataSource						= livesimDataSource;
+		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, OrderProcessor orderProcessor) {
+			base.Name									= "LivesimBroker";
 			this.DataSnapshot							= new LivesimBrokerDataSnapshot(this.LivesimDataSource);
+			base.InitializeDataSource_inverse(livesimDataSource, this.LivesimDataSource.StreamingAsLivesim_nullUnsafe,  orderProcessor);
+		}
+		public override BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
+			LivesimBrokerEditorEmpty emptyEditor = new LivesimBrokerEditorEmpty();
+			emptyEditor.Initialize(this, dataSourceEditor);
+			this.BrokerEditorInstance = emptyEditor;
+			return emptyEditor;
 		}
 
 		public override void OrderSubmit(Order order) {
@@ -201,7 +210,7 @@ namespace Sq1.Core.Livesim {
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			if (executor.BacktesterOrLivesimulator.IsBacktestingLivesimNow == false) {
+			if (executor.BacktesterOrLivesimulator.ImRunningLivesim == false) {
 				string msg = "I_REFUSE_TO_SIMULATE_FILL_PENDING_ALERTS_LIVESIM_NOT_RUNNING__PROBABLY_STOPPED/ABORTED?";
 				Assembler.PopupException(msg, null, false);
 				return;
@@ -239,8 +248,9 @@ namespace Sq1.Core.Livesim {
 			//    string msg = "DUMPED_PRIOR_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
 			//}
 			int pendingCountPre = executor.ExecutionDataSnapshot.AlertsPending.Count;
-			int pendingFilled = executor.MarketsimBacktest.SimulateFillAllPendingAlerts(
-					quoteAttachedToStreamingToConsumerBars, new Action<Alert, double, double>(this.onAlertFilled));
+			//int pendingFilled = executor.MarketsimBacktest.SimulateFillAllPendingAlerts(
+			int pendingFilled = base.BacktestMarketsim.SimulateFillAllPendingAlerts(
+					quoteAttachedToStreamingToConsumerBars, new Action<Alert, double, double>(this.action_afterAlertFilled_beforeMovedAround));
 			int pendingCountNow = executor.ExecutionDataSnapshot.AlertsPending.Count;
 			if (pendingCountNow != pendingCountPre - pendingFilled) {
 				string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";
@@ -253,7 +263,7 @@ namespace Sq1.Core.Livesim {
 			ReporterPokeUnit pokeUnitNullUnsafe = executor.ExecuteOnNewBarOrNewQuote(quoteAttachedToStreamingToConsumerBars);
 			//base.GeneratedQuoteEnrichSymmetricallyAndPush(quote, bar2simulate);
 		}
-		void onAlertFilled(Alert alertFilled, double priceFilled, double qtyFilled) {
+		void action_afterAlertFilled_beforeMovedAround(Alert alertFilled, double priceFilled, double qtyFilled) {
 			try {
 				this.DataSnapshot.AlertsScheduledForDelayedFill.WaitAndLockFor(this, "onAlertFilled(WAIT)");
 				if (this.DataSnapshot.AlertsScheduledForDelayedFill.Contains(alertFilled, this, "onAlertFilled(WAIT)")) {
@@ -290,9 +300,9 @@ namespace Sq1.Core.Livesim {
 			} else {
 				string msg = "ITS_OKAY this.livesimDataSource might have been already disposed by LivesimStreaming.Dispose()";
 			}
-			this.DataSnapshot		.Dispose();
-			this.LivesimDataSource	= null;
-			this.DataSnapshot		= null;
+			this.DataSnapshot	.Dispose();
+			base.DataSource		= null;
+			this.DataSnapshot	= null;
 			this.IsDisposed = true;
 		}
 	}

@@ -130,8 +130,11 @@ namespace Sq1.Core.Broker {
 			this.orderProcessor.UpdateOrderStateAndPostProcess(replacementOrder, newOrderState);
 
 			//this.BrokerAdapter.SubmitOrdersThreadEntry(ordersFromAlerts);
-			ThreadPool.QueueUserWorkItem(new WaitCallback(replacementOrder.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
-				new object[] { new List<Order>() { replacementOrder } });
+			//ThreadPool.QueueUserWorkItem(new WaitCallback(replacementOrder.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
+			//	new object[] { new List<Order>() { replacementOrder } });
+			List<Order> replacementOrder_oneInTheList = new List<Order>() { replacementOrder };
+			BrokerAdapter broker = replacementOrder.Alert.DataSource.BrokerAdapter;
+			this.orderProcessor.SubmitToBrokerAdapter_inNewThreadOrStraight(replacementOrder_oneInTheList, broker);
 
 			//this.orderProcessor.UpdateActiveOrdersCountEvent();
 		}

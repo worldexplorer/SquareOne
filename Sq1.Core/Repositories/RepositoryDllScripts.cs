@@ -3,6 +3,6 @@
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Repositories {
-	public class RepositoryDllScript : RepositoryDllScanner<Script> {
+	public class RepositoryDllScripts : RepositoryDllScanner<Script> {
 	}
 }

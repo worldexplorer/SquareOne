@@ -3,7 +3,7 @@ namespace Sq1.Core.DataTypes {
 		//OK,
 		//Error,
 		//Warning
-		Unknown = 0,
+		UnknownConnectionState = 0,
 		JustInitialized_solidifiersUnsubscribed = 1,
 		JustInitialized_solidifiersSubscribed = 2,
 		DisconnectedJustConstructed = 3,

@@ -143,7 +143,7 @@ namespace Sq1.Gui.Forms {
 		void btnStreamingWillTriggerScript_Click(object sender, EventArgs e) {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnStreaming.CheckOnClick=True this.BtnStreaming.Checked = !this.BtnStreaming.Checked;
 			try {
-				if (this.btnStreamingTriggersScript.Checked) {
+				if (this.BtnStreamingTriggersScript.Checked) {
 					this.ChartControl.ChartStreamingConsumer.StreamingTriggeringScriptStart();
 					// same idea as in mniSubscribedToStreamingAdapterQuotesBars_Click();
 					ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
@@ -171,11 +171,11 @@ namespace Sq1.Gui.Forms {
 		}
 		void btnStrategyEmittingOrders_Click(object sender, EventArgs e) {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnAutoSubmit.CheckOnClick=True this.BtnAutoSubmit.Checked = !this.BtnAutoSubmit.Checked;;
-			this.ChartFormManager.Executor.IsStrategyEmittingOrders = this.btnStrategyEmittingOrders.Checked;
+			this.ChartFormManager.Executor.IsStrategyEmittingOrders = this.BtnStrategyEmittingOrders.Checked;
 			this.ChartFormManager.Strategy.Serialize();
 		}
 
-		void mniBacktestOnEveryChange_Click(object sender, System.EventArgs e) {
+		void mniBacktestOnAnyChange_Click(object sender, System.EventArgs e) {
 			try {
 				Strategy strategy = this.ChartFormManager.Executor.Strategy;
 				if (strategy == null) return;
@@ -183,9 +183,14 @@ namespace Sq1.Gui.Forms {
 				strategy.ScriptContextCurrent.BacktestOnSelectorsChange					= this.mniBacktestOnSelectorsChange.Checked;
 				strategy.ScriptContextCurrent.BacktestOnDataSourceSaved					= this.mniBacktestOnDataSourceSaved.Checked;
 				strategy.ScriptContextCurrent.BacktestOnRestart							= this.mniBacktestOnRestart.Checked;
+				strategy.ScriptContextCurrent.BacktestAfterSubscribed					= this.mniBacktestAfterSubscribed.Checked;
 				strategy.Serialize();
 
-				this.ctxBacktest.Visible = true;
+				if (sender == this.mniBacktestAfterSubscribed) {
+					this.ctxBars.Visible = true;
+				} else {
+					this.ctxBacktest.Visible = true;
+				}
 			} catch (Exception ex) {
 				Assembler.PopupException("mniBacktestOnEveryChange_Click()", ex);
 			}
@@ -414,7 +419,8 @@ namespace Sq1.Gui.Forms {
 					this.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
 					if (this.ChartFormManager.Strategy != null
 							// GET_IT_FROM_SCRIPT_NOT_CHART_ALTHOUGH_SAME_POINTER && ctxChart.IsStreamingTriggeringScript
-							&& this.ChartFormManager.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript
+							//&& this.ChartFormManager.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript
+							&& this.ChartFormManager.Strategy.ScriptContextCurrent.BacktestAfterSubscribed
 						) {
 						// without backtest here, Indicators aren't calculated if there was no "Backtest Now" or "Backtest on App Restart"
 						// better duplicated backtest but synced, than streaming starts without prior bars are processed by the strategy
@@ -505,7 +511,7 @@ namespace Sq1.Gui.Forms {
 		}
 
 		void chartControl_BarStreamingUpdatedMerged(object sender, BarEventArgs e) {
-			if (this.ChartFormManager.Executor.BacktesterOrLivesimulator.IsBacktestingLivesimNow == false) {
+			if (this.ChartFormManager.Executor.BacktesterOrLivesimulator.ImRunningLivesim == false) {
 				string msg = "NON_LIVESIM_STREAMING_SEEMS_TO_HAVE_ChartFormStreamingConsumer_HANDLING_QUOTE_TIMESTAMP_ON_BTN";
 				//Assembler.PopupException(msg, null, false);
 				//return;
@@ -513,6 +519,13 @@ namespace Sq1.Gui.Forms {
 			bool guiHasTime = this.ChartFormManager.Executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
 			if (guiHasTime == false) return;
 			this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
+		}
+
+		void ChartControl_OnPumpPaused(object sender, EventArgs e) {
+			this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = false;
+		}
+		void ChartControl_OnPumpUnPaused(object sender, EventArgs e) {
+			this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = true;
 		}
 	}
 }

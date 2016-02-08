@@ -179,8 +179,11 @@ namespace Sq1.Core.Broker {
 				OrderStateMessage omsg = new OrderStateMessage(replacement, OrderState.PreSubmit, msg);
 				this.orderProcessor.UpdateOrderStateAndPostProcess(replacement, omsg);
 
-				ThreadPool.QueueUserWorkItem(new WaitCallback(replacement.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
-					new object[] { new List<Order>() { replacement } });
+				//ThreadPool.QueueUserWorkItem(new WaitCallback(replacement.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
+				//	new object[] { new List<Order>() { replacement } });
+				List<Order> replacementOrder_oneInTheList = new List<Order>() { replacement };
+				BrokerAdapter broker = replacement.Alert.DataSource.BrokerAdapter;
+				this.orderProcessor.SubmitToBrokerAdapter_inNewThreadOrStraight(replacementOrder_oneInTheList, broker);
 			} catch (Exception e) {
 				Assembler.PopupException("Replacement wasn't submitted [" + replacement + "]", e);
 				OrderStateMessage omsg2 = new OrderStateMessage(replacement, OrderState.Error, e.Message);

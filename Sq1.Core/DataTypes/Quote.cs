@@ -65,6 +65,30 @@ namespace Sq1.Core.DataTypes {
 			ret = string.Format("{0:" + symbolInfo.VolumeFormat + "}", this.Size);
 			return ret;
 		} }
+		
+		[JsonIgnore]	public string		StreamingButtonIdent { get {
+			StringBuilder sb = new StringBuilder();
+			sb.Append(" #");
+			sb.Append(this.IntraBarSerno.ToString("000"));
+			sb.Append(" ");
+			sb.Append(this.ServerTime.ToString("HH:mm:ss.fff"));
+			bool quoteTimesDifferMoreThanOneMicroSecond = this.ServerTime.ToString("HH:mm:ss.f") != this.LocalTimeCreated.ToString("HH:mm:ss.f");
+			if (quoteTimesDifferMoreThanOneMicroSecond) {
+				sb.Append(" :: ");
+				sb.Append(this.LocalTimeCreated.ToString("HH:mm:ss.fff"));
+			}
+			if (this.HasParentBar) {
+				TimeSpan timeLeft = (this.ParentBarStreaming.DateTimeNextBarOpenUnconditional > this.ServerTime)
+					? this.ParentBarStreaming.DateTimeNextBarOpenUnconditional.Subtract(this.ServerTime)
+					: this.ServerTime.Subtract(this.ParentBarStreaming.DateTimeNextBarOpenUnconditional);
+				string format = "mm:ss";
+				if (timeLeft.Minutes > 0) format = "mm:ss";
+				if (timeLeft.Hours > 0) format = "HH:mm:ss";
+				sb.Append(" ");
+				sb.Append(new DateTime(timeLeft.Ticks).ToString(format));
+			}
+			return sb.ToString();
+		} }
 
 
 		protected Quote() {	// make it proteted and use it when you'll need to super-modify a quote in StreamingAdapter-derived 

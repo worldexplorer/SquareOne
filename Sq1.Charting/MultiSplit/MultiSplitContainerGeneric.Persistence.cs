@@ -58,7 +58,9 @@ namespace Sq1.Charting.MultiSplit {
 				MultiSplitterProperties props = splitterPropertiesByPanelName[panelName];
 				if (props.ManualOrder != i) {
 					string msg = "REPLACE_WITH_MORE_RELIABLE_ALGORITHM YOU_SWAPPED_PANELS_AND_SAVED_IN_PROPERTIES__NEED_TO_MOVE_INSIDE_ARRAYS";
+					#if DEBUG_HEAVY
 					Assembler.PopupException(msg, null, false);
+					#endif
 					this.panels		.Move(i, props.ManualOrder);
 					this.splitters	.Move(i, props.ManualOrder);
 				}

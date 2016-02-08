@@ -116,7 +116,7 @@ namespace Sq1.Core.Execution {
 			//WHATS_THE_POINT_THEN return;	//EXPLAIN_BETTER  POTENTIAL_RACE_CONDITIONs are all followed by lock(){} upstack, right?
 
 			if (this.AnyScriptOverridenMethodIsRunningNowBlockingRead == false) return;
-			if (this.executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+			if (this.executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
 				string msg1 = "SKIPPING_CHECKS_FOR_BACKTESTER_SINCE_ITS_SINGLE_THREADED";
 				return;
 			}

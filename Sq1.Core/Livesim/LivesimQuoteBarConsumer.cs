@@ -59,7 +59,7 @@ namespace Sq1.Core.Livesim {
 		#endregion
 
 		public override string ToString() {
-			string ret = "CONSUMER_FOR_" + this.livesimulator.ToString();
+			string ret = "CHARTLESS_CONSUMER_FOR_" + this.livesimulator.ToString();
 			return ret;
 		}
 	}
