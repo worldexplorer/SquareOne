@@ -256,14 +256,13 @@ namespace Sq1.Widgets.DataSourcesTree {
 			}
 
 			try {
-				int numberOfDataSourcesHavingSymbolToBeRenamed = this.dataSourceRepository.SameSymbolInHowManyDataSources(sourceSymbol).Count;
-
+				List<DataSource> dataSourcesHavingSymbolToBeRenamed = this.dataSourceRepository.SameSymbolInHowManyDataSources(sourceSymbol);
+				int numberOfDataSourcesHavingSymbolToBeRenamed = dataSourcesHavingSymbolToBeRenamed.Count;
 				if (numberOfDataSourcesHavingSymbolToBeRenamed < 1) {
 					string msg = "I_REFUSE_TO_RENAME SYMBOL_MUST_EXIST_AT_LEAST_IN_1_DATASOURCE [" + this.DataSourceSelected + "] numberOfDataSourcesHavingSymbolToBeRenamed[" + numberOfDataSourcesHavingSymbolToBeRenamed + "] < 1";
 					Assembler.PopupException(msg + msig);
 					return;
 				}
-
 				bool renameSymbolInfoKozNoOtherDataSourceHasSameSymbol = numberOfDataSourcesHavingSymbolToBeRenamed == 1;
 
 				SymbolInfo sourceSymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoNullUnsafe(sourceSymbol);
@@ -273,7 +272,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 					if (renameSymbolInfoKozNoOtherDataSourceHasSameSymbol) {
 						Assembler.InstanceInitialized.RepositorySymbolInfos.Rename(sourceSymbolInfo, targetSymbol);
 					} else {
-						Assembler.InstanceInitialized.RepositorySymbolInfos.Duplicate(targetSymbolInfo, targetSymbol);	// targetSymbolInfoAlreadyExists
+						Assembler.InstanceInitialized.RepositorySymbolInfos.Duplicate(sourceSymbolInfo, targetSymbol);	// targetSymbolInfoAlreadyExists
 					}
 				}
 
@@ -284,6 +283,10 @@ namespace Sq1.Widgets.DataSourcesTree {
 				Assembler.PopupException("REPOSITORIES_FILE_ACCESS__OR_OnSymbolRenamed_EVENT_CONSUMERS" + msig, ex);
 			}
 
+			// I right-clicked on Symbol to rename it; it is still Selected and I typed new Symbol name in a popup-menu
+			if (this.OlvTree.SelectedObject != null) {
+				this.OlvTree.Expand(this.OlvTree.SelectedObject);
+			}
 			//REPOSITORY_WILL_NOTIFY_ME_USING_EVENT this.SelectSymbol(this.DataSourceSelected.Name, e.StringUserTyped);
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
 		}

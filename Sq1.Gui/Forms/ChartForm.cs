@@ -122,6 +122,10 @@ namespace Sq1.Gui.Forms {
 			this.ChartFormManager.Strategy.Serialize();
 		}
 		void ChartControl_ChartSettingsChangedContainerShouldSerialize(object sender, EventArgs e) {
+			if (this.ChartFormManager.ContextCurrentChartOrStrategy.Symbol != this.ChartFormManager.Executor.Bars.Symbol) {
+				string msg = "YOU_ARE_COMING_FROM_SyncBarsIdentDueToSymbolRename__ChartShadow_COULDNT_HANDLE_ITS_OWN_CONTEXT__DO_YOU_NEED/KNOW_HOW_TO_REFACTOR?";
+				this.ChartFormManager.ContextCurrentChartOrStrategy.Symbol  = this.ChartFormManager.Executor.Bars.Symbol;
+			}
 			this.ChartFormManager.DataSnapshotSerializer.Serialize();
 		}
 		// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos

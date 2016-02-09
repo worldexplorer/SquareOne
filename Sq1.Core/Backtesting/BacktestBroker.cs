@@ -35,9 +35,11 @@ namespace Sq1.Core.Backtesting {
 
 		public bool ImLivesimBroker { get {
 			bool ret = this is LivesimBroker;
-			if (ret != this.ScriptExecutor.BacktesterOrLivesimulator.ImLivesimulator) {
-				string msg = "FOR_LIVESIM__MUST_BE_DERIVED_FROM_LivesimBroker [" + this + "]";	// PARANOID_BUT_JUSTFIFIED
-				Assembler.PopupException(msg);
+			if (this.ScriptExecutor != null) {	// while creating a new DataSource, we take Dummy who doesn't have anything
+				if (ret != this.ScriptExecutor.BacktesterOrLivesimulator.ImLivesimulator) {
+					string msg = "FOR_LIVESIM__MUST_BE_DERIVED_FROM_LivesimBroker [" + this + "]";	// PARANOID_BUT_JUSTFIFIED
+					Assembler.PopupException(msg);
+				}
 			}
 			return ret;
 		} }

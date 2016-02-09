@@ -631,8 +631,8 @@ namespace Sq1.Core.StrategyBase {
 			// DATASOURCE_WILL_NOT_RENAME_YOUR_INSTANTIATED_BARS_BUT_WILL_RENAME_BARFILE_AND_SYMBOL_IN_BARFILE_HEADER
 			if (this.Bars != null && this.Bars.DataSource != null) {
 				// unfollowing old Bars (so that it'll be only renaming .BAR file); most likely those Bars will be GarbageCollected
-				this.Bars.DataSource.SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars -=
-					new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars);
+				this.Bars.DataSource.OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull -=
+					new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull);
 			}
 			this.Bars = barsClicked;
 			if (this.Bars.DataSource == null) {
@@ -640,38 +640,50 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.Bars.DataSource.SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars +=
-				new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars);
+			this.Bars.DataSource.OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull +=
+				new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull);
 		}
-		void barDataSource_SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars(object sender, DataSourceSymbolRenamedEventArgs e) {
+		void barDataSource_OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull(object sender, DataSourceSymbolRenamedEventArgs e) {
 			if (this.Bars == null) {
 				string msg = "INITIALIZED_EXECUTOR_ALWAYS_HAVE_BARS MAKE_SURE_YOU_UNSUBSCRIBED_ME_FROM_PREVIOUS_BARS";
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 			if (e.DataSource != this.Bars.DataSource) {
 				string msg = "I_SHOULD_NOT_BE_NOTIFIED_ABOUT_OTHER_DATASOURCES";
+				Assembler.PopupException(msg, null, false);
+				e.CancelRepositoryRename_oneExecutorRefusedToRename_wasStreamingTheseBars = false;
 				return;
 			}
 			if (e.Symbol == this.Bars.Symbol) {
 				string msg = "I_SHOULD_NOT_BE_NOTIFIED_IF_SYMBOL_WAS_NOT_RENAMED";
+				Assembler.PopupException(msg, null, false);
+				e.CancelRepositoryRename_oneExecutorRefusedToRename_wasStreamingTheseBars = false;
 				return;
 			}
-			if (this.IsStreamingTriggeringScript) {
-				string msg = "EXECUTOR_REFUSED_TO_RENAME_STREAMING_BARS"
-					+ " TO_CREATE_BACKUP_TURN_STREAMING_OFF_RENAME_STREAMING_BACK_ON"
-					+ " TO_RENAME_PERMANENTLY_IMPLMEMENT_SYMBOL_MAPPING_FOR_STREAMING_SYMBOLS";
-				Assembler.PopupException(msg);
-				e.CancelRepositoryRenameExecutorRefusedToRenameWasStreamingTheseBars = true;
-				return;
+			if (this.Strategy != null) {
+				if (this.IsStreamingTriggeringScript) {
+					string msg = "EXECUTOR_REFUSED_TO_RENAME_STREAMING_BARS"
+						+ " TO_CREATE_BACKUP_TURN_STREAMING_OFF_RENAME_STREAMING_BACK_ON"
+						+ " TO_RENAME_PERMANENTLY_IMPLMEMENT_SYMBOL_MAPPING_FOR_STREAMING_SYMBOLS";
+					Assembler.PopupException(msg);
+					e.CancelRepositoryRename_oneExecutorRefusedToRename_wasStreamingTheseBars = true;
+					return;
+				}
 			}
 			this.Bars.RenameSymbol(e.Symbol);
-			this.ChartShadow.SyncBarsIdentDueToSymbolRename();
-			
+
+			if (this.ChartShadow == null) {
+				string msg = "YOU_FORGOT_TO_INVOKE_ScriptExecutor.Initialize() MANDATORY_FOR_ANY_CHART_EVEN_WITH_STRATEGY_NULL";
+				Assembler.PopupException(msg);
+			} else {
+				this.ChartShadow.SyncBarsIdentDueToSymbolRename();		// can I delete propagation to Strategy.ScriptContextCurrent?
+				this.ChartShadow.RaiseChartSettingsChangedContainerShouldSerialize();
+			}
 			if (this.Strategy == null) return;
 			if (this.Strategy.ScriptContextCurrent.Symbol == this.Bars.Symbol) return;
 			this.Strategy.ScriptContextCurrent.Symbol  = this.Bars.Symbol;
-			this.Strategy.Serialize();
-
+			//PAS_BESOIN__ALREADY_RAISED_RaiseChartSettingsChangedContainerShouldSerialize() this.Strategy.Serialize();
 		}
 		public double PositionSizeCalculate(Bar bar, double priceScriptAligned) {
 			double ret = 1;
@@ -719,8 +731,8 @@ namespace Sq1.Core.StrategyBase {
 		public override string ToString() {
 			//string ret = this.StrategyName;
 			//if (this.Strategy != null) {
-			//    if (this.Strategy.Name == null) return ret;
-			//    ret += " @ " + this.Strategy.ScriptContextCurrent.ToString();
+			//	if (this.Strategy.Name == null) return ret;
+			//	ret += " @ " + this.Strategy.ScriptContextCurrent.ToString();
 			//} else {
 			//}
 			//return ret;

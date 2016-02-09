@@ -52,7 +52,7 @@ namespace Sq1.Core.DataFeed {
 			}
 
 			try {
-				bool executorProhibitedRenaming = this.RaiseSymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars(oldSymbolName, newSymbolName);
+				bool executorProhibitedRenaming = this.RaiseOnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull(oldSymbolName, newSymbolName);
 				if (executorProhibitedRenaming) return;	// event handlers are responsible to Assembler.PopupException(), I reported MY errors above
 	
 				this.BarsRepository.SymbolDataFileRename(oldSymbolName, newSymbolName);

@@ -112,10 +112,14 @@ namespace Sq1.Core.Streaming {
 
 		public virtual bool ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval,
 										StreamingConsumer barConsumer, bool quotePumpSeparatePushingThreadEnabled) { lock (this.lockConsumersBySymbol) {
-			Bar barStaticLast = barConsumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe;
-			if (barStaticLast == null) {
-				string msg = "YOUR_BAR_CONSUMER_SHOULD_HAVE_BarStaticLast_NON_NULL MOST_LIKELY_YOU_WILL_GET_MESSAGE__THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
-				//Assembler.PopupException(msg, null, false);
+			if (barConsumer is StreamingSolidifier) {
+				string msg = "StreamingSolidifier_DOESNT_SUPPORT_ConsumerBarsToAppendInto";
+			} else {
+				Bar barStaticLast = barConsumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe;
+				if (barStaticLast == null) {
+					string msg = "YOUR_BAR_CONSUMER_SHOULD_HAVE_BarStaticLast_NON_NULL MOST_LIKELY_YOU_WILL_GET_MESSAGE__THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
+					Assembler.PopupException(msg);
+				}
 			}
 			if (this.DistributionChannels.ContainsKey(symbol) == false) {
 				SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled, this.ReasonIwasCreated);

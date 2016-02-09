@@ -36,7 +36,7 @@ namespace Sq1.Gui.Forms {
 		void mniStrategyRemove_Click(object sender, System.EventArgs e) {
 			this.ChartFormManager.Strategy = null;
 			this.ChartFormManager.Executor.Initialize(null, this.ChartControl);
-			this.ChartFormManager.InitializeChartNoStrategy(this.ChartFormManager.ContextCurrentChartOrStrategy);
+			this.ChartFormManager.InitializeWithoutStrategy(this.ChartFormManager.ContextCurrentChartOrStrategy);
 			this.ChartControl.ClearAllScriptObjectsBeforeBacktest();
 			
 			if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.ScriptEditorForm) == false) {
@@ -245,7 +245,7 @@ namespace Sq1.Gui.Forms {
 				ContextChart context = this.ChartFormManager.ContextCurrentChartOrStrategy;
 				context.ScaleInterval = scaleIntervalUserEntered;
 				
-				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mniltbAll_UserTyped");
+				this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("mniltbAll_UserTyped");
 				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniltbMinutes_UserTyped()", ex);
@@ -296,7 +296,7 @@ namespace Sq1.Gui.Forms {
 				this.mniShowBarRange.Checked = false;
 				this.mniShowBarRange_Click(sender, null);
 
-				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbShowLastBars_UserTyped");
+				this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("mnitlbShowLastBars_UserTyped");
 				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbShowLastBars_UserTyped()", ex);
@@ -342,7 +342,7 @@ namespace Sq1.Gui.Forms {
 
 				this.selectOneDeselectResetOthers(this.DdbBacktest.DropDownItems, sender, this.GroupPositionSizeLabeledTextboxes);
 
-				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbPositionSizeSharesConstant_UserTyped");
+				this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("mnitlbPositionSizeSharesConstant_UserTyped");
 				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbPositionSizeSharesConstant_UserTyped()", ex);
@@ -367,7 +367,7 @@ namespace Sq1.Gui.Forms {
 
 				this.selectOneDeselectResetOthers(this.DdbBacktest.DropDownItems, sender, this.GroupPositionSizeLabeledTextboxes);
 
-				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped");
+				this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped");
 				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped()", ex);
@@ -378,7 +378,7 @@ namespace Sq1.Gui.Forms {
 			ContextScript context = this.ChartFormManager.Strategy.ScriptContextCurrent;
 			context.FillOutsideQuoteSpreadParanoidCheckThrow = this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Checked;
 			this.ChartFormManager.Strategy.Serialize();
-			this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mniOutOfQuoteFillThrow_Click");
+			this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("mniOutOfQuoteFillThrow_Click");
 		}
 		void mnitlbSpreadGeneratorPct_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			this.ctxBacktest.Visible = true;
@@ -403,7 +403,7 @@ namespace Sq1.Gui.Forms {
 					this.ChartFormManager.Executor.BacktesterOrLivesimulator.InitializeQuoteGenerator();
 				}
 
-				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbSpreadGeneratorPct_UserTyped");
+				this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("mnitlbSpreadGeneratorPct_UserTyped");
 				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbSpreadGeneratorPct_UserTyped()", ex);

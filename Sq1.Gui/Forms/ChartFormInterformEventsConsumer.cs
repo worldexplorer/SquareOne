@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 
+using WeifenLuo.WinFormsUI.Docking;
+
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
@@ -10,8 +12,6 @@ using Sq1.Widgets.RangeBar;
 using Sq1.Widgets;
 
 using Sq1.Gui.Singletons;
-
-using WeifenLuo.WinFormsUI.Docking;
 
 
 namespace Sq1.Gui.Forms {
@@ -72,7 +72,7 @@ namespace Sq1.Gui.Forms {
 				ContextChart contextChart = this.chartFormManager.ContextCurrentChartOrStrategy;
 				if (contextChart.DataSourceName != e.DataSource.Name)	contextChart.DataSourceName = e.DataSource.Name; 
 				if (contextChart.Symbol			!= e.Symbol) 			contextChart.Symbol 		= e.Symbol;
-				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("DataSourcesTree_OnSymbolSelected");
+				this.chartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("DataSourcesTree_OnSymbolSelected");
 				DataSourcesForm.Instance.DataSourcesTreeControl.Refresh();
 
 				this.chartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
@@ -250,7 +250,7 @@ namespace Sq1.Gui.Forms {
 		internal void ChartRangeBar_AnyValueChanged(object sender, RangeArgs<DateTime> e) {
 			BarDataRange newRange = new BarDataRange(e.ValueMin.Date, e.ValueMax.Date);
 			try {
-				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("ChartRangeBar_AnyValueChanged");
+				this.chartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("ChartRangeBar_AnyValueChanged");
 				this.chartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("ChartRangeBar_AnyValueChanged", ex);

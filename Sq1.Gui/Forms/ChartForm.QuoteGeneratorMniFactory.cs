@@ -83,7 +83,7 @@ namespace Sq1.Gui.Forms {
 					return;
 				}
 				// to inform SequencerControl of new strokes selected
-				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("ChartForm_OnBacktestStrokesClicked");
+				this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("ChartForm_OnBacktestStrokesClicked");
 				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				string msg = "REBACKTEST_FAILED?";
