@@ -2,13 +2,13 @@
   "$type": "Sq1.Core.DataFeed.DataSource, Sq1.Core",
   "SymbolSelected": "",
   "Symbols": [
-    "RIM3-Qmock"
+    "RIM3-qmoc"
   ],
   "ScaleInterval": {
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
     "Interval": 1,
     "Scale": 3,
-    "AsString_cached": null,
+    "AsString_cached": "1-Minute",
     "IsIntraday": true,
     "AsTimeSpanInSeconds": 60,
     "AsTimeSpan": "00:01:00",
@@ -35,14 +35,15 @@
     },
     "Account": {
       "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
-      "AccountNumber": "ACCTNR_NOT_SET",
-      "CashAvailable": -1000.0,
+      "AccountNumber": "",
+      "CashAvailable": 0.0,
       "AccountValueTimeStamp": "0001-01-01T00:00:00"
     },
     "QuikFolder": "",
     "QuikDllName": "TRANS2QUIK.DLL",
     "QuikClientCode": null,
-    "ReconnectTimeoutMillis": 0
+    "ReconnectTimeoutMillis": 0,
+    "UpstreamConnected": false
   },
   "MarketName": "MOCK",
   "Name": "Qmock",

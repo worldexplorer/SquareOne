@@ -45,7 +45,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		}
 
 		protected override void SolidifierAllSymbolsSubscribe_onAppRestart() {
-			string msg = "OTHERWIZE_BASE_WILL_SUBSCRIBE_SOLIDIFIER LIVESIM_MUST_NOT_SAVE_ANY_BARS";
+			string msg = "LIVESIM_MUST_NOT_SAVE_ANY_BARS EMPTY_HERE_TO_PREVENT_BASE_FROM_SUBSCRIBING_SOLIDIFIER";
 		}
 
 		public override void UpstreamConnect_LivesimStarting() {
