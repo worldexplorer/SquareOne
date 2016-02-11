@@ -269,7 +269,7 @@ namespace Sq1.Gui.Forms {
 			ret.AppendReportersMenuItems(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
 			return ret;
 		}
-		public void InitializeChartNoStrategy(ContextChart contextChart) {
+		public void InitializeWithoutStrategy(ContextChart contextChart) {
 			string msig = " //ChartFormsManager[" + this.ToString() + "].InitializeChartNoStrategy(" + contextChart + ")";
 
 			if (this.DataSnapshot.ChartSerno == -1) {
@@ -303,13 +303,16 @@ namespace Sq1.Gui.Forms {
 			#endregion
 			this.ChartForm.Initialize();
 
+			//without this, renaming the symbol (loaded into the chartWithoutStrategy) will throw in ChartShadow.barDataSource_OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull()
+			this.Executor.Initialize(null, this.ChartForm.ChartControl, false);
+
 			try {
 				//string msg = "MUST_BE_AN_OLD_BUG WHAT_SELECTORS???__IS_THAT_THE_WAY_TO_CLEAR_SLIDERS_AFTER_REMOVING_STRATEGY_FROM_THE_CHART???";
 				//Assembler.PopupException(msg, null, false);
 				bool loadNewBars = true;
 				bool skipBacktest = true;
 				bool saveStrategyRequired = false;
-				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, loadNewBars, skipBacktest, saveStrategyRequired);
+				this.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(msig, loadNewBars, skipBacktest, saveStrategyRequired);
 				//v1 if (this.DataSnapshot.ContextChart.IsStreaming) {
 				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
 				ContextChart ctx = this.ContextCurrentChartOrStrategy;
@@ -371,7 +374,7 @@ namespace Sq1.Gui.Forms {
 				// ALL_SORT_OF_STARTUP_ERRORS this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, false);
 				bool loadNewBars = true;
 				bool saveStrategyRequired = false;
-				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, loadNewBars, skipBacktestDuringDeserialization, saveStrategyRequired);
+				this.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(msig, loadNewBars, skipBacktestDuringDeserialization, saveStrategyRequired);
 				if (skipBacktestDuringDeserialization == false) {
 					string msg = "YOU_DID_NOT_SWITCH_TO_GUI_THREAD...";
 					this.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
@@ -392,7 +395,7 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 
-		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(
+		public void PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(
 					string msig, bool loadNewBars = true, bool skipBacktest = false, bool saveStrategyRequired = true) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
 			this.Executor.BacktesterAbortIfRunningRestoreContext();
@@ -473,12 +476,12 @@ namespace Sq1.Gui.Forms {
 				Bars barsClicked = barsAll.SelectRange(context.DataRange);
 				
 				if (this.Executor.Bars != null) {
-					this.Executor.Bars.DataSource.DataSourceEditedChartsDisplayedShouldRunBacktestAgain -=
-						new EventHandler<DataSourceEventArgs>(chartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain);
+					this.Executor.Bars.DataSource.OnDataSourceEditedChartsDisplayedShouldRunBacktestAgain -=
+						new EventHandler<DataSourceEventArgs>(chartFormManager_DataSourceEdited_chartsDisplayedShouldRunBacktestAgain);
 				}
 				this.Executor.SetBars(barsClicked);
-				this.Executor.Bars.DataSource.DataSourceEditedChartsDisplayedShouldRunBacktestAgain +=
-						new EventHandler<DataSourceEventArgs>(chartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain);
+				this.Executor.Bars.DataSource.OnDataSourceEditedChartsDisplayedShouldRunBacktestAgain +=
+						new EventHandler<DataSourceEventArgs>(chartFormManager_DataSourceEdited_chartsDisplayedShouldRunBacktestAgain);
 
 				//v1 I_LOADED_NEW_BARS__SHOULD_INVALIDATE_ALL_OTHERWIZE_REPAINTED_ONLY_AFTER_MOUSEOVER__WONT_BACKTEST_DOESNT_MATTER bool invalidateAllPanels = wontBacktest;
 				bool invalidateAllPanels = true;
@@ -525,7 +528,7 @@ namespace Sq1.Gui.Forms {
 			}
 			this.BacktesterRunSimulation();
 		}
-		void chartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain(object sender, DataSourceEventArgs e) {
+		void chartFormManager_DataSourceEdited_chartsDisplayedShouldRunBacktestAgain(object sender, DataSourceEventArgs e) {
 			if (this.Strategy == null) {
 				//OUTDATED Assembler.PopupException("hey for ATRbandCompiled-DLL #D Debugger shows this=NullReferenceException, and Strategy=null while it was instantiated from DLL, right?....");
 				return;
@@ -533,7 +536,7 @@ namespace Sq1.Gui.Forms {
 			// Save datasource must fully unregister consumers and register again to avoid StreamingSolidifier dupes
 			// ConsumerBarUnRegister()
 			if (this.Strategy.ScriptContextCurrent.BacktestOnDataSourceSaved == false) return;
-			this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(
+			this.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(
 				"ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain", true, false);
 		}
 		public void BacktesterRunSimulation(bool subscribeUpstreamOnWorkspaceRestore = false) {
@@ -628,7 +631,7 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		public void InitializeChartNoStrategyAfterDeserialization() {
-			this.InitializeChartNoStrategy(null);
+			this.InitializeWithoutStrategy(null);
 		}
 		public void InitializeStrategyAfterDeserialization(string strategyGuid, string strategyName = "PLEASE_SUPPLY_FOR_USERS_CONVENIENCE") {
 			this.StrategyFoundDuringDeserialization = false;

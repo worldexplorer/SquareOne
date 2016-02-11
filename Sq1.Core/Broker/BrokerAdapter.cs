@@ -102,16 +102,15 @@ namespace Sq1.Core.Broker {
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public BrokerAdapter() {
-		    string msg = "We should never be here; skip instantiation by Activator in MainModule::InitializeProviders()";
-		    //throw new Exception(msg);
-		}
-
-		public BrokerAdapter(string reasonToExist) {
-			ReasonToExist					= reasonToExist;
+			ReasonToExist					= "DUMMY_FOR_LIST_OF_BROKER_PROVIDERS_IN_DATASOURCE_EDITOR";
 			//Accounts = new List<Account>();
 			this.lockSubmitOrders			= new object();
 			this.AccountAutoPropagate		= new Account("ACCTNR_NOT_SET", -1000);
 			this.OrderCallbackDupesChecker	= new OrderCallbackDupesCheckerTransparent(this);
+		}
+
+		public BrokerAdapter(string reasonToExist) : this() {
+			ReasonToExist					= reasonToExist;
 		}
 		public virtual void InitializeDataSource_inverse(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
 			this.DataSource			= dataSource;

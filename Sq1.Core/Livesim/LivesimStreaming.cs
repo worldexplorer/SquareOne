@@ -120,7 +120,7 @@ namespace Sq1.Core.Livesim {
 			}
 		}
 		protected override void SolidifierAllSymbolsSubscribe_onAppRestart() {
-			return;
+			string msg = "LIVESIM_MUST_NOT_SAVE_ANY_BARS EMPTY_HERE_TO_PREVENT_BASE_FROM_SUBSCRIBING_SOLIDIFIER";
 		}
 		#endregion
 

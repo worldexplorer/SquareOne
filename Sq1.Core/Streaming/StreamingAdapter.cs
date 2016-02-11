@@ -24,7 +24,7 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	protected	object					SymbolsSubscribedLock;
 		[JsonIgnore]	public		virtual string			SymbolsUpstreamSubscribedAsString 	{ get {
 				string ret = "";
-				lock (SymbolsSubscribedLock) {
+				lock (this.SymbolsSubscribedLock) {
 					foreach (string symbol in this.SymbolsUpstreamSubscribed) ret += symbol + ",";
 				}
 				ret = ret.TrimEnd(',');
@@ -87,12 +87,7 @@ namespace Sq1.Core.Streaming {
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public StreamingAdapter() {
-		    string msg = "We should never be here; skip instantiation by Activator in MainModule::InitializeProviders()";
-		    //throw new Exception(msg);
-		}
-
-		public StreamingAdapter(string reasonToExist) {
-			ReasonToExist									= reasonToExist;
+			ReasonToExist									= "DUMMY_FOR_LIST_OF_STREAMING_PROVIDERS_IN_DATASOURCE_EDITOR";
 			SymbolsSubscribedLock							= new object();
 			SymbolsUpstreamSubscribed						= new List<string>();
 			DataDistributor_replacedForLivesim				= new DataDistributorCharts(this);
@@ -103,6 +98,10 @@ namespace Sq1.Core.Streaming {
 			Level2RefreshRateMs								= 200;
 			//if (this is LivesimStreaming) return;
 			//NULL_UNTIL_QUIK_PROVIDES_OWN_DDE_REDIRECTOR LivesimStreamingImplementation					= new LivesimStreamingDefault(true, "USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_STREAMING");	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
+		}
+
+		public StreamingAdapter(string reasonToExist) : this() {
+			ReasonToExist									= reasonToExist;
 		}
 		public virtual void InitializeFromDataSource(DataSource dataSource) {
 			this.DataSource = dataSource;

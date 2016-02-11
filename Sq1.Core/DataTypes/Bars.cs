@@ -183,7 +183,7 @@ namespace Sq1.Core.DataTypes {
 			this.RaiseBarStreamingUpdated(this.BarStreamingNullUnsafeCloneReadonly);
 		}
 		public override string ToString() {
-			string ret = this.IntervalScaleCount + this.MyInstanceAsString;
+			string ret = this.Symbol + "-" + this.IntervalScaleCount + this.MyInstanceAsString;
 			if (base.Count > 0) {
 				//try {
 					string barLastStaticAsString = "BAR_STATIC_NULL";

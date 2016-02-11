@@ -148,8 +148,13 @@ namespace Sq1.Widgets.DataSourceEditor {
 					}
 					// I still want to get a new instance, so if user choses it, I'll Initialize() it and put into serialize-able DataSource
 					if (streamingAdapterInstance == null) {
-						streamingAdapterInstance = (StreamingAdapter)Activator.CreateInstance(streamingAdapterPrototype.GetType());
-						string msg = "INITIALIZED_streamingAdapterInstance[" + streamingAdapterInstance + "]";
+						object instance = Activator.CreateInstance(streamingAdapterPrototype.GetType());
+						streamingAdapterInstance = instance as StreamingAdapter;
+						if (streamingAdapterInstance == null) {
+							string msg1 = "NOT_INITIALIZED streamingAdapterPrototype[" + streamingAdapterPrototype + "]";
+							Assembler.PopupException(msg1);
+						}
+						string msg = "INITIALIZED streamingAdapterInstance[" + streamingAdapterInstance.ToString() + "]";
 						Assembler.PopupException(msg, null, false);
 					}
 
@@ -285,7 +290,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			try {
 				//LOOKS_LIKE_STARTS_BACKTESTING_BEFORE_DSEDITOR_CLOSED
 				//USER_HAS_X_TO_CLOSE_THIS_WINDOW this.btnCancel_Click(this, null);
-				this.dataSourceIamEditing.RaiseDataSourceEdited_chartsDisplayedShouldRunBacktestAgain();
+				this.dataSourceIamEditing.RaiseOnDataSourceEdited_chartsDisplayedShouldRunBacktestAgain();
 			} catch (Exception ex) {
 				string msg = "SOMETHING_HAPPENED_TO_ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy()";
 				Assembler.PopupException(msg, ex);

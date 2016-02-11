@@ -5,7 +5,6 @@ using System.Drawing;
 using BrightIdeasSoftware;
 
 using Sq1.Core;
-
 using Sq1.Core.DataFeed;
 using Sq1.Core.Charting;
 

@@ -92,7 +92,7 @@ namespace Sq1.Gui {
 		}
 		void chartCreateShowPopulateSelectorsSlidersNoStrategy(ContextChart contextChart) {
 			ChartFormManager chartFormManager = new ChartFormManager(this.mainForm);
-			chartFormManager.InitializeChartNoStrategy(contextChart);
+			chartFormManager.InitializeWithoutStrategy(contextChart);
 			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
 
 			this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Add(chartFormManager.ChartForm.ChartControl.ChartSettings, chartFormManager.ChartForm.ChartControl);
@@ -328,7 +328,7 @@ namespace Sq1.Gui {
 			//v2 WILLBEDONE_BY_PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy() SlidersForm.Instance.Initialize(strategy);
 			try {
 				this.mainForm.ChartFormActive_nullUnsafe.ChartFormManager
-					.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("StrategiesTree_OnScriptContextLoadClicked()");
+					.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("StrategiesTree_OnScriptContextLoadClicked()");
 			} catch (Exception ex) {
 				Assembler.PopupException("StrategiesTree_OnScriptContextLoadClicked()", ex);
 			}
@@ -364,7 +364,7 @@ namespace Sq1.Gui {
 			// SAME_OBJECTS_BETWEEN_SLIDER_AND_CURRENT_SCRIPT_CONTEXT_BUT_SCRIPT_HAS_ITS_OWN_ACCESSIBLE_THROUGH_REFLECTED
 			strategyToSaveAndRun.PushChangedScriptParameterValueToScript(indicatorParamChangedArg.IndicatorParameter);
 
-			chartFormActive.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("SlidersAutoGrow_SliderValueChanged", false);
+			chartFormActive.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("SlidersAutoGrow_SliderValueChanged", false);
 
 // NO_FREAKING_IDEA_WHY_THIS_WAS_TYPED_IN_HERE			
 //			ScriptParameterEventArgs demuxScriptParameterEventArgs = e as ScriptParameterEventArgs;   
