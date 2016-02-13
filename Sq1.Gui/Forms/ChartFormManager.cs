@@ -1037,31 +1037,31 @@ namespace Sq1.Gui.Forms {
 			//}
 		}
 
-		public void LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters() {
-			LivesimStreamingSettings stream = this.ChartForm.ChartFormManager.Executor.Strategy.LivesimStreamingSettings;
-			// REPLACED_BY_CHECKBOX if (stream.DelayBetweenSerialQuotesEnabled && stream.DelayBetweenSerialQuotesMin >= 50) return;
-
+		public void LivesimStartedOrUnpaused_HideReportersAndExecution() {
 			if (this.Strategy == null) {
 				if (this.Executor.Strategy != null) {
 					string msg = "INCONSISTENCY_TINY_CHECK [this.Strategy==null while this.Executor.Strategy!=null]";
 					Assembler.PopupException(msg);
 				}
+				string msg1 = "THIS_CHECKBOX_SHOULD_BE_DISABLED_FOR_CHARTS_WITHOUT_STRATEGY";
+				Assembler.PopupException(msg1);
 				return;
 			}
-			if (this.Strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim == false) return;
 
+			if (this.Strategy.ScriptContextCurrent.MinimizeGuiExtensiveExecutionAllReportersForTheDurationOfLiveSim == false) return;	// checkbox was unchecked => leave the guys untouched
+
+			this.ReportersFormsManager.LivesimStartedOrUnpaused_HideReporters();
 			ExecutionForm exec = ExecutionForm.Instance;
 			if (exec.IsCoveredOrAutoHidden == false) exec.ToggleAutoHide();
-			this.ReportersFormsManager.LivesimStartedOrUnpaused_AutoHideReporters();
 		}
-		public void LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters() {
+		public void LivesimEndedOrStoppedOrPaused_RestoreHiddenReportersAndExecution() {
 			if (this.Strategy == null) return;
-			if (this.Strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim == true) return;
+			if (this.Strategy.ScriptContextCurrent.MinimizeGuiExtensiveExecutionAllReportersForTheDurationOfLiveSim == false) return;
 
+			this.ReportersFormsManager.LivesimEndedOrStoppedOrPaused_RestoreHiddenReporters();
 			ExecutionForm exec = ExecutionForm.Instance;
 			if (exec.IsCoveredOrAutoHidden == true) exec.ToggleAutoHide();
 			exec.ExecutionTreeControl.RebuildAllTreeFocusOnTopmost();
-			this.ReportersFormsManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenReporters();
 		}
 		public void Dispose_workspaceReloading() {
 			string msig = " //ChartFormsManager.Dispose_workspaceReloading()";

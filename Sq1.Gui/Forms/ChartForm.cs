@@ -244,7 +244,7 @@ namespace Sq1.Gui.Forms {
 				this.mniBacktestOnSelectorsChange								.Checked = ctxScript.BacktestOnSelectorsChange;
 				this.mniBacktestAfterSubscribed									.Checked = ctxScript.BacktestAfterSubscribed;
 				this.BtnStrategyEmittingOrders									.Checked = ctxScript.StrategyEmittingOrders;
-				this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Checked = ctxScript.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
+				this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Checked = ctxScript.MinimizeGuiExtensiveExecutionAllReportersForTheDurationOfLiveSim;
 
 				this.mniBacktestOnTriggeringYesWhenNotSubscribed				.Enabled = true;
 				this.mniBacktestOnDataSourceSaved								.Enabled = true;

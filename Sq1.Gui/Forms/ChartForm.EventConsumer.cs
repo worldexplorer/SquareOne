@@ -495,16 +495,17 @@ namespace Sq1.Gui.Forms {
 					Assembler.PopupException(msg + msig);
 					return;
 				}
-				strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim
+				strategy.ScriptContextCurrent.MinimizeGuiExtensiveExecutionAllReportersForTheDurationOfLiveSim
 									= this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim.Checked;
 				strategy.Serialize();
 				this.MniShowLivesim.ShowDropDown();
 
-				if (strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim) {	// sync after click (paused or running)
-					this.ChartFormManager.LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters();
-				} else {
-					this.ChartFormManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters();
-				}
+				//dont sync me now, I'm having just a good time
+				//if (strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim) {	// sync after click (paused or running)
+				//    this.ChartFormManager.LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters();
+				//} else {
+				//    this.ChartFormManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters();
+				//}
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			}

@@ -43,7 +43,7 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public double						SpreadModelerPercent;
 		[JsonProperty]	public BacktestStrokesPerBar		BacktestStrokesPerBar;
 
-		[JsonProperty]	public bool							MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
+		[JsonProperty]	public bool							MinimizeGuiExtensiveExecutionAllReportersForTheDurationOfLiveSim;
 
 		[JsonIgnore]	public List<IndicatorParameter>		ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders { get {
 				List<IndicatorParameter> ret = new List<IndicatorParameter>();

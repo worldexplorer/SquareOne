@@ -287,14 +287,14 @@ namespace Sq1.Gui.ReportersSupport {
 			}
 		}
 
-		public void LivesimStartedOrUnpaused_AutoHideReporters() {
+		public void LivesimStartedOrUnpaused_HideReporters() {
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
 				ReporterFormWrapper wrapper = rep.Parent as ReporterFormWrapper;
 				if (wrapper == null) continue;
 				if (wrapper.IsCoveredOrAutoHidden == false) wrapper.ToggleAutoHide();
 			}
 		}
-		public void LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenReporters() {
+		public void LivesimEndedOrStoppedOrPaused_RestoreHiddenReporters() {
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
 				ReporterFormWrapper wrapper = rep.Parent as ReporterFormWrapper;
 				if (wrapper == null) continue;

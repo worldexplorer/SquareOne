@@ -47,7 +47,7 @@
         "ManualOrder": 1,
         "Distance": 46,
         "SplitterHeight": 6,
-        "PanelHeight": 141
+        "PanelHeight": 158
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -57,14 +57,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 65
+        "PanelHeight": 64
       },
       "multiSplitRowsVolumePrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 71,
+        "Distance": 70,
         "SplitterHeight": 6,
-        "PanelHeight": 246
+        "PanelHeight": 247
       }
     },
     "Name": "Default",
