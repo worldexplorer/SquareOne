@@ -86,7 +86,7 @@ namespace Sq1.Core.Repositories {
 				this.ItemsFound.Add(fnameDateSize);
 			}
 		}
-		public FnameDateSizeColorPFavg ItemsFoundContainsSymbolScaleRange_NullUnsafe(string symbolScaleRange) {
+		public FnameDateSizeColorPFavg ItemsFoundContainsSymbolScaleRange__nullUnsafe(string symbolScaleRange) {
 			FnameDateSizeColorPFavg ret = null;
 			foreach (FnameDateSizeColorPFavg each in this.ItemsFound) {
 				if (each.SymbolScaleRange != symbolScaleRange) continue;

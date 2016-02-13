@@ -29,7 +29,7 @@ namespace Sq1.Core.Indicators.HelperSeries {
 			double hiLo = newStaticBar.HighLowDistance;
 			if (newStaticBar.ParentBarsIndex == 0) return hiLo;
 
-			Bar prevBar = newStaticBar.BarPreviousNullUnsafe;
+			Bar prevBar = newStaticBar.BarPrevious_nullUnsafe;
 			if (prevBar == null) return hiLo;
 			
 			double hiPrevClose = Math.Abs(newStaticBar.High - prevBar.Close);

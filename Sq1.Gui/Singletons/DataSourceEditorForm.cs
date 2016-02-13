@@ -18,7 +18,7 @@ namespace Sq1.Gui.Singletons {
 		public void Initialize(string dsName, DockPanel mainFormDockPanel) {
 			if (string.IsNullOrEmpty(dsName)) return;
 			
-			DataSource found = Assembler.InstanceInitialized.RepositoryJsonDataSources.DataSourceFindNullUnsafe(dsName);
+			DataSource found = Assembler.InstanceInitialized.RepositoryJsonDataSources.DataSourceFind_nullUnsafe(dsName);
 			if (found == null) {
 				string msg = "DATA_SOURCE_FORM_EDITOR_INITIALIZED_WITH_DATASOURCE_THAT_CAN_NOT_BE_FOUND [" + dsName + "]";
 				Assembler.PopupException(msg);

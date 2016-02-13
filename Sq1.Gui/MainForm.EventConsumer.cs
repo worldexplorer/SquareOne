@@ -74,7 +74,7 @@ namespace Sq1.Gui {
 					//v1 DOESNT_HELP Application.DoEvents();
 
 					//v1
-					//int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor.DistributionChannels.Count;
+					//int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DataDistributor.DistributionChannels.Count;
 					//if (mustBeZero_AbortedOk != 0) {
 					//    string msg = "I_REFUSE_TO_CLOSE_MAINFORM CHART_STAYS_STREAMING_AND_ON_RESTART_THE_STRATEGY_GETS_BACKTESTED_WHILE_USER_DIDNT_WANT_TO mustBeZero_AbortedOk[" + mustBeZero_AbortedOk + "]";
 					//    Assembler.PopupException(msg);

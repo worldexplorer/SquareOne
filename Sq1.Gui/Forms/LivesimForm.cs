@@ -42,9 +42,9 @@ namespace Sq1.Gui.Forms {
 			this.LivesimControl.TssLblStrategyAsString.Text = this.chartFormManager.Executor.ToStringWithCurrentParameters();
 			
 			try {
-				//LivesimDataSource livesimDS = this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe;
-				//LivesimStreaming livesimStreaming = livesimDS.StreamingAsLivesimNullUnsafe;
-				//v1: TOO_WIDE_UNTIL_StreamingAsLivesimNullUnsafe_ WE_ARE_GOING_TO_BE_NOTIFIED_ABOUT_ANY_SYMBOL_RECEIVED_BY_STREAMING_ADAPDER
+				//LivesimDataSource livesimDS = this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesim_nullUnsafe;
+				//LivesimStreaming livesimStreaming = livesimDS.StreamingAsLivesim_nullUnsafe;
+				//v1: TOO_WIDE_UNTIL_StreamingAsLivesim_nullUnsafe_ WE_ARE_GOING_TO_BE_NOTIFIED_ABOUT_ANY_SYMBOL_RECEIVED_BY_STREAMING_ADAPDER
 				//livesimStreaming.QuotePushedToAllDistributionChannels += new EventHandler<QuoteEventArgs>(this.livesimulator_QuotePushedToDistributor);
 				//v2
 				//Bars bars = this.chartFormManager.Executor.Bars;
@@ -55,7 +55,7 @@ namespace Sq1.Gui.Forms {
 				//this.chartFormManager.Executor.EventGenerator.OnStrategyExecutedOneQuoteOrBarOrdersEmitted +=
 				//	new EventHandler<EventArgs>(this.livesimForm_StrategyExecutedOneQuoteOrBarOrdersEmitted);
 
-				//DataSourceAsLivesimNullUnsafe_IS_NULL_HERE this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Initialize(this.chartFormManager.ChartForm.ChartControl);
+				//DataSourceAsLivesim_nullUnsafe_IS_NULL_HERE this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.Initialize(this.chartFormManager.ChartForm.ChartControl);
 				this.LivesimControl.StreamingLivesimEditor.Initialize(this.chartFormManager.Strategy.LivesimStreamingSettings);
 				this.LivesimControl.   BrokerLivesimEditor.Initialize(this.chartFormManager.Strategy.LivesimBrokerSettings);
 			} catch (Exception ex) {

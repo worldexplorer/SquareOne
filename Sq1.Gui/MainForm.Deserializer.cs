@@ -281,7 +281,7 @@ namespace Sq1.Gui {
 			}
 			ChartSettingsEditorForm.Instance.Initialize(this.GuiDataSnapshot.ChartSettingsForChartSettingsEditor);
 			if (this.ChartFormActive_nullUnsafe == null) {
-				string msg = "APPRESTART_DATASOURCE_EDITOR_ACTIVE?__I_REFUSE_TO_PopulateWithChartSettings() this.ChartFormActiveNullUnsafe=null //initializeMainFromDeserializedDataSnapshot()";
+				string msg = "APPRESTART_DATASOURCE_EDITOR_ACTIVE?__I_REFUSE_TO_PopulateWithChartSettings() this.ChartFormActive_nullUnsafe=null //initializeMainFromDeserializedDataSnapshot()";
 				//Assembler.PopupException(msg);
 				return;
 			}

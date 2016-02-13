@@ -56,8 +56,8 @@ namespace Sq1.Strategies.Demo {
 
 			if (base.Bars.Count == base.Executor.BacktesterOrLivesimulator.BarsOriginal.Count) {
 				base.ChartConditionalLineDrawModify("acrossAllBars",
-					0, base.Bars.BarStaticFirstNullUnsafe.Open,
-					base.Bars.BarStaticLastNullUnsafe.ParentBarsIndex, base.Bars.BarStaticLastNullUnsafe.Open,
+					0, base.Bars.BarStaticFirst_nullUnsafe.Open,
+					base.Bars.BarStaticLast_nullUnsafe.ParentBarsIndex, base.Bars.BarStaticLast_nullUnsafe.Open,
 					Color.Goldenrod, 1);
 			}
 		}

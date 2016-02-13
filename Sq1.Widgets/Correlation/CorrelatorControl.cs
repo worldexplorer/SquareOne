@@ -36,7 +36,7 @@ namespace Sq1.Widgets.Correlation {
 
 			RepositorySerializerSymbolInfos symbolInfoRep = Assembler.InstanceInitialized.RepositorySymbolInfos;
 			if (this.sequencedOriginal != null) {
-				SymbolInfo symbolInfoOld = symbolInfoRep.FindSymbolInfoNullUnsafe(this.sequencedOriginal.Symbol);
+				SymbolInfo symbolInfoOld = symbolInfoRep.FindSymbolInfo_nullUnsafe(this.sequencedOriginal.Symbol);
 				if (symbolInfoOld != null) {
 					symbolInfoOld.PriceDecimalsChanged -= new EventHandler<EventArgs>(reloadNetWhenSymbolInfoChanged_PriceDecimalsChanged);
 				} else {
@@ -45,7 +45,7 @@ namespace Sq1.Widgets.Correlation {
 				}
 			}
 
-			SymbolInfo symbolInfoNew = symbolInfoRep.FindSymbolInfoNullUnsafe(originalSequencedBacktests.Symbol);
+			SymbolInfo symbolInfoNew = symbolInfoRep.FindSymbolInfo_nullUnsafe(originalSequencedBacktests.Symbol);
 			if (symbolInfoNew != null) {
 				symbolInfoNew.PriceDecimalsChanged += new EventHandler<EventArgs>(reloadNetWhenSymbolInfoChanged_PriceDecimalsChanged);
 			} else {

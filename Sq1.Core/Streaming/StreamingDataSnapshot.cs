@@ -173,7 +173,7 @@ namespace Sq1.Core.Streaming {
 			double price = 0;
 			oss = OrderSpreadSide.ERROR;
 
-			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoNullUnsafe(symbol);
+			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfo_nullUnsafe(symbol);
 			MarketOrderAs spreadSide;
 			if (forceCrossMarket) {
 				spreadSide = MarketOrderAs.LimitCrossMarket;

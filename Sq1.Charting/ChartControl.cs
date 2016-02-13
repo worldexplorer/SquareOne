@@ -359,9 +359,9 @@ namespace Sq1.Charting {
 				return new Point(x, y);
 			}
 			//v2 NOT_TESTED_SINCE_NOT_USED_YET__HOPING_RECURSIVE_ADDING_CONTROLS_TO_EACH_OTHER_ARE_CAUGHT_BY_WINFORMS
-			MultiSplitContainer whichMultisplitter = priceIndicatorVolumeOrLevel2.ParentMultiSplitContainerNullUnsafe;
+			MultiSplitContainer whichMultisplitter = priceIndicatorVolumeOrLevel2.ParentMultiSplitContainer_nullUnsafe;
 			if (whichMultisplitter == null) {
-				string msg = "PANEL_MUST_BE_ADDED_IN_VERTICAL/HORIZONTAL_MULTISPLIT_CONTAINER priceIndicatorVolumeOrLevel2[" + priceIndicatorVolumeOrLevel2.ToString() + "].ParentMultiSplitContainerNullUnsafe = null";
+				string msg = "PANEL_MUST_BE_ADDED_IN_VERTICAL/HORIZONTAL_MULTISPLIT_CONTAINER priceIndicatorVolumeOrLevel2[" + priceIndicatorVolumeOrLevel2.ToString() + "].ParentMultiSplitContainer_nullUnsafe = null";
 				Assembler.PopupException(msg);
 				return new Point(x, y);
 			}
@@ -381,7 +381,7 @@ namespace Sq1.Charting {
 			}
 
 			string msg2 = "PANEL_ADDED_IN_UNKNOWN_MULTISPLIT_CONTAINER__NOT_VERTICAL/HORIZONTAL_I_KNOW_OF"
-				+ " priceIndicatorVolumeOrLevel2[" + priceIndicatorVolumeOrLevel2.ToString() + "].ParentMultiSplitContainerNullUnsafe[" + whichMultisplitter.ToString() + "]";
+				+ " priceIndicatorVolumeOrLevel2[" + priceIndicatorVolumeOrLevel2.ToString() + "].ParentMultiSplitContainer_nullUnsafe[" + whichMultisplitter.ToString() + "]";
 			Assembler.PopupException(msg2);
 			return new Point(x, y);
 		}

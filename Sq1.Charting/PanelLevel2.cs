@@ -14,7 +14,7 @@ namespace Sq1.Charting {
 
 		[Browsable(false)]	public override bool					PanelHasValuesForVisibleBarWindow		{ get { return false;	/* this will cancel drawing right gutter */ } }
 		[Browsable(false)]	protected override int					ValueIndexLastAvailableMinusOneUnsafe	{ get { return -1; } }
-		[Browsable(false)]	public			StreamingDataSnapshot	StreamingDataSnapshotNullUnsafe			{ get {
+		[Browsable(false)]	public			StreamingDataSnapshot	StreamingDataSnapshot_nullUnsafe			{ get {
 			if (base.ChartControl.Executor == null) return null;		// for TestChartControl
 			if (base.ChartControl.Executor.DataSource_fromBars.StreamingAdapter == null) return null;
 			return base.ChartControl.Executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot;
@@ -129,7 +129,7 @@ namespace Sq1.Charting {
 			g.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
 
 			this.errorDetected = false;
-			if (this.StreamingDataSnapshotNullUnsafe == null) {
+			if (this.StreamingDataSnapshot_nullUnsafe == null) {
 				base.DrawError(g, "EDIT_DATASOURCE_SELECT_STREAMING_ADAPTER");
 				this.errorDetected = true;
 			}
@@ -139,7 +139,7 @@ namespace Sq1.Charting {
 			}
 			Quote lastQuote = null;
 			if (this.errorDetected == false) {
-				lastQuote = this.StreamingDataSnapshotNullUnsafe.LastQuoteCloneGetForSymbol(base.ChartControl.Bars.Symbol);
+				lastQuote = this.StreamingDataSnapshot_nullUnsafe.LastQuoteCloneGetForSymbol(base.ChartControl.Bars.Symbol);
 				if (lastQuote == null) {
 					base.DrawError(g, "CONNECT_STREAMING__OR__CHART>BARS>SUBSCRIBE");
 					this.errorDetected = true;
@@ -367,7 +367,7 @@ namespace Sq1.Charting {
 			Quote quoteLast = base.ChartControl.ScriptExecutorObjects.QuoteLast;
 			if (quoteLast == null) return;
 
-			//Quote quoteLastFromDictionary = this.StreamingDataSnapshotNullUnsafe.LastQuoteCloneGetForSymbol(base.ChartControl.Bars.Symbol);
+			//Quote quoteLastFromDictionary = this.StreamingDataSnapshot_nullUnsafe.LastQuoteCloneGetForSymbol(base.ChartControl.Bars.Symbol);
 			//if (quoteLast.SameBidAsk(quoteLastFromDictionary) == false) {
 			//	string msg = "GOOD_THAT_YOU_CACHED DATASNAP_UNSYNCED_EXECOBJ quoteLast[" + quoteLast + "] != quoteLastFromDictionary[" + quoteLastFromDictionary + "]";
 			//	Assembler.PopupException(msg, null, false);

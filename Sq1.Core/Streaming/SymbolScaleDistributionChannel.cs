@@ -128,7 +128,7 @@ namespace Sq1.Core.Streaming {
 						this.bindConsumeLastStaticFormed(quoteSernoEnrichedWithUnboundStreamingBar);
 					}
 				} else {
-					string msg = "I_REFUSE_BIND_AND_PUSH_LAST_STATIC_FORMED [" + this.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe + "]"
+					string msg = "I_REFUSE_BIND_AND_PUSH_LAST_STATIC_FORMED [" + this.StreamingBarFactoryUnattached.BarLastFormedUnattached_nullUnsafe + "]"
 						//+ " I won't push LastStaticBar(DateTime.MinValue, NaN*5) because it has initialized LastStaticBar=StreamingBar.Clone()"
 						+ " on first quoteSernoEnrichedWithUnboundStreamingBar[" + quoteSernoEnrichedWithUnboundStreamingBar + "]"
 						+ " for " + this.StreamingBarFactoryUnattached;
@@ -173,7 +173,7 @@ namespace Sq1.Core.Streaming {
 				//			Assembler.PopupException(msg);
 				//			continue;
 				//		}
-				//		Bar lastBarFormedUnattached = this.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe.Clone();
+				//		Bar lastBarFormedUnattached = this.StreamingBarFactoryUnattached.BarLastFormedUnattached_nullUnsafe.Clone();
 				//		barConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(lastBarFormedUnattached, null);
 				//	} catch (Exception e) {
 				//		string msg = "STREAMING_SOLIDIFIER_FAILED_TO_CONSUME_STATIC_JUST_FORMED";
@@ -206,8 +206,8 @@ namespace Sq1.Core.Streaming {
 					Assembler.PopupException(msg + msig);
 					continue;
 				}
-				if (	barConsumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe != null
-					 && barConsumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe.DateTimeOpen == barStreamingUnattached.DateTimeOpen) {
+				if (	barConsumer.ConsumerBarsToAppendInto.BarStaticLast_nullUnsafe != null
+					 && barConsumer.ConsumerBarsToAppendInto.BarStaticLast_nullUnsafe.DateTimeOpen == barStreamingUnattached.DateTimeOpen) {
 					string msg = "KEEP_THIS_NOT_HAPPENING_BY_LEAVING_STATIC_LAST_ON_APPRESTART_NULL_ON_LIVEBACKTEST_CONTAINING_LAST_INCOMING_QUOTE"
 						+ " we are on 1st ever streaming quote: probably shouln't add it to avoid ALREADY_HAVE exception";
 					//Debugger.Break();
@@ -239,7 +239,7 @@ namespace Sq1.Core.Streaming {
 				}
 
 				try {
-					Bar barStaticLast = barConsumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe;
+					Bar barStaticLast = barConsumer.ConsumerBarsToAppendInto.BarStaticLast_nullUnsafe;
 					if (barStaticLast == null) {
 						string msg = "THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
 						Assembler.PopupException(msg, null, false);
@@ -434,7 +434,7 @@ namespace Sq1.Core.Streaming {
 			}
 			foreach (StreamingConsumer barConsumer in this.ConsumersBar) {
 				if (barConsumer is StreamingSolidifier == false) {
-					lastQuoteReceived.SetParentBarStreaming(barConsumer.ConsumerBarsToAppendInto.BarStreamingNullUnsafe);
+					lastQuoteReceived.SetParentBarStreaming(barConsumer.ConsumerBarsToAppendInto.BarStreaming_nullUnsafe);
 				}
 				barConsumer.UpstreamUnSubscribedFromSymbolNotification(lastQuoteReceived);
 			}

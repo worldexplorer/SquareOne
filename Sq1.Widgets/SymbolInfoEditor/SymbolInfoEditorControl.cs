@@ -13,7 +13,7 @@ namespace Sq1.Widgets.SymbolEditor {
 
 		RepositorySerializerSymbolInfos	repositorySerializerSymbolInfo;
 		RepositoryJsonDataSources		repositoryJsonDataSource;
-		SymbolInfo						symbolInfoSelectedNullUnsafe { get { return this.tsiCbxSymbols.ComboBox.SelectedItem as SymbolInfo; } }
+		SymbolInfo						symbolInfoSelected_nullUnsafe { get { return this.tsiCbxSymbols.ComboBox.SelectedItem as SymbolInfo; } }
 		bool							rebuildingDropdown;
 		bool							openDropDownAfterSelected;
 		bool							ignoreEvent_SelectedIndexChanged_resetInHandler;
@@ -66,7 +66,7 @@ namespace Sq1.Widgets.SymbolEditor {
 			this.tsiCbxSymbols.ComboBox.Items.Add(this.noSymbolSelected_symbolInfo);
 			this.PopulateWithSymbolInfo(this.noSymbolSelected_symbolInfo);
 			// that's it! nothing else is needed to be done: once any other symbol is selected,
-			// toolStripItemComboBox1_SelectedIndexChanged() will do this.PopulateWithSymbolInfo(this.symbolInfoSelectedNullUnsafe, true);
+			// toolStripItemComboBox1_SelectedIndexChanged() will do this.PopulateWithSymbolInfo(this.symbolInfoSelected_nullUnsafe, true);
 		}
 		public void PopulateWithSymbolInfo(SymbolInfo symbolInfo, bool rebuildDropdown = false) {
 			if (symbolInfo == null) {
@@ -98,7 +98,7 @@ namespace Sq1.Widgets.SymbolEditor {
 			this.propertyGrid1.SelectedObject = symbolInfo;
 
 			if (rebuildDropdown) this.rebuildDropdown();
-			if (this.symbolInfoSelectedNullUnsafe != null && this.symbolInfoSelectedNullUnsafe.ToString() == symbolInfo.ToString()) {
+			if (this.symbolInfoSelected_nullUnsafe != null && this.symbolInfoSelected_nullUnsafe.ToString() == symbolInfo.ToString()) {
 				return;
 			}
 			foreach (SymbolInfo eachSymbolInfo in this.tsiCbxSymbols.ComboBox.Items) {
@@ -106,13 +106,13 @@ namespace Sq1.Widgets.SymbolEditor {
 				this.openDropDownAfterSelected = false;
 				if (this.tsiCbxSymbols.ComboBox.SelectedItem == eachSymbolInfo) break;
 				this.ignoreEvent_SelectedIndexChanged_resetInHandler = true;
-				this.tsiCbxSymbols.ComboBox.SelectedItem = eachSymbolInfo;	// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelectedNullUnsafe + Initialize()
+				this.tsiCbxSymbols.ComboBox.SelectedItem = eachSymbolInfo;	// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelected_nullUnsafe + Initialize()
 				break;
 			}
 		}
 		public void PopulateRenamedSymbol_rebuildDropdown(DataSourceSymbolRenamedEventArgs e) {
 			string msig = " //PopulateRenamedSymbol_rebuildDropdown(" + e.SymbolOld + "=>" + e.Symbol + ")";
-			SymbolInfo symbolInfo = this.repositorySerializerSymbolInfo.FindSymbolInfoNullUnsafe(e.Symbol);
+			SymbolInfo symbolInfo = this.repositorySerializerSymbolInfo.FindSymbolInfo_nullUnsafe(e.Symbol);
 			if (symbolInfo == null) {
 				string msg = "RENAME_IN_REPOSITORY_FIRST__EDITOR_DEALS_WITH_EXISTING_DATA";
 				Assembler.PopupException(msg + msig);
@@ -123,7 +123,7 @@ namespace Sq1.Widgets.SymbolEditor {
 
 		public void PopulateWithSymbol_findOrCreateSymbolInfo(string symbol) {
 			string msig = " //PopulateWithSymbol_findOrCreateSymbolInfo(" + symbol + ")";
-			SymbolInfo symbolInfo = this.repositorySerializerSymbolInfo.FindSymbolInfoNullUnsafe(symbol);
+			SymbolInfo symbolInfo = this.repositorySerializerSymbolInfo.FindSymbolInfo_nullUnsafe(symbol);
 			if (symbolInfo == null) {
 				string msg = "HACKY!!!!_RENAME_IN_REPOSITORY_FIRST__EDITOR_DEALS_WITH_EXISTING_DATA";
 				Assembler.PopupException(msg + msig);

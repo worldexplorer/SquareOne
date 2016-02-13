@@ -84,7 +84,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	string				StrategyName					{ get; protected set; }
 		[JsonIgnore]	public	Strategy			Strategy						{ get; protected set; }
 
-		[JsonIgnore]			Backtester			BacktesterNullUnsafeForDeserialized			{ get {
+		[JsonIgnore]			Backtester			Backtester_nullUnsafeForDeserialized			{ get {
 				if (this.Strategy == null) {
 					string msg = "ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL__ADDED_[JsonIgnore]";
 					Assembler.PopupException(msg);
@@ -108,17 +108,17 @@ namespace Sq1.Core.Execution {
 				return this.Strategy.Script.Executor.BacktesterOrLivesimulator;
 			} }
 		[JsonIgnore]	public	bool				IsBacktestRunning_FalseIfNoBacktester		{ get {
-				Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
+				Backtester	backtester = this.Backtester_nullUnsafeForDeserialized;
 				if (backtester == null) return false;
 				return backtester.ImBacktestingOrLivesimming;
 			} }
 		[JsonIgnore]	public	bool				IsBacktestingNoLivesimNow_FalseIfNoBacktester		{ get {
-		        Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
+		        Backtester	backtester = this.Backtester_nullUnsafeForDeserialized;
 		        if (backtester == null) return false;
 		        return backtester.ImRunningChartlessBacktesting;
 		    } }
 		[JsonIgnore]	public	bool				IsBacktestingLivesimNow_FalseIfNoBacktester		{ get {
-		        Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
+		        Backtester	backtester = this.Backtester_nullUnsafeForDeserialized;
 		        if (backtester == null) return false;
 		        return this.Strategy.Script.Executor.BacktesterOrLivesimulator.ImRunningLivesim;
 		    }

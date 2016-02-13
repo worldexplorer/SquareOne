@@ -13,7 +13,7 @@ namespace Sq1.Core.Repositories {
 
 		public SymbolInfoList SymbolInfos { get { return base.EntityDeserialized; } }
 
-		public SymbolInfo FindSymbolInfoNullUnsafe(string symbol) {
+		public SymbolInfo FindSymbolInfo_nullUnsafe(string symbol) {
 			SymbolInfo ret = null;
 			if (string.IsNullOrEmpty(symbol)) return ret;
 			foreach (SymbolInfo eachSymbolInfo in this.SymbolInfos) {
@@ -28,12 +28,12 @@ namespace Sq1.Core.Repositories {
 			return ret;
 		}
 		public SymbolInfo FindSymbolInfoOrNew(string symbol) {
-			SymbolInfo ret = this.FindSymbolInfoNullUnsafe(symbol);
+			SymbolInfo ret = this.FindSymbolInfo_nullUnsafe(symbol);
 			if (ret == null) ret = this.Add(symbol);
 			return ret;
 		}
 		public SymbolInfo Duplicate(SymbolInfo symbolInfo, string dupeSymbol) {
-			if (this.FindSymbolInfoNullUnsafe(dupeSymbol) != null){
+			if (this.FindSymbolInfo_nullUnsafe(dupeSymbol) != null){
 				string msg = "I_REFUSE_TO_DUPLICATE_SYMBOL_INFO__SYMBOL_ALREADY_EXISTS[" + dupeSymbol + "]";
 				Assembler.PopupException(msg);
 				return null;
@@ -46,7 +46,7 @@ namespace Sq1.Core.Repositories {
 			return clone;
 		}
 		public SymbolInfo Rename(SymbolInfo symbolInfo, string newSymbol) {
-			if (this.FindSymbolInfoNullUnsafe(newSymbol) != null) {
+			if (this.FindSymbolInfo_nullUnsafe(newSymbol) != null) {
 				string msg = "I_REFUSE_TO_RENAME_SYMBOL_INFO__SYMBOL_ALREADY_EXISTS[" + newSymbol + "]";
 				Assembler.PopupException(msg);
 				return null;
@@ -62,7 +62,7 @@ namespace Sq1.Core.Repositories {
 				Assembler.PopupException(msg);
 				return null;
 			}
-			if (this.FindSymbolInfoNullUnsafe(newSymbol) != null) {
+			if (this.FindSymbolInfo_nullUnsafe(newSymbol) != null) {
 				string msg = "I_REFUSE_TO_ADD_SYMBOL_INFO__SYMBOL_ALREADY_EXISTS[" + newSymbol + "]";
 				Assembler.PopupException(msg);
 				return null;

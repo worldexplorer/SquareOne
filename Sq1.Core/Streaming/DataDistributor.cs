@@ -117,7 +117,7 @@ namespace Sq1.Core.Streaming {
 			if (barConsumer is StreamingSolidifier) {
 				string msg = "StreamingSolidifier_DOESNT_SUPPORT_ConsumerBarsToAppendInto";
 			} else {
-				Bar barStaticLast = barConsumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe;
+				Bar barStaticLast = barConsumer.ConsumerBarsToAppendInto.BarStaticLast_nullUnsafe;
 				bool isLive				= barConsumer			is ChartStreamingConsumer;
 				bool isBacktest			= barConsumer			is BacktestQuoteBarConsumer;
 				bool isLivesim			= barConsumer			is LivesimQuoteBarConsumer;

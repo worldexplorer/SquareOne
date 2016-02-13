@@ -192,8 +192,8 @@ namespace Sq1.Core.Backtesting {
 			List<Position> positionsSafe = this.Executor.ExecutionDataSnapshot.PositionsOpenNow.SafeCopy(this, "closePositionsLeftOpenAfterBacktest(WAIT)");
 			foreach (Position positionOpen in positionsSafe) {
 				//v1 List<Alert> alertsSubmittedToKill = this.Executor.Strategy.Script.PositionCloseImmediately(positionOpen, );
-				//v2 WONT_CLOSE_POSITION_EARLIER_THAN_OPENED Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStaticLastNullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
-				Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStreamingNullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
+				//v2 WONT_CLOSE_POSITION_EARLIER_THAN_OPENED Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStaticLast_nullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
+				Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStreaming_nullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
 				if (exitAlert != positionOpen.ExitAlert) {
 					string msg = "FIXME_SOMEHOW";
 					Assembler.PopupException(msg);

@@ -249,7 +249,7 @@ namespace Sq1.Core.StrategyBase {
 		//        throw new Exception(msg);
 		//    }
 
-		//    quoteLast.SetParentBarStreaming(alert.Bars.BarStreamingNullUnsafe.Clone());
+		//    quoteLast.SetParentBarStreaming(alert.Bars.BarStreaming_nullUnsafe.Clone());
 		//    if (quoteLast.ParentBarStreaming.ParentBarsIndex == -1) {
 		//        string msg = "EARLY_BINDER_DIDNT_DO_ITS_JOB#1 quote.ParentStreamingBar.ParentBarsIndex=-1 ";
 		//        #if DEBUG

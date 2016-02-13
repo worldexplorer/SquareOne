@@ -63,7 +63,7 @@ namespace Sq1.Widgets.Correlation {
 				this.AlignBaseSizeToDisplayedCells();
 				this.ctxOneParameterControl.Show();	//I like when it stays open, but AutoClose=false results in not opening at all
 
-				//CorrelatorOneParameterSnapshot snap = this.indicatorParameterNullUnsafe.CorrelatorSnap;
+				//CorrelatorOneParameterSnapshot snap = this.indicatorParameter_nullUnsafe.CorrelatorSnap;
 				CorrelatorOneParameterSnapshot snap = this.correlator.CorrelatorDataSnapshot[this.Parameter.ParameterName];
 				if (mni == this.mniShowAllBacktestedParams) {
 					snap.MniShowAllBacktestsChecked = mni.Checked;

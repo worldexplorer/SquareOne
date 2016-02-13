@@ -343,7 +343,7 @@ namespace Sq1.Core.Streaming {
 			if (channel == null) return;
 			//v1 
 			//Bar streamingBar = distributionChannel.StreamingBarFactoryUnattached.StreamingBarUnattached;
-			Bar streamingBar = chartBars.BarStreamingNullUnsafe;
+			Bar streamingBar = chartBars.BarStreaming_nullUnsafe;
 			if (streamingBar == null) {
 				string msg = "STREAMING_NEVER_STARTED BarFactory.StreamingBar=null for distributionChannel[" + channel + "]";
 				Assembler.PopupException(msg);
@@ -355,7 +355,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
-			if (chartBars.BarStaticLastNullUnsafe == null) {
+			if (chartBars.BarStaticLast_nullUnsafe == null) {
 				// FAILED_FIXING_IN_DataDistributor
 				string msg = "BAR_STATIC_LAST_IS_NULL while streamingBar[" + streamingBar
 					+ "] for distributionChannel[" + channel + "]";
@@ -364,20 +364,20 @@ namespace Sq1.Core.Streaming {
 				return;
 			}
 			
-			if (streamingBar.DateTimeOpen != chartBars.BarStaticLastNullUnsafe.DateTimeNextBarOpenUnconditional) {
-				if (streamingBar.DateTimeOpen == chartBars.BarStaticLastNullUnsafe.DateTimeOpen) {
+			if (streamingBar.DateTimeOpen != chartBars.BarStaticLast_nullUnsafe.DateTimeNextBarOpenUnconditional) {
+				if (streamingBar.DateTimeOpen == chartBars.BarStaticLast_nullUnsafe.DateTimeOpen) {
 					string msg = "STREAMINGBAR_OVERWROTE_LASTBAR streamingBar.DateTimeOpen[" + streamingBar.DateTimeOpen
-						+ "] == this.LastStaticBar.DateTimeOpen[" + chartBars.BarStaticLastNullUnsafe.DateTimeOpen + "] " + chartBars;
+						+ "] == this.LastStaticBar.DateTimeOpen[" + chartBars.BarStaticLast_nullUnsafe.DateTimeOpen + "] " + chartBars;
 					//log.Error(msg);
 				} else {
 					string msg = "STREAMINGBAR_OUTDATED streamingBar.DateTimeOpen[" + streamingBar.DateTimeOpen
 						+ "] != chartBars.LastStaticBar.DateTimeNextBarOpenUnconditional["
-						+ chartBars.BarStaticLastNullUnsafe.DateTimeNextBarOpenUnconditional + "] " + chartBars;
+						+ chartBars.BarStaticLast_nullUnsafe.DateTimeNextBarOpenUnconditional + "] " + chartBars;
 					//log.Error(msg);
 				}
 			}
 			chartBars.BarStreamingOverrideDOHLCVwith(streamingBar);
-			string msg1 = "StreamingOHLCV Overwritten: Bars.StreamingBar[" + chartBars.BarStreamingNullUnsafeCloneReadonly + "] taken from streamingBar[" + streamingBar + "]";
+			string msg1 = "StreamingOHLCV Overwritten: Bars.StreamingBar[" + chartBars.BarStreaming_nullUnsafeCloneReadonly + "] taken from streamingBar[" + streamingBar + "]";
 			//Assembler.PopupException(msg1, null, false);
 		}
 		public override string ToString() {
@@ -393,18 +393,18 @@ namespace Sq1.Core.Streaming {
 		internal void AbsorbStreamingBarFactoryFromBacktestComplete(StreamingAdapter streamingBacktest, string symbol, BarScaleInterval barScaleInterval) {
 			SymbolScaleDistributionChannel channelBacktest = streamingBacktest.DataDistributor_replacedForLivesim.GetDistributionChannelFor_nullUnsafe(symbol, barScaleInterval);
 			if (channelBacktest == null) return;
-			Bar barLastFormedBacktest = channelBacktest.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe;
+			Bar barLastFormedBacktest = channelBacktest.StreamingBarFactoryUnattached.BarLastFormedUnattached_nullUnsafe;
 			if (barLastFormedBacktest == null) return;
 
 			Bar barStreamingBacktest = channelBacktest.StreamingBarFactoryUnattached.BarStreamingUnattached;
 
 			SymbolScaleDistributionChannel channelOriginal = this.DataDistributor_replacedForLivesim.GetDistributionChannelFor_nullUnsafe(symbol, barScaleInterval);
 			if (channelOriginal == null) return;
-			Bar barLastFormedOriginal = channelOriginal.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe;
+			Bar barLastFormedOriginal = channelOriginal.StreamingBarFactoryUnattached.BarLastFormedUnattached_nullUnsafe;
 			//if (barLastFormedOriginal == null) return;
 
 			channelOriginal.StreamingBarFactoryUnattached.AbsorbBarLastStaticFromChannelBacktesterComplete(channelBacktest);
-			Bar barLastFormedAbsorbed = channelOriginal.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe;
+			Bar barLastFormedAbsorbed = channelOriginal.StreamingBarFactoryUnattached.BarLastFormedUnattached_nullUnsafe;
 			if (barLastFormedOriginal == null || barLastFormedAbsorbed.DateTimeOpen != barLastFormedOriginal.DateTimeOpen) {
 				string msg = "GUT";
 			}
@@ -481,7 +481,7 @@ namespace Sq1.Core.Streaming {
 		internal void SubscribeChart(string symbolSafe, BarScaleInterval scaleIntervalSafe, Charting.ChartStreamingConsumer chartStreamingConsumer, string msigForNpExceptions) {
 			bool iWantChartToConsumeQuotesInSeparateThreadToLetStreamingGoWithoutWaitingForStrategyToFinish = true;
 
-			//NPE_AFTER_SEPARATED_SOLIDIFIERS SymbolScaleDistributionChannel channel = streamingSafe.DataDistributor.GetDistributionChannelForNullUnsafe(symbolSafe, scaleIntervalSafe);
+			//NPE_AFTER_SEPARATED_SOLIDIFIERS SymbolScaleDistributionChannel channel = streamingSafe.DataDistributor.GetDistributionChannelFor_nullUnsafe(symbolSafe, scaleIntervalSafe);
 			if (this.DataDistributor_replacedForLivesim.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, chartStreamingConsumer) == true) {
 				Assembler.PopupException("CHART_STREAMING_ALREADY_SUBSCRIBED_CONSUMER_QUOTE" + msigForNpExceptions);
 			} else {

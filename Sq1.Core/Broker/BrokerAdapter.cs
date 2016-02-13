@@ -419,7 +419,7 @@ namespace Sq1.Core.Broker {
 			order.AppendMessage(msg + msig);
 		}
 
-		public Order ScanEvidentLanesForGuidNullUnsafe(string GUID, List<OrderLane> orderLanes = null, char separator = ';') {
+		public Order ScanEvidentLanesForGuid_nullUnsafe(string GUID, List<OrderLane> orderLanes = null, char separator = ';') {
 			string msig = " //" + this.Name;
 			string orderLanesSearchedAsString = "";
 			Order orderFound = null;
@@ -434,7 +434,7 @@ namespace Sq1.Core.Broker {
 				if (orderFound != null) break;
 			}
 			orderLanesSearchedAsString = orderLanesSearchedAsString.TrimEnd(separator);
-			msig += ".FindOrderLaneOptimizedNullUnsafe(" + GUID + "),orderLanesSearchedAsString[" + orderLanesSearchedAsString + "]";
+			msig += ".FindOrderLaneOptimized_nullUnsafe(" + GUID + "),orderLanesSearchedAsString[" + orderLanesSearchedAsString + "]";
 			
 			if (orderFound == null) {
 				string msg = "PENDING_ORDER_NOT_FOUND__RETURNING_ORDER_NULL";

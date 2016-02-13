@@ -56,12 +56,12 @@ namespace Sq1.Core.Livesim {
 				base.Executor.EventGenerator.RaiseOnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4();
 				
 				BacktestSpreadModeler spreadModeler;
-				// kept it on the surface and didn't pass ScriptContextCurrent.SpreadModelerPercent to "new DataSourceAsLivesimNullUnsafe()" because later DataSourceAsLivesimNullUnsafe:
+				// kept it on the surface and didn't pass ScriptContextCurrent.SpreadModelerPercent to "new DataSourceAsLivesim_nullUnsafe()" because later DataSourceAsLivesim_nullUnsafe:
 				// 1) will support different SpreadModelers with not only 1 parameter like SpreadModelerPercentage;
 				// 2) will support different BacktestModes like 12strokes, not only 4Stroke 
 				// 3) will poke StreamingAdapter-derived implementations 12 times a bar with platform-generated quotes for backtests with regulated poke delay
 				// 4) will need to be provide visualized 
-				// v1 this.DataSourceAsLivesimNullUnsafe.BacktestStreamingAdapter.InitializeSpreadModelerPercentage(base.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
+				// v1 this.DataSourceAsLivesim_nullUnsafe.BacktestStreamingAdapter.InitializeSpreadModelerPercentage(base.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
 				// v2 UI-controlled in the future, right now the stub  
 				ContextScript ctx = base.Executor.Strategy.ScriptContextCurrent;
 				string msig = "STARTING_LIVESIM " + base.Executor.Strategy.ToString() + " //SimulationPreBarsSubstitute_overrideable()";
@@ -92,8 +92,8 @@ namespace Sq1.Core.Livesim {
 				//this.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim.AllQuotePumps_Pause(reasonToPauseSymbol);
 				this.Executor.DataSource_fromBars.LivesimStreamingDefault_PumpPause_freezeOtherConsumers_forSameSymbolScale(this.Executor);
 
-				this.DataSourceAsLivesim_nullUnsafe.PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource();	// no need to restore (this.DataSourceAsLivesimNullUnsafe will be re-initialized at next Livesim)
-				// NO!!! KEEP_THEM_TO_ORIGINAL_DATASOURCE_BECAUSE_DDE_SERVER_DELIVERS_LEVEL2_TO_ORIGINAL_DATA_SNAPSHOT base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;	// will need to restore (base.BarsSimulating is not needed after Livesim is done)
+				this.DataSourceAsLivesim_nullUnsafe.PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource();	// no need to restore (this.DataSourceAsLivesim_nullUnsafe will be re-initialized at next Livesim)
+				// NO!!! KEEP_THEM_TO_ORIGINAL_DATASOURCE_BECAUSE_DDE_SERVER_DELIVERS_LEVEL2_TO_ORIGINAL_DATA_SNAPSHOT base.BarsSimulating.DataSource = this.DataSourceAsLivesim_nullUnsafe;	// will need to restore (base.BarsSimulating is not needed after Livesim is done)
 				this.DataSourceAsLivesim_nullUnsafe.InitializeLivesim(base.Executor.ToString(), base.BarsSimulating, spreadModeler);
 				base.BarsSimulating.DataSource = this.DataSourceAsLivesim_nullUnsafe;
 				//DURING_LIVESIM_I_LEFT_STREAMING_EXACTLY_THE_SAME_AS_FOR_LIVE_TRADING_TO_TEST_IT!!! this.StreamingOriginal = this.Executor.DataSource.StreamingAdapter;		// will have to restore
@@ -141,7 +141,7 @@ namespace Sq1.Core.Livesim {
 				#endregion
 
 				//this.BarsSimulating.DataSource = this.DataSourceAsLivesim_nullUnsafe;	// may not need to restore (base.BarsSimulating is not needed after Livesim is done)
-				if (this.BarsSimulating.BarStaticLastNullUnsafe == null) {
+				if (this.BarsSimulating.BarStaticLast_nullUnsafe == null) {
 					string msg = "NO!!! DOES_IT_SOLVE__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM?";
 					//Assembler.PopupException(msg, null, false);
 				}
@@ -236,7 +236,7 @@ namespace Sq1.Core.Livesim {
 				//this.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim.AllQuotePumps_Unpause(reasonToUnPauseSymbol);
 				this.Executor.DataSource_fromBars.LivesimStreamingDefault_PumpResume_unfreezeOtherConsumers_forSameSymbolScale(this.Executor);
 
-				//if (this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.settings.DelayBetweenSerialQuotesEnabled) {
+				//if (this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.settings.DelayBetweenSerialQuotesEnabled) {
 				if (base.Executor.Strategy.LivesimStreamingSettings.DelayBetweenSerialQuotesEnabled == false) {
 					base.Executor.OrderProcessor.RaiseDelaylessLivesimEndedShouldRebuildOLV(this);
 				}

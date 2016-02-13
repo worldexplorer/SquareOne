@@ -265,8 +265,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 				}
 				bool renameSymbolInfoKozNoOtherDataSourceHasSameSymbol = numberOfDataSourcesHavingSymbolToBeRenamed == 1;
 
-				SymbolInfo sourceSymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoNullUnsafe(sourceSymbol);
-				SymbolInfo targetSymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoNullUnsafe(targetSymbol);
+				SymbolInfo sourceSymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfo_nullUnsafe(sourceSymbol);
+				SymbolInfo targetSymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfo_nullUnsafe(targetSymbol);
 
 				if (targetSymbolInfo == null) {
 					if (renameSymbolInfoKozNoOtherDataSourceHasSameSymbol) {

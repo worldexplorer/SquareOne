@@ -224,7 +224,7 @@ namespace Sq1.Gui.ReportersSupport {
 		public ReporterFormWrapper ReporterActivateShowRegisterMniTick(string typeNameShortOrFullAutodetect, bool show=true) {
 			string typeNameShort = this.reportersRepo.ShrinkTypeName(typeNameShortOrFullAutodetect);
 			Reporter reporterActivated = this.reportersRepo.ActivateFromTypeName(typeNameShortOrFullAutodetect);
-			object reportersSnapshot = this.findOrCreateReportersSnapshotNullUnsafe(reporterActivated);
+			object reportersSnapshot = this.findOrCreateReportersSnapshot_nullUnsafe(reporterActivated);
 			reporterActivated.Initialize(this.ChartFormsManager.ChartForm.ChartControl as ChartShadow, reportersSnapshot, this.ChartFormsManager.Executor.PerformanceAfterBacktest);
 
 			var ret = new ReporterFormWrapper(this, reporterActivated);
@@ -245,7 +245,7 @@ namespace Sq1.Gui.ReportersSupport {
 			reporterActivated.BuildFullOnBacktestFinished();
 			return ret;
 		}
-		object findOrCreateReportersSnapshotNullUnsafe(Reporter reporterActivated) {
+		object findOrCreateReportersSnapshot_nullUnsafe(Reporter reporterActivated) {
 			Strategy strategy = this.ChartFormsManager.Executor.Strategy;
 			if (strategy == null) {
 				string msg = "STRATEGY_MUST_NOT_BE_NULL ChartFormManager.Executor.Strategy";

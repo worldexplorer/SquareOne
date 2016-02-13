@@ -42,7 +42,7 @@ namespace Sq1.Core.Livesim {
 
 			this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange += new EventHandler<QuoteEventArgs>(streamingAsLivesim_nullUnsafe_OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange);
 
-			barsAreSetInGuiThread.Set();		// SOLVES__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM release the thread that waits to start livesim (second livesim throws LastBarNullUnsafe == null)
+			barsAreSetInGuiThread.Set();		// SOLVES__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM release the thread that waits to start livesim (second livesim throws LastBar_nullUnsafe == null)
 			barsAreSetInGuiThread.Reset();		// SOLVES__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM and close the gate again - you should not wait!!! I don't trust AutoResetEvent
 
 			this.btnPauseResume.Enabled = true;

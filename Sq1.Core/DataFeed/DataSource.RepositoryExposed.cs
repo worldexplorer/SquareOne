@@ -31,7 +31,7 @@ namespace Sq1.Core.DataFeed {
 				string abspathSource = dataSourceFrom.BarsRepository.AbspathForSymbol(symbolToCopy);
 				this.BarsRepository.SymbolDataFileCopy(symbolToCopy, abspathSource);
 				RepositoryBarsFile filePickedUp = this.BarsRepository.DataFileForSymbol(symbolToCopy);
-				Assembler.PopupException("BARS_SAVED_UNCOMPRESSED: " + filePickedUp.BarsLoadAllNullUnsafeThreadSafe().Count + msig, null, false);
+				Assembler.PopupException("BARS_SAVED_UNCOMPRESSED: " + filePickedUp.BarsLoadAll_nullUnsafeThreadSafe().Count + msig, null, false);
 			} else {
 				string millisElapsedLoadCompress;
 				Bars barsCompressed = dataSourceFrom.BarsLoadAndCompress(symbolToCopy, dataSourceTo.ScaleInterval, out millisElapsedLoadCompress);
@@ -84,7 +84,7 @@ namespace Sq1.Core.DataFeed {
 			this.Symbols.Remove(symbolToDelete);
 			this.BarsRepository.SymbolDataFileDelete(symbolToDelete);
 
-			List<ChartShadow> chartsForOldSymbol = this.ChartsOpenForSymbol.FindContentsForSimilarKey_NullUnsafe(new SymbolOfDataSource(symbolToDelete, this));
+			List<ChartShadow> chartsForOldSymbol = this.ChartsOpenForSymbol.FindContentsForSimilarKey__nullUnsafe(new SymbolOfDataSource(symbolToDelete, this));
 			if (chartsForOldSymbol != null) {
 				string msg = "SHOULD_I_CLOSE_THE_CHARTS_OPEN_WITH_SYMBOL? symbolToDelete[" + symbolToDelete + "]";
 				Assembler.PopupException(msg);

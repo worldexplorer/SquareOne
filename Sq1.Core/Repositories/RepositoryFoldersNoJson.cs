@@ -143,7 +143,7 @@ namespace Sq1.Core.Repositories {
 
 
 		// copypaste & refactor from RepositorySerializerSymbolInfo.cs
-		public string FindWorkspaceNameNullUnsafe(string workspace) {
+		public string FindWorkspaceName_nullUnsafe(string workspace) {
 			string ret = null;
 			if (string.IsNullOrEmpty(workspace)) return ret;
 			foreach (string eachWorkspaceName in this.FoldersWithin) {
@@ -155,12 +155,12 @@ namespace Sq1.Core.Repositories {
 			return ret;
 		}
 		public string FindWorkspaceNameOrNew(string workspace) {
-			string ret = this.FindWorkspaceNameNullUnsafe(workspace);
+			string ret = this.FindWorkspaceName_nullUnsafe(workspace);
 			if (ret == null) ret = this.Add(workspace);
 			return ret;
 		}
 		public string Duplicate(string workspace, string workspaceDupe) {
-			if (this.FindWorkspaceNameNullUnsafe(workspaceDupe) != null) {
+			if (this.FindWorkspaceName_nullUnsafe(workspaceDupe) != null) {
 				string msg = "I_REFUSE_TO_DUPLICATE_WORKSPACE__SYMBOL_ALREADY_EXISTS[" + workspaceDupe + "]";
 				Assembler.PopupException(msg);
 				return null;
@@ -171,7 +171,7 @@ namespace Sq1.Core.Repositories {
 			return workspaceDupe;
 		}
 		public string Rename(string workspace, string workspaceNew) {
-			if (this.FindWorkspaceNameNullUnsafe(workspaceNew) != null) {
+			if (this.FindWorkspaceName_nullUnsafe(workspaceNew) != null) {
 				string msg = "I_REFUSE_TO_RENAME_WORKSPACE__SYMBOL_ALREADY_EXISTS[" + workspaceNew + "]";
 				Assembler.PopupException(msg);
 				return null;
@@ -183,7 +183,7 @@ namespace Sq1.Core.Repositories {
 			return workspace;
 		}
 		public string Add(string workspaceNew) {
-			if (this.FindWorkspaceNameNullUnsafe(workspaceNew) != null) {
+			if (this.FindWorkspaceName_nullUnsafe(workspaceNew) != null) {
 				string msg = "I_REFUSE_TO_ADD_WORKSPACE__SYMBOL_ALREADY_EXISTS[" + workspaceNew + "]";
 				Assembler.PopupException(msg);
 				return null;

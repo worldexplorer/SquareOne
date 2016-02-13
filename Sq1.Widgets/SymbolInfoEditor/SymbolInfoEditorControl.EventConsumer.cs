@@ -10,10 +10,10 @@ using Sq1.Widgets.LabeledTextBox;
 namespace Sq1.Widgets.SymbolEditor {
 	public partial class SymbolInfoEditorControl {
 		void toolStripItemComboBox1_DropDown(object sender, EventArgs e) {
-			if (this.symbolInfoSelectedNullUnsafe != null) {
-				bool rebuildToRemove_noSymbolSelected = this.symbolInfoSelectedNullUnsafe.Symbol == noSymbolSelected_symbol;
+			if (this.symbolInfoSelected_nullUnsafe != null) {
+				bool rebuildToRemove_noSymbolSelected = this.symbolInfoSelected_nullUnsafe.Symbol == noSymbolSelected_symbol;
 				if (rebuildToRemove_noSymbolSelected == false) return;
-				this.PopulateWithSymbolInfo(this.symbolInfoSelectedNullUnsafe, rebuildToRemove_noSymbolSelected);
+				this.PopulateWithSymbolInfo(this.symbolInfoSelected_nullUnsafe, rebuildToRemove_noSymbolSelected);
 			} else {
 				this.rebuildDropdown();
 			}
@@ -26,9 +26,9 @@ namespace Sq1.Widgets.SymbolEditor {
 				return;
 			}
 
-			if (this.symbolInfoSelectedNullUnsafe != null) {
-				bool rebuild_onFirstEventAfterNoSymbolWasChosenAfterDeletion = this.symbolInfoSelectedNullUnsafe == this.noSymbolSelected_symbolInfo;
-				this.PopulateWithSymbolInfo(this.symbolInfoSelectedNullUnsafe, rebuild_onFirstEventAfterNoSymbolWasChosenAfterDeletion);
+			if (this.symbolInfoSelected_nullUnsafe != null) {
+				bool rebuild_onFirstEventAfterNoSymbolWasChosenAfterDeletion = this.symbolInfoSelected_nullUnsafe == this.noSymbolSelected_symbolInfo;
+				this.PopulateWithSymbolInfo(this.symbolInfoSelected_nullUnsafe, rebuild_onFirstEventAfterNoSymbolWasChosenAfterDeletion);
 			} else {
 				string msg = "YOU_MUST_INITIALIZE_DROPDOWN_WITH_CURRENT_SYMBOL_INFO__USE_PopulateWithSymbol()"
 					+ "; now this.toolStripItemComboBox1.ComboBox.SelectedItem as SymbolInfo=null";
@@ -46,22 +46,22 @@ namespace Sq1.Widgets.SymbolEditor {
 		}
 		void propertyGrid1_PropertyValueChanged(object sender, PropertyValueChangedEventArgs e) {
 			this.repositorySerializerSymbolInfo.Serialize();
-			this.PopulateWithSymbolInfo(this.symbolInfoSelectedNullUnsafe, true);
+			this.PopulateWithSymbolInfo(this.symbolInfoSelected_nullUnsafe, true);
 		}
 		void mniltbDuplicate_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
-			SymbolInfo dupe = this.repositorySerializerSymbolInfo.Duplicate(this.symbolInfoSelectedNullUnsafe, e.StringUserTyped);
+			SymbolInfo dupe = this.repositorySerializerSymbolInfo.Duplicate(this.symbolInfoSelected_nullUnsafe, e.StringUserTyped);
 			this.mniltbDuplicate.TextRed = dupe == null;
 			if (dupe == null) return;
 			this.PopulateWithSymbolInfo(dupe, true);
 		}
 		void mniltbRename_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
-			SymbolInfo renamed = this.repositorySerializerSymbolInfo.Rename(this.symbolInfoSelectedNullUnsafe, e.StringUserTyped);
+			SymbolInfo renamed = this.repositorySerializerSymbolInfo.Rename(this.symbolInfoSelected_nullUnsafe, e.StringUserTyped);
 			this.mniltbRename.TextRed = renamed == null;
 			if (renamed == null) return;
 			this.PopulateWithSymbolInfo(renamed, true);
 		}
 		void mniDeleteSymbol_Click(object sender, EventArgs e) {
-			SymbolInfo priorToDeleted = this.repositorySerializerSymbolInfo.Delete(this.symbolInfoSelectedNullUnsafe);
+			SymbolInfo priorToDeleted = this.repositorySerializerSymbolInfo.Delete(this.symbolInfoSelected_nullUnsafe);
 			if (priorToDeleted == null) return;
 			this.PopulateWithSymbolInfo(priorToDeleted, true);
 			this.tsiCbxSymbols.ComboBox.DroppedDown = true;
@@ -83,7 +83,7 @@ namespace Sq1.Widgets.SymbolEditor {
 		void repositoryJsonDataSource_OnSymbolRenamed_refresh(object sender, DataSourceSymbolRenamedEventArgs e) {
 			string msig = " //repositoryJsonDataSource_OnSymbolRenamed_refresh(" + e.SymbolOld + "=>" + e.Symbol + ")";
 			if (e.SymbolOld == e.Symbol) {
-				string msg = "SYMBOL_NOT_CHANGED_WHY_DID_YOU_INVOKE_ME? this.symbolInfoSelectedNullUnsafe.Symbol[" + this.symbolInfoSelectedNullUnsafe.Symbol + "]";
+				string msg = "SYMBOL_NOT_CHANGED_WHY_DID_YOU_INVOKE_ME? this.symbolInfoSelected_nullUnsafe.Symbol[" + this.symbolInfoSelected_nullUnsafe.Symbol + "]";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
@@ -91,9 +91,9 @@ namespace Sq1.Widgets.SymbolEditor {
 		}
 		void repositoryJsonDataSource_OnSymbolRemoved_clean(object sender, DataSourceSymbolEventArgs e) {
 			string msig = " //repositoryJsonDataSource_OnSymbolRemoved_clean(" + e.Symbol + ")";
-			if (this.symbolInfoSelectedNullUnsafe.Symbol != e.Symbol) {
+			if (this.symbolInfoSelected_nullUnsafe.Symbol != e.Symbol) {
 				string msg = "IGNORING_DELETION_OTHER_SYMBOL_NOT_IM_ACTUALLY_DISPLAYING"
-					+ " this.symbolInfoSelectedNullUnsafe.Symbol[" + this.symbolInfoSelectedNullUnsafe.Symbol + "] != e.Symbol[" + e.Symbol + "]";
+					+ " this.symbolInfoSelected_nullUnsafe.Symbol[" + this.symbolInfoSelected_nullUnsafe.Symbol + "] != e.Symbol[" + e.Symbol + "]";
 				Assembler.PopupException(msg + msig);
 				return;
 			}

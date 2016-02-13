@@ -183,7 +183,7 @@ namespace Sq1.Core.Livesim {
 		//    StreamingConsumer		chartless		= livesimulator.LivesimQuoteBarConsumer;
 		//    ScriptExecutor			executor		= livesimulator.Executor;
 
-		//    //DataDistributor distr = livesimulator.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor_replacedForLivesim;
+		//    //DataDistributor distr = livesimulator.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim;
 		//    DataDistributor distr = base.DataDistributor_replacedForLivesim;
 		//    bool livesimIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count > 0;
 		//    if (livesimIsSubscribed_toBarsSimulated == false) {
@@ -207,7 +207,7 @@ namespace Sq1.Core.Livesim {
 		//    if (runningOnLivesimStreamingDefault) return;
 
 
-		//    //DataDistributor distr = this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor_replacedForLivesim;
+		//    //DataDistributor distr = this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim;
 		//    DataDistributor distr = base.DataDistributor_replacedForLivesim;
 		//    bool livesimIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count == 1;
 		//    if (livesimIsSubscribed_toBarsSimulated) {

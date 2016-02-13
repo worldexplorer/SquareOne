@@ -97,8 +97,8 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			Bar barFill = (this.IsStreamingTriggeringScript)
-				? alertFilled.Bars.BarStreamingNullUnsafeCloneReadonly
-				: alertFilled.Bars.BarStaticLastNullUnsafe;
+				? alertFilled.Bars.BarStreaming_nullUnsafeCloneReadonly
+				: alertFilled.Bars.BarStaticLast_nullUnsafe;
 
 			if (alertFilled.IsEntryAlert) {
 				if (alertFilled.PositionAffected.EntryFilledBarIndex != -1) {
@@ -119,7 +119,7 @@ namespace Sq1.Core.StrategyBase {
 			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alertFilled.Symbol);
 
 			int barFillRelno  = alertFilled.Bars.Count - 1;
-			if (barFillRelno != alertFilled.Bars.BarStreamingNullUnsafe.ParentBarsIndex) {
+			if (barFillRelno != alertFilled.Bars.BarStreaming_nullUnsafe.ParentBarsIndex) {
 				string msg = "NONSENSE#3";
 				Assembler.PopupException(msg);
 			}
@@ -144,7 +144,7 @@ namespace Sq1.Core.StrategyBase {
 					string msg = "NONSENSE#1";
 					Assembler.PopupException(msg);
 				}
-				if (quoteFilledThisAlertNullForLive.ParentBarStreaming != alertFilled.Bars.BarStreamingNullUnsafe) {
+				if (quoteFilledThisAlertNullForLive.ParentBarStreaming != alertFilled.Bars.BarStreaming_nullUnsafe) {
 					string msg = "NONSENSE#4";
 					Assembler.PopupException(msg);
 				}
@@ -189,10 +189,10 @@ namespace Sq1.Core.StrategyBase {
 			bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
 
 // MOST_LIKELY_INVOKED_FROM_CALLBACK_WITH_PREVIOUS_BAR_INDEX AND_ONE_MORE_FILTER_PENDING_NOT_EARLIER_THAN_PLACED 
-//			Bar barBarStreamingNullUnsafe = this.Bars.BarStreamingNullUnsafe;
+//			Bar barBarStreaming_nullUnsafe = this.Bars.BarStreaming_nullUnsafe;
 //			List<Alert> alertsPendingAtCurrentBarSafeCopy = this.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
-//			if (barBarStreamingNullUnsafe != null && alertsPendingAtCurrentBarSafeCopy.Count > 0) {
-//				this.ChartShadow.AlertsPendingStillNotFilledForBarAdd(barBarStreamingNullUnsafe.ParentBarsIndex, alertsPendingAtCurrentBarSafeCopy);
+//			if (barBarStreaming_nullUnsafe != null && alertsPendingAtCurrentBarSafeCopy.Count > 0) {
+//				this.ChartShadow.AlertsPendingStillNotFilledForBarAdd(barBarStreaming_nullUnsafe.ParentBarsIndex, alertsPendingAtCurrentBarSafeCopy);
 //			}
 			
 
@@ -471,7 +471,7 @@ namespace Sq1.Core.StrategyBase {
 					return false;
 				}
 			} else {
-				Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreamingNullUnsafeCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
+				Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreaming_nullUnsafeCloneReadonly : alert.Bars.BarStaticLast_nullUnsafe;
 				if (alert.PositionAffected.EntryFilledBarIndex != -1) {
 					string msg = "DUPE: can't do my job: alert.PositionAffected.EntryBar!=-1 for alert [" + alert + "]";
 					//throw new Exception(msig + msg);

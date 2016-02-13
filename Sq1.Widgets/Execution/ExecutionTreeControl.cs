@@ -355,7 +355,7 @@ namespace Sq1.Widgets.Execution {
 				this.SelectOrderAndOrPopulateMessages(null);
 				return;
 			}
-			var orderTopmost = this.ordersTree.FirstNullUnsafe;
+			var orderTopmost = this.ordersTree.First_nullUnsafe;
 			this.SelectOrderAndOrPopulateMessages(orderTopmost);
 		}
 //		public void RebuildOneRootNodeChildAdded(Order orderParentToRepaint) {

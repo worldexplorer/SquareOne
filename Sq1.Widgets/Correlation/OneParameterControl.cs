@@ -27,7 +27,7 @@ namespace Sq1.Widgets.Correlation {
 			}
 			return this.allParametersControl.Correlator; } }
 
-		IndicatorParameter	indicatorParameterNullUnsafe	{ get { 
+		IndicatorParameter	indicatorParameter_nullUnsafe	{ get { 
 			IndicatorParameter ret = null;
 			if (this.correlator.Executor == null) {
 				string msg = "OneParameterControl.correlator.Executor == null";
@@ -441,7 +441,7 @@ namespace Sq1.Widgets.Correlation {
 			base.Width = lastVisibleRectangle.Right + parentResizeableBordersLeftRight;
 		}
 		void olvStateBinaryRestoreAllValuesForOneParam() {
-			if (this.indicatorParameterNullUnsafe == null) {
+			if (this.indicatorParameter_nullUnsafe == null) {
 				this.propagateColumnVisibilityFromMni();
 				return;
 			}

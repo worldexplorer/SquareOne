@@ -27,8 +27,8 @@ namespace Sq1.Core.Streaming {
 				return ret;
 			}
 
-			SymbolScaleDistributionChannel channelNullUnsafe = base.GetDistributionChannelFor_nullUnsafe(symbol, scaleInterval);
-			if (channelNullUnsafe != null && channelNullUnsafe.ConsumersBarCount > 0) {
+			SymbolScaleDistributionChannel channel_nullUnsafe = base.GetDistributionChannelFor_nullUnsafe(symbol, scaleInterval);
+			if (channel_nullUnsafe != null && channel_nullUnsafe.ConsumersBarCount > 0) {
 				string msg = "I_REFUSE_TO_REGISTER_MULTIPLE_SOLIDIFIERS_FOR_SAME_SYMBOL";
 				Assembler.PopupException(msg + msig);
 				return ret;
@@ -60,8 +60,8 @@ namespace Sq1.Core.Streaming {
 				return ret;
 			}
 
-			SymbolScaleDistributionChannel channelNullUnsafe = base.GetDistributionChannelFor_nullUnsafe(symbol, scaleInterval);
-			if (channelNullUnsafe != null && channelNullUnsafe.ConsumersQuoteCount > 0) {
+			SymbolScaleDistributionChannel channel_nullUnsafe = base.GetDistributionChannelFor_nullUnsafe(symbol, scaleInterval);
+			if (channel_nullUnsafe != null && channel_nullUnsafe.ConsumersQuoteCount > 0) {
 				string msg = "I_REFUSE_TO_REGISTER_MULTIPLE_SOLIDIFIERS_FOR_SAME_SYMBOL";
 				Assembler.PopupException(msg + msig);
 				return ret;

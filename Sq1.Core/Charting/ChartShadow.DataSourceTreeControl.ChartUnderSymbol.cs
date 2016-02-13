@@ -23,7 +23,7 @@ namespace Sq1.Core.Charting {
 			SymbolOfDataSource newForLivesim = new SymbolOfDataSource(symbol, this.Bars.DataSource);
 			SymbolOfDataSource symbolOfDataSourceFound = chartsOpenForSymbol.FindSimilarKey(newForLivesim);
 			if (symbolOfDataSourceFound != null) {
-				List<ChartShadow> addingToList = chartsOpenForSymbol.FindContentsOf_NullUnsafe(symbolOfDataSourceFound);
+				List<ChartShadow> addingToList = chartsOpenForSymbol.FindContentsOf__nullUnsafe(symbolOfDataSourceFound);
 				if (addingToList.Contains(this) == false) {
 					chartsOpenForSymbol.Add(symbolOfDataSourceFound, this);
 				} else {
@@ -53,7 +53,7 @@ namespace Sq1.Core.Charting {
 			DictionaryManyToOne<SymbolOfDataSource, ChartShadow> chartsOpenForSymbol = this.Bars.DataSource.ChartsOpenForSymbol;
 			SymbolOfDataSource symbolOfDataSourceFound = chartsOpenForSymbol.FindSimilarKey(new SymbolOfDataSource(symbol, this.Bars.DataSource));
 			if (symbolOfDataSourceFound != null) {
-				List<ChartShadow> iMustBeHere = chartsOpenForSymbol.FindContentsOf_NullUnsafe(symbolOfDataSourceFound);
+				List<ChartShadow> iMustBeHere = chartsOpenForSymbol.FindContentsOf__nullUnsafe(symbolOfDataSourceFound);
 				if (iMustBeHere.Contains(this)) {
 					chartsOpenForSymbol.Remove(symbolOfDataSourceFound, this);
 				} else {

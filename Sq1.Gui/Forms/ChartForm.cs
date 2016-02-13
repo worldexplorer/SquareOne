@@ -377,15 +377,15 @@ namespace Sq1.Gui.Forms {
 			}
 
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete) {
-				ChartForm chartFormNullUnsafe = this.ChartFormManager.MainForm.ChartFormActive_nullUnsafe;
-				if (chartFormNullUnsafe == null) {
+				ChartForm chartForm_nullUnsafe = this.ChartFormManager.MainForm.ChartFormActive_nullUnsafe;
+				if (chartForm_nullUnsafe == null) {
 					string msg2 = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET WE_ARE_HERE_WHEN_I_SWITCH_ACTIVE_DOCUMENT_TAB_FROM_DataSourceEditor_TO_ChartForm";
 					//#if DEBUG_HEAVY
 					Assembler.PopupException(msg2, null, false);
 					//#endif
 				} else {
 					#if DEBUG	// PARANOID TEST
-					if (chartFormNullUnsafe != this) {
+					if (chartForm_nullUnsafe != this) {
 						string msg = "WHY___WE_ARE_HERE_WHEN_WE_CHANGE_TIMEFRAME_OF_CHART I_STARTED_LIVESIM_FOR_NON_ACTIVE_CHART";
 						Assembler.PopupException(msg, null, false);
 					}

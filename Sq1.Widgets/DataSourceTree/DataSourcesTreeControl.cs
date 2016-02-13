@@ -301,7 +301,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			//if (indexFoundForSelectObject == -1) {
 			//    //Sq1.Core.DataSource has to notify Sq1.Widgets.DataSourcesTreeControl about a new chart added;
 			//    //I'm lazy to loop it through JsonRepository like OnDataSourceAdded / OnSymbolAdded
-			//    //so I'm just rebuilding the list making this.OlvTree.ChildrenGetter to DataSource.ChartsOpenForSymbol.FindContentsOf_NullUnsafe(symbol)
+			//    //so I'm just rebuilding the list making this.OlvTree.ChildrenGetter to DataSource.ChartsOpenForSymbol.FindContentsOf__nullUnsafe(symbol)
 			//    //var model = this.OlvTree.TreeModel;
 			//    this.OlvTree.RebuildAll(true);		// without Rebuild, OlvTree.SelectObject(chartControl) will also find index=-1
 			//    this.OlvTree.Expand(chartControl.SymbolOfDataSource);
