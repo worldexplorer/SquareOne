@@ -57,7 +57,7 @@
         ]
       },
       "IsCurrent": true,
-      "StrategyEmittingOrders": false,
+      "StrategyEmittingOrders": true,
       "ReporterShortNamesUserInvokedJSONcheck": [
         "Positions",
         "Performance"
@@ -372,7 +372,7 @@
   },
   "LivesimStreamingSettings": {
     "$type": "Sq1.Core.Livesim.LivesimStreamingSettings, Sq1.Core",
-    "DelayBetweenSerialQuotesMin": 5,
+    "DelayBetweenSerialQuotesMin": 6,
     "DelayBetweenSerialQuotesMax": 0,
     "DelayBetweenSerialQuotesEnabled": true,
     "OutOfOrderQuoteGenerationHappensOncePerQuoteMin": 0,

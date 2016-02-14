@@ -236,7 +236,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
-				"ChartFormDataSnapshot-" + charSernoDeserialized + ".json", "Workspaces",
+				"Sq1.Gui.Forms.ChartFormDataSnapshot-" + charSernoDeserialized + ".json", "Workspaces",
 				Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded, true, true);
 			this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
 			if (this.DataSnapshot == null) {
@@ -275,7 +275,7 @@ namespace Sq1.Gui.Forms {
 			if (this.DataSnapshot.ChartSerno == -1) {
 				int charSernoNext = this.MainForm.GuiDataSnapshot.ChartSernoNextAvailable;
 				bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
-					"ChartFormDataSnapshot-" + charSernoNext + ".json", "Workspaces",
+					"Sq1.Gui.Forms.ChartFormDataSnapshot-" + charSernoNext + ".json", "Workspaces",
 					Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded, true, true);
 				this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();	// will CREATE a new ChartFormDataSnapshot and keep the reference for further Serialize(); we should fill THIS object
 				this.DataSnapshot.ChartSerno = charSernoNext;
@@ -333,7 +333,7 @@ namespace Sq1.Gui.Forms {
 			if (this.DataSnapshot.ChartSerno == -1) {
 				int charSernoNext = this.MainForm.GuiDataSnapshot.ChartSernoNextAvailable;
 				bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
-					"ChartFormDataSnapshot-" + charSernoNext + ".json", "Workspaces",
+					"Sq1.Gui.Forms.ChartFormDataSnapshot-" + charSernoNext + ".json", "Workspaces",
 					Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded, true, true);
 				this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
 				this.DataSnapshot.ChartSerno = charSernoNext;

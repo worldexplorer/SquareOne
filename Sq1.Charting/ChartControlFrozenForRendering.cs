@@ -10,6 +10,7 @@ using Sq1.Core.Indicators;
 using Sq1.Core.Streaming;
 using Sq1.Core.Charting.OnChart;
 using Sq1.Core.Support;
+
 using Sq1.Charting.OnChart;
 
 namespace Sq1.Charting {

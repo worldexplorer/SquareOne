@@ -174,7 +174,7 @@ namespace Sq1.Widgets.Execution {
 
 			this.DataSnapshotSerializer = new Serializer<ExecutionTreeDataSnapshot>();
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
-				"Sq1.Widgets.ExecutionTreeDataSnapshot.json", "Workspaces" ,
+				"Sq1.Widgets.Execution.ExecutionTreeDataSnapshot.json", "Workspaces" ,
 				Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded);
 			this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
 			if (createdNewFile) {

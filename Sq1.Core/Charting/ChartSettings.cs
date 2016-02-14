@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.ComponentModel;
+using System.Reflection;
 
 using Newtonsoft.Json;
-using Sq1.Core.Charting;
+
 using Sq1.Core;
 using Sq1.Core.DataFeed;
-using System.Reflection;
+using Sq1.Core.Charting;
 
 namespace Sq1.Core.Charting {
 	// why ChartSettings inherits Component? F4 on ChartSettings will allow you to edit colors visually
@@ -348,6 +349,9 @@ namespace Sq1.Core.Charting {
 
 		[Category("7. Level 2"), Description("description to be composed")]
 		[JsonProperty]	public int		LevelTwoLotPaddingHorizontal							{ get; set; }
+
+		[Category("7. Level 2"), Description("proportional => use PricePanel's pricelevel height (squeeze-able); unproportional => fit the volume with LevelTwoFont into the stripe")]
+		[JsonProperty]	public	bool	LevelTwoStripesHeightWrapsVolumeLabel							{ get; set; }
 
 
 
@@ -808,6 +812,7 @@ namespace Sq1.Core.Charting {
 			LevelTwoLotFont = new Font("Microsoft Sans Serif", 8.25f);
 			LevelTwoLotColor = Color.Black;
 			LevelTwoLotPaddingHorizontal = 3;
+			LevelTwoStripesHeightWrapsVolumeLabel = true;
 
 			base.Name = "UNASSIGNED";
 		}

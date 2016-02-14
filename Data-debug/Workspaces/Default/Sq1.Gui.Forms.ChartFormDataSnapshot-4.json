@@ -40,14 +40,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 140
+        "PanelHeight": 125
       },
       "panelVolume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 146,
+        "Distance": 131,
         "SplitterHeight": 6,
-        "PanelHeight": 58
+        "PanelHeight": 53
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -57,14 +57,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 80
+        "PanelHeight": 58
       },
       "multiSplitRowsVolumePrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 86,
+        "Distance": 64,
         "SplitterHeight": 6,
-        "PanelHeight": 231
+        "PanelHeight": 166
       }
     },
     "Name": "Default",
@@ -164,11 +164,12 @@
     "LevelTwoAskColorContour": "205, 180, 180",
     "LevelTwoBidColorBackground": "230, 255, 230",
     "LevelTwoBidColorContour": "180, 205, 180",
-    "LevelTwoMinimumPriceLevelThicknessRendered": -1,
+    "LevelTwoMinimumPriceLevelThicknessRendered": 14,
     "LevelTwoLotDrawString": true,
     "LevelTwoLotFont": "Microsoft Sans Serif, 8.25pt",
     "LevelTwoLotColor": "Black",
-    "LevelTwoLotPaddingHorizontal": 3
+    "LevelTwoLotPaddingHorizontal": 3,
+    "LevelTwoStripesHeightWrapsVolumeLabel": true
   },
   "ChartSerno": 4,
   "ContextChartCommentJsonCheck": "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE"
