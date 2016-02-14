@@ -4,24 +4,24 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
 	public partial class Bars {
-		[JsonIgnore]	public Bar BarStaticFirstNullUnsafe { get {
+		[JsonIgnore]	public Bar BarStaticFirst_nullUnsafe { get {
 			Bar last = base.BarFirst;
 			if (last == null) return null; 
-			if (last != this.BarStreamingNullUnsafe) return last;
+			if (last != this.BarStreaming_nullUnsafe) return last;
 			return null;
 			//throw new Exception("Bars.BarLast point to Bars.StreamingBar???");
 		} }
-		[JsonIgnore]	public Bar BarStaticLastNullUnsafe { get {
+		[JsonIgnore]	public Bar BarStaticLast_nullUnsafe { get {
 			Bar last = base.BarLast;
 			if (last == null) return null; 
-			if (last != this.BarStreamingNullUnsafe) return last;
+			if (last != this.BarStreaming_nullUnsafe) return last;
 			Bar preLast = base.BarPreLast;
 			if (preLast == null) return null;
-			if (preLast != this.BarStreamingNullUnsafe) return preLast;
+			if (preLast != this.BarStreaming_nullUnsafe) return preLast;
 			//return null;
 			throw new Exception("both Bars.BarLast and Bars.BarPreLast point to Bars.StreamingBar???");
 		} }
-		public Quote LastQuoteCloneNullUnsafe { get {
+		public Quote LastQuoteClone_nullUnsafe { get {
 			Quote ret = null;
 			if (this.DataSource == null) return ret;
 			if (this.DataSource.StreamingAdapter == null) return ret;

@@ -8,21 +8,21 @@ namespace Sq1.Core.DataTypes {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: IsStreamingBar: Bar[" + this + "].HasParentBars=false");
 				}
-				return this == this.ParentBars.BarStreamingNullUnsafe;
+				return this == this.ParentBars.BarStreaming_nullUnsafe;
 			} }
 		[JsonIgnore]	public bool IsBarStaticLast { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: IsLastStaticBar: Bar[" + this + "].HasParentBars=false");
 				}
-				return this == this.ParentBars.BarStaticLastNullUnsafe;
+				return this == this.ParentBars.BarStaticLast_nullUnsafe;
 			} }
 		[JsonIgnore]	public bool IsBarStaticFirst { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: IsFirstStaticBar: Bar[" + this + "].HasParentBars=false");
 				}
-				return this == this.ParentBars.BarStaticFirstNullUnsafe;
+				return this == this.ParentBars.BarStaticFirst_nullUnsafe;
 			} }
-		[JsonIgnore]	public Bar BarPreviousNullUnsafe { get {
+		[JsonIgnore]	public Bar BarPrevious_nullUnsafe { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarPrevious: Bar[" + this + "].HasParentBars=false");
 				}
@@ -31,7 +31,7 @@ namespace Sq1.Core.DataTypes {
 				}
 				return this.ParentBars[this.ParentBarsIndex - 1];
 			} }
-		[JsonIgnore]	public Bar BarNextNullUnsafe { get {
+		[JsonIgnore]	public Bar BarNext_nullUnsafe { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarNext: Bar[" + this + "].HasParentBars=false");
 				}

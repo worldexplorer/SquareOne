@@ -144,7 +144,7 @@ namespace Sq1.Charting {
 				return;
 			}
 			
-			this.ScriptExecutorObjects.QuoteLast = this.Bars.LastQuoteCloneNullUnsafe;
+			this.ScriptExecutorObjects.QuoteLast = this.Bars.LastQuoteClone_nullUnsafe;
 
 			// doing same thing from GUI thread at PanelLevel2.renderLevel2() got me even closer to realtime (after pausing a Livesim
 			// and repainting Level2 whole thing was misplaced comparing to PanelPrice spread) but looked really random, not behind and not ahead;

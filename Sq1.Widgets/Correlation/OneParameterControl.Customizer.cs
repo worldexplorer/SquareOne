@@ -934,7 +934,7 @@ namespace Sq1.Widgets.Correlation {
 			}
 		}
 		void oLVColumn_VisibilityChanged(object sender, EventArgs e) {
-			if (this.indicatorParameterNullUnsafe == null) return;
+			if (this.indicatorParameter_nullUnsafe == null) return;
 			OLVColumn oLVColumn = sender as OLVColumn;
 			if (oLVColumn == null) return;
 			this.olvSaveBinaryState_SerializeSnapshot();

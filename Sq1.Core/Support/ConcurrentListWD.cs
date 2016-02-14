@@ -7,9 +7,9 @@ namespace Sq1.Core.Support {
 		protected	List<T>		InnerList	{ get; private set; }
 		public		int			Count		{ get; protected set; }
 
-		public T FirstNullUnsafe(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public T First_nullUnsafe(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			T ret = default(T);
-			lockPurpose += " //" + this.ToString() + ".FirstNullUnsafe()";
+			lockPurpose += " //" + this.ToString() + ".First_nullUnsafe()";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 			    if (ret != null) {
@@ -22,9 +22,9 @@ namespace Sq1.Core.Support {
 			}
 			return ret;
 		}
-		public T LastNullUnsafe(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public T Last_nullUnsafe(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			T ret = default(T);
-			lockPurpose += " //" + this.ToString() + ".LastNullUnsafe()";
+			lockPurpose += " //" + this.ToString() + ".Last_nullUnsafe()";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 			    if (ret != null) {
@@ -37,9 +37,9 @@ namespace Sq1.Core.Support {
 			}
 			return ret;
 		}
-		public T PreLastNullUnsafe(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public T PreLast_nullUnsafe(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 		    T ret = default(T);
-			lockPurpose += " //" + this.ToString() + ".PreLastNullUnsafe()";
+			lockPurpose += " //" + this.ToString() + ".PreLast_nullUnsafe()";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 			    if (ret != null) {

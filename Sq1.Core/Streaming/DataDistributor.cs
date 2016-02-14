@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Charting;
+using Sq1.Core.Backtesting;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
 	public partial class DataDistributor {
@@ -115,10 +117,15 @@ namespace Sq1.Core.Streaming {
 			if (barConsumer is StreamingSolidifier) {
 				string msg = "StreamingSolidifier_DOESNT_SUPPORT_ConsumerBarsToAppendInto";
 			} else {
-				Bar barStaticLast = barConsumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe;
-				if (barStaticLast == null) {
-					string msg = "YOUR_BAR_CONSUMER_SHOULD_HAVE_BarStaticLast_NON_NULL MOST_LIKELY_YOU_WILL_GET_MESSAGE__THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
-					Assembler.PopupException(msg);
+				Bar barStaticLast = barConsumer.ConsumerBarsToAppendInto.BarStaticLast_nullUnsafe;
+				bool isLive				= barConsumer			is ChartStreamingConsumer;
+				bool isBacktest			= barConsumer			is BacktestQuoteBarConsumer;
+				bool isLivesim			= barConsumer			is LivesimQuoteBarConsumer;
+				bool isLivesimDefault	= this.StreamingAdapter is LivesimStreamingDefault;
+				if (barStaticLast == null && isLivesimDefault) {	// isBacktest,isLivesim are magically fine; where did you notice the problem?
+					string msg = "YOUR_BAR_CONSUMER_SHOULD_HAVE_BarStaticLast_NON_NULL"
+						+ " MOST_LIKELY_YOU_WILL_GET_MESSAGE__THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
+					Assembler.PopupException(msg, null, false);
 				}
 			}
 			if (this.DistributionChannels.ContainsKey(symbol) == false) {

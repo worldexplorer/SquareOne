@@ -23,10 +23,10 @@ namespace Sq1.Core.StrategyBase {
 				return (pos.ExitMarketLimitStop == MarketLimitStop.Unknown);
 			} }
 		public		Position		LastPositionOpenNow					{ get {
-				return this.Executor.ExecutionDataSnapshot.PositionsOpenNow.LastNullUnsafe(this, "//LastPositionOpenNowWAIT");
+				return this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Last_nullUnsafe(this, "//LastPositionOpenNowWAIT");
 			} }
 		public		Position		LastPosition						{ get {
-				return this.Executor.ExecutionDataSnapshot.PositionsMaster.LastNullUnsafe(this, "//LastPositionWAIT");
+				return this.Executor.ExecutionDataSnapshot.PositionsMaster.Last_nullUnsafe(this, "//LastPositionWAIT");
 			} }
 		public		bool			HasAlertsPendingAndPositionsOpenNow	{ get { return this.HasAlertsPending && this.HasPositionsOpenNow; } }
 		public		bool			HasAlertsPendingOrPositionsOpenNow	{ get { return this.HasAlertsPending || this.HasPositionsOpenNow; } }

@@ -167,7 +167,7 @@ namespace Sq1.Core.StrategyBase {
 					ret = pct + "%";
 				}
 				if (this.Bars != null) {
-					Bar lastBar = this.Bars.BarStaticLastNullUnsafe;
+					Bar lastBar = this.Bars.BarStaticLast_nullUnsafe;
 					if (lastBar != null) {
 						double lastClose = lastBar.Close;
 						double spreadPips = lastClose * pct / 100d;
@@ -344,7 +344,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 			} else {
 				if (this.barStaticExecutedLast != null) {
-					int mustBeOne = this.Bars.BarStaticLastNullUnsafe.ParentBarsIndex - this.barStaticExecutedLast.ParentBarsIndex;
+					int mustBeOne = this.Bars.BarStaticLast_nullUnsafe.ParentBarsIndex - this.barStaticExecutedLast.ParentBarsIndex;
 					if (mustBeOne == 0) {
 						string msg2 = "DUPE_IN_SCRIPT_INVOCATION__INDICATORS_WILL_COMPLAIN_TOO";
 						Assembler.PopupException(msg2, null, false);
@@ -359,7 +359,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
 					try {
-						indicator.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended(this.Bars.BarStaticLastNullUnsafe);
+						indicator.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended(this.Bars.BarStaticLast_nullUnsafe);
 					} catch (Exception ex) {
 						Assembler.PopupException("INDICATOR_ON_NEW_BAR " + indicator.ToString(), ex);
 					}
@@ -371,14 +371,14 @@ namespace Sq1.Core.StrategyBase {
 						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
 						if (this.IsStreamingTriggeringScript) {
 							// TODO: What about Script.onQuote, onAlertFilled, onPositionClosed/Opened? - should they also NOT be invoked?
-							this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLastNullUnsafe);
+							this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLast_nullUnsafe);
 						}
 					} finally {
 						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this);
 						this.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
 					}
-					this.EventGenerator.RaiseOnStrategyExecutedOneBar(this.Bars.BarStaticLastNullUnsafe);
-					this.barStaticExecutedLast = this.Bars.BarStaticLastNullUnsafe;
+					this.EventGenerator.RaiseOnStrategyExecutedOneBar(this.Bars.BarStaticLast_nullUnsafe);
+					this.barStaticExecutedLast = this.Bars.BarStaticLast_nullUnsafe;
 				} catch (Exception ex) {
 					string msig = " //Script[" + this.Strategy.Script.GetType().Name
 						+ "].OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(" + quoteForAlertsCreated + ")";
@@ -406,10 +406,10 @@ namespace Sq1.Core.StrategyBase {
 			//this.ExecutionDataSnapshot.PositionsOpenedAfterExec
 			//this.ExecutionDataSnapshot.PositionsClosedAfterExec
 
-			Bar barStreamingNullUnsafe = this.Bars.BarStreamingNullUnsafe;
+			Bar barStreaming_nullUnsafe = this.Bars.BarStreaming_nullUnsafe;
 			List<Alert> alertsPendingAtCurrentBarSafeCopy = this.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "ExecuteOnNewBarOrNewQuote(WAIT)");
-			if (barStreamingNullUnsafe != null && alertsPendingAtCurrentBarSafeCopy.Count > 0) {
-				this.ChartShadow.AlertsPendingStillNotFilledForBarAdd(barStreamingNullUnsafe.ParentBarsIndex, alertsPendingAtCurrentBarSafeCopy);
+			if (barStreaming_nullUnsafe != null && alertsPendingAtCurrentBarSafeCopy.Count > 0) {
+				this.ChartShadow.AlertsPendingStillNotFilledForBarAdd(barStreaming_nullUnsafe.ParentBarsIndex, alertsPendingAtCurrentBarSafeCopy);
 			}
 
 			List<Alert> alertsNewAfterExecSafeCopy = this.ExecutionDataSnapshot.AlertsNewAfterExec.SafeCopy(this, "ExecuteOnNewBarOrNewQuote(WAIT)");
@@ -587,13 +587,13 @@ namespace Sq1.Core.StrategyBase {
 			//if (this.checkPositionCanBeClosed(alert, msig, checkPositionOpenNow) == false) return;
 
 			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerAdapter knows to pass Bar here?...
-			//v1 STREAMING DOESNT BELONG??? Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
-			//v2 NO_I_NEED_STREAMING_BAR_NOT_THE_SAME_I_OPENED_THE_LEFTOVER_POSITION Bar barFill = alert.Bars.BarStaticLastNullUnsafe;
+			//v1 STREAMING DOESNT BELONG??? Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLast_nullUnsafe;
+			//v2 NO_I_NEED_STREAMING_BAR_NOT_THE_SAME_I_OPENED_THE_LEFTOVER_POSITION Bar barFill = alert.Bars.BarStaticLast_nullUnsafe;
 			// HACK adding streaming LIVE to where BACKTEST_BARS_CLONED_FOR_ just ended; to avoid NPE at "if (exitBar.Open != this.ExitBar.Open) {"
 			//v3 alert.Bars.BarCreateAppendBindStatic(barFill.DateTimeOpen, barFill.Open, barFill.High, barFill.Low, barFill.Close, barFill.Volume);
 			//v4 alert.Bars.BarStreamingCreateNewOrAbsorb(this.Bars.BarStreaming);
 			//v5 IM_USING_ALERTS_EXIT_BAR_NOW__NOT_STREAMING
-			Bar barFill = (alert.PlacedBar != null) ? alert.PlacedBar : alert.Bars.BarStaticLastNullUnsafe;
+			Bar barFill = (alert.PlacedBar != null) ? alert.PlacedBar : alert.Bars.BarStaticLast_nullUnsafe;
 			alert.FillPositionAffectedEntryOrExitRespectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
 			alert.SignalName += " RemovePendingExitAlertClosePosition " + Alert.FORCEFULLY_CLOSED_BACKTEST_LAST_POSITION;
 			// REFACTORED_POSITION_HAS_AN_ALERT_AFTER_ALERTS_CONSTRUCTOR we can exit by TP or SL - position doesn't have an ExitAlert assigned until Position.EntryAlert was filled!!!
@@ -606,7 +606,7 @@ namespace Sq1.Core.StrategyBase {
 			string msig = "RemovePendingEntry(): ";
 
 			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerAdapter knows to pass Bar here?...
-			Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreamingNullUnsafeCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
+			Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreaming_nullUnsafeCloneReadonly : alert.Bars.BarStaticLast_nullUnsafe;
 			alert.FillPositionAffectedEntryOrExitRespectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
 			alert.SignalName += " RemovePendingEntryAlertClosePosition " + Alert.FORCEFULLY_CLOSED_BACKTEST_LAST_POSITION;
 		}

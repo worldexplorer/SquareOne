@@ -208,7 +208,7 @@ namespace Sq1.Core.Charting {
 						.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe, barsSafe);
 
 					// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
-					ReporterPokeUnit pokeUnitNullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
+					ReporterPokeUnit pokeUnit_nullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
 					//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 				} finally {
 					//v1 bool thereWereNeighbours = dataSourceSafe.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING
@@ -247,14 +247,14 @@ namespace Sq1.Core.Charting {
 				return;
 			}
 			string msg2 = "BARS_IDENTICAL";
-			bool sameDOHLCV = barsSafe.BarStreamingNullUnsafe.HasSameDOHLCVas(quote.ParentBarStreaming, "quote.ParentStreamingBar", "barsSafe.BarStreaming", ref msg2);
+			bool sameDOHLCV = barsSafe.BarStreaming_nullUnsafe.HasSameDOHLCVas(quote.ParentBarStreaming, "quote.ParentStreamingBar", "barsSafe.BarStreaming", ref msg2);
 			if (sameDOHLCV == false) {
-				string msg = "FIXME_MUST_BE_THE_SAME EARLY_BINDER_DIDNT_DO_ITS_JOB#3 [" + msg2 + "] this.Executor.Bars.BarStreaming[" + barsSafe.BarStreamingNullUnsafe
+				string msg = "FIXME_MUST_BE_THE_SAME EARLY_BINDER_DIDNT_DO_ITS_JOB#3 [" + msg2 + "] this.Executor.Bars.BarStreaming[" + barsSafe.BarStreaming_nullUnsafe
 					+ "].HasSameDOHLCVas(quote.ParentStreamingBar[" + quote.ParentBarStreaming + "])=false";
 				Assembler.PopupException(msg + base.MsigForNpExceptions);
 				return;
 			}
-			if (barsSafe.BarStreamingNullUnsafe != quote.ParentBarStreaming) {
+			if (barsSafe.BarStreaming_nullUnsafe != quote.ParentBarStreaming) {
 				string msg = "SHOULD_THEY_BE_CLONES_OR_SAME? EARLY_BINDER_DIDNT_DO_ITS_JOB#3 bars[" + barsSafe
 					+ "] quote.ParentStreamingBar[" + quote.ParentBarStreaming + "]";
 				Assembler.PopupException(msg + base.MsigForNpExceptions);
@@ -295,7 +295,7 @@ namespace Sq1.Core.Charting {
 							.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe, barsSafe);
 
 						// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
-						ReporterPokeUnit pokeUnitNullUnsafe1 = executorSafe.ExecuteOnNewBarOrNewQuote(quote, true);
+						ReporterPokeUnit pokeUnit_nullUnsafe1 = executorSafe.ExecuteOnNewBarOrNewQuote(quote, true);
 						//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 					} finally {
 						//v1 bool thereWereNeighbours = dataSourceSafe.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING

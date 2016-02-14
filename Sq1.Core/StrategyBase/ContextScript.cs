@@ -43,13 +43,13 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public double						SpreadModelerPercent;
 		[JsonProperty]	public BacktestStrokesPerBar		BacktestStrokesPerBar;
 
-		[JsonProperty]	public bool							MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
+		[JsonProperty]	public bool							MinimizeGuiExtensiveExecutionAllReportersForTheDurationOfLiveSim;
 
 		[JsonIgnore]	public List<IndicatorParameter>		ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders { get {
 				List<IndicatorParameter> ret = new List<IndicatorParameter>();
 				ret.AddRange(this.ScriptParametersById.Values);
 				//v1 foreach (List<IndicatorParameter> iParams in this.IndicatorParametersByName.Values) ret.AddRange(iParams);
-				//v2 fixes OneParameterControl.indicatorParameterNullUnsafe: ScriptAndIndicatorParametersMergedUnclonedForSequencerByName.ContainsKey(" + this.parameter.ParameterName + ") == false becomes true
+				//v2 fixes OneParameterControl.indicatorParameter_nullUnsafe: ScriptAndIndicatorParametersMergedUnclonedForSequencerByName.ContainsKey(" + this.parameter.ParameterName + ") == false becomes true
 				foreach (string indicatorName in this.IndicatorParametersByName.Keys) {
 					List<IndicatorParameter> iParams = this.IndicatorParametersByName[indicatorName];
 					foreach (IndicatorParameter iParam in iParams) {

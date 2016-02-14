@@ -15,7 +15,7 @@ namespace Sq1.Core.StrategyBase {
 				this.scriptParametersById_ReflectionForced = true;
 				ret.AddRange(this.ScriptParametersById_ReflectedCached.Values);
 				//v1 foreach (List<IndicatorParameter> iParams in this.IndicatorParametersByName.Values) ret.AddRange(iParams);
-				//v2 fixes OneParameterControl.indicatorParameterNullUnsafe: ScriptAndIndicatorParametersMergedUnclonedForSequencerByName.ContainsKey(" + this.parameter.ParameterName + ") == false becomes true
+				//v2 fixes OneParameterControl.indicatorParameter_nullUnsafe: ScriptAndIndicatorParametersMergedUnclonedForSequencerByName.ContainsKey(" + this.parameter.ParameterName + ") == false becomes true
 				this.indicatorsByName_ReflectionForced = true;
 				foreach (string indicatorName in this.IndicatorsByName_ReflectedCached.Keys) {
 					List<IndicatorParameter> iParams = new List<IndicatorParameter>(this.IndicatorsByName_ReflectedCached[indicatorName].ParametersByName.Values);

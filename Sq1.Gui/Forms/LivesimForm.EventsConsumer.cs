@@ -14,7 +14,7 @@ namespace Sq1.Gui.Forms {
 			if (clickedStart) {
 				btnStartStop.Text = "Starting";
 				btnStartStop.Enabled = false;
-				this.chartFormManager.LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters();
+				this.chartFormManager.LivesimStartedOrUnpaused_HideReportersAndExecution();
 				this.chartFormManager.Executor.Livesimulator.Start_invokedFromGuiThread(btnStartStop, btnPauseResume, this.chartFormManager.ChartForm.ChartControl);
 				btnStartStop.Text = "Stop";
 				btnStartStop.Enabled = true;
@@ -24,7 +24,7 @@ namespace Sq1.Gui.Forms {
 				btnStartStop.Text = "Stopping";
 				btnStartStop.Enabled = false;
 				this.chartFormManager.Executor.Livesimulator.Stop_invokedFromGuiThread();
-				this.chartFormManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters();
+				this.chartFormManager.LivesimEndedOrStoppedOrPaused_RestoreHiddenReportersAndExecution();
 				btnStartStop.Text = "Start";
 				btnStartStop.Enabled = true;
 				btnPauseResume.Enabled = false;
@@ -39,7 +39,7 @@ namespace Sq1.Gui.Forms {
 				btnPauseResume.Text = "Pausing";
 				btnPauseResume.Enabled = false;
 				this.chartFormManager.Executor.Livesimulator.Pause_invokedFromGuiThread();
-				this.chartFormManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters();
+				this.chartFormManager.LivesimEndedOrStoppedOrPaused_RestoreHiddenReportersAndExecution();
 				this.chartFormManager.ReportersFormsManager.RebuildingFullReportForced_onLivesimPaused();
 				btnPauseResume.Text = "Resume";
 				btnPauseResume.Enabled = true;
@@ -50,7 +50,7 @@ namespace Sq1.Gui.Forms {
 			} else {
 				btnPauseResume.Text = "Resuming";
 				btnPauseResume.Enabled = false;
-				this.chartFormManager.LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters();
+				this.chartFormManager.LivesimStartedOrUnpaused_HideReportersAndExecution();
 				this.chartFormManager.Executor.Livesimulator.Unpause_inGuiThread();
 				btnPauseResume.Text = "Pause";
 				btnPauseResume.Enabled = true;

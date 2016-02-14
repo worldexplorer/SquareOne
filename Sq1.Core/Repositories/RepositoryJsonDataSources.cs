@@ -109,7 +109,7 @@ namespace Sq1.Core.Repositories {
 				Assembler.PopupException(msig, ex);
 			}
 		}
-		public DataSource DataSourceFindNullUnsafe(string name) {
+		public DataSource DataSourceFind_nullUnsafe(string name) {
 			DataSource ret = null;
 			string nameUpper = name.ToUpper();
 			foreach (DataSource current in base.ItemsAsList) {

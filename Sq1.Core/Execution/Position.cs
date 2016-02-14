@@ -76,10 +76,10 @@ namespace Sq1.Core.Execution {
 				if (this.ExitFilledPrice != 0 && this.ExitFilledPrice != -1) {	//-1 is a standard for justInitialized nonFilled position's Entry/Exit Prices and Bars;
 					ret = this.ExitFilledPrice;
 				} else {
-					if (this.Bars.BarStreamingNullUnsafe == null) {
+					if (this.Bars.BarStreaming_nullUnsafe == null) {
 						throw new Exception("Position.ExitOrStreamingPrice: this.Bars.StreamingBar=null; @ExitBar[" + this.ExitFilledBarIndex + "] position=[" + this + "]; ");
 					}
-					ret = this.Bars.BarStreamingNullUnsafe.Close;
+					ret = this.Bars.BarStreaming_nullUnsafe.Close;
 				}
 				if (this.ExitFilledSlippage != -1) ret += this.ExitFilledSlippage;
 				return ret;

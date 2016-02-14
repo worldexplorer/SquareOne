@@ -15,7 +15,7 @@ namespace Sq1.Core.Repositories {
 			base.SerializeAll();
 		}
 
-		public ChartSettings ChartSettingsFindNullUnsafe(string name) {
+		public ChartSettings ChartSettingsFind_nullUnsafe(string name) {
 			ChartSettings ret = null;
 			string nameUpper = name.ToUpper();
 			foreach (ChartSettings current in base.ItemsAsList) {

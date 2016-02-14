@@ -16,6 +16,7 @@ using Sq1.Widgets.LabeledTextBox;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 using Sq1.Gui.ReportersSupport;
+using System.Threading;
 
 namespace Sq1.Gui {
 	public partial class MainForm {
@@ -73,7 +74,7 @@ namespace Sq1.Gui {
 					//v1 DOESNT_HELP Application.DoEvents();
 
 					//v1
-					//int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor.DistributionChannels.Count;
+					//int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DataDistributor.DistributionChannels.Count;
 					//if (mustBeZero_AbortedOk != 0) {
 					//    string msg = "I_REFUSE_TO_CLOSE_MAINFORM CHART_STAYS_STREAMING_AND_ON_RESTART_THE_STRATEGY_GETS_BACKTESTED_WHILE_USER_DIDNT_WANT_TO mustBeZero_AbortedOk[" + mustBeZero_AbortedOk + "]";
 					//    Assembler.PopupException(msg);
@@ -83,7 +84,9 @@ namespace Sq1.Gui {
 
 					//v2 CANCELLING_THIS_CLOSE_EVENT_COMLETELY,WAITING_LIVESIM(s)_TO_STOP_AND_GENERATING_ANOTHER_CLOSE_EVENT_AGAIN THIS_WAY_I_LET_DDE_RUN
 					Task t = new Task(delegate() {
-						livesimRunning.AbortRunningBacktestWaitAborted(msig, 60 * 1000);
+						Thread.CurrentThread.Name = "ABORTING_LIVESIM livesimRunning[" + livesimRunning.ToString() + "]";
+						int oneMinute = 60 * 1000;
+						livesimRunning.AbortRunningBacktestWaitAborted(msig, oneMinute);
 						int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim.DistributionChannels.Count;
 						if (mustBeZero_AbortedOk != 0) {
 						    string msg = "mustBeZero_AbortedOk[" + mustBeZero_AbortedOk + "]";

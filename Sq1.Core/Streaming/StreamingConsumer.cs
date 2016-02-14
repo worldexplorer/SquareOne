@@ -105,13 +105,13 @@ namespace Sq1.Core.Streaming {
 				return ret;
 			} }
 		protected 		Bar StreamingBarSafeClone_nullReported { get {
-				var ret = this.Bars_nullReported.BarStreamingNullUnsafeCloneReadonly;
+				var ret = this.Bars_nullReported.BarStreaming_nullUnsafeCloneReadonly;
 				//this.actionForNullPointer(ret, "this.Executor.Bars.StreamingBarSafeClone=null");
 				if (ret == null) ret = new Bar();
 				return ret;
 			} }
 		protected 		Bar LastStaticBar_nullReported { get {
-				var ret = this.Bars_nullReported.BarStaticLastNullUnsafe;
+				var ret = this.Bars_nullReported.BarStaticLast_nullUnsafe;
 				this.ActionForNullPointer(ret, "this.Executor.Bars.LastStaticBar=null");
 				return ret;
 			} }

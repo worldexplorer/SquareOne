@@ -104,5 +104,25 @@ namespace Sq1.Core.Streaming {
 		public override string ToString() {
 			return this.ReasonToExist + ":[" + base.Count + "]";
 		}
+
+		public LevelTwoHalfSortedFrozen Clone_noDeeperThan(int depthFittingToDisplayedHeight = -1) {
+			if (depthFittingToDisplayedHeight == -1) depthFittingToDisplayedHeight = this.Count;
+			if (depthFittingToDisplayedHeight > this.Count) {
+				string msg = "DONT_REQUEST_ASK/BID_DEPTH_LONGER_THAN_I_HAVE"
+					+ " depthFittingToDisplayedHeight[" + depthFittingToDisplayedHeight + "] = this.Count[" + this.Count + "]";
+				Assembler.PopupException(msg);
+				depthFittingToDisplayedHeight = this.Count;
+			}
+			Dictionary<double, double> shorterHalf = new Dictionary<double,double>(depthFittingToDisplayedHeight);
+			foreach (KeyValuePair<double, double> keyValue in this) {
+				shorterHalf.Add(keyValue.Key, keyValue.Value);
+				if (shorterHalf.Count >= depthFittingToDisplayedHeight) break;
+			}
+
+			LevelTwoHalfSortedFrozen ret = new LevelTwoHalfSortedFrozen(this.BidOrAsk
+				, this.ReasonToExist  + " SHALLOW_CLONE[" + depthFittingToDisplayedHeight + "]"
+				, shorterHalf, base.Comparer);
+			return ret;
+		}
 	}
 }

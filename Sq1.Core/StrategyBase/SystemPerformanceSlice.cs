@@ -216,7 +216,7 @@ namespace Sq1.Core.StrategyBase {
 			double prevCumProfitDollar = 0;
 			double prevCumProfitPercent = 0;
 
-			Position preLastPositionTracked = this.PositionsImTracking.PreLastNullUnsafe(this, "CumulativeAppendOrReplaceForPositionClosedOrOpenNow(WAIT)");
+			Position preLastPositionTracked = this.PositionsImTracking.PreLast_nullUnsafe(this, "CumulativeAppendOrReplaceForPositionClosedOrOpenNow(WAIT)");
 			if (preLastPositionTracked != null) {
 				if (this.CumulativeNetProfitDollar.ContainsKey(preLastPositionTracked) == false) {
 					if (this.CumulativeNetProfitDollar.Count > this.PositionsImTracking.Count - 2) {

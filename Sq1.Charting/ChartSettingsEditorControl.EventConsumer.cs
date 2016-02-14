@@ -20,7 +20,7 @@ namespace Sq1.Charting {
 
 			}
 
-			ChartSettings selected = this.chartSettingsSelectedNullUnsafe;
+			ChartSettings selected = this.chartSettingsSelected_nullUnsafe;
 			if (selected == null) {
 				string msg = "YOU_MUST_ComboBox.SelectValue(CURRENT_CHART_CONTROL.ChartSettings)__USE_PopulateWithChartSettings()"
 					+ "; now this.toolStripItemComboBox1.ComboBox.SelectedItem as ChartSettings=null";
@@ -39,7 +39,7 @@ namespace Sq1.Charting {
 			this.cbxSettings.ComboBox.DroppedDown = true;
 		}
 		void propertyGrid1_PropertyValueChanged(object sender, PropertyValueChangedEventArgs e) {
-			ChartSettings selected = this.chartSettingsSelectedNullUnsafe;
+			ChartSettings selected = this.chartSettingsSelected_nullUnsafe;
 			if (selected == null) {
 				string msg = "YOU_DELETED_CHART_SETTINGS_BEFORE_PROPERTY_GRID_COULD_SAVE_A_CHANGED_PROPERTY???";
 				Assembler.PopupException(msg);
@@ -77,7 +77,7 @@ namespace Sq1.Charting {
 				mni.Text = tpl.Name;
 				mni.Name = "chartSettingsTemplate_" + tpl.Name;
 				mni.Tag = tpl;
-				if (this.chartSettingsSelectedNullUnsafe != null && this.chartSettingsSelectedNullUnsafe.Name == tpl.Name) mni.Checked = true;
+				if (this.chartSettingsSelected_nullUnsafe != null && this.chartSettingsSelected_nullUnsafe.Name == tpl.Name) mni.Checked = true;
 				mni.DropDownOpening += new EventHandler(tsi_DropDownOpening);
 				mni.Click += new EventHandler(tsi_Click);
 				ret.Add(mni);
@@ -100,9 +100,9 @@ namespace Sq1.Charting {
 			this.populateTemplate(tpl);
 		}
 		void populateTemplate(ChartSettings tpl) {
-			ChartSettings selected = this.chartSettingsSelectedNullUnsafe;
+			ChartSettings selected = this.chartSettingsSelected_nullUnsafe;
 			if (selected == null) {
-				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelectedNullUnsafe=null";
+				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelected_nullUnsafe=null";
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -140,7 +140,7 @@ namespace Sq1.Charting {
 
 			ChartSettings settingsMouseOver = mni.Tag as ChartSettings;
 			if (settingsMouseOver == null) {
-				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelectedNullUnsafe=null";
+				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelected_nullUnsafe=null";
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -171,7 +171,7 @@ namespace Sq1.Charting {
 		void mniltbDuplicate_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			ChartSettings selected = this.ctxTemplateActions.Tag as ChartSettings;
 			if (selected == null) {
-				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelectedNullUnsafe=null";
+				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelected_nullUnsafe=null";
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -184,13 +184,13 @@ namespace Sq1.Charting {
 		void mniltbRenameTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			ChartSettings selected = this.ctxTemplateActions.Tag as ChartSettings;
 			if (selected == null) {
-				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelectedNullUnsafe=null";
+				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelected_nullUnsafe=null";
 				Assembler.PopupException(msg);
 				return;
 			}
 			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.ItemRename(selected, e.StringUserTyped);
 			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder();
-			if (this.chartSettingsSelectedNullUnsafe.Name == selected.Name) {
+			if (this.chartSettingsSelected_nullUnsafe.Name == selected.Name) {
 				this.populateTemplate(selected);
 			}
 		}
@@ -202,13 +202,13 @@ namespace Sq1.Charting {
 		void mniDelete_Click(object sender, EventArgs e) {
 			ChartSettings selected = this.ctxTemplateActions.Tag as ChartSettings;
 			if (selected == null) {
-				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelectedNullUnsafe=null";
+				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelected_nullUnsafe=null";
 				Assembler.PopupException(msg);
 				return;
 			}
 			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.ItemDelete(selected);
 			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder();
-			if (this.chartSettingsSelectedNullUnsafe.Name == selected.Name) {
+			if (this.chartSettingsSelected_nullUnsafe.Name == selected.Name) {
 				// get next
 				//this.populateTemplate(clone);
 			}
@@ -224,9 +224,9 @@ namespace Sq1.Charting {
 			this.populateTemplate(selected);
 		}
 		void mniltbSaveCurrentAs_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
-			ChartSettings selected = this.chartSettingsSelectedNullUnsafe;
+			ChartSettings selected = this.chartSettingsSelected_nullUnsafe;
 			if (selected == null) {
-				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelectedNullUnsafe=null";
+				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelected_nullUnsafe=null";
 				Assembler.PopupException(msg);
 				return;
 			}

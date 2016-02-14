@@ -105,7 +105,7 @@ namespace Sq1.Core.DataFeed {
 
 				if (this.BarsRepository.DataFileExistsForSymbol(symbol)) continue;
 				Bars barsEmpty = new Bars(symbol, this.ScaleInterval, "DISCOVERED_NON_EXISTING");
-				// FAILED_FIXING_IN_DataDistributor BarStaticLastNullUnsafe=null for freshly added Symbol
+				// FAILED_FIXING_IN_DataDistributor BarStaticLast_nullUnsafe=null for freshly added Symbol
 				//barsEmpty.BarAppendBindStatic(new Bar(symbol, this.ScaleInterval, DateTime.Now));
 				//barsEmpty.BarCreateAppendBindStatic(DateTime.Now, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN);
 
@@ -201,7 +201,7 @@ namespace Sq1.Core.DataFeed {
 			//ret = barsPerst.BarsRead();
 			//if (ret == null) {
 			RepositoryBarsFile barsFile = this.BarsRepository.DataFileForSymbol(symbolRq);
-			barsOriginal = barsFile.BarsLoadAllNullUnsafeThreadSafe();
+			barsOriginal = barsFile.BarsLoadAll_nullUnsafeThreadSafe();
 			//}
 
 			readAllTimer.Stop();

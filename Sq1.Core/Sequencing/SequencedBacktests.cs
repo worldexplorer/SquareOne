@@ -51,7 +51,7 @@ namespace Sq1.Core.Sequencing {
 						continue;
 					}
 					SystemPerformanceRestoreAble fromBeginningTillWaterline
-						= eachBacktest.CreateSubsetBelowWaterline_NullUnsafe(this.SubsetWaterLineDateTime);
+						= eachBacktest.CreateSubsetBelowWaterline__nullUnsafe(this.SubsetWaterLineDateTime);
 					if (fromBeginningTillWaterline == null) {
 						string msg = "NO_POSITIONS_CLOSED_BELOW_WATERLINE["
 							+ this.SubsetWaterLineDateTime.ToString(Assembler.DateTimeFormatToMinutes)
@@ -91,7 +91,7 @@ namespace Sq1.Core.Sequencing {
 				this.subsetWalkforward_cached = new List<SystemPerformanceRestoreAble>();
 				foreach (SystemPerformanceRestoreAble eachBacktest in this.backtests) {
 					SystemPerformanceRestoreAble fromWaterlineTillEnd
-						= eachBacktest.CreateSubsetAboveWaterline_NullUnsafe(this.SubsetWaterLineDateTime);
+						= eachBacktest.CreateSubsetAboveWaterline__nullUnsafe(this.SubsetWaterLineDateTime);
 					if (fromWaterlineTillEnd == null) {
 						string msg = "NO_POSITIONS_CLOSED_ABOVE_WATERLINE[" + this.SubsetWaterLineDateTime + "] eachBacktest[" + eachBacktest.ToString() + "]";
 						Assembler.PopupException(msg, null, false);

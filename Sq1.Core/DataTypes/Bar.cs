@@ -145,7 +145,7 @@ namespace Sq1.Core.DataTypes {
 			this.ParentBars = parentBars;
 			this.ParentBarsIndex = parentBarsIndex;
 			
-			Bar barPrevious = this.BarPreviousNullUnsafe;
+			Bar barPrevious = this.BarPrevious_nullUnsafe;
 			if (barPrevious != null) {
 				this.DaySerial = barPrevious.DaySerial;
 				if (this.DateTimeOpen.Date > barPrevious.DateTimeOpen.Date) {

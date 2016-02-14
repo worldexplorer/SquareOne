@@ -202,9 +202,9 @@ namespace Sq1.Gui {
 				if (this.ChartFormActive_nullUnsafe != null) {
 					this.ChartFormActive_nullUnsafe.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
 					// onStartup, current chart is blank - MAY_FAIL when PANEL_HEIGHT_MUST_BE_POSITIVE but works otherwize
-					//this.ChartFormActiveNullUnsafe.Invalidate();
-					//BARS_ARE_STILL_NOT_PAINTER_ON_APPRESTART__MOVED_TO_SECOND_CFMGR_LOOP_180_LINES_BELOW this.ChartFormActiveNullUnsafe.ChartControl.InvalidateAllPanels();
-					//DOESNT_HELP this.ChartFormActiveNullUnsafe.PerformLayout();
+					//this.ChartFormActive_nullUnsafe.Invalidate();
+					//BARS_ARE_STILL_NOT_PAINTER_ON_APPRESTART__MOVED_TO_SECOND_CFMGR_LOOP_180_LINES_BELOW this.ChartFormActive_nullUnsafe.ChartControl.InvalidateAllPanels();
+					//DOESNT_HELP this.ChartFormActive_nullUnsafe.PerformLayout();
 				}
 	
 				this.WorkspacesManager.SelectWorkspaceAfterLoaded(workspaceToLoad);

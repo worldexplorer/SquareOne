@@ -23,8 +23,8 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public	string				SymbolIntervalScale		{ get { return "[" + this.Symbol + " " + this.ScaleInterval.ToString() + "]"; } }
 		[JsonIgnore]	public	string				IntervalScaleCount		{ get { return "[" + this.ScaleInterval + "][" + base.Count + "]bars"; } }
 
-		[JsonIgnore]	public	Bar					BarStreamingNullUnsafe	{ get; private set; }
-		[JsonIgnore]	public	Bar					BarStreamingNullUnsafeCloneReadonly { get {
+		[JsonIgnore]	public	Bar					BarStreaming_nullUnsafe	{ get; private set; }
+		[JsonIgnore]	public	Bar					BarStreaming_nullUnsafeCloneReadonly { get {
 				//v1
 //				Bar lastStatic = this.BarStaticLast;
 //				DateTime lastStaticOrServerNow = (lastStatic != null)
@@ -40,8 +40,8 @@ namespace Sq1.Core.DataTypes {
 //				return ret;
 				
 				//v2
-				if (this.BarStreamingNullUnsafe == null) return null;
-				return this.BarStreamingNullUnsafe.Clone();
+				if (this.BarStreaming_nullUnsafe == null) return null;
+				return this.BarStreaming_nullUnsafe.Clone();
 			} }
 
 		[JsonIgnore]	public	int					MyInstance					{ get; private set; }
@@ -103,17 +103,17 @@ namespace Sq1.Core.DataTypes {
 				barAdding.SetOHLCValigned(barToMergeToStreaming.Open, barToMergeToStreaming.High,
 					barToMergeToStreaming.Low, barToMergeToStreaming.Close, barToMergeToStreaming.Volume, this.SymbolInfo);
 				this.BarAppendBind(barAdding);
-				this.BarStreamingNullUnsafe = barAdding;
+				this.BarStreaming_nullUnsafe = barAdding;
 				this.RaiseBarStreamingAdded(barAdding);
 			} else {
-				if (this.BarStreamingNullUnsafe == null) {
-					this.BarStreamingNullUnsafe = this.BarLast;
+				if (this.BarStreaming_nullUnsafe == null) {
+					this.BarStreaming_nullUnsafe = this.BarLast;
 				}
 				//base.BarAbsorbAppend(this.StreamingBar, open, high, low, close, volume);
-				this.BarStreamingNullUnsafe.MergeExpandHLCVwhileCompressingManyBarsToOne(barToMergeToStreaming, false);	// duplicated volume for just added bar; moved up
+				this.BarStreaming_nullUnsafe.MergeExpandHLCVwhileCompressingManyBarsToOne(barToMergeToStreaming, false);	// duplicated volume for just added bar; moved up
 				this.RaiseBarStreamingUpdated(barToMergeToStreaming);
 			}
-			return this.BarStreamingNullUnsafe;
+			return this.BarStreaming_nullUnsafe;
 		} }
 		public Bar BarCreateAppendBindStatic(DateTime dateTime,
 				double open, double high, double low, double close, double volume,
@@ -131,7 +131,7 @@ namespace Sq1.Core.DataTypes {
 				if (exceptionPullUpstack) throw new Exception(msg, ex);
 				Assembler.PopupException(msg, ex, false);
 			}
-			this.BarStreamingNullUnsafe = null;
+			this.BarStreaming_nullUnsafe = null;
 			this.BarAppendBind(barAdding);
 			this.RaiseBarStaticAdded(barAdding);
 		} }
@@ -163,12 +163,12 @@ namespace Sq1.Core.DataTypes {
 				string msg = "I_DONT_ACCEPT_NULL_BARS_TO OverrideStreamingDOHLCVwith(" + bar + ")";
 				throw new Exception(msg);
 			}
-			if (this.BarStreamingNullUnsafe == null) {
+			if (this.BarStreaming_nullUnsafe == null) {
 				string msg = "CAN_ONLY_OVERRIDE_STREAMING_NOT_NULL_WHILE_NOW_IT_IS_NULL OverrideStreamingDOHLCVwith(" + bar + "): this.streamingBar == null";
 				throw new Exception(msg);
 			}
 			string msgSame = "BARS_IDENTICAL";
-			bool sameDOHLCV = this.BarStreamingNullUnsafe.HasSameDOHLCVas(bar, "barAbsorbed", "BarStreaming", ref msgSame);
+			bool sameDOHLCV = this.BarStreaming_nullUnsafe.HasSameDOHLCVas(bar, "barAbsorbed", "BarStreaming", ref msgSame);
 			if (sameDOHLCV) {
 				string msg = "NO_NEED_TO_ABSORB_ANYTHING__DESTINATION_HasSameDOHLCV msgSame[" + msgSame + "]";
 				Assembler.PopupException(msg, null, false);
@@ -178,16 +178,16 @@ namespace Sq1.Core.DataTypes {
 				//Assembler.PopupException(msg, null, false);
 			}
 			//this.streamingBar.DateTimeOpen = bar.DateTimeOpen;
-			this.BarStreamingNullUnsafe.AbsorbOHLCVfrom(bar);
+			this.BarStreaming_nullUnsafe.AbsorbOHLCVfrom(bar);
 			// IMPORTANT!! this.BarStreamingCloneReadonly freezes changes in the clone so that subscribers get the same StreamingBar
-			this.RaiseBarStreamingUpdated(this.BarStreamingNullUnsafeCloneReadonly);
+			this.RaiseBarStreamingUpdated(this.BarStreaming_nullUnsafeCloneReadonly);
 		}
 		public override string ToString() {
 			string ret = this.Symbol + "-" + this.IntervalScaleCount + this.MyInstanceAsString;
 			if (base.Count > 0) {
 				//try {
 					string barLastStaticAsString = "BAR_STATIC_NULL";
- 					Bar barLastStatic = this.BarStaticLastNullUnsafe;
+ 					Bar barLastStatic = this.BarStaticLast_nullUnsafe;
 					if (barLastStatic != null) {
 						barLastStaticAsString = this.ValueFormatted(barLastStatic.Close) + "] @[" + barLastStatic.DateTimeOpen;
 					}
@@ -197,7 +197,7 @@ namespace Sq1.Core.DataTypes {
 				//}
 				//try {
 					string barStreamingAsString = "BAR_STREAMING_NULL";
- 					Bar barStreaming = this.BarStreamingNullUnsafeCloneReadonly;
+ 					Bar barStreaming = this.BarStreaming_nullUnsafeCloneReadonly;
 					if (barStreaming != null) {
 						barStreamingAsString = this.ValueFormatted(barStreaming.Close) + "] @[" + barStreaming.DateTimeOpen;
 					}
@@ -221,8 +221,8 @@ namespace Sq1.Core.DataTypes {
 				bars.Symbol == this.Symbol
 				&& bars.ScaleInterval == this.ScaleInterval
 				&& bars.Count == base.Count
-				&& bars.BarStaticFirstNullUnsafe.ToString() == this.BarStaticFirstNullUnsafe.ToString()
-				&& bars.BarStaticLastNullUnsafe.ToString() == this.BarStaticLastNullUnsafe.ToString()
+				&& bars.BarStaticFirst_nullUnsafe.ToString() == this.BarStaticFirst_nullUnsafe.ToString()
+				&& bars.BarStaticLast_nullUnsafe.ToString() == this.BarStaticLast_nullUnsafe.ToString()
 			);
 			return identicalContent;
 			//return (barsAsString == thisAsString);

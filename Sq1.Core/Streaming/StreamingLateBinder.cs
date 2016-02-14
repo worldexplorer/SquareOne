@@ -27,11 +27,11 @@ namespace Sq1.Core.Streaming {
 				string msg = "MUST_NEVER_HAPPEN_barStreamingBound != consumer.ConsumerBarsToAppendInto.BarLast";
 				throw new Exception(msg);
 			}
-			if (barStreamingBound == bars.BarStaticLastNullUnsafe) {
-				string msg = "MUST_NEVER_HAPPEN_barStreamingBound == consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe";
+			if (barStreamingBound == bars.BarStaticLast_nullUnsafe) {
+				string msg = "MUST_NEVER_HAPPEN_barStreamingBound == consumer.ConsumerBarsToAppendInto.BarStaticLast_nullUnsafe";
 				throw new Exception(msg);
 			}
-			if (barStreamingBound != bars.BarStreamingNullUnsafe) {
+			if (barStreamingBound != bars.BarStreaming_nullUnsafe) {
 				string msg = "MUST_NEVER_HAPPEN_barStreamingBound != consumer.ConsumerBarsToAppendInto.BarStreaming";
 				throw new Exception(msg);
 			}
@@ -70,13 +70,13 @@ namespace Sq1.Core.Streaming {
 			// 2) I get the customers' BarStreaming and update its DOHLCV
 			//v1
 
-			if (bars.BarStreamingNullUnsafe == null) {
+			if (bars.BarStreaming_nullUnsafe == null) {
 				string msg = "INITIALIZING_STREAMING_BAR_TO_NON_NULL_NEW_OR_LASTSTATIC"
 					+ " FIRST_STREAMING_QUOTE_PER_BACKTEST_ON_STREAMINGLESS_BARS_JUST_FORKED_FROM_BARS_ORIGINAL_AT_BACKTEST_INITIALIZATION";
 				//v1 I_LEFT_QUOTE_UNATTACHED_UPSTACK,ATTACHING_TO_FACTORY_HERE
 				//v1 this.consumer.ConsumerBarsToAppendInto.BarStreamingCreateNewOrAbsorb(quoteCloneSernoEnrichedFactoryUnattachedStreamingBar.ParentBarStreaming);
 				Bar streamingCreatedUnattached = bars.BarStreamingCreateNewOrAbsorb(this.StreamingBarFactoryUnattached.BarStreamingUnattached);
-				if (streamingCreatedUnattached != bars.BarStreamingNullUnsafe) {
+				if (streamingCreatedUnattached != bars.BarStreaming_nullUnsafe) {
 					string msg2 = "MUST_BE_THE_SAME_BAR PARANOID_CHECK";
 					Assembler.PopupException(msg2);
 				}
@@ -97,7 +97,7 @@ namespace Sq1.Core.Streaming {
 
 			//Quote quoteAttachedToStreamingAttachedToConsumerBars = quoteCloneSernoEnrichedFactoryUnattachedStreamingBar;	// already cloned upstack .Clone();
 			Quote quoteAttachedToStreamingAttachedToConsumerBars = quoteCloneSernoEnrichedFactoryUnattachedStreamingBar;	//.Clone();
-			quoteAttachedToStreamingAttachedToConsumerBars.SetParentBarStreaming(bars.BarStreamingNullUnsafe);
+			quoteAttachedToStreamingAttachedToConsumerBars.SetParentBarStreaming(bars.BarStreaming_nullUnsafe);
 			return quoteAttachedToStreamingAttachedToConsumerBars;
 		}
 		public override string ToString() {

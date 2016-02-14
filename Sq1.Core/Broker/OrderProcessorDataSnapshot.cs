@@ -115,7 +115,7 @@ namespace Sq1.Core.Broker {
 			this.SerializerLogrotateOrders.HasChangesToSave = true;
 		}
 
-		public OrderLaneByState SuggestLaneByOrderStateNullUnsafe(OrderState orderState) {
+		public OrderLaneByState SuggestLaneByOrderState_nullUnsafe(OrderState orderState) {
 			if (this.OrdersSubmitting		.StateIsAcceptable(orderState))	return this.OrdersSubmitting;
 			if (this.OrdersPending			.StateIsAcceptable(orderState))	return this.OrdersPending;
 			if (this.OrdersPendingFailed	.StateIsAcceptable(orderState))	return this.OrdersPendingFailed;
@@ -123,7 +123,7 @@ namespace Sq1.Core.Broker {
 			if (this.OrdersCemeterySick		.StateIsAcceptable(orderState))	return this.OrdersCemeterySick;
 			return null;
 		}
-		public OrderLaneByState ScanLanesForOrderGuidNullUnsafe(Order order) {
+		public OrderLaneByState ScanLanesForOrderGuid_nullUnsafe(Order order) {
 			if (this.OrdersSubmitting		.Contains(order))	return this.OrdersSubmitting;
 			if (this.OrdersPending			.Contains(order))	return this.OrdersPending;
 			if (this.OrdersPendingFailed	.Contains(order))	return this.OrdersPendingFailed;
@@ -134,8 +134,8 @@ namespace Sq1.Core.Broker {
 
 		public void SwitchLanesForOrderPostStatusUpdate(Order orderNowAfterUpdate, OrderState orderStatePriorToUpdate) { lock (this.orderSwitchingLanesLock) {
 				string msig = " //OrderProcessorDataSnapshot::SwitchLanesForOrderPostStatusUpdate()";
-				OrderLaneByState orderLaneBeforeStateUpdate = this.SuggestLaneByOrderStateNullUnsafe(orderStatePriorToUpdate);
-				OrderLaneByState  orderLaneAfterStateUpdate = this.SuggestLaneByOrderStateNullUnsafe(orderNowAfterUpdate.State);
+				OrderLaneByState orderLaneBeforeStateUpdate = this.SuggestLaneByOrderState_nullUnsafe(orderStatePriorToUpdate);
+				OrderLaneByState  orderLaneAfterStateUpdate = this.SuggestLaneByOrderState_nullUnsafe(orderNowAfterUpdate.State);
 				if (orderLaneBeforeStateUpdate == orderLaneAfterStateUpdate) return;
 				if (orderLaneBeforeStateUpdate != null) {
 					try {

@@ -177,7 +177,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvBacktests.UseWaitCursor = true;
 
 			if (this.symbolScaleRangeSelected != symbolScaleRange) {
-				FnameDateSizeColorPFavg foundBySymbolScaleRange = this.RepositoryJsonSequencer.ItemsFoundContainsSymbolScaleRange_NullUnsafe(symbolScaleRange);
+				FnameDateSizeColorPFavg foundBySymbolScaleRange = this.RepositoryJsonSequencer.ItemsFoundContainsSymbolScaleRange__nullUnsafe(symbolScaleRange);
 				if (foundBySymbolScaleRange != null) {
 					this.backtestsLocalEasierToSync = this.RepositoryJsonSequencer.DeserializeSingle(foundBySymbolScaleRange.NameWithMarker);
 					if (this.backtestsLocalEasierToSync == null || this.backtestsLocalEasierToSync.Count == 0) {
@@ -191,7 +191,7 @@ namespace Sq1.Widgets.Sequencing {
 					this.backtestsLocalEasierToSync.CheckPositionsCountMustIncreaseOnly();
 
 					RepositorySerializerSymbolInfos symbolInfoRep = Assembler.InstanceInitialized.RepositorySymbolInfos;
-					SymbolInfo reloadNetWhenSymbolInfoChanged = symbolInfoRep.FindSymbolInfoNullUnsafe(this.backtestsLocalEasierToSync.Symbol);
+					SymbolInfo reloadNetWhenSymbolInfoChanged = symbolInfoRep.FindSymbolInfo_nullUnsafe(this.backtestsLocalEasierToSync.Symbol);
 					if (reloadNetWhenSymbolInfoChanged != null) {
 						reloadNetWhenSymbolInfoChanged.PriceDecimalsChanged -= new EventHandler<EventArgs>(reloadNetWhenSymbolInfoChanged_PriceDecimalsChanged);
 						reloadNetWhenSymbolInfoChanged.PriceDecimalsChanged += new EventHandler<EventArgs>(reloadNetWhenSymbolInfoChanged_PriceDecimalsChanged);
@@ -370,7 +370,7 @@ namespace Sq1.Widgets.Sequencing {
 		public void NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize() {
 			Strategy strategy = this.sequencer.Executor.Strategy;
 			string symbolScaleRange = strategy.ScriptContextCurrent.SymbolScaleIntervalDataRangeForScriptContextNewName;
-			FnameDateSizeColorPFavg foundBySymbolScaleRange = this.RepositoryJsonSequencer.ItemsFoundContainsSymbolScaleRange_NullUnsafe(symbolScaleRange);
+			FnameDateSizeColorPFavg foundBySymbolScaleRange = this.RepositoryJsonSequencer.ItemsFoundContainsSymbolScaleRange__nullUnsafe(symbolScaleRange);
 			if (foundBySymbolScaleRange == null) return;
 
 			//string staleReason = this.sequencer.StaleReason;

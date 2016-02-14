@@ -162,7 +162,7 @@ namespace Sq1.Widgets {
 		public bool IsDockedAutoHide	{ get { return base.Visible && DockHelper.IsDockStateAutoHide(base.DockState); } }
 		public bool IsCoveredOrAutoHidden { get {
 				if (base.Visible == false) return false;
-				if (this.IsDockedAutoHide) return true;
+				if (this.IsDockedAutoHide) return base.IsHidden;
 				if (this.IsDocked) {
 					string msg = "go find out if I'm covered by other forms docked into the same area"
 						+ " ; meanwhile I'll report I'm not covered so you can click ChartForm>HIDESourceCodeEditor";

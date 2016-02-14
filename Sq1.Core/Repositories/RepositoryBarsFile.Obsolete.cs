@@ -62,21 +62,21 @@ namespace Sq1.Core.Repositories {
 		[Obsolete("replaced by barAppendStaticUnconditional()")]
 		int barAppendStaticFullCopySlow(Bar barLastFormed) {
 			//v1
-			Bars allBars = this.BarsLoadAllNullUnsafeThreadSafe();
+			Bars allBars = this.BarsLoadAll_nullUnsafeThreadSafe();
 			if (allBars == null) {
 				allBars = new Bars(barLastFormed.Symbol, barLastFormed.ScaleInterval, "DUMMY: LoadBars()=null");
 			}
 			//allBars.DumpPartialInitFromStreamingBar(bar);
 			
 			// this happens on a very first quote - this.pushBarToConsumers(StreamingBarFactory.LastBarFormed.Clone());
-			if (allBars.BarStaticLastNullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) return 0;
+			if (allBars.BarStaticLast_nullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) return 0;
 			
 			// not really needed to clone to save it in a file, but we became strict to eliminate other bugs
 			barLastFormed = barLastFormed.CloneDetached();
 			
 			// SetParentForBackwardUpdateAutoindex used within Bar only()
 			//barLastFormed.SetParentForBackwardUpdateAutoindex(allBars);
-			if (allBars.BarStaticLastNullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) {
+			if (allBars.BarStaticLast_nullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) {
 				return 0;
 			}
 			

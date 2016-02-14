@@ -12,7 +12,7 @@ using Sq1.Core.Charting;
 namespace Sq1.Charting {
 	public partial class ChartSettingsEditorControl : UserControl {
 		Dictionary<ChartSettings, ChartControl> chartSettings;
-		ChartSettings							chartSettingsSelectedNullUnsafe { get { return this.cbxSettings.ComboBox.SelectedItem as ChartSettings; } }
+		ChartSettings							chartSettingsSelected_nullUnsafe { get { return this.cbxSettings.ComboBox.SelectedItem as ChartSettings; } }
 		bool									rebuildingDropdown;
 		bool									openDropDownAfterSelected;
 
@@ -51,7 +51,7 @@ namespace Sq1.Charting {
 		}
 		public void PopulateWithChartSettings(ChartSettings chartSettings = null, bool forceRebuild = false) {
 			if (chartSettings == null) {
-				chartSettings = this.chartSettingsSelectedNullUnsafe;
+				chartSettings = this.chartSettingsSelected_nullUnsafe;
 			}
 			if (chartSettings == null) {
 				string msg = "I_REFUSE_TO_INITIALIZE_WITH_NULL_ChartSettings";
@@ -66,7 +66,7 @@ namespace Sq1.Charting {
 			this.propertyGrid1.SelectedObject = chartSettings;
 			if (forceRebuild) this.RebuildDropdown();
 
-			ChartSettings selected = this.chartSettingsSelectedNullUnsafe;
+			ChartSettings selected = this.chartSettingsSelected_nullUnsafe;
 			if (selected == null) {
 				this.cbxSettings.ComboBox.SelectedItem = chartSettings;
 				return;
@@ -78,7 +78,7 @@ namespace Sq1.Charting {
 			foreach (ChartSettings eachChartSettings in this.cbxSettings.ComboBox.Items) {
 				if (eachChartSettings.ToString() != chartSettings.ToString()) continue;
 				this.openDropDownAfterSelected = false;
-				this.cbxSettings.ComboBox.SelectedItem = eachChartSettings;	// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelectedNullUnsafe + Initialize()
+				this.cbxSettings.ComboBox.SelectedItem = eachChartSettings;	// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelected_nullUnsafe + Initialize()
 				break;
 			}
 		}

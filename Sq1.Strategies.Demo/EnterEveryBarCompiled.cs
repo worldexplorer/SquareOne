@@ -84,7 +84,7 @@ namespace Sq1.Strategies.Demo {
 				Bar bar = quote.ParentBarStreaming;
 				int barNo = bar.ParentBarsIndex;
 				if (barNo <= 0) return;
-				DateTime lastStaticBarDateTime = bar.ParentBars.BarStaticLastNullUnsafe.DateTimeOpen;
+				DateTime lastStaticBarDateTime = bar.ParentBars.BarStaticLast_nullUnsafe.DateTimeOpen;
 				DateTime streamingBarDateTime = bar.DateTimeOpen;
 				Bar barNormalizedDateTimes = new Bar(bar.Symbol, bar.ScaleInterval, quote.ServerTime);
 				DateTime thisBarDateTimeOpen = barNormalizedDateTimes.DateTimeOpen;
@@ -104,7 +104,7 @@ namespace Sq1.Strategies.Demo {
 			//this.testBarAnnotations(barStaticFormed);
 			//Thread.Sleep(500);
 
-			Bar barStreaming = base.Bars.BarStreamingNullUnsafe;
+			Bar barStreaming = base.Bars.BarStreaming_nullUnsafe;
 			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
 				//Debugger.Break();
 			}
@@ -157,7 +157,7 @@ namespace Sq1.Strategies.Demo {
 			//if (base.HasAlertsPendingAndPositionsOpenNow) {
 				if (snap.AlertsPending.Count > 0) {
 					//GOT_OUT_OF_BOUNDADRY_EXCEPTION_ONCE Alert firstPendingAlert = snap.AlertsPending.InnerList[0];
-					Alert firstPendingAlert = snap.AlertsPending.LastNullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
+					Alert firstPendingAlert = snap.AlertsPending.Last_nullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
 					Alert lastPosEntryAlert = lastPos != null ? lastPos.EntryAlert : null;
 					Alert lastPosExitAlert  = lastPos != null ? lastPos.ExitAlert : null;
 					if (firstPendingAlert == lastPosEntryAlert) {
@@ -173,7 +173,7 @@ namespace Sq1.Strategies.Demo {
 				}
 				if (snap.PositionsOpenNow.Count > 1) {
 					string msg = "EXPECTED: I got multiple positions[" + snap.PositionsOpenNow.Count + "]";
-					if (snap.PositionsOpenNow.FirstNullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)") == lastPos) {
+					if (snap.PositionsOpenNow.First_nullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)") == lastPos) {
 						msg += "50/50: positionsMaster.Last = positionsOpenNow.First";
 					}
 					this.log(msg);

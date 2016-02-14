@@ -45,8 +45,8 @@ namespace Sq1.Core.Repositories {
 			this.Abspath = this.barsRepository.AbspathForSymbol(this.Symbol, throwIfDoesntExist, createIfDoesntExist);
 		}
 
-		public Bars BarsLoadNullUnsafeThreadSafe_NOT_USED(DateTime dateFrom, DateTime dateTill, int maxBars) {
-			Bars barsAll = this.BarsLoadAllNullUnsafeThreadSafe();
+		public Bars BarsLoad_nullUnsafeThreadSafe_NOT_USED(DateTime dateFrom, DateTime dateTill, int maxBars) {
+			Bars barsAll = this.BarsLoadAll_nullUnsafeThreadSafe();
 			if (barsAll == null) return barsAll;
 			
 			//Assembler.PopupException("Loaded [ " + bars.Count + "] bars; symbol[" + this.Symbol + "] scaleInterval[" + this.BarsFolder.ScaleInterval + "]");
@@ -66,7 +66,7 @@ namespace Sq1.Core.Repositories {
 			}
 			return bars;
 		}
-		public Bars BarsLoadAllNullUnsafeThreadSafe(bool saveBarsIfThereWasFailedCheckOHLCV = true) {
+		public Bars BarsLoadAll_nullUnsafeThreadSafe(bool saveBarsIfThereWasFailedCheckOHLCV = true) {
 			Bars bars = null;
 			lock(this.fileReadWriteSequentialLock) {
 				if (File.Exists(this.Abspath) == false) {
@@ -76,11 +76,11 @@ namespace Sq1.Core.Repositories {
 					return null;
 //					return bars;
 				}
-				bars = this.barsLoadAllNullUnsafe(saveBarsIfThereWasFailedCheckOHLCV);
+				bars = this.barsLoadAll_nullUnsafe(saveBarsIfThereWasFailedCheckOHLCV);
 			}
 			return bars;
 		}
-		Bars barsLoadAllNullUnsafe(bool resaveBarsIfThereWasFailedCheckOHLCV = true) {
+		Bars barsLoadAll_nullUnsafe(bool resaveBarsIfThereWasFailedCheckOHLCV = true) {
 			string msig = " BarsLoadAll(this.Abspath=[" + this.Abspath + "]): ";
 			int barsReadTotal = 0;
 			int barsFailedCheckOHLCV = 0;

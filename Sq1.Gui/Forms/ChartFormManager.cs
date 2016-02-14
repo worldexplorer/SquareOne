@@ -236,7 +236,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
-				"ChartFormDataSnapshot-" + charSernoDeserialized + ".json", "Workspaces",
+				"Sq1.Gui.Forms.ChartFormDataSnapshot-" + charSernoDeserialized + ".json", "Workspaces",
 				Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded, true, true);
 			this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
 			if (this.DataSnapshot == null) {
@@ -275,7 +275,7 @@ namespace Sq1.Gui.Forms {
 			if (this.DataSnapshot.ChartSerno == -1) {
 				int charSernoNext = this.MainForm.GuiDataSnapshot.ChartSernoNextAvailable;
 				bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
-					"ChartFormDataSnapshot-" + charSernoNext + ".json", "Workspaces",
+					"Sq1.Gui.Forms.ChartFormDataSnapshot-" + charSernoNext + ".json", "Workspaces",
 					Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded, true, true);
 				this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();	// will CREATE a new ChartFormDataSnapshot and keep the reference for further Serialize(); we should fill THIS object
 				this.DataSnapshot.ChartSerno = charSernoNext;
@@ -333,7 +333,7 @@ namespace Sq1.Gui.Forms {
 			if (this.DataSnapshot.ChartSerno == -1) {
 				int charSernoNext = this.MainForm.GuiDataSnapshot.ChartSernoNextAvailable;
 				bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
-					"ChartFormDataSnapshot-" + charSernoNext + ".json", "Workspaces",
+					"Sq1.Gui.Forms.ChartFormDataSnapshot-" + charSernoNext + ".json", "Workspaces",
 					Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded, true, true);
 				this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
 				this.DataSnapshot.ChartSerno = charSernoNext;
@@ -419,7 +419,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			DataSource dataSource = Assembler.InstanceInitialized.RepositoryJsonDataSources.DataSourceFindNullUnsafe(context.DataSourceName);
+			DataSource dataSource = Assembler.InstanceInitialized.RepositoryJsonDataSources.DataSourceFind_nullUnsafe(context.DataSourceName);
 			if (dataSource == null) {
 				string msg = "DataSourceName[" + context.DataSourceName + "] not found; WILL_NOT_INITIALIZE Executor.Init(Strategy->BarsLoaded)";
 				Assembler.PopupException(msg + msig);
@@ -1037,31 +1037,31 @@ namespace Sq1.Gui.Forms {
 			//}
 		}
 
-		public void LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters() {
-			LivesimStreamingSettings stream = this.ChartForm.ChartFormManager.Executor.Strategy.LivesimStreamingSettings;
-			// REPLACED_BY_CHECKBOX if (stream.DelayBetweenSerialQuotesEnabled && stream.DelayBetweenSerialQuotesMin >= 50) return;
-
+		public void LivesimStartedOrUnpaused_HideReportersAndExecution() {
 			if (this.Strategy == null) {
 				if (this.Executor.Strategy != null) {
 					string msg = "INCONSISTENCY_TINY_CHECK [this.Strategy==null while this.Executor.Strategy!=null]";
 					Assembler.PopupException(msg);
 				}
+				string msg1 = "THIS_CHECKBOX_SHOULD_BE_DISABLED_FOR_CHARTS_WITHOUT_STRATEGY";
+				Assembler.PopupException(msg1);
 				return;
 			}
-			if (this.Strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim == false) return;
 
+			if (this.Strategy.ScriptContextCurrent.MinimizeGuiExtensiveExecutionAllReportersForTheDurationOfLiveSim == false) return;	// checkbox was unchecked => leave the guys untouched
+
+			this.ReportersFormsManager.LivesimStartedOrUnpaused_HideReporters();
 			ExecutionForm exec = ExecutionForm.Instance;
 			if (exec.IsCoveredOrAutoHidden == false) exec.ToggleAutoHide();
-			this.ReportersFormsManager.LivesimStartedOrUnpaused_AutoHideReporters();
 		}
-		public void LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters() {
+		public void LivesimEndedOrStoppedOrPaused_RestoreHiddenReportersAndExecution() {
 			if (this.Strategy == null) return;
-			if (this.Strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim == true) return;
+			if (this.Strategy.ScriptContextCurrent.MinimizeGuiExtensiveExecutionAllReportersForTheDurationOfLiveSim == false) return;
 
+			this.ReportersFormsManager.LivesimEndedOrStoppedOrPaused_RestoreHiddenReporters();
 			ExecutionForm exec = ExecutionForm.Instance;
 			if (exec.IsCoveredOrAutoHidden == true) exec.ToggleAutoHide();
 			exec.ExecutionTreeControl.RebuildAllTreeFocusOnTopmost();
-			this.ReportersFormsManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenReporters();
 		}
 		public void Dispose_workspaceReloading() {
 			string msig = " //ChartFormsManager.Dispose_workspaceReloading()";

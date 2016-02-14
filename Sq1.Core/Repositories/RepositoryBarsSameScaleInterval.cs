@@ -6,9 +6,9 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Repositories {
 	public class RepositoryBarsSameScaleInterval {
-		public string DataSourceAbspath { get; protected set; }
-		public string Extension { get; protected set; }
-		public BarScaleInterval ScaleInterval { get; protected set; }
+		public	string				DataSourceAbspath	{ get; protected set; }
+		public	string				Extension			{ get; protected set; }
+		public	BarScaleInterval	ScaleInterval		{ get; protected set; }
 		
 		public List<string> SymbolsInScaleIntervalSubFolder { get {
 				List<string> ret = new List<string>();

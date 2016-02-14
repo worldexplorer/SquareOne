@@ -80,7 +80,7 @@ namespace Sq1.Core.Livesim {
 			string msig = " //LivesimBroker.OrderPendingKillWithoutKillerSubmit()";
 			
 			string orderGUID = orderPendingToKill.GUID;
-			Order orderPendingFound = base.ScanEvidentLanesForGuidNullUnsafe(orderGUID);
+			Order orderPendingFound = base.ScanEvidentLanesForGuid_nullUnsafe(orderGUID);
 			if (orderPendingFound != orderPendingToKill) {
 				string msg = "PARANOID_SCAN_FAILED orderPendingFound[" + orderPendingFound + "] != orderPendingToKill[" + orderPendingToKill + "]";
 				Assembler.PopupException(msg);
@@ -204,7 +204,7 @@ namespace Sq1.Core.Livesim {
 		} }
 		void consumeQuoteOfStreamingBarToFillPendingAsync(QuoteGenerated quoteUnattached, AlertList expectingToFill) {
 			ScriptExecutor executor = this.LivesimDataSource.Executor;
-			Bar barStreaming = executor.Bars.BarStreamingNullUnsafe;
+			Bar barStreaming = executor.Bars.BarStreaming_nullUnsafe;
 			if (barStreaming == null) {
 				string msg = "I_REFUSE_TO_SIMULATE_FILL_PENDING_ALERTS_WITH_BAR_STREAMING_NULL__END_OF_LIVESIM?";
 				Assembler.PopupException(msg, null, false);
@@ -260,7 +260,7 @@ namespace Sq1.Core.Livesim {
 			}
 			//executor.Script.OnNewQuoteCallback(quoteToReach);
 
-			ReporterPokeUnit pokeUnitNullUnsafe = executor.ExecuteOnNewBarOrNewQuote(quoteAttachedToStreamingToConsumerBars);
+			ReporterPokeUnit pokeUnit_nullUnsafe = executor.ExecuteOnNewBarOrNewQuote(quoteAttachedToStreamingToConsumerBars);
 			//base.GeneratedQuoteEnrichSymmetricallyAndPush(quote, bar2simulate);
 		}
 		void action_afterAlertFilled_beforeMovedAround(Alert alertFilled, double priceFilled, double qtyFilled) {

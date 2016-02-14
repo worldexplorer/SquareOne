@@ -21,7 +21,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 
 				SymbolOfDataSource symbol = o as SymbolOfDataSource;
 				if (symbol != null) {
-					List<ChartShadow> charts = symbol.DataSource.ChartsOpenForSymbol.FindContentsOf_NullUnsafe(symbol);
+					List<ChartShadow> charts = symbol.DataSource.ChartsOpenForSymbol.FindContentsOf__nullUnsafe(symbol);
 					return charts.Count > 0;
 				}
 
@@ -36,7 +36,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 
 				SymbolOfDataSource symbol = o as SymbolOfDataSource;
 				if (symbol != null) {
-					List<ChartShadow> charts = symbol.DataSource.ChartsOpenForSymbol.FindContentsOf_NullUnsafe(symbol);
+					List<ChartShadow> charts = symbol.DataSource.ChartsOpenForSymbol.FindContentsOf__nullUnsafe(symbol);
 					return charts;
 				}
 

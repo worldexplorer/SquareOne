@@ -103,7 +103,7 @@ namespace Sq1.Strategies.Demo {
 			}
 			bool crossed = fastCrossedUp || fastCrossedDown;
 				
-			Bar barStreaming = barStaticFormed.ParentBars.BarStreamingNullUnsafe;
+			Bar barStreaming = barStaticFormed.ParentBars.BarStreaming_nullUnsafe;
 
 			Position lastPos = base.LastPosition;
 			bool isLastPositionNotClosedYet = base.IsLastPositionNotClosedYet;

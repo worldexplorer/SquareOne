@@ -163,7 +163,7 @@ namespace Sq1.Core.Backtesting {
 				closestOnOurWay.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;		// DONT_FORGET_TO_ASSIGN_LATEST_ABSNO_TO_QUOTE_TO_REACH
 				closestOnOurWay.IntraBarSerno += injectedPushed.Count;						// first quote has IntraBarSerno=-1, rimemba?
 
-				//v1 "Received" is for Quik/InteractiveBrokers; "Generated" is for Backtest/Livesim  this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.PushQuoteReceived(closestOnOurWay);
+				//v1 "Received" is for Quik/InteractiveBrokers; "Generated" is for Backtest/Livesim  this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.PushQuoteReceived(closestOnOurWay);
 				//v2 1) LivesimBroker will push it delayed; 2) register closestOnOurWay as Streaming.LastQuoteReceived[Symbol]
 				this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.PushQuoteGenerated(closestOnOurWay);
 
@@ -405,7 +405,7 @@ namespace Sq1.Core.Backtesting {
 			#endif
 
 			//v1
-			//Quote quotePrevDowncasted = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.StreamingDataSnapshot
+			//Quote quotePrevDowncasted = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
 			//    .LastQuoteCloneGetForSymbol(alert.Symbol);
 			//QuoteGenerated quotePrev = quotePrevDowncasted as QuoteGenerated;
 			//if (quotePrev == null) {

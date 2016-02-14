@@ -14,7 +14,7 @@ namespace Sq1.Charting {
 
 		[Browsable(false)]	public override bool					PanelHasValuesForVisibleBarWindow		{ get { return false;	/* this will cancel drawing right gutter */ } }
 		[Browsable(false)]	protected override int					ValueIndexLastAvailableMinusOneUnsafe	{ get { return -1; } }
-		[Browsable(false)]	public			StreamingDataSnapshot	StreamingDataSnapshotNullUnsafe			{ get {
+		[Browsable(false)]	public			StreamingDataSnapshot	StreamingDataSnapshot_nullUnsafe			{ get {
 			if (base.ChartControl.Executor == null) return null;		// for TestChartControl
 			if (base.ChartControl.Executor.DataSource_fromBars.StreamingAdapter == null) return null;
 			return base.ChartControl.Executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot;
@@ -129,7 +129,7 @@ namespace Sq1.Charting {
 			g.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
 
 			this.errorDetected = false;
-			if (this.StreamingDataSnapshotNullUnsafe == null) {
+			if (this.StreamingDataSnapshot_nullUnsafe == null) {
 				base.DrawError(g, "EDIT_DATASOURCE_SELECT_STREAMING_ADAPTER");
 				this.errorDetected = true;
 			}
@@ -139,7 +139,7 @@ namespace Sq1.Charting {
 			}
 			Quote lastQuote = null;
 			if (this.errorDetected == false) {
-				lastQuote = this.StreamingDataSnapshotNullUnsafe.LastQuoteCloneGetForSymbol(base.ChartControl.Bars.Symbol);
+				lastQuote = this.StreamingDataSnapshot_nullUnsafe.LastQuoteCloneGetForSymbol(base.ChartControl.Bars.Symbol);
 				if (lastQuote == null) {
 					base.DrawError(g, "CONNECT_STREAMING__OR__CHART>BARS>SUBSCRIBE");
 					this.errorDetected = true;
@@ -176,27 +176,66 @@ namespace Sq1.Charting {
 			//base.DrawError(g, msgCalc);
 
 			LevelTwoHalfSortedFrozen asks_sortedCachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Asks_sortedCachedForOnePaint;
-			LevelTwoHalfSortedFrozen bidssortedCachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Bids_sortedCachedForOnePaint;
+			LevelTwoHalfSortedFrozen bids_sortedCachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Bids_sortedCachedForOnePaint;
 
-			if (asks_sortedCachedForOnePaint == null) return;		//it's coming; I don't understand how I happen to be here then :(
-			if (bidssortedCachedForOnePaint == null) return;		//it's coming
+			if (asks_sortedCachedForOnePaint == null) {
+				string msg = "HAPPENS_AT_FIRST_FEW_QUOTES_OF_STARTING_LIVESIM base.ChartControl.ScriptExecutorObjects.Asks_sortedCachedForOnePaint=null";
+				//Assembler.PopupException(msg);
+				return;
+			}
+			if (bids_sortedCachedForOnePaint == null) {
+				string msg = "HAPPENS_AT_FIRST_FEW_QUOTES_OF_STARTING_LIVESIM base.ChartControl.ScriptExecutorObjects.Asks_sortedCachedForOnePaint=null";
+				//Assembler.PopupException(msg);
+				return;
+			}
 
-			double	priceMax = Math.Max(bidssortedCachedForOnePaint.PriceMax, asks_sortedCachedForOnePaint.PriceMax);
-			double	askQuote = Math.Min(bidssortedCachedForOnePaint.PriceMin, asks_sortedCachedForOnePaint.PriceMin);
+			//double	priceMax = Math.Max(bids_sortedCachedForOnePaint.PriceMax, asks_sortedCachedForOnePaint.PriceMax);
+			//double	priceMin = Math.Min(bids_sortedCachedForOnePaint.PriceMin, asks_sortedCachedForOnePaint.PriceMin);
 			//double	priceRangeToDisplay = priceMax - priceMin;
 
-			double	lotsMax = Math.Max(bidssortedCachedForOnePaint.LotSum, asks_sortedCachedForOnePaint.LotSum);
-			double	lotsMin = Math.Min(bidssortedCachedForOnePaint.LotSum, asks_sortedCachedForOnePaint.LotSum);
-			double	lotRangeToDisplay = lotsMax - lotsMin;
-
-			//double	pxPerLot_Width = base.Width / lotRangeToDisplay;
-			double pxPerLot_Width = base.Width / lotsMax;
 			int pxPerPriceStep_Height = panelPrice.PixelsPerPriceStep5pxLeast_cached;
 			int pxPricePanelVertialOffset	= panelPrice.ParentMultiSplitMyLocationAmongSiblingsPanels.Y;
 			if (pxPricePanelVertialOffset == -1) {
 				string msg = "PARANOID__PANEL_PRICE_MUST_BE_IN_THE_LIST_OF_MULTISPLITTER_CONTENT_BUT_NOT_FOUND_NONSENSE";
 				throw new Exception(msg);
 			}
+
+			double quoteAsk = lastQuote.Ask;
+			//quoteAsk = priceMin;
+			int quoteAskYoffsetted = panelPrice.ValueToYinverted(quoteAsk) + pxPricePanelVertialOffset;
+
+			double quoteBid = lastQuote.Bid;
+			//quoteBid = priceMax;
+			int quoteBidYofsetted = panelPrice.ValueToYinverted(quoteBid) + pxPricePanelVertialOffset;
+
+
+			//v1 bool allowUnproportional = true;
+			bool stripeHeightWillContainMeasuredText = base.ChartControl.ChartSettings.LevelTwoStripesHeightWrapsVolumeLabel;
+			if (stripeHeightWillContainMeasuredText) {
+				int howManyAskPriceLevelsWillFit = (int) Math.Round(quoteAskYoffsetted / (double)pxPerPriceStep_Height);
+				int howManyBidPriceLevelsWillFit = (int) Math.Round((base.ClientRectangle.Height - quoteBidYofsetted) / (double)pxPerPriceStep_Height);
+
+				int depthFittingToDisplayedHeight = Math.Min(howManyBidPriceLevelsWillFit, howManyAskPriceLevelsWillFit);
+				bool requestingLongerMoustaches =
+					depthFittingToDisplayedHeight >= asks_sortedCachedForOnePaint.Count &&
+					depthFittingToDisplayedHeight >= bids_sortedCachedForOnePaint.Count;
+
+				if (requestingLongerMoustaches == false) {
+					asks_sortedCachedForOnePaint = asks_sortedCachedForOnePaint.Clone_noDeeperThan(depthFittingToDisplayedHeight);
+					bids_sortedCachedForOnePaint = bids_sortedCachedForOnePaint.Clone_noDeeperThan(depthFittingToDisplayedHeight);
+				}
+			}
+
+			double	lotsMax = Math.Max(bids_sortedCachedForOnePaint.LotSum, asks_sortedCachedForOnePaint.LotSum);
+			double	lotsMin = Math.Min(bids_sortedCachedForOnePaint.LotSum, asks_sortedCachedForOnePaint.LotSum);
+
+			double	lotsMaxVisible = lotsMax;
+			double	lotsMinVisible = lotsMin;
+
+			double	lotRangeToDisplay = lotsMaxVisible - lotsMinVisible;
+
+			//double	pxPerLot_Width = base.Width / lotRangeToDisplay;
+			double pxPerLot_Width = base.Width / lotsMaxVisible;
 
 			//double mouseOveredPrice = panelPrice.PanelValueForBarMouseOveredNaNunsafe;
 			//if (double.IsNaN(mouseOveredPrice) == false) {
@@ -206,25 +245,17 @@ namespace Sq1.Charting {
 
 			//using (Pen black = new Pen(Color.Black)) g.DrawLine(black, 0, pxPricePanelVertialOffset, base.Width, pxPricePanelVertialOffset);
 
-			double quoteAsk = lastQuote.Ask;
-			quoteAsk = quoteAsk;
-			int quoteAskYoffsetted = panelPrice.ValueToYinverted(quoteAsk) + pxPricePanelVertialOffset;
-
-			double quoteBid = lastQuote.Bid;
-			//quoteBid = priceMax;
-			int quoteBidYofsetted = panelPrice.ValueToYinverted(quoteBid) + pxPricePanelVertialOffset;
-
-			bool allowUnproportional = true;
+			#region draw Asks upwards [spread...Y=0]
 			//v1 foreach (double ask in asks_cachedForOnePaint.Keys) {		// Keys may be unsorted in a regular Dictionary => rendering price levels randomly
 			//	double lotAbsolute = asks_cachedForOnePaint[ask];
 			foreach (KeyValuePair<double, double> keyValue in asks_sortedCachedForOnePaint) {
 				double ask = keyValue.Key;
-				double lotAbsolute = keyValue.Value;
+				double lotAbsolute		= keyValue.Value;
 				double lotCumulative	= asks_sortedCachedForOnePaint.LotsCumulative[ask];
-				double lotsRelative = lotCumulative;// -lotsMin;
+				double lotsRelative		= lotCumulative;// -lotsMin;
 
 				int yAsk = -1;
-				if (allowUnproportional) {
+				if (stripeHeightWillContainMeasuredText) {
 					// using panelPrice.PixelsPerPriceStep5pxLeast_cached as minimal step (making price level wider on PanelLevel2 than price level displayed on PanelPrice for visual convenience)
 					double diffFromQuoteAsk = ask - quoteAsk;
 					int diffFromQuoteAskAsPriceStepsAway = (int)Math.Ceiling(diffFromQuoteAsk / priceStep);
@@ -286,18 +317,19 @@ namespace Sq1.Charting {
 				g.DrawString(lotCumulativeFormatted,
 					base.ChartControl.ChartSettings.SpreadLabelFont,
 					base.ChartControl.ChartSettings.BrushLevelTwoLot, xLabel, yLabel);
-
 			}
+			#endregion
 
+			#region draw Bids downwards [spread...Y=base.Height]
 			//int askY = panelPrice.ValueToYinverted(this.lastQuote_cached.Ask);
-			foreach (KeyValuePair<double, double> keyValue in bidssortedCachedForOnePaint) {
+			foreach (KeyValuePair<double, double> keyValue in bids_sortedCachedForOnePaint) {
 				double bid = keyValue.Key;
-				double lotAbsolute = keyValue.Value;
-				double lotCumulative = bidssortedCachedForOnePaint.LotsCumulative[bid];
-				double lotsRelative = lotCumulative;// -lotsMin;
+				double lotAbsolute		= keyValue.Value;
+				double lotCumulative	= bids_sortedCachedForOnePaint.LotsCumulative[bid];
+				double lotsRelative		= lotCumulative;// -lotsMin;
 
 				int yBid = -1;
-				if (allowUnproportional) {
+				if (stripeHeightWillContainMeasuredText) {
 					// using panelPrice.PixelsPerPriceStep5pxLeast_cached as minimal step (making price level wider on PanelLevel2 than price level displayed on PanelPrice for visual convenience)
 					double diffFromQuoteBid = quoteBid - bid;
 					int diffFromQuoteBidAsPriceStepsAway = (int)Math.Ceiling(diffFromQuoteBid / priceStep);
@@ -359,6 +391,7 @@ namespace Sq1.Charting {
 					base.ChartControl.ChartSettings.SpreadLabelFont,
 					base.ChartControl.ChartSettings.BrushLevelTwoLot, xLabel, yLabel);
 			}
+			#endregion
 
 		}
 		void renderBidAsk(Graphics g) {
@@ -367,7 +400,7 @@ namespace Sq1.Charting {
 			Quote quoteLast = base.ChartControl.ScriptExecutorObjects.QuoteLast;
 			if (quoteLast == null) return;
 
-			//Quote quoteLastFromDictionary = this.StreamingDataSnapshotNullUnsafe.LastQuoteCloneGetForSymbol(base.ChartControl.Bars.Symbol);
+			//Quote quoteLastFromDictionary = this.StreamingDataSnapshot_nullUnsafe.LastQuoteCloneGetForSymbol(base.ChartControl.Bars.Symbol);
 			//if (quoteLast.SameBidAsk(quoteLastFromDictionary) == false) {
 			//	string msg = "GOOD_THAT_YOU_CACHED DATASNAP_UNSYNCED_EXECOBJ quoteLast[" + quoteLast + "] != quoteLastFromDictionary[" + quoteLastFromDictionary + "]";
 			//	Assembler.PopupException(msg, null, false);

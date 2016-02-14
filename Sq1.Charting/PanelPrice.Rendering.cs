@@ -158,7 +158,7 @@ namespace Sq1.Charting {
 				} else {
 					// BarStreaming, end up on GutterRight
 					oppositeEndX = base.ChartControl.ChartWidthMinusGutterRightPrice;
-					oppositeEndY = base.ValueToYinverted(position.Bars.BarStreamingNullUnsafe.Close);
+					oppositeEndY = base.ValueToYinverted(position.Bars.BarStreaming_nullUnsafe.Close);
 				}
 			} else {
 				// Exit
