@@ -50,9 +50,10 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 		//protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
 		protected override LevelTwoOlv IncomingTableRow_convertToDataStructure_monitoreable(XlRowParsed row) {
-			double bidVolume	= (double)row["SELL_VOLUME"];
-			double price		= (double)row["PRICE"];
-			double askVolume	= (double)row["BUY_VOLUME"];
+			double bidVolume	= row.GetDouble("SELL_VOLUME"	, double.NaN);
+			double price		= row.GetDouble("PRICE"			, double.NaN);
+			double askVolume	= row.GetDouble("BUY_VOLUME"	, double.NaN);
+
 			if (double.IsNaN(bidVolume) == false) {		// where Blank become NaN?
 				//base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids_refactorBySymbol.Add(price, bidVolume, this, "IncomingRowParsedPush");
 				levelTwoBids.Add(price, bidVolume, this, "IncomingRowParsedPush");

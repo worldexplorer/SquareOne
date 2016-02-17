@@ -25,7 +25,20 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			if (this.popupIf_keyDoesNotExist(columnName, "double", popup)) return valueIfNotFound;
 			object value = base[columnName];
 			if (value == null) value = valueIfNotFound;		// when XlType.Blank was received
-			double ret = (double)value;
+			double ret = double.NaN;
+			try {
+				//if (value is float) {
+					ret = Convert.ToDouble(value);
+				//} else if (value is double) {
+				//    ret = (double)value;
+				//} else {
+				//    // slowest?
+				//    Double.TryParse(value.ToString(), out ret);
+				//}
+			} catch (Exception ex) {
+				string msg = "IS_NOT_DOUBLE[" + value + "] //GetDouble(columnName[" + columnName + "], valueIfNotFound[" + valueIfNotFound + "], popup[" + popup + "])";
+				Assembler.PopupException(msg, ex);
+			}
 			return ret;
 		}
 
@@ -56,6 +69,16 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 				Assembler.PopupException("DUPLICATE_COLUMN_ALREADY_EXISTED [" + columnName + "]", null, false);
 				base[columnName] = value;
 			}
+		}
+
+		public override string ToString() {
+			string ret = "";
+			foreach (KeyValuePair<string, object> each in this) {
+				string asString = each.Key + "[" + Convert.ToString(each.Value) + "]";
+				if (ret != "") ret += ",";
+				ret += asString;
+			}
+			return ret;
 		}
 	}
 }

@@ -15,7 +15,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 		protected DateTime		lastQuoteDateTimeForVolume = DateTime.MinValue;
 		protected double		lastQuoteSizeForVolume = 0;
 
-		public DdeTableQuotes(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : base(topic, quikStreaming, columns) {}
+		public DdeTableQuotes(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : base(topic, quikStreaming, columns, true) {}
 
 		//protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
 		protected override QuoteQuik IncomingTableRow_convertToDataStructure_monitoreable(XlRowParsed row) {
@@ -38,8 +38,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			if (last == quikQuote.Bid) quikQuote.TradedAt = BidOrAsk.Bid;
 			if (last == quikQuote.Ask) quikQuote.TradedAt = BidOrAsk.Ask;
 			if (quikQuote.TradedAt == BidOrAsk.UNKNOWN) {
-				string msg = "ROUNDING_ERROR?... last must be bid or ask";
-				Assembler.PopupException(msg);
+				string msg = "QUOTE_WAST_TRADED last must NOT be bid or ask //ROUNDING_ERROR?...";
+				Assembler.PopupException(msg, null, false);
 			}
 
 			quikQuote.FortsDepositBuy	= row.GetDouble("buydepo"		, double.NaN);

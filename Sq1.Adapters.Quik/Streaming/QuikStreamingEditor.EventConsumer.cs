@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 
 using WeifenLuo.WinFormsUI.Docking;
@@ -38,7 +38,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 				return;
 			}
 			if (this.cbxStartDde.Checked) {
-				this.quikStreamingAdapter.DdeServerRegister();
+				//v1 this.quikStreamingAdapter.DdeServerRegister();
+				this.quikStreamingAdapter.UpstreamConnect();
 			} else {
 				this.quikStreamingAdapter.DdeServerUnregister();
 			}
