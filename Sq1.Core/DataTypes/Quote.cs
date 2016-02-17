@@ -37,7 +37,7 @@ namespace Sq1.Core.DataTypes {
 
 
 		[JsonProperty]	public string		AskFormatted { get {
-			string ret = this.Ask.ToString("N1");
+			string ret = this.Ask.ToString("N2");
 			if (this.ParentBarStreaming							== null) return ret;
 			if (this.ParentBarStreaming.ParentBars				== null) return ret;
 			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
@@ -47,7 +47,7 @@ namespace Sq1.Core.DataTypes {
 		} }
 
 		[JsonProperty]	public string		BidFormatted { get {
-			string ret = this.Bid.ToString("N1");
+			string ret = this.Bid.ToString("N2");
 			if (this.ParentBarStreaming							== null) return ret;
 			if (this.ParentBarStreaming.ParentBars				== null) return ret;
 			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
@@ -57,7 +57,7 @@ namespace Sq1.Core.DataTypes {
 		} }
 
 		[JsonProperty]	public string		SizeFormatted { get {
-			string ret = this.Size.ToString("N1");
+			string ret = this.Size.ToString("N0");
 			if (this.ParentBarStreaming							== null) return ret;
 			if (this.ParentBarStreaming.ParentBars				== null) return ret;
 			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;

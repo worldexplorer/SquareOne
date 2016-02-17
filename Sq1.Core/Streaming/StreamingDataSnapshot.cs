@@ -86,21 +86,23 @@ namespace Sq1.Core.Streaming {
 			}
 			this.level2andLastQuoteUnboundClone_bySymbol[quote.Symbol].LastQuote = quote;
 		} }
-		public Quote LastQuoteCloneGetForSymbol(string Symbol) { lock (this.lockLastQuote) {
-				if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(Symbol) == false) return null;
-				Quote weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy = this.level2andLastQuoteUnboundClone_bySymbol[Symbol].LastQuote;
+		public Quote LastQuoteCloneGetForSymbol(string symbol) { //lock (this.lockLastQuote) {
+				if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(symbol) == false) return null;
+				LevelTwoAndLastQuote levelTwoAndLastQuote = this.level2andLastQuoteUnboundClone_bySymbol[symbol];
+				if (levelTwoAndLastQuote == null) return null;
+				Quote weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy = levelTwoAndLastQuote.LastQuote;
 				return weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy;
+			} //}
+		public LevelTwoHalf LevelTwoAsks_getForSymbol(string symbol) { lock (this.lockLastQuote) {
+				if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(symbol) == false) return null;
+				return this.level2andLastQuoteUnboundClone_bySymbol[symbol].Asks;
 			} }
-		public LevelTwoHalf LevelTwoAsks_getForSymbol(string Symbol) { lock (this.lockLastQuote) {
-				if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(Symbol) == false) return null;
-				return this.level2andLastQuoteUnboundClone_bySymbol[Symbol].Asks;
+		public LevelTwoHalf LevelTwoBids_getForSymbol(string symbol) { lock (this.lockLastQuote) {
+				if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(symbol) == false) return null;
+				return this.level2andLastQuoteUnboundClone_bySymbol[symbol].Bids;
 			} }
-		public LevelTwoHalf LevelTwoBids_getForSymbol(string Symbol) { lock (this.lockLastQuote) {
-				if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(Symbol) == false) return null;
-				return this.level2andLastQuoteUnboundClone_bySymbol[Symbol].Bids;
-			} }
-		public double LastQuoteGetPriceForMarketOrder(string Symbol) {
-			Quote lastQuote = this.LastQuoteCloneGetForSymbol(Symbol);
+		public double LastQuoteGetPriceForMarketOrder(string symbol) {
+			Quote lastQuote = this.LastQuoteCloneGetForSymbol(symbol);
 			if (lastQuote == null) return 0;
 			if (lastQuote.TradedAt == BidOrAsk.UNKNOWN) {
 				string msg = "NEVER_HAPPENED_SO_FAR LAST_QUOTE_MUST_BE_BID_OR_ASK lastQuote.TradeOccuredAt[" + lastQuote.TradedAt + "]=BidOrAsk.UNKNOWN";
@@ -110,9 +112,9 @@ namespace Sq1.Core.Streaming {
 			return lastQuote.TradedPrice;
 		}
 
-		public double BestBidGetForMarketOrder(string Symbol) {
+		public double BestBidGetForMarketOrder(string symbol) {
 			double ret = -1;
-			Quote lastQuote = this.LastQuoteCloneGetForSymbol(Symbol);
+			Quote lastQuote = this.LastQuoteCloneGetForSymbol(symbol);
 			if (lastQuote == null) {
 				string msg = "LAST_TIME_I_HAD_IT_WHEN_Livesimulator_STORED_QUOTES_IN_QuikLivesimStreaming_WHILE_MarketLive_ASKED_QuikStreaming_TO_FILL_ALERT";
 				Assembler.PopupException(msg);
@@ -121,9 +123,9 @@ namespace Sq1.Core.Streaming {
 			ret = lastQuote.Bid;
 			return ret;
 		} 
-		public double BestAskGetForMarketOrder(string Symbol) {
+		public double BestAskGetForMarketOrder(string symbol) {
 			double ret = -1;
-			Quote lastQuote = this.LastQuoteCloneGetForSymbol(Symbol);
+			Quote lastQuote = this.LastQuoteCloneGetForSymbol(symbol);
 			if (lastQuote == null) {
 				string msg = "LAST_TIME_I_HAD_IT_WHEN_Livesimulator_STORED_QUOTES_IN_QuikLivesimStreaming_WHILE_MarketLive_ASKED_QuikStreaming_TO_FILL_ALERT";
 				Assembler.PopupException(msg);

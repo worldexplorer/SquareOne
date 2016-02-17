@@ -14,6 +14,7 @@ namespace Sq1.Widgets.Level2 {
 		public LevelTwoOlv(LevelTwoHalf levelTwoBids, LevelTwoHalf levelTwoAsks, SymbolInfo symbolInfoPassed) {
 			this.bids = levelTwoBids;
 			this.asks = levelTwoAsks;
+			//if (symbolInfoPassed == null) symbolInfoPassed = new SymbolInfo();	// just for cleaning DomControl after manual user-dde-stop; nothing is gonna be outputted so I don't care; avoiding NPE
 			this.symbolInfo = symbolInfoPassed;
 		}
 
@@ -29,6 +30,9 @@ namespace Sq1.Widgets.Level2 {
 				new LevelTwoHalfSortedFrozen.DESC());
 
 			List<LevelTwoOlvEachLine> ret = new List<LevelTwoOlvEachLine>();
+			if (this.symbolInfo == null && asksFrozen.Count == 0 && bidsFrozen.Count == 0) return ret;	// just for cleaning DomControl after manual user-dde-stop; nothing is gonna be outputted
+
+
 			double priceStep = this.symbolInfo.PriceStepFromDecimal;
 
 			double priceLastAdded = double.NaN;

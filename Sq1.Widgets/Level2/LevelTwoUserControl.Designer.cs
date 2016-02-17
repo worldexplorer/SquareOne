@@ -38,16 +38,16 @@
 			// 
 			// UserControlInner
 			// 
-			this.UserControlInner.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.UserControlInner.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.UserControlInner.Padding = new System.Windows.Forms.Padding(0, 18, 0, 0);
 			this.UserControlInner.Size = new System.Drawing.Size(206, 402);
 			// 
 			// panel1
 			// 
-			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.panel1.BackColor = System.Drawing.SystemColors.InactiveCaption;
 			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panel1.Controls.Add(this.lblDomTitle);
@@ -60,8 +60,8 @@
 			// 
 			// lblDomTitle
 			// 
-			this.lblDomTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.lblDomTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.lblDomTitle.AutoSize = true;
 			this.lblDomTitle.ForeColor = System.Drawing.SystemColors.ControlText;
 			this.lblDomTitle.Location = new System.Drawing.Point(3, 2);
@@ -79,9 +79,9 @@
 			this.olvcLevelTwo.AllColumns.Add(this.olvBid);
 			this.olvcLevelTwo.AllColumns.Add(this.olvBidCumulative);
 			this.olvcLevelTwo.AllowColumnReorder = true;
-			this.olvcLevelTwo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.olvcLevelTwo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.olvcLevelTwo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.olvcLevelTwo.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.olvWeirdBehaviourShiftedToFirstColumnFake,
@@ -90,6 +90,7 @@
             this.olvBid});
 			this.olvcLevelTwo.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvcLevelTwo.EmptyListMsg = "No Level2 Received Yet";
+			this.olvcLevelTwo.FullRowSelect = true;
 			this.olvcLevelTwo.HideSelection = false;
 			this.olvcLevelTwo.Location = new System.Drawing.Point(4, 72);
 			this.olvcLevelTwo.Margin = new System.Windows.Forms.Padding(3, 30, 3, 3);
@@ -149,13 +150,13 @@
 			this.olvBidCumulative.Text = "BidCumulative";
 			this.olvBidCumulative.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
-			// QuikStreamingMonitorDomUserControl
+			// LevelTwoUserControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.olvcLevelTwo);
 			this.Controls.Add(this.panel1);
-			this.Name = "QuikStreamingMonitorDomUserControl";
+			this.Name = "LevelTwoUserControl";
 			this.Size = new System.Drawing.Size(214, 410);
 			this.Controls.SetChildIndex(this.UserControlInner, 0);
 			this.Controls.SetChildIndex(this.panel1, 0);
