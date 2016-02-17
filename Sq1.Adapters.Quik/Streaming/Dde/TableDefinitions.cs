@@ -16,7 +16,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				new XlColumn(XlBlockType.Float,		"last",			true),
 				//new XlColumn(, "realvmprice",	TypeExpected = XlTable.BlockType.String },
 				//new XlColumn() { Names = new List<string>() {"time", "changetime"}, Type = XlTable.BlockType.String, Format = "h:mm:sstt" },
-				new XlColumn(XlBlockType.String,	"date",			true)	{ ToDateTimeParseFormat = "dd.MM.yyyy" },
+				new XlColumn(XlBlockType.String,	"date",			false)	{ ToDateTimeParseFormat = "dd.MM.yyyy" },
 				new XlColumn(XlBlockType.String,	"time",			true)	{ ToDateTimeParseFormat = "HH:mm:ss" },
 				new XlColumn(XlBlockType.String,	"changetime")			{ ToDateTimeParseFormat = "h:mm:sstt" },
 				new XlColumn(XlBlockType.Float,		"selldepo"),

@@ -90,7 +90,7 @@ namespace Sq1.Widgets.Level2 {
 			this.stopwatchRarifyingUIupdates.Restart();
 
 			List<LevelTwoOlvEachLine> level2rows = levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl.FrozenSortedFlattened_priceLevelsInserted;
-			this.olvcLevelTwo.SetObjects(level2rows);
+			this.olvcLevelTwo.SetObjects(level2rows, true);
 		}
 	}
 }

@@ -24,6 +24,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 		protected	List<XlColumn>					ColumnDefinitions;				// part of the abstraction to implement in children
 		protected	Dictionary<string, XlColumn>	ColumnDefinitionsByNameLookup;
 
+		public		bool							OneRowUpdates			{ get; private set; }
+
 		protected	Dictionary<int, XlColumn>		ColumnClonesFoundByIndex;
 		protected	bool							ColumnsIdentified;
 		protected	QuikStreaming					QuikStreaming			{ get; private set; }
@@ -34,10 +36,11 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			this.ColumnsIdentified			= false;	// sure it's false			at consctruction time
 			this.ResetCounters();						// sure they are zeroes		at consctruction time
 		}
-		protected XlDdeTable(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : this() {
+		protected XlDdeTable(string topic, QuikStreaming quikStreaming, List<XlColumn> columns, bool oneRowUpdates) : this() {
 			this.Topic = topic;
 			this.QuikStreaming = quikStreaming;
 			this.ColumnDefinitions = columns;
+			this.OneRowUpdates = oneRowUpdates;
 
 			this.ColumnDefinitionsByNameLookup = new Dictionary<string, XlColumn>();
 			foreach (XlColumn col in this.ColumnDefinitions) {
@@ -57,24 +60,28 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			this.DdeMessagesReceived++;
 		}
 		protected virtual void ParseMessage_readAsTable_convertEachRowToDataStructures(XlReader reader) {
-			// IDENTIFY_EACH_NEW_MESSAGE_DONT_CACHE if (this.ColumnsIdentified == false) {
+			int rowsIalreadyRead = 0;
+			if (base.OneRowUpdates == false) this.ColumnsIdentified == false;			// IDENTIFY_EACH_NEW_MESSAGE_DONT_CACHE
+			if (this.ColumnsIdentified == false) {
 				this.ColumnsIdentified = this.identifyColumnsByReadingHeader(reader);
+				rowsIalreadyRead++;
 				if (this.ColumnsIdentified == false) {
-					reader.Rewind();
-					this.ColumnsIdentified = this.identifyColumnsByReadingHeader(reader, true);
+					//JUST_DROP_IT reader.Rewind();
+					//this.ColumnsIdentified = this.identifyColumnsByReadingHeader(reader, true);
 					return;
 				}
 				if (reader.RowsCount == 1) return;
-			//}
+			}
 
-			for (int i = 1; i < reader.RowsCount; i++) {
+			for (int i = rowsIalreadyRead; i < reader.RowsCount; i++) {
 				XlRowParsed rowParsed = this.parseRow(reader);
 				if (rowParsed == null || rowParsed.Count == 0) continue;
 
 				#region CONSISTENCY_CHECK
 				foreach (XlColumn col in this.ColumnDefinitions) {
 					if (rowParsed.ContainsKey(col.Name) == false) {
-						string msg = "I_EXPECTED_ALL_COLUMNS_BE_PRESENT__THEY_JUST_MUST";
+						string msg = "ALL_COLUMNS_MUST_BE_PRESENT__CAN_BE_NULL col.Name[" + col.Name + "] IS_MISSING_IN rowParsed[" + rowParsed + "]";
+						Assembler.PopupException(msg, null, false);
 						continue;
 					}
 					object valueParsed = rowParsed[col.Name];
@@ -82,17 +89,20 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 						string msg = "JUST_IGNORE?...";
 						continue;
 					}
-					string typeParsed = valueParsed.GetType().Name;
-					if (typeParsed == "Double") typeParsed = "Float";	// BinaryReader/Writer can't read/write (float)s, so I transfer doubles and consume doubles in Streaming
+					Type typeParsed = valueParsed.GetType();
+					string typeParsedAsString = typeParsed.Name;
+					if (typeParsedAsString == "Single") continue;	// I dont know how to deal with that!!! what is a Type=Single??
+
+					if (typeParsedAsString == "Double") typeParsedAsString = "Float";	// BinaryReader/Writer can't read/write (float)s, so I transfer doubles and consume doubles in Streaming
 					string typeExpected = col.TypeExpected.ToString();
-					if (typeParsed == "DateTime") typeParsed = "String";
-					if (typeParsed == typeExpected) continue;
+					if (typeParsedAsString == "DateTime") typeParsedAsString = "String";
+					if (typeParsedAsString == typeExpected) continue;
 
 					this.ColumnsIdentified = false;
 					string msg1 = "TYPE_MISTMATCH col.TypeExpected[" + col.TypeExpected + "]!=typeParsed[" + typeParsed + "]"
 						+ " rowParsed[" + col.Name + "][" + valueParsed + "]"
 						+ ", skipping quote and re-identifyingColumnsByReadingHeader";
-					Assembler.PopupException(msg1);
+					Assembler.PopupException(msg1, null, false);
 				}
 				#endregion
 
@@ -100,18 +110,21 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 					this.IncomingTableRow_convertToDataStructure(rowParsed);
 				} catch (Exception ex) {
 					string msg = "[" + this.LastDataReceived.ToString("HH:mm:ss.fff ddd dd MMM yyyy") + "]";
-					Assembler.PopupException(msg, ex);
+					Assembler.PopupException(msg, ex, false);
 				}
 			}
 		}
+		List<XlColumn> columnsInMessageFoundSoFar = new List<XlColumn>();
 		protected bool identifyColumnsByReadingHeader(XlReader reader, bool debugMandatoryNotFound = false) {
 			bool ret = false;
 			List<XlColumn> mandatoriesNotFound = new List<XlColumn>();
 			this.ColumnClonesFoundByIndex.Clear();
 			foreach (XlColumn col in this.ColumnDefinitions) {
 				col.IndexFound = -1;
-				if (col.Mandatory) mandatoriesNotFound.Add(col);
+                if (col.Mandatory == false) continue;
+                mandatoriesNotFound.Add(col);
 			}
+
 			for (int colSerno = 0; colSerno < reader.ColumnsCount; colSerno++) {
 				try {
 					reader.ReadNext();
@@ -123,10 +136,13 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 
 				if (reader.BlockType != XlBlockType.String) {
 					string msg = "FIRST_HEADER_ROW_MUST_CONTAIN_ONLY_STRINGS";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
 					continue;
 				}
-				string columnNameToIdentify = (string) reader.ValueJustRead;
+
+				string columnNameToIdentify = Convert.ToString(reader.ValueJustRead);
+				this.columnsInMessageFoundSoFar.Add(new XlColumn(reader.BlockType, columnNameToIdentify));
+
 				foreach (XlColumn colDef in this.ColumnDefinitions) {
 					if (colDef.Name != columnNameToIdentify) continue;
 					XlColumn colFound = colDef.Clone();
@@ -146,10 +162,25 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 					columnsNotReceived += colNF.Name + ",";
 				}
 				columnsNotReceived = columnsNotReceived.TrimEnd(',');
-				string msg = "MANDATORY_COLUMNS_NOT_RECEIVED: [" + columnsNotReceived + "]";
-				Assembler.PopupException(msg);
+
+				string msg = "MANDATORY_COLUMNS_NOT_RECEIVED: [" + columnsNotReceived + "]"
+					+ " columnsIdentifiedAsString[" + this.ColumnsIdentifiedAsString + "]"
+					+ " columnsInMessageAsString[" + this.ColumnsInMessageAsString + "]";
+				Assembler.PopupException(msg, null, false);
 			}
 			return ret;
+		}
+
+		public string ColumnsIdentifiedAsString { get { return this.columnsAsString(new List<XlColumn>(this.ColumnClonesFoundByIndex.Values)); } }
+		public string ColumnsInMessageAsString { get { return this.columnsAsString(this.columnsInMessageFoundSoFar); } }
+		private string columnsAsString(List<XlColumn> listOfXlColumns) {
+			string columnsInMessageAsString = "";
+			foreach (XlColumn columnInMessage in listOfXlColumns) {
+				string asString = columnInMessage.TypeExpected + ":" + columnInMessage.Name;
+				if (columnsInMessageAsString != "") columnsInMessageAsString += ",";
+				columnsInMessageAsString += asString;
+			}
+			return columnsInMessageAsString;
 		}
 		protected virtual XlRowParsed parseRow(XlReader reader) {
 			XlRowParsed rowParsed = new XlRowParsed(this.DdeConsumerClassName);
@@ -165,8 +196,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 
 				XlColumn xlCol = this.ColumnClonesFoundByIndex[col].Clone();
 
-				
-				if (reader.BlockType == XlBlockType.Blank) {
+
+				if (reader.BlockType == XlBlockType.Blank || reader.BlockType == XlBlockType.Skip) {
 					switch (xlCol.TypeExpected) {
 						case XlBlockType.Float:		rowParsed.Add_popupIfDuplicate(xlCol.Name, double.NaN);	break;
 						//case XlBlockType.String:	rowParsed.Add_popupIfDuplicate(xlCol.Name, double.NaN);	break;
@@ -176,17 +207,24 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 					continue;
 				}
 
-				if (reader.BlockType != xlCol.TypeExpected) {
-					string errmsg3 = "GOT[" + reader.BlockType + "] INSTEAD_OF TypeExpected[" + xlCol.TypeExpected + "] FOR xlCol[" + xlCol.Name + "]";
-					Assembler.PopupException(errmsg3);
-					//continue;
-				}
-
-				object valueReceived = reader.ValueJustRead;
+                object valueReceived = reader.ValueJustRead;
 				if (valueReceived == null) {
 					string errmsg3 = "MUST_NOT_BE_NULL reader.ValueJustRead[" + reader.ValueJustRead + "] BlockType[" + reader.BlockType + "] FOR xlCol[" + xlCol.Name + "]";
 					Assembler.PopupException(errmsg3);
-				}
+				} else {
+				    if (reader.BlockType != xlCol.TypeExpected) {
+                        if (xlCol.TypeExpected == XlBlockType.Float && reader.BlockType == XlBlockType.String) {
+                            string valueReceivedAsString = valueReceived.ToString();
+                            float parsedAsFloat = float.NaN;
+                            float.TryParse(valueReceivedAsString, out parsedAsFloat);
+                            valueReceived = parsedAsFloat;
+                        } else {
+					        string errmsg3 = "AUTOCONVERT_UNAVAILABLE_FOR: GOT[" + reader.BlockType + "] INSTEAD_OF TypeExpected[" + xlCol.TypeExpected + "] FOR xlCol[" + xlCol.Name + "]";
+					        Assembler.PopupException(errmsg3, null, false);
+					        //continue;
+                        }
+				    }
+                }
 
 				rowParsed.Add_popupIfDuplicate(xlCol.Name, valueReceived);
 			}

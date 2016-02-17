@@ -12,17 +12,17 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 		protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
 			QuikTrade quikTrade			= new QuikTrade(this.DdeConsumerClassName + " Topic[" + base.Topic + "]");
 
-			quikTrade.Symbol			= (string)row["SECCODE"];
-			quikTrade.SymbolClass		= (string)row["CLASSCODE"];
+			quikTrade.Symbol			= row.GetString("SECCODE",		"SECCODE_NOT_FOUND");
+			quikTrade.SymbolClass		= row.GetString("CLASSCODE",	"CLASSCODE_NOT_FOUND");
 			//quikTrade.ServerTime		= new DateTime(rowParsed["TRADEDATE"] + " " + rowParsed["TRADETIME"]);
 
-			quikTrade.Price				= (double)row["PRICE"];
-			quikTrade.Quantity			= (double)row["QTY"];
+			quikTrade.Price				= row.GetDouble("PRICE", double.NaN);
+			quikTrade.Quantity			= row.GetDouble("QTY", double.NaN);
 
 			// HOW IT CAN BE ONLY BUY OR SELL? IT'S BOTH SIMULTANEOUSLY! IT CAN ONLY BE ONE OF THE TWO:
 			// 1) it was filled at bid (passive buyer  got filled by active crossmarket seller) or
 			// 2) it was filled at ask (passive seller got filled by active crossmarket buyer)
-			quikTrade.BoughtTrue_SoldFalse	= (string)row["BUYSELL"] == "Купля" ? true : false;
+			quikTrade.BoughtTrue_SoldFalse	= row.GetString("BUYSELL", "BUYSELL_NOT_FOUND") == "Купля" ? true : false;
 
 			// 1) I can have a monitor here;
 			// 2) I should check all orders I'm waiting for the fill;
