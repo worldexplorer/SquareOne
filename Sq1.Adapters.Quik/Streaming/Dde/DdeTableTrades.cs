@@ -7,7 +7,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 	public class DdeTableTrades : XlDdeTable {
 		protected override string DdeConsumerClassName { get { return "DdeTableTrades"; } }
 
-		public DdeTableTrades(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : base(topic, quikStreaming, columns) {}
+		public DdeTableTrades(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : base(topic, quikStreaming, columns, true) {}
 
 		protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
 			QuikTrade quikTrade			= new QuikTrade(this.DdeConsumerClassName + " Topic[" + base.Topic + "]");

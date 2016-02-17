@@ -7,6 +7,7 @@ using Sq1.Widgets.Level2;
 
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
 using Sq1.Adapters.Quik.Streaming.Monitor;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik.Streaming.Dde {
 	public partial class DdeBatchSubscriber {
@@ -44,12 +45,16 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
+			LevelTwoOlv level2fromDde_pushTo_domResizeableUserControl = null;
 			if (alwaysJustOneDom.DataStructureParsed.Count != 1) {
-				string msg = "MUST_BE_ONLY_ONE_LEVEL2_IN_THE_LIST alwaysJustOneDom.DataStructureParsed.Count[" + alwaysJustOneDom.DataStructureParsed.Count + "]";
-				Assembler.PopupException(msg + msig);
-				return;
+				//v1 string msg = "MUST_BE_ONLY_ONE_LEVEL2_IN_THE_LIST alwaysJustOneDom.DataStructureParsed.Count[" + alwaysJustOneDom.DataStructureParsed.Count + "]";
+				//v1 Assembler.PopupException(msg + msig);
+				//v1 return;
+				string msg = "I_MANUALLY_RAISED_EVENT_WITH_EMPTY_LIST_TO_CLEAR_ANYTHING_(QUOTES/LEVEL2/TRADES)_RIGHT_AFTER_USER_STOPPED_DDE_FEED";
+				level2fromDde_pushTo_domResizeableUserControl = new LevelTwoOlv(new LevelTwoHalf("MANUAL_CLEAN"), new LevelTwoHalf("MANUAL_CLEAN"), null);
+			} else {
+				level2fromDde_pushTo_domResizeableUserControl = alwaysJustOneDom.DataStructureParsed[0];
 			}
-			LevelTwoOlv level2fromDde_pushTo_domResizeableUserControl = alwaysJustOneDom.DataStructureParsed[0];
 			domResizeable.PopulateLevel2ToDomControl(level2fromDde_pushTo_domResizeableUserControl);
 		}
 	}

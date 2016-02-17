@@ -17,7 +17,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			if (this.popupIf_keyDoesNotExist(columnName, "string", popup)) return valueIfNotFound;
 			object value = base[columnName];
 			if (value == null) value = valueIfNotFound;		// when XlType.Blank was received
-			string ret = (string)value;
+			//string ret = (string)value;
+			string ret = Convert.ToString(value);
 			return ret;
 		}
 

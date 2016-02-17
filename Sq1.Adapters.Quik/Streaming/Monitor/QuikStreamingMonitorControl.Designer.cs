@@ -79,9 +79,9 @@
 			// 
 			// grpQuotes
 			// 
-			this.grpQuotes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.grpQuotes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.grpQuotes.Controls.Add(this.OlvQuotes);
 			this.grpQuotes.Location = new System.Drawing.Point(9, 3);
 			this.grpQuotes.Margin = new System.Windows.Forms.Padding(9, 3, 9, 9);
@@ -90,7 +90,7 @@
 			this.grpQuotes.TabIndex = 0;
 			this.grpQuotes.TabStop = false;
 			this.grpQuotes.Text = "Quotes [Sq1-quotes]:26116 //TableQuotes.DataStructuresParsed_Table_MUST_BE_THE_SE" +
-    "NDER";
+				"NDER";
 			// 
 			// OlvQuotes
 			// 
@@ -106,9 +106,9 @@
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesFortsPriceMin);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesFortsPriceMax);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesAbsnoPerSymbol);
-			this.OlvQuotes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.OlvQuotes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.OlvQuotes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.olvcQuotesSymbolClass,
             this.olvcQuotesSymbol,
@@ -123,6 +123,7 @@
             this.olvcQuotesFortsPriceMax,
             this.olvcQuotesAbsnoPerSymbol});
 			this.OlvQuotes.Cursor = System.Windows.Forms.Cursors.Default;
+			this.OlvQuotes.FullRowSelect = true;
 			this.OlvQuotes.Location = new System.Drawing.Point(6, 19);
 			this.OlvQuotes.Name = "OlvQuotes";
 			this.OlvQuotes.ShowGroups = false;
@@ -235,9 +236,9 @@
 			// 
 			// grpDom
 			// 
-			this.grpDom.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.grpDom.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.grpDom.Controls.Add(this.flpDoms);
 			this.grpDom.Location = new System.Drawing.Point(9, 3);
 			this.grpDom.Margin = new System.Windows.Forms.Padding(9, 3, 9, 9);
@@ -249,9 +250,9 @@
 			// 
 			// flpDoms
 			// 
-			this.flpDoms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.flpDoms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.flpDoms.AutoScroll = true;
 			this.flpDoms.BackColor = System.Drawing.SystemColors.Control;
 			this.flpDoms.Location = new System.Drawing.Point(6, 19);
@@ -261,9 +262,9 @@
 			// 
 			// grpTrades
 			// 
-			this.grpTrades.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.grpTrades.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.grpTrades.Controls.Add(this.olvTrades);
 			this.grpTrades.Location = new System.Drawing.Point(9, 3);
 			this.grpTrades.Margin = new System.Windows.Forms.Padding(9, 3, 9, 9);
@@ -275,9 +276,10 @@
 			// 
 			// olvTrades
 			// 
-			this.olvTrades.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.olvTrades.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.olvTrades.FullRowSelect = true;
 			this.olvTrades.Location = new System.Drawing.Point(6, 19);
 			this.olvTrades.Name = "olvTrades";
 			this.olvTrades.Size = new System.Drawing.Size(564, 57);

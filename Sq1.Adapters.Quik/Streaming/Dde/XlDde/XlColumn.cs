@@ -8,17 +8,20 @@
 		public	object			Value;
 		public	bool			Mandatory;
 		public	bool			UpperLowerCaseSensitive;
+		public	bool			PrimaryKey_forSingleUpdates;
 
 		XlColumn() {
 			IndexFound				= -1;
 			Mandatory				= false;
-			UpperLowerCaseSensitive	= false;
+			UpperLowerCaseSensitive = false;
+			PrimaryKey_forSingleUpdates = false;
 		}
 
-		public XlColumn(XlBlockType typeExpected, string name, bool mandatory = false) : this() {
+		public XlColumn(XlBlockType typeExpected, string name, bool mandatory = false, bool primaryKey = false) : this() {
 			TypeExpected = typeExpected;
 			Name = name;
 			Mandatory = mandatory;
+			PrimaryKey_forSingleUpdates = primaryKey;
 		}
 
 		public XlColumn Clone() {
@@ -28,7 +31,9 @@
 		}
 
 		public override string ToString() {
-			return "{" + this.IndexFound + "}" + this.TypeExpected + ":" + this.Name + "[" + this.Value + "]";
+			string ret = "{" + this.IndexFound + "}" + this.TypeExpected + ":" + this.Name + "[" + this.Value + "]";
+			if (this.PrimaryKey_forSingleUpdates) ret += "PK";
+			return ret;
 		}
 	}
 }

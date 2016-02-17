@@ -24,7 +24,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 		protected	List<XlColumn>					ColumnDefinitions;				// part of the abstraction to implement in children
 		protected	Dictionary<string, XlColumn>	ColumnDefinitionsByNameLookup;
 
-		public		bool							OneRowUpdates			{ get; private set; }
+		public		bool							DdeWillDeliver_updatesForEachRow_inSeparateMessages			{ get; private set; }
+		public		string							PrimaryKey_forEachRowUpdate									{ get; private set; }
 
 		protected	Dictionary<int, XlColumn>		ColumnClonesFoundByIndex;
 		protected	bool							ColumnsIdentified;
@@ -40,7 +41,19 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			this.Topic = topic;
 			this.QuikStreaming = quikStreaming;
 			this.ColumnDefinitions = columns;
-			this.OneRowUpdates = oneRowUpdates;
+			this.DdeWillDeliver_updatesForEachRow_inSeparateMessages = oneRowUpdates;
+
+			if (this.DdeWillDeliver_updatesForEachRow_inSeparateMessages) {
+				foreach (XlColumn eachColumn in this.ColumnDefinitions) {
+					if (eachColumn.PrimaryKey_forSingleUpdates == false) continue;
+					this.PrimaryKey_forEachRowUpdate = eachColumn.Name;
+					break;
+				}
+				if (string.IsNullOrEmpty(this.PrimaryKey_forEachRowUpdate)) {
+					string msg = "YOU_DIDNT_MARK_ONE_COLUMN_AS_PRIMARY_KEY Topic[" + topic + "] ColumnDefinitions[" + this.columnsAsString(this.ColumnDefinitions) + "] //XlDdeTable.ctor()";
+					Assembler.PopupException(msg);
+				}
+			}
 
 			this.ColumnDefinitionsByNameLookup = new Dictionary<string, XlColumn>();
 			foreach (XlColumn col in this.ColumnDefinitions) {
@@ -60,20 +73,25 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			this.DdeMessagesReceived++;
 		}
 		protected virtual void ParseMessage_readAsTable_convertEachRowToDataStructures(XlReader reader) {
-			int rowsIalreadyRead = 0;
-			if (base.OneRowUpdates == false) this.ColumnsIdentified == false;			// IDENTIFY_EACH_NEW_MESSAGE_DONT_CACHE
+			int rowsIhaveReadAlready = 0;
+			if (this.DdeWillDeliver_updatesForEachRow_inSeparateMessages == false) this.ColumnsIdentified = false;			// IDENTIFY_EACH_NEW_MESSAGE_DONT_CACHE
 			if (this.ColumnsIdentified == false) {
 				this.ColumnsIdentified = this.identifyColumnsByReadingHeader(reader);
-				rowsIalreadyRead++;
+				rowsIhaveReadAlready++;
 				if (this.ColumnsIdentified == false) {
 					//JUST_DROP_IT reader.Rewind();
 					//this.ColumnsIdentified = this.identifyColumnsByReadingHeader(reader, true);
 					return;
+				} else {
+					if (this.DdeWillDeliver_updatesForEachRow_inSeparateMessages) {
+						string msg = "COLUMNS_IDENTIFIED[" + this.ColumnsIdentifiedAsString + "]";
+						Assembler.PopupException(msg, null, false);
+					}
 				}
 				if (reader.RowsCount == 1) return;
 			}
 
-			for (int i = rowsIalreadyRead; i < reader.RowsCount; i++) {
+			for (int i = rowsIhaveReadAlready; i < reader.RowsCount; i++) {
 				XlRowParsed rowParsed = this.parseRow(reader);
 				if (rowParsed == null || rowParsed.Count == 0) continue;
 

@@ -29,7 +29,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 			QuoteQuik quikQuote = new QuoteQuik(DateTime.Now);
 			quikQuote.Source			= this.DdeConsumerClassName + " Topic[" + base.Topic + "]";
-			quikQuote.Symbol			= row.GetString("SHORTNAME"		, "NO_SYMBOL_RECEIVED_DDE");
+			quikQuote.Symbol			= row.GetString("CODE"			, "NO_SYMBOL_RECEIVED_DDE");
 			quikQuote.SymbolClass		= row.GetString("CLASS_CODE"	, "NO_CLASS_CODE_RECEIVED_DDE");
 			quikQuote.Bid				= row.GetDouble("bid"			, double.NaN);
 			quikQuote.Ask				= row.GetDouble("offer"			, double.NaN);
@@ -44,8 +44,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 			quikQuote.FortsDepositBuy	= row.GetDouble("buydepo"		, double.NaN);
 			quikQuote.FortsDepositSell	= row.GetDouble("selldepo"		, double.NaN);
-			quikQuote.FortsPriceMin		= row.GetDouble("pricemin"		, double.NaN);
-			quikQuote.FortsPriceMax		= row.GetDouble("pricemax"		, double.NaN);
+			quikQuote.FortsPriceMax		= row.GetDouble("high"		, double.NaN);
+			quikQuote.FortsPriceMin		= row.GetDouble("low"		, double.NaN);
 
 			this.reconstructServerTime(row);
 			quikQuote.ServerTime		= row.GetDateTime("ServerTime"	, DateTime.Now);
@@ -72,19 +72,21 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			return quikQuote;									//one more delay is to raise and event which will go to GUI thread as well QuikStreamingMonitorForm.tableQuotes_DataStructureParsed_One()
 		}
 		void reconstructServerTime(XlRowParsed rowParsed) {
+			string dateFormat = base.ColumnDefinitionsByNameLookup["TRADE_DATE_CODE"].ToDateTimeParseFormat;
+			string timeFormat = base.ColumnDefinitionsByNameLookup["time"].ToDateTimeParseFormat;
+			string dateTimeFormat = dateFormat + " " + timeFormat;
+
 			rowParsed["ServerTime"] = DateTime.MinValue;
 
-			string dateReceived = rowParsed.GetString("date", "QUOTE_DATE_NOT_DELIVERED_DDE");
+			string dateReceived = rowParsed.GetString("TRADE_DATE_CODE", "QUOTE_DATE_NOT_DELIVERED_DDE");
+			if (dateReceived == "QUOTE_DATE_NOT_DELIVERED_DDE") {
+				dateReceived = DateTime.Now.Date.ToString(dateFormat);
+			}
 			string timeReceived = rowParsed.GetString("time", "QUOTE_TIME_NOT_DELIVERED_DDE");
 			string dateTimeReceived = dateReceived + " " + timeReceived;
 			if (dateTimeReceived.Contains("NOT_DELIVERED_DDE")) {
 				return;
 			}
-
-			string dateFormat = base.ColumnDefinitionsByNameLookup["date"].ToDateTimeParseFormat;
-			string timeFormat = base.ColumnDefinitionsByNameLookup["time"].ToDateTimeParseFormat;
-			string dateTimeFormat = dateFormat + " " + timeFormat;
-
 
 			try {
 			    rowParsed["ServerTime"] = DateTime.ParseExact(dateTimeReceived, dateTimeFormat, CultureInfo.InvariantCulture);

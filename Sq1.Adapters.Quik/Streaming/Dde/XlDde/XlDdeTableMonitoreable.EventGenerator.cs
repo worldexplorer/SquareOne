@@ -21,7 +21,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 		void raiseDataStructuresParsed_Table(List<T> tableParsed) {
 			if (this.OnDataStructuresParsed_Table == null) return;
 			try {
-				this.OnDataStructuresParsed_Table(this, new XlDdeTableMonitoringEventArg<List<T>>(tableParsed));
+				this.OnDataStructuresParsed_Table(this, new XlDdeTableMonitoringEventArg<List<T>>(new List<T>(tableParsed)));		// TODO: employ ConcurrentListWD
 			} catch (Exception ex) {
 				string msg = "QuikStreamingMonitorControl_TREW_IN_raiseDataStructuresParsed_Table(tableParsed[" + tableParsed + "])";
 				Assembler.PopupException(msg, ex);
