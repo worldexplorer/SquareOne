@@ -108,7 +108,7 @@ namespace Sq1.Charting {
 			if (this.Bars == null) {
 				#if DEBUG
 				string msg = "POSSIBLY_DISABLE_SCROLLBAR_WHEN_CHART_HAS_NO_BARS? OR MAKE_CHART_ALWAYS_DISPLAY_BARS";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				#endif
 				return;
 			}

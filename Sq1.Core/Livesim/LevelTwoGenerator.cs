@@ -17,8 +17,8 @@ namespace Sq1.Core.Livesim {
 
 		public LevelTwoGenerator() {
 			levelsToGenerate = 5;
-			LevelTwoAsks = new LevelTwoHalf("LevelTwoAsks_FOR_QuikLivesimStreaming");
-			LevelTwoBids = new LevelTwoHalf("LevelTwoBids_FOR_QuikLivesimStreaming");
+			LevelTwoAsks = new LevelTwoHalf("LevelTwoAsks_FOR_LivesimStreaming");
+			LevelTwoBids = new LevelTwoHalf("LevelTwoBids_FOR_LivesimStreaming");
 		}
 		public void Initialize(SymbolInfo symbolInfo, int levelsToGenerate) {
 			if (symbolInfo == null) {

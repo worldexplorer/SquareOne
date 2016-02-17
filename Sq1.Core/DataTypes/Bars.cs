@@ -84,7 +84,18 @@ namespace Sq1.Core.DataTypes {
 			// while in streaming, you use AbsorbIntoStreaming(), when complete use CreateNewStreaming 
 			//this.BarStreaming = new Bar(this.Symbol, this.ScaleInterval, DateTime.MinValue);
 		}
-		public Bars CloneNoBars(string reasonToExist = null, BarScaleInterval scaleIntervalConvertingTo = null) {
+		public Bars CloneBars_firstBarInside_avoidingLastBarNull(string reasonToExist = null, BarScaleInterval scaleIntervalConvertingTo = null) {
+			Bars ret = this.CloneBars_zeroBarsInside(reasonToExist, scaleIntervalConvertingTo);
+			if (this.Count == 0) {
+				string msg = "I_REFUSE_TO_ADD_FIRST_BAR CLONE_EMPTY_BARS__WITH_CloneBars_zeroBarsInside()_INSTEAD";
+				Assembler.PopupException(msg);
+				return ret;
+			}
+			Bar firstBar_noParentBackRef = this[0].CloneDetached();
+			ret.BarAppendBindStatic(firstBar_noParentBackRef);
+			return ret;
+		}
+		public Bars CloneBars_zeroBarsInside(string reasonToExist = null, BarScaleInterval scaleIntervalConvertingTo = null) {
 			if (scaleIntervalConvertingTo == null) scaleIntervalConvertingTo = this.ScaleInterval;
 			if (string.IsNullOrEmpty(reasonToExist)) reasonToExist = "InitializedFrom(" + this.ReasonToExist + ")";
 			reasonToExist += this.InstanceScaleCount;
@@ -276,7 +287,7 @@ namespace Sq1.Core.DataTypes {
 
 			//v1 string reasonForClone = this.ReasonToExist + " [" + dataRangeRq.ToString() + "]";
 			string reasonForClone = "RANGE_SELECTED[" + dataRangeRq.ToString() + "]";
-			Bars ret = this.CloneNoBars(reasonForClone, this.ScaleInterval);
+			Bars ret = this.CloneBars_zeroBarsInside(reasonForClone, this.ScaleInterval);
 			int recentIndexStart = 0;
 			if (dataRangeRq.RecentBars > 0) recentIndexStart = this.Count - dataRangeRq.RecentBars;  
 			for (int i=0; i<this.Count; i++) {
@@ -307,7 +318,7 @@ namespace Sq1.Core.DataTypes {
 
 			//v1 string reasonForClone = this.ReasonToExist + "=>[" + scaleIntervalTo + "]";
 			string reasonForClone = "COMPRESSED_CLONE_OF_" + this.IntervalScaleCount + "=>[" + scaleIntervalTo + "]";
-			Bars barsConverted = this.CloneNoBars(reasonForClone, scaleIntervalTo);
+			Bars barsConverted = this.CloneBars_zeroBarsInside(reasonForClone, scaleIntervalTo);
 			if (this.Count == 0) return barsConverted;
 			
 			Bar barFromFirst = this[0];

@@ -29,8 +29,13 @@ namespace Sq1.Core.Streaming {
 				+ executor.Bars.SymbolIntervalScale
 				;
 
+			if (this.DataDistributor_replacedForLivesim.DistributionChannels.Count == 0 && chartBarsSubscribeSelected) {
+				string msg = "ORIGINAL_DISTRIBUTOR_MUST_HAVE_HAD_THE_CHART_YOU_WANT_TO_PAUSE AND_SOLIDIFIER";
+				Assembler.PopupException(msg, null, false);
+			}
+
 			this.dataDistributor_preLivesimForSymbolLivesimming = this.DataDistributor_replacedForLivesim;
-			// ZERO_CONSUMERS?_MOVED_UPSTACK this.dataDistributor_preLivesimForSymbolLivesimming.AllQuotePumps_Pause(reasonForNewDistributor);
+			// MOVED_UPSTACK_PAUSES_EVERYTHING_FOR_SYMBOL this.dataDistributor_preLivesimForSymbolLivesimming.AllQuotePumps_Pause(reasonForNewDistributor);
 			this.DataDistributor_replacedForLivesim = new DataDistributor(this, reasonForNewDistributor);
 
 			if (chartBarsSubscribeSelected) {
@@ -59,8 +64,18 @@ namespace Sq1.Core.Streaming {
 				this.DataDistributor_replacedForLivesim.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(symbol, scaleInterval);
 			}
 
+			if (this.DataDistributorSolidifiers_replacedForLivesim.DistributionChannels.Count > 1) {
+				this.DataDistributorSolidifiers_replacedForLivesim.AllQuotePumps_Pause(reasonForNewDistributor);
+			} else {
+				if (this is LivesimStreamingDefault) {
+					string msg4 = "DEFAULT_LIVESIM_HAS_NO_SOLIDIFIERS";
+				} else {
+					string msg4 = "IM_A_REAL_STREAMING__I_MUST_HAVE_SOLIDIFIERS_TO_PAUSE";
+					Assembler.PopupException(msg4, null, false);
+				}
+			}
+			string msg3 = "REGARDLESS_WHETHER_I_HAD_SOLIDIFIERS__I_CREATE_NEW_TO_INDICATE_IM_LIVESIMMING";
 			this.dataDistributorSolidifiers_preLivesimForSymbolLivesimming = this.DataDistributorSolidifiers_replacedForLivesim;
-			this.dataDistributorSolidifiers_preLivesimForSymbolLivesimming.AllQuotePumps_Pause(reasonForNewDistributor);
 			this.DataDistributorSolidifiers_replacedForLivesim = new DataDistributor(this, reasonForNewDistributor);		// EMPTY!!! exactly what I wanted
 
 			string msg1 = "THESE_STREAMING_CONSUMERS_LOST_INCOMING_QUOTES_FOR_THE_DURATION_OF_LIVESIM: ";
@@ -84,8 +99,18 @@ namespace Sq1.Core.Streaming {
 			this.DataDistributor_replacedForLivesim				= this.dataDistributor_preLivesimForSymbolLivesimming;
 			this.DataDistributorSolidifiers_replacedForLivesim	= this.dataDistributorSolidifiers_preLivesimForSymbolLivesimming;
 
-			this.DataDistributor_replacedForLivesim				.AllQuotePumps_Unpause(reasonForStoppingReplacedDistributor);
-			this.DataDistributorSolidifiers_replacedForLivesim	.AllQuotePumps_Unpause(reasonForStoppingReplacedDistributor);
+			//MOVED_UPSTACK_PAUSES_EVERYTHING_FOR_SYMBOL this.DataDistributor_replacedForLivesim				.AllQuotePumps_Unpause(reasonForStoppingReplacedDistributor);
+
+			if (this.DataDistributorSolidifiers_replacedForLivesim.DistributionChannels.Count > 1) {
+				this.DataDistributorSolidifiers_replacedForLivesim	.AllQuotePumps_Unpause(reasonForStoppingReplacedDistributor);
+			} else {
+				if (this is LivesimStreamingDefault) {
+					string msg4 = "DEFAULT_LIVESIM_HAS_NO_SOLIDIFIERS";
+				} else {
+					string msg4 = "IM_A_REAL_STREAMING__I_MUST_HAVE_SOLIDIFIERS_TO_UNPAUSE";
+					Assembler.PopupException(msg4, null, false);
+				}
+			}
 
 			string msg1 = "STREAMING_CONSUMERS_RESTORED_CONNECTIVITY_TO_STREAMING_ADAPTER_AFTER_LIVESIM: "
 				+ this.DataDistributor_replacedForLivesim.ToString() + " SOLIDIFIERS:" + this.DataDistributorSolidifiers_replacedForLivesim	;

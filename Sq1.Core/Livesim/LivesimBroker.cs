@@ -42,8 +42,8 @@ namespace Sq1.Core.Livesim {
 			this.LivesimBrokerSpoiler					= new LivesimBrokerSpoiler(this);
 		}
 		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, OrderProcessor orderProcessor) {
-			base.Name									= "LivesimBroker";
-			this.DataSnapshot							= new LivesimBrokerDataSnapshot(this.LivesimDataSource);
+			base.DataSource		= livesimDataSource;
+			this.DataSnapshot	= new LivesimBrokerDataSnapshot(this.LivesimDataSource);
 			base.InitializeDataSource_inverse(livesimDataSource, this.LivesimDataSource.StreamingAsLivesim_nullUnsafe,  orderProcessor);
 		}
 		public override BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {

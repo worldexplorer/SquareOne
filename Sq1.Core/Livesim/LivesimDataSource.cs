@@ -11,8 +11,8 @@ namespace Sq1.Core.Livesim {
 
 		LivesimDataSource() {
 			base.Name				= "LivesimDataSource";
-			base.StreamingAdapter	= new LivesimStreamingDefault("WILL_BE_OVERWRITTEN_FROM_REAL_DATASOURCE");	//USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_STREAMING
-			base.BrokerAdapter		= new LivesimBrokerDefault	 ("WILL_BE_OVERWRITTEN_FROM_REAL_DATASOURCE");	//USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_BROKER
+			//base.StreamingAdapter	= new LivesimStreamingDefault("WILL_BE_OVERWRITTEN_FROM_REAL_DATASOURCE");	//USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_STREAMING
+			//base.BrokerAdapter		= new LivesimBrokerDefault	 ("WILL_BE_OVERWRITTEN_FROM_REAL_DATASOURCE");	//USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_BROKER
 		}
 
 		public LivesimDataSource(ScriptExecutor executor) : this() {
@@ -38,6 +38,7 @@ namespace Sq1.Core.Livesim {
 						+ " LivesimDataSource.ctor() should have created its own basic LivesimStreaming<=BacktestStreaming, now NULL";
 					Assembler.PopupException(msg1);
 				} else {
+					//base.StreamingAsLivesim_nullUnsafe.CreateDataDistributors_onlyWhenNecessary("DD_FOR_ONE_LIVESIM");
 					string msg1 = "WILL_LIVESIM_VIA"
 						+ " StreamingAsLivesim_nullUnsafe[" + base.StreamingAsLivesim_nullUnsafe + "]"
 						+ ".DataDistributor_replacedForLivesim[" + base.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim.ReasonIwasCreated + "]"
@@ -89,7 +90,7 @@ namespace Sq1.Core.Livesim {
 		}
 		public bool IsDisposed { get; private set; }
 
-		internal void InitializeLivesim(string executorImServing, Bars bars, BacktestSpreadModeler spreadModeler) {
+		internal void InitializeLivesim_tunnelToBacktest(string executorImServing, Bars bars, BacktestSpreadModeler spreadModeler) {
 			base.InitializeBacktest(executorImServing, bars, spreadModeler);
 		}
 

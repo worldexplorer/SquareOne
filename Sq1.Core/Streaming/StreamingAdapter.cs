@@ -9,7 +9,6 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
-	// TODO: it's not an abstract class because....
 	public abstract partial class StreamingAdapter {
 		[JsonIgnore]	public		string					Name								{ get; protected set; }
 		[JsonIgnore]	public		string					ReasonToExist						{ get; protected set; }
@@ -38,7 +37,7 @@ namespace Sq1.Core.Streaming {
 				if (this.upstreamConnectionState == value) return;	//don't invoke StateChanged if it didn't change
 				if (this.upstreamConnectionState == ConnectionState.UpstreamConnected_downstreamSubscribedAll
 								&& value == ConnectionState.JustInitialized_solidifiersUnsubscribed) {
-					Assembler.PopupException("YOU_ARE_RESETTING_ORIGINAL_DATASOURCE_WITH_LIVESIM_DATASOURCE", null, false);
+					Assembler.PopupException("YOU_ARE_RESETTING_ORIGINAL_STREAMING_STATE__FROM_OWN_LIVESIM_STREAMING", null, false);
 				}
 				if (this.upstreamConnectionState == ConnectionState.UpstreamConnected_downstreamUnsubscribed
 								&& value == ConnectionState.JustInitialized_solidifiersSubscribed) {
@@ -51,7 +50,7 @@ namespace Sq1.Core.Streaming {
 		[JsonProperty]	public		bool					UpstreamConnected					{ get {
 			bool ret = false;
 			switch (this.UpstreamConnectionState) {
-				case ConnectionState.UnknownConnectionState:											ret = false;	break;
+				case ConnectionState.UnknownConnectionState:							ret = false;	break;
 				case ConnectionState.JustInitialized_solidifiersUnsubscribed:			ret = false;	break;
 				case ConnectionState.JustInitialized_solidifiersSubscribed:				ret = false;	break;
 				case ConnectionState.DisconnectedJustConstructed:						ret = false;	break;
@@ -90,18 +89,27 @@ namespace Sq1.Core.Streaming {
 			ReasonToExist									= "DUMMY_FOR_LIST_OF_STREAMING_PROVIDERS_IN_DATASOURCE_EDITOR";
 			SymbolsSubscribedLock							= new object();
 			SymbolsUpstreamSubscribed						= new List<string>();
-			DataDistributor_replacedForLivesim				= new DataDistributorCharts(this);
-			DataDistributorSolidifiers_replacedForLivesim	= new DataDistributorSolidifiers(this);
 			StreamingDataSnapshot							= new StreamingDataSnapshot(this);
 			StreamingSolidifier								= new StreamingSolidifier();
-			QuotePumpSeparatePushingThreadEnabled			= true;
 			Level2RefreshRateMs								= 200;
+			QuotePumpSeparatePushingThreadEnabled			= true;
+			LivesimStreaming_ownImplementation				= null;		// so that be careful addressing it here! valid only for StreamingAdapter-derived!!!
 			//if (this is LivesimStreaming) return;
 			//NULL_UNTIL_QUIK_PROVIDES_OWN_DDE_REDIRECTOR LivesimStreamingImplementation					= new LivesimStreamingDefault(true, "USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_STREAMING");	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
 		}
 
 		public StreamingAdapter(string reasonToExist) : this() {
 			ReasonToExist									= reasonToExist;
+			this.CreateDataDistributors_onlyWhenNecessary(reasonToExist);
+		}
+
+		public void CreateDataDistributors_onlyWhenNecessary(string reasonToExist) {
+			if (this.DataDistributor_replacedForLivesim == null) {
+				this.DataDistributor_replacedForLivesim			= new DataDistributorCharts		(this, reasonToExist);
+			} else {
+				//this.DataDistributor_replacedForLivesim.ForceUnsubscribeLeftovers_mustBeEmptyAlready(reasonToExist);
+			}
+			this.DataDistributorSolidifiers_replacedForLivesim	= new DataDistributorSolidifiers(this, reasonToExist);
 		}
 		public virtual void InitializeFromDataSource(DataSource dataSource) {
 			this.DataSource = dataSource;
@@ -120,7 +128,15 @@ namespace Sq1.Core.Streaming {
 
 		//public void SolidifierSubscribeOneSymbol_iFinishedLivesimming(string symbol = null) {
 		void solidifierSubscribeOneSymbol(string symbol = null) {
+			if (this.DataDistributorSolidifiers_replacedForLivesim == null) {
+				string msg = "DONT_SUBSCRIBE_SOLIDIFIERS_FOR_DUMMY_ADAPTERS this[" + this + "]";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+
 			if (symbol == null) {
+				string msg = "WHEN_AM_I_ACTIVATED??? IT_LOOKS_VERY_SUSPICIOUS_HERE NPE_RISKY";
+				Assembler.PopupException(msg);
 				symbol  = this.LivesimStreaming_ownImplementation.DataSource.Symbols[0];
 			}
 

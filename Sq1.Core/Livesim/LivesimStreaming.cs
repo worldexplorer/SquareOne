@@ -30,7 +30,7 @@ namespace Sq1.Core.Livesim {
 		[JsonIgnore]	protected	LivesimStreamingSpoiler		LivesimStreamingSpoiler;
 
 		[JsonIgnore]	public		bool						IsDisposed					{ get; private set; }
-		[JsonIgnore]	public		StreamingAdapter			StreamingOriginal			{ get; private set; }
+		[JsonIgnore]	public		StreamingAdapter			StreamingOriginal			{ get; protected set; }
 
 		//protected LivesimStreaming() : base("DLL_SCANNER_INSTANTIATES_DUMMY_STREAMING") {
 		//    string msg = "IM_HERE_WHEN_DLL_SCANNER_INSTANTIATES_DUMMY_STREAMING"
@@ -57,11 +57,11 @@ namespace Sq1.Core.Livesim {
 			this.StreamingOriginal = streamingOriginalPassed;
 
 			LevelTwoGeneratorLivesim levelTwoGeneratorLivesim = this.LevelTwoGenerator as LevelTwoGeneratorLivesim;
-			if (levelTwoGeneratorLivesim != null) {
-				levelTwoGeneratorLivesim.InitializeLevelTwo(symbolLivesimming);
-			} else {
-				string msg = "WHERE_AM_I?";
+			if (levelTwoGeneratorLivesim == null) {
+				string msg = "WHERE_AM_I? NPE_GUARANTEED";
+				Assembler.PopupException(msg);
 			}
+			levelTwoGeneratorLivesim.InitializeLevelTwo(symbolLivesimming);
 		}
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			LivesimStreamingEditorEmpty emptyEditor = new LivesimStreamingEditorEmpty();

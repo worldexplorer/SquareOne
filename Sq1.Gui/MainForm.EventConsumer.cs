@@ -63,6 +63,7 @@ namespace Sq1.Gui {
 			this.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad = true;
 
 			foreach (ChartFormManager eachChartManager in this.GuiDataSnapshot.ChartFormManagers.Values) {
+				if (eachChartManager.Executor.Bars == null) continue;	//avoiding NPE in the next line
 				StreamingAdapter streaming = eachChartManager.Executor.DataSource_fromBars.StreamingAdapter;
 				if (streaming == null) continue;
 

@@ -128,16 +128,18 @@ namespace Sq1.Charting {
 		public override void Initialize(Bars barsNotNull, string strategySavedInChartSettings, bool removeChartShadowFromOldSymbolAndAddToLoadingBars = false, bool invalidateAllPanels = true) {
 			this.barEventsDetach();
 			this.ChartSettings.StrategyName = strategySavedInChartSettings;
-			base.Initialize(barsNotNull, strategySavedInChartSettings, removeChartShadowFromOldSymbolAndAddToLoadingBars, invalidateAllPanels);
-			//if (this.BarsNotEmpty == false) {
-			if (this.Bars == null) {
-				string msg = "SYMBOL_REMOVED_FROM_DATASOURCE_CLEARING_CHART"
+
+			//v1 if (this.Bars == null) {
+			if (barsNotNull == null) {
+				string msg = "SYMBOL_REMOVED_FROM_DATASOURCE / LIVESIM_ABORTED_WITH_NO_BARS_TO_RESTORE CLEARING_CHART"
 					// I_CANT_ATTACH_BAR_EVENTS_TO_NULL_BARS DONT_PASS_EMPTY_BARS_TO_CHART_CONTROL "
 					;
-				//Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				this.InvalidateAllPanels();
 				return;
 			}
+
+			base.Initialize(barsNotNull, strategySavedInChartSettings, removeChartShadowFromOldSymbolAndAddToLoadingBars, invalidateAllPanels);
 			this.barEventsAttach();
 			this.SyncHorizontalScrollToBarsCount();
 			//this.hScrollBar.ValueCurrent = this.hScrollBar.Maximum;	// I just sync'ed this.hScrollBar.Maximum = this.Bars.Count - 1
