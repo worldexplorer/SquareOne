@@ -137,16 +137,27 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 				if (this.QuikStreamingLivesim.DdePokerShouldSyncWaitForDdeServerToReceiveMessage_falseToAvoidDeadlocks) {
 					this.DdeClient.EndPoke(handle);		//SYNCHRONOUS
 				}
+				return;
 			} catch (ArgumentNullException ex) {
-				Assembler.PopupException("This is thrown when item or data is a null reference.", ex);
+				string msg = "This is thrown when item or data is a null reference.";
+				Assembler.PopupException(msg, ex);
+				throw new Exception(msg, ex);
 			} catch (ArgumentException ex) {
-				Assembler.PopupException("This is thown when item exceeds 255 characters.", ex);
+				string msg = "This is thown when item exceeds 255 characters.";
+				Assembler.PopupException(msg, ex);
+				throw new Exception(msg, ex);
 			} catch (InvalidOperationException ex) {
-				Assembler.PopupException("This is thrown when the client is not connected.", ex);
+				string msg = "This is thrown when the client is not connected.";
+				Assembler.PopupException(msg, ex);
+				throw new Exception(msg, ex);
 			} catch (DdeException ex) {
-				Assembler.PopupException("This is thrown when the asynchronous operation could not begin.", ex);
+				string msg = "This is thrown when the asynchronous operation could not begin.";
+				Assembler.PopupException(msg, ex);
+				throw new Exception(msg, ex);
 			} catch (Exception ex) {
-				Assembler.PopupException("UNKNOWN_ERROR_DDE_CLIENT_BEGIN_POKE", ex);
+				string msg = "UNKNOWN_ERROR_DDE_CLIENT_BEGIN_POKE";
+				Assembler.PopupException(msg, ex);
+				throw new Exception(msg, ex);
 			}
 		}
 	}

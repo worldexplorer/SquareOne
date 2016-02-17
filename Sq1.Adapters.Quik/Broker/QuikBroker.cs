@@ -5,18 +5,19 @@ using System.IO;
 using Newtonsoft.Json;
 
 using Sq1.Core;
-using Sq1.Core.Accounting;
 using Sq1.Core.Broker;
+using Sq1.Core.Accounting;
 using Sq1.Core.DataFeed;
-using Sq1.Core.DataTypes;
-using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
+using Sq1.Core.Execution;
+using Sq1.Core.DataTypes;
 
 using Sq1.Adapters.Quik.Streaming;
+using Sq1.Adapters.Quik.Broker.Livesim;
 using Sq1.Adapters.Quik.Broker.Terminal;
 
 namespace Sq1.Adapters.Quik.Broker {
-	public class QuikBroker : BrokerAdapter {
+	public partial class QuikBroker : BrokerAdapter {
 		[JsonIgnore]	public	QuikTerminal	QuikTerminal			{ get; protected set; }
 		[JsonProperty]	public	string			QuikFolder				{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
 		[JsonProperty]	public	string			QuikDllName				{ get; protected set; }
@@ -42,30 +43,23 @@ namespace Sq1.Adapters.Quik.Broker {
 			base.OrderCallbackDupesChecker = new OrderCallbackDupesCheckerQuik(this);
 		}
 		public override void InitializeDataSource_inverse(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
-			base.InitializeDataSource_inverse(dataSource, streamingAdapter, orderProcessor);
 			base.Name = "Quik Broker";
 
-			if (String.IsNullOrEmpty(this.QuikFolder)) return;
-			if (Directory.Exists(this.QuikFolder) == false) {
-				string msg = "QuikStreamingAdapter.QuikFolder[" + this.QuikFolder + "] doesn't exist; will not try to QuikTerminal.ConnectDll()";
-				//Assembler.PopupException(msg);
-				throw new Exception(msg);
+			if (base.LivesimBroker_ownImplementation == null) {
+				base.LivesimBroker_ownImplementation	= new QuikBrokerLivesim("OWN_IMPLEMENTATION_USED_FOR_LIVESIM_NOT_DUMMY");
+			} else {
+				string msg = "ALREADY_INITIALIZED_OWN_DISTRIBUTOR MUST_NEVER_HAPPEN_BUT_CRITICAL_WHEN_IT_DOES";
+				Assembler.PopupException(msg);
 			}
-			if (File.Exists(this.QuikDllAbsPath) == false) {
-				string msg = "QuikStreamingAdapter.QuikDllAbsPath[" + this.QuikDllAbsPath + "] doesn't exist; will not try to QuikTerminal.ConnectDll()";
-				//Assembler.PopupException(msg);
-				throw new Exception(msg);
-			}
-			
-			this.QuikTerminal.ConnectDll();
+
+			base.InitializeDataSource_inverse(dataSource, streamingAdapter, orderProcessor);
 		}
 		public override BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.BrokerEditorInitializeHelper(dataSourceEditor);
 			base.BrokerEditorInstance = new BrokerQuikEditor(this, dataSourceEditor);
 			return base.BrokerEditorInstance;
 		}
-		public override void Connect() { QuikTerminal.ConnectDll(); }
-		public override void Disconnect() { QuikTerminal.DisconnectDll(); }
+
 		public void CallbackTradeStateReceivedQuik(long SernoExchange, DateTime tradeDate, 
 				string classCode, string secCode, double priceFill, int qtyFill,
 				double tradePrice2, double tradeTradeSysCommission, double tradeTScommission) {
@@ -114,7 +108,7 @@ namespace Sq1.Adapters.Quik.Broker {
 				+ " SernoExchange=[" + SernoExchange + "] GUID=[" + GUID + "]"
 				+ " //" + Name + ":CallbackOrderStateReceivedQuik()";
 
-			Order order = base.ScanEvidentLanesForGuidNullUnsafe(GUID);
+			Order order = base.ScanEvidentLanesForGuid_nullUnsafe(GUID);
 			if (order == null) {
 				// already reported "PENDING_ORDER_NOT_FOUND__RETURNING_ORDER_NULL" in base.FindOrderLaneOptimizedNullUnsafe() 
 				return;
@@ -183,123 +177,6 @@ namespace Sq1.Adapters.Quik.Broker {
 			}
 			string msg = state + " " + message;
 			Assembler.DisplayConnectionStatus(state, msg);
-		}
-		public override void OrderSubmit(Order order) {
-			//Debugger.Break();
-			string msig = " //" + Name + "::OrderSubmit():"
-				+ " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
-				+ " SernoSession[" + order.SernoSession + "]";
-			string msg = "";
-
-			// was the reason of TP/SL "sequenced" submit here?...
-			//if (this.Name == "Mock BrokerAdapter") Thread.Sleep(1000);
-
-			char typeMarketLimitStop = '?';
-			switch (order.Alert.MarketLimitStop) {
-				case MarketLimitStop.Market:
-					typeMarketLimitStop = 'M';
-					break;
-				case MarketLimitStop.Limit:
-					typeMarketLimitStop = 'L';
-					break;
-				case MarketLimitStop.Stop:
-					typeMarketLimitStop = 'S';
-					break;
-				case MarketLimitStop.StopLimit:
-					typeMarketLimitStop = 'S';
-					break;
-				default:
-					msg = " No MarketLimitStop[" + order.Alert.MarketLimitStop + "] handler for order[" + order.ToString() + "]"
-						+ "; must be one of those: Market/Limit/Stop";
-					this.OrderProcessor.UpdateOrderStateAndPostProcess(order,
-						new OrderStateMessage(order, OrderState.Error, msig + msg));
-					throw new Exception(msig + msg);
-			}
-
-			char opBuySell = (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) ? 'B' : 'S';
-			int sernoSessionFromTerminal = -999;
-			string msgSubmittedFromTerminal = "";
-			OrderState orderStateFromTerminalMustGetSubmitted = OrderState.Unknown;
-
-			double priceFill = order.PriceRequested;
-			this.QuikTerminal.SendTransactionOrderAsync(opBuySell, typeMarketLimitStop,
-				order.Alert.Symbol, order.Alert.SymbolClass,
-				order.PriceRequested, (int)order.QtyRequested, order.GUID,
-				out sernoSessionFromTerminal, out msgSubmittedFromTerminal, out orderStateFromTerminalMustGetSubmitted);
-
-			msg = msgSubmittedFromTerminal + "order.SernoSession[" + order.SernoSession + "]=>[" + sernoSessionFromTerminal + "] ";
-			order.SernoSession = sernoSessionFromTerminal;
-
-			OrderStateMessage newState = new OrderStateMessage(order, orderStateFromTerminalMustGetSubmitted, msg + msig);
-			base.OrderProcessor.UpdateOrderStateAndPostProcess(order, newState);
-		}
-		public override void OrderKillSubmit(Order victimOrder) {
-			string msig = Name + "::OrderKillSubmit():"
-				+ "State[" + victimOrder.State + "]"
-				+ " [" + victimOrder.Alert.Symbol + "/" + victimOrder.Alert.SymbolClass + "]"
-				+ " VictimToBeKilled.SernoExchange[" + victimOrder.SernoExchange + "] ";
-
-			bool victimWasStopOrder = victimOrder.Alert.MarketLimitStop == MarketLimitStop.Stop;
-			
-			string msgSubmittedFromTerminal = "";
-			int sernoSessionFromTerminal = -999;
-			OrderState killerStateFromTerminal = OrderState.Unknown;
-
-			Order killerOrder = victimOrder.KillerOrder;
-
-			QuikTerminal.SendTransactionOrderKillAsync(victimOrder.Alert.Symbol, victimOrder.Alert.SymbolClass,
-				killerOrder.GUID.ToString(),
-				victimOrder.GUID.ToString(),
-				victimOrder.SernoExchange, victimWasStopOrder,
-				out msgSubmittedFromTerminal, out sernoSessionFromTerminal, out killerStateFromTerminal);
-
-			killerOrder.SernoSession = sernoSessionFromTerminal;
-
-			string msg = "killerStateFromTerminal[" + killerStateFromTerminal + "]"
-				+ " msgSubmittedFromTerminal[" + msgSubmittedFromTerminal + "]"
-				+ " sernoSessionFromTerminal[" + sernoSessionFromTerminal + "]";
-			base.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(killerOrder, msig + msg);
-
-			// don't set State.KillPending to Killer!!! Killer has KillSubmitting->BulletFlying->KillerDone
-			//base.OrderManager.UpdateOrderStateAndPostProcess(killerOrder,
-			//	new OrderStateMessage(killerOrder, killerStateFromTerminal, msgSubmittedFromTerminal));
-		}
-		public override void CancelReplace(Order order, Order newOrder) {
-			throw new Exception("TODO: don't forget to implement before going live!");
-		}
-		public override void OrderPreSubmitEnrichBrokerSpecificInjection(Order order) {
-			string msig = " //BrokerQuik.OrderPreSubmitEnrichBrokerSpecificInjection(" + order.ToString() + ")";
-			string msg = "";
-			
-			if (order.Alert.QuoteCreatedThisAlert == null) {
-				Quote lastMayNotBeTheCreatorHereHavingNoParentBars = this.StreamingAdapter.StreamingDataSnapshot
-					.LastQuoteCloneGetForSymbol(order.Alert.Symbol);
-				order.Alert.QuoteCreatedThisAlert = lastMayNotBeTheCreatorHereHavingNoParentBars;
-				string msg2 = "AVOIDING_ORDER_MARKED_INCONSISTENT: " + order.Alert.QuoteCreatedThisAlert;
-				Assembler.PopupException(msg2, null, false);
-			}
-			
-			if (order.Alert.PriceDeposited != -1) {
-				msg = "I_REFISE_TO_ENRICH_FILLED_ALERT alert[" + order.Alert + "].PriceDeposited[" + order.Alert.PriceDeposited + "] != 0";
-				Assembler.PopupException(msg + msig, null, false);
-				return;
-			}
-			QuoteQuik quikQuote = QuoteQuik.SafeUpcast(order.Alert.QuoteCreatedThisAlert);
-			if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) {
-				if (quikQuote.FortsDepositBuy <= 0) {
-					//DISABLED_FOR_ORDER_TO_SHOWUP_IN_ORDER_EXECUTION_FORM msg = "Quote.FortsDepositBuy[" + quikQuote.FortsDepositBuy + "] <= ZERO";
-				} else {
-					order.Alert.PriceDeposited = quikQuote.FortsDepositBuy;
-				}
-			} else {
-				if (quikQuote.FortsDepositSell <= 0) {
-					//DISABLED_FOR_ORDER_TO_SHOWUP_IN_ORDER_EXECUTION_FORM msg = "Quote.FortsDepositSell[" + quikQuote.FortsDepositSell + "] <= ZERO";
-				} else {
-					order.Alert.PriceDeposited = -quikQuote.FortsDepositSell;
-				}
-			}
-			if (string.IsNullOrEmpty(msg)) return;
-			Assembler.PopupException(msg + msig, null, false);
 		}
 		public override string ModifyOrderTypeAccordingToMarketOrderAsBrokerSpecificInjection(Order order) {
 			string msg = "";

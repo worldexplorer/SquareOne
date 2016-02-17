@@ -92,6 +92,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Broker\Livesim\QuikBrokerLivesimSettings.cs" />
+    <Compile Include="Broker\QuikBroker.BrokerAdapterProtocol.cs">
+      <DependentUpon>QuikBroker.cs</DependentUpon>
+    </Compile>
     <Compile Include="Streaming\Dde\DdeBatchSubscriber.EventConsumer.cs">
       <DependentUpon>DdeBatchSubscriber.cs</DependentUpon>
     </Compile>

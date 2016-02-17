@@ -25,7 +25,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.txtDdeServerPrefix.Text		= this.quikStreamingAdapter.DdeServiceName;
 			this.txtDdeTopicQuotes.Text			= this.quikStreamingAdapter.DdeTopicQuotes;
 			this.txtDdeTopicTrades.Text			= this.quikStreamingAdapter.DdeTopicTrades;
-			this.txtDdeTopicPrefixDom.Text		= this.quikStreamingAdapter.DdeTopicPrefixDom;
+			this.txtDdeTopicPrefixDom.Text		= this.quikStreamingAdapter.DdeTopicSuffixDom;
 			this.txtDdeMonitorRefreshRate.Text	= this.quikStreamingAdapter.DdeMonitorRefreshRateMs.ToString();
 		}
 		public override void PushEditedSettingsToStreamingAdapter() {
@@ -33,7 +33,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.quikStreamingAdapter.DdeServiceName	= this.txtDdeServerPrefix.Text;
 			this.quikStreamingAdapter.DdeTopicQuotes	= this.txtDdeTopicQuotes.Text;
 			this.quikStreamingAdapter.DdeTopicTrades	= this.txtDdeTopicTrades.Text;
-			this.quikStreamingAdapter.DdeTopicPrefixDom	= this.txtDdeTopicPrefixDom.Text;
+			this.quikStreamingAdapter.DdeTopicSuffixDom	= this.txtDdeTopicPrefixDom.Text;
 
 			int refreshRateParsed = 200;
 			Int32.TryParse(this.txtDdeMonitorRefreshRate.Text, out refreshRateParsed);

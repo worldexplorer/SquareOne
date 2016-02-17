@@ -2,13 +2,13 @@
   "$type": "Sq1.Core.DataFeed.DataSource, Sq1.Core",
   "SymbolSelected": "",
   "Symbols": [
-    "RIM3-qmoc"
+    "RIM3qmoc"
   ],
   "ScaleInterval": {
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
     "Interval": 1,
     "Scale": 3,
-    "AsString_cached": "1-Minute",
+    "AsString_cached": null,
     "IsIntraday": true,
     "AsTimeSpanInSeconds": 60,
     "AsTimeSpan": "00:01:00",
@@ -20,10 +20,10 @@
     "DdeServiceName": "SQ1",
     "DdeTopicQuotes": "quotes",
     "DdeTopicTrades": "trades",
-    "DdeTopicPrefixDom": "dom",
+    "DdeTopicSuffixDom": "dom",
     "DdeMonitorRefreshRateMs": 200,
     "Level2RefreshRateMs": 200,
-    "UpstreamConnected": false
+    "UpstreamConnected": true
   },
   "BrokerAdapter": {
     "$type": "Sq1.Adapters.Quik.Broker.QuikBroker, Sq1.Adapters.Quik",
@@ -35,8 +35,8 @@
     },
     "Account": {
       "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
-      "AccountNumber": "",
-      "CashAvailable": 0.0,
+      "AccountNumber": "ACCTNR_NOT_SET",
+      "CashAvailable": -1000.0,
       "AccountValueTimeStamp": "0001-01-01T00:00:00"
     },
     "QuikFolder": "",
@@ -48,6 +48,6 @@
   "MarketName": "MOCK",
   "Name": "Qmock",
   "StreamingAdapterName": "QuikStreaming",
-  "BrokerAdapterName": "Quik Broker",
+  "BrokerAdapterName": "Quik BrokerDummy",
   "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\Qmock"
 }

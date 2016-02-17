@@ -46,7 +46,6 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		}
 
 		internal void SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(LevelTwoHalf levelTwoAsks, LevelTwoHalf levelTwoBids) {
-
 			if (this.ddeTableGeneratorDepth == null) {
 				string msg = "I_REFUSE_TO_SendLevelTwo()__DATASOURCE_DIDNT_CONTAIN_ANY_SYMBOLS_TO_LAUNCH_DdeClient_FOR";
 				Assembler.PopupException(msg);

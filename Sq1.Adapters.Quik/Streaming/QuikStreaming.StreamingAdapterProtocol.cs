@@ -15,7 +15,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 
 		public override void UpstreamConnect() { lock (base.SymbolsSubscribedLock) {
 			if (base.UpstreamConnected == true) return;
-			this.DdeBatchSubscriber.Tables_CommonForAllSymbols_Add();
+			// MOVED_TO_CTOR_TO_AVOID_NPE_IN_MONITOR this.DdeBatchSubscriber.Tables_CommonForAllSymbols_Add();
 			string symbolsSubscribed = this.upstreamSubscribeAllDataSourceSymbols();
 			this.DdeServerRegister();	// ConnectionState.UpstreamConnected_downstreamUnsubscribed;		// will result in StreamingConnected=true
 			this.DdeBatchSubscriber.AllDdeMessagesReceivedCounter_reset();
@@ -31,7 +31,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.UpstreamConnectionState = ConnectionState.UpstreamConnected_downstreamUnsubscribedAll;
 			Assembler.DisplayConnectionStatus(base.UpstreamConnectionState, this.Name + " symbolsUnsubscribedAll[" + symbolsUnsubscribed + "]");
 			this.DdeServerUnregister();
-			this.DdeBatchSubscriber.Tables_CommonForAllSymbols_Add();
+			// MOVED_TO_CTOR_TO_AVOID_NPE_IN_MONITOR this.DdeBatchSubscriber.Tables_CommonForAllSymbols_Add();
 			Assembler.DisplayConnectionStatus(base.UpstreamConnectionState, this.Name + " stopped DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
 		} }
 

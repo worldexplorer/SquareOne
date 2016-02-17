@@ -19,13 +19,14 @@ using Sq1.Adapters.Quik;
 namespace Sq1.Adapters.Quik.Streaming.Livesim {
 	[SkipInstantiationAt(Startup = true)]		// overriding LivesimStreaming's TRUE to have QuikStreamingLivesim appear in DataSourceEditor
 	public partial class QuikStreamingLivesim : LivesimStreaming {
-		[JsonIgnore]	string	reasonToExist =    "1) use LivesimForm as control "
-												+ "2) instantiate QuikStreaming and make it run its DDE server "
-												+ "3) push quotes generated using DDE client";
+		// reasonToExist =    "1) use LivesimForm as control "
+		//					+ "2) instantiate QuikStreaming and make it run its DDE server "
+		//					+ "3) push quotes generated using DDE client";
 
 		[JsonIgnore]	public	QuikLivesimBatchPublisher	QuikLivesimBatchPublisher;
 		[JsonIgnore]	public	QuikStreaming				QuikStreamingOriginal								{ get { return base.StreamingOriginal as QuikStreaming; } }
 		[JsonIgnore]			bool						upstreamWasSubscribed_preLivesim;
+		[JsonIgnore]			DataSource					dataSourcePreLivesim;
 		
 		// or 1) override DdeClient.EndPoke()
 		// or 2) create AsyncContext to deal with Invoke/BeginInvoke/EndInvoke just like GuiThread's message queue
@@ -44,6 +45,24 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			base.LevelTwoGenerator = new LevelTwoGenerator();		// this one has it's own LevelTwoAsks,LevelTwoBids NOT_REDIRECTED to StreamingDatasnapshot => sending Level2 via DDE to QuikStreaming.StreamingDatasnapshot
 		}
 
+		public override void InitializeLivesim(LivesimDataSource livesimDataSource, StreamingAdapter streamingOriginalPassed, string symbolLivesimming) {
+			if (livesimDataSource == null) {
+				string msg = "DID_ACTIVATOR_PICK_THE_WRONG_CONSTRUCTOR?...";
+				Assembler.PopupException(msg);
+			}
+			//this.livesimDataSource = livesimDataSource;
+			base.DataSource = livesimDataSource;
+			this.StreamingOriginal = streamingOriginalPassed;
+
+			// disabled comparing to base.InitializeLivesim()
+			//LevelTwoGeneratorLivesim levelTwoGeneratorLivesim = this.LevelTwoGenerator as LevelTwoGeneratorLivesim;
+			//if (levelTwoGeneratorLivesim == null) {
+			//    string msg = "WHERE_AM_I? NPE_GUARANTEED";
+			//    Assembler.PopupException(msg);
+			//}
+			//levelTwoGeneratorLivesim.InitializeLevelTwo(symbolLivesimming);
+		}
+
 		protected override void SolidifierAllSymbolsSubscribe_onAppRestart() {
 			string msg = "LIVESIM_MUST_NOT_SAVE_ANY_BARS EMPTY_HERE_TO_PREVENT_BASE_FROM_SUBSCRIBING_SOLIDIFIER";
 		}
@@ -51,16 +70,23 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		public override void UpstreamConnect_LivesimStarting() {
 			string msig = " //UpstreamConnect_LivesimStarting(" + this.ToString() + ")";
 
-			this.upstreamWasSubscribed_preLivesim = this.QuikStreamingOriginal.UpstreamConnected;
-
-
-			base.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor();
+			this.upstreamWasSubscribed_preLivesim	= this.QuikStreamingOriginal.UpstreamConnected;
+			this.dataSourcePreLivesim				= this.QuikStreamingOriginal.DataSource;
+			
+			//FIRST_LINES_OF_QuikStreamingLivesim.UpstreamConnect_LivesimStarting()_MAKE_SENSE_FOR_OTHERS
+			//base.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor();
 			//LivesimDataSource is now having LivesimBacktester and no-solidifier DataDistributor
-			this.QuikStreamingOriginal.InitializeDataSource_inverse(base.Livesimulator.DataSourceAsLivesim_nullUnsafe, false);
-	
-			//if (this.upstreamWasSubscribed_preLivesim == false) {
+
+			//v1 this.QuikStreamingOriginal.InitializeDataSource_inverse(base.Livesimulator.DataSourceAsLivesim_nullUnsafe, false);
+			//v2 this.QuikStreamingOriginal.InitializeFromDataSource(base.Livesimulator.DataSourceAsLivesim_nullUnsafe);
+			//v3 this.InitializeFromDataSource(base.Livesimulator.DataSourceAsLivesim_nullUnsafe);
+			this.UpstreamConnectionState = Sq1.Core.DataTypes.ConnectionState.JustInitialized_solidifiersUnsubscribed;
+			this.StreamingDataSnapshot = this.QuikStreamingOriginal.StreamingDataSnapshot;
+
+
+			if (this.upstreamWasSubscribed_preLivesim == false) {
 				this.QuikStreamingOriginal.UpstreamConnect();
-			//}
+			}
 
 			// MarketLive checks for LastQuote, which I don't save anymore in QuikStreamingLivesim
 			// QuikStreamingLivesim is a handicap without StreamingDataSnapshot; normally Snap is maintained by
@@ -76,7 +102,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 
 			this.QuikLivesimBatchPublisher = new QuikLivesimBatchPublisher(this);
 			this.QuikLivesimBatchPublisher.ConnectAll();
-			string msg = "DDE_CLIENT_PUBLISHING_TOPICS [" + this.QuikLivesimBatchPublisher.TopicsAsString + "]";
+			string msg = "DDE_CLIENT_PUBLISHING_ALL_TOPICS_NEEDED_FOR_LIVESIM: [" + this.QuikLivesimBatchPublisher.TopicsAsString + "]";
 			Assembler.PopupException(msg + msig, null, false);
 		}
 
@@ -86,16 +112,18 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			Assembler.PopupException(msg + msig, null, false);
 			this.QuikLivesimBatchPublisher.DisconnectAll();
 			this.QuikLivesimBatchPublisher.DisposeAll();
+
 			if (this.upstreamWasSubscribed_preLivesim == false) {
 				this.QuikStreamingOriginal.UpstreamDisconnect();	// not disposed, QuikStreaming.ddeServerStart() is reusable
 			}
 			//this.QuikStreamingOriginal.SolidifierSubscribeOneSymbol_iFinishedLivesimming();
-			base.SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor();
+			this.QuikStreamingOriginal.InitializeFromDataSource(this.dataSourcePreLivesim);
+
+			//LAST_LINE_OF_QuikStreamingLivesim.UpstreamConnect_LivesimStarting()_MAKES_SENSE_FOR_OTHERS
+			//base.SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor();
 
 			// YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
 			// NO_LEAVE_IT__SECOND_LIVESIM_RUN_THROWS_NPE_IN_base.InitializeFromDataSource() this.StreamingDataSnapshot = null;
-
-			// ALREADY_AUTO_DISCONNECTED_AFTER_LAST_CLIENT_DISCONNECTED? this.QuikStreamingPuppet.UpstreamDisconnect();
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
@@ -160,6 +188,8 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			string msg1 = "I_PREFER_TO_PUSH_LEVEL2_NOW__BEFORE_base.PushQuoteGenerated(quote)";
 			//v3 REDIRECTING_PushQuoteGenerated_RADICAL_PARENT_DETACHED base.Level2generator.GenerateAndStoreInStreamingSnap(quote);
 			base.LevelTwoGenerator.GenerateForQuote(quote);
+
+			// two dde tables from quik will always be received asynchronously; I'm seding them here asynchronously, too; synchronization must be done on the server side (beware of one table suddenly being disconnected; don't ever rely they ARE synchronized in your strategy)
 			this.QuikLivesimBatchPublisher.SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(base.LevelTwoGenerator.LevelTwoAsks, base.LevelTwoGenerator.LevelTwoBids);
 			this.QuikLivesimBatchPublisher.SendQuote_DdeClientPokesDdeServer_waitServerProcessed(quote);
 

@@ -5,19 +5,19 @@
   "StrategyAbsPathJsonCheck": "NO_STRATEGY_CHART_ONLY",
   "ContextChart": {
     "$type": "Sq1.Core.StrategyBase.ContextChart, Sq1.Core",
-    "Name": "CHART_GMKN",
-    "Symbol": "LKOH",
-    "DataSourceName": "STATIC",
+    "Name": "CHART_RIM3-qmoc",
+    "Symbol": "RIM3qmoc",
+    "DataSourceName": "Qmock",
     "ScaleInterval": {
       "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-      "Interval": 5,
+      "Interval": 10,
       "Scale": 3,
-      "AsString_cached": "5-Minute",
+      "AsString_cached": "10-Minute",
       "IsIntraday": true,
-      "AsTimeSpanInSeconds": 300,
-      "AsTimeSpan": "00:05:00",
-      "AsStringShortest_cached": "5m",
-      "AsStringShort_cached": "5min"
+      "AsTimeSpanInSeconds": 600,
+      "AsTimeSpan": "00:10:00",
+      "AsStringShortest_cached": "10m",
+      "AsStringShort_cached": "10min"
     },
     "DataRange": {
       "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
@@ -29,25 +29,25 @@
     },
     "StreamingIsTriggeringScript": false,
     "ShowRangeBar": false,
-    "DownstreamSubscribed": true
+    "DownstreamSubscribed": false
   },
   "ChartSettings": {
     "$type": "Sq1.Core.Charting.ChartSettings, Sq1.Core",
     "MultiSplitterRowsPropertiesByPanelName": {
       "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "PanelPrice": {
+      "panelVolume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 125
+        "PanelHeight": 57
       },
-      "panelVolume": {
+      "PanelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 131,
+        "Distance": 63,
         "SplitterHeight": 6,
-        "PanelHeight": 53
+        "PanelHeight": 268
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -57,14 +57,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 58
+        "PanelHeight": 116
       },
       "multiSplitRowsVolumePrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 64,
+        "Distance": 122,
         "SplitterHeight": 6,
-        "PanelHeight": 166
+        "PanelHeight": 385
       }
     },
     "Name": "Default",
@@ -111,7 +111,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 171,
+    "ScrollPositionAtBarIndex": 481,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -164,13 +164,13 @@
     "LevelTwoAskColorContour": "205, 180, 180",
     "LevelTwoBidColorBackground": "230, 255, 230",
     "LevelTwoBidColorContour": "180, 205, 180",
-    "LevelTwoMinimumPriceLevelThicknessRendered": 14,
+    "LevelTwoMinimumPriceLevelThicknessRendered": -1,
     "LevelTwoLotDrawString": true,
     "LevelTwoLotFont": "Microsoft Sans Serif, 8.25pt",
     "LevelTwoLotColor": "Black",
     "LevelTwoLotPaddingHorizontal": 3,
     "LevelTwoStripesHeightWrapsVolumeLabel": true
   },
-  "ChartSerno": 4,
+  "ChartSerno": 7,
   "ContextChartCommentJsonCheck": "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE"
 }

@@ -27,7 +27,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				Assembler.PopupException("SYMBOL_MUST_NOT_BE_NULL //GetDomTopicForSymbol(" + symbol + ")");
 				return null;
 			}
-			return this.quikStreamingAdapter.DdeServiceName + "-" + this.quikStreamingAdapter.DdeTopicPrefixDom + "-" + symbol;
+			return this.quikStreamingAdapter.DdeServiceName + "-" + symbol + "-" + this.quikStreamingAdapter.DdeTopicSuffixDom;
 		}
 		public void TableIndividual_DepthOfMarket_ForSymbolAdd(string symbol) {
 			if (this.level2BySymbol.ContainsKey(symbol)) {
@@ -125,16 +125,16 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 		}
 		internal long AllDdeMessagesReceivedCounters_total { get {
 			long ret = 0;
-			ret += this.TableQuotes.DdeMessagesReceived;
-			ret += this.TableTrades.DdeMessagesReceived;
+			ret += this.TableQuotes.DdeMessagesReceived;	//MUST_NOT_BE_NULL_AFTER_I_MOVED_TO_CTOR_DdeBatchSubscriber.Tables_CommonForAllSymbols_Add()
+			ret += this.TableTrades.DdeMessagesReceived;	//MUST_NOT_BE_NULL_AFTER_I_MOVED_TO_CTOR_DdeBatchSubscriber.Tables_CommonForAllSymbols_Add()
 			ret += this.AllDOMsMessagesReceivedCounters_total;
 			return ret;
 		} }
 
 		internal long AllDdeRowsReceivedCounters_total { get {
 			long ret = 0;
-			ret += this.TableQuotes.DdeRowsReceived;
-			ret += this.TableTrades.DdeRowsReceived;
+			ret += this.TableQuotes.DdeRowsReceived;	//MUST_NOT_BE_NULL_AFTER_I_MOVED_TO_CTOR_DdeBatchSubscriber.Tables_CommonForAllSymbols_Add()
+			ret += this.TableTrades.DdeRowsReceived;	//MUST_NOT_BE_NULL_AFTER_I_MOVED_TO_CTOR_DdeBatchSubscriber.Tables_CommonForAllSymbols_Add()
 			ret += this.AllDOMsRowsReceivedCounters_total;
 			return ret;
 		} }

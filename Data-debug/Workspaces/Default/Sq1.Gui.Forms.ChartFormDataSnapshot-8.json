@@ -6,18 +6,18 @@
   "ContextChart": {
     "$type": "Sq1.Core.StrategyBase.ContextChart, Sq1.Core",
     "Name": "CHART_RIM3-qmoc",
-    "Symbol": "RIM3-qmoc",
+    "Symbol": "RIM3qmoc",
     "DataSourceName": "Qmock",
     "ScaleInterval": {
       "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-      "Interval": 10,
+      "Interval": 15,
       "Scale": 3,
-      "AsString_cached": "10-Minute",
+      "AsString_cached": "15-Minute",
       "IsIntraday": true,
-      "AsTimeSpanInSeconds": 600,
-      "AsTimeSpan": "00:10:00",
-      "AsStringShortest_cached": "10m",
-      "AsStringShort_cached": "10min"
+      "AsTimeSpanInSeconds": 900,
+      "AsTimeSpan": "00:15:00",
+      "AsStringShortest_cached": "15m",
+      "AsStringShort_cached": "15min"
     },
     "DataRange": {
       "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
@@ -29,7 +29,7 @@
     },
     "StreamingIsTriggeringScript": false,
     "ShowRangeBar": false,
-    "DownstreamSubscribed": false
+    "DownstreamSubscribed": true
   },
   "ChartSettings": {
     "$type": "Sq1.Core.Charting.ChartSettings, Sq1.Core",
@@ -40,14 +40,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 34
+        "PanelHeight": 64
       },
       "PanelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 40,
+        "Distance": 70,
         "SplitterHeight": 6,
-        "PanelHeight": 161
+        "PanelHeight": 132
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -57,14 +57,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 46
+        "PanelHeight": 61
       },
       "multiSplitRowsVolumePrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 52,
+        "Distance": 67,
         "SplitterHeight": 6,
-        "PanelHeight": 153
+        "PanelHeight": 157
       }
     },
     "Name": "Default",
@@ -111,7 +111,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 481,
+    "ScrollPositionAtBarIndex": 490,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -168,8 +168,9 @@
     "LevelTwoLotDrawString": true,
     "LevelTwoLotFont": "Microsoft Sans Serif, 8.25pt",
     "LevelTwoLotColor": "Black",
-    "LevelTwoLotPaddingHorizontal": 3
+    "LevelTwoLotPaddingHorizontal": 3,
+    "LevelTwoStripesHeightWrapsVolumeLabel": true
   },
-  "ChartSerno": 7,
+  "ChartSerno": 8,
   "ContextChartCommentJsonCheck": "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE"
 }

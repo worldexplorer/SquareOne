@@ -235,7 +235,7 @@
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
     "priceDecimals": 0,
     "SecurityType": 2,
-    "Symbol": "RIM3-qmoc",
+    "Symbol": "RIM3qmoc",
     "SymbolClass": "TESTCLASS",
     "Point2Dollar": 1.0,
     "VolumeDecimals": 0,
