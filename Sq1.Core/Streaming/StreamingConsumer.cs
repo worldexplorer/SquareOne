@@ -122,6 +122,10 @@ namespace Sq1.Core.Streaming {
 				var symbolSafe			= this.Symbol_nullReported;
 				var scaleIntervalSafe	= this.ScaleInterval_nullReported;
 
+				if (streamingSafe.DataDistributor_replacedForLivesim == null) {
+					// quick hack; make QuikStreaming use base(reasonIwasCreated)
+					this.StreamingAdapter_nullReported.CreateDataDistributors_onlyWhenNecessary(this.ReasonToExist);
+				}
 				bool quote	= streamingSafe.DataDistributor_replacedForLivesim.ConsumerQuoteIsSubscribed(	symbolSafe, scaleIntervalSafe, this);
 				bool bar	= streamingSafe.DataDistributor_replacedForLivesim.ConsumerBarIsSubscribed(		symbolSafe, scaleIntervalSafe, this);
 				bool ret = quote & bar;
@@ -155,6 +159,10 @@ namespace Sq1.Core.Streaming {
 		public virtual void PumpPaused_notification_overrideMe_switchLivesimmingThreadToGui() {
 		}
 		public virtual void PumpUnPaused_notification_overrideMe_switchLivesimmingThreadToGui() {
+		}
+
+		public override string ToString() {
+			return this.ReasonToExist;
 		}
 	}
 }

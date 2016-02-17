@@ -22,18 +22,20 @@ namespace Sq1.Core.StrategyBase {
 			string msig = " //BacktestContextInitialize(" + barsEmptyButWillGrow + ")";
 
 			DataSource dataSourceFromBars = this.DataSource_fromBars;
-			if (dataSourceFromBars == null) {
-				string msg = "MUST_NEVER_BE_NULL DataSource_fromBars[" + dataSourceFromBars + "]";
-				Assembler.PopupException(msg + msig);
-				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
-				return;
-			}
-			if (dataSourceFromBars.StreamingAsBacktest_nullUnsafe == null) {
-				string msg = "MUST_NEVER_BE_NULL DataSource_fromBars.StreamingAsBacktest_nullUnsafe[" + dataSourceFromBars.StreamingAsBacktest_nullUnsafe + "]";
-				Assembler.PopupException(msg + msig);
-				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
-				return;
-			}
+
+			// will only work for DataSource.Streaming=StreamingLivesimDefault; for quik will throw
+			//if (dataSourceFromBars == null) {
+			//    string msg = "MUST_NEVER_BE_NULL DataSource_fromBars[" + dataSourceFromBars + "]";
+			//    Assembler.PopupException(msg + msig);
+			//    this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
+			//    return;
+			//}
+			//if (dataSourceFromBars.StreamingAsBacktest_nullUnsafe == null) {
+			//    string msg = "MUST_NEVER_BE_NULL DataSource_fromBars.StreamingAsBacktest_nullUnsafe[" + dataSourceFromBars.StreamingAsBacktest_nullUnsafe + "]";
+			//    Assembler.PopupException(msg + msig);
+			//    this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
+			//    return;
+			//}
 
 			dataSourceFromBars.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(this, barsEmptyButWillGrow);
 
@@ -86,18 +88,19 @@ namespace Sq1.Core.StrategyBase {
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 
 			DataSource dataSourceFromBars = this.DataSource_fromBars;
-			if (dataSourceFromBars == null) {
-				string msg = "MUST_NEVER_BE_NULL DataSource_fromBars[" + dataSourceFromBars + "]";
-				Assembler.PopupException(msg + msig);
-				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
-				return;
-			}
-			if (dataSourceFromBars.StreamingAsBacktest_nullUnsafe == null) {
-				string msg = "MUST_NEVER_BE_NULL BacktestDataSource_fromBars_nullUnsafe.StreamingAsBacktest_nullUnsafe[" + this.DataSource_fromBars.StreamingAsBacktest_nullUnsafe + "]";
-				Assembler.PopupException(msg + msig);
-				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
-				return;
-			}
+			// will only work for DataSource.Streaming=StreamingLivesimDefault; for quik will throw
+			//if (dataSourceFromBars == null) {
+			//    string msg = "MUST_NEVER_BE_NULL DataSource_fromBars[" + dataSourceFromBars + "]";
+			//    Assembler.PopupException(msg + msig);
+			//    this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
+			//    return;
+			//}
+			//if (dataSourceFromBars.StreamingAsBacktest_nullUnsafe == null) {
+			//    string msg = "MUST_NEVER_BE_NULL BacktestDataSource_fromBars_nullUnsafe.StreamingAsBacktest_nullUnsafe[" + this.DataSource_fromBars.StreamingAsBacktest_nullUnsafe + "]";
+			//    Assembler.PopupException(msg + msig);
+			//    this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
+			//    return;
+			//}
 
 			dataSourceFromBars.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(this);
 

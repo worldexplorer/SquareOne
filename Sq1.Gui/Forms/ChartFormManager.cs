@@ -222,7 +222,11 @@ namespace Sq1.Gui.Forms {
 					if (olvTree.SelectedIndex != -1 && olvTree.SelectedObject == this.ChartForm.ChartControl) {
 						olvTree.SelectedObject = this.Executor.DataSource_fromBars;
 					}
-					olvTree.RefreshObject(this.ChartForm.ChartControl);
+					//INEFFICIENT olvTree.RefreshObject(this.ChartForm.ChartControl);
+					OLVListItem olvi = olvTree.ModelToItem(this.ChartForm.ChartControl);
+					olvi.ListView.Refresh();
+					//foreach (ListViewItem.ListViewSubItem subItem in olvi.SubItems) {
+					//}
 
 					this.ChartForm.BtnStreamingTriggersScript.BackColor = this.ChartForm.ChartControl.ColorBackground_inDataSourceTree;
 				});

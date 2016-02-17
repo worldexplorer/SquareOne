@@ -5,7 +5,7 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Streaming {
 	public class DataDistributorCharts : DataDistributor {
 		public const string REASON_TO_EXIST = "I_ALLOW_MULTIPLE_CONSUMERS_FOR_SAME_SYMBOL:SCALEINTERVAL_PAIR__SUITABLE_FOR_MULTIPLE_CHARTS";
-		public DataDistributorCharts(StreamingAdapter streamingAdapter) : base(streamingAdapter, "DataDistributorCharts") {
+		public DataDistributorCharts(StreamingAdapter streamingAdapter, string reasonToExist) : base(streamingAdapter, "DataDistributorCharts-" + reasonToExist) {
 		}
 
 		public override bool ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, 

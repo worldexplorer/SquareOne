@@ -92,7 +92,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				if (symbol != null) return symbol.DataSource.ScaleInterval.AsStringShort_cached;
 
 				ChartShadow chartShadow = o as ChartShadow;
-				if (chartShadow != null) return chartShadow.Bars.ScaleInterval.AsStringShort_cached;
+				if (chartShadow != null && chartShadow.Bars != null) return chartShadow.Bars.ScaleInterval.AsStringShort_cached;
 
 				return o.ToString();
 			};

@@ -329,6 +329,9 @@
     <Compile Include="StrategyBase\Strategy.ScriptContext.cs">
       <DependentUpon>Strategy.cs</DependentUpon>
     </Compile>
+    <Compile Include="Streaming\DataDistributor.DebuggingLivesim.cs">
+      <DependentUpon>DataDistributor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Streaming\DataDistributorCharts.cs" />
     <Compile Include="Streaming\DataDistributorSolidifiers.cs" />
     <Compile Include="Streaming\LevelTwoAndLastQuote.cs" />

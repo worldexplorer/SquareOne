@@ -12,7 +12,7 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core.Backtesting {
 	public class Backtester : IDisposable {
-		public const string				BARS_BACKTEST_CLONE_PREFIX		= "BACKTEST_BARS_CLONED_FROM_";
+		public const string				BARS_BACKTEST_CLONE_PREFIX		= "BACKTEST_BARS_CLONED_FROM-";
 		public		ScriptExecutor		Executor						{ get; private set; }
 
 		public		Bars				BarsOriginal					{ get; protected set; }
@@ -228,7 +228,7 @@ namespace Sq1.Core.Backtesting {
 
 				#region candidate for this.BacktestDataSourceBuildFromUserSelection()
 				this.BarsOriginal = this.Executor.Bars;
-				this.BarsSimulating = this.Executor.Bars.CloneNoBars(BARS_BACKTEST_CLONE_PREFIX);	// + this.BarsOriginal
+				this.BarsSimulating = this.Executor.Bars.CloneBars_zeroBarsInside(BARS_BACKTEST_CLONE_PREFIX);	// + this.BarsOriginal
 				this.Executor.EventGenerator.RaiseOnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4();
 				
 				BacktestSpreadModeler spreadModeler;
@@ -269,6 +269,10 @@ namespace Sq1.Core.Backtesting {
 
 				StreamingAdapter streaming = this.BacktestDataSource.StreamingAdapter;
 				DataDistributor distr = streaming.DataDistributor_replacedForLivesim;
+				if (distr == null) {
+					string msg = "YOU_DIDNT_RESTORE_DISTRIBUTOR_PROPERLY_AFTER_LIVESIM";
+					Assembler.PopupException(msg);
+				}
 				distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer, false);
 				distr.ConsumerBarSubscribe  (this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer, false);
 				distr.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);

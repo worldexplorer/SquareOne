@@ -8,11 +8,12 @@ using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
 	public partial class DataDistributor {
-					object																				lockConsumersBySymbol;
-		protected	StreamingAdapter																	StreamingAdapter;
+					object											lockConsumersBySymbol;
+		protected	StreamingAdapter								StreamingAdapter;
 		public		Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>>	DistributionChannels	{ get; protected set; }
 
-		public		string	ReasonIwasCreated 	{ get; protected set; }
+		public		string											ReasonIwasCreated 	{ get; protected set; }
+		public		int												InstanceSerno	 	{ get; protected set; }
 
 		DataDistributor(string reasonIwasCreated) {
 			DistributionChannels	= new Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>>();
@@ -22,6 +23,9 @@ namespace Sq1.Core.Streaming {
 		public DataDistributor(StreamingAdapter streamingAdapter, string reasonIwasCreated) : this(reasonIwasCreated) {
 			this.StreamingAdapter = streamingAdapter;
 			//this.ReasonIwasCreated = this.StreamingAdapter + ":" + this.ReasonIwasCreated;
+			this.storeAllInstancesEverCreated(streamingAdapter);
+			var keepNecessaryOnly = DataDistributor.AllDataDistributorsEverCreated;
+			InstanceSerno = DataDistributor.AllDataDistributorsEverCreated_total;
 		}
 
 		public virtual bool ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval,
@@ -122,10 +126,12 @@ namespace Sq1.Core.Streaming {
 				bool isBacktest			= barConsumer			is BacktestQuoteBarConsumer;
 				bool isLivesim			= barConsumer			is LivesimQuoteBarConsumer;
 				bool isLivesimDefault	= this.StreamingAdapter is LivesimStreamingDefault;
-				if (barStaticLast == null && isLivesimDefault) {	// isBacktest,isLivesim are magically fine; where did you notice the problem?
-					string msg = "YOUR_BAR_CONSUMER_SHOULD_HAVE_BarStaticLast_NON_NULL"
-						+ " MOST_LIKELY_YOU_WILL_GET_MESSAGE__THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
-					Assembler.PopupException(msg, null, false);
+				if (barStaticLast == null) {
+					if (isLivesimDefault == false) {	// isBacktest,isLivesim are magically fine; where did you notice the problem?
+						string msg = "YOUR_BAR_CONSUMER_SHOULD_HAVE_BarStaticLast_NON_NULL"
+							+ " MOST_LIKELY_YOU_WILL_GET_MESSAGE__THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
+						Assembler.PopupException(msg, null, false);
+					}
 				}
 			}
 			if (this.DistributionChannels.ContainsKey(symbol) == false) {
@@ -428,6 +434,52 @@ namespace Sq1.Core.Streaming {
 			return ret;
 		} }
 
+
+		internal void ForceUnsubscribeLeftovers_mustBeEmptyAlready(string newReasonToExist) {
+			string ret = "";
+			//v1 - doesn't dispose Pump's MRE => Handles leak this.DistributionChannels.Clear();
+
+			foreach (string symbol in this.DistributionChannels.Keys) {
+				string perSymbol = "symbol[" + symbol + "]";
+				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> channelsForEachSymbol = new Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>(this.DistributionChannels[symbol]);
+				foreach(SymbolScaleDistributionChannel eachChannel in new List<SymbolScaleDistributionChannel>(channelsForEachSymbol.Values)) {
+					string perScaleInterval = "scaleInterval[" + eachChannel.ScaleInterval + "]";
+
+					string barConsumersUnsubscribed = "";
+					foreach (StreamingConsumer eachBarConsumer in eachChannel.ConsumersBar) {
+						if (barConsumersUnsubscribed != "") barConsumersUnsubscribed += ",";
+						barConsumersUnsubscribed += "[" + eachBarConsumer + "]";
+						this.ConsumerBarUnsubscribe(symbol, eachChannel.ScaleInterval, eachBarConsumer);	// affects original List, our new List<>() keeps enumerating
+					}
+					if (eachChannel.ConsumersBarCount > 0) {
+						string msg = "MUST_BE_EMPTY__BY_NOW eachChannel[" + eachChannel.ToString() + "].ConsumersBarCount[" + eachChannel.ConsumersBarCount + "]";
+						Assembler.PopupException(msg);
+					}
+
+					string quoteConsumersUnsubscribed = "";
+					foreach (StreamingConsumer eachQuoteConsumer in eachChannel.ConsumersQuote) {
+						if (quoteConsumersUnsubscribed != "") quoteConsumersUnsubscribed += ",";
+						quoteConsumersUnsubscribed += "[" + eachQuoteConsumer + "]";
+						this.ConsumerQuoteUnsubscribe(symbol, eachChannel.ScaleInterval, eachQuoteConsumer);	// affects original List, our new List<>() keeps enumerating
+					}
+					if (eachChannel.ConsumersQuoteCount > 0) {
+						string msg = "MUST_BE_EMPTY__BY_NOW eachChannel[" + eachChannel.ToString() + "].ConsumersQuoteCount[" + eachChannel.ConsumersQuoteCount + "]";
+						Assembler.PopupException(msg);
+					}
+
+					eachChannel.QuotePump_nullUnsafe.DisposeAllHandles();
+					perSymbol += perScaleInterval + ":barConsumers{" + barConsumersUnsubscribed + "},quoteConsumers{" + quoteConsumersUnsubscribed + "}";
+				}
+				ret += " " + perSymbol;
+			}
+			if (ret != "") {
+				string msig = " //ForceUnsubscribeLeftovers(newReasonToExist[" + newReasonToExist + "])";
+				string msg = "LIVESIM_DISTRIBUTOR_MUST_HAVE_BEEN_CLEAN_BEFORE_REUSING DISTRIBUTOR_FOR_DUMMY_STREAMING_MUST_BE_EMPTY";
+				Assembler.PopupException(msg + ret + msig);
+			}
+			this.ReasonIwasCreated = newReasonToExist;
+		}
+
 		public override string ToString() {
 			string ret = this.ToStringCommon(false);
 			return ret;
@@ -439,7 +491,7 @@ namespace Sq1.Core.Streaming {
 		} }
 
 		private string ToStringCommon(bool consumerNamesOnly = false) {
-			string ret = this.ReasonIwasCreated + " DataDistributorFor[" + this.StreamingAdapter.Name + "]: ";
+			string ret = "#" + this.InstanceSerno + " " + this.ReasonIwasCreated + " ForStreamingAdapter[" + this.StreamingAdapter.Name + "]: ";
 			foreach (string symbol in this.DistributionChannels.Keys) {
 				string consumers = "";
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> distributionChannel = this.DistributionChannels[symbol];

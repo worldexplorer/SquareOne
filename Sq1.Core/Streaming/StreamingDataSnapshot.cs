@@ -9,12 +9,11 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.Streaming {
 	public class StreamingDataSnapshot {
-		[JsonIgnore]	StreamingAdapter			streamingAdapter;
-		[JsonIgnore]	object						lockLastQuote;
+		[JsonIgnore]	StreamingAdapter							streamingAdapter;
+		[JsonIgnore]	object										lockLastQuote;
 		[JsonProperty]	Dictionary<string, LevelTwoAndLastQuote>	level2andLastQuoteUnboundClone_bySymbol;	// { get; private set; }
-		public long Level2RefreshRate;
-
-		[JsonProperty]	public string				SymbolsSubscribedAndReceiving		{ get {
+				public	long										Level2RefreshRate;
+		[JsonProperty]	public string								SymbolsSubscribedAndReceiving		{ get {
 				string ret = "";
 				foreach (string symbol in level2andLastQuoteUnboundClone_bySymbol.Keys) {
 					if (ret.Length > 0) ret += ",";

@@ -61,6 +61,11 @@ namespace Sq1.Core.Charting {
 			this.Executor = executor;
 		}
 		public virtual void Initialize(Bars barsNotNull, string strategySavedInChartSettings, bool removeChartShadowFromOldSymbolAndAddToLoadingBars = false, bool invalidateAllPanels = true) {
+			if (barsNotNull == null) {
+				string msg = "AVOIDING_NPE LIVESIM_ABORTED_WITH_NO_BARS_TO_RESTORE //ChartShadow.Initialize(null, strategySavedInChartSettings[" + strategySavedInChartSettings + "])";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
 		    #region I loaded bars by click on the DataSourceTree=>Symbol; I want the ChartName to move from previous symbol to barsNotNull.Symbol
 		    // 1) ChartDeserialization
 		    // 2) Backtester.InitializeAndRun_step1or2()

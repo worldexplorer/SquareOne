@@ -5,8 +5,7 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Streaming {
 	public class DataDistributorSolidifiers : DataDistributor {
 		public const string REASON_TO_EXIST = "I_DONT_ALLOW_MULTIPLE_CONSUMERS_FOR_SAME_SYMBOL:SCALEINTERVAL_PAIR__SUITABLE_FOR_ONE_SOLIDIFIER_PER_SYMBOL";
-
-		public DataDistributorSolidifiers(StreamingAdapter streamingAdapter) : base(streamingAdapter, "DataDistributorSolidifiers") {
+		public DataDistributorSolidifiers(StreamingAdapter streamingAdapter, string reasonToExist) : base(streamingAdapter, "DataDistributorSolidifiers-" + reasonToExist) {
 		}
 
 		public override bool ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval,

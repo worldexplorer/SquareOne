@@ -237,7 +237,7 @@ namespace Sq1.Core.Charting {
 			if (barsSafe.ScaleInterval != quote.ParentBarStreaming.ScaleInterval) {
 				string msg = "SCALEINTERVAL_RECEIVED_DOESNT_MATCH_CHARTS ChartForm[" + base.ChartShadow_nullReported.Text + "]"
 					+ " bars[" + barsSafe.ScaleInterval + "] quote.ParentStreamingBar[" + quote.ParentBarStreaming.ScaleInterval + "]";
-				Assembler.PopupException(msg + base.MsigForNpExceptions);
+				Assembler.PopupException(msg + base.MsigForNpExceptions, null, false);
 				return;
 			}
 			if (barsSafe.Symbol != quote.ParentBarStreaming.Symbol) {

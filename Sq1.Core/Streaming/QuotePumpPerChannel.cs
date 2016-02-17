@@ -290,6 +290,9 @@ namespace Sq1.Core.Streaming {
 
 		#region NOT_USED_YET if I'll need to stop the Pump+AllConsumers when ChartFormsManager gets disposed
 		void IDisposable.Dispose() {
+			this.DisposeAllHandles();
+		}
+		public void DisposeAllHandles() {
 			if (this.IsDisposed) {
 				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
 				Assembler.PopupException(msg);

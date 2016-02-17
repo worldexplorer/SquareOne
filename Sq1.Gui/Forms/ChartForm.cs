@@ -181,6 +181,7 @@ namespace Sq1.Gui.Forms {
 			}
 			// "AfterBarsLoaded" implies Executor.SetBars() has already initialized this.ChartFormManager.Executor.DataSource
 			this.populateCtxMniBars_streamingConnectionState_orange();
+			this.mnitlbSpreadGeneratorPct.TextRight = this.ChartFormManager.Executor.SpreadPips + " pips";
 		}
 		void populateCtxMniBars_streamingConnectionState_orange() {
 			if (this.ChartFormManager.ContextCurrentChartOrStrategy.DownstreamSubscribed) {
@@ -386,7 +387,7 @@ namespace Sq1.Gui.Forms {
 				} else {
 					#if DEBUG	// PARANOID TEST
 					if (chartForm_nullUnsafe != this) {
-						string msg = "WHY___WE_ARE_HERE_WHEN_WE_CHANGE_TIMEFRAME_OF_CHART I_STARTED_LIVESIM_FOR_NON_ACTIVE_CHART";
+						string msg = "LEFT_FOR_QUIK_LIVESIM_COMPAT_TEST WHY___WE_ARE_HERE_WHEN_WE_CHANGE_TIMEFRAME_OF_CHART I_STARTED_LIVESIM_FOR_NON_ACTIVE_CHART";
 						Assembler.PopupException(msg, null, false);
 					}
 					#endif
