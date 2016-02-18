@@ -296,7 +296,9 @@ namespace Sq1.Widgets.Exceptions {
 						return;
 					}
 					this.treeExceptions.ExpandAll();
-					this.selectMostRecentException();
+					if (this.DataSnapshot.RecentAlwaysSelected) {
+						this.selectMostRecentException();
+					}
 					//v2
 					//return;
 					//v3

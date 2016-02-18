@@ -31,7 +31,7 @@ namespace Sq1.Gui.Singletons {
 			this.Controls.Add(this.DataSourceEditorControl);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.Name = "DataSourceEditorForm";
-			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.Document;
+			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockRight;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Creating New DataSource";
 			this.ResumeLayout(false);
