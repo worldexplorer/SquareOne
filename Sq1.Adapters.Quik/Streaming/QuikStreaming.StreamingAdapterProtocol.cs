@@ -96,8 +96,20 @@ namespace Sq1.Adapters.Quik.Streaming {
 			if (string.IsNullOrEmpty(quote.Source)) quote.Source = "Quik";
 			QuoteQuik quoteQuik = QuoteQuik.SafeUpcast(quote);
 			this.StreamingDataSnapshotQuik.StoreFortsSpecifics(quoteQuik);
+			this.syncSymbolClass_toSymbolInfo(quoteQuik);
 			base.PushQuoteReceived(quote);
 		}
+
+		void syncSymbolClass_toSymbolInfo(QuoteQuik quoteQuik) {
+			if (string.IsNullOrEmpty(quoteQuik.Symbol		) == false) return;
+			if (string.IsNullOrEmpty(quoteQuik.SymbolClass	) == false) return;
+			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfo_nullUnsafe(quoteQuik.Symbol);
+			if (symbolInfo == null) return;
+			if (symbolInfo.SymbolClass == quoteQuik.SymbolClass) return;
+			symbolInfo.SymbolClass = quoteQuik.SymbolClass;
+			Assembler.InstanceInitialized.RepositorySymbolInfos.Serialize();
+		}
+
 		public override void EnrichQuoteWithStreamingDependantDataSnapshot(Quote quote) {
 			QuoteQuik quikQuote = QuoteQuik.SafeUpcast(quote);
 			quikQuote.EnrichFromStreamingDataSnapshotQuik(this.StreamingDataSnapshotQuik);

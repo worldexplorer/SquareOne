@@ -8,7 +8,7 @@
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
     "Interval": 1,
     "Scale": 3,
-    "AsString_cached": null,
+    "AsString_cached": "1-Minute",
     "IsIntraday": true,
     "AsTimeSpanInSeconds": 60,
     "AsTimeSpan": "00:01:00",
@@ -23,7 +23,7 @@
     "DdeTopicSuffixDom": "dom",
     "DdeMonitorRefreshRateMs": 200,
     "Level2RefreshRateMs": 200,
-    "UpstreamConnected": true
+    "UpstreamConnectedOnAppRestart": false
   },
   "BrokerAdapter": {
     "$type": "Sq1.Adapters.Quik.Broker.QuikBroker, Sq1.Adapters.Quik",
@@ -48,6 +48,6 @@
   "MarketName": "MOCK",
   "Name": "Qmock",
   "StreamingAdapterName": "QuikStreaming",
-  "BrokerAdapterName": "Quik BrokerDummy",
+  "BrokerAdapterName": "Quik Broker",
   "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\Qmock"
 }

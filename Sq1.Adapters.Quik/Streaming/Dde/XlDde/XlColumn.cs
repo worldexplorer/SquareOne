@@ -2,8 +2,9 @@
 	public class XlColumn {
 		public	XlBlockType		TypeExpected;
 		public	string			Name;
-//		public	List<string>	Names;
-		public	string			ToDateTimeParseFormat;
+//		public	List<string>	NameSynonims;
+		public	string			ToDateParseFormat;	// mention some format to indicate it's a Date, I'll try to parse from anything first and then I'll try the mentioned one
+		public	string			ToTimeParseFormat;	// mention some format to indicate it's a Time, I'll try to parse from anything first and then I'll try the mentioned one
 		public	int				IndexFound;
 		public	object			Value;
 		public	bool			Mandatory;

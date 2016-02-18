@@ -21,6 +21,11 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		}
 
 		internal void DomUserControl_createAddFor(DdeTableDepth tableLevel2) {
+			if (base.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker)delegate() { this.DomUserControl_createAddFor(tableLevel2); });
+				return;
+			}
+
 			string msig = " //DomUserControl_createAddFor(" + tableLevel2.ToString() + ")";
 			LevelTwoUserControl level2userControl = new LevelTwoUserControl();
 			DockContentImproved ddeMonitorForm = this.Parent as DockContentImproved;
@@ -33,6 +38,21 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 			this.flpDoms.Controls.Add(level2userControl);
 		}
 		internal void DomUserControl_deleteFor(DdeTableDepth tableLevel2) {
+			if (base.InvokeRequired) {
+			   //at System.Windows.Forms.Control.get_Handle()
+			   //at System.Windows.Forms.Control.SetParentHandle(IntPtr value)
+			   //at System.Windows.Forms.Control.ControlCollection.Remove(Control value)
+			   //at Sq1.Adapters.Quik.Streaming.Monitor.QuikStreamingMonitorControl.DomUserControl_deleteFor(DdeTableDepth tableLevel2)
+			   //at Sq1.Adapters.Quik.Streaming.Dde.DdeBatchSubscriber.TableIndividual_DepthOfMarket_ForSymbolRemove(String symbol)
+			   //at Sq1.Adapters.Quik.Streaming.QuikStreaming.UpstreamUnSubscribe(String symbol)
+			   //at Sq1.Adapters.Quik.Streaming.QuikStreaming.upstreamUnsubscribeAllDataSourceSymbols(Boolean avoidDuplicates_openChartsAlreadyUnsubscribed)
+			   //at Sq1.Adapters.Quik.Streaming.QuikStreaming.UpstreamDisconnect()
+			   //at Sq1.Adapters.Quik.Streaming.Livesim.QuikStreamingLivesim.UpstreamDisconnect_LivesimTerminatedOrAborted()
+			   //at Sq1.Core.Livesim.Livesimulator.SimulationPostBarsRestore_overrideable() in C:\SquareOne\Sq1.Core\Livesim\Livesimulator.cs:line 240
+				base.BeginInvoke((MethodInvoker)delegate() { this.DomUserControl_deleteFor(tableLevel2); });
+				return;
+			}
+
 			string msig = " //DomUserControl_deleteFor(" + tableLevel2 + ")";
 			LevelTwoUserControl domResizeable = tableLevel2.UserControlMonitoringMe as LevelTwoUserControl;
 			if (domResizeable == null) {

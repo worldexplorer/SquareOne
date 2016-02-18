@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 
+using NDde;
 using NDde.Client;
 
 using Sq1.Core;
 
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
-using NDde;
 
 namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 	public abstract class XlDdeTableGenerator  : ISynchronizeInvoke {
@@ -26,7 +26,11 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 
 		protected	XlWriter						XlWriter					{ get; private set; }
 
-		protected XlDdeTableGenerator(string ddeService, string ddeTopic, QuikStreamingLivesim quikLivesimStreaming) {
+		public		bool							DdeWillDeliver_updatesForEachRow_inSeparateMessages			{ get; private set; }
+		public		bool							HeaderAlreadySentForThisSession								{ get; private set; }
+
+
+		protected XlDdeTableGenerator(string ddeService, string ddeTopic, QuikStreamingLivesim quikLivesimStreaming, bool oneRowUpdates) {
 			this.ddeService				= ddeService;
 			this.ddeTopic				= ddeTopic;
 			this.DdeClient				= new DdeClient(this.ddeService, this.ddeTopic, this);
@@ -34,6 +38,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 			this.DdeClient.Disconnected	+= new EventHandler<DdeDisconnectedEventArgs>(client_Disconnected);
 
 			this.QuikStreamingLivesim = quikLivesimStreaming;
+			DdeWillDeliver_updatesForEachRow_inSeparateMessages = oneRowUpdates;
 		}
 		protected void Initialize(List<XlColumn> columns) {
 			if (columns == null || columns.Count == 0) {
@@ -64,11 +69,21 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 			this.DdeClient.Connect();
 			string msg = "DDE_CLIENT_CONNECTED [" + this.DdeClient.Topic + "]";
 			Assembler.PopupException(msg, null, false);
+			if (this.HeaderAlreadySentForThisSession != false) {
+				string msg1 = "MUST_HAVE_BEEN_RESET_IN_client_Disconnected(): this.HeaderAlreadySentForThisSession[" + this.HeaderAlreadySentForThisSession + "]=>false //Connect()";
+				Assembler.PopupException(msg1);
+				this.HeaderAlreadySentForThisSession = false;
+			}
 		}
 		internal void Disconnect() {
 			this.DdeClient.Disconnect();
 			string msg = "DDE_CLIENT_DISCONNECTED [" + this.DdeClient.Topic + "]";
 			Assembler.PopupException(msg, null, false);
+			if (this.HeaderAlreadySentForThisSession != false) {
+				string msg1 = "MUST_HAVE_BEEN_RESET_IN_client_Disconnected(): this.HeaderAlreadySentForThisSession[" + this.HeaderAlreadySentForThisSession + "]=>false //Disconnect()";
+				Assembler.PopupException(msg1);
+				this.HeaderAlreadySentForThisSession = false;
+			}
 		}
 		internal void Dispose() {
 			string topic = this.DdeClient.Topic;
@@ -92,6 +107,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 			string msig = " //XlDdeTableGenerator.client_Disconnected(" + e.ToString() + ")";
 			string msg = "QuikLivesimDdeClient[" + this.QuikStreamingLivesim.Name + "]";
 			Assembler.PopupException(msg + msig, null, false);
+			this.HeaderAlreadySentForThisSession = false;
 		}
 
 		void client_Advise(object sender, DdeAdviseEventArgs e) {
@@ -132,7 +148,16 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 
 		protected void Send_DdeClientPokesDdeServer_asynControlledByLivesim(string itemName_noClueHowIuseIt) {
 			try {
-				byte[] bufferToSend = this.XlWriter.ConvertToXlDdeMessage();
+				bool sendHeader = true;
+				if (this.DdeWillDeliver_updatesForEachRow_inSeparateMessages) {
+					if (this.HeaderAlreadySentForThisSession) {
+						sendHeader = false;
+					} else {
+						this.HeaderAlreadySentForThisSession =  true;	// will be sent again only at the beginning of next Livesimming session (after disconnect)
+						sendHeader = true;
+					}
+				}
+				byte[] bufferToSend = this.XlWriter.ConvertToXlDdeMessage(sendHeader);
 				IAsyncResult handle = this.DdeClient.BeginPoke(itemName_noClueHowIuseIt, bufferToSend, 0, null, this);
 				if (this.QuikStreamingLivesim.DdePokerShouldSyncWaitForDdeServerToReceiveMessage_falseToAvoidDeadlocks) {
 					this.DdeClient.EndPoke(handle);		//SYNCHRONOUS

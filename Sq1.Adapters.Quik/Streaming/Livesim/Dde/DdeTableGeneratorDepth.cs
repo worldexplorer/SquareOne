@@ -17,7 +17,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 	public class DdeTableGeneratorDepth : XlDdeTableGenerator {
 		protected override string DdeGeneratorClassName { get { return "DdeTableGeneratorDepth"; } }
 
-		public DdeTableGeneratorDepth(string ddeService, string ddeTopic, QuikStreamingLivesim quikLivesimStreaming) : base(ddeService, ddeTopic, quikLivesimStreaming) {
+		public DdeTableGeneratorDepth(string ddeService, string ddeTopic, QuikStreamingLivesim quikLivesimStreaming) : base(ddeService, ddeTopic, quikLivesimStreaming, false) {
 			base.Initialize(TableDefinitions.XlColumnsForTable_DepthOfMarketPerSymbol);
 		}
 

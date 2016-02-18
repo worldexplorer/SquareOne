@@ -15,7 +15,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 	public class DdeTableGeneratorQuotes : XlDdeTableGenerator {
 		protected override string DdeGeneratorClassName { get { return "DdeTableGeneratorQuotes"; } }
 
-		public DdeTableGeneratorQuotes(string ddeService, string ddeTopic, QuikStreamingLivesim quikLivesimStreaming) : base(ddeService, ddeTopic, quikLivesimStreaming) {
+		public DdeTableGeneratorQuotes(string ddeService, string ddeTopic, QuikStreamingLivesim quikLivesimStreaming) : base(ddeService, ddeTopic, quikLivesimStreaming, true) {
 			base.Initialize(TableDefinitions.XlColumnsForTable_Quotes);
 		}
 
@@ -30,7 +30,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 				Assembler.PopupException("MUST_BE_A_QuoteGenerated [" + quoteAsObject.GetType() + "]" + msig);
 				return;
 			}
-			base.XlWriter.Put("SHORTNAME",	quote.Symbol);
+			base.XlWriter.Put("CODE",		quote.Symbol);
 			base.XlWriter.Put("CLASS_CODE",	quote.SymbolClass);
 			base.XlWriter.Put("bid",		quote.Bid);
 			//base.XlWriter.Put("biddepth",	quote.Symbol);
@@ -40,22 +40,22 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 			//base.XlWriter.Put("stepprice",	quote.Symbol);
 
 
-			string dateFormat = base.ColumnsLookup["date"].ToDateTimeParseFormat;
-			string timeFormat = base.ColumnsLookup["time"].ToDateTimeParseFormat;
+			string dateFormat = base.ColumnsLookup["TRADE_DATE_CODE"]	.ToDateParseFormat;
+			string timeFormat = base.ColumnsLookup["time"]				.ToTimeParseFormat;
 
 			string date = quote.ServerTime.ToString(dateFormat);
 			string time = quote.ServerTime.ToString(timeFormat);
 
-			base.XlWriter.Put("date",		date);
-			base.XlWriter.Put("time",		time);
+			base.XlWriter.Put("TRADE_DATE_CODE",	date);
+			base.XlWriter.Put("time",				time);
 
-			//base.XlWriter.Put("changetime",	quote.Symbol);
-			//base.XlWriter.Put("selldepo",	quote.Symbol);
-			//base.XlWriter.Put("buydepo",	quote.Symbol);
-			base.XlWriter.Put("qty",		quote.Size);
-			//base.XlWriter.Put("pricemin",	quote.Symbol);
-			//base.XlWriter.Put("pricemax",	quote.Symbol);
-			//base.XlWriter.Put("stepprice",	quote.Symbol);
+			//base.XlWriter.Put("changetime",		quote.Symbol);
+			//base.XlWriter.Put("selldepo",			quote.Symbol);
+			//base.XlWriter.Put("buydepo",			quote.Symbol);
+			base.XlWriter.Put("qty",				quote.Size);
+			//base.XlWriter.Put("pricemin",			quote.Symbol);
+			//base.XlWriter.Put("pricemax",			quote.Symbol);
+			//base.XlWriter.Put("stepprice",		quote.Symbol);
 		}
 
 		internal void Send_DdeClientPokesDdeServer_waitServerProcessed(QuoteGenerated quote) {

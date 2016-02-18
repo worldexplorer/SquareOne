@@ -72,11 +72,11 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			return quikQuote;									//one more delay is to raise and event which will go to GUI thread as well QuikStreamingMonitorForm.tableQuotes_DataStructureParsed_One()
 		}
 		void reconstructServerTime(XlRowParsed rowParsed) {
-			string dateFormat = base.ColumnDefinitionsByNameLookup["TRADE_DATE_CODE"].ToDateTimeParseFormat;
-			string timeFormat = base.ColumnDefinitionsByNameLookup["time"].ToDateTimeParseFormat;
+			string dateFormat = base.ColumnDefinitionsByNameLookup["TRADE_DATE_CODE"]	.ToDateParseFormat;
+			string timeFormat = base.ColumnDefinitionsByNameLookup["time"]				.ToTimeParseFormat;
 			string dateTimeFormat = dateFormat + " " + timeFormat;
 
-			rowParsed["ServerTime"] = DateTime.MinValue;
+			DateTime ret = DateTime.MinValue;
 
 			string dateReceived = rowParsed.GetString("TRADE_DATE_CODE", "QUOTE_DATE_NOT_DELIVERED_DDE");
 			if (dateReceived == "QUOTE_DATE_NOT_DELIVERED_DDE") {
@@ -85,11 +85,22 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			string timeReceived = rowParsed.GetString("time", "QUOTE_TIME_NOT_DELIVERED_DDE");
 			string dateTimeReceived = dateReceived + " " + timeReceived;
 			if (dateTimeReceived.Contains("NOT_DELIVERED_DDE")) {
+				rowParsed["ServerTime"] = ret;
 				return;
 			}
 
 			try {
-			    rowParsed["ServerTime"] = DateTime.ParseExact(dateTimeReceived, dateTimeFormat, CultureInfo.InvariantCulture);
+			    ret = DateTime.Parse(dateTimeReceived);
+				rowParsed["ServerTime"] = ret;
+				if (ret != DateTime.MinValue) return;
+			} catch (Exception ex) {
+			    string errmsg = "TROWN DateTime.Parse(" + dateTimeReceived + "): " + ex.Message;
+			    rowParsed.ErrorMessages.Add(errmsg);
+			}
+
+			try {
+			    ret = DateTime.ParseExact(dateTimeReceived, dateTimeFormat, CultureInfo.InvariantCulture);
+				rowParsed["ServerTime"] = ret;
 			} catch (Exception ex) {
 			    string errmsg = "TROWN DateTime.ParseExact(" + dateTimeReceived + ", " + dateTimeFormat + "): " + ex.Message;
 			    rowParsed.ErrorMessages.Add(errmsg);

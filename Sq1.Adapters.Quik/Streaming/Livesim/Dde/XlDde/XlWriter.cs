@@ -39,27 +39,34 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 			this.rows.Add(new Dictionary<string, object>());	// that's for the header
 		}
 
-		public byte[] ConvertToXlDdeMessage() {
+		public byte[] ConvertToXlDdeMessage(bool flushHeader) {
 			//this.Dispose();
 			//this.ms = new MemoryStream();
 			//this.bw = new BinaryWriter(this.ms, Encoding.ASCII);
 
+			int rowsMyMessageContain = this.rows.Count;
+			if (flushHeader) rowsMyMessageContain++;
+
 			this.ms.Seek(0, SeekOrigin.Begin);						// hope I don't need disposing and re-creation
 			this.bw.Write((UInt16)XlBlockType.Table);				// [0-2]
 			this.bw.Write((UInt16)0xFF);							// [2-4] XlReader expects two dummy bytes more prior to rows count?
-			this.bw.Write((UInt16)(this.rows.Count + 1));			// [4-6] at least I will dump DDE table header (which must be non-empty) and one empty data row
+			this.bw.Write((UInt16)(rowsMyMessageContain));			// [4-6] at least I will dump DDE table header (which must be non-empty) and one empty data row
 			this.bw.Write((UInt16)this.XlColumnsDescription.Count);	// [6-8] number of columns
 
-			// flushing the header
-			int currentRowWhileFlushing = 1;
+			int currentRowWhileFlushing = 0;
 			int currentColumnWhileFlushing = 0;
-			foreach (XlColumn col in this.XlColumnsDescription) {
-				currentColumnWhileFlushing++;
-				this.bw.Write((UInt16)XlBlockType.String);
-				string colName = col.Name;
-				if (colName.Length > 255) colName = colName.Substring(0, 255);
-				this.bw.Write((UInt16)(colName.Length+1));			// blocksize must include (byte)stringLength + whole string
-				this.bw.Write((string)colName);
+
+			// flushing the header
+			if (flushHeader) {	// for Quotes, header is flushed only for the first quote after connect; subsequent are updates (DdeTableQuotes on DDE Server receiver side will treat other headers as a Quote with string values instead of float)
+				currentRowWhileFlushing++;
+				foreach (XlColumn col in this.XlColumnsDescription) {
+					currentColumnWhileFlushing++;
+					this.bw.Write((UInt16)XlBlockType.String);
+					string colName = col.Name;
+					if (colName.Length > 255) colName = colName.Substring(0, 255);
+					this.bw.Write((UInt16)(colName.Length+1));			// blocksize must include (byte)stringLength + whole string
+					this.bw.Write((string)colName);
+				}
 			}
 
 			// flushing rows (at least one empty, appended in the constructor)

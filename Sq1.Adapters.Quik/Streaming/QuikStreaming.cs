@@ -93,10 +93,11 @@ namespace Sq1.Adapters.Quik.Streaming {
 
 		public override void InitializeDataSource_inverse(DataSource dataSource, bool subscribeSolidifier = true) {
 			base.Name					= "QuikStreaming";
+			base.ReasonToExist			= "INSTANCE_FOR[" + dataSource.Name + "]";
 			base.Level2RefreshRateMs	= this.DdeMonitorRefreshRateMs;	// DataSourceEditor.btnSave.click () will come here and RETURN if DdeServer has already been started => propagating user input before 
 
 			if (base.LivesimStreaming_ownImplementation == null) {
-				base.LivesimStreaming_ownImplementation	= new QuikStreamingLivesim("OWN_IMPLEMENTATION_USED_FOR_LIVESIM_NOT_DUMMY");
+				base.LivesimStreaming_ownImplementation	= new QuikStreamingLivesim("LIVESIM_OWN_IMPLEMENTATION " + base.ReasonToExist);
 				//base.LivesimStreaming_ownImplementation.CreateDataDistributors_onlyWhenNecessary("USED_FOR_OWN_IMPLEMENTATION");
 			} else {
 				string msg = "ALREADY_INITIALIZED_OWN_DISTRIBUTOR MUST_NEVER_HAPPEN_BUT_CRITICAL_WHEN_IT_DOES";
