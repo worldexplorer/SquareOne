@@ -7,6 +7,7 @@ using NDde.Client;
 using Newtonsoft.Json;
 
 using Sq1.Core;
+using Sq1.Core.DataTypes;
 using Sq1.Core.Support;
 using Sq1.Core.Livesim;
 using Sq1.Core.DataFeed;
@@ -80,7 +81,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			//v1 this.QuikStreamingOriginal.InitializeDataSource_inverse(base.Livesimulator.DataSourceAsLivesim_nullUnsafe, false);
 			//v2 this.QuikStreamingOriginal.InitializeFromDataSource(base.Livesimulator.DataSourceAsLivesim_nullUnsafe);
 			//v3 this.InitializeFromDataSource(base.Livesimulator.DataSourceAsLivesim_nullUnsafe);
-			this.UpstreamConnectionState = Sq1.Core.DataTypes.ConnectionState.JustInitialized_solidifiersUnsubscribed;
+			this.UpstreamConnectionState = ConnectionState.JustInitialized_solidifiersUnsubscribed;
 			
 			//GOOD_FOR_LivesimStreamingDefault_BUT_BAD_FOR_QuikStreamingLivesim this.StreamingDataSnapshot = this.QuikStreamingOriginal.StreamingDataSnapshot;
 

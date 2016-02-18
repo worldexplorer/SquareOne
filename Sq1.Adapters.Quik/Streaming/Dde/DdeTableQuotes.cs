@@ -38,8 +38,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			if (last == quikQuote.Bid) quikQuote.TradedAt = BidOrAsk.Bid;
 			if (last == quikQuote.Ask) quikQuote.TradedAt = BidOrAsk.Ask;
 			if (quikQuote.TradedAt == BidOrAsk.UNKNOWN) {
-				string msg = "QUOTE_WAST_TRADED last must NOT be bid or ask //ROUNDING_ERROR?...";
-				Assembler.PopupException(msg, null, false);
+				string msg = "QUOTE_WASNT_TRADED last must NOT be bid or ask //ROUNDING_ERROR?...";
+				//Assembler.PopupException(msg, null, false);
 			}
 
 			quikQuote.FortsDepositBuy	= row.GetDouble("buydepo"		, double.NaN);

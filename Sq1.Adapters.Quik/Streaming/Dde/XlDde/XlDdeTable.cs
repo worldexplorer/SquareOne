@@ -99,7 +99,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 				foreach (XlColumn col in this.ColumnDefinitions) {
 					if (rowParsed.ContainsKey(col.Name) == false) {
 						string msg = "ALL_COLUMNS_MUST_BE_PRESENT__CAN_BE_NULL col.Name[" + col.Name + "] IS_MISSING_IN rowParsed[" + rowParsed + "]";
-						Assembler.PopupException(msg, null, false);
+						//Assembler.PopupException(msg, null, false);
 						continue;
 					}
 					object valueParsed = rowParsed[col.Name];
