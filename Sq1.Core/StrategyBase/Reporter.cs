@@ -93,7 +93,7 @@ namespace Sq1.Core.StrategyBase {
 		public virtual void RebuildingFullReportForced_onLivesimPaused() { }
 
 		public void RaiseContextScriptChangedContainerShouldSerialize() {
-			this.Chart.RaiseContextScriptChangedContainerShouldSerialize();
+			this.Chart.RaiseOnContextScriptChanged_containerShouldSerialize();
 		}
 	}
 }

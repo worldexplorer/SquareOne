@@ -253,7 +253,7 @@ namespace Sq1.Charting {
 			if (bar > this.hScrollBar.Maximum) bar = this.hScrollBar.Maximum;
 			if (bar < this.hScrollBar.Minimum) bar = this.hScrollBar.Minimum;
 			this.ChartSettings.ScrollPositionAtBarIndex = bar;
-			this.RaiseChartSettingsChangedContainerShouldSerialize();
+			this.RaiseOnChartSettingsChanged_containerShouldSerialize();
 			this.hScrollBar.Value = bar;
 			this.InvalidateAllPanels();
 		}
@@ -289,8 +289,8 @@ namespace Sq1.Charting {
 			}
 			// quite useless since I don't plan to append-statically to displayed-bars; I'll use Initialize(newBars)
 			//this.Bars.BarStaticAdded					+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
-			this.Bars.BarStreamingAdded					+= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
-			this.Bars.BarStreamingUpdatedMerged			+= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
+			this.Bars.OnBarStreamingAdded				+= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
+			this.Bars.OnBarStreamingUpdatedMerged		+= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
 			this.Bars.SymbolInfo.PriceDecimalsChanged	+= new EventHandler<EventArgs>(bars_symbolInfo_PriceDecimalsChanged);
 
 			if (Assembler.IsInitialized == false) return;	// ChartForm: avoiding Designer's complains about Assembler.Initialized==false
@@ -305,8 +305,8 @@ namespace Sq1.Charting {
 				return;
 			}
 			this.Bars.SymbolInfo.PriceDecimalsChanged	-= new EventHandler<EventArgs>(bars_symbolInfo_PriceDecimalsChanged);
-			this.Bars.BarStreamingUpdatedMerged			-= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
-			this.Bars.BarStreamingAdded					-= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
+			this.Bars.OnBarStreamingUpdatedMerged		-= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
+			this.Bars.OnBarStreamingAdded				-= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
 
 			// quite useless since I don't plan to append-statically to displayed-bars; I'll use Initialize(newBars)
 			//this.Bars.BarStaticAdded					-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
@@ -315,13 +315,13 @@ namespace Sq1.Charting {
 			if (this.ChartSettings.BarWidthIncludingPadding >= this.ChartSettings.BarWidthIncludingPaddingMax) return; 
 			this.ChartSettings.BarWidthIncludingPadding += this.ChartSettings.SqueezeHorizontalKeyOnePressReceivedToOneStep;
 			this.InvalidateAllPanels();
-			base.RaiseChartSettingsChangedContainerShouldSerialize();
+			base.RaiseOnChartSettingsChanged_containerShouldSerialize();
 		}
 		public void BarWidthDecrementAtKeyPressRate() {
 			if (this.ChartSettings.BarWidthIncludingPadding <= this.ChartSettings.SqueezeHorizontalKeyOnePressReceivedToOneStep) return;	// <= since BarWidth mustn't be zero (ZeroDivException)
 			this.ChartSettings.BarWidthIncludingPadding -= this.ChartSettings.SqueezeHorizontalKeyOnePressReceivedToOneStep;
 			this.InvalidateAllPanels();
-			base.RaiseChartSettingsChangedContainerShouldSerialize();
+			base.RaiseOnChartSettingsChanged_containerShouldSerialize();
 		}
 		public void DragDownSqueeze() {
 			this.ChartSettings.SqueezeVerticalPaddingPx += this.ChartSettings.SqueezeVerticalPaddingStep;

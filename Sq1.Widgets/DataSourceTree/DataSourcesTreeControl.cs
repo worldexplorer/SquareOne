@@ -70,7 +70,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				Assembler.PopupException(" DataSourcesTreeControl.Initialize()", ex);
 			}
 			
-			this.populateDataSourcesIntoTreeListView();
+			this.PopulateDataSourcesIntoTreeListView();
 			this.populateDataSnapshotDeserialized();
 			
 			// TODO MULTIPLE_INITIALIZATIONS_WILL_INVOKE_YOUR_HANDLERS_MULTIPLE_TIMES
@@ -102,7 +102,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		void populateDataSourcesIntoTreeListView() {
+		public void PopulateDataSourcesIntoTreeListView() {
 			List<DataSource> dataSources = dataSourceRepository.ItemsAsList;
 			this.imageList.Images.Clear();
 			foreach (DataSource ds in dataSources) {

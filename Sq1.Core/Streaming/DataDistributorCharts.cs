@@ -54,8 +54,8 @@ namespace Sq1.Core.Streaming {
 			}
 
 			ret = base.ConsumerQuoteSubscribe(symbol, scaleInterval, chartConsumer, quotePumpSeparatePushingThreadEnabled);
-			string msg2 = "SUBSCRIBED_CHART_QUOTES[" + ret + "]";
-			//Assembler.PopupException(msg2 + msig, null, false);
+			string msg2 = "SUBSCRIBED_CHART_QUOTES upstreamUnsubscribed[" + ret + "]";
+			Assembler.PopupException(msg2 + msig, null, false);
 
 			base.StreamingAdapter.StreamingDataSnapshot.InitializeLastQuoteAndLevelTwoForSymbol(symbol);
 			return ret;
@@ -64,8 +64,8 @@ namespace Sq1.Core.Streaming {
 					StreamingConsumer chartConsumer) {
 						string msig = " //ConsumerQuoteUnsubscribe(" + symbol + ":" + scaleInterval + " [" + chartConsumer + "])";
 			bool ret = base.ConsumerQuoteUnsubscribe(symbol, scaleInterval, chartConsumer);
-			string msg2 = "UNSUBSCRIBED_CHART_QUOTES[" + ret + "]";
-			//Assembler.PopupException(msg2 + msig, null, false);
+			string msg2 = "UNSUBSCRIBED_CHART_QUOTES upstreamUnsubscribed[" + ret + "]";
+			Assembler.PopupException(msg2 + msig, null, false);
 
 			base.StreamingAdapter.StreamingDataSnapshot.InitializeLastQuoteAndLevelTwoForSymbol(symbol);
 

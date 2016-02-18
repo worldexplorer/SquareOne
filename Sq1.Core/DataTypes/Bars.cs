@@ -115,14 +115,14 @@ namespace Sq1.Core.DataTypes {
 					barToMergeToStreaming.Low, barToMergeToStreaming.Close, barToMergeToStreaming.Volume, this.SymbolInfo);
 				this.BarAppendBind(barAdding);
 				this.BarStreaming_nullUnsafe = barAdding;
-				this.RaiseBarStreamingAdded(barAdding);
+				this.raiseOnBarStreamingAdded(barAdding);
 			} else {
 				if (this.BarStreaming_nullUnsafe == null) {
 					this.BarStreaming_nullUnsafe = this.BarLast;
 				}
 				//base.BarAbsorbAppend(this.StreamingBar, open, high, low, close, volume);
 				this.BarStreaming_nullUnsafe.MergeExpandHLCVwhileCompressingManyBarsToOne(barToMergeToStreaming, false);	// duplicated volume for just added bar; moved up
-				this.RaiseBarStreamingUpdated(barToMergeToStreaming);
+				this.raiseOnBarStreamingUpdated(barToMergeToStreaming);
 			}
 			return this.BarStreaming_nullUnsafe;
 		} }
@@ -144,7 +144,7 @@ namespace Sq1.Core.DataTypes {
 			}
 			this.BarStreaming_nullUnsafe = null;
 			this.BarAppendBind(barAdding);
-			this.RaiseBarStaticAdded(barAdding);
+			this.raiseOnBarStaticAdded(barAdding);
 		} }
 		protected override void CheckThrowDateIsNotLessThanScaleDictates(DateTime dateAdding) {
 			if (this.Count == 0) return;
@@ -191,7 +191,7 @@ namespace Sq1.Core.DataTypes {
 			//this.streamingBar.DateTimeOpen = bar.DateTimeOpen;
 			this.BarStreaming_nullUnsafe.AbsorbOHLCVfrom(bar);
 			// IMPORTANT!! this.BarStreamingCloneReadonly freezes changes in the clone so that subscribers get the same StreamingBar
-			this.RaiseBarStreamingUpdated(this.BarStreaming_nullUnsafeCloneReadonly);
+			this.raiseOnBarStreamingUpdated(this.BarStreaming_nullUnsafeCloneReadonly);
 		}
 		public override string ToString() {
 			string ret = this.Symbol + "-" + this.IntervalScaleCount + this.MyInstanceAsString;

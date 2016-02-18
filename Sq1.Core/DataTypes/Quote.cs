@@ -5,68 +5,68 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
 	public class Quote {
-		[JsonIgnore]	public const int	IntraBarSernoShiftForGeneratedTowardsPendingFill = 100000;
+		[JsonIgnore]	public	const int	IntraBarSernoShiftForGeneratedTowardsPendingFill = 100000;
 
-		[JsonProperty]	public string		Symbol;
-		[JsonProperty]	public string		SymbolClass;
-		[JsonProperty]	public string		Source;
-		[JsonProperty]	public DateTime		ServerTime;
-		[JsonProperty]	public DateTime		LocalTimeCreated	{ get; protected set; }
+		[JsonProperty]	public	string		Symbol;
+		[JsonProperty]	public	string		SymbolClass;
+		[JsonProperty]	public	string		Source;
+		[JsonProperty]	public	DateTime	ServerTime;
+		[JsonProperty]	public	DateTime	LocalTimeCreated	{ get; protected set; }
 
-		[JsonProperty]	public double		Bid;
-		[JsonProperty]	public double		Ask;
-		[JsonProperty]	public double		Size;
+		[JsonProperty]	public	double		Bid;
+		[JsonProperty]	public	double		Ask;
+		[JsonProperty]	public	double		Size;
 		
-		[JsonIgnore]	public int			IntraBarSerno;
-		[JsonIgnore]	public bool			IamInjectedToFillPendingAlerts {
+		[JsonIgnore]	public	int			IntraBarSerno;
+		[JsonIgnore]	public	bool		IamInjectedToFillPendingAlerts {
 			get { return this.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill; } }
-		[JsonProperty]	public long			AbsnoPerSymbol;
+		[JsonProperty]	public	long		AbsnoPerSymbol;
 
-		[JsonIgnore]	public Bar			ParentBarStreaming	{ get; protected set; }
-		[JsonIgnore]	public bool			HasParentBar		{ get { return this.ParentBarStreaming != null; } }
-		[JsonProperty]	public string		ParentBarIdent		{ get { return (this.HasParentBar) ? this.ParentBarStreaming.ParentBarsIdent : "NO_PARENT_BAR"; } }
+		[JsonIgnore]	public	Bar			ParentBarStreaming	{ get; protected set; }
+		[JsonIgnore]	public	bool		HasParentBar		{ get { return this.ParentBarStreaming != null; } }
+		[JsonProperty]	public	string		ParentBarIdent		{ get { return (this.HasParentBar) ? this.ParentBarStreaming.ParentBarsIdent : "NO_PARENT_BAR"; } }
 
 		[Obsolete("NOT_REALLY_USED")]
-		[JsonIgnore]	public BidOrAsk		ItriggeredFillAtBidOrAsk;
-		[JsonProperty]	public BidOrAsk		TradedAt;
-		[JsonProperty]	public double		TradedPrice			{ get {		//WRITTEN_ONLY_BY_QUOTE_GENERATOR MADE_READONLY_COZ_WRITING_IS_A_WRONG_CONCEPT
+		[JsonIgnore]	public	BidOrAsk	ItriggeredFillAtBidOrAsk;
+		[JsonProperty]	public	BidOrAsk	TradedAt;
+		[JsonProperty]	public	double		TradedPrice			{ get {		//WRITTEN_ONLY_BY_QUOTE_GENERATOR MADE_READONLY_COZ_WRITING_IS_A_WRONG_CONCEPT
 				if (this.TradedAt == BidOrAsk.UNKNOWN) return double.NaN;
 				return (this.TradedAt == BidOrAsk.Bid) ? this.Bid : this.Ask;
 			} }
-		[JsonProperty]	public double		Spread				{ get { return this.Ask - this.Bid; } }
+		[JsonProperty]	public	double		Spread				{ get { return this.Ask - this.Bid; } }
 
-
-		[JsonProperty]	public string		AskFormatted { get {
-			string ret = this.Ask.ToString("N2");
+		#region long story short
+		[JsonIgnore]			SymbolInfo	symbolInfo_nullUnsafe					{ get {
+			SymbolInfo ret = this.symbolInfo_fromParentBars_nullUnsafe;
+			if (ret == null) {
+				ret = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfo_nullUnsafe(this.Symbol);
+			}
+			return ret;
+		} }
+		[JsonIgnore]			SymbolInfo	symbolInfo_fromParentBars_nullUnsafe	{ get {
+			SymbolInfo ret = null;
 			if (this.ParentBarStreaming							== null) return ret;
 			if (this.ParentBarStreaming.ParentBars				== null) return ret;
 			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
-			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format("{0:" + symbolInfo.PriceFormat + "}", this.Ask);
+			ret = this.ParentBarStreaming.ParentBars.SymbolInfo;
 			return ret;
 		} }
 
-		[JsonProperty]	public string		BidFormatted { get {
-			string ret = this.Bid.ToString("N2");
-			if (this.ParentBarStreaming							== null) return ret;
-			if (this.ParentBarStreaming.ParentBars				== null) return ret;
-			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
-			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format("{0:" + symbolInfo.PriceFormat + "}", this.Bid);
-			return ret;
+		[JsonIgnore]			string		priceFormat	{ get {
+			SymbolInfo symbolInfo = this.symbolInfo_nullUnsafe;
+			return symbolInfo != null ? symbolInfo.PriceFormat : "N2";
 		} }
+		[JsonIgnore]			string		volumeFormat	{ get {
+			SymbolInfo symbolInfo = this.symbolInfo_nullUnsafe;
+			return symbolInfo != null ? symbolInfo.PriceFormat : "N0";
+		} }
+		#endregion
 
-		[JsonProperty]	public string		SizeFormatted { get {
-			string ret = this.Size.ToString("N0");
-			if (this.ParentBarStreaming							== null) return ret;
-			if (this.ParentBarStreaming.ParentBars				== null) return ret;
-			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
-			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format("{0:" + symbolInfo.VolumeFormat + "}", this.Size);
-			return ret;
-		} }
+		[JsonProperty]	public	string		AskFormatted	{ get { return string.Format("{0:" + this.priceFormat + "}", this.Ask); } }
+		[JsonProperty]	public	string		BidFormatted	{ get { return string.Format("{0:" + this.priceFormat + "}", this.Bid); } }
+		[JsonProperty]	public	string		SizeFormatted	{ get { return string.Format("{0:" + this.volumeFormat + "}", this.Size); } }
 		
-		[JsonIgnore]	public string		StreamingButtonIdent { get {
+		[JsonIgnore]	public	string		StreamingButtonIdent { get {
 			StringBuilder sb = new StringBuilder();
 			sb.Append(" #");
 			sb.Append(this.IntraBarSerno.ToString("000"));

@@ -36,7 +36,7 @@ namespace Sq1.Gui.Forms {
 		void mniStrategyRemove_Click(object sender, System.EventArgs e) {
 			this.ChartFormManager.Strategy = null;
 			this.ChartFormManager.Executor.Initialize(null, this.ChartControl);
-			this.ChartFormManager.InitializeWithoutStrategy(this.ChartFormManager.ContextCurrentChartOrStrategy);
+			this.ChartFormManager.InitializeWithoutStrategy(this.ChartFormManager.ContextCurrentChartOrStrategy, true);
 			this.ChartControl.ClearAllScriptObjectsBeforeBacktest();
 			
 			if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.ScriptEditorForm) == false) {

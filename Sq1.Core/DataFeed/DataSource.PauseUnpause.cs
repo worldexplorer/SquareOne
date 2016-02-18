@@ -1,11 +1,11 @@
 using System;
+using System.Collections.Generic;
 
 using Sq1.Core.Streaming;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Livesim;
 using Sq1.Core.Backtesting;
-using System.Collections.Generic;
 
 namespace Sq1.Core.DataFeed {
 	public partial class DataSource {

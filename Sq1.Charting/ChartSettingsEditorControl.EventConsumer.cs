@@ -51,7 +51,7 @@ namespace Sq1.Charting {
 			} else {
 				ChartControl canSerialize = this.chartSettings[selected];
 				canSerialize.ChartSettings.PensAndBrushesCached_DisposeAndNullify();
-				canSerialize.RaiseChartSettingsChangedContainerShouldSerialize();
+				canSerialize.RaiseOnChartSettingsChanged_containerShouldSerialize();
 				canSerialize.InvalidateAllPanels();
 			}
 			this.openDropDownAfterSelected = false;
@@ -113,7 +113,7 @@ namespace Sq1.Charting {
 			} else {
 				ChartControl canSerialize = this.chartSettings[selected];
 				canSerialize.ChartSettings.PensAndBrushesCached_DisposeAndNullify();
-				canSerialize.RaiseChartSettingsChangedContainerShouldSerialize();
+				canSerialize.RaiseOnChartSettingsChanged_containerShouldSerialize();
 				canSerialize.InvalidateAllPanels();
 				foreach (var each in this.ctxTemplates.Items) {
 					ToolStripMenuItem eachAsMni = each as ToolStripMenuItem;
