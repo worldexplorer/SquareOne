@@ -285,7 +285,8 @@ namespace Sq1.Gui {
 			//DataSourceEditorForm.Instance.DataSourceEditorControl.Initialize(e.DataSource);
 			DataSourceEditorForm.Instance.Initialize(e.DataSource.Name, this.mainForm.DockPanel);
 			try {
-				DataSourceEditorForm.Instance.ShowAsDocumentTabNotPane(this.mainForm.DockPanel);
+				//DataSourceEditorForm.Instance.ShowAsDocumentTabNotPane(this.mainForm.DockPanel);
+				DataSourceEditorForm.Instance.Show(this.mainForm.DockPanel);		// as DockRight (Designer)
 			} catch (Exception exc) {
 				string msg = "DataSourceEditorForm(DataSource[" + e.DataSource + "]): internal Exception";
 				Assembler.PopupException(msg, exc);

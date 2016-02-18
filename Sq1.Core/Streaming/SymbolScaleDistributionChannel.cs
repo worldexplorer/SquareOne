@@ -77,6 +77,15 @@ namespace Sq1.Core.Streaming {
 
 			Quote quoteSernoEnrichedWithUnboundStreamingBar = this.StreamingBarFactoryUnattached.
 				EnrichQuoteWithSernoUpdateStreamingBarCreateNewBar(quote2bClonedForEachConsumer);
+			if (	quoteSernoEnrichedWithUnboundStreamingBar == null) {
+				string msg = "I_REFUSE_TO_PUSH COULD_NOT_ENRICH_QUOTE quoteSernoEnrichedWithUnboundStreamingBar[null]"
+					+ " quote2bClonedForEachConsumer[" + quote2bClonedForEachConsumer + "]"
+					+ " this[" + this + "]"
+					;
+				//Assembler.PopupException(msg, null, false);
+				return;
+			}
+
 			if (	quoteSernoEnrichedWithUnboundStreamingBar.ParentBarStreaming == null
 				 || quoteSernoEnrichedWithUnboundStreamingBar.ParentBarStreaming.ParentBars == null) {
 				string msg = "HERE_NULL_IS_OK___BINDER_WILL_BE_INVOKED_DOWNSTACK_SOON_FOR_QUOTE_CLONED StreamingEarlyBinder.BindStreamingBarForQuote()";

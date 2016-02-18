@@ -88,6 +88,7 @@ namespace Sq1.Widgets.Exceptions {
 		void mniRecentAlwaysSelected_Click(object sender, EventArgs e) {
 			this.DataSnapshot.RecentAlwaysSelected = this.mniRecentAlwaysSelected.Checked;
 			this.DataSnapshotSerializer.Serialize();
+			if (this.DataSnapshot.RecentAlwaysSelected == false) return;
 			this.selectMostRecentException();
 		}
 		void mniRefresh_Click(object sender, EventArgs e) {

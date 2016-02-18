@@ -430,7 +430,8 @@ namespace Sq1.Core.DataTypes {
 			#if DEBUG
 			if (this.Open.ToString(priceFormat) != Math.Round(this.Open,	priceDecimals).ToString(priceFormat)) {
 				string msg = "Double.ToString() doesn't invoke Math.Round!";
-				Debugger.Break();
+				//Debugger.Break();
+				Assembler.PopupException(msg, null, false);
 			}
 			#endif
 			

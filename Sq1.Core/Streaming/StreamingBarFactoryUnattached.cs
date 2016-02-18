@@ -29,7 +29,7 @@ namespace Sq1.Core.Streaming {
 			if (quoteClone.TradedAt == BidOrAsk.UNKNOWN) {
 				string msg = "CANT_FILL_STREAMING_CLOSE_FROM_BID_OR_ASK_UNKNOWN quote.PriceLastDeal[" + quoteClone.TradedPrice + "];"
 					+ "what kind of quote is that?... (" + quoteClone + ")";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 				//throw new Exception(msg);
 				return null;
 			}

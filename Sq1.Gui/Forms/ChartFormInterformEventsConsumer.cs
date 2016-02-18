@@ -67,7 +67,7 @@ namespace Sq1.Gui.Forms {
 				 //&& this.chartFormManager.Executor.IsStreamingTriggeringScript
 				 && this.chartFormManager.ContextCurrentChartOrStrategy.DownstreamSubscribed == true
 				) {
-				string msg = "I_REFUSE_CHANGE_SYMBOL"
+				string msg = "I_REFUSE_TO_CHANGE_SYMBOL"
 					//+ " CURRENT_CHART_HAS_STRATEGY_RUNNING_ON_STREAMING"
 					+ " CURRENT_CHART_HAS_STRATEGY_SUBSCRIBED"
 					+ " to prevent occasional order execution, click [" + this.chartFormManager.StreamingButtonIdent + "] button on ChartForm to unsubscribe";
