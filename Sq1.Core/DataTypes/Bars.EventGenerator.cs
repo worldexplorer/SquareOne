@@ -3,32 +3,32 @@ using System;
 namespace Sq1.Core.DataTypes {
 	public partial class Bars {
 		// IObservable emulated?...
-		public event EventHandler<BarEventArgs> BarStaticAdded;
-		public event EventHandler<BarEventArgs> BarStreamingAdded;
-		public event EventHandler<BarEventArgs> BarStreamingUpdatedMerged;
+		public event EventHandler<BarEventArgs> OnBarStaticAdded;
+		public event EventHandler<BarEventArgs> OnBarStreamingAdded;
+		public event EventHandler<BarEventArgs> OnBarStreamingUpdatedMerged;
 		
-		public void RaiseBarStaticAdded(Bar barAdding) {
-			if (this.BarStaticAdded == null) return;
+		void raiseOnBarStaticAdded(Bar barAdding) {
+			if (this.OnBarStaticAdded == null) return;
 			try {
-				this.BarStaticAdded(this, new BarEventArgs(barAdding));
+				this.OnBarStaticAdded(this, new BarEventArgs(barAdding));
 			} catch (Exception ex) {
 				string msg = "Bars.BarStaticAdded(bar[" + barAdding + "])";
 				Assembler.PopupException(msg, ex, false);
 			}
 		}
-		public void RaiseBarStreamingAdded(Bar barAdding) {
-			if (this.BarStreamingAdded == null) return;
+		void raiseOnBarStreamingAdded(Bar barAdding) {
+			if (this.OnBarStreamingAdded == null) return;
 			try {
-				this.BarStreamingAdded(this, new BarEventArgs(barAdding));
+				this.OnBarStreamingAdded(this, new BarEventArgs(barAdding));
 			} catch (Exception ex) {
 				string msg = "Bars.BarStreamingAdded(bar[" + barAdding + "])";
 				Assembler.PopupException(msg, ex, false);
 			}
 		}
-		public void RaiseBarStreamingUpdated(Bar barUpdated) {
-			if (this.BarStreamingUpdatedMerged == null) return;
+		void raiseOnBarStreamingUpdated(Bar barUpdated) {
+			if (this.OnBarStreamingUpdatedMerged == null) return;
 			try {
-				this.BarStreamingUpdatedMerged(this, new BarEventArgs(barUpdated));
+				this.OnBarStreamingUpdatedMerged(this, new BarEventArgs(barUpdated));
 			} catch (Exception ex) {
 				string msg = "Bars.BarStreamingUpdated(bar[" + barUpdated + "])";
 				Assembler.PopupException(msg, ex, false);

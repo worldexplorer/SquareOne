@@ -372,7 +372,7 @@ namespace Sq1.Core.Streaming {
 			}
 			if (ret == "") ret = "NO_CONSUMERS";
 			ret = this.ReasonIwasCreated_propagatedFromDistributor + " :: " + ret;
-			ret += this.SymbolScaleInterval;
+			ret += " " + this.SymbolScaleInterval;
 			return ret;
 		} }
 

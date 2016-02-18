@@ -17,10 +17,10 @@ namespace Sq1.Widgets.DataSourcesTree {
 			if (e.RowIndex == -1) return;
 			this.syncSymbolAndDataSourceSelectedFromRowIndexClicked(e.RowIndex);
 			if (this.SymbolSelected != null) {
-				this.RaiseOnSymbolSelected();
+				this.raiseOnSymbolSelected();
 				//this.tree.RebuildAll(true);
 			} else {
-				this.RaiseOnDataSourceSelected();
+				this.raiseOnDataSourceSelected();
 			}
 			this.OlvTree.RebuildAll(true);		// needed for Chart to get removed from old Symbol and move to the Symbol clicked; not needed without level3
 		}
@@ -98,13 +98,13 @@ namespace Sq1.Widgets.DataSourcesTree {
 		}
 
 		void mniNewChartSymbol_Click(object sender, EventArgs e) {
-			this.RaiseOnNewChartForSymbolClicked();
+			this.raiseOnNewChartForSymbolClicked();
 		}
 		void mniBarsAnalyzerSymbol_Click(object sender, EventArgs e) {
-			this.RaiseOnBarsAnalyzerClicked();
+			this.raiseOnBarsAnalyzerClicked();
 		}
 		void mniOpenStrategySymbol_Click(object sender, EventArgs e) {
-			this.RaiseOnOpenStrategyForSymbolClicked();
+			this.raiseOnOpenStrategyForSymbolClicked();
 		}
 		void mniDataSourceDelete_Click(object sender, EventArgs e) {
 			if (this.DataSourceSelected == null) {
@@ -122,13 +122,13 @@ namespace Sq1.Widgets.DataSourcesTree {
 			}
 			if (this.SymbolSelected == "") return;
 			this.dataSourceRepository.SymbolRemove(this.DataSourceSelected, this.SymbolSelected, this);		//blocking!
-			this.populateDataSourcesIntoTreeListView();
+			this.PopulateDataSourcesIntoTreeListView();
 		}
 //		void mniDataSourceCreate_Click(object sender, EventArgs e) {
 //			this.RaiseOnDataSourceCreateClicked();
 //		}
 		void mniDataSourceEdit_Click(object sender, EventArgs e) {
-			this.RaiseOnDataSourceEditClicked();
+			this.raiseOnDataSourceEditClicked();
 		}
 		void ctxDataSource_Opening(object sender, CancelEventArgs e) {
 			if (this.DataSourceSelected == null) {
@@ -313,7 +313,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 //			this.SelectSymbol(ds.Name);
 			// but now user has selected the static provider and I want the provider's icon in the tree
 			this.PopulateIconForDataSource(dataSourceNewborn);
-			this.RaiseOnDataSourceEditClicked();	//ds
+			this.raiseOnDataSourceEditClicked();	//ds
 		}
 
 		void dataSourceRepository_OnSymbolAdded(object sender, DataSourceSymbolEventArgs e) {
@@ -352,7 +352,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		}
 		
 		void dataSourceRepository_OnDataSourceAdded(object sender, NamedObjectJsonEventArgs<DataSource> e) {
-			this.populateDataSourcesIntoTreeListView();	// roots changed => this.tree.RebuildAll(true) isn't enough
+			this.PopulateDataSourcesIntoTreeListView();	// roots changed => this.tree.RebuildAll(true) isn't enough
 			this.SelectSymbol(e.Item.Name, null);
 		}
 		void dataSourceRepository_OnDataSourceRenamed(object sender, NamedObjectJsonEventArgs<DataSource> e) {
@@ -364,14 +364,14 @@ namespace Sq1.Widgets.DataSourcesTree {
 			}
 		}
 		void dataSourceRepository_OnDataSourceRemovedDone(object sender, NamedObjectJsonEventArgs<DataSource> e) {
-			this.populateDataSourcesIntoTreeListView();
+			this.PopulateDataSourcesIntoTreeListView();
 		}
 		void dataSourceRepository_OnDataSourceCanBeRemoved(object sender, NamedObjectJsonEventArgs<DataSource> e) {
 			e.DoNotDeleteItsUsedElsewhere = false;
 		}
 		void mniRefresh_Click(object sender, EventArgs e) {
 			Cursor.Current = Cursors.WaitCursor;
-			this.populateDataSourcesIntoTreeListView();
+			this.PopulateDataSourcesIntoTreeListView();
 			Cursor.Current = Cursors.Arrow;
 		}
 		void mniShowHeader_Click(object sender, EventArgs e) {
@@ -477,7 +477,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				return;
 			}
 			Assembler.InstanceInitialized.RepositoryJsonDataSources.SymbolCopyOrCompressFrom(this.DataSourceSelected, this.SymbolSelected, dsDestination, this);
-			this.populateDataSourcesIntoTreeListView();
+			this.PopulateDataSourcesIntoTreeListView();
 		}
 	}
 }

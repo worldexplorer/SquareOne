@@ -125,7 +125,7 @@ namespace Sq1.Charting {
 			// single-click input (arrows, direct position) or EndScroll after ThumbPosition
 			if (this.ChartSettings.ScrollPositionAtBarIndex != this.hScrollBar.Value) {
 				this.ChartSettings.ScrollPositionAtBarIndex  = this.hScrollBar.Value;
-				this.RaiseChartSettingsChangedContainerShouldSerialize();	//scrollbar should have OnDragCompleteMouseReleased event!!!
+				this.RaiseOnChartSettingsChanged_containerShouldSerialize();	//scrollbar should have OnDragCompleteMouseReleased event!!!
 			}
 		}
 		void bars_symbolInfo_PriceDecimalsChanged(object sender, EventArgs e) {
@@ -208,7 +208,7 @@ namespace Sq1.Charting {
 			//} catch (Exception ex) {
 			//	Assembler.PopupException(null, ex);
 			//}
-			this.RaiseChartSettingsChangedContainerShouldSerialize();
+			this.RaiseOnChartSettingsChanged_containerShouldSerialize();
 		}
 
 		void repositoryJsonDataSources_OnSymbolRemoved_clearChart(object sender, DataSourceSymbolEventArgs e) {

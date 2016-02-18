@@ -4,36 +4,36 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Charting {
 	public partial class ChartShadow {
-		public event EventHandler<EventArgs> ChartSettingsChangedContainerShouldSerialize;
-		public event EventHandler<EventArgs> ContextScriptChangedContainerShouldSerialize;
+		public event EventHandler<EventArgs>	OnChartSettingsChanged_containerShouldSerialize;
+		public event EventHandler<EventArgs>	OnContextScriptChanged_containerShouldSerialize;
 
-		public event EventHandler<BarEventArgs> BarStreamingUpdatedMerged;
+		public event EventHandler<BarEventArgs>	OnBarStreamingUpdatedMerged;
 
-		public event EventHandler<EventArgs> OnPumpPaused;
-		public event EventHandler<EventArgs> OnPumpUnPaused;
+		public event EventHandler<EventArgs>	OnPumpPaused;
+		public event EventHandler<EventArgs>	OnPumpUnPaused;
 
-		public void RaiseBarStreamingUpdatedMerged(BarEventArgs e) {
-			if (this.BarStreamingUpdatedMerged == null) return;
+		void raiseOnBarStreamingUpdatedMerged(BarEventArgs e) {
+			if (this.OnBarStreamingUpdatedMerged == null) return;
 			try {
-				this.BarStreamingUpdatedMerged(this, e);
+				this.OnBarStreamingUpdatedMerged(this, e);
 			} catch (Exception ex) {
 				string msg = "RaiseBarStreamingUpdatedMerged(bar[" + e.Bar + "])";
 				Assembler.PopupException(msg, ex, false);
 			}
 		}
 		
-		public void RaiseChartSettingsChangedContainerShouldSerialize() {
-			if (this.ChartSettingsChangedContainerShouldSerialize == null) return;
+		public void RaiseOnChartSettingsChanged_containerShouldSerialize() {
+			if (this.OnChartSettingsChanged_containerShouldSerialize == null) return;
 			try {
-				this.ChartSettingsChangedContainerShouldSerialize(this, null);
+				this.OnChartSettingsChanged_containerShouldSerialize(this, null);
 			} catch (Exception ex) {
 				Assembler.PopupException("RaiseChartSettingsChangedContainerShouldSerialize()", ex);
 			}
 		}
-		public void RaiseContextScriptChangedContainerShouldSerialize() {
-			if (this.ContextScriptChangedContainerShouldSerialize == null) return;
+		public void RaiseOnContextScriptChanged_containerShouldSerialize() {
+			if (this.OnContextScriptChanged_containerShouldSerialize == null) return;
 			try {
-				this.ContextScriptChangedContainerShouldSerialize(this, null);
+				this.OnContextScriptChanged_containerShouldSerialize(this, null);
 			} catch (Exception ex) {
 				Assembler.PopupException("RaiseContextScriptChangedContainerShouldSerialize()", ex);
 			}

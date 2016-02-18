@@ -12,6 +12,8 @@ using Sq1.Widgets.RangeBar;
 using Sq1.Widgets;
 
 using Sq1.Gui.Singletons;
+using Sq1.Core.Charting;
+using Sq1.Core.Streaming;
 
 
 namespace Sq1.Gui.Forms {
@@ -62,17 +64,49 @@ namespace Sq1.Gui.Forms {
 
 			if (	this.chartFormManager.Executor.DataSource_fromBars.StreamingAdapter != null
 				 && this.chartFormManager.Executor.Strategy != null
-				 && this.chartFormManager.Executor.IsStreamingTriggeringScript) {
-				string msg = "I_REFUSE_CHANGE_SYMBOL__CURRENT_CHART_HAS_STRATEGY_RUNNING_ON_STREAMING click [" + this.chartFormManager.StreamingButtonIdent + "] button on ChartForm to unsubscribe";
+				 //&& this.chartFormManager.Executor.IsStreamingTriggeringScript
+				 && this.chartFormManager.ContextCurrentChartOrStrategy.DownstreamSubscribed == true
+				) {
+				string msg = "I_REFUSE_CHANGE_SYMBOL"
+					//+ " CURRENT_CHART_HAS_STRATEGY_RUNNING_ON_STREAMING"
+					+ " CURRENT_CHART_HAS_STRATEGY_SUBSCRIBED"
+					+ " to prevent occasional order execution, click [" + this.chartFormManager.StreamingButtonIdent + "] button on ChartForm to unsubscribe";
 				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
 
 			try {
 				ContextChart contextChart = this.chartFormManager.ContextCurrentChartOrStrategy;
+
+				#region subscribed strategies are not allowed to swap the horses; chartsWithoutStrategies are updated by Bars.OnBarStreamingUpdatedMerged
+				//string symbol_beforeChange			= contextChart.Symbol;
+				//string dataSource_beforeChange		= contextChart.DataSourceName;
+				//string reasonToSubscribeUnsubscribe = "USER_MADE_CHART?_CHANGE_BARS[" + symbol_beforeChange + "@" + dataSource_beforeChange + "]=>[" + e.Symbol + "@" + e.DataSource.Name + "]";
+				//ChartStreamingConsumer	amIsubscribed				= this.chartFormManager.ChartForm.ChartControl.ChartStreamingConsumer;
+				//DataDistributor			hopefullyLiveStreaming		= this.chartFormManager.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim;
+				//bool chartMustBeSubscribedToNewBars = contextChart.DownstreamSubscribed;
+				//if (chartMustBeSubscribedToNewBars) {
+				//    BarScaleInterval		scaleInterval_beforeChange	= contextChart.ScaleInterval;
+				//    //bool barsUnsubscribed	= hopefullyLiveStreaming.ConsumerBarUnsubscribe		(symbol_beforeChange, scaleInterval_beforeChange, amIsubscribed);
+				//    //bool quotesUnsubscribed = hopefullyLiveStreaming.ConsumerQuoteUnsubscribe	(symbol_beforeChange, scaleInterval_beforeChange, amIsubscribed);
+				//    amIsubscribed.StreamingUnsubscribe(reasonToSubscribeUnsubscribe);
+				//}
+				#endregion
+				
 				if (contextChart.DataSourceName != e.DataSource.Name)	contextChart.DataSourceName = e.DataSource.Name; 
 				if (contextChart.Symbol			!= e.Symbol) 			contextChart.Symbol 		= e.Symbol;
 				this.chartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("DataSourcesTree_OnSymbolSelected");
+
+				#region subscribed strategies are not allowed to swap the horses; chartsWithoutStrategies are updated by Bars.OnBarStreamingUpdatedMerged
+				//if (chartMustBeSubscribedToNewBars) {
+				//    string					symbol_afterChange			= contextChart.Symbol;
+				//    BarScaleInterval		scaleInterval_afterChange	= contextChart.ScaleInterval;
+				//    //bool barsSubscribed		= hopefullyLiveStreaming.ConsumerBarSubscribe	(symbol_afterChange, scaleInterval_afterChange, amIsubscribed, true);
+				//    //bool quotesSubscribed	= hopefullyLiveStreaming.ConsumerQuoteSubscribe	(symbol_afterChange, scaleInterval_afterChange, amIsubscribed, true);
+				//    amIsubscribed.StreamingSubscribe(reasonToSubscribeUnsubscribe);
+				//}
+				#endregion
+
 				DataSourcesForm.Instance.DataSourcesTreeControl.Refresh();
 
 				this.chartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();

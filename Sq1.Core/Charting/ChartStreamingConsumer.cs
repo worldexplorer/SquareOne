@@ -60,12 +60,12 @@ namespace Sq1.Core.Charting {
 				// did you find it? now you have to save it :(
 				if (strategy_nullUnsafe != null) {
 					//strategy_nullUnsafe.Serialize();
-					this.ChartShadow.RaiseContextScriptChangedContainerShouldSerialize();
+					this.ChartShadow.RaiseOnContextScriptChanged_containerShouldSerialize();
 					serialized = true;
 				} else {
 					//string msg = "RAISE_EVENT_SO_THAT_MAIN_FORM_SAVES_CHART_CONTEXT_WITHOUT_STRATEGY";
 					//Assembler.PopupException(msg, null, false);
-					this.ChartShadow.RaiseChartSettingsChangedContainerShouldSerialize();
+					this.ChartShadow.RaiseOnChartSettingsChanged_containerShouldSerialize();
 					serialized = true;
 				}
 			}
@@ -131,12 +131,12 @@ namespace Sq1.Core.Charting {
 				// did you find it? now you have to save it :(
 				if (this.Executor.Strategy != null) {
 					//strategy_nullUnsafe.Serialize();
-					this.ChartShadow.RaiseContextScriptChangedContainerShouldSerialize();
+					this.ChartShadow.RaiseOnContextScriptChanged_containerShouldSerialize();
 					serialized = true;
 				} else {
 					//string msg = "RAISE_EVENT_SO_THAT_MAIN_FORM_SAVES_CHART_CONTEXT_WITHOUT_STRATEGY";
 					//Assembler.PopupException(msg, null, false);
-					this.ChartShadow.RaiseChartSettingsChangedContainerShouldSerialize();
+					this.ChartShadow.RaiseOnChartSettingsChanged_containerShouldSerialize();
 					serialized = true;
 				}
 			}

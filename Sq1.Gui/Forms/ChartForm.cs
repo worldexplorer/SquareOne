@@ -78,7 +78,7 @@ namespace Sq1.Gui.Forms {
 
 			this.waitForChartFormIsLoaded = new ManualResetEvent(false);
 
-			this.ChartControl.BarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged);
+			this.ChartControl.OnBarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged);
 		}
 		//programmer's constructor
 		public ChartForm(ChartFormManager chartFormManager) : this() {
@@ -95,33 +95,33 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		public void ChartFormEventsToChartFormManagerAttach() {
-			this.ChartControl.RangeBar.ValueMinChanged						+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
-			this.ChartControl.RangeBar.ValueMaxChanged						+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
-			this.ChartControl.RangeBar.ValuesMinAndMaxChanged				+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
-			this.ChartControl.ChartSettingsChangedContainerShouldSerialize	+= new EventHandler<EventArgs>(ChartControl_ChartSettingsChangedContainerShouldSerialize);
-			this.ChartControl.ContextScriptChangedContainerShouldSerialize	+= new EventHandler<EventArgs>(ChartControl_ContextScriptChangedContainerShouldSerialize);
-			this.ChartControl.OnPumpPaused									+= new EventHandler<EventArgs>(ChartControl_OnPumpPaused);
-			this.ChartControl.OnPumpUnPaused								+= new EventHandler<EventArgs>(ChartControl_OnPumpUnPaused);
+			this.ChartControl.RangeBar.ValueMinChanged							+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
+			this.ChartControl.RangeBar.ValueMaxChanged							+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
+			this.ChartControl.RangeBar.ValuesMinAndMaxChanged					+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
+			this.ChartControl.OnChartSettingsChanged_containerShouldSerialize	+= new EventHandler<EventArgs>(ChartControl_OnChartSettingsChanged_containerShouldSerialize);
+			this.ChartControl.OnContextScriptChanged_containerShouldSerialize	+= new EventHandler<EventArgs>(ChartControl_OnContextScriptChanged_containerShouldSerialize);
+			this.ChartControl.OnPumpPaused										+= new EventHandler<EventArgs>(ChartControl_OnPumpPaused);
+			this.ChartControl.OnPumpUnPaused									+= new EventHandler<EventArgs>(ChartControl_OnPumpUnPaused);
 		}
 
 		public void ChartFormEventsToChartFormManagerDetach() {
-			this.ChartControl.RangeBar.ValueMinChanged						-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
-			this.ChartControl.RangeBar.ValueMaxChanged						-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
-			this.ChartControl.RangeBar.ValuesMinAndMaxChanged				-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
-			this.ChartControl.ChartSettingsChangedContainerShouldSerialize	-= new EventHandler<EventArgs>(ChartControl_ChartSettingsChangedContainerShouldSerialize);
-			this.ChartControl.ContextScriptChangedContainerShouldSerialize	-= new EventHandler<EventArgs>(ChartControl_ContextScriptChangedContainerShouldSerialize);
-			this.ChartControl.OnPumpPaused									-= new EventHandler<EventArgs>(ChartControl_OnPumpPaused);
-			this.ChartControl.OnPumpUnPaused								-= new EventHandler<EventArgs>(ChartControl_OnPumpUnPaused);
+			this.ChartControl.RangeBar.ValueMinChanged							-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
+			this.ChartControl.RangeBar.ValueMaxChanged							-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
+			this.ChartControl.RangeBar.ValuesMinAndMaxChanged					-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
+			this.ChartControl.OnChartSettingsChanged_containerShouldSerialize	-= new EventHandler<EventArgs>(ChartControl_OnChartSettingsChanged_containerShouldSerialize);
+			this.ChartControl.OnContextScriptChanged_containerShouldSerialize	-= new EventHandler<EventArgs>(ChartControl_OnContextScriptChanged_containerShouldSerialize);
+			this.ChartControl.OnPumpPaused										-= new EventHandler<EventArgs>(ChartControl_OnPumpPaused);
+			this.ChartControl.OnPumpUnPaused									-= new EventHandler<EventArgs>(ChartControl_OnPumpUnPaused);
 		}
 
-		void ChartControl_ContextScriptChangedContainerShouldSerialize(object sender, EventArgs e) {
+		void ChartControl_OnContextScriptChanged_containerShouldSerialize(object sender, EventArgs e) {
 			if (this.ChartFormManager.Strategy == null) {
 				string msg = "I_INVOKED_YOU_FROM_REPORTER_NOT_POSSIBLE_STRATEGY_DISAPPEARED_NOW";
 				Assembler.PopupException(msg);
 			}
 			this.ChartFormManager.Strategy.Serialize();
 		}
-		void ChartControl_ChartSettingsChangedContainerShouldSerialize(object sender, EventArgs e) {
+		void ChartControl_OnChartSettingsChanged_containerShouldSerialize(object sender, EventArgs e) {
 			if (this.ChartFormManager.ContextCurrentChartOrStrategy.Symbol != this.ChartFormManager.Executor.Bars.Symbol) {
 				string msg = "YOU_ARE_COMING_FROM_SyncBarsIdentDueToSymbolRename__ChartShadow_COULDNT_HANDLE_ITS_OWN_CONTEXT__DO_YOU_NEED/KNOW_HOW_TO_REFACTOR?";
 				this.ChartFormManager.ContextCurrentChartOrStrategy.Symbol  = this.ChartFormManager.Executor.Bars.Symbol;

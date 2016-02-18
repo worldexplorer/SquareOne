@@ -30,8 +30,11 @@ namespace Sq1.Core.Streaming {
 				;
 
 			if (this.DataDistributor_replacedForLivesim.DistributionChannels.Count == 0 && chartBarsSubscribeSelected) {
-				string msg = "ORIGINAL_DISTRIBUTOR_MUST_HAVE_HAD_THE_CHART_YOU_WANT_TO_PAUSE AND_SOLIDIFIER";
-				Assembler.PopupException(msg, null, false);
+				string nonDefaultLivesimWasntSubscribed = this.DataDistributor_replacedForLivesim.ToString();
+				if (nonDefaultLivesimWasntSubscribed.Contains("LiveStreamingDefault")) {
+					string msg = "ORIGINAL_DISTRIBUTOR_MUST_HAVE_HAD_THE_CHART_YOU_WANT_TO_PAUSE AND_SOLIDIFIER";
+					Assembler.PopupException(msg, null, false);
+				}
 			}
 
 			this.dataDistributor_preLivesimForSymbolLivesimming = this.DataDistributor_replacedForLivesim;

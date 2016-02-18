@@ -678,7 +678,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg);
 			} else {
 				this.ChartShadow.SyncBarsIdentDueToSymbolRename();		// can I delete propagation to Strategy.ScriptContextCurrent?
-				this.ChartShadow.RaiseChartSettingsChangedContainerShouldSerialize();
+				this.ChartShadow.RaiseOnChartSettingsChanged_containerShouldSerialize();
 			}
 			if (this.Strategy == null) return;
 			if (this.Strategy.ScriptContextCurrent.Symbol == this.Bars.Symbol) return;

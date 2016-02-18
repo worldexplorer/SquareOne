@@ -288,10 +288,11 @@ namespace Sq1.Gui {
 					//if (cfmgr.DataSnapshot.ContextChart.IsStreaming == true) {
 					//    string msg = "CHART_SUBSCRIBED__BUT_SHOULD_CONNECT_AFTER_BACKTEST";
 					//} else {
-						StreamingAdapter streaming = cfmgr.Executor.DataSource_fromBars.StreamingAdapter;
-						if (streaming != null && (streaming is LivesimStreaming) == false) {
-							streaming.UpstreamConnect();
-						}
+						//NO!!! will autoconnect once per DataSource, guided by Streaming.UpstreamConnectedOnAppRestart
+						//StreamingAdapter streaming = cfmgr.Executor.DataSource_fromBars.StreamingAdapter;
+						//if (streaming != null && (streaming is LivesimStreaming) == false && streaming.UpstreamConnectionState) {
+						//    streaming.UpstreamConnect();
+						//}
 					//}
 				}
 				
@@ -391,11 +392,26 @@ namespace Sq1.Gui {
 					string dsNameToSelect = DataSourceEditorForm.Instance.DataSourceEditorControl.DataSourceName;
 					DataSourcesForm.Instance.DataSourcesTreeControl.SelectDatasource(dsNameToSelect);
 				}
+				if (DataSourcesForm.Instance.IsShown) {
+					DataSourcesForm.Instance.DataSourcesTreeControl.PopulateDataSourcesIntoTreeListView();
+				}
 
 				//DOESNT_WORK trigger DataSourceTree to select the ActiveChart via full handler DockPanel_ActiveDocumentChanged();
 				this.ChartFormActive_nullUnsafe.DockHandler.Pane.Activate();
 			} catch (Exception ex) {
 				Assembler.PopupException("WorkspaceLoad#2()", ex);
+			}
+
+			foreach (DataSource eachDataSource in Assembler.InstanceInitialized.RepositoryJsonDataSources.ItemsAsList) {
+				StreamingAdapter streamingAdapter = eachDataSource.StreamingAdapter;
+				if (streamingAdapter == null) continue;
+				if (streamingAdapter is LivesimStreaming) continue;
+				if (streamingAdapter.UpstreamConnectedOnAppRestart == false) continue;
+				try {
+					streamingAdapter.UpstreamConnect();
+				} catch (Exception ex) {
+					Assembler.PopupException("FAILED_TO_UpstreamConnect() streamingAdapter[" + streamingAdapter.ToString() + "] //WorkspaceLoad#3()", ex);
+				}
 			}
 		}
 		void MainFormEventManagerInitializeWhenDockingIsNotNullAnymore() {

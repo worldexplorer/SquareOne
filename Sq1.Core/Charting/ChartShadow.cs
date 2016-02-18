@@ -74,7 +74,7 @@ namespace Sq1.Core.Charting {
 
 		    if (removeChartShadowFromOldSymbolAndAddToLoadingBars && this.Bars != null)	this.ChartShadow_RemoveFromDataSource();
 			if (this.Bars != null) {
-				this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
+				this.Bars.OnBarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(this.bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
 			}
 
 			this.Bars = barsNotNull;
@@ -82,10 +82,10 @@ namespace Sq1.Core.Charting {
 		    #endregion
 
 		    // ChartForm wants to update last received quote datetime; FOR_NON_CORE_CONSUMERS_ONLY CORE_DEFINED_CONSUMERS_IMPLEMENT_IStreamingConsumer.ConsumeQuoteOfStreamingBar()
-		    this.Bars.BarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
+		    this.Bars.OnBarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(this.bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
 		}
-		void bars_BarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm(object sender, BarEventArgs e) {
-			this.RaiseBarStreamingUpdatedMerged(e);
+		void bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm(object sender, BarEventArgs e) {
+			this.raiseOnBarStreamingUpdatedMerged(e);
 		}
 		
 		public virtual bool SelectPosition(Position position) {

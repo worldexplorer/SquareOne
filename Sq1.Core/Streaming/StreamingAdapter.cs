@@ -44,10 +44,23 @@ namespace Sq1.Core.Streaming {
 					Assembler.PopupException("WHAT_DID_YOU_INITIALIZE? IT_WAS_ALREADY_INITIALIZED_AND_UPSTREAM_CONNECTED", null, false);
 				}
 				this.upstreamConnectionState = value;
-				this.RaiseOnConnectionStateChanged();
+				this.RaiseOnConnectionStateChanged();	// consumed by QuikStreamingMonitorForm,QuikStreamingEditor
+
+				try {
+					if (this.UpstreamConnectedOnAppRestart != this.UpstreamConnected) {
+						this.UpstreamConnectedOnAppRestart =  this.UpstreamConnected;		// you can override this.UpstreamConnectedOnAppRestart and keep it FALSE to avoid DS serialization
+						if (this.DataSource != null) {
+							Assembler.InstanceInitialized.RepositoryJsonDataSources.SerializeSingle(this.DataSource);
+						}
+					}
+				} catch (Exception ex) {
+					string msg = "SOMETHING_WENT_WRONG_WHILE_SAVING_DATASOURCE_AFTER_YOU_CHANGED UpstreamConnected for streaming[" + this + "]";
+					Assembler.PopupException(msg);
+				}
 			}
 		}
-		[JsonProperty]	public		bool					UpstreamConnected					{ get {
+		[JsonProperty]	public	virtual	bool				UpstreamConnectedOnAppRestart		{ get; protected set; }
+		[JsonIgnore]	public		bool					UpstreamConnected					{ get {
 			bool ret = false;
 			switch (this.UpstreamConnectionState) {
 				case ConnectionState.UnknownConnectionState:							ret = false;	break;
@@ -80,6 +93,7 @@ namespace Sq1.Core.Streaming {
 			}
 			return ret;
 		} }
+		
 		[JsonProperty]	public		int						Level2RefreshRateMs;
 		[JsonIgnore]	public		bool					QuotePumpSeparatePushingThreadEnabled	{ get; protected set; }
 		[JsonIgnore]	public		LivesimStreaming		LivesimStreaming_ownImplementation		{ get; protected set; }

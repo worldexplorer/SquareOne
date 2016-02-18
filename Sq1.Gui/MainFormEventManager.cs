@@ -58,7 +58,7 @@ namespace Sq1.Gui {
 				ChartFormManager msg = this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
 				active = msg.ChartForm;
 			}
-			active.ChartFormManager.InitializeWithStrategy(strategy, false);
+			active.ChartFormManager.InitializeWithStrategy(strategy, false, true);
 			if (strategy.Script != null && strategy.Script.Executor != null) {
 				strategy.ContextSwitchCurrentToNamedAndSerialize(e.scriptContextName);
 			} else {
@@ -80,7 +80,7 @@ namespace Sq1.Gui {
 		}
 		ChartFormManager chartCreateShowPopulateSelectorsSlidersFromStrategy(Strategy strategy) {
 			ChartFormManager chartFormManager = new ChartFormManager(this.mainForm);
-			chartFormManager.InitializeWithStrategy(strategy, false);
+			chartFormManager.InitializeWithStrategy(strategy, false, true);
 			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
 
 			this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Add(chartFormManager.ChartForm.ChartControl.ChartSettings, chartFormManager.ChartForm.ChartControl);
@@ -92,7 +92,7 @@ namespace Sq1.Gui {
 		}
 		void chartCreateShowPopulateSelectorsSlidersNoStrategy(ContextChart contextChart) {
 			ChartFormManager chartFormManager = new ChartFormManager(this.mainForm);
-			chartFormManager.InitializeWithoutStrategy(contextChart);
+			chartFormManager.InitializeWithoutStrategy(contextChart, true);
 			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
 
 			this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Add(chartFormManager.ChartForm.ChartControl.ChartSettings, chartFormManager.ChartForm.ChartControl);

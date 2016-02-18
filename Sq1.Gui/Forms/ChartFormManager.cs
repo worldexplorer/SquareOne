@@ -273,7 +273,7 @@ namespace Sq1.Gui.Forms {
 			ret.AppendReportersMenuItems(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
 			return ret;
 		}
-		public void InitializeWithoutStrategy(ContextChart contextChart) {
+		public void InitializeWithoutStrategy(ContextChart contextChart, bool saveStrategyOrCtx = false) {
 			string msig = " //ChartFormsManager[" + this.ToString() + "].InitializeChartNoStrategy(" + contextChart + ")";
 
 			if (this.DataSnapshot.ChartSerno == -1) {
@@ -315,8 +315,7 @@ namespace Sq1.Gui.Forms {
 				//Assembler.PopupException(msg, null, false);
 				bool loadNewBars = true;
 				bool skipBacktest = true;
-				bool saveStrategyRequired = false;
-				this.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(msig, loadNewBars, skipBacktest, saveStrategyRequired);
+				this.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(msig, loadNewBars, skipBacktest, saveStrategyOrCtx);
 				//v1 if (this.DataSnapshot.ContextChart.IsStreaming) {
 				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
 				ContextChart ctx = this.ContextCurrentChartOrStrategy;
@@ -329,7 +328,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg + msig, ex);
 			}
 		}
-		public void InitializeWithStrategy(Strategy strategy, bool skipBacktestDuringDeserialization = true) {
+		public void InitializeWithStrategy(Strategy strategy, bool skipBacktestDuringDeserialization = true, bool saveStrategyRequired = false) {
 			string msig = " //ChartFormsManager[" + this.ToString() + "].InitializeWithStrategy(" + strategy.ToString() + ")";
 			this.Strategy = strategy;
 			//this.Executor = new ScriptExecutor(mainForm.Assembler, this.Strategy);
@@ -377,7 +376,6 @@ namespace Sq1.Gui.Forms {
 				// STRATEGY_CLICK_TO_CHART_DOESNT_BACKTEST this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true);
 				// ALL_SORT_OF_STARTUP_ERRORS this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, false);
 				bool loadNewBars = true;
-				bool saveStrategyRequired = false;
 				this.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(msig, loadNewBars, skipBacktestDuringDeserialization, saveStrategyRequired);
 				if (skipBacktestDuringDeserialization == false) {
 					string msg = "YOU_DID_NOT_SWITCH_TO_GUI_THREAD...";
@@ -400,7 +398,7 @@ namespace Sq1.Gui.Forms {
 		}
 
 		public void PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(
-					string msig, bool loadNewBars = true, bool skipBacktest = false, bool saveStrategyRequired = true) {
+					string msig, bool loadNewBars = true, bool skipBacktest = false, bool saveStrategyOrCtx = true) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
 			this.Executor.BacktesterAbortIfRunningRestoreContext();
 
@@ -460,7 +458,7 @@ namespace Sq1.Gui.Forms {
 				context.ScaleInterval = dataSource.ScaleInterval;
 				string msg2 = "CONTEXT_SCALE_INTERVAL_UNKNOWN__RESET_TO_DATASOURCE'S contextToPopulate.ScaleInterval[" + context.ScaleInterval + "]";
 				Assembler.PopupException(msg2 + msig, null, false);
-				saveStrategyRequired = true;	// don't move this write before you read above
+				saveStrategyOrCtx = true;	// don't move this write before you read above
 			}
 
 			bool wontBacktest = skipBacktest || (this.Strategy != null && this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false);
@@ -507,11 +505,11 @@ namespace Sq1.Gui.Forms {
 			//this.ChartForm.ChartControl.InvalidateAllPanelsFolding();	// WHEN_I_CHANGE_SMA_PERIOD_I_DONT_WANT_TO_SEE_CLEAR_CHART_BUT_REPAINTED_WITHOUT_2SEC_BLINK
 			
 			if (this.Strategy == null) {
-				this.DataSnapshotSerializer.Serialize();
+				if (saveStrategyOrCtx) this.DataSnapshotSerializer.Serialize();
 				return;
 			}
 
-			if (saveStrategyRequired) {
+			if (saveStrategyOrCtx) {
 				// StrategySave is here koz I'm invoked for ~10 user-click GUI events; only Deserialization shouldn't save anything
 				this.Strategy.Serialize();
 			}
@@ -635,7 +633,7 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		public void InitializeChartNoStrategyAfterDeserialization() {
-			this.InitializeWithoutStrategy(null);
+			this.InitializeWithoutStrategy(null, false);
 		}
 		public void InitializeStrategyAfterDeserialization(string strategyGuid, string strategyName = "PLEASE_SUPPLY_FOR_USERS_CONVENIENCE") {
 			this.StrategyFoundDuringDeserialization = false;
@@ -648,7 +646,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.InitializeWithStrategy(strategyFound, true);
+			this.InitializeWithStrategy(strategyFound, true, false);
 			this.StrategyFoundDuringDeserialization = true;
 			if (this.Executor.Bars == null) {
 				string msg = "TYRINIG_AVOID_BARS_NULL_EXCEPTION: FIXME InitializeWithStrategy() didn't load bars";
