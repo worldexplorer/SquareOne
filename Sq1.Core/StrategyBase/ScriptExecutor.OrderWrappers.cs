@@ -116,7 +116,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 
-			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alertFilled.Symbol);
+			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteClone_getForSymbol(alertFilled.Symbol);
 
 			int barFillRelno  = alertFilled.Bars.Count - 1;
 			if (barFillRelno != alertFilled.Bars.BarStreaming_nullUnsafe.ParentBarsIndex) {

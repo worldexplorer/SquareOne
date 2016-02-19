@@ -23,7 +23,7 @@ namespace Sq1.Gui {
 		void mainForm_Load(object sender, System.EventArgs e) {
 			try {
 				// separate try {} for MONO: Reflection bla-bla-bla exception
-				this.MainFormEventManagerInitializeWhenDockingIsNotNullAnymore();
+				this.MainFormEventManager_initialize_whenDockingIsNotNullAnymore();
 			} catch (Exception ex) {
 				Assembler.PopupException("MainFormEventManagerInitializeWhenDockingIsNotNullAnymore()", ex);
 			}

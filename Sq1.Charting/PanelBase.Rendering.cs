@@ -418,7 +418,10 @@ namespace Sq1.Charting {
 			}
 			// ALREADY_CHECKED_FOR_NULL_OR_EMPTY
 			Dictionary<string, Indicator> indicators = this.ChartControl.ScriptExecutorObjects.Indicators;
-
+			
+			//just increase Y; otherwize first indicator's label will be covered by Symbol
+			this.ChartLabelsUpperLeftYincremental += 13;
+			
 			int barX = this.ChartControl.ChartWidthMinusGutterRightPrice;
 			// i > this.VisibleBarLeft_cached is enough because Indicator.Draw() takes previous bar
 			for (int i = this.VisibleBarRight_cached; i > this.VisibleBarLeft_cached; i--) {

@@ -2,6 +2,7 @@
 
 namespace Sq1.Core.DataFeed {
 	public interface IDataSourceEditor {
-		void ApplyEditorsToDataSource();
+		void PushEditedSettingsToAdapters_initializeDataSource_updateDataSourceTree_rebacktestCharts();
+		void SerializeDataSource_saveAdapters();
 	}
 }

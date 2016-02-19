@@ -384,7 +384,7 @@ namespace Sq1.Core.StrategyBase {
 
 		public string ReasonWhyPlacingProtoDoesntMakeSense(PositionPrototype proto, bool internalCallee = false) {
 			double lastPrice = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteGetPriceForMarketOrder(proto.Symbol);
-			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(proto.Symbol);
+			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteClone_getForSymbol(proto.Symbol);
 			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
 			bool willBeExecutedImmediately = false;
 			MarketLimitStop planningEntryUsing = MarketConverter.EntryMarketLimitStopFromDirection(
@@ -535,7 +535,7 @@ namespace Sq1.Core.StrategyBase {
 				#endif
 				throw new Exception(msg1);
 			}
-			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(proto.Symbol);
+			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteClone_getForSymbol(proto.Symbol);
 			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
 			double newTakeProfitPrice = proto.OffsetToPrice(newTakeProfitPositiveOffset);
 			bool willBeExecutedImmediately = false;

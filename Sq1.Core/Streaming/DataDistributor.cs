@@ -260,7 +260,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException("quote[" + quote + "]'se Symbol is null or empty, returning");
 				return;
 			}
-			Quote lastQuote = this.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(quote.Symbol);
+			Quote lastQuote = this.StreamingAdapter.StreamingDataSnapshot.LastQuoteClone_getForSymbol(quote.Symbol);
 			List<SymbolScaleDistributionChannel> channelsForSymbol = this.GetDistributionChannels_allScaleIntervals_forSymbol(quote.Symbol);
 			foreach (SymbolScaleDistributionChannel channel in channelsForSymbol) {
 				// late quote should be within current StreamingBar, otherwize don't deliver for channel

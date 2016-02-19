@@ -19,7 +19,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 				return this.dataSourceIamEditing.Name;
 			} }
 
-		public	DockPanel								MainFormDockPanel_forDdeMonitor	{ get; private set; }
+		//public	DockPanel								MainFormDockPanel_forDdeMonitor	{ get; private set; }
 
 		public	Dictionary<string, StreamingAdapter>	StreamingAdaptersByName			{ get; private set; }
 		public	Dictionary<string, BrokerAdapter>		BrokerAdaptersByName			{ get; private set; }
@@ -47,7 +47,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.orderProcessor						= orderProcessorPassed;
 		}
 		public void Initialize(DataSource dsEdit, DockPanel mainFormDockPanel) {
-			this.MainFormDockPanel_forDdeMonitor = mainFormDockPanel;
+			//this.MainFormDockPanel_forDdeMonitor = mainFormDockPanel;
 
 			if (dsEdit == null) {
 				throw new Exception("DataSourceEditor can not create the DataSource; pass an existing datasource for editing, not NULL");
@@ -251,7 +251,18 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.lvBrokerAdapters.Items[brokerIndex].Selected = true;
 			lvBrokerAdapters_SelectedIndexChanged(null, null);
 		}
-		public void ApplyEditorsToDataSource() {
+
+		public void SerializeDataSource_saveAdapters() {
+			try {
+				this.repositoryJsonDataSource.SerializeSingle(dataSourceIamEditing);
+			} catch (Exception ex) {
+				string msg = "SOMETHING_HAPPENED_WHILE_repositoryJsonDataSource.SerializeSingle(" + this.dataSourceIamEditing + ")";
+				Assembler.PopupException(msg, ex);
+			}
+
+		}
+
+		public void PushEditedSettingsToAdapters_initializeDataSource_updateDataSourceTree_rebacktestCharts() {
 			if (this.tsiLtbDataSourceName.InputFieldValue == "") {
 				string msg = "Please provide Name for this new DataSet";
 				Assembler.PopupException(msg);

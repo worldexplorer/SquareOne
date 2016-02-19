@@ -60,7 +60,7 @@ namespace Sq1.Gui {
 		public MainForm() {
 			InitializeComponent();
 			#if DEBUG
-			this.lblSpace.Text = "   ||   ";
+			this.lblSpace.Text = "   ||   ";	 //single line is RELEASE, double line is DEBUG
 			#endif
 
 			try {
@@ -88,6 +88,8 @@ namespace Sq1.Gui {
 			}
 		}
 		public void WorkspaceLoad(string workspaceToLoad = null) {
+			string msig = " //WorkspaceLoad(" + workspaceToLoad + ")";
+			
 			bool dockContentWillBeReCreated = true;
 			if (string.IsNullOrEmpty(workspaceToLoad)) {
 				workspaceToLoad = Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded;
@@ -250,13 +252,23 @@ namespace Sq1.Gui {
 				}
 
 				foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
-					if (cfmgr.ChartForm == null) continue;
+					if (cfmgr.ChartForm == null) {
+						string msg = "MUST_NEVER_HAPPEN cfmgr[" + cfmgr + "].ChartForm=null";
+						Assembler.PopupException(msg + msig, null, false);
+						continue;
+					}
 					if (cfmgr.ChartForm.MniShowSourceCodeEditor.Enabled) {		//set to true in InitializeWithStrategy() << DeserializeDockContent() 20 lines above
 						cfmgr.ChartForm.MniShowSourceCodeEditor.Checked = cfmgr.ScriptEditorIsOnSurface;
 					}
 
 					//ADDED_ANOTHER_FOREACH_AFTER_ResumeLayout(true) cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
+					
+					if (cfmgr.DataSnapshot.ChartSerno == this.GuiDataSnapshot.ChartSernoLastKnownHadFocus) {
+						string msg = "IF_I_FAIL_TO_ACTIVATE__THEN_WILL_DO_IT_IN_NEXT_LOOP_OVER_ChartManagers__IN_ATTEMPT#2_AFTER_DOCK_FULLY_UNSERIALIZED";
+						cfmgr.ChartForm.Activate();
+					}
 
+					// main goal for this foreach is to initialize Indicators which only are there for Strategies
 					Strategy chartStrategy = cfmgr.Executor.Strategy;
 					if (chartStrategy == null) continue;
 					if (chartStrategy.ActivatedFromDll == false) {
@@ -374,7 +386,15 @@ namespace Sq1.Gui {
 				}
 
 				cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
+
+				// ATTEMPT#2_AFTER_DOCK_FULLY_UNSERIALIZED this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
+				//if (cfmgr.DataSnapshot.ChartSerno == this.GuiDataSnapshot.ChartSernoLastKnownHadFocus) {
+				//	string msg = "ATTEMPT#2_AFTER_DOCK_FULLY_UNSERIALIZED";
+				//	cfmgr.ChartForm.Activate();
+				//	//Activate already did its job! Active=LastKnownActive cfmgr.ChartForm.BringToFront();
+				//}
 			}
+			
 			if (this.ChartFormActive_nullUnsafe != null) {
 				//+ainFrom.Deserializer on apprestart, Document.Active (ChartForm) doesn't paint Bars
 				this.ChartFormActive_nullUnsafe.ChartControl.InvalidateAllPanels();
@@ -397,7 +417,7 @@ namespace Sq1.Gui {
 				}
 
 				//DOESNT_WORK trigger DataSourceTree to select the ActiveChart via full handler DockPanel_ActiveDocumentChanged();
-				this.ChartFormActive_nullUnsafe.DockHandler.Pane.Activate();
+				//this.ChartFormActive_nullUnsafe.DockHandler.Pane.Activate();	// get LastKnownActive focus()'ed, after whatever DockPanel has added the last
 			} catch (Exception ex) {
 				Assembler.PopupException("WorkspaceLoad#2()", ex);
 			}
@@ -414,7 +434,7 @@ namespace Sq1.Gui {
 				}
 			}
 		}
-		void MainFormEventManagerInitializeWhenDockingIsNotNullAnymore() {
+		void MainFormEventManager_initialize_whenDockingIsNotNullAnymore() {
 			// OK_SO_LUO_PLAYS_WITH_WINDOWS.FORMS.VISIBLE_I_SEE Debugger.Break();
 			DataSourcesForm			.Instance.VisibleChanged	+= delegate { this.mniDataSources			.Checked = DataSourcesForm			.Instance.Visible; };
 			ExceptionsForm			.Instance.VisibleChanged	+= delegate { this.mniExceptions			.Checked = ExceptionsForm			.Instance.Visible; };
