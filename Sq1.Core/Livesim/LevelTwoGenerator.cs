@@ -27,7 +27,7 @@ namespace Sq1.Core.Livesim {
 				return;
 			}
 			this.symbolInfo			= symbolInfo;
-			this.stepPrice			= this.symbolInfo.PriceStepFromDecimal;
+			this.stepPrice			= this.symbolInfo.PriceStep;
 			this.stepSize			= this.symbolInfo.VolumeStepFromDecimal;
 			this.levelsToGenerate	= levelsToGenerate;
 		}
