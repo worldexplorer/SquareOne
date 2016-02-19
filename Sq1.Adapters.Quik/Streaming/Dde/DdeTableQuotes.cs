@@ -57,11 +57,11 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			double sizeParsed			= row.GetDouble("qty"			, double.NaN);
 			//if (lastQuoteDateTimeForVolume != quikQuote.ServerTime) {
 			//    lastQuoteDateTimeForVolume  = quikQuote.ServerTime;
-			//    quikQuote.Size = sizeParsed;
+			    quikQuote.Size = sizeParsed;
 			//} else {
 			//    string msg = "SHOULD_I_DELIVER_THE_DUPLIATE_QUOTE?";
-			//    //Assembler.PopupException(msg, null, false);
-			//    //return quikQuote;
+			//    Assembler.PopupException(msg, null, false);
+			//    return quikQuote;
 			//}
 			//if (lastQuoteSizeForVolume != sizeParsed) {
 			//	lastQuoteSizeForVolume = sizeParsed;
