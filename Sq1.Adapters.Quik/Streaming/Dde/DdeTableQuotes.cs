@@ -55,22 +55,25 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			//}
 
 			double sizeParsed			= row.GetDouble("qty"			, double.NaN);
-			if (lastQuoteDateTimeForVolume != quikQuote.ServerTime) {
-				lastQuoteDateTimeForVolume  = quikQuote.ServerTime;
-				quikQuote.Size = sizeParsed;
-			} else {
-				string msg = "SHOULD_I_DELIVER_THE_DUPLIATE_QUOTE?";
-				//Assembler.PopupException(msg, null, false);
-				return quikQuote;
-			}
+			//if (lastQuoteDateTimeForVolume != quikQuote.ServerTime) {
+			//    lastQuoteDateTimeForVolume  = quikQuote.ServerTime;
+			//    quikQuote.Size = sizeParsed;
+			//} else {
+			//    string msg = "SHOULD_I_DELIVER_THE_DUPLIATE_QUOTE?";
+			//    //Assembler.PopupException(msg, null, false);
+			//    //return quikQuote;
+			//}
 			//if (lastQuoteSizeForVolume != sizeParsed) {
 			//	lastQuoteSizeForVolume = sizeParsed;
 			//	quote.Size = sizeParsed;
 			//}
 
+			this.syncPriceStep_toSymbolInfo(row, quikQuote);
+
 			base.QuikStreaming.PushQuoteReceived(quikQuote);	//goes to another thread via PUMP and invokes strategies letting me go
 			return quikQuote;									//one more delay is to raise and event which will go to GUI thread as well QuikStreamingMonitorForm.tableQuotes_DataStructureParsed_One()
 		}
+
 		void reconstructServerTime(XlRowParsed rowParsed) {
 			string dateFormat = base.ColumnDefinitionsByNameLookup["TRADE_DATE_CODE"]	.ToDateParseFormat;
 			string timeFormat = base.ColumnDefinitionsByNameLookup["time"]				.ToTimeParseFormat;
@@ -105,6 +108,22 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			    string errmsg = "TROWN DateTime.ParseExact(" + dateTimeReceived + ", " + dateTimeFormat + "): " + ex.Message;
 			    rowParsed.ErrorMessages.Add(errmsg);
 			}
+		}
+
+		void syncPriceStep_toSymbolInfo(XlRowParsed row, QuoteQuik quikQuote) {
+			double priceStep_fromDde = row.GetDouble("SEC_PRICE_STEP", double.NaN);
+			if (double.IsNaN(priceStep_fromDde)) return;
+
+			if (Assembler.InstanceInitialized.RepositorySymbolInfos == null) return;
+
+			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfo_nullUnsafe(quikQuote.Symbol);
+			if (symbolInfo == null) return;
+
+			//int priceStep_fromDde_asInt = Convert.ToInt32(Math.Round(priceStep_fromDde));
+			if (symbolInfo.PriceStepFromDde == priceStep_fromDde) return;
+
+			symbolInfo.PriceStepFromDde = priceStep_fromDde;
+			Assembler.InstanceInitialized.RepositorySymbolInfos.Serialize();	// YEAH (double)0 != (double)0... serializing as many times as many quotes we received first; but only once/symbol/session koz Infos are cached
 		}
 	}
 }

@@ -51,7 +51,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				//v1 Assembler.PopupException(msg + msig);
 				//v1 return;
 				string msg = "I_MANUALLY_RAISED_EVENT_WITH_EMPTY_LIST_TO_CLEAR_ANYTHING_(QUOTES/LEVEL2/TRADES)_RIGHT_AFTER_USER_STOPPED_DDE_FEED";
-				level2fromDde_pushTo_domResizeableUserControl = new LevelTwoOlv(new LevelTwoHalf("MANUAL_CLEAN"), new LevelTwoHalf("MANUAL_CLEAN"), null);
+				level2fromDde_pushTo_domResizeableUserControl = new LevelTwoOlv(null, null, null);
 			} else {
 				level2fromDde_pushTo_domResizeableUserControl = alwaysJustOneDom.DataStructureParsed[0];
 			}

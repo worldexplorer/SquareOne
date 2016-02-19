@@ -28,14 +28,15 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				new XlColumn(XlBlockType.Float,		"high"),
 				new XlColumn(XlBlockType.Float,		"low"),
 				new XlColumn(XlBlockType.Float,		"stepprice"),
+				new XlColumn(XlBlockType.Float,		"SEC_PRICE_STEP"),
 			};
 		} }
 
 		public static List<XlColumn> XlColumnsForTable_Trades { get {
 			return  new List<XlColumn>() {
-				new XlColumn(XlBlockType.String,	"TRADEDATE")	{ ToDateParseFormat = "dd.MM.yyyy" },
-				new XlColumn(XlBlockType.String,	"TRADETIME")	{ ToTimeParseFormat = "h:mm:sstt" },
-				new XlColumn(XlBlockType.Float,		"SECCODE", true, true),
+				new XlColumn(XlBlockType.String,	"TRADEDATE")		{ ToDateParseFormat = "dd.MM.yyyy" },
+				new XlColumn(XlBlockType.String,	"TRADETIME")		{ ToTimeParseFormat = "h:mm:sstt" },
+				new XlColumn(XlBlockType.Float,		"SECCODE",			true, true),
 				new XlColumn(XlBlockType.Float,		"CLASSCODE"),
 				new XlColumn(XlBlockType.Float,		"PRICE"),
 				new XlColumn(XlBlockType.Float,		"QTY"),
@@ -47,9 +48,9 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 		public static List<XlColumn> XlColumnsForTable_DepthOfMarketPerSymbol { get {
 			return  new List<XlColumn>() {
-				new XlColumn(XlBlockType.Float,		"SELL_VOLUME",	false),		// will be null@Write/Blank@Read  for levelTwoBids
-				new XlColumn(XlBlockType.Float,		"PRICE",		true, true),
-				new XlColumn(XlBlockType.Float,		"BUY_VOLUME",	false),		// will be null@Write/Blank@Read  for levelTwoAsks
+				new XlColumn(XlBlockType.Float,		"SELL_VOLUME",		false),		// will be null@Write/Blank@Read  for levelTwoBids
+				new XlColumn(XlBlockType.Float,		"PRICE",			true, true),
+				new XlColumn(XlBlockType.Float,		"BUY_VOLUME",		false),		// will be null@Write/Blank@Read  for levelTwoAsks
 			};
 		} }
 

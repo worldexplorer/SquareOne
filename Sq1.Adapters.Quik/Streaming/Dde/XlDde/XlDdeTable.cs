@@ -86,6 +86,9 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 					if (this.DdeWillDeliver_updatesForEachRow_inSeparateMessages) {
 						string msg = "COLUMNS_IDENTIFIED[" + this.ColumnsIdentifiedAsString + "]";
 						Assembler.PopupException(msg, null, false);
+
+						string msg2 = "COLUMNS_IN_MESSAGE[" + this.ColumnsInMessageAsString + "]";
+						Assembler.PopupException(msg2, null, false);
 					}
 				}
 				if (reader.RowsCount == 1) return;
@@ -98,7 +101,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 				#region CONSISTENCY_CHECK
 				foreach (XlColumn col in this.ColumnDefinitions) {
 					if (rowParsed.ContainsKey(col.Name) == false) {
-						string msg = "ALL_COLUMNS_MUST_BE_PRESENT__CAN_BE_NULL col.Name[" + col.Name + "] IS_MISSING_IN rowParsed[" + rowParsed + "]";
+						string msg = "ALL_COLUMNS_MUST_BE_PRESENT__CAN_NOT_BE_NULL col.Name[" + col.Name + "] IS_MISSING_IN rowParsed[" + rowParsed + "]";
 						//Assembler.PopupException(msg, null, false);
 						continue;
 					}
@@ -195,7 +198,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			string columnsInMessageAsString = "";
 			foreach (XlColumn columnInMessage in listOfXlColumns) {
 				string asString = columnInMessage.TypeExpected + ":" + columnInMessage.Name;
-				if (columnsInMessageAsString != "") columnsInMessageAsString += ",";
+				if (columnsInMessageAsString != "") columnsInMessageAsString += "," + Environment.NewLine;
 				columnsInMessageAsString += asString;
 			}
 			return columnsInMessageAsString;

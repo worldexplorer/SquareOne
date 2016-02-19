@@ -139,12 +139,12 @@
 			// olvcQuotesSymbolClass
 			// 
 			this.olvcQuotesSymbolClass.Text = "Class";
-			this.olvcQuotesSymbolClass.Width = 40;
+			this.olvcQuotesSymbolClass.Width = 52;
 			// 
 			// olvcQuotesSymbol
 			// 
 			this.olvcQuotesSymbol.Text = "Symbol";
-			this.olvcQuotesSymbol.Width = 75;
+			this.olvcQuotesSymbol.Width = 93;
 			// 
 			// olvcQuotesServerTime
 			// 
@@ -156,42 +156,42 @@
 			this.olvcQuotesQty.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesQty.Text = "Qty";
 			this.olvcQuotesQty.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvcQuotesQty.Width = 40;
+			this.olvcQuotesQty.Width = 46;
 			// 
 			// olvcQuotesBid
 			// 
 			this.olvcQuotesBid.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesBid.Text = "Bid";
 			this.olvcQuotesBid.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvcQuotesBid.Width = 65;
+			this.olvcQuotesBid.Width = 71;
 			// 
 			// olvcQuotesAsk
 			// 
 			this.olvcQuotesAsk.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesAsk.Text = "Ask";
 			this.olvcQuotesAsk.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvcQuotesAsk.Width = 65;
+			this.olvcQuotesAsk.Width = 73;
 			// 
 			// olvcQuotesLast
 			// 
 			this.olvcQuotesLast.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesLast.Text = "Last";
 			this.olvcQuotesLast.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvcQuotesLast.Width = 65;
+			this.olvcQuotesLast.Width = 10;
 			// 
 			// olvcQuotesFortsDepositBuy
 			// 
 			this.olvcQuotesFortsDepositBuy.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesFortsDepositBuy.Text = "FortsRepoBuy";
 			this.olvcQuotesFortsDepositBuy.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvcQuotesFortsDepositBuy.Width = 85;
+			this.olvcQuotesFortsDepositBuy.Width = 5;
 			// 
 			// olvcQuotesFortsDepositSell
 			// 
 			this.olvcQuotesFortsDepositSell.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesFortsDepositSell.Text = "FortsRepoSell";
 			this.olvcQuotesFortsDepositSell.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvcQuotesFortsDepositSell.Width = 85;
+			this.olvcQuotesFortsDepositSell.Width = 5;
 			// 
 			// olvcQuotesFortsPriceMin
 			// 

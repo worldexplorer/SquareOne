@@ -42,6 +42,20 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			this.levelTwoBids.UnLockFor(this, "IncomingTableBegun");
 			string msg = "send a notify event or Chart is already Wait(indefinitely)'ing to get a FrozenHalfs  and go draw them?...";
 
+
+			//#if DEBUG
+			if (levelTwoAsks.InnerDictionary.Count > 1 && levelTwoBids.InnerDictionary.Count > 1) {
+				List<double> asksPriceLevels_ASC = new List<double>(levelTwoAsks.InnerDictionary.Keys);
+				double askBest_lowest =  asksPriceLevels_ASC[0];
+				List<double> bidsPriceLevels_DESC = new List<double>(levelTwoBids.InnerDictionary.Keys);
+				double bidBest_highest =  bidsPriceLevels_DESC[bidsPriceLevels_DESC.Count-1];
+				if (askBest_lowest < bidBest_highest) {
+					string msg1 = "YOUR_MOUSTACHES_GOT_REVERTED";
+					Assembler.PopupException(msg1, null, false);
+				}
+			}
+			//#endif
+
 			// is ChartControl.chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline() invoked?
 			//base.QuikStreaming.(quikQuote);
 			msg = "notifying DomResizeableUserControl now:";
@@ -50,9 +64,9 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 		//protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
 		protected override LevelTwoOlv IncomingTableRow_convertToDataStructure_monitoreable(XlRowParsed row) {
-			double bidVolume	= row.GetDouble("SELL_VOLUME"	, double.NaN);
+			double bidVolume	= row.GetDouble("BUY_VOLUME"	, double.NaN);
 			double price		= row.GetDouble("PRICE"			, double.NaN);
-			double askVolume	= row.GetDouble("BUY_VOLUME"	, double.NaN);
+			double askVolume	= row.GetDouble("SELL_VOLUME"	, double.NaN);
 
 			if (double.IsNaN(bidVolume) == false) {		// where Blank become NaN?
 				//base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids_refactorBySymbol.Add(price, bidVolume, this, "IncomingRowParsedPush");

@@ -26,8 +26,15 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 		}
 
 		protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
+			string msig = " //this[" + this + "].IncomingTableRow_convertToDataStructure(" + row + ")";
+
 			try {
 				T oneParsed = this.IncomingTableRow_convertToDataStructure_monitoreable(row);
+				if (oneParsed == null) {
+					string msg = "DONT_RETURN_NULL_FROM_IncomingTableRow_convertToDataStructure_monitoreable()";
+					Assembler.PopupException(msg + msig);
+					return;
+				}
 				if (base.DdeWillDeliver_updatesForEachRow_inSeparateMessages) {
 					bool updatedByPrimaryKey = false;
 					int indexToReplace = -1;
@@ -64,7 +71,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 				this.raiseDataStructureParsed_One(oneParsed);
 			} catch (Exception ex) {
 				string msg = "THROWN_IN_IncomingTableRow_convertToDataStructure(" + row + ")";
-				Assembler.PopupException(msg, ex, false);
+				Assembler.PopupException(msg + msig, ex, false);
 			}
 		}
 		protected abstract T IncomingTableRow_convertToDataStructure_monitoreable(XlRowParsed row);

@@ -6,55 +6,17 @@ using Newtonsoft.Json;
 
 namespace Sq1.Adapters.Quik.Streaming {
 	public class QuoteQuik : Quote {
-		[JsonProperty]	public double	FortsDepositBuy;
-		[JsonProperty]	public double	FortsDepositSell;
+		[JsonProperty]	public	double	FortsDepositBuy;
+		[JsonProperty]	public	double	FortsDepositSell;
 
-		[JsonProperty]	public double	FortsPriceMax;
-		[JsonProperty]	public double	FortsPriceMin;
-
-
-		[JsonProperty]	public string		FortsDepositBuyFormatted { get {
-			string ret = this.FortsDepositBuy.ToString("N1");
-			if (this.ParentBarStreaming							== null) return ret;
-			if (this.ParentBarStreaming.ParentBars				== null) return ret;
-			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
-			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format("{0:" + symbolInfo.PriceFormat + "}", this.FortsDepositBuy);
-			return ret;
-		} }
-
-		[JsonProperty]	public string		FortsDepositSellFormatted { get {
-			string ret = this.FortsDepositSell.ToString("N1");
-			if (this.ParentBarStreaming							== null) return ret;
-			if (this.ParentBarStreaming.ParentBars				== null) return ret;
-			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
-			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format("{0:" + symbolInfo.PriceFormat + "}", this.FortsDepositSell);
-			return ret;
-		} }
+		[JsonProperty]	public	double	FortsPriceMax;
+		[JsonProperty]	public	double	FortsPriceMin;
 
 
-		[JsonProperty]	public string		FortsPriceMaxFormatted { get {
-			string ret = this.FortsPriceMax.ToString("N1");
-			if (this.ParentBarStreaming							== null) return ret;
-			if (this.ParentBarStreaming.ParentBars				== null) return ret;
-			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
-			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format("{0:" + symbolInfo.PriceFormat + "}", this.FortsPriceMax);
-			return ret;
-		} }
-
-		[JsonProperty]	public string		FortsPriceMinFormatted { get {
-			string ret = this.FortsPriceMin.ToString("N1");
-			if (this.ParentBarStreaming							== null) return ret;
-			if (this.ParentBarStreaming.ParentBars				== null) return ret;
-			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
-			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format("{0:" + symbolInfo.PriceFormat + "}", this.FortsPriceMin);
-			return ret;
-		} }
-
-
+		[JsonProperty]	public	string	FortsDepositBuyFormatted	{ get { return string.Format("{0:" + base.PriceFormat + "}", this.FortsDepositBuy); } }
+		[JsonProperty]	public	string	FortsDepositSellFormatted	{ get { return string.Format("{0:" + base.PriceFormat + "}", this.FortsDepositSell); } }
+		[JsonProperty]	public	string	FortsPriceMaxFormatted		{ get { return string.Format("{0:" + base.PriceFormat + "}", this.FortsPriceMax); } }
+		[JsonProperty]	public	string	FortsPriceMinFormatted		{ get { return string.Format("{0:" + base.PriceFormat + "}", this.FortsPriceMin); } }
 
 		public QuoteQuik(DateTime quoteDate) : base(quoteDate) {
 		}

@@ -40,11 +40,14 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 			//base.XlWriter.Put("stepprice",	quote.Symbol);
 
 
-			string dateFormat = base.ColumnsLookup["TRADE_DATE_CODE"]	.ToDateParseFormat;
-			string timeFormat = base.ColumnsLookup["time"]				.ToTimeParseFormat;
+			//string dateFormat = base.ColumnsLookup["TRADE_DATE_CODE"]	.ToDateParseFormat;
+			//string timeFormat = base.ColumnsLookup["time"]				.ToTimeParseFormat;
+			//string date = quote.ServerTime.ToString(dateFormat);
+			//string time = quote.ServerTime.ToString(timeFormat);
 
-			string date = quote.ServerTime.ToString(dateFormat);
-			string time = quote.ServerTime.ToString(timeFormat);
+			// using ControlPanel => Regional Date&Time settings; testing Date.Parse() from "any" format
+			string date = quote.ServerTime.ToString();
+			string time = quote.ServerTime.ToString();
 
 			base.XlWriter.Put("TRADE_DATE_CODE",	date);
 			base.XlWriter.Put("time",				time);

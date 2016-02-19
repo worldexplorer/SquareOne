@@ -31,17 +31,17 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 			for (int i=0; i<askKeys.Count; i++) {
 			    double priceLevel = askKeys[i];
 				double volumeAtPrice = levelTwoAsks.InnerDictionary[priceLevel];
-				base.XlWriter.Put("SELL_VOLUME",	null);
+				base.XlWriter.Put("BUY_VOLUME",		null);
 				base.XlWriter.Put("PRICE",			priceLevel);
-				base.XlWriter.Put("BUY_VOLUME",		volumeAtPrice);
+				base.XlWriter.Put("SELL_VOLUME",	volumeAtPrice);
 			    if (i < askKeys.Count - 1) base.XlWriter.StartNewRow();
 			}
 			foreach (double priceLevel in levelTwoBids.InnerDictionary.Keys) {
 				base.XlWriter.StartNewRow();
 				double volumeAtPrice = levelTwoBids.InnerDictionary[priceLevel];
-				base.XlWriter.Put("SELL_VOLUME",	volumeAtPrice);
+				base.XlWriter.Put("BUY_VOLUME",		volumeAtPrice);
 				base.XlWriter.Put("PRICE",			priceLevel);
-				base.XlWriter.Put("BUY_VOLUME",		null);
+				base.XlWriter.Put("SELL_VOLUME",	null);
 			}
 		}
 
