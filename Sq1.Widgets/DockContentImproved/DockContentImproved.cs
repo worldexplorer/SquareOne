@@ -104,15 +104,28 @@ namespace Sq1.Widgets {
 			this.Show(dockPanel, DockState.Document);
 		}
 
-		public void ShowAsSiblingTabOnTopOf(DockContentImproved existingFormThatIWillCover) {
+		public void ShowOnTopOf(DockContentImproved existingFormThatIWillCover) {
 			//existingFormThatIWillCover.Show(this);
 			//base.Show(this.DockHandler.Pane, existingFormThatIWillCover);
-			base.Show(base.DockHandler.DockPanel, existingFormThatIWillCover.DockState);
-			//this.Activate();
+			if (existingFormThatIWillCover.DockPanel == null) return;
+
+			base.Show(existingFormThatIWillCover.DockPanel, existingFormThatIWillCover.DockState);
+			//base.DockTo(existingFormThatIWillCover.DockPanel.Panes[0], DockStyle.Fill, 0);
+			//var notParent1 = base.Pane;
+			//var notParent2 = base.PanelPane;
+			//var notParent3 = this.DockHandler.PreviousActive;
+			var parent = this.DockHandler.PreviousActive.DockHandler.Pane;
+			//var dockedRight = base.DockPanel.Panes[4]; 
+			//var whichPaneIsDockedRight = base.DockPanel;	// 14 panes "under" 14 forms open and docked everywhere
+			int tabToTheLeft = 0;
+			int tabToTheRight = -1;
+			base.DockTo(parent, DockStyle.Fill, tabToTheLeft);		// my own page = pane of existingFormThatIWillCover, Fill = on top
+			base.Activate();
 		}
-		public void ShowAsSiblingTabOnTopOfMe(DockContentImproved willCoverMe) {
+		public void ShowOnTopOfMe(DockContentImproved willCoverMe) {
 			//base.Show(willCoverMe.DockHandler.Pane, this);
-			base.Show(this.DockPanel, this.DockState);
+			willCoverMe.Show(this.DockPanel, this.DockState);
+			willCoverMe.DockTo(base.DockPanel.Panes[0], DockStyle.Fill, 0);
 			//willCoverMe.Activate();
 		}
 		

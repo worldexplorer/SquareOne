@@ -46,7 +46,7 @@ namespace Sq1.Widgets {
 			try {
 				bool notPausedTest = this.expiredMre.WaitOne(this.tooSoon);
 				if (notPausedTest == true) {
-					string msg = "SIGNALLED_TOO_QUIK LOOKS_LIKE_TIMER_WASNT_SCHEDULED FIXME_HERE_TO_AVOID_100%_CPU";
+					string msg = "SIGNALLED_TOO_FAST LOOKS_LIKE_TIMER_WASNT_SCHEDULED FIXME_HERE_TO_AVOID_100%_CPU";
 					Assembler.PopupException(msg, null, false);
 					return;
 				}

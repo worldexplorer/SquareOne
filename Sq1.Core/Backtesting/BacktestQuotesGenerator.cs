@@ -204,7 +204,7 @@ namespace Sq1.Core.Backtesting {
 
 			Quote quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde =
 				this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
-					.LastQuoteCloneGetForSymbol(quoteToReach.Symbol);
+					.LastQuoteClone_getForSymbol(quoteToReach.Symbol);
 
 			if (quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde == null) {
 				string msg = "I_CANNOT_CONTINUE_LIVESIM_FIXME#1";
@@ -416,7 +416,7 @@ namespace Sq1.Core.Backtesting {
 			//v2
 			Quote quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde =
 				this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
-					.LastQuoteCloneGetForSymbol(alert.Symbol);
+					.LastQuoteClone_getForSymbol(alert.Symbol);
 			QuoteGenerated quotePrev = quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
 			if (quotePrev == null) {
 				string msg = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"

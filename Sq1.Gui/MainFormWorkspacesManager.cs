@@ -4,6 +4,7 @@ using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.Repositories;
+
 using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Gui {

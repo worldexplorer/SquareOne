@@ -10,6 +10,10 @@ using Sq1.Core.DataFeed;
 namespace Sq1.Widgets.DataSourceEditor {
 	public partial class DataSourceEditorControl {
 		void lvStreamingAdapters_SelectedIndexChanged(object sender, EventArgs e) {
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				//WANTED_TO_POPUP_MONITOR_BUT_QUIK_STREAMING_EDITOR_DOESNT_SHOW_UP_ON_DESERIALIZATION return;
+			}
+
 			if (this.lvStreamingAdapters.SelectedItems.Count == 0) {
 				return;
 			}
@@ -47,7 +51,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 		}
 		void btnSave_Click(object sender, EventArgs e) {
 			try {
-				this.ApplyEditorsToDataSource();
+				this.PushEditedSettingsToAdapters_initializeDataSource_updateDataSourceTree_rebacktestCharts();
 			} catch (Exception exc) {
 				Assembler.PopupException("btnSave_Click()", exc);
 			}

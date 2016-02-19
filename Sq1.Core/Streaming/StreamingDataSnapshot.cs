@@ -18,7 +18,7 @@ namespace Sq1.Core.Streaming {
 				foreach (string symbol in level2andLastQuoteUnboundClone_bySymbol.Keys) {
 					if (ret.Length > 0) ret += ",";
 					ret += symbol;
-					Quote lastClone = this.LastQuoteCloneGetForSymbol(symbol);
+					Quote lastClone = this.LastQuoteClone_getForSymbol(symbol);
 					ret += ":";
 					if (lastClone == null) {
 						ret += "NULL";
@@ -86,13 +86,13 @@ namespace Sq1.Core.Streaming {
 			}
 			this.level2andLastQuoteUnboundClone_bySymbol[quote.Symbol].LastQuote = quote;
 		} }
-		public Quote LastQuoteCloneGetForSymbol(string symbol) { //lock (this.lockLastQuote) {
+		public Quote LastQuoteClone_getForSymbol(string symbol) { lock (this.lockLastQuote) {
 				if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(symbol) == false) return null;
 				LevelTwoAndLastQuote levelTwoAndLastQuote = this.level2andLastQuoteUnboundClone_bySymbol[symbol];
 				if (levelTwoAndLastQuote == null) return null;
 				Quote weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy = levelTwoAndLastQuote.LastQuote;
 				return weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy;
-			} //}
+			} }
 		public LevelTwoHalf LevelTwoAsks_getForSymbol(string symbol) { lock (this.lockLastQuote) {
 				if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(symbol) == false) return null;
 				return this.level2andLastQuoteUnboundClone_bySymbol[symbol].Asks;
@@ -102,7 +102,7 @@ namespace Sq1.Core.Streaming {
 				return this.level2andLastQuoteUnboundClone_bySymbol[symbol].Bids;
 			} }
 		public double LastQuoteGetPriceForMarketOrder(string symbol) {
-			Quote lastQuote = this.LastQuoteCloneGetForSymbol(symbol);
+			Quote lastQuote = this.LastQuoteClone_getForSymbol(symbol);
 			if (lastQuote == null) return 0;
 			if (lastQuote.TradedAt == BidOrAsk.UNKNOWN) {
 				string msg = "NEVER_HAPPENED_SO_FAR LAST_QUOTE_MUST_BE_BID_OR_ASK lastQuote.TradeOccuredAt[" + lastQuote.TradedAt + "]=BidOrAsk.UNKNOWN";
@@ -114,7 +114,7 @@ namespace Sq1.Core.Streaming {
 
 		public double BestBidGetForMarketOrder(string symbol) {
 			double ret = -1;
-			Quote lastQuote = this.LastQuoteCloneGetForSymbol(symbol);
+			Quote lastQuote = this.LastQuoteClone_getForSymbol(symbol);
 			if (lastQuote == null) {
 				string msg = "LAST_TIME_I_HAD_IT_WHEN_Livesimulator_STORED_QUOTES_IN_QuikLivesimStreaming_WHILE_MarketLive_ASKED_QuikStreaming_TO_FILL_ALERT";
 				Assembler.PopupException(msg);
@@ -125,7 +125,7 @@ namespace Sq1.Core.Streaming {
 		} 
 		public double BestAskGetForMarketOrder(string symbol) {
 			double ret = -1;
-			Quote lastQuote = this.LastQuoteCloneGetForSymbol(symbol);
+			Quote lastQuote = this.LastQuoteClone_getForSymbol(symbol);
 			if (lastQuote == null) {
 				string msg = "LAST_TIME_I_HAD_IT_WHEN_Livesimulator_STORED_QUOTES_IN_QuikLivesimStreaming_WHILE_MarketLive_ASKED_QuikStreaming_TO_FILL_ALERT";
 				Assembler.PopupException(msg);

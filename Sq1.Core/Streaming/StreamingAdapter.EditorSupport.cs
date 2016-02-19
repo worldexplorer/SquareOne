@@ -6,7 +6,7 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Streaming {
 	public partial class StreamingAdapter {
-		[JsonIgnore]					IDataSourceEditor	dataSourceEditor;
+		[JsonIgnore]	public			IDataSourceEditor	DataSourceEditor			{ get; protected set; }
 		[JsonIgnore]	protected		StreamingEditor		StreamingEditorInstance;
 		[JsonIgnore]	public virtual	bool				EditorInstanceInitialized	{ get { return (this.StreamingEditorInstance != null); } }
 		[JsonIgnore]	public virtual	StreamingEditor		EditorInstance				{ get {
@@ -31,12 +31,12 @@ namespace Sq1.Core.Streaming {
 				+ " 2) do base.streamingEditorInstance=new FoobarStreamingEditor()");
 		}
 		public void StreamingEditorInitializeHelper(IDataSourceEditor dataSourceEditor) {
-			if (this.dataSourceEditor != null) {
-				if (this.dataSourceEditor == dataSourceEditor) return;
+			if (this.DataSourceEditor != null) {
+				if (this.DataSourceEditor == dataSourceEditor) return;
 				string msg = "this.dataSourceEditor!=null, already initialized; should I overwrite it with another instance you provided?...";
 				throw new Exception(msg);
 			}
-			this.dataSourceEditor = dataSourceEditor;
+			this.DataSourceEditor = dataSourceEditor;
 		}
 
 	}

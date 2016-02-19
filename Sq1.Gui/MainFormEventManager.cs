@@ -161,6 +161,10 @@ namespace Sq1.Gui {
 				string msg = "onAppClose getting invoked for each [mosaically] visible document, right? nope just once per Close()";
 				return;
 			}
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				string msg = "dont save ChartSernoLastKnownHadFocus";
+				return;
+			}
 
 			ChartForm chartFormClicked = this.mainForm.DockPanel.ActiveDocument as ChartForm;
 			if (chartFormClicked == null) {
@@ -179,10 +183,12 @@ namespace Sq1.Gui {
 			//if (chartFormClicked.IsActivated == false) return;	//NOUP ActiveDocumentChanged is invoked twice: 1) for a form loosing control, 2) for a form gaining control
 			try {
 				chartFormClicked.ChartFormManager.InterformEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
-				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
-				//v1 this.mainForm.GuiDataSnapshotSerializer.Serialize();
-				//v2
-				this.mainForm.MainFormSerialize();
+				if (this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus != chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno) {
+					this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus  = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
+					//v1 should be enough
+					this.mainForm.GuiDataSnapshotSerializer.Serialize();
+					//v2 EXCESSIVE_FOR_SAVING.ChartSernoLastKnownHadFocus this.mainForm.MainFormSerialize();		// serialises Snap and XML
+				}
 				
 				//v1: DOESNT_POPULATE_SYMBOL_AND_SCRIPT_PARAMETERS 
 				//if (chartFormClicked.ChartFormManager.Strategy == null) {
@@ -191,7 +197,7 @@ namespace Sq1.Gui {
 				//	StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(chartFormClicked.ChartFormManager.Strategy);
 				//}
 				chartFormClicked.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
-				//chartFormClicked.Activate();	// I_GUESS_ITS_ALREADY_ACTIVE
+				//chartFormClicked.Activate();	// IT_IS_ALREADY_ACTIVE
 				chartFormClicked.Focus();		// FLOATING_FORM_CANT_BE_RESIZED_WITHOUT_FOCUS FOCUS_WAS_PROBABLY_STOLEN_BY_SOME_OTHER_FORM(MAIN?)_LAZY_TO_DEBUG
 				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(chartFormClicked.ChartControl.ChartSettings);
 				if (chartFormClicked.ChartFormManager.Executor.Bars != null) {
@@ -232,10 +238,10 @@ namespace Sq1.Gui {
 			if (chartFormClicked == null) {
 				string msig = " DockPanel_ActiveContentChanged() is looking for mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus["
 					+ this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus + "]";
-				int lastKnownChartSerno = this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus;
-				ChartFormManager lastKnownChartFormManager = this.mainForm.GuiDataSnapshot.FindChartFormsManagerBySerno(lastKnownChartSerno, msig, false);
+				int lastKnownHadFocus = this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus;
+				ChartFormManager lastKnownChartFormManager = this.mainForm.GuiDataSnapshot.FindChartFormsManagerBySerno(lastKnownHadFocus, msig, false);
 				if (lastKnownChartFormManager == null) {
-					string msg = "DOCK_ACTIVE_CONTENT_CHANGED_BUT_CANT_FIND_LAST_CHART lastKnownChartSerno[" + lastKnownChartSerno + "]";
+					string msg = "DOCK_ACTIVE_CONTENT_CHANGED_BUT_CANT_FIND_LAST_CHART lastKnownChartSerno[" + lastKnownHadFocus + "]";
 					// INFINITE_LOOP_HANGAR_NINE_DOOMED_TO_COLLAPSE Assembler.PopupException(msg + msig);
 					return;
 				}

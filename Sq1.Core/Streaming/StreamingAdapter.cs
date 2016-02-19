@@ -47,12 +47,16 @@ namespace Sq1.Core.Streaming {
 				this.RaiseOnConnectionStateChanged();	// consumed by QuikStreamingMonitorForm,QuikStreamingEditor
 
 				try {
-					if (this.UpstreamConnectedOnAppRestart != this.UpstreamConnected) {
-						this.UpstreamConnectedOnAppRestart =  this.UpstreamConnected;		// you can override this.UpstreamConnectedOnAppRestart and keep it FALSE to avoid DS serialization
-						if (this.DataSource != null) {
-							Assembler.InstanceInitialized.RepositoryJsonDataSources.SerializeSingle(this.DataSource);
-						}
+					if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
+					if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+					if (this.UpstreamConnectedOnAppRestart == this.UpstreamConnected) return;
+					this.UpstreamConnectedOnAppRestart = this.UpstreamConnected;		// you can override this.UpstreamConnectedOnAppRestart and keep it FALSE to avoid DS serialization
+					if (this.DataSource == null) {
+						string msg = "SHOULD_NEVER_HAPPEN DataSource=null for streaming[" + this + "]";
+						Assembler.PopupException(msg);
+						return;
 					}
+					Assembler.InstanceInitialized.RepositoryJsonDataSources.SerializeSingle(this.DataSource);
 				} catch (Exception ex) {
 					string msg = "SOMETHING_WENT_WRONG_WHILE_SAVING_DATASOURCE_AFTER_YOU_CHANGED UpstreamConnected for streaming[" + this + "]";
 					Assembler.PopupException(msg);
@@ -285,7 +289,7 @@ namespace Sq1.Core.Streaming {
 
 			long absnoPerSymbolNext = 0;
 
-			Quote lastQuote = this.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(quote.Symbol);
+			Quote lastQuote = this.StreamingDataSnapshot.LastQuoteClone_getForSymbol(quote.Symbol);
 			if (lastQuote == null) {
 				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR#1 symbol[" + quote.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
 				//Assembler.PopupException(msg + msig, null, false);
@@ -362,7 +366,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public void UpstreamUnSubscribedFromSymbolPokeConsumersHelper(string symbol) {
 			List<SymbolScaleDistributionChannel> channels = this.DataDistributor_replacedForLivesim.GetDistributionChannels_allScaleIntervals_forSymbol(symbol);
-			Quote lastQuoteReceived = this.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(symbol);
+			Quote lastQuoteReceived = this.StreamingDataSnapshot.LastQuoteClone_getForSymbol(symbol);
 			foreach (var channel in channels) {
 				channel.UpstreamUnSubscribedFromSymbolPokeConsumers(symbol, lastQuoteReceived);
 			}
