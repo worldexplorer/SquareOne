@@ -18,6 +18,9 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		}
 		internal void Initialize(QuikStreaming quikStreamingPassed) {
 			this.quikStreaming = quikStreamingPassed;
+			foreach (DdeTableDepth eachDom in this.quikStreaming.DdeBatchSubscriber.Level2BySymbol.Values) {
+				this.DomUserControl_createAddFor(eachDom);
+			}
 		}
 
 		internal void DomUserControl_createAddFor(DdeTableDepth tableLevel2) {

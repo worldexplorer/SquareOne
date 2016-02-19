@@ -117,7 +117,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.StreamingEditorInitializeHelper(dataSourceEditor);
-			base.StreamingEditorInstance = new QuikStreamingEditor(this, dataSourceEditor);
+			base.StreamingEditorInstance = new QuikStreamingEditorControl(this, dataSourceEditor);
 			return base.StreamingEditorInstance;
 		}
 

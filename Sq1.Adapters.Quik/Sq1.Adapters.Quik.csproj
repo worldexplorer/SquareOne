@@ -131,15 +131,15 @@
     </Compile>
     <Compile Include="Streaming\QuikQuote.cs" />
     <Compile Include="Streaming\QuikStreamingDataSnapshot.cs" />
-    <Compile Include="Streaming\QuikStreamingEditor.cs">
+    <Compile Include="Streaming\QuikStreamingEditorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Streaming\QuikStreaming.cs" />
-    <Compile Include="Streaming\QuikStreamingEditor.Designer.cs">
-      <DependentUpon>QuikStreamingEditor.cs</DependentUpon>
+    <Compile Include="Streaming\QuikStreamingEditorControl.Designer.cs">
+      <DependentUpon>QuikStreamingEditorControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\QuikStreamingEditor.EventConsumer.cs">
-      <DependentUpon>QuikStreamingEditor.cs</DependentUpon>
+    <Compile Include="Streaming\QuikStreamingEditorControl.EventConsumer.cs">
+      <DependentUpon>QuikStreamingEditorControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Broker\QuikBrokerEditor.cs">
@@ -212,8 +212,8 @@
     <EmbeddedResource Include="Broker\Livesim\QuikBrokerLivesimEditor.resx">
       <DependentUpon>QuikBrokerLivesimEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Streaming\QuikStreamingEditor.resx">
-      <DependentUpon>QuikStreamingEditor.cs</DependentUpon>
+    <EmbeddedResource Include="Streaming\QuikStreamingEditorControl.resx">
+      <DependentUpon>QuikStreamingEditorControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Streaming\Monitor\QuikStreamingMonitorControl.resx">
       <DependentUpon>QuikStreamingMonitorControl.cs</DependentUpon>

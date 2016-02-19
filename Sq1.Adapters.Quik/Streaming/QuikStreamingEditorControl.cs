@@ -8,15 +8,15 @@ using Sq1.Core.Streaming;
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Adapters.Quik.Streaming {
-	public partial class QuikStreamingEditor {
+	public partial class QuikStreamingEditorControl {
 		QuikStreaming	quikStreamingAdapter { get { return base.StreamingAdapter as QuikStreaming; } }
 		bool			dontStartStopDdeServer_imSyncingDdeStarted_intoTheBtnText_only;
 
-		public QuikStreamingEditor() {
+		public QuikStreamingEditorControl() {
 			this.InitializeComponent();
 		}
 		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => streamingAdapterInstance.StreamingEditorInitialize() will call this
-		public QuikStreamingEditor(StreamingAdapter quikStreamingAdapter, IDataSourceEditor dataSourceEditor) : this() {
+		public QuikStreamingEditorControl(StreamingAdapter quikStreamingAdapter, IDataSourceEditor dataSourceEditor) : this() {
 			base.Initialize(quikStreamingAdapter, dataSourceEditor);
 			this.propagateStreamingConnected_intoBtnStateText();
 		}
@@ -27,6 +27,10 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.txtDdeTopicTrades.Text			= this.quikStreamingAdapter.DdeTopicTrades;
 			this.txtDdeTopicPrefixDom.Text		= this.quikStreamingAdapter.DdeTopicSuffixDom;
 			this.txtDdeMonitorRefreshRate.Text	= this.quikStreamingAdapter.DdeMonitorRefreshRateMs.ToString();
+
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete) return;
+			if (this.quikStreamingAdapter.DdeMonitorPopupOnRestart == false) return;
+			// CONTINUE_WITH_MONTIOR_APPRESTART induces {if (existingFormThatIWillCover.DockPanel == null) return;} lnkDdeMonitor_LinkClicked(this, null);
 		}
 		public override void PushEditedSettingsToStreamingAdapter() {
 			if (base.IgnoreEditorFieldChangesWhileInitializingEditor) return;

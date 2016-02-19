@@ -7,9 +7,9 @@ using System.Windows.Forms;
 using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik.Streaming {
-	[ToolboxBitmap(typeof(QuikStreamingEditor), "StreamingQuik")]
+	[ToolboxBitmap(typeof(QuikStreamingEditorControl), "QuikStreamingEditorControl")]
 	[Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]
-	public partial class QuikStreamingEditor : StreamingEditor {
+	public partial class QuikStreamingEditorControl : StreamingEditor {
 		#region Component Designer generated code
 		private System.ComponentModel.IContainer components = null;
 		private Label lblDdePrefix;

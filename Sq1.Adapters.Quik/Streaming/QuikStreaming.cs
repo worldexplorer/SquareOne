@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 
 using Newtonsoft.Json;
 
@@ -11,8 +12,8 @@ using Sq1.Core.Streaming;
 
 using Sq1.Adapters.Quik.Streaming.Dde;
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
-using Sq1.Adapters.Quik.Streaming.Monitor;
 using Sq1.Adapters.Quik.Streaming.Livesim;
+using Sq1.Adapters.Quik.Streaming.Monitor;
 
 namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreaming : StreamingAdapter {
@@ -21,6 +22,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 		[JsonProperty]	public		string					DdeTopicTrades;				//QuikStreamingLivesim needs it public{ get; internal set; }
 		[JsonProperty]	public		string					DdeTopicSuffixDom;			//QuikStreamingLivesim needs it public { get; internal set; }
 		[JsonProperty]	public		int						DdeMonitorRefreshRateMs;
+		[JsonProperty]	public		bool					DdeMonitorPopupOnRestart;
 
 		[JsonIgnore]	public		XlDdeServer				DdeServer					{ get; private set; }
 		[JsonIgnore]	public		bool					DdeServerIsRegistered		{ get { return this.DdeServer != null && this.DdeServer.IsRegistered; } }
@@ -59,7 +61,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 		[JsonIgnore]	public	QuikStreamingMonitorForm MonitorForm { get {
 				if (this.monitorForm == null) {
 					this.monitorForm = new QuikStreamingMonitorForm(this);
-					this.monitorForm.FormClosed += delegate(object sender, System.Windows.Forms.FormClosedEventArgs e) {
+					this.monitorForm.FormClosed += delegate(object sender, FormClosedEventArgs e) {
 						this.monitorForm = null;
 					};
 				}
@@ -87,6 +89,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.DdeTopicTrades				= "trades";
 			this.DdeTopicSuffixDom			= "dom";
 			this.DdeMonitorRefreshRateMs	= 200;
+			this.DdeMonitorPopupOnRestart	= false;
 			base.StreamingDataSnapshot		= new QuikStreamingDataSnapshot(this);
 			this.UpstreamConnectionState	= ConnectionState.DisconnectedJustConstructed;
 		}

@@ -1,7 +1,7 @@
 {
   "$type": "Sq1.Gui.GuiDataSnapshot, Sq1.Gui",
-  "MainFormLocation": "471, 709",
-  "MainFormSize": "1261, 822",
+  "MainFormLocation": "244, 331",
+  "MainFormSize": "1268, 822",
   "MainFormIsFullScreen": false,
   "ChartSernoLastUsed": 8,
   "ChartSernoLastKnownHadFocus": 8

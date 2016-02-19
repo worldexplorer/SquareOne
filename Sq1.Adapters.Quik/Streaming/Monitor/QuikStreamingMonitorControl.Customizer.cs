@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Sq1.Core;
+
 namespace Sq1.Adapters.Quik.Streaming.Monitor {
 	public partial class QuikStreamingMonitorControl  {
 		void olvQuotesCustomize() {
@@ -64,7 +66,7 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 				QuoteQuik quoteQuik = o as QuoteQuik;
 				if (quoteQuik == null) return "olvcQuotesServerTime.AspectGetter: quoteQuik=null";
 				//return position.MFEPercent.ToString("F2") + " %";
-				return quoteQuik.ServerTime;
+				return quoteQuik.ServerTime.ToString(Assembler.DateTimeFormatToMinutesSeconds);
 			};
 
 			this.olvcQuotesAbsnoPerSymbol.AspectGetter = delegate(object o) {
