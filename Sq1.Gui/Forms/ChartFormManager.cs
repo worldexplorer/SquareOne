@@ -224,7 +224,9 @@ namespace Sq1.Gui.Forms {
 					}
 					//INEFFICIENT olvTree.RefreshObject(this.ChartForm.ChartControl);
 					OLVListItem olvi = olvTree.ModelToItem(this.ChartForm.ChartControl);
-					olvi.ListView.Refresh();
+					if (olvi != null) {		// lazy to dive deeper
+						olvi.ListView.Refresh();
+					}
 					//foreach (ListViewItem.ListViewSubItem subItem in olvi.SubItems) {
 					//}
 

@@ -7,6 +7,8 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.DataTypes {
 	public class SymbolInfo {
+		[JsonIgnore]	const double PriceStepFromDde_NOT_RECEIVED = -1;
+
 
 		[Category("1. Essential"), Description("[Stock] is linear, [Future] expires and has to be glued up (2D), [Option] has strikes (3D), [Forex] allows non-integer lots and trades Mon6am-Fri5pm EST, [CryptoCurrencies] are slow due to their JSON-over-web nature, [USBond] has 1/16 PriceStep"), DefaultValue(SecurityType.Stock)]
 		[JsonProperty]	public	SecurityType	SecurityType				{ get; set; }
@@ -19,6 +21,9 @@ namespace Sq1.Core.DataTypes {
 
 		[Category("1. Essential"), Description("For {RTSIndex = MICEX * USD/RUR}: {Position.Size = Position.Size * SymbolInfo.Point2Dollar}"), DefaultValue(1)]
 		[JsonProperty]	public	double			Point2Dollar				{ get; set; }
+
+		[Category("1. Essential"), Description("when received same Bid and Ask as for the previous Quote, don't push it to consumers and to DdeMonitor; reduces size=-1"), DefaultValue(true)]
+		[JsonProperty]	public	bool			FilterOutSameBestBidAskDupes		{ get; set; }
 
 		//[Category("EmergencyProcessor"), Description("NOT_USED Connected somehow with Point2Dollar")]
 		//[JsonProperty]	public	double			LeverageForFutures			{ get; set; }
@@ -33,12 +38,20 @@ namespace Sq1.Core.DataTypes {
 			set { this.priceDecimals = value; this.raisePriceDecimalsChanged(); }
 		}
 
+
 		//BEFORE Pow/Log was invented: for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
-		[Category("2. Price and Volume Units"), Description("digits after decimal dot for min lot Volume; valid for partial Forex lots (-5 for 0.00001) and Bitcoins (-6 for 0.0000001); for stocks/options/futures 0")]
+		[Category("2. Price and Volume Units"), Description("TODO")]
 		[JsonIgnore]	public	double			PriceStepFromDecimal		{ get { return Math.Pow(10, -this.PriceDecimals); } }		// 10^(-2) = 0.01
 
+		[Category("2. Price and Volume Units"), Description("if not -1 then goes to PriceStep; set to -1 to use PriceStepFromDecimal for PriceStep")]
+		[JsonProperty]	public	double			PriceStepFromDde			{ get; set; }
+		
+		[Category("2. Price and Volume Units"), Description("TODO")]
+		[JsonIgnore]	public	double			PriceStep					{ get {
+			return this.PriceStepFromDde != SymbolInfo.PriceStepFromDde_NOT_RECEIVED ? this.PriceStepFromDde : this.PriceStepFromDecimal; } }
+
 		[Category("2. Price and Volume Units"), Description("Chart and Execution will display PriceDecimals+1 to visually assure Streaming and Broker adapters haven't got prices out of your expectations")]
-		[JsonIgnore]	public	string			PriceFormat					{ get { return "N" + (this.PriceDecimals + 1); } }
+		[JsonIgnore]	public	string			PriceFormat					{ get { return "N" + (this.PriceDecimals); } }
 
 
 
@@ -50,7 +63,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public	double			VolumeStepFromDecimal		{ get { return Math.Pow(10, -this.VolumeDecimals); } }		// 10^(-2) = 0.01
 
 		[Category("2. Price and Volume Units"), Description("Chart and Execution will display VolumeDecimals+1 to visually assure Streaming and Broker adapters haven't got volumes out of your expectations")]
-		[JsonIgnore]	public	string			VolumeFormat				{ get { return "N" + (this.VolumeDecimals + 1); } }
+		[JsonIgnore]	public	string			VolumeFormat				{ get { return "N" + (this.VolumeDecimals); } }
 
 
 
@@ -109,13 +122,13 @@ namespace Sq1.Core.DataTypes {
 
 
 		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
-		[JsonProperty]	public	bool			Level2AskFillHoles			{ get; set; }
+		[JsonProperty]	public	bool			Level2AskShowHoles			{ get; set; }
 
 		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
 		[JsonProperty]	public	bool			Level2ShowSpread			{ get; set; }
 
 		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
-		[JsonProperty]	public	bool			Level2BidFillHoles			{ get; set; }
+		[JsonProperty]	public	bool			Level2BidShowHoles			{ get; set; }
 
 		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
 		[JsonProperty]	public bool Level2BidCumulativeShowColumn			{ get; set; }
@@ -133,7 +146,10 @@ namespace Sq1.Core.DataTypes {
 			this.Symbol							= "UNKNOWN_SYMBOL";
 			this.SymbolClass					= "";
 			this.Point2Dollar					= 1.0;
+			this.FilterOutSameBestBidAskDupes	= true;
+
 			this.PriceDecimals					= 2;
+			this.PriceStepFromDde				= SymbolInfo.PriceStepFromDde_NOT_RECEIVED;
 			this.VolumeDecimals					= 0;	// if your Forex Symbol uses lotMin=0.001, DecimalsVolume = 3 
 			this.SameBarPolarCloseThenOpen		= true;
 			this.SequencedOpeningAfterClosedDelayMillis = 1000;
@@ -147,9 +163,10 @@ namespace Sq1.Core.DataTypes {
 			this.UseFirstSlippageForBacktest	= true;
 			this.EmergencyCloseInterAttemptDelayMillis		= 8000;
 			this.EmergencyCloseAttemptsMax		= 5;
-			this.Level2AskFillHoles				= true;
+
+			this.Level2AskShowHoles				= true;
 			this.Level2ShowSpread				= true;
-			this.Level2BidFillHoles				= true;
+			this.Level2BidShowHoles				= true;
 			this.Level2PriceLevels				= 10;
 		}
 		public int getSlippageIndexMax(Direction direction) {
@@ -391,7 +408,7 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		}
 		public override string ToString() {
-			string ret = this.Symbol + ":" + this.PriceStepFromDecimal;
+			string ret = this.Symbol + ":" + this.PriceStep;
 			ret += "(" + Enum.GetName(typeof(SecurityType), this.SecurityType) + ")";
 			return ret;
 		}

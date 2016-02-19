@@ -113,7 +113,7 @@ namespace Sq1.Charting {
 
 		[Browsable(false)]	public 	virtual	double	PriceStep						{ get {
 			return	  this.ChartControl.Bars.SymbolInfo != null
-					? this.ChartControl.Bars.SymbolInfo.PriceStepFromDecimal
+					? this.ChartControl.Bars.SymbolInfo.PriceStep
 					: -1d; } }
 
 

@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Collections.Generic;
 
+using Sq1.Core;
 using Sq1.Core.Support;
 using Sq1.Core.Streaming;
 using Sq1.Core.DataTypes;
@@ -74,6 +75,11 @@ namespace Sq1.Widgets.Level2 {
 		}
 
 		public void PopulateLevel2ToDomControl(LevelTwoOlv levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl) {
+			if (levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl == null) {
+				string msg = "LEVEL2_PROXY_WASNT_CREATED_DUE_TO_A_TYPO....";
+				Assembler.PopupException(msg);
+				return;
+			}
 			if (this.olvcLevelTwo.IsDisposed) return;
 			if (base.IsDisposed) return;
 

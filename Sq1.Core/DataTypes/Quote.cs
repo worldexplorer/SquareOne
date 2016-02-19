@@ -52,19 +52,19 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		} }
 
-		[JsonIgnore]			string		priceFormat	{ get {
+		[JsonIgnore]	protected	string		PriceFormat	{ get {
 			SymbolInfo symbolInfo = this.symbolInfo_nullUnsafe;
 			return symbolInfo != null ? symbolInfo.PriceFormat : "N2";
 		} }
-		[JsonIgnore]			string		volumeFormat	{ get {
+		[JsonIgnore]	protected	string		VolumeFormat	{ get {
 			SymbolInfo symbolInfo = this.symbolInfo_nullUnsafe;
 			return symbolInfo != null ? symbolInfo.PriceFormat : "N0";
 		} }
 		#endregion
 
-		[JsonProperty]	public	string		AskFormatted	{ get { return string.Format("{0:" + this.priceFormat + "}", this.Ask); } }
-		[JsonProperty]	public	string		BidFormatted	{ get { return string.Format("{0:" + this.priceFormat + "}", this.Bid); } }
-		[JsonProperty]	public	string		SizeFormatted	{ get { return string.Format("{0:" + this.volumeFormat + "}", this.Size); } }
+		[JsonProperty]	public	string		AskFormatted	{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Ask); } }
+		[JsonProperty]	public	string		BidFormatted	{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Bid); } }
+		[JsonProperty]	public	string		SizeFormatted	{ get { return string.Format("{0:" + this.VolumeFormat + "}", this.Size); } }
 		
 		[JsonIgnore]	public	string		StreamingButtonIdent { get {
 			StringBuilder sb = new StringBuilder();
