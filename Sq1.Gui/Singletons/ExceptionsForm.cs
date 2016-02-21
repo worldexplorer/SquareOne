@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 using Sq1.Core;
 
@@ -34,43 +33,12 @@ namespace Sq1.Gui.Singletons {
 				#endif
 			}
 
-			//v1 SWITCHING_TO_GUI_THREAD_AS_ONE_STEP___MAY_GET_VERY_CLUMSY_WHEN_MANY_THREADS_POPUP_THEIR_EXCEPTIONS_AT_THE_SAME_TIME
-			//base.ShowPopupSwitchToGuiThreadRunDelegateInIt(new Action(delegate {
-			//    this.ExceptionControl.InsertSyncAndFlushListToTreeIfDockContentDeserialized_inGuiThread(ex);
-			//}));
-			//v2 TRYING_TO_1)LET_INVOKER_GO_EARLIER_FOR_FURTHER_2)QUEUEING_OF_LISTVIEW_REPAINT__2)NYI
-			//#region EXPERIMENTAL
-			//Task t = new Task(delegate {
-			//    base.ShowPopupSwitchToGuiThreadRunDelegateInIt(new Action(delegate {
-			//        this.ExceptionControl.InsertSyncAndFlushExceptionsToOLVIfDockContentDeserialized_inGuiThread(ex);
-			//    }));
-			//});
-			//t.ContinueWith(delegate {
-			//    string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
-			//    Assembler.PopupException(msg2, t.Exception);
-			//}, TaskContinuationOptions.OnlyOnFaulted);
-			//t.Start();		// WHO_DOES t.Dispose() ?
-			//#endregion
-			//v3 FlushExceptionsToOLV
 			this.ExceptionControl.InsertAsyncAutoFlush(ex);
-			//v4 timers are spawned!!!
-			//Task t = new Task(delegate {
-			//    this.ExceptionControl.InsertAsyncAutoFlush(ex);
-			//});
-			//t.ContinueWith(delegate {
-			//    string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
-			//    Assembler.PopupException(msg2, t.Exception);
-			//}, TaskContinuationOptions.OnlyOnFaulted);
-			//t.Start();		// WHO_DOES t.Dispose() ?
 		}
 		protected override void OnLoad(EventArgs e) {
 			foreach (Exception beforeFormInstantiated in Assembler.InstanceInitialized.ExceptionsWhileInstantiating) {
 				this.PopupException(null, beforeFormInstantiated, false);
 			}
 		}
-
-		//internal void UpdateConnectionStatus(Core.DataTypes.ConnectionState status, int statusCode, string message) {
-		//	throw new NotImplementedException();
-		//}
 	}
 }

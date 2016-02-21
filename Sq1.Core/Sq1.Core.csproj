@@ -358,8 +358,8 @@
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\StreamingSolidifier.cs" />
-    <Compile Include="Support\ConcurrentDictionaryGeneric.cs" />
-    <Compile Include="Support\ConcurrentListWD.cs" />
+    <Compile Include="Support\ConcurrentDictionary.cs" />
+    <Compile Include="Support\ConcurrentList.cs" />
     <Compile Include="Support\ConcurrentWatchdog.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 
 namespace Sq1.Core.Support {
-	public class ConcurrentDictionaryGeneric<PRICE_LEVEL, TOTAL_LOTS> : ConcurrentWatchdog {
-		public Dictionary<PRICE_LEVEL, TOTAL_LOTS> InnerDictionary { get; protected set; }
+	public class ConcurrentDictionary<PRICE_LEVEL, TOTAL_LOTS> : ConcurrentWatchdog {
+		protected	Dictionary<PRICE_LEVEL, TOTAL_LOTS> InnerDictionary		{ get; private set; }
+		public		int									Count				{ get; protected set; }
 
-		public int Count(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public int CountBlocking(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			int count = -1;
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
@@ -25,7 +26,7 @@ namespace Sq1.Core.Support {
 			return ret;	//I'm sucpiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
 		}
 
-		public ConcurrentDictionaryGeneric(string reasonToExist) : base(reasonToExist) {
+		public ConcurrentDictionary(string reasonToExist) : base(reasonToExist) {
 			InnerDictionary	= new Dictionary<PRICE_LEVEL, TOTAL_LOTS>();
 		}
 		public bool ContainsKey(PRICE_LEVEL priceLevel, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
@@ -42,6 +43,7 @@ namespace Sq1.Core.Support {
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				this.InnerDictionary.Clear();
+				this.Count = this.InnerDictionary.Count;
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
 			}
@@ -57,6 +59,7 @@ namespace Sq1.Core.Support {
 					}
 				} else {
 					removed = this.InnerDictionary.Remove(priceLevel);
+					this.Count = this.InnerDictionary.Count;
 				}
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
@@ -74,13 +77,14 @@ namespace Sq1.Core.Support {
 				} else {
 					this.InnerDictionary.Add(priceLevel, totalLots);
 					added = true;
+					this.Count = this.InnerDictionary.Count;
 				}
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
 			}
 			return added;	//I'm sucpiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
 		}
-		public virtual bool Update(PRICE_LEVEL priceLevel, TOTAL_LOTS totalLots
+		public virtual bool UpdateAtKey(PRICE_LEVEL priceLevel, TOTAL_LOTS totalLots
 						, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
 			bool updated = false;
 			try {
@@ -97,8 +101,24 @@ namespace Sq1.Core.Support {
 			}
 			return updated;	//I'm sucpiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
 		}
+		public virtual TOTAL_LOTS GetAtKey(PRICE_LEVEL priceLevel
+						, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
+			TOTAL_LOTS ret = default(TOTAL_LOTS);
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				if (this.ContainsKey(priceLevel, owner, lockPurpose, ConcurrentWatchdog.TIMEOUT_DEFAULT) == false && absenceThrowsAnError) {
+					string msg = this.ReasonToExist + ": I_REFUSE_TO_UPDATE__WAS_NOT_ADDED " + priceLevel.ToString();
+					Assembler.PopupException(msg, null, false);
+				} else {
+					ret = this.InnerDictionary[priceLevel];
+				}
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
+			return ret;	//I'm sucpiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
+		}
 		public override string ToString() {
-			return this.ReasonToExist + ":InnerDictionary[" + this.InnerDictionary.Count + "]";
+			return this.ReasonToExist + ":InnerDictionary[" + this.Count + "]";
 		}
 	}
 }

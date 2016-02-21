@@ -40,7 +40,7 @@ namespace Sq1.Core.Streaming {
 		}
 		#endregion
 
-		public virtual void EnrichQuoteWithStreamingDependantDataSnapshot(Quote quote) {
+		public virtual void EnrichQuote_withStreamingDependant_dataSnapshot(Quote quote) {
 			// in Market-dependant StreamingAdapters, put in the Quote-derived quote anything like QuikQuote.FortsDepositBuy ;
 		}
 

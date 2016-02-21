@@ -1,6 +1,5 @@
 using System;
 using System.Windows.Forms;
-
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
@@ -17,32 +16,35 @@ namespace Sq1.Widgets.Exceptions {
 	public partial class ExceptionsControl : UserControl {
 #endif
 
-		#region Windows Form Designer generated code
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ghdfg"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "hdfgh"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "hdfg"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "dfghdfg"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Occured")]
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
-			this.treeExceptions = new BrightIdeasSoftware.TreeListView();
-			this.olvTime = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvTreeExceptions = new BrightIdeasSoftware.TreeListView();
+			this.olvcException = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcTime = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.ctxTree = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.mniRecentAlwaysSelected = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniTreeShowExceptionTime = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniltbDelay = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.mniCopy = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniClear = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.mniPopupOnIncomingException = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniRecentAlwaysSelected = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniShowTimestamps = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniShowHeaders = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.mniltbDelay = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mniRefresh = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniCopy = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainerVertical = new System.Windows.Forms.SplitContainer();
 			this.splitContainerHorizontal = new System.Windows.Forms.SplitContainer();
 			this.txtExceptionMessage = new System.Windows.Forms.TextBox();
-			this.lvStackTrace = new System.Windows.Forms.ListView();
+			this.olvStackTrace = new System.Windows.Forms.ListView();
 			this.lvhMethod = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.lvhDeclaringClass = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.lvhLine = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.lvhFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.ctxCallStack = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniCopyStackPosition = new System.Windows.Forms.ToolStripMenuItem();
-			((System.ComponentModel.ISupportInitialize)(this.treeExceptions)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.olvTreeExceptions)).BeginInit();
 			this.ctxTree.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerVertical)).BeginInit();
 			this.splitContainerVertical.Panel1.SuspendLayout();
@@ -55,123 +57,156 @@ namespace Sq1.Widgets.Exceptions {
 			this.ctxCallStack.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// treeExceptions
+			// olvTreeExceptions
 			// 
-			this.treeExceptions.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.treeExceptions.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.olvTime});
-			this.treeExceptions.ContextMenuStrip = this.ctxTree;
-			this.treeExceptions.CopySelectionOnControlC = false;
-			this.treeExceptions.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.treeExceptions.EmptyListMsg = "";
-			this.treeExceptions.FullRowSelect = true;
-			this.treeExceptions.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.treeExceptions.HideSelection = false;
-			this.treeExceptions.IncludeColumnHeadersInCopy = true;
-			this.treeExceptions.IncludeHiddenColumnsInDataTransfer = true;
-			this.treeExceptions.Location = new System.Drawing.Point(0, 0);
-			this.treeExceptions.Name = "treeExceptions";
-			this.treeExceptions.OwnerDraw = true;
-			this.treeExceptions.ShowCommandMenuOnRightClick = true;
-			this.treeExceptions.ShowGroups = false;
-			this.treeExceptions.ShowItemToolTips = true;
-			this.treeExceptions.Size = new System.Drawing.Size(212, 353);
-			this.treeExceptions.TabIndex = 3;
-			this.treeExceptions.TintSortColumn = true;
-			this.treeExceptions.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
-			this.treeExceptions.UseCompatibleStateImageBehavior = false;
-			this.treeExceptions.UseFilterIndicator = true;
-			this.treeExceptions.UseFiltering = true;
-			this.treeExceptions.UseHotItem = true;
-			this.treeExceptions.UseTranslucentHotItem = true;
-			this.treeExceptions.View = System.Windows.Forms.View.Details;
-			this.treeExceptions.VirtualMode = true;
-			this.treeExceptions.SelectedIndexChanged += new System.EventHandler(this.tree_SelectedIndexChanged);
+			this.olvTreeExceptions.AllColumns.Add(this.olvcException);
+			this.olvTreeExceptions.AllColumns.Add(this.olvcTime);
+			this.olvTreeExceptions.AllowColumnReorder = true;
+			this.olvTreeExceptions.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.olvTreeExceptions.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.olvcException,
+            this.olvcTime});
+			this.olvTreeExceptions.ContextMenuStrip = this.ctxTree;
+			this.olvTreeExceptions.CopySelectionOnControlC = false;
+			this.olvTreeExceptions.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.olvTreeExceptions.FullRowSelect = true;
+			this.olvTreeExceptions.HideSelection = false;
+			this.olvTreeExceptions.IncludeColumnHeadersInCopy = true;
+			this.olvTreeExceptions.IncludeHiddenColumnsInDataTransfer = true;
+			this.olvTreeExceptions.Location = new System.Drawing.Point(0, 0);
+			this.olvTreeExceptions.Name = "olvTreeExceptions";
+			this.olvTreeExceptions.OwnerDraw = true;
+			this.olvTreeExceptions.ShowCommandMenuOnRightClick = true;
+			this.olvTreeExceptions.ShowGroups = false;
+			this.olvTreeExceptions.ShowItemToolTips = true;
+			this.olvTreeExceptions.Size = new System.Drawing.Size(213, 361);
+			this.olvTreeExceptions.TabIndex = 3;
+			this.olvTreeExceptions.TintSortColumn = true;
+			this.olvTreeExceptions.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientInactiveCaption;
+			this.olvTreeExceptions.UseCompatibleStateImageBehavior = false;
+			this.olvTreeExceptions.UseFilterIndicator = true;
+			this.olvTreeExceptions.UseFiltering = true;
+			this.olvTreeExceptions.UseHotItem = true;
+			this.olvTreeExceptions.UseTranslucentHotItem = true;
+			this.olvTreeExceptions.UseTranslucentSelection = true;
+			this.olvTreeExceptions.View = System.Windows.Forms.View.Details;
+			this.olvTreeExceptions.VirtualMode = true;
+			this.olvTreeExceptions.SelectedIndexChanged += new System.EventHandler(this.tree_SelectedIndexChanged);
 			// 
-			// olvTime
+			// olvcException
 			// 
-			this.olvTime.FillsFreeSpace = true;
-			this.olvTime.Text = "Time";
+			this.olvcException.FillsFreeSpace = true;
+			this.olvcException.Text = "Exception";
+			// 
+			// olvcTime
+			// 
+			this.olvcTime.Text = "Occured";
+			this.olvcTime.Width = 80;
 			// 
 			// ctxTree
 			// 
 			this.ctxTree.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniRecentAlwaysSelected,
-            this.mniTreeShowExceptionTime,
-            this.mniltbDelay,
-            this.toolStripSeparator1,
-            this.mniCopy,
             this.mniClear,
-            this.mniRefresh});
+            this.toolStripSeparator2,
+            this.mniPopupOnIncomingException,
+            this.mniRecentAlwaysSelected,
+            this.mniShowTimestamps,
+            this.mniShowHeaders,
+            this.toolStripSeparator1,
+            this.mniltbDelay,
+            this.mniRefresh,
+            this.mniCopy});
 			this.ctxTree.Name = "ctx";
-			this.ctxTree.Size = new System.Drawing.Size(235, 144);
+			this.ctxTree.Size = new System.Drawing.Size(266, 194);
+			// 
+			// mniClear
+			// 
+			this.mniClear.Name = "mniClear";
+			this.mniClear.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
+			this.mniClear.Size = new System.Drawing.Size(265, 22);
+			this.mniClear.Text = "Clear";
+			this.mniClear.Click += new System.EventHandler(this.mniClear_Click);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(262, 6);
+			// 
+			// mniPopupOnIncomingException
+			// 
+			this.mniPopupOnIncomingException.CheckOnClick = true;
+			this.mniPopupOnIncomingException.Name = "mniPopupOnIncomingException";
+			this.mniPopupOnIncomingException.Size = new System.Drawing.Size(265, 22);
+			this.mniPopupOnIncomingException.Text = "Popup on Every Incoming Exception";
+			this.mniPopupOnIncomingException.Click += new System.EventHandler(this.mniPopupOnEveryIncomingException_Click);
 			// 
 			// mniRecentAlwaysSelected
 			// 
 			this.mniRecentAlwaysSelected.CheckOnClick = true;
 			this.mniRecentAlwaysSelected.Name = "mniRecentAlwaysSelected";
 			this.mniRecentAlwaysSelected.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.R)));
-			this.mniRecentAlwaysSelected.Size = new System.Drawing.Size(234, 22);
+			this.mniRecentAlwaysSelected.Size = new System.Drawing.Size(265, 22);
 			this.mniRecentAlwaysSelected.Text = "Recent Always Selected";
 			this.mniRecentAlwaysSelected.Click += new System.EventHandler(this.mniRecentAlwaysSelected_Click);
 			// 
-			// mniTreeShowExceptionTime
+			// mniShowTimestamps
 			// 
-			this.mniTreeShowExceptionTime.CheckOnClick = true;
-			this.mniTreeShowExceptionTime.Name = "mniTreeShowExceptionTime";
-			this.mniTreeShowExceptionTime.Size = new System.Drawing.Size(234, 22);
-			this.mniTreeShowExceptionTime.Text = "Show Timestamps";
-			this.mniTreeShowExceptionTime.Click += new System.EventHandler(this.mniTreeShowsTimesInsteadOfMessages_Click);
+			this.mniShowTimestamps.CheckOnClick = true;
+			this.mniShowTimestamps.Name = "mniShowTimestamps";
+			this.mniShowTimestamps.Size = new System.Drawing.Size(265, 22);
+			this.mniShowTimestamps.Text = "Show Timestamps";
+			this.mniShowTimestamps.Click += new System.EventHandler(this.mniShowTimestamps_Click);
 			// 
-			// mniltbDelay
+			// mniShowHeaders
 			// 
-			this.mniltbDelay.BackColor = System.Drawing.Color.Transparent;
-			this.mniltbDelay.Enabled = false;
-			this.mniltbDelay.InputFieldAlignedRight = false;
-			this.mniltbDelay.InputFieldEditable = false;
-			this.mniltbDelay.InputFieldOffsetX = 80;
-			this.mniltbDelay.InputFieldValue = "";
-			this.mniltbDelay.InputFieldWidth = 0;
-			this.mniltbDelay.Name = "mniltbDelay";
-			this.mniltbDelay.Size = new System.Drawing.Size(148, 21);
-			this.mniltbDelay.TextLeft = "Delay, msec:";
-			this.mniltbDelay.TextLeftOffsetX = 0;
-			this.mniltbDelay.TextLeftWidth = 75;
-			this.mniltbDelay.TextRed = false;
-			this.mniltbDelay.TextRight = "~= 121pips";
-			this.mniltbDelay.TextRightOffsetX = 83;
-			this.mniltbDelay.TextRightWidth = 68;
-			this.mniltbDelay.Visible = false;
-			this.mniltbDelay.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDelay_UserTyped);
+			this.mniShowHeaders.CheckOnClick = true;
+			this.mniShowHeaders.Name = "mniShowHeaders";
+			this.mniShowHeaders.Size = new System.Drawing.Size(265, 22);
+			this.mniShowHeaders.Text = "Show Headers";
+			this.mniShowHeaders.Click += new System.EventHandler(this.mniShowHeaders_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(231, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(262, 6);
 			// 
-			// mniCopy
+			// mniltbDelay
 			// 
-			this.mniCopy.Name = "mniCopy";
-			this.mniCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.mniCopy.Size = new System.Drawing.Size(234, 22);
-			this.mniCopy.Text = "Copy";
-			this.mniCopy.Click += new System.EventHandler(this.mniCopy_Click);
-			// 
-			// mniClear
-			// 
-			this.mniClear.Name = "mniClear";
-			this.mniClear.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
-			this.mniClear.Size = new System.Drawing.Size(234, 22);
-			this.mniClear.Text = "Clear";
-			this.mniClear.Click += new System.EventHandler(this.mniClear_Click);
+			this.mniltbDelay.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbDelay.InputFieldAlignedRight = false;
+			this.mniltbDelay.InputFieldBackColor = System.Drawing.SystemColors.Info;
+			this.mniltbDelay.InputFieldEditable = true;
+			this.mniltbDelay.InputFieldMultiline = false;
+			this.mniltbDelay.InputFieldOffsetX = 113;
+			this.mniltbDelay.InputFieldValue = "200";
+			this.mniltbDelay.InputFieldWidth = 40;
+			this.mniltbDelay.Name = "mniltbDelay";
+			this.mniltbDelay.OffsetTop = 0;
+			this.mniltbDelay.Size = new System.Drawing.Size(180, 21);
+			this.mniltbDelay.TextLeft = "Delay for buffering";
+			this.mniltbDelay.TextLeftOffsetX = 0;
+			this.mniltbDelay.TextLeftWidth = 108;
+			this.mniltbDelay.TextRed = false;
+			this.mniltbDelay.TextRight = "ms";
+			this.mniltbDelay.TextRightOffsetX = 153;
+			this.mniltbDelay.TextRightWidth = 27;
+			this.mniltbDelay.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDelay_UserTyped);
 			// 
 			// mniRefresh
 			// 
 			this.mniRefresh.Name = "mniRefresh";
 			this.mniRefresh.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-			this.mniRefresh.Size = new System.Drawing.Size(234, 22);
+			this.mniRefresh.Size = new System.Drawing.Size(265, 22);
 			this.mniRefresh.Text = "Refresh";
 			this.mniRefresh.Click += new System.EventHandler(this.mniRefresh_Click);
+			// 
+			// mniCopy
+			// 
+			this.mniCopy.Name = "mniCopy";
+			this.mniCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+			this.mniCopy.Size = new System.Drawing.Size(265, 22);
+			this.mniCopy.Text = "Copy";
+			this.mniCopy.Click += new System.EventHandler(this.mniCopy_Click);
 			// 
 			// splitContainerVertical
 			// 
@@ -182,15 +217,15 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			// splitContainerVertical.Panel1
 			// 
-			this.splitContainerVertical.Panel1.Controls.Add(this.treeExceptions);
+			this.splitContainerVertical.Panel1.Controls.Add(this.olvTreeExceptions);
 			this.splitContainerVertical.Panel1MinSize = 40;
 			// 
 			// splitContainerVertical.Panel2
 			// 
 			this.splitContainerVertical.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainerVertical.Panel2.Controls.Add(this.splitContainerHorizontal);
-			this.splitContainerVertical.Size = new System.Drawing.Size(506, 353);
-			this.splitContainerVertical.SplitterDistance = 212;
+			this.splitContainerVertical.Size = new System.Drawing.Size(509, 361);
+			this.splitContainerVertical.SplitterDistance = 213;
 			this.splitContainerVertical.SplitterWidth = 5;
 			this.splitContainerVertical.TabIndex = 6;
 			// 
@@ -208,9 +243,9 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			// splitContainerHorizontal.Panel2
 			// 
-			this.splitContainerHorizontal.Panel2.Controls.Add(this.lvStackTrace);
-			this.splitContainerHorizontal.Size = new System.Drawing.Size(289, 353);
-			this.splitContainerHorizontal.SplitterDistance = 185;
+			this.splitContainerHorizontal.Panel2.Controls.Add(this.olvStackTrace);
+			this.splitContainerHorizontal.Size = new System.Drawing.Size(291, 361);
+			this.splitContainerHorizontal.SplitterDistance = 189;
 			this.splitContainerHorizontal.SplitterWidth = 5;
 			this.splitContainerHorizontal.TabIndex = 15;
 			// 
@@ -221,33 +256,33 @@ namespace Sq1.Widgets.Exceptions {
 			this.txtExceptionMessage.Location = new System.Drawing.Point(0, 0);
 			this.txtExceptionMessage.Multiline = true;
 			this.txtExceptionMessage.Name = "txtExceptionMessage";
-			this.txtExceptionMessage.Size = new System.Drawing.Size(289, 185);
+			this.txtExceptionMessage.Size = new System.Drawing.Size(291, 189);
 			this.txtExceptionMessage.TabIndex = 1;
 			this.txtExceptionMessage.TabStop = false;
-			this.txtExceptionMessage.Text = "ghdfg hdfg\r\ndfghdfg hdfgh\r\n9999";
 			// 
-			// lvStackTrace
+			// olvStackTrace
 			// 
-			this.lvStackTrace.Activation = System.Windows.Forms.ItemActivation.OneClick;
-			this.lvStackTrace.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.lvStackTrace.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this.olvStackTrace.Activation = System.Windows.Forms.ItemActivation.OneClick;
+			this.olvStackTrace.AllowColumnReorder = true;
+			this.olvStackTrace.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.olvStackTrace.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.lvhMethod,
             this.lvhDeclaringClass,
             this.lvhLine,
             this.lvhFile});
-			this.lvStackTrace.ContextMenuStrip = this.ctxCallStack;
-			this.lvStackTrace.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.lvStackTrace.FullRowSelect = true;
-			this.lvStackTrace.GridLines = true;
-			this.lvStackTrace.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.lvStackTrace.Location = new System.Drawing.Point(0, 0);
-			this.lvStackTrace.Name = "lvStackTrace";
-			this.lvStackTrace.Scrollable = false;
-			this.lvStackTrace.ShowItemToolTips = true;
-			this.lvStackTrace.Size = new System.Drawing.Size(289, 163);
-			this.lvStackTrace.TabIndex = 12;
-			this.lvStackTrace.UseCompatibleStateImageBehavior = false;
-			this.lvStackTrace.View = System.Windows.Forms.View.Details;
+			this.olvStackTrace.ContextMenuStrip = this.ctxCallStack;
+			this.olvStackTrace.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.olvStackTrace.FullRowSelect = true;
+			this.olvStackTrace.HideSelection = false;
+			this.olvStackTrace.HotTracking = true;
+			this.olvStackTrace.HoverSelection = true;
+			this.olvStackTrace.Location = new System.Drawing.Point(0, 0);
+			this.olvStackTrace.Name = "olvStackTrace";
+			this.olvStackTrace.ShowItemToolTips = true;
+			this.olvStackTrace.Size = new System.Drawing.Size(291, 167);
+			this.olvStackTrace.TabIndex = 12;
+			this.olvStackTrace.UseCompatibleStateImageBehavior = false;
+			this.olvStackTrace.View = System.Windows.Forms.View.Details;
 			// 
 			// lvhMethod
 			// 
@@ -289,9 +324,10 @@ namespace Sq1.Widgets.Exceptions {
 			this.BackColor = System.Drawing.SystemColors.MenuHighlight;
 			this.Controls.Add(this.splitContainerVertical);
 			this.Name = "ExceptionsControl";
-			this.Size = new System.Drawing.Size(506, 353);
+			this.Size = new System.Drawing.Size(509, 361);
 			this.Load += new System.EventHandler(this.form_OnLoad);
-			((System.ComponentModel.ISupportInitialize)(this.treeExceptions)).EndInit();
+			this.VisibleChanged += new System.EventHandler(this.exceptionsControl_VisibleChanged);
+			((System.ComponentModel.ISupportInitialize)(this.olvTreeExceptions)).EndInit();
 			this.ctxTree.ResumeLayout(false);
 			this.splitContainerVertical.Panel1.ResumeLayout(false);
 			this.splitContainerVertical.Panel2.ResumeLayout(false);
@@ -306,10 +342,10 @@ namespace Sq1.Widgets.Exceptions {
 			this.ResumeLayout(false);
 
 		}
-		private System.Windows.Forms.ToolStripMenuItem mniTreeShowExceptionTime;
-		private TreeListView treeExceptions;
+		private System.Windows.Forms.ToolStripMenuItem mniShowTimestamps;
+		private TreeListView olvTreeExceptions;
 		private TextBox txtExceptionMessage;
-		private ListView lvStackTrace;
+		private ListView olvStackTrace;
 		private ColumnHeader lvhFile;
 		private ColumnHeader lvhLine;
 		private ColumnHeader lvhMethod;
@@ -317,7 +353,7 @@ namespace Sq1.Widgets.Exceptions {
 		private SplitContainer splitContainerVertical;
 		private SplitContainer splitContainerHorizontal;
 
-		private BrightIdeasSoftware.OLVColumn olvTime;
+		private BrightIdeasSoftware.OLVColumn olvcTime;
 		private System.Windows.Forms.ToolStripMenuItem mniCopyStackPosition;
 		private System.Windows.Forms.ContextMenuStrip ctxCallStack;
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbDelay;
@@ -327,8 +363,11 @@ namespace Sq1.Widgets.Exceptions {
 		private System.Windows.Forms.ToolStripMenuItem mniClear;
 		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.ContextMenuStrip ctxTree;
-		#endregion
 		private ToolStripMenuItem mniRefresh;
+		private ToolStripMenuItem mniShowHeaders;
+		private OLVColumn olvcException;
+		private ToolStripSeparator toolStripSeparator2;
+		private ToolStripMenuItem mniPopupOnIncomingException;
 		
 	}
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.Execution {
-	public class PositionList : ConcurrentListWD<Position> {
+	public class PositionList : ConcurrentList<Position> {
 		public Dictionary<int, List<Position>>	ByEntryBarFilled	{ get; protected set; }
 		public Dictionary<int, List<Position>>	ByExitBarFilled		{ get; protected set; }
 		
@@ -156,7 +156,7 @@ namespace Sq1.Core.Execution {
 				//	return added;
 				//}
 				//v2
-				added = base.Add(positionOpened, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
+				added = base.AppendUnique(positionOpened, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
 				if (added == false) {
 					string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH?";
 					Assembler.PopupException(msg);
@@ -220,7 +220,7 @@ namespace Sq1.Core.Execution {
 			lockPurpose += " //" + base.ReasonToExist + ".Remove(" + position.ToString() + ")";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				bool removed = base.Remove(position, owner, lockPurpose, waitMillis, absenseThrowsAnError);
+				bool removed = base.RemoveUnique(position, owner, lockPurpose, waitMillis, absenseThrowsAnError);
 				if (this.ByEntryBarFilled.ContainsKey(position.EntryFilledBarIndex)) {
 					List<Position> byEntrySlot = this.ByEntryBarFilled[position.EntryFilledBarIndex];
 					if (byEntrySlot.Contains(position)) byEntrySlot.Remove(position);

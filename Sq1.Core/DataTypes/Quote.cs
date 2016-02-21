@@ -62,9 +62,9 @@ namespace Sq1.Core.DataTypes {
 		} }
 		#endregion
 
-		[JsonProperty]	public	string		AskFormatted	{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Ask); } }
-		[JsonProperty]	public	string		BidFormatted	{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Bid); } }
-		[JsonProperty]	public	string		SizeFormatted	{ get { return string.Format("{0:" + this.VolumeFormat + "}", this.Size); } }
+		[JsonProperty]	public	string		Ask_formatted	{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Ask); } }
+		[JsonProperty]	public	string		Bid_formatted	{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Bid); } }
+		[JsonProperty]	public	string		Size_formatted	{ get { return string.Format("{0:" + this.VolumeFormat + "}", this.Size); } }
 		
 		[JsonIgnore]	public	string		StreamingButtonIdent { get {
 			StringBuilder sb = new StringBuilder();
