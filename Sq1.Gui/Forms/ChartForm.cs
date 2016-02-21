@@ -155,7 +155,7 @@ namespace Sq1.Gui.Forms {
 			}
 			if (quote == null) {
 				if (this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter == null) {
-					string msg = "I_REFUSE_TO_PRINT_QUOTE_TIMESTAMP this.ChartFormManager.Executor.DataSource.StreamingAdapter==null";
+					string msg = "I_REFUSE_TO_PRINT_QUOTE_TIMESTAMP this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter==null";
 					Assembler.PopupException(msg);
 					return;
 				}

@@ -7,7 +7,7 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.Support {
 	public class ConcurrentWatchdog : IDisposable {
-		public		const int		TIMEOUT_DEFAULT				= 3000;
+		public		const int		TIMEOUT_DEFAULT				= 3000;		// 3000ms = 3s
 
 		public		string					ReasonToExist { get; protected set; }
 		protected	ExecutionDataSnapshot	Snap;

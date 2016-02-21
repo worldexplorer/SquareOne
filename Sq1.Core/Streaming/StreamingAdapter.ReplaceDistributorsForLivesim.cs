@@ -67,7 +67,7 @@ namespace Sq1.Core.Streaming {
 				this.DataDistributor_replacedForLivesim.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(symbol, scaleInterval);
 			}
 
-			if (this.DataDistributorSolidifiers_replacedForLivesim.DistributionChannels.Count > 1) {
+			if (this.DataDistributorSolidifiers_replacedForLivesim.DistributionChannels.Count > 0) {
 				this.DataDistributorSolidifiers_replacedForLivesim.AllQuotePumps_Pause(reasonForNewDistributor);
 			} else {
 				if (this is LivesimStreamingDefault) {

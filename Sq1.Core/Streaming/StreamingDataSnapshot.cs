@@ -53,7 +53,7 @@ namespace Sq1.Core.Streaming {
 			}
 			Quote prevQuote = this.level2andLastQuoteUnboundClone_bySymbol[symbol].Initialize();
 		} }
-		public void LastQuoteCloneSetForSymbol(Quote quote) { lock (this.lockLastQuote) {
+		public void LastQuoteClone_setForSymbol(Quote quote) { lock (this.lockLastQuote) {
 			string msig = " StreamingDataSnapshot.LastQuoteSetForSymbol(" + quote.ToString() + ")";
 
 			if (quote == null) {
@@ -91,6 +91,9 @@ namespace Sq1.Core.Streaming {
 				LevelTwoAndLastQuote levelTwoAndLastQuote = this.level2andLastQuoteUnboundClone_bySymbol[symbol];
 				if (levelTwoAndLastQuote == null) return null;
 				Quote weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy = levelTwoAndLastQuote.LastQuote;
+				if (weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy == null) {
+					string msg = "MUST_NOT_BE_NULL_FOR_LIVESIM_TOO levelTwoAndLastQuote.LastQuote";
+				}
 				return weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy;
 			} }
 		public LevelTwoHalf LevelTwoAsks_getForSymbol(string symbol) { lock (this.lockLastQuote) {
