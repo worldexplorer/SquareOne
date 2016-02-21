@@ -40,14 +40,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 44
+        "PanelHeight": 49
       },
       "PanelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 50,
+        "Distance": 55,
         "SplitterHeight": 6,
-        "PanelHeight": 450
+        "PanelHeight": 143
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -57,20 +57,20 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 408
+        "PanelHeight": 549
       },
       "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 414,
+        "Distance": 555,
         "SplitterHeight": 6,
-        "PanelHeight": 97
+        "PanelHeight": 95
       }
     },
     "Name": "Default",
     "StrategyName": "TwoMAsCompiled",
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 5,
+    "BarWidthIncludingPadding": 8,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -101,7 +101,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 120,
+    "SqueezeVerticalPaddingPx": 0,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,

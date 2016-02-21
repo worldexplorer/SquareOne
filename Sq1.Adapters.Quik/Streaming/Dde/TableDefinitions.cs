@@ -20,17 +20,18 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				//new XlColumn(, "realvmprice",	TypeExpected = XlTable.BlockType.String },
 				//new XlColumn() { Names = new List<string>() {"time", "changetime"}, Type = XlTable.BlockType.String, Format = "h:mm:sstt" },
 
+				//MAYBE_FOR_OLD_QUIK new XlColumn(XlBlockType.String,	"changetime")				{ ToTimeParseFormat = "h:mm:sstt" },	// mention some format to indicate it's a Time, I'll try to parse from anything first and then I'll try the mentioned one
 				// QuikQuote.Date,Time are not Mandatory due to reconstructServerTime_useNowAndTimezoneFromMarketInfo_ifNotFoundInRow()
 				new XlColumn(XlBlockType.String,	"TRADE_DATE_CODE",	false)	{ ToDateParseFormat = "dd.MM.yyyy" },	// mention some format to indicate it's a Date, I'll try to parse from anything first and then I'll try the mentioned one
 				new XlColumn(XlBlockType.String,	"time",				false)	{ ToTimeParseFormat = "HH:mm:ss" },		// mention some format to indicate it's a Time, I'll try to parse from anything first and then I'll try the mentioned one
 
-				new XlColumn(XlBlockType.String,	"changetime")				{ ToTimeParseFormat = "h:mm:sstt" },	// mention some format to indicate it's a Time, I'll try to parse from anything first and then I'll try the mentioned one
 				new XlColumn(XlBlockType.Float,		"selldepo"),
 				new XlColumn(XlBlockType.Float,		"buydepo"),
 				new XlColumn(XlBlockType.Float,		"qty"),
 				new XlColumn(XlBlockType.Float,		"high"),
 				new XlColumn(XlBlockType.Float,		"low"),
-				new XlColumn(XlBlockType.Float,		"stepprice"),
+
+				//MAYBE_FOR_OLD_QUIK new XlColumn(XlBlockType.Float,		"stepprice"),
 				new XlColumn(XlBlockType.Float,		"SEC_PRICE_STEP"),		// => SymbolInfo 
 			};
 		} }

@@ -57,7 +57,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 
 			string msg = "NULL_VALUE_RECEIVED_DDE_FOR " + this.topicImServing + "[" + columnName + "]";
 			if (string.IsNullOrEmpty(typeExpected) == false) {
-				msg += " MUST_BE_" + typeExpected;
+				msg += " MUST_BE " + typeExpected;
 			}
 			Assembler.PopupException(msg, null, false);
 			return true;
@@ -76,10 +76,18 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			string ret = "";
 			foreach (KeyValuePair<string, object> each in this) {
 				string asString = each.Key + "[" + Convert.ToString(each.Value) + "]";
-				if (ret != "") ret += ",";
+				if (ret != "") ret += "," + Environment.NewLine;
 				ret += asString;
 			}
 			return ret;
+		}
+
+		internal void AddOrReplace(string key, object value) {
+			if (base.ContainsKey(key) == false) {
+				base.Add(key, value);
+				return;
+			}
+			base[key] = value;
 		}
 	}
 }

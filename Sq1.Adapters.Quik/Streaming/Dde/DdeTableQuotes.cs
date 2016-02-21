@@ -23,9 +23,11 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			//	int a = 1;
 			//}
 
-			foreach (string msg in row.ErrorMessages) {
-				Assembler.PopupException(msg, null, false);
-			}
+			// UPSTACK ALREADY_DOES_IT
+			//string msig = " //this[" + this + "].IncomingTableRow_convertToDataStructure_monitoreable(" + row + ")";
+			//foreach (string msg in row.ErrorMessages) {
+			//    Assembler.PopupException(msg + msig, null, false);
+			//}
 
 			QuoteQuik quikQuote = new QuoteQuik(DateTime.Now);
 			quikQuote.Source			= this.DdeConsumerClassName + " Topic[" + base.Topic + "]";
@@ -48,7 +50,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			quikQuote.FortsPriceMin		= row.GetDouble("low"			, double.NaN);
 
 			this.reconstructServerTime_useNowAndTimezoneFromMarketInfo_ifNotFoundInRow(row);	// upstack@base check rowParsed.ErrorMessages 
-			quikQuote.ServerTime		= row.GetDateTime("ServerTime"	, DateTime.Now);
+			quikQuote.ServerTime		= row.GetDateTime("_ServerTime"	, DateTime.Now);
 			//DateTime qChangeTime = DateTime.MinValue;
 			//if (quote.ServerTime == DateTime.MinValue && qChangeTime != DateTime.MinValue) {
 			//	quote.ServerTime = qChangeTime;
@@ -76,21 +78,23 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 		}
 
 		void reconstructServerTime_useNowAndTimezoneFromMarketInfo_ifNotFoundInRow(XlRowParsed rowParsed) {
+			string msig = " //this[" + this + "].reconstructServerTime_useNowAndTimezoneFromMarketInfo_ifNotFoundInRow(" + rowParsed + ")";
+
 			DateTime ret = DateTime.MinValue;
 			string errmsg = "DATE_NOT_FOUND_IN_rowParsed__RETURNING_DateTime.MinValue";
 
-			MarketInfo marketInfo = this.QuikStreaming.DataSource.MarketInfo;
-			if (marketInfo == null) {
-				ret = TimeZoneInfo.ConvertTime(DateTime.Now, marketInfo.TimeZoneInfo);
-				errmsg = "DATE_NOT_FOUND_IN_rowParsed__RETURNING_DateTime.Now=>marketInfo[" + this.QuikStreaming.DataSource.MarketName + "]"
-					+ ".TimeZoneInfo.BaseUtcOffset[" + marketInfo.TimeZoneInfo.BaseUtcOffset + "]";
-			}
-
-			string dateReceived = rowParsed.GetString("TRADE_DATE_CODE", "QUOTE_DATE_NOT_DELIVERED_DDE");
-			string timeReceived = rowParsed.GetString("time", "QUOTE_TIME_NOT_DELIVERED_DDE");
+			string dateReceived = rowParsed.GetString("TRADE_DATE_CODE",	"QUOTE_DATE_NOT_DELIVERED_DDE");
+			string timeReceived = rowParsed.GetString("time",				"QUOTE_TIME_NOT_DELIVERED_DDE");
+			
 			if (dateReceived == "QUOTE_DATE_NOT_DELIVERED_DDE" || timeReceived == "QUOTE_TIME_NOT_DELIVERED_DDE") {
-				rowParsed["ServerTime"] = ret;
-			    rowParsed.ErrorMessages.Add(errmsg);
+				MarketInfo marketInfo = this.QuikStreaming.DataSource.MarketInfo;
+				if (marketInfo != null) {
+					ret = TimeZoneInfo.ConvertTime(DateTime.Now, marketInfo.TimeZoneInfo);
+					errmsg = "DATE_NOT_FOUND_IN_rowParsed__RETURNING_DateTime.Now=>marketInfo[" + this.QuikStreaming.DataSource.MarketName + "]"
+						+ ".TimeZoneInfo.BaseUtcOffset[" + marketInfo.TimeZoneInfo.BaseUtcOffset + "]";
+				}
+				rowParsed.AddOrReplace("_ServerTime", ret);
+			    rowParsed.ErrorMessages.Add(errmsg + msig);
 				return;
 			}
 
@@ -98,11 +102,11 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 			try {
 			    ret = DateTime.Parse(dateTimeReceived);
-				rowParsed["ServerTime"] = ret;
+				rowParsed.AddOrReplace("_ServerTime", ret);
 				return;		// if not Parse()d fromAnyFormat then it'll throw and I'll continue with ParseExact()
 			} catch (Exception ex) {
-			    errmsg = "TROWN DateTime.Parse(" + dateTimeReceived + "): " + ex.Message;
-			    rowParsed.ErrorMessages.Add(errmsg);
+			    errmsg = "TROWN_DateTime.Parse(" + dateTimeReceived + "): " + ex.Message;
+			    rowParsed.ErrorMessages.Add(errmsg + msig);
 			}
 
 			string dateFormat = base.ColumnDefinitionsByNameLookup["TRADE_DATE_CODE"]	.ToDateParseFormat;
@@ -110,10 +114,10 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			string dateTimeFormat = dateFormat + " " + timeFormat;
 			try {
 			    ret = DateTime.ParseExact(dateTimeReceived, dateTimeFormat, CultureInfo.InvariantCulture);
-				rowParsed["ServerTime"] = ret;
+				rowParsed.AddOrReplace("_ServerTime", ret);
 			} catch (Exception ex) {
-			    errmsg = "TROWN DateTime.ParseExact(" + dateTimeReceived + ", " + dateTimeFormat + "): " + ex.Message;
-			    rowParsed.ErrorMessages.Add(errmsg);
+			    errmsg = "TROWN_DateTime.ParseExact(" + dateTimeReceived + ", " + dateTimeFormat + "): " + ex.Message;
+			    rowParsed.ErrorMessages.Add(errmsg + msig);
 			}
 		}
 

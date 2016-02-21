@@ -106,6 +106,10 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 						continue;
 					}
 					object valueParsed = rowParsed[col.Name];
+					//if (col.Name == "time") {
+					//	string msg = "HOW_COME_YOU_PARSED_TIME_BUT_GOT_DATETIME_FILLED_WITH_DATE??? " + valueParsed;
+					//	Assembler.PopupException(msg, null, false);
+					//}
 					if (valueParsed == null) {
 						string msg = "JUST_IGNORE?...";
 						continue;
@@ -116,7 +120,9 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 
 					if (typeParsedAsString == "Double") typeParsedAsString = "Float";	// BinaryReader/Writer can't read/write (float)s, so I transfer doubles and consume doubles in Streaming
 					string typeExpected = col.TypeExpected.ToString();
-					if (typeParsedAsString == "DateTime") typeParsedAsString = "String";
+					if (typeParsedAsString == "DateTime") {
+						typeParsedAsString = "String";
+					}
 					if (typeParsedAsString == typeExpected) continue;
 
 					this.ColumnsIdentified = false;
@@ -216,6 +222,10 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 				if (this.ColumnClonesFoundByIndex.ContainsKey(col) == false) continue;
 
 				XlColumn xlCol = this.ColumnClonesFoundByIndex[col].Clone();
+				//if (xlCol.Name == "time") {
+				//	string msg = "HOW_COME_YOU_PARSED_TIME_BUT_GOT_DATETIME_FILLED_WITH_DATE??? " + reader.ValueJustRead;
+				//	Assembler.PopupException(msg, null, false);
+				//}
 
 
 				if (reader.BlockType == XlBlockType.Blank || reader.BlockType == XlBlockType.Skip) {

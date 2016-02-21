@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 
 using Sq1.Core;
+using Sq1.Core.Streaming;
+
 using Sq1.Widgets;
 using Sq1.Widgets.Level2;
 
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
 using Sq1.Adapters.Quik.Streaming.Monitor;
-using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik.Streaming.Dde {
 	public partial class DdeBatchSubscriber {
@@ -23,8 +24,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			}
 			LevelTwoUserControl domResizeable = tableLevel2.UserControlMonitoringMe as LevelTwoUserControl;
 			if (domResizeable == null) {
-				string msg = "I_MUST_HAVE_BEEN_LevelTwoUserControl_tableLevel2.WhereIamMonitored[" + tableLevel2.UserControlMonitoringMe + "]";
-				Assembler.PopupException(msg + msig);
+				string msg = "DDE_MONITOR_WAS_NOT_OPEN I_MUST_HAVE_BEEN_LevelTwoUserControl_tableLevel2.WhereIamMonitored[" + tableLevel2.UserControlMonitoringMe + "]";
+				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
 

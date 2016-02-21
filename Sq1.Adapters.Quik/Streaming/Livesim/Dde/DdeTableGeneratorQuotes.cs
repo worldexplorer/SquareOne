@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 using NDde;
 using NDde.Client;
-
-using Sq1.Core;
-using Sq1.Core.DataTypes;
-using Sq1.Core.Backtesting;
-
 using Sq1.Adapters.Quik.Streaming.Dde;
 using Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde;
+using Sq1.Core;
+using Sq1.Core.Backtesting;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 	public class DdeTableGeneratorQuotes : XlDdeTableGenerator {
@@ -40,15 +39,17 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 			//base.XlWriter.Put("stepprice",	quote.Symbol);
 
 
-			//string dateFormat = base.ColumnsLookup["TRADE_DATE_CODE"]	.ToDateParseFormat;
-			//string timeFormat = base.ColumnsLookup["time"]				.ToTimeParseFormat;
-			//string date = quote.ServerTime.ToString(dateFormat);
-			//string time = quote.ServerTime.ToString(timeFormat);
-
 			// using ControlPanel => Regional Date&Time settings; testing Date.Parse() from "any" format
-			string date = quote.ServerTime.ToString();
-			string time = quote.ServerTime.ToString();
+			string dateFormat = DateTimeFormatInfo.CurrentInfo.LongDatePattern;
+			string timeFormat = DateTimeFormatInfo.CurrentInfo.LongTimePattern;
+			
+			if (string.IsNullOrEmpty(dateFormat)) dateFormat = base.ColumnsLookup["TRADE_DATE_CODE"]	.ToDateParseFormat;
+			if (string.IsNullOrEmpty(timeFormat)) timeFormat = base.ColumnsLookup["time"]				.ToTimeParseFormat;
 
+			string date = quote.ServerTime.ToString(dateFormat);
+			string time = quote.ServerTime.ToString(timeFormat);
+
+			//INTENTIONALLY_BROKEN_TO_SEE_NOW_CONVERTED_FOR_MARKET_TIMEZONE
 			base.XlWriter.Put("TRADE_DATE_CODE",	date);
 			base.XlWriter.Put("time",				time);
 

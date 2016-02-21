@@ -93,7 +93,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			//    Assembler.PopupException(new Exception(msg));
 			//    return;
 			//}
-			if (string.IsNullOrEmpty(quote.Source)) quote.Source = "Quik";
+			if (string.IsNullOrEmpty(quote.Source)) quote.Source = "Quik.Source_INPRECISE";
 			QuoteQuik quoteQuik = QuoteQuik.SafeUpcast(quote);
 			this.StreamingDataSnapshotQuik.StoreFortsSpecifics(quoteQuik);
 			this.syncSymbolClass_toSymbolInfo(quoteQuik);

@@ -8,7 +8,7 @@
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
     "Interval": 1,
     "Scale": 3,
-    "AsString_cached": null,
+    "AsString_cached": "1-Minute",
     "IsIntraday": true,
     "AsTimeSpanInSeconds": 60,
     "AsTimeSpan": "00:01:00",
@@ -48,7 +48,7 @@
   },
   "MarketName": "FORTS",
   "Name": "Qmock",
-  "StreamingAdapterName": "QuikStreaming",
+  "StreamingAdapterName": "QuikStreaming-inititedFromDS",
   "BrokerAdapterName": "Quik Broker",
   "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\Qmock"
 }
