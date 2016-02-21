@@ -43,7 +43,7 @@ namespace Sq1.Core.DataFeed {
 			get { return this.marketInfo; }
 			set {
 				this.marketInfo = value;
-				MarketName = value.Name;
+				this.MarketName = value.Name;
 			} }
 		[JsonProperty]	public string				StreamingAdapterName	{ get {
 				//if (this.StreamingAdapter == null) return "PLEASE_ATTACH_AND_CONFIGURE_STREAMING_ADAPDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT";

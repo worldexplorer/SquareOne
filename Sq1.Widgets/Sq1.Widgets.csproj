@@ -147,6 +147,10 @@
     <Compile Include="DockContentImproved\DockContentImproved.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Exceptions\ExceptionsControl.Clipboard.cs">
+      <DependentUpon>ExceptionsControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Exceptions\ExceptionsControlDataSnapshot.cs" />
     <Compile Include="Exceptions\ExceptionsControl.cs">
       <SubType>UserControl</SubType>

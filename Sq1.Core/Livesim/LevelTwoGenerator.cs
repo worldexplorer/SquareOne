@@ -37,8 +37,8 @@ namespace Sq1.Core.Livesim {
 				throw new Exception(msg);
 			}
 
-			if (this.LevelTwoBids.Count(this, "GenerateForQuote(" + quote + ")") > 0) this.LevelTwoBids.Clear(this, "GenerateForQuote(" + quote + ")");
-			if (this.LevelTwoAsks.Count(this, "GenerateForQuote(" + quote + ")") > 0) this.LevelTwoAsks.Clear(this, "GenerateForQuote(" + quote + ")");
+			if (this.LevelTwoBids.Count > 0) this.LevelTwoBids.Clear(this, "GenerateForQuote(" + quote + ")");
+			if (this.LevelTwoAsks.Count > 0) this.LevelTwoAsks.Clear(this, "GenerateForQuote(" + quote + ")");
 
 			double sizeAsk = quote.Size;
 			double sizeBid = quote.Size;

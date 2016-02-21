@@ -16,7 +16,7 @@ namespace Sq1.Widgets {
 				bool				continueSelfScheduling;
 		public	bool				SelfReschedule	{
 			get { return this.continueSelfScheduling; }
-			set {
+			private set {
 				if (this.continueSelfScheduling == value) return;
 				if (value == true) {
 					this.reschedule();
@@ -27,7 +27,7 @@ namespace Sq1.Widgets {
 				this.continueSelfScheduling = value;
 			}
 		}
-		public	int					Delay		{ get; private set; }
+		public	int					Delay;		// ATOMIC_OPERATION ExceptionsForm may be closed and opened again => Initialize will have to set the TreeRefreshDelayMsec		{ get; private set; }
 		public	bool				Scheduled	{ get; private set; }
 
 		private bool expired {
@@ -120,7 +120,7 @@ namespace Sq1.Widgets {
 			}
 			this.IsDisposed = true;
 
-			this.timer.Stop();
+			this.timer.Stop();		// are you sure I have to start/stop System.WindowsForm.Timers from GUI thread?
 			this.timer.Enabled = false;
 			this.timer.Dispose();
 			this.timer = null;

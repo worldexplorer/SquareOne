@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.Execution {
-	public class AlertList : ConcurrentListWD<Alert>, IDisposable {
+	public class AlertList : ConcurrentList<Alert>, IDisposable {
 		protected Dictionary<int, List<Alert>>	ByBarPlaced		{ get; private set; }
 		
 		public Dictionary<int, AlertList>	ByBarPlacedSafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
@@ -61,7 +61,7 @@ namespace Sq1.Core.Execution {
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				bool newBarAddedInHistory = false;
-				bool added = base.Add(alert, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
+				bool added = base.AppendUnique(alert, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
 				if (added == false) return ByBarDumpStatus.BarAlreadyContainedTheAlertToAdd;
 
 				//int barIndexAlertStillPending = alert.Bars.Count - 1;
@@ -86,7 +86,7 @@ namespace Sq1.Core.Execution {
 			lockPurpose += " //" + base.ReasonToExist + ".Remove(" + alert.ToString() + ")";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				bool removed = base.Remove(alert, owner, lockPurpose, waitMillis, absenseThrowsAnError);
+				bool removed = base.RemoveUnique(alert, owner, lockPurpose, waitMillis, absenseThrowsAnError);
 				int barIndexPlaced = alert.PlacedBarIndex;
 				if (this.ByBarPlaced.ContainsKey(barIndexPlaced)) {
 					List<Alert> slot = this.ByBarPlaced[barIndexPlaced];

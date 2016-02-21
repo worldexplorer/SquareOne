@@ -35,6 +35,14 @@ namespace Sq1.Core.Support {
 			stopwatchUnlock			= new Stopwatch();
 			customerUnLockingQueue	= new object();
 		}
+		public bool IsUnlocked { get {
+			bool unlocked = this.WaitUnlocked(0);
+			return unlocked;
+		} }
+		public bool WaitUnlocked(int waitMillis = TIMEOUT_DEFAULT) {
+			bool unlocked = this.isFree.WaitOne(waitMillis);
+			return unlocked;
+		}
 		public bool WaitAndLockFor(object owner, string lockPurpose,
 					int waitMillis = TIMEOUT_DEFAULT, bool engageWaitingForEva = true) {
 			// lock(){} above WAS DEADLY when, between two stack frames, another thread locked me
@@ -204,14 +212,20 @@ namespace Sq1.Core.Support {
 			try {
 				this.stopwatchLock.Stop();
 			} catch (Exception ex) {
+				string msg = "THREW_AT_this.stopwatchLock.Stop()";
+				Assembler.PopupException(msg, ex);
 			}
 			try {
 				this.stopwatchUnlock.Stop();
 			} catch (Exception ex) {
+				string msg = "THREW_AT_this.stopwatchUnlock.Stop()";
+				Assembler.PopupException(msg);
 			}
 			try {
 				this.isFree.Dispose();
 			} catch (Exception ex) {
+				string msg = "THREW_AT_this.isFree.Dispose()";
+				Assembler.PopupException(msg);
 			}
 			this.IsDisposed = true;
 		}
