@@ -35,6 +35,10 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 					Assembler.PopupException(msg + msig);
 					return;
 				}
+
+				foreach (string msg in row.ErrorMessages) {			// thanx to reconstructServerTime_useNowAndTimezoneFromMarketInfo_ifNotFoundInRow()
+					Assembler.PopupException(msg, null, false);
+				}
 				if (base.DdeWillDeliver_updatesForEachRow_inSeparateMessages) {
 					bool updatedByPrimaryKey = false;
 					int indexToReplace = -1;

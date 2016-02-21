@@ -22,24 +22,31 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 		}
 
 		internal void OutgoingObjectsBufferize_perSymbol(LevelTwoHalf levelTwoAsks, LevelTwoHalf levelTwoBids) {
-			string msig = " //" + this.DdeGeneratorClassName + ".OutgoingObjectsBufferize_perSymbol(" + levelTwoAsks + "," + levelTwoBids + ")";
+			string msig = " //" + this.DdeGeneratorClassName + ".OutgoingObjectsBufferize_perSymbol("
+				+ levelTwoAsks.ToString() + "," + levelTwoBids.ToString() + ")";
 
 			//foreach (double priceLevel in levelTwoAsks.InnerDictionary.Keys) {
 			//	base.XlWriter.StartNewRow();	// first row was already added as a header
-
-			List<double> askKeys = new List<double>(levelTwoAsks.InnerDictionary.Keys);
-			for (int i=0; i<askKeys.Count; i++) {
-			    double priceLevel = askKeys[i];
-				double volumeAtPrice = levelTwoAsks.InnerDictionary[priceLevel];
+			//List<double> askKeys = new List<double>(levelTwoAsks.SafeCopy(this, msig).Keys);
+			//for (int i=0; i<askKeys.Count; i++) {
+			//    double priceLevel = askKeys[i];
+			Dictionary<double, double> asksSafeCopy = levelTwoAsks.SafeCopy(this, msig);
+			int serno = 0;
+			foreach (KeyValuePair<double, double> volumeAskByPriceLevel in asksSafeCopy) {
+				double priceLevel = volumeAskByPriceLevel.Key;
+				double volumeBid  = volumeAskByPriceLevel.Value;
+				double volumeAtPrice = levelTwoAsks.GetAtKey(priceLevel, this, msig);
 				base.XlWriter.Put("BUY_VOLUME",		null);
 				base.XlWriter.Put("PRICE",			priceLevel);
 				base.XlWriter.Put("SELL_VOLUME",	volumeAtPrice);
-			    if (i < askKeys.Count - 1) base.XlWriter.StartNewRow();
+			    if (serno < asksSafeCopy.Count - 1) base.XlWriter.StartNewRow();
 			}
-			foreach (double priceLevel in levelTwoBids.InnerDictionary.Keys) {
+			//foreach (double priceLevel in levelTwoBids.InnerDictionary.Keys) {
+			foreach (KeyValuePair<double, double> volumeBidForPriceLevel in levelTwoBids.SafeCopy(this, msig)) {
+				double priceLevel = volumeBidForPriceLevel.Key;
+				double volumeBid  = volumeBidForPriceLevel.Value;
 				base.XlWriter.StartNewRow();
-				double volumeAtPrice = levelTwoBids.InnerDictionary[priceLevel];
-				base.XlWriter.Put("BUY_VOLUME",		volumeAtPrice);
+				base.XlWriter.Put("BUY_VOLUME",		volumeBid);
 				base.XlWriter.Put("PRICE",			priceLevel);
 				base.XlWriter.Put("SELL_VOLUME",	null);
 			}

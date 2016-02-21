@@ -12,16 +12,19 @@ namespace Sq1.Adapters.Quik.Streaming {
 		[JsonProperty]	public	double	FortsPriceMax;
 		[JsonProperty]	public	double	FortsPriceMin;
 
+		[JsonProperty]	public	double	PriceStepFromDde;
 
-		[JsonProperty]	public	string	FortsDepositBuyFormatted	{ get { return string.Format("{0:" + base.PriceFormat + "}", this.FortsDepositBuy); } }
-		[JsonProperty]	public	string	FortsDepositSellFormatted	{ get { return string.Format("{0:" + base.PriceFormat + "}", this.FortsDepositSell); } }
-		[JsonProperty]	public	string	FortsPriceMaxFormatted		{ get { return string.Format("{0:" + base.PriceFormat + "}", this.FortsPriceMax); } }
-		[JsonProperty]	public	string	FortsPriceMinFormatted		{ get { return string.Format("{0:" + base.PriceFormat + "}", this.FortsPriceMin); } }
+
+		[JsonProperty]	public	string	FortsDepositBuy_formatted	{ get { return string.Format("{0:" + base.PriceFormat + "}", this.FortsDepositBuy); } }
+		[JsonProperty]	public	string	FortsDepositSell_formatted	{ get { return string.Format("{0:" + base.PriceFormat + "}", this.FortsDepositSell); } }
+		[JsonProperty]	public	string	FortsPriceMax_formatted		{ get { return string.Format("{0:" + base.PriceFormat + "}", this.FortsPriceMax); } }
+		[JsonProperty]	public	string	FortsPriceMin_formatted		{ get { return string.Format("{0:" + base.PriceFormat + "}", this.FortsPriceMin); } }
+		[JsonProperty]	public	string	PriceStepFromDde_formatted	{ get { return string.Format("{0:" + base.PriceFormat + "}", this.PriceStepFromDde); } }
 
 		public QuoteQuik(DateTime quoteDate) : base(quoteDate) {
 		}
 
-		public void EnrichFromStreamingDataSnapshotQuik(QuikStreamingDataSnapshot quikStreamingDataSnapshot) {
+		public void Enrich_fromStreamingDataSnapshotQuik(QuikStreamingDataSnapshot quikStreamingDataSnapshot) {
 			this.FortsDepositBuy	= quikStreamingDataSnapshot.FortsGetDepositBuyForSymbol	(base.Symbol);
 			this.FortsDepositSell	= quikStreamingDataSnapshot.FortsGetDepositSellForSymbol(base.Symbol);
 			this.FortsPriceMin		= quikStreamingDataSnapshot.FortsGetPriceMinForSymbol	(base.Symbol);

@@ -59,7 +59,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			if (string.IsNullOrEmpty(typeExpected) == false) {
 				msg += " MUST_BE_" + typeExpected;
 			}
-			//Assembler.PopupException(msg, null, false);
+			Assembler.PopupException(msg, null, false);
 			return true;
 		}
 

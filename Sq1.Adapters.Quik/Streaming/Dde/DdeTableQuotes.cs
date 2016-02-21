@@ -39,15 +39,15 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			if (last == quikQuote.Ask) quikQuote.TradedAt = BidOrAsk.Ask;
 			if (quikQuote.TradedAt == BidOrAsk.UNKNOWN) {
 				string msg = "QUOTE_WASNT_TRADED last must NOT be bid or ask //ROUNDING_ERROR?...";
-				//Assembler.PopupException(msg, null, false);
+				Assembler.PopupException(msg, null, false);
 			}
 
 			quikQuote.FortsDepositBuy	= row.GetDouble("buydepo"		, double.NaN);
 			quikQuote.FortsDepositSell	= row.GetDouble("selldepo"		, double.NaN);
-			quikQuote.FortsPriceMax		= row.GetDouble("high"		, double.NaN);
-			quikQuote.FortsPriceMin		= row.GetDouble("low"		, double.NaN);
+			quikQuote.FortsPriceMax		= row.GetDouble("high"			, double.NaN);
+			quikQuote.FortsPriceMin		= row.GetDouble("low"			, double.NaN);
 
-			this.reconstructServerTime(row);
+			this.reconstructServerTime_useNowAndTimezoneFromMarketInfo_ifNotFoundInRow(row);	// upstack@base check rowParsed.ErrorMessages 
 			quikQuote.ServerTime		= row.GetDateTime("ServerTime"	, DateTime.Now);
 			//DateTime qChangeTime = DateTime.MinValue;
 			//if (quote.ServerTime == DateTime.MinValue && qChangeTime != DateTime.MinValue) {
@@ -68,61 +68,66 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			//	quote.Size = sizeParsed;
 			//}
 
-			this.syncPriceStep_toSymbolInfo(row, quikQuote);
+			quikQuote.PriceStepFromDde	= row.GetDouble("SEC_PRICE_STEP"	, double.NaN);
+			this.syncPriceStep_toSymbolInfo(quikQuote);
 
 			base.QuikStreaming.PushQuoteReceived(quikQuote);	//goes to another thread via PUMP and invokes strategies letting me go
 			return quikQuote;									//one more delay is to raise and event which will go to GUI thread as well QuikStreamingMonitorForm.tableQuotes_DataStructureParsed_One()
 		}
 
-		void reconstructServerTime(XlRowParsed rowParsed) {
-			string dateFormat = base.ColumnDefinitionsByNameLookup["TRADE_DATE_CODE"]	.ToDateParseFormat;
-			string timeFormat = base.ColumnDefinitionsByNameLookup["time"]				.ToTimeParseFormat;
-			string dateTimeFormat = dateFormat + " " + timeFormat;
-
+		void reconstructServerTime_useNowAndTimezoneFromMarketInfo_ifNotFoundInRow(XlRowParsed rowParsed) {
 			DateTime ret = DateTime.MinValue;
+			string errmsg = "DATE_NOT_FOUND_IN_rowParsed__RETURNING_DateTime.MinValue";
+
+			MarketInfo marketInfo = this.QuikStreaming.DataSource.MarketInfo;
+			if (marketInfo == null) {
+				ret = TimeZoneInfo.ConvertTime(DateTime.Now, marketInfo.TimeZoneInfo);
+				errmsg = "DATE_NOT_FOUND_IN_rowParsed__RETURNING_DateTime.Now=>marketInfo[" + this.QuikStreaming.DataSource.MarketName + "]"
+					+ ".TimeZoneInfo.BaseUtcOffset[" + marketInfo.TimeZoneInfo.BaseUtcOffset + "]";
+			}
 
 			string dateReceived = rowParsed.GetString("TRADE_DATE_CODE", "QUOTE_DATE_NOT_DELIVERED_DDE");
-			if (dateReceived == "QUOTE_DATE_NOT_DELIVERED_DDE") {
-				dateReceived = DateTime.Now.Date.ToString(dateFormat);
-			}
 			string timeReceived = rowParsed.GetString("time", "QUOTE_TIME_NOT_DELIVERED_DDE");
-			string dateTimeReceived = dateReceived + " " + timeReceived;
-			if (dateTimeReceived.Contains("NOT_DELIVERED_DDE")) {
+			if (dateReceived == "QUOTE_DATE_NOT_DELIVERED_DDE" || timeReceived == "QUOTE_TIME_NOT_DELIVERED_DDE") {
 				rowParsed["ServerTime"] = ret;
+			    rowParsed.ErrorMessages.Add(errmsg);
 				return;
 			}
+
+			string dateTimeReceived = dateReceived + " " + timeReceived;
 
 			try {
 			    ret = DateTime.Parse(dateTimeReceived);
 				rowParsed["ServerTime"] = ret;
-				if (ret != DateTime.MinValue) return;
+				return;		// if not Parse()d fromAnyFormat then it'll throw and I'll continue with ParseExact()
 			} catch (Exception ex) {
-			    string errmsg = "TROWN DateTime.Parse(" + dateTimeReceived + "): " + ex.Message;
+			    errmsg = "TROWN DateTime.Parse(" + dateTimeReceived + "): " + ex.Message;
 			    rowParsed.ErrorMessages.Add(errmsg);
 			}
 
+			string dateFormat = base.ColumnDefinitionsByNameLookup["TRADE_DATE_CODE"]	.ToDateParseFormat;
+			string timeFormat = base.ColumnDefinitionsByNameLookup["time"]				.ToTimeParseFormat;
+			string dateTimeFormat = dateFormat + " " + timeFormat;
 			try {
 			    ret = DateTime.ParseExact(dateTimeReceived, dateTimeFormat, CultureInfo.InvariantCulture);
 				rowParsed["ServerTime"] = ret;
 			} catch (Exception ex) {
-			    string errmsg = "TROWN DateTime.ParseExact(" + dateTimeReceived + ", " + dateTimeFormat + "): " + ex.Message;
+			    errmsg = "TROWN DateTime.ParseExact(" + dateTimeReceived + ", " + dateTimeFormat + "): " + ex.Message;
 			    rowParsed.ErrorMessages.Add(errmsg);
 			}
 		}
 
-		void syncPriceStep_toSymbolInfo(XlRowParsed row, QuoteQuik quikQuote) {
-			double priceStep_fromDde = row.GetDouble("SEC_PRICE_STEP", double.NaN);
-			if (double.IsNaN(priceStep_fromDde)) return;
-
+		void syncPriceStep_toSymbolInfo(QuoteQuik quikQuote) {
+			if (double.IsNaN(quikQuote.PriceStepFromDde)) return;
 			if (Assembler.InstanceInitialized.RepositorySymbolInfos == null) return;
 
 			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfo_nullUnsafe(quikQuote.Symbol);
 			if (symbolInfo == null) return;
 
 			//int priceStep_fromDde_asInt = Convert.ToInt32(Math.Round(priceStep_fromDde));
-			if (symbolInfo.PriceStepFromDde == priceStep_fromDde) return;
+			if (symbolInfo.PriceStepFromDde == quikQuote.PriceStepFromDde) return;
 
-			symbolInfo.PriceStepFromDde = priceStep_fromDde;
+			symbolInfo.PriceStepFromDde = quikQuote.PriceStepFromDde;
 			Assembler.InstanceInitialized.RepositorySymbolInfos.Serialize();	// YEAH (double)0 != (double)0... serializing as many times as many quotes we received first; but only once/symbol/session koz Infos are cached
 		}
 	}

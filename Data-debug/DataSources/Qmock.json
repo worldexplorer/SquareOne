@@ -8,7 +8,7 @@
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
     "Interval": 1,
     "Scale": 3,
-    "AsString_cached": "1-Minute",
+    "AsString_cached": null,
     "IsIntraday": true,
     "AsTimeSpanInSeconds": 60,
     "AsTimeSpan": "00:01:00",
@@ -22,9 +22,9 @@
     "DdeTopicTrades": "trades",
     "DdeTopicSuffixDom": "dom",
     "DdeMonitorRefreshRateMs": 200,
-    "DdeMonitorPopupOnRestart": false,
+    "DdeMonitorPopupOnRestart": true,
     "Level2RefreshRateMs": 200,
-    "UpstreamConnectedOnAppRestart": true
+    "UpstreamConnectedOnAppRestart": false
   },
   "BrokerAdapter": {
     "$type": "Sq1.Adapters.Quik.Broker.QuikBroker, Sq1.Adapters.Quik",
@@ -46,7 +46,7 @@
     "ReconnectTimeoutMillis": 0,
     "UpstreamConnected": false
   },
-  "MarketName": "MOCK",
+  "MarketName": "FORTS",
   "Name": "Qmock",
   "StreamingAdapterName": "QuikStreaming",
   "BrokerAdapterName": "Quik Broker",

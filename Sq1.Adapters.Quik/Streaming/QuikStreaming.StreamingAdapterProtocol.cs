@@ -110,9 +110,9 @@ namespace Sq1.Adapters.Quik.Streaming {
 			Assembler.InstanceInitialized.RepositorySymbolInfos.Serialize();
 		}
 
-		public override void EnrichQuoteWithStreamingDependantDataSnapshot(Quote quote) {
+		public override void EnrichQuote_withStreamingDependant_dataSnapshot(Quote quote) {
 			QuoteQuik quikQuote = QuoteQuik.SafeUpcast(quote);
-			quikQuote.EnrichFromStreamingDataSnapshotQuik(this.StreamingDataSnapshotQuik);
+			quikQuote.Enrich_fromStreamingDataSnapshotQuik(this.StreamingDataSnapshotQuik);
 		}
 
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {

@@ -37,6 +37,7 @@
 			this.olvcQuotesFortsDepositSell = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcQuotesFortsPriceMin = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcQuotesFortsPriceMax = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcPriceStepDde = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcQuotesAbsnoPerSymbol = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this.grpDom = new System.Windows.Forms.GroupBox();
@@ -105,6 +106,7 @@
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesFortsDepositSell);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesFortsPriceMin);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesFortsPriceMax);
+			this.OlvQuotes.AllColumns.Add(this.olvcPriceStepDde);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesAbsnoPerSymbol);
 			this.OlvQuotes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
@@ -121,9 +123,11 @@
             this.olvcQuotesFortsDepositSell,
             this.olvcQuotesFortsPriceMin,
             this.olvcQuotesFortsPriceMax,
+            this.olvcPriceStepDde,
             this.olvcQuotesAbsnoPerSymbol});
 			this.OlvQuotes.Cursor = System.Windows.Forms.Cursors.Default;
 			this.OlvQuotes.FullRowSelect = true;
+			this.OlvQuotes.HideSelection = false;
 			this.OlvQuotes.Location = new System.Drawing.Point(6, 19);
 			this.OlvQuotes.Name = "OlvQuotes";
 			this.OlvQuotes.ShowGroups = false;
@@ -196,16 +200,23 @@
 			// olvcQuotesFortsPriceMin
 			// 
 			this.olvcQuotesFortsPriceMin.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvcQuotesFortsPriceMin.Text = "PriceMin";
+			this.olvcQuotesFortsPriceMin.Text = "MinPrice";
 			this.olvcQuotesFortsPriceMin.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesFortsPriceMin.Width = 65;
 			// 
 			// olvcQuotesFortsPriceMax
 			// 
 			this.olvcQuotesFortsPriceMax.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvcQuotesFortsPriceMax.Text = "PriceMax";
+			this.olvcQuotesFortsPriceMax.Text = "MaxPrice";
 			this.olvcQuotesFortsPriceMax.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesFortsPriceMax.Width = 65;
+			// 
+			// olvcPriceStepDde
+			// 
+			this.olvcPriceStepDde.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcPriceStepDde.Text = "StepPrice";
+			this.olvcPriceStepDde.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcPriceStepDde.Width = 35;
 			// 
 			// olvcQuotesAbsnoPerSymbol
 			// 
@@ -280,6 +291,7 @@
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.olvTrades.FullRowSelect = true;
+			this.olvTrades.HideSelection = false;
 			this.olvTrades.Location = new System.Drawing.Point(6, 19);
 			this.olvTrades.Name = "olvTrades";
 			this.olvTrades.Size = new System.Drawing.Size(564, 57);
@@ -334,5 +346,6 @@
 		public System.Windows.Forms.GroupBox grpQuotes;
 		public System.Windows.Forms.GroupBox grpDom;
 		public System.Windows.Forms.GroupBox grpTrades;
+		private BrightIdeasSoftware.OLVColumn olvcPriceStepDde;
 	}
 }

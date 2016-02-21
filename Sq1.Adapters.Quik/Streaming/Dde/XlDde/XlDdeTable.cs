@@ -100,9 +100,9 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 
 				#region CONSISTENCY_CHECK
 				foreach (XlColumn col in this.ColumnDefinitions) {
-					if (rowParsed.ContainsKey(col.Name) == false) {
-						string msg = "ALL_COLUMNS_MUST_BE_PRESENT__CAN_NOT_BE_NULL col.Name[" + col.Name + "] IS_MISSING_IN rowParsed[" + rowParsed + "]";
-						//Assembler.PopupException(msg, null, false);
+					if (rowParsed.ContainsKey(col.Name) == false && col.Mandatory) {
+						string msg = "MANDATORY_col.Name[" + col.Name + "] IS_MISSING_IN_rowParsed[" + rowParsed + "]";
+						Assembler.PopupException(msg, null, false);
 						continue;
 					}
 					object valueParsed = rowParsed[col.Name];

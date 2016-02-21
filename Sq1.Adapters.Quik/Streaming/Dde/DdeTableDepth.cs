@@ -38,16 +38,17 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			this.levelTwoBids.WaitAndLockFor(this, "IncomingTableBegun");
 		}
 		protected override void IncomingTableTerminated() {
+			string msig = " //DdeTableDepth.IncomingTableTerminated()";
 			this.levelTwoAsks.UnLockFor(this, "IncomingTableBegun");
 			this.levelTwoBids.UnLockFor(this, "IncomingTableBegun");
 			string msg = "send a notify event or Chart is already Wait(indefinitely)'ing to get a FrozenHalfs  and go draw them?...";
 
 
 			//#if DEBUG
-			if (levelTwoAsks.InnerDictionary.Count > 1 && levelTwoBids.InnerDictionary.Count > 1) {
-				List<double> asksPriceLevels_ASC = new List<double>(levelTwoAsks.InnerDictionary.Keys);
+			if (levelTwoAsks.Count > 1 && levelTwoBids.Count > 1) {
+				List<double> asksPriceLevels_ASC = new List<double>(levelTwoAsks.SafeCopy(this, msig).Keys);
 				double askBest_lowest =  asksPriceLevels_ASC[0];
-				List<double> bidsPriceLevels_DESC = new List<double>(levelTwoBids.InnerDictionary.Keys);
+				List<double> bidsPriceLevels_DESC = new List<double>(levelTwoBids.SafeCopy(this, msig).Keys);
 				double bidBest_highest =  bidsPriceLevels_DESC[bidsPriceLevels_DESC.Count-1];
 				if (askBest_lowest < bidBest_highest) {
 					string msg1 = "YOUR_MOUSTACHES_GOT_REVERTED";
