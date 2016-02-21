@@ -86,9 +86,11 @@ namespace Sq1.Widgets.Exceptions {
 				return;
 			}
 			this.dataSnapshot.TreeRefreshDelayMsec = typedMsec;
-			mnilbDelay.TextRed = false;
 			this.dataSnapshotSerializer.Serialize();
+			this.timerFlushToGui_noNewcomersWithinDelay.Delay = this.dataSnapshot.TreeRefreshDelayMsec;
+			mnilbDelay.TextRed = false;
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
+			this.populateWindowsTitle();
 			this.ctxTree.Visible = true;	// keep it open
 		}
 		void mniShowTimestamps_Click(object sender, EventArgs e) {

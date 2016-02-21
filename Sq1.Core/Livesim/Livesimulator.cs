@@ -127,8 +127,7 @@ namespace Sq1.Core.Livesim {
 
 				//livesimming without DataDistributor replacement routes to wrong Bars and creates problems with ChartMultisplitter
 				//FIRST_LINE_OF_QuikStreamingLivesim.UpstreamConnect_LivesimStarting()_MAKE_SENSE_FOR_OTHERS
-				livesimStreaming.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(
-					livesimStreaming, this.Executor.Strategy.ScriptContextCurrent.DownstreamSubscribed);
+				livesimStreaming.Original_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor();
 				//LivesimDataSource is now having LivesimBacktester and no-solidifier DataDistributor
 
 				this.CheckSubscribed_LivesimQuoteBarConsumer_toDataDistributor_replacedForLivesim();
@@ -241,7 +240,7 @@ namespace Sq1.Core.Livesim {
 				//DURING_LIVESIM_I_LEFT_STREAMING_EXACTLY_THE_SAME_AS_FOR_LIVE_TRADING_TO_TEST_IT!!! this.Executor.DataSource.StreamingAdapter = this.StreamingOriginal;
 
 				//LAST_LINE_OF_QuikStreamingLivesim.UpstreamConnect_LivesimStarting()_MAKES_SENSE_FOR_OTHERS
-				livesimStreaming.SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor();
+				livesimStreaming.Original_SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor();
 
 				#region MOVED_BACK_DOWNSTACK NEVER_COMMENT_OUT__I_SPENT_TWO_DAYS_TO_DEBUG_IT
 				//string reasonToUnPauseSymbol = "SYMBOL_UNPAUSED_LIVESIMMING-" + this.Executor.ToString();

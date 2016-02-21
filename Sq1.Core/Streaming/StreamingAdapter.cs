@@ -137,6 +137,8 @@ namespace Sq1.Core.Streaming {
 		protected virtual void SolidifierAllSymbolsSubscribe_onAppRestart() {
 			string msg = "SUBSCRIBING_SOLIDIFIER_APPRESTART " + this.DataSource.Name;
 			Assembler.PopupException(msg, null, false);
+
+			this.CreateDataDistributors_onlyWhenNecessary(this.ReasonToExist);
 			this.StreamingSolidifier.Initialize(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
 				this.solidifierSubscribeOneSymbol(symbol);
@@ -292,7 +294,7 @@ namespace Sq1.Core.Streaming {
 			Quote lastQuote = this.StreamingDataSnapshot.LastQuoteClone_getForSymbol(quote.Symbol);
 			if (lastQuote == null) {
 				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR#1 symbol[" + quote.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
-				//Assembler.PopupException(msg + msig, null, false);
+				Assembler.PopupException(msg + msig, null, false);
 			} else {
 				if (lastQuote.AbsnoPerSymbol == -1) {
 					string msg = "LAST_QUOTE_DIDNT_HAVE_ABSNO_SET_BY_STREAMING_ADAPDER_ON_PREV_ITERATION";
@@ -334,7 +336,7 @@ namespace Sq1.Core.Streaming {
 			//OUTDATED?... BacktestStreamingAdapter.EnrichGeneratedQuoteSaveSpreadInStreaming has updated lastQuote alredy...
 			//essence of PushQuoteReceived(); all above were pre-checks ensuring successfull completion of two lines below
 			// ALREADY_ENRICHED this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
-			this.StreamingDataSnapshot.LastQuoteCloneSetForSymbol(quote);
+			this.StreamingDataSnapshot.LastQuoteClone_setForSymbol(quote);
 
 			try {
 				bool thisIsLivesimDataSource	= this is LivesimDataSource;

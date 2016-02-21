@@ -145,7 +145,7 @@ namespace Sq1.Widgets.Exceptions {
 		}
 		void selectMostRecentException() {
 			if (this.olvTreeExceptions.GetItemCount() == 0) return;
-			this.olvTreeExceptions.SelectedIndex = 0;
+			this.olvTreeExceptions.SelectedIndex = 0;		// YES_CONFIRMED will invoke tree_SelectedIndexChanged() with displayStackTrace_forSingleSelected()
 			//WHAT_FOR? this.treeExceptions.RefreshSelectedObjects();
 			this.olvTreeExceptions.EnsureVisible(0);
 		}
@@ -279,9 +279,13 @@ namespace Sq1.Widgets.Exceptions {
 			// ALREADY_PRINTED_2_LINES_LATER ret += this.exceptions_notFlushedYet.Count ? "BUFFERING " : "";
 			ret += this.Exceptions.Count;
 			if (this.exceptions_notFlushedYet.Count > 0) ret += "/" + this.exceptions_notFlushedYet.Count + " BUFFERED";
-			ret += "   treeRebuilt:" + howLongTreeRebuilds.ElapsedMilliseconds + "ms"
-				//+ " RebuildPostponedSoFar NewComers_NonStop"
-				;
+			ret += "   flushed" + howLongTreeRebuilds.ElapsedMilliseconds + "ms"
+				 + "   buffering" + this.timerFlushToGui_noNewcomersWithinDelay.Delay + "ms";
+			if (howLongTreeRebuilds.ElapsedMilliseconds > this.timerFlushToGui_noNewcomersWithinDelay.Delay) {
+				string msg = "YOU_MAY_NEED_TO_INCREASE_TIMER.Delay_FOR_FLUSHING " + ret;
+				// STACK_OVERFLOW_AGAIN Assembler.PopupException(msg);
+				this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(new Exception(msg));
+			}
 			return ret;
 		}
 	}
