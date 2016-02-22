@@ -15,32 +15,34 @@ namespace Sq1.Widgets.Level2 {
 				SymbolInfo				symbolInfo;
 				string					windowTitle;
 
-		public	DockContentImproved		DdeMonitorForm_nullUnsafe		{ get {
-			DockContentImproved ddeMonitorForm = this.Parent.Parent.Parent as DockContentImproved;
-			if (ddeMonitorForm == null) {
-				string msg = "I_NEED_THE_UPPER_LEVEL_FORM_VISIBILITY_TO_NOT_TO_REPAINT_IF_FORM_IS_MINIMIZED_OR_NOT_SHOWN";
-				Assembler.PopupException(msg + " //LevelTwoUserControl.DdeMonitorForm", null, false);
-			}
-			return ddeMonitorForm;
-		} }
+		//public	DockContentImproved		DdeMonitorForm_nullUnsafe		{ get {
+		//    DockContentImproved ddeMonitorForm = this.Parent.Parent.Parent as DockContentImproved;
+		//    if (ddeMonitorForm == null) {
+		//        string msg = "I_NEED_THE_UPPER_LEVEL_FORM_VISIBILITY_TO_NOT_TO_REPAINT_IF_FORM_IS_MINIMIZED_OR_NOT_SHOWN";
+		//        Assembler.PopupException(msg + " //LevelTwoUserControl.DdeMonitorForm", null, false);
+		//    }
+		//    return ddeMonitorForm;
+		//} }
 
-		Stopwatch			stopwatchRarifyingUIupdates;
+		//Stopwatch			stopwatchRarifyingUIupdates;
 
 		public LevelTwoUserControl() {
 			InitializeComponent();
+			//this.OlvLevelTwo.EmptyListMsg = "No Level2 Received Yet";
 			this.olvDomCustomize();
-			this.stopwatchRarifyingUIupdates = new Stopwatch();
-			this.stopwatchRarifyingUIupdates.Start();
+			//this.stopwatchRarifyingUIupdates = new Stopwatch();
 		}
 		void layoutUserControlResizeable() {
 			base.UserControlInner.Controls.Add(this.OlvLevelTwo);
 			this.OlvLevelTwo.Dock = DockStyle.Fill;
 		}
 
-		public void Initialize(StreamingAdapter quikStreamingPassed, SymbolInfo symbolInfoPassed, string windowTitlePassed) {
-			this.streamingAdapter	= quikStreamingPassed;
-			this.symbolInfo			= symbolInfoPassed;
-			this.windowTitle		= windowTitlePassed;
+		public void Initialize(StreamingAdapter quikStreaming_passed, SymbolInfo symbolInfo_passed, string windowTitle_passed) {
+			this.streamingAdapter	= quikStreaming_passed;
+			this.symbolInfo			= symbolInfo_passed;
+			this.windowTitle		= windowTitle_passed;
+
+			//this.stopwatchRarifyingUIupdates.Start();
 
 			if (this.symbolInfo.Level2ShowCumulativesInsteadOfLots) {
 				this.olvAskCumulative	.IsVisible = true;
@@ -58,21 +60,21 @@ namespace Sq1.Widgets.Level2 {
 			this.layoutUserControlResizeable();
 			this.PopulateLevel2ToTitle(this.windowTitle, true);
 		}
-		public void PopulateLevel2ToTitle(string windowTitlePassed = null, bool ignoreTimer = false) {
+		public void PopulateLevel2ToTitle(string windowTitle_passed = null, bool ignoreTimer = false) {
 			if (this.OlvLevelTwo.IsDisposed) return;
 			if (base.IsDisposed) return;
 
-			if (windowTitlePassed != null) {
-				this.windowTitle = windowTitlePassed;
+			if (windowTitle_passed != null) {
+				this.windowTitle = windowTitle_passed;
 			}
 
-			if (ignoreTimer == false) {
+			//if (ignoreTimer == false) {
 				// WHAT_IF_BEFORE_SWITCHING_TO_GUI_THREAD?
-				if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.streamingAdapter.Level2RefreshRateMs) return;
-			}
+				//if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.streamingAdapter.Level2RefreshRateMs) return;
+			//}
 
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.PopulateLevel2ToTitle(windowTitlePassed, ignoreTimer); });
+				base.BeginInvoke((MethodInvoker)delegate { this.PopulateLevel2ToTitle(windowTitle_passed, ignoreTimer); });
 				return;
 			}
 			// I paid the price of switching to GuiThread, but I don' have to worry if I already stopwatch.Restart()ed
@@ -103,7 +105,7 @@ namespace Sq1.Widgets.Level2 {
 			}
 			// I paid the price of switching to GuiThread, but I don' have to worry if I already stopwatch.Restart()ed
 			//if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRate) return;
-			this.stopwatchRarifyingUIupdates.Restart();
+			//this.stopwatchRarifyingUIupdates.Restart();
 
 			List<LevelTwoEachLine> level2rows = levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl.FrozenSortedFlattened_priceLevelsInserted;
 			this.OlvLevelTwo.SetObjects(level2rows, true);

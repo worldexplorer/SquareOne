@@ -89,7 +89,6 @@
             this.olvPrice,
             this.olvBid});
 			this.OlvLevelTwo.Cursor = System.Windows.Forms.Cursors.Default;
-			this.OlvLevelTwo.EmptyListMsg = "No Level2 Received Yet";
 			this.OlvLevelTwo.FullRowSelect = true;
 			this.OlvLevelTwo.HideSelection = false;
 			this.OlvLevelTwo.Location = new System.Drawing.Point(4, 72);
