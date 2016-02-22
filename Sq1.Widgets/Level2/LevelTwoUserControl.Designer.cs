@@ -25,7 +25,7 @@
 		private void InitializeComponent() {
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.lblDomTitle = new System.Windows.Forms.Label();
-			this.olvcLevelTwo = new BrightIdeasSoftware.ObjectListView();
+			this.OlvLevelTwo = new BrightIdeasSoftware.ObjectListView();
 			this.olvWeirdBehaviourShiftedToFirstColumnFake = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvAskCumulative = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvAsk = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -33,7 +33,7 @@
 			this.olvBid = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvBidCumulative = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.panel1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.olvcLevelTwo)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.OlvLevelTwo)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// UserControlInner
@@ -70,42 +70,42 @@
 			this.lblDomTitle.TabIndex = 0;
 			this.lblDomTitle.Text = "SQ1-RIM3-dom [232323] RECEIVING#2";
 			// 
-			// olvcLevelTwo
+			// OlvLevelTwo
 			// 
-			this.olvcLevelTwo.AllColumns.Add(this.olvWeirdBehaviourShiftedToFirstColumnFake);
-			this.olvcLevelTwo.AllColumns.Add(this.olvAskCumulative);
-			this.olvcLevelTwo.AllColumns.Add(this.olvAsk);
-			this.olvcLevelTwo.AllColumns.Add(this.olvPrice);
-			this.olvcLevelTwo.AllColumns.Add(this.olvBid);
-			this.olvcLevelTwo.AllColumns.Add(this.olvBidCumulative);
-			this.olvcLevelTwo.AllowColumnReorder = true;
-			this.olvcLevelTwo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			this.OlvLevelTwo.AllColumns.Add(this.olvWeirdBehaviourShiftedToFirstColumnFake);
+			this.OlvLevelTwo.AllColumns.Add(this.olvAskCumulative);
+			this.OlvLevelTwo.AllColumns.Add(this.olvAsk);
+			this.OlvLevelTwo.AllColumns.Add(this.olvPrice);
+			this.OlvLevelTwo.AllColumns.Add(this.olvBid);
+			this.OlvLevelTwo.AllColumns.Add(this.olvBidCumulative);
+			this.OlvLevelTwo.AllowColumnReorder = true;
+			this.OlvLevelTwo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this.olvcLevelTwo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.olvcLevelTwo.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this.OlvLevelTwo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.OlvLevelTwo.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.olvWeirdBehaviourShiftedToFirstColumnFake,
             this.olvAsk,
             this.olvPrice,
             this.olvBid});
-			this.olvcLevelTwo.Cursor = System.Windows.Forms.Cursors.Default;
-			this.olvcLevelTwo.EmptyListMsg = "No Level2 Received Yet";
-			this.olvcLevelTwo.FullRowSelect = true;
-			this.olvcLevelTwo.HideSelection = false;
-			this.olvcLevelTwo.Location = new System.Drawing.Point(4, 72);
-			this.olvcLevelTwo.Margin = new System.Windows.Forms.Padding(3, 30, 3, 3);
-			this.olvcLevelTwo.Name = "olvcLevelTwo";
-			this.olvcLevelTwo.ShowCommandMenuOnRightClick = true;
-			this.olvcLevelTwo.ShowGroups = false;
-			this.olvcLevelTwo.Size = new System.Drawing.Size(206, 288);
-			this.olvcLevelTwo.TabIndex = 2;
-			this.olvcLevelTwo.TintSortColumn = true;
-			this.olvcLevelTwo.UseCompatibleStateImageBehavior = false;
-			this.olvcLevelTwo.UseFilterIndicator = true;
-			this.olvcLevelTwo.UseHotItem = true;
-			this.olvcLevelTwo.UseTranslucentHotItem = true;
-			this.olvcLevelTwo.UseTranslucentSelection = true;
-			this.olvcLevelTwo.View = System.Windows.Forms.View.Details;
+			this.OlvLevelTwo.Cursor = System.Windows.Forms.Cursors.Default;
+			this.OlvLevelTwo.EmptyListMsg = "No Level2 Received Yet";
+			this.OlvLevelTwo.FullRowSelect = true;
+			this.OlvLevelTwo.HideSelection = false;
+			this.OlvLevelTwo.Location = new System.Drawing.Point(4, 72);
+			this.OlvLevelTwo.Margin = new System.Windows.Forms.Padding(3, 30, 3, 3);
+			this.OlvLevelTwo.Name = "OlvLevelTwo";
+			this.OlvLevelTwo.ShowCommandMenuOnRightClick = true;
+			this.OlvLevelTwo.ShowGroups = false;
+			this.OlvLevelTwo.Size = new System.Drawing.Size(206, 288);
+			this.OlvLevelTwo.TabIndex = 2;
+			this.OlvLevelTwo.TintSortColumn = true;
+			this.OlvLevelTwo.UseCompatibleStateImageBehavior = false;
+			this.OlvLevelTwo.UseFilterIndicator = true;
+			this.OlvLevelTwo.UseHotItem = true;
+			this.OlvLevelTwo.UseTranslucentHotItem = true;
+			this.OlvLevelTwo.UseTranslucentSelection = true;
+			this.OlvLevelTwo.View = System.Windows.Forms.View.Details;
 			// 
 			// olvWeirdBehaviourShiftedToFirstColumnFake
 			// 
@@ -154,16 +154,16 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.olvcLevelTwo);
+			this.Controls.Add(this.OlvLevelTwo);
 			this.Controls.Add(this.panel1);
 			this.Name = "LevelTwoUserControl";
 			this.Size = new System.Drawing.Size(214, 410);
 			this.Controls.SetChildIndex(this.UserControlInner, 0);
 			this.Controls.SetChildIndex(this.panel1, 0);
-			this.Controls.SetChildIndex(this.olvcLevelTwo, 0);
+			this.Controls.SetChildIndex(this.OlvLevelTwo, 0);
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.olvcLevelTwo)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.OlvLevelTwo)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -175,9 +175,9 @@
 		private BrightIdeasSoftware.OLVColumn olvAsk;
 		private BrightIdeasSoftware.OLVColumn olvPrice;
 		private BrightIdeasSoftware.OLVColumn olvBid;
-		private BrightIdeasSoftware.ObjectListView olvcLevelTwo;
 		private BrightIdeasSoftware.OLVColumn olvAskCumulative;
 		private BrightIdeasSoftware.OLVColumn olvBidCumulative;
 		private BrightIdeasSoftware.OLVColumn olvWeirdBehaviourShiftedToFirstColumnFake;
+		public BrightIdeasSoftware.ObjectListView OlvLevelTwo;
 	}
 }

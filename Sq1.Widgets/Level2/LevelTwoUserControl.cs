@@ -14,7 +14,15 @@ namespace Sq1.Widgets.Level2 {
 				StreamingAdapter		streamingAdapter;
 				SymbolInfo				symbolInfo;
 				string					windowTitle;
-		public	DockContentImproved		DdeMonitorForm		{ get; private set; }
+
+		public	DockContentImproved		DdeMonitorForm_nullUnsafe		{ get {
+			DockContentImproved ddeMonitorForm = this.Parent.Parent.Parent as DockContentImproved;
+			if (ddeMonitorForm == null) {
+				string msg = "I_NEED_THE_UPPER_LEVEL_FORM_VISIBILITY_TO_NOT_TO_REPAINT_IF_FORM_IS_MINIMIZED_OR_NOT_SHOWN";
+				Assembler.PopupException(msg + " //LevelTwoUserControl.DdeMonitorForm", null, false);
+			}
+			return ddeMonitorForm;
+		} }
 
 		Stopwatch			stopwatchRarifyingUIupdates;
 
@@ -25,15 +33,14 @@ namespace Sq1.Widgets.Level2 {
 			this.stopwatchRarifyingUIupdates.Start();
 		}
 		void layoutUserControlResizeable() {
-			base.UserControlInner.Controls.Add(this.olvcLevelTwo);
-			this.olvcLevelTwo.Dock = DockStyle.Fill;
+			base.UserControlInner.Controls.Add(this.OlvLevelTwo);
+			this.OlvLevelTwo.Dock = DockStyle.Fill;
 		}
 
-		public void Initialize(StreamingAdapter quikStreamingPassed, SymbolInfo symbolInfoPassed, string windowTitlePassed, DockContentImproved ddeMonitorFormPassed) {
+		public void Initialize(StreamingAdapter quikStreamingPassed, SymbolInfo symbolInfoPassed, string windowTitlePassed) {
 			this.streamingAdapter	= quikStreamingPassed;
 			this.symbolInfo			= symbolInfoPassed;
 			this.windowTitle		= windowTitlePassed;
-			this.DdeMonitorForm		= ddeMonitorFormPassed;
 
 			if (this.symbolInfo.Level2ShowCumulativesInsteadOfLots) {
 				this.olvAskCumulative	.IsVisible = true;
@@ -46,16 +53,19 @@ namespace Sq1.Widgets.Level2 {
 				this.olvBid				.IsVisible = true;
 				this.olvBidCumulative	.IsVisible = false;
 			}
-			this.olvcLevelTwo.RebuildColumns();
+			this.OlvLevelTwo.RebuildColumns();
 
 			this.layoutUserControlResizeable();
 			this.PopulateLevel2ToTitle(this.windowTitle, true);
 		}
-		public void PopulateLevel2ToTitle(string windowTitlePassed, bool ignoreTimer = false) {
-			if (this.olvcLevelTwo.IsDisposed) return;
+		public void PopulateLevel2ToTitle(string windowTitlePassed = null, bool ignoreTimer = false) {
+			if (this.OlvLevelTwo.IsDisposed) return;
 			if (base.IsDisposed) return;
 
-			this.windowTitle = windowTitlePassed;
+			if (windowTitlePassed != null) {
+				this.windowTitle = windowTitlePassed;
+			}
+
 			if (ignoreTimer == false) {
 				// WHAT_IF_BEFORE_SWITCHING_TO_GUI_THREAD?
 				if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.streamingAdapter.Level2RefreshRateMs) return;
@@ -74,17 +84,17 @@ namespace Sq1.Widgets.Level2 {
 			this.lblDomTitle.Text = this.windowTitle;
 		}
 
-		public void PopulateLevel2ToDomControl(LevelTwoOlv levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl) {
+		public void PopulateLevel2ToDomControl(LevelTwo levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl) {
 			if (levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl == null) {
 				string msg = "LEVEL2_PROXY_WASNT_CREATED_DUE_TO_A_TYPO....";
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.olvcLevelTwo.IsDisposed) return;
+			if (this.OlvLevelTwo.IsDisposed) return;
 			if (base.IsDisposed) return;
 
 			// WHAT_IF_BEFORE_SWITCHING_TO_GUI_THREAD?
-			if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.streamingAdapter.Level2RefreshRateMs) return;
+			//if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.streamingAdapter.Level2RefreshRateMs) return;
 			//this.stopwatchRarifyingUIupdates.Restart();
 
 			if (base.InvokeRequired) {
@@ -95,8 +105,8 @@ namespace Sq1.Widgets.Level2 {
 			//if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRate) return;
 			this.stopwatchRarifyingUIupdates.Restart();
 
-			List<LevelTwoOlvEachLine> level2rows = levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl.FrozenSortedFlattened_priceLevelsInserted;
-			this.olvcLevelTwo.SetObjects(level2rows, true);
+			List<LevelTwoEachLine> level2rows = levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl.FrozenSortedFlattened_priceLevelsInserted;
+			this.OlvLevelTwo.SetObjects(level2rows, true);
 		}
 	}
 }

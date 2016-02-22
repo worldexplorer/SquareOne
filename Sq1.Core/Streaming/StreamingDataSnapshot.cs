@@ -11,7 +11,7 @@ namespace Sq1.Core.Streaming {
 	public class StreamingDataSnapshot {
 		[JsonIgnore]	StreamingAdapter							streamingAdapter;
 		[JsonIgnore]	object										lockLastQuote;
-		[JsonProperty]	Dictionary<string, LevelTwoAndLastQuote>	level2andLastQuoteUnboundClone_bySymbol;	// { get; private set; }
+		[JsonProperty]	Dictionary<string, LevelTwo>	level2andLastQuoteUnboundClone_bySymbol;	// { get; private set; }
 				public	long										Level2RefreshRate;
 		[JsonProperty]	public string								SymbolsSubscribedAndReceiving		{ get {
 				string ret = "";
@@ -30,7 +30,7 @@ namespace Sq1.Core.Streaming {
 			} }
 
 		StreamingDataSnapshot() {
-			level2andLastQuoteUnboundClone_bySymbol = new Dictionary<string, LevelTwoAndLastQuote>();
+			level2andLastQuoteUnboundClone_bySymbol = new Dictionary<string, LevelTwo>();
 			lockLastQuote = new object();
 		}
 
@@ -49,7 +49,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public void InitializeLastQuoteAndLevelTwoForSymbol(string symbol) { lock (this.lockLastQuote) {
 			if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(symbol) == false) {
-				this.level2andLastQuoteUnboundClone_bySymbol.Add(symbol, new LevelTwoAndLastQuote(symbol));
+				this.level2andLastQuoteUnboundClone_bySymbol.Add(symbol, new LevelTwo(symbol));
 			}
 			Quote prevQuote = this.level2andLastQuoteUnboundClone_bySymbol[symbol].Initialize();
 		} }
@@ -88,7 +88,7 @@ namespace Sq1.Core.Streaming {
 		} }
 		public Quote LastQuoteClone_getForSymbol(string symbol) { lock (this.lockLastQuote) {
 				if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(symbol) == false) return null;
-				LevelTwoAndLastQuote levelTwoAndLastQuote = this.level2andLastQuoteUnboundClone_bySymbol[symbol];
+				LevelTwo levelTwoAndLastQuote = this.level2andLastQuoteUnboundClone_bySymbol[symbol];
 				if (levelTwoAndLastQuote == null) return null;
 				Quote weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy = levelTwoAndLastQuote.LastQuote;
 				if (weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy == null) {

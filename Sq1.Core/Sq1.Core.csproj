@@ -334,9 +334,10 @@
     </Compile>
     <Compile Include="Streaming\DataDistributorCharts.cs" />
     <Compile Include="Streaming\DataDistributorSolidifiers.cs" />
-    <Compile Include="Streaming\LevelTwoAndLastQuote.cs" />
+    <Compile Include="Streaming\LevelTwo.cs" />
     <Compile Include="Streaming\LevelTwoHalf.cs" />
     <Compile Include="Streaming\LevelTwoHalfSortedFrozen.cs" />
+    <Compile Include="Streaming\LevelTwoEachLine.cs" />
     <Compile Include="Streaming\StreamingAdapter.OverrideMe.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>

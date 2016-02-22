@@ -87,7 +87,7 @@ namespace Sq1.Widgets.Exceptions {
 			}
 			this.dataSnapshot.TreeRefreshDelayMsec = typedMsec;
 			this.dataSnapshotSerializer.Serialize();
-			this.timerFlushToGui_noNewcomersWithinDelay.Delay = this.dataSnapshot.TreeRefreshDelayMsec;
+			this.timedTask_flushingToGui.Delay = this.dataSnapshot.TreeRefreshDelayMsec;
 			mnilbDelay.TextRed = false;
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
 			this.populateWindowsTitle();

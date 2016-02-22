@@ -3,9 +3,12 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Drawing;
 
+using BrightIdeasSoftware;
+
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Support;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Widgets.Level2 {
 	public partial class LevelTwoUserControl {	
@@ -13,21 +16,21 @@ namespace Sq1.Widgets.Level2 {
 			this.olvDomCustomize_cellBackgound();
 
 			this.olvAskCumulative.AspectGetter = delegate(object o) {
-				LevelTwoOlvEachLine askPriceBid = o as LevelTwoOlvEachLine;
+				LevelTwoEachLine askPriceBid = o as LevelTwoEachLine;
 				if (askPriceBid == null) return "olvAskCumulative.AspectGetter: askPriceBid=null";
 				if (double.IsNaN(askPriceBid.AskVolume)) return null;
 				string formatVolume = this.symbolInfo.VolumeFormat;
 				return askPriceBid.AskCumulative.ToString(formatVolume);
 			};
 			this.olvAsk.AspectGetter = delegate(object o) {
-				LevelTwoOlvEachLine askPriceBid = o as LevelTwoOlvEachLine;
+				LevelTwoEachLine askPriceBid = o as LevelTwoEachLine;
 				if (askPriceBid == null) return "olvAsk.AspectGetter: askPriceBid=null";
 				if (double.IsNaN(askPriceBid.AskVolume)) return null;
 				string formatVolume = this.symbolInfo.VolumeFormat;
 				return askPriceBid.AskVolume.ToString(formatVolume);
 			};
 			this.olvPrice.AspectGetter = delegate(object o) {
-				LevelTwoOlvEachLine askPriceBid = o as LevelTwoOlvEachLine;
+				LevelTwoEachLine askPriceBid = o as LevelTwoEachLine;
 				if (askPriceBid == null) return "olvPrice.AspectGetter: askPriceBid=null";
 				string formatPrice = this.symbolInfo.PriceFormat;
 				string priceFormatted = askPriceBid.PriceLevel.ToString(formatPrice);
@@ -37,14 +40,14 @@ namespace Sq1.Widgets.Level2 {
 				return priceFormatted;
 			};
 			this.olvBid.AspectGetter = delegate(object o) {
-				LevelTwoOlvEachLine askPriceBid = o as LevelTwoOlvEachLine;
+				LevelTwoEachLine askPriceBid = o as LevelTwoEachLine;
 				if (askPriceBid == null) return "olvBid.AspectGetter: askPriceBid=null";
 				if (double.IsNaN(askPriceBid.BidVolume)) return null;
 				string formatVolume = this.symbolInfo.VolumeFormat;
 				return askPriceBid.BidVolume.ToString(formatVolume);
 			};
 			this.olvBidCumulative.AspectGetter = delegate(object o) {
-				LevelTwoOlvEachLine askPriceBid = o as LevelTwoOlvEachLine;
+				LevelTwoEachLine askPriceBid = o as LevelTwoEachLine;
 				if (askPriceBid == null) return "olvBidCumulative.AspectGetter: askPriceBid=null";
 				if (double.IsNaN(askPriceBid.BidVolume)) return null;
 				string formatVolume = this.symbolInfo.VolumeFormat;
@@ -68,15 +71,17 @@ namespace Sq1.Widgets.Level2 {
 			//this.LevelTwoBidColorContour		= Color.FromArgb(this.LevelTwoBidColorBackground.R - 50, this.LevelTwoBidColorBackground.G - 50, this.LevelTwoBidColorBackground.B - 50);
 			this.LevelTwoSpreadColorBackground	= Color.Gainsboro;
 
-			this.olvcLevelTwo.FormatCell += new EventHandler<BrightIdeasSoftware.FormatCellEventArgs>(olvcLevelTwo_FormatCell);
-			this.olvcLevelTwo.UseCellFormatEvents = true;
+			this.OlvLevelTwo.FormatCell += new EventHandler<FormatCellEventArgs>(olvcLevelTwo_FormatCell);
+			this.OlvLevelTwo.UseCellFormatEvents = true;
 		}
 
-		void olvcLevelTwo_FormatCell(object sender, BrightIdeasSoftware.FormatCellEventArgs e) {			
-			LevelTwoOlvEachLine askPriceBid = e.Model as LevelTwoOlvEachLine;
+		void olvcLevelTwo_FormatCell(object sender, FormatCellEventArgs e) {
+			if (e.Model == null) return;
+			LevelTwoEachLine askPriceBid = e.Model as LevelTwoEachLine;
 			if (askPriceBid == null) {
-				string msg = "MUST_BE_LevelTwoOlvEachLine e.Model[" + e.Model + "] //olvcLevelTwo_FormatCell()";
+				string msg = "MUST_BE_LevelTwoEachLine e.Model[" + e.Model + "] //olvcLevelTwo_FormatCell()";
 				Assembler.PopupException(msg, null, false);
+				return;
 			}
 			if (askPriceBid.BidOrAsk == BidOrAsk.UNKNOWN) {
 				e.SubItem.BackColor = this.LevelTwoSpreadColorBackground;
