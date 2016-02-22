@@ -201,8 +201,6 @@
     <Compile Include="LabeledTextBox\MenuItemLabeledTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Level2\LevelTwoOlv.cs" />
-    <Compile Include="Level2\LevelTwoOlvEachLine.cs" />
     <Compile Include="Level2\LevelTwoUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -347,6 +345,7 @@
       <DependentUpon>SteppingSliderComboControl.cs</DependentUpon>
     </Compile>
     <Compile Include="TimerSimplified.cs" />
+    <Compile Include="TimerSimplifiedTask.cs" />
     <Compile Include="ToolStripWidgets\ToolStripItemLabeledTextBox.cs">
       <SubType>Component</SubType>
     </Compile>

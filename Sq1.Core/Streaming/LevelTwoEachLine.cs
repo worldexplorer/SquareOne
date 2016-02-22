@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
 
-namespace Sq1.Widgets.Level2 {
-	class LevelTwoOlvEachLine {
+namespace Sq1.Core.Streaming {
+	public class LevelTwoEachLine {
 		public	BidOrAsk	BidOrAsk		{ get; private set; }
 		public	double		PriceLevel		{ get; private set; }
 		public	bool		Colorify		{ get; private set; }
@@ -15,7 +15,7 @@ namespace Sq1.Widgets.Level2 {
 		public	double		BidVolume		{ get; private set; }
 		public	double		BidCumulative	{ get; private set; }
 
-		LevelTwoOlvEachLine() {
+		LevelTwoEachLine() {
 			BidOrAsk		= BidOrAsk.UNKNOWN;		// which means "spread" and should be used only once per whole list published into OLV
 			AskCumulative	= double.NaN;
 			AskVolume		= double.NaN;
@@ -23,7 +23,7 @@ namespace Sq1.Widgets.Level2 {
 			BidCumulative	= double.NaN;
 		}
 
-		internal LevelTwoOlvEachLine(BidOrAsk bidOrAsk, double priceLevelToCoverTheDistance, bool colorify = true)  : this() {
+		internal LevelTwoEachLine(BidOrAsk bidOrAsk, double priceLevelToCoverTheDistance, bool colorify = true)  : this() {
 			this.BidOrAsk = bidOrAsk;
 			this.PriceLevel = priceLevelToCoverTheDistance;
 			this.Colorify = colorify;

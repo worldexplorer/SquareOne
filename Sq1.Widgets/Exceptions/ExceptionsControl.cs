@@ -17,23 +17,25 @@ namespace Sq1.Widgets.Exceptions {
 				Serializer<ExceptionsControlDataSnapshot>	dataSnapshotSerializer;
 				ConcurrentDictionary<Exception, DateTime>	exceptionTimes;
 		public	ConcurrentList<Exception>					Exceptions				{ get; private set; }
+				ConcurrentList<Exception>					exceptions_notFlushedYet;
 
-				List<Exception>		exceptions_notFlushedYet;
 				Stopwatch			howLongTreeRebuilds;
 				DateTime			exceptionLastDate_notFlushedYet;
 
-				TimerSimplified		timerFlushToGui_noNewcomersWithinDelay;
+				TimerSimplifiedTask	timedTask_flushingToGui;
 
 				Exception			exceptionSingleSelectedInTree_nullUnsafe		{ get { return this.olvTreeExceptions.SelectedObject as Exception; } }
 				DockContentImproved parentAsDockContentImproved_nullUnsafe			{ get { return base.Parent as DockContentImproved; } }
 
 		public ExceptionsControl() : base() {
-			exceptionTimes				= new ConcurrentDictionary<Exception, DateTime>("Exceptions_delayedGuiFlush");
+			exceptionTimes				= new ConcurrentDictionary<Exception, DateTime>("exceptionTimes_delayedGuiFlush");
 			Exceptions					= new ConcurrentList<Exception>("Exceptions_delayedGuiFlush");
-			exceptions_notFlushedYet	= new List<Exception>();
+			exceptions_notFlushedYet	= new ConcurrentList<Exception>("exceptions_notFlushedYet");
 			exceptionLastDate_notFlushedYet	= DateTime.MinValue;
-			timerFlushToGui_noNewcomersWithinDelay = new TimerSimplified(this, 200);	// not started by default
 			howLongTreeRebuilds			= new Stopwatch();
+
+			timedTask_flushingToGui = new TimerSimplifiedTask("FLUSH_EXCEPTIONS_CONTROL__AFTER_HAVING_BUFFERED_FOR_LONG_ENOUGH", this, new Action(delegate {this.flushExceptionsToOLV_switchToGuiThread(); }));
+			timedTask_flushingToGui.Delay = 200;
 
 			this.InitializeComponent();
 			//WindowsFormsUtils.SetDoubleBuffered(this.tree);	//doesn't help, still flickers
@@ -51,7 +53,7 @@ namespace Sq1.Widgets.Exceptions {
 				// hopefully disposing=true will be invoked once/lifetime - I don't care when; I'm lazy to work around NPEs and alreadyDisposed
 				this.exceptionTimes.Dispose();
 				this.Exceptions.Dispose();
-				this.timerFlushToGui_noNewcomersWithinDelay.Dispose();
+				this.timedTask_flushingToGui.Dispose();
 			}
 			base.Dispose(disposing);
 		}
@@ -71,7 +73,10 @@ namespace Sq1.Widgets.Exceptions {
 				this.dataSnapshot.SplitDistanceHorizontal = this.splitContainerHorizontal.SplitterDistance;
 				this.dataSnapshotSerializer.Serialize();
 			}
-			this.timerFlushToGui_noNewcomersWithinDelay.Delay = this.dataSnapshot.TreeRefreshDelayMsec;	// may be already started?
+			this.timedTask_flushingToGui.Delay = this.dataSnapshot.TreeRefreshDelayMsec;	// may be already started?
+
+			this.timedTask_flushingToGui.Delay = this.dataSnapshot.TreeRefreshDelayMsec;	// may be already started?
+			this.timedTask_flushingToGui.Start();
 		}
 		public void PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized_invokeMeFromGuiThreadOnly() {
 			string msig = " //PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized()";
@@ -131,8 +136,8 @@ namespace Sq1.Widgets.Exceptions {
 				return;
 			}
 
-			if (this.timerFlushToGui_noNewcomersWithinDelay.Scheduled) {
-				this.exceptions_notFlushedYet.Add(exception);
+			if (this.timedTask_flushingToGui.Scheduled) {
+				this.exceptions_notFlushedYet.AppendUnique(exception, this, "insertTo_exceptionsNotFlushedYet_willReportIfBlocking");
 				return;
 			}
 			if (this.Exceptions.Count == 0) {
@@ -176,17 +181,22 @@ namespace Sq1.Widgets.Exceptions {
 
 		public void InsertAsyncAutoFlush(Exception ex) {
 			this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(ex);
-			if (this.timerFlushToGui_noNewcomersWithinDelay.Scheduled) {
+			if (this.timedTask_flushingToGui.Scheduled) {
 				// second exception came in while tree was rebuilding (after the first one wasn't finished) => schedule rebuild in 
-				this.timerFlushToGui_noNewcomersWithinDelay.ScheduleOnce();	// postpone flushToGui() for another 200ms
+				this.timedTask_flushingToGui.ScheduleOnce();	// postpone flushToGui() for another 200ms
 				this.exceptionLastDate_notFlushedYet = DateTime.Now;
+
+				if (base.InvokeRequired) {	// waiting for WindowHandle to be created
+					base.BeginInvoke((MethodInvoker)delegate() { this.populateWindowsTitle(); });
+				}
+
 				return;
 			}
 			// http://stackoverflow.com/questions/2475435/c-sharp-timer-wont-tick
 			// Always stop/start a System.Windows.Forms.Timer on the UI thread, apparently! –  user145426
 
 			// first exception came in => flush immediately; mark already now that all other fresh exceptions would line up by timer
-			this.timerFlushToGui_noNewcomersWithinDelay.ScheduleOnce();
+			this.timedTask_flushingToGui.ScheduleOnce();
 			this.exceptionLastDate_notFlushedYet = DateTime.Now;
 			this.flushExceptionsToOLV_switchToGuiThread();
 		}
@@ -202,13 +212,14 @@ namespace Sq1.Widgets.Exceptions {
 			// WINDOWS.FORMS.VISIBLE=FALSE_IS_SET_BY_DOCK_CONTENT_LUO ANALYZE_DockContentImproved.IsShown_INSTEAD if (this.Visible == false) return;
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 
-			this.howLongTreeRebuilds.Restart();
 			if (this.InvokeRequired) {
 				this.BeginInvoke((MethodInvoker)delegate() { this.flushExceptionsToOLV_switchToGuiThread(); });
 				//string msg = "I_MUST_BE_ALREADY_IN_GUI_THREAD__HOPING_TO_INSERT_IN_SEQUENCE_OF_INVOCATION";
 				//Debugger.Break();
 				return;
 			}
+
+			this.howLongTreeRebuilds.Restart();
 
 			string msg = "if we are in GUI thread, go on timer immediately (correlator throwing thousands at startup, or chart.OnPaint() doing something wrong)";
 			try {
@@ -217,7 +228,7 @@ namespace Sq1.Widgets.Exceptions {
 					return;
 				}
 
-				if (this.timerFlushToGui_noNewcomersWithinDelay.Scheduled == true) {
+				if (this.timedTask_flushingToGui.Scheduled == true) {
 					string msg1 = "MUST_CONTINUE_FLUSHING__I_INTENTIONALLY_SCHEDULED_BEFORE_FLUSHING_TO_REDIRECT_ALL_NEWCOMERS_TO_BUFFER"
 						//+ " DONT_FLUSH_ME_WHEN_ANOTHER_FLUSH_SCHEDULED"
 						;
@@ -225,11 +236,20 @@ namespace Sq1.Widgets.Exceptions {
 					//Assembler.PopupException(msg1 + msig);
 					//return;
 				}
-				foreach (Exception ex in this.exceptions_notFlushedYet) {
-					this.exceptionTimes.Add(ex, DateTime.Now, this, msig);
-					this.Exceptions.InsertUnique(0, ex, this, msig);
+				try {
+					this.exceptions_notFlushedYet.WaitAndLockFor(this, msig);		// avoiding CollectionModified Exception - I employed WatchDog to tell (and silently resolve by sequencing) me which thread inserts while another thread is enumerating
+					List<Exception> buffered = this.exceptions_notFlushedYet.SafeCopy(this, msig);
+					foreach (Exception ex in buffered) {
+						this.exceptionTimes.Add(ex, DateTime.Now, this, msig);
+						this.Exceptions.InsertUnique(0, ex, this, msig);
+					}
+					this.exceptions_notFlushedYet.Clear(this, msig);
+				} catch (Exception ex) {
+					string msg2 = "BLOCKING_BUFFER_FLUSH this.exceptions_notFlushedYet => this.Exceptions";
+					Assembler.PopupException(msg2 + msig, ex);
+				} finally {
+					this.exceptions_notFlushedYet.UnLockFor(this, msig);
 				}
-				this.exceptions_notFlushedYet.Clear();
 #if DEBUG
 				if (this.Exceptions.Count > 0) {
 					Exception lastInserted = this.Exceptions.First_nullUnsafe(this, msig);
@@ -277,14 +297,15 @@ namespace Sq1.Widgets.Exceptions {
 			string ret = "";
 			// ALWAYS_SCHEDULED_AFTER_ANY_NEWCOMER_BUFFERED_OR_FLUSHED ret += this.timerFlushToGui_noNewcomersWithinDelay.Scheduled ? "BUFFERING " : "";
 			// ALREADY_PRINTED_2_LINES_LATER ret += this.exceptions_notFlushedYet.Count ? "BUFFERING " : "";
-			ret += this.Exceptions.Count;
-			if (this.exceptions_notFlushedYet.Count > 0) ret += "/" + this.exceptions_notFlushedYet.Count + " BUFFERED";
-			ret += "   flushed" + howLongTreeRebuilds.ElapsedMilliseconds + "ms"
-				 + "   buffering" + this.timerFlushToGui_noNewcomersWithinDelay.Delay + "ms";
-			if (howLongTreeRebuilds.ElapsedMilliseconds > this.timerFlushToGui_noNewcomersWithinDelay.Delay) {
+			ret += this.Exceptions.Count.ToString("000");
+			//if (this.exceptions_notFlushedYet.Count > 0)
+				ret += "/" + this.exceptions_notFlushedYet.Count.ToString("000") + "buffered";
+			ret += "   flushed:" + howLongTreeRebuilds.ElapsedMilliseconds + "ms"
+				 + "   buffering:" + this.timedTask_flushingToGui.Delay + "ms";
+			if (howLongTreeRebuilds.ElapsedMilliseconds > this.timedTask_flushingToGui.Delay) {
 				string msg = "YOU_MAY_NEED_TO_INCREASE_TIMER.Delay_FOR_FLUSHING " + ret;
 				// STACK_OVERFLOW_AGAIN Assembler.PopupException(msg);
-				this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(new Exception(msg));
+				//this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(new Exception(msg));
 			}
 			return ret;
 		}
