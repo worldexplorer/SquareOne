@@ -5,18 +5,16 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Support;
 using Sq1.Core.Streaming;
 
-using Sq1.Widgets.Level2;
-
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Streaming.Dde {
-	public class DdeTableDepth : XlDdeTableMonitoreable<LevelTwoOlv> {
+	public class DdeTableDepth : XlDdeTableMonitoreable<LevelTwo> {
 		protected override string DdeConsumerClassName { get { return "DdeTableDepth"; } }
 
 		string			symbol;
 		LevelTwoHalf	levelTwoAsks;
 		LevelTwoHalf	levelTwoBids;
-		LevelTwoOlv		levelTwoProxy;
+		LevelTwo		levelTwoProxy;
 
 		public	SymbolInfo		SymbolInfo		{ get; private set; }
 
@@ -28,7 +26,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			this.levelTwoBids = base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids_getForSymbol(this.symbol);
 
 			if (this.levelTwoBids != null && this.levelTwoAsks != null) {
-				this.levelTwoProxy = new LevelTwoOlv(this.levelTwoBids, this.levelTwoAsks, this.SymbolInfo);
+				this.levelTwoProxy = new LevelTwo(this.levelTwoBids, this.levelTwoAsks, this.SymbolInfo);
 			}
 		}
 		protected override void IncomingTableBegun() {
@@ -64,7 +62,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 		}
 
 		//protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
-		protected override LevelTwoOlv IncomingTableRow_convertToDataStructure_monitoreable(XlRowParsed row) {
+		protected override LevelTwo IncomingTableRow_convertToDataStructure_monitoreable(XlRowParsed row) {
 			double bidVolume	= row.GetDouble("BUY_VOLUME"	, double.NaN);
 			double price		= row.GetDouble("PRICE"			, double.NaN);
 			double askVolume	= row.GetDouble("SELL_VOLUME"	, double.NaN);

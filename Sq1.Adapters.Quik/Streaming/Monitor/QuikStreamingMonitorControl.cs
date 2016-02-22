@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 using Sq1.Core;
 using Sq1.Widgets;
@@ -16,30 +17,30 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 			InitializeComponent();
 			this.olvQuotesCustomize();
 		}
-		internal void Initialize(QuikStreaming quikStreamingPassed) {
+
+		internal void Initialize(QuikStreaming quikStreamingPassed, Stopwatch stopwatchRarifyingUIupdates_passed) {
 			this.quikStreaming = quikStreamingPassed;
+
+			this.flpDoms.Controls.Clear();
 			foreach (DdeTableDepth eachDom in this.quikStreaming.DdeBatchSubscriber.Level2BySymbol.Values) {
-				this.DomUserControl_createAddFor(eachDom);
+				//this.DomUserControl_createAddFor(eachDom);
+				QuikLevel2Control level2userControl = new QuikLevel2Control(eachDom, stopwatchRarifyingUIupdates_passed);
+				this.flpDoms.Controls.Add(level2userControl);
 			}
 		}
 
-		internal void DomUserControl_createAddFor(DdeTableDepth tableLevel2) {
-			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate() { this.DomUserControl_createAddFor(tableLevel2); });
-				return;
-			}
-
-			string msig = " //DomUserControl_createAddFor(" + tableLevel2.ToString() + ")";
-			LevelTwoUserControl level2userControl = new LevelTwoUserControl();
-			DockContentImproved ddeMonitorForm = this.Parent as DockContentImproved;
-			if (ddeMonitorForm == null) {
-				string msg = "I_NEED_THE_UPPER_LEVEL_FORM_VISIBILITY_TO_NOT_TO_REPAINT_IF_FORM_IS_MINIMIZED_OR_NOT_SHOWN";
-				Assembler.PopupException(msg + msig);
-			}
-			level2userControl.Initialize(this.quikStreaming, tableLevel2.SymbolInfo, tableLevel2.ToString(), ddeMonitorForm);
-			tableLevel2.UserControlMonitoringMe = level2userControl;
-			this.flpDoms.Controls.Add(level2userControl);
-		}
+		//internal void DomUserControl_createAddFor(DdeTableDepth tableLevel2) {
+		//	string msig = " //DomUserControl_createAddFor(" + tableLevel2.ToString() + ")";
+		//	DockContentImproved ddeMonitorForm = this.Parent as DockContentImproved;
+		//	if (ddeMonitorForm == null) {
+		//		string msg = "I_NEED_THE_UPPER_LEVEL_FORM_VISIBILITY_TO_NOT_TO_REPAINT_IF_FORM_IS_MINIMIZED_OR_NOT_SHOWN";
+		//		Assembler.PopupException(msg + msig);
+		//	}
+		//	QuikLevel2 level2userControl = new QuikLevel2(tableLevel2, ddeMonitorForm);
+		//	level2userControl.Initialize(this.quikStreaming, tableLevel2.SymbolInfo, tableLevel2.ToString(), ddeMonitorForm);
+		//	tableLevel2.UserControlMonitoringMe = level2userControl;
+		//	this.flpDoms.Controls.Add(level2userControl);
+		//}
 		internal void DomUserControl_deleteFor(DdeTableDepth tableLevel2) {
 			if (base.InvokeRequired) {
 			   //at System.Windows.Forms.Control.get_Handle()
@@ -57,9 +58,9 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 			}
 
 			string msig = " //DomUserControl_deleteFor(" + tableLevel2 + ")";
-			LevelTwoUserControl domResizeable = tableLevel2.UserControlMonitoringMe as LevelTwoUserControl;
+			QuikLevel2Control domResizeable = tableLevel2.UserControlMonitoringMe as QuikLevel2Control;
 			if (domResizeable == null) {
-				string msg = "I_MUST_HAVE_BEEN_LevelTwoUserControl_tableLevel2.WhereIamMonitored[" + tableLevel2.UserControlMonitoringMe + "]";
+				string msg = "I_MUST_HAVE_BEEN_QuikLevel2_tableLevel2.WhereIamMonitored[" + tableLevel2.UserControlMonitoringMe + "]";
 				Assembler.PopupException(msg + msig);
 				return;
 			}

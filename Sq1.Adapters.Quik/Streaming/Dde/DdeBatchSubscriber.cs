@@ -6,6 +6,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Widgets.Level2;
 
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik.Streaming.Dde {
 	public partial class DdeBatchSubscriber {
@@ -14,12 +15,12 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 		public	DdeTableQuotes							TableQuotes		{ get; protected set; }
 		public	DdeTableTrades							TableTrades		{ get; protected set; }
 
-		public	Dictionary<string, XlDdeTableMonitoreable<LevelTwoOlv>> Level2BySymbol	{ get; protected set; }
+		public	Dictionary<string, XlDdeTableMonitoreable<LevelTwo>> Level2BySymbol	{ get; protected set; }
 		public	List<string>							SymbolsDOMsSubscribed			{ get { return new List<string>(this.Level2BySymbol.Keys); } }
 		
 		public DdeBatchSubscriber(QuikStreaming streamingAdapter) {
 			this.quikStreamingAdapter		= streamingAdapter;
-			this.Level2BySymbol	= new Dictionary<string, XlDdeTableMonitoreable<LevelTwoOlv>>();
+			this.Level2BySymbol	= new Dictionary<string, XlDdeTableMonitoreable<LevelTwo>>();
 			//this.Tables_CommonForAllSymbols_Add();
 		}
 		public string GetDomTopicForSymbol(string symbol) {
@@ -39,13 +40,13 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			DdeTableDepth ddeTableLevel2adding	= new DdeTableDepth(domTopic, this.quikStreamingAdapter, TableDefinitions.XlColumnsForTable_DepthOfMarketPerSymbol, symbol);
 			this.quikStreamingAdapter.DdeServer.TableAdd(domTopic, ddeTableLevel2adding);
 			this.Level2BySymbol.Add(symbol, ddeTableLevel2adding);
-			ddeTableLevel2adding.OnDataStructuresParsed_Table += new EventHandler<XlDdeTableMonitoringEventArg<List<LevelTwoOlv>>>(this.level2_OnDataStructuresParsed_Table_butAlwaysOneElementInList);
+			//ddeTableLevel2adding.OnDataStructuresParsed_Table += new EventHandler<XlDdeTableMonitoringEventArg<List<LevelTwo>>>(this.level2_OnDataStructuresParsed_Table_butAlwaysOneElementInList);
 			// MOVED_TO_MonitorForm.Initialize() this.quikStreamingAdapter.MonitorForm.QuikStreamingMonitorControl.DomUserControl_createAddFor(ddeTableLevel2adding);
 		}
 		public void TableIndividual_DepthOfMarket_ForSymbolRemove(string symbol) {
 			string msig = " //TableIndividual_DepthOfMarket_ForSymbolRemove()";
 			if (this.Level2BySymbol.ContainsKey(symbol) == false) return;
-			XlDdeTableMonitoreable<LevelTwoOlv> ddeTableLevel2removing = this.Level2BySymbol[symbol];
+			XlDdeTableMonitoreable<LevelTwo> ddeTableLevel2removing = this.Level2BySymbol[symbol];
 			if (ddeTableLevel2removing == null) {
 				string msg = "MUST_BE_NOT_NULL this.level2BySymbol[" + symbol + "]";
 				Assembler.PopupException(msg + msig);
@@ -58,7 +59,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				return;
 			}
 			if (ddeTableLevel2removing_asDdeTableDepth == null) return;
-			ddeTableLevel2removing_asDdeTableDepth.OnDataStructuresParsed_Table -= new EventHandler<XlDdeTableMonitoringEventArg<List<LevelTwoOlv>>>(this.level2_OnDataStructuresParsed_Table_butAlwaysOneElementInList);
+			//ddeTableLevel2removing_asDdeTableDepth.OnDataStructuresParsed_Table -= new EventHandler<XlDdeTableMonitoringEventArg<List<LevelTwo>>>(this.level2_OnDataStructuresParsed_Table_butAlwaysOneElementInList);
 			this.quikStreamingAdapter.DdeServer.TableRemove(ddeTableLevel2removing_asDdeTableDepth.Topic);
 
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
@@ -71,7 +72,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 		public string Level2ForSymbol(string symbol) {
 			string ret = "Symbol[" + symbol + "]channels: ";
 			if (this.SymbolIsSubscribedForLevel2(symbol) == false) return ret + " NO_INDIVIDUAL_CHANNELS";
-			XlDdeTableMonitoreable<LevelTwoOlv> level2 = this.Level2BySymbol[symbol];
+			XlDdeTableMonitoreable<LevelTwo> level2 = this.Level2BySymbol[symbol];
 			if (level2 == null) return ret + " NULL_INDIVIDUAL_CHANNELS";
 			ret += " " + level2.ToString();
 			return ret;
@@ -122,7 +123,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 		internal void AllDdeMessagesReceivedCounter_reset() {
 			this.TableQuotes.ResetCounters();
 			this.TableTrades.ResetCounters();
-			foreach (XlDdeTableMonitoreable<LevelTwoOlv> eachLevel2 in this.Level2BySymbol.Values) {
+			foreach (XlDdeTableMonitoreable<LevelTwo> eachLevel2 in this.Level2BySymbol.Values) {
 				eachLevel2.ResetCounters();
 			}
 		}
@@ -144,14 +145,14 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 		public long AllDOMsMessagesReceivedCounters_total { get {
 			long ret = 0;
-			foreach (XlDdeTableMonitoreable<LevelTwoOlv> eachLevel2 in this.Level2BySymbol.Values) {
+			foreach (XlDdeTableMonitoreable<LevelTwo> eachLevel2 in this.Level2BySymbol.Values) {
 				ret += eachLevel2.DdeMessagesReceived;
 			}
 			return ret;
 		} }
 		public long AllDOMsRowsReceivedCounters_total { get {
 			long ret = 0;
-			foreach (XlDdeTableMonitoreable<LevelTwoOlv> eachLevel2 in this.Level2BySymbol.Values) {
+			foreach (XlDdeTableMonitoreable<LevelTwo> eachLevel2 in this.Level2BySymbol.Values) {
 				ret += eachLevel2.DdeRowsReceived;
 			}
 			return ret;

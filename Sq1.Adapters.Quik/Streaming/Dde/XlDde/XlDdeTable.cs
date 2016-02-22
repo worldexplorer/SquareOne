@@ -29,7 +29,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 
 		protected	Dictionary<int, XlColumn>		ColumnClonesFoundByIndex;
 		protected	bool							ColumnsIdentified;
-		protected	QuikStreaming					QuikStreaming			{ get; private set; }
+		public		QuikStreaming					QuikStreaming			{ get; private set; }
 
 		XlDdeTable() {
 			this.ColumnDefinitions			= new List<XlColumn>();			// part of the abstraction to implement in children

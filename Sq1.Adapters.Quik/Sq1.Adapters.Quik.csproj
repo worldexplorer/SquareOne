@@ -111,6 +111,13 @@
     <Compile Include="Streaming\Dde\DdeTableTrades.cs" />
     <Compile Include="Streaming\Dde\XlDde\XlDdeTableMonitoreable.cs" />
     <Compile Include="Streaming\Dde\XlDde\XlDdeTableMonitoringEventArg.cs" />
+    <Compile Include="Streaming\Monitor\QuikLevel2Control.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Streaming\Monitor\QuikLevel2Control.EventConsumer.cs">
+      <DependentUpon>QuikLevel2Control.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Streaming\Monitor\QuikStreamingMonitorControl.Customizer.cs">
       <DependentUpon>QuikStreamingMonitorControl.cs</DependentUpon>
       <SubType>UserControl</SubType>

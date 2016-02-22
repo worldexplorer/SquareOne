@@ -12,19 +12,19 @@ using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
 namespace Sq1.Adapters.Quik.Streaming.Monitor {
 	public partial class QuikStreamingMonitorForm : DockContentImproved {
 		QuikStreaming	quikStreaming;
-		Stopwatch		stopwatchRarifyingUIupdates;
+		Stopwatch		StopwatchRarifyingUIupdates;
 
 		// I_DONT_WANT_MONITOR_TO_STAY_AFTER_APPRESTART__HOPING_NEVER_INVOKED_BY_DESERIALIZER
 		public QuikStreamingMonitorForm() {
 			InitializeComponent();
+			this.StopwatchRarifyingUIupdates = new Stopwatch();
 		}
 
 		// HUMAN_INVOKED_CONSTRUCTOR
 		public QuikStreamingMonitorForm(QuikStreaming quikStreamingInstantiatedForDataSource) : this() {
 			this.quikStreaming = quikStreamingInstantiatedForDataSource;
-			this.QuikStreamingMonitorControl.Initialize(this.quikStreaming);
-			this.stopwatchRarifyingUIupdates = new Stopwatch();
-			this.stopwatchRarifyingUIupdates.Start();
+			this.StopwatchRarifyingUIupdates.Start();
+			this.QuikStreamingMonitorControl.Initialize(this.quikStreaming, this.StopwatchRarifyingUIupdates);
 		}
 
 		void quikStreaming_OnConnectionStateChanged(object sender, EventArgs e) {
@@ -42,26 +42,26 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		}
 
 		void tableQuotes_DataStructuresParsed_Table(object sender, XlDdeTableMonitoringEventArg<List<QuoteQuik>> e) {
-			if (base.IsDisposed) return;
-			if (this.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.tableQuotes_DataStructuresParsed_Table(sender, e); });
-				return;
-			}
-			// I paid the price of switching to GuiThread, but I don' have to worry if I already stopwatch.Restart()ed
-			if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRateMs) return;
-			this.stopwatchRarifyingUIupdates.Restart();
+		    if (base.IsDisposed) return;
+		    if (this.InvokeRequired) {
+		        base.BeginInvoke((MethodInvoker)delegate { this.tableQuotes_DataStructuresParsed_Table(sender, e); });
+		        return;
+		    }
+		    // I paid the price of switching to GuiThread, but I don' have to worry if I already stopwatch.Restart()ed
+		    //if (this.StopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRateMs) return;
+		    //this.StopwatchRarifyingUIupdates.Restart();
 
-			this.QuikStreamingMonitorControl.OlvQuotes.SetObjects(e.DataStructureParsed);
-			this.populateWindowTitle_grpStatuses();
+		    this.QuikStreamingMonitorControl.OlvQuotes.SetObjects(e.DataStructureParsed);
+		    this.populateWindowTitle_grpStatuses();
 
-			// done in QuikStreamingMonitorControl.Populate_grpStatuses()
-			//XlDdeTableMonitoreable<QuoteQuik> xlDdeTable = sender as XlDdeTableMonitoreable<QuoteQuik>;
-			//if (xlDdeTable == null) return;
-			//this.QuikStreamingMonitorControl.grpQuotes.Text = xlDdeTable.ToString();
+		    // done in QuikStreamingMonitorControl.Populate_grpStatuses()
+		    //XlDdeTableMonitoreable<QuoteQuik> xlDdeTable = sender as XlDdeTableMonitoreable<QuoteQuik>;
+		    //if (xlDdeTable == null) return;
+		    //this.QuikStreamingMonitorControl.grpQuotes.Text = xlDdeTable.ToString();
 		}
 		void tableQuotes_DataStructureParsed_One(object sender, XlDdeTableMonitoringEventArg<QuoteQuik> e) {
-			// dont forget about the stopwatch
-			// if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRate) return;
+		    // dont forget about the stopwatch
+		    // if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRate) return;
 		}
 
 		internal void PopulateWindowTitle_dataSourceName_market_quotesTopic() {
