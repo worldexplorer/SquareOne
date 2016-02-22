@@ -7,6 +7,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 	public abstract partial class XlDdeTableMonitoreable<T> {
 		public event EventHandler<XlDdeTableMonitoringEventArg<T>>			OnDataStructureParsed_One;
 		public event EventHandler<XlDdeTableMonitoringEventArg<List<T>>>	OnDataStructuresParsed_Table;
+		public event EventHandler<XlDdeTableMonitoringEventArg<List<T>>>	FormClosingEventArgs;
 
 		void raiseDataStructureParsed_One(T oneParsed) {
 			if (this.OnDataStructureParsed_One == null) return;
