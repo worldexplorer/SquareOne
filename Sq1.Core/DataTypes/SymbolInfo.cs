@@ -131,13 +131,10 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	bool			Level2BidShowHoles			{ get; set; }
 
 		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
-		[JsonProperty]	public bool Level2BidCumulativeShowColumn			{ get; set; }
+		[JsonProperty]	public bool				Level2ShowCumulativesInsteadOfLots	{ get; set; }
 
 		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
-		[JsonProperty]	public bool Level2ShowCumulativesInsteadOfLots		{ get; set; }
-
-		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
-		[JsonProperty]	public int	Level2PriceLevels						{ get; set; }
+		[JsonProperty]	public int				Level2PriceLevels			{ get; set; }
 
 
 		public SymbolInfo() { 		// used by JSONdeserialize() /  XMLdeserialize()
@@ -209,7 +206,7 @@ namespace Sq1.Core.DataTypes {
 		}
 
 		[Obsolete("REMOVE_ONCE_NEW_ALIGNMENT_MATURES_DECEMBER_15TH_2014 used only in tidal calculations")]
-		public double AlignOrderToPriceLevel(double orderPrice, Direction direction, MarketLimitStop marketLimitStop) {
+		public double AlignOrder_toPriceLevel(double orderPrice, Direction direction, MarketLimitStop marketLimitStop) {
 			bool entryNotExit = true;
 			PositionLongShort positionLongShortV1 = PositionLongShort.Long;
 			switch (direction) {

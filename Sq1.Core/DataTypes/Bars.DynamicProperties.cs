@@ -26,7 +26,7 @@ namespace Sq1.Core.DataTypes {
 			if (this.DataSource == null) return ret;
 			if (this.DataSource.StreamingAdapter == null) return ret;
 			if (this.DataSource.StreamingAdapter.StreamingDataSnapshot == null) return ret;
-			ret = this.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteClone_getForSymbol(this.Symbol);
+			ret = this.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuote_getForSymbol(this.Symbol);
 			return ret;
 		} }
 

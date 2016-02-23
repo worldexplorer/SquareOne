@@ -8,7 +8,7 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Streaming {
 	public class LevelTwo {
 								string			symbol;
-		[JsonIgnore]	public	Quote			LastQuote;
+		[JsonIgnore]	public	Quote			LastQuote_unbound_notCloned;
 		[JsonIgnore]	public	LevelTwoHalf	Asks;
 		[JsonIgnore]	public	LevelTwoHalf	Bids;
 
@@ -18,9 +18,9 @@ namespace Sq1.Core.Streaming {
 			this.Bids = new LevelTwoHalf("LevelTwoBids[" + this.symbol + "]");
 		}
 
-		internal Quote Initialize() {
-			Quote ret = this.LastQuote;
-			this.LastQuote = null;
+		internal Quote Clear() {
+			Quote ret = this.LastQuote_unbound_notCloned;
+			this.LastQuote_unbound_notCloned = null;
 			this.Asks.Clear(this, "livesimEnded");
 			this.Bids.Clear(this, "livesimEnded");
 			return ret;
@@ -73,6 +73,15 @@ namespace Sq1.Core.Streaming {
 				}
 			}
 			#endif
+
+
+			if (this.symbolInfo.Level2PriceLevels < bidsFrozen.Count) {
+				bidsFrozen = bidsFrozen.Clone_noDeeperThan(this.symbolInfo.Level2PriceLevels);
+			}
+			if (this.symbolInfo.Level2PriceLevels < asksFrozen.Count) {
+				asksFrozen = asksFrozen.Clone_noDeeperThan(this.symbolInfo.Level2PriceLevels);
+			}
+
 
 			double priceStep = this.symbolInfo.PriceStep;
 

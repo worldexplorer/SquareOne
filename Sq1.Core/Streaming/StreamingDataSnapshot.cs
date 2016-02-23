@@ -6,32 +6,34 @@ using Newtonsoft.Json;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.Support;
 
 namespace Sq1.Core.Streaming {
 	public class StreamingDataSnapshot {
 		[JsonIgnore]	StreamingAdapter							streamingAdapter;
-		[JsonIgnore]	object										lockLastQuote;
-		[JsonProperty]	Dictionary<string, LevelTwo>	level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS;	// { get; private set; }
+		[JsonProperty]	ConcurrentDictionary<string, LevelTwo>		level2_lastQuoteUnbound_bySymbol;	// { get; private set; }
 				public	long										Level2RefreshRate;
-		[JsonProperty]	public string								SymbolsSubscribedAndReceiving		{ get {
-				string ret = "";
-				foreach (string symbol in this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.Keys) {
-					if (ret.Length > 0) ret += ",";
-					ret += symbol;
-					Quote lastClone = this.LastQuoteClone_getForSymbol(symbol);
-					ret += ":";
-					if (lastClone == null) {
-						ret += "NULL";
-					} else {
-						ret += lastClone.AbsnoPerSymbol.ToString();
-					}
-				}
-				return ret;
-			} }
+		//[JsonProperty]	public string								SymbolsSubscribedAndReceiving		{ get {
+		//        string ret = "";
+		//        foreach (string symbol in this.level2_lastQuoteUnbound_bySymbol.SafeCopy(this, "SymbolsSubscribedAndReceiving").Keys) {
+		//            if (ret.Length > 0) ret += ",";
+		//            ret += symbol;
+		//            Quote lastClone = this.LastQuote_getForSymbol(symbol);
+		//            ret += ":";
+		//            if (lastClone == null) {
+		//                ret += "NULL";
+		//            } else {
+		//                ret += lastClone.AbsnoPerSymbol.ToString();
+		//            }
+		//        }
+		//        return ret;
+		//    } }
+
+		[JsonProperty]	public string								SymbolsSubscribedAndReceiving		{ get; private set; }
 
 		StreamingDataSnapshot() {
-			level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS = new Dictionary<string, LevelTwo>();
-			lockLastQuote = new object();
+			level2_lastQuoteUnbound_bySymbol = new ConcurrentDictionary<string, LevelTwo>("level2_lastQuoteUnbound_bySymbol");
+			SymbolsSubscribedAndReceiving	 = "";
 		}
 
 		public StreamingDataSnapshot(StreamingAdapter streamingAdapter) : this() {
@@ -42,70 +44,106 @@ namespace Sq1.Core.Streaming {
 			this.streamingAdapter = streamingAdapter;
 		}
 
-		public void InitializeLastQuoteReceived(List<string> symbols) {
+		public void Initialize_levelTwo_forAllSymbolsInDataSource(List<string> symbols) {
 			foreach (string symbol in symbols) {
-				this.InitializeLastQuoteAndLevelTwoForSymbol(symbol);
+				this.Initialize_levelTwo_forSymbol(symbol);
 			}
 		}
-		public void InitializeLastQuoteAndLevelTwoForSymbol(string symbol) { lock (this.lockLastQuote) {
-			if (this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.ContainsKey(symbol) == false) {
-				this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.Add(symbol, new LevelTwo(symbol));
+		public void Initialize_levelTwo_forSymbol(string symbol) {
+			string msig = " //StreamingDataSnapshot.InitializeLastQuoteAndLevelTwoForSymbol(" + symbol + ")";
+			try {
+				this.level2_lastQuoteUnbound_bySymbol.WaitAndLockFor(this, msig);
+				if (this.level2_lastQuoteUnbound_bySymbol.ContainsKey(symbol, this, msig) == false) {
+					this.level2_lastQuoteUnbound_bySymbol.Add(symbol, new LevelTwo(symbol), this, msig);
+				}
+				LevelTwo level2 = this.level2_lastQuoteUnbound_bySymbol.GetAtKey(symbol, this, msig);
+				Quote quoteBeforeNullification_WHY = level2.Clear();
+				this.SymbolsSubscribedAndReceiving += "," + symbol;
+			} finally {
+				this.level2_lastQuoteUnbound_bySymbol.UnLockFor(this, msig);
 			}
-			Quote prevQuote = this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[symbol].Initialize();
-		} }
-		public void LastQuoteClone_setForSymbol(Quote quote) { lock (this.lockLastQuote) {
-			string msig = " StreamingDataSnapshot.LastQuoteSetForSymbol(" + quote.ToString() + ")";
+		}
+		public void LastQuote_setForSymbol(Quote quote) {
+			string msig = " //StreamingDataSnapshot.LastQuote_setForSymbol(" + quote.ToString() + ")";
 
 			if (quote == null) {
 				string msg = "USE_LastQuoteInitialize_INSTEAD_OF_PASSING_NULL_TO_LastQuoteCloneSetForSymbol";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			if (this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.ContainsKey(quote.Symbol) == false) {
-				this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.Add(quote.Symbol, new LevelTwo(quote.Symbol));
-				string msg = "SUBSCRIBER_SHOULD_HAVE_INVOKED_InitializeLastQuoteReceived()__FOLLOW_THIS_LIFECYCLE__ITS_A_RELIGION_NOT_OPEN_FOR_DISCUSSION";
-				Assembler.PopupException(msg + msig, null, false);
-			}
+			try {
+				this.level2_lastQuoteUnbound_bySymbol.WaitAndLockFor(this, msig);
+				if (this.level2_lastQuoteUnbound_bySymbol.ContainsKey(quote.Symbol, this, msig) == false) {
+					//this.level2_lastQuoteUnbound_bySymbol.Add(quote.Symbol, new LevelTwo(quote.Symbol), this, msig);
+					this.Initialize_levelTwo_forSymbol(quote.Symbol);
+					string msg = "SUBSCRIBER_SHOULD_HAVE_INVOKED_Initialize_levelTwo_forAllSymbolsInDataSource()__FOLLOW_THIS_LIFECYCLE__ITS_A_RELIGION_NOT_OPEN_FOR_DISCUSSION";
+					Assembler.PopupException(msg + msig, null, false);
+				}
 
-			Quote lastQuote = this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[quote.Symbol].LastQuote;
-			if (lastQuote == null) {
-				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR#2 symbol[" + quote.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
-				//Assembler.PopupException(msg, null, false);
-				this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[quote.Symbol].LastQuote = quote;
-				return;
+				LevelTwo level2 = this.level2_lastQuoteUnbound_bySymbol.GetAtKey(quote.Symbol, this, msig);
+				Quote lastQuote = level2.LastQuote_unbound_notCloned;
+				if (lastQuote == null) {
+					string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR#2 symbol[" + quote.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
+					//Assembler.PopupException(msg, null, false);
+					level2.LastQuote_unbound_notCloned = quote;
+					return;
+				}
+				if (lastQuote == quote) {
+					string msg = "DONT_PUT_SAME_QUOTE_TWICE";
+					Assembler.PopupException(msg + msig);
+					return;
+				}
+				if (lastQuote.AbsnoPerSymbol >= quote.AbsnoPerSymbol) {
+					string msg = "DONT_FEED_ME_WITH_OLD_QUOTES (????QuoteQuik #-1/0 AUTOGEN)";
+					Assembler.PopupException(msg + msig);
+					return;
+				}
+				level2.LastQuote_unbound_notCloned = quote;
+			} finally {
+				this.level2_lastQuoteUnbound_bySymbol.UnLockFor(this, msig);
 			}
-			if (lastQuote == quote) {
-				string msg = "DONT_PUT_SAME_QUOTE_TWICE";
-				Assembler.PopupException(msg + msig);
-				return;
-			}
-			if (lastQuote.AbsnoPerSymbol >= quote.AbsnoPerSymbol) {
-				string msg = "DONT_FEED_ME_WITH_OLD_QUOTES (????QuoteQuik #-1/0 AUTOGEN)";
-				Assembler.PopupException(msg + msig);
-				return;
-			}
-			this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[quote.Symbol].LastQuote = quote;
-		} }
-		public Quote LastQuoteClone_getForSymbol(string symbol) { //lock (this.lockLastQuote) {
-				if (this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.ContainsKey(symbol) == false) return null;
-				LevelTwo levelTwoAndLastQuote = this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[symbol];
-				if (levelTwoAndLastQuote == null) return null;
-				Quote weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy = levelTwoAndLastQuote.LastQuote;
+		}
+		public Quote LastQuote_getForSymbol(string symbol) { //HERE_WAS_THE_DEADLOCK lock (this.lockLastQuote) {
+			string msig = " //StreamingDataSnapshot.LastQuote_getForSymbol(" + symbol + ")";
+			try {
+				this.level2_lastQuoteUnbound_bySymbol.WaitAndLockFor(this, msig);
+				if (this.level2_lastQuoteUnbound_bySymbol.ContainsKey(symbol, this, msig) == false) return null;
+				LevelTwo level2 = this.level2_lastQuoteUnbound_bySymbol.GetAtKey(symbol, this, msig);
+				if (level2 == null) return null;
+				Quote weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy = level2.LastQuote_unbound_notCloned;
 				if (weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy == null) {
 					string msg = "MUST_NOT_BE_NULL_FOR_LIVESIM_TOO levelTwoAndLastQuote.LastQuote";
 				}
 				return weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy;
-			} //}
-		public LevelTwoHalf LevelTwoAsks_getForSymbol(string symbol) { lock (this.lockLastQuote) {
-				if (this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.ContainsKey(symbol) == false) return null;
-				return this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[symbol].Asks;
-			} }
-		public LevelTwoHalf LevelTwoBids_getForSymbol(string symbol) { lock (this.lockLastQuote) {
-				if (this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.ContainsKey(symbol) == false) return null;
-				return this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[symbol].Bids;
-			} }
-		public double LastQuoteGetPriceForMarketOrder(string symbol) {
-			Quote lastQuote = this.LastQuoteClone_getForSymbol(symbol);
+			} finally {
+				this.level2_lastQuoteUnbound_bySymbol.UnLockFor(this, msig);
+			}
+		}
+		public LevelTwoHalf LevelTwoAsks_getForSymbol_nullUnsafe(string symbol) {
+			string msig = " //StreamingDataSnapshot.LevelTwoAsks_getForSymbol(" + symbol + ")";
+			try {
+				this.level2_lastQuoteUnbound_bySymbol.WaitAndLockFor(this, msig);
+				if (this.level2_lastQuoteUnbound_bySymbol.ContainsKey(symbol, this, msig) == false) return null;
+				LevelTwo level2 = this.level2_lastQuoteUnbound_bySymbol.GetAtKey(symbol, this, msig);
+				return level2.Asks;
+			} finally {
+				this.level2_lastQuoteUnbound_bySymbol.UnLockFor(this, msig);
+			}
+		}
+		public LevelTwoHalf LevelTwoBids_getForSymbol_nullUnsafe(string symbol) {
+			string msig = " //StreamingDataSnapshot.LevelTwoBids_getForSymbol(" + symbol + ")";
+			try {
+				this.level2_lastQuoteUnbound_bySymbol.WaitAndLockFor(this, msig);
+				if (this.level2_lastQuoteUnbound_bySymbol.ContainsKey(symbol, this, msig) == false) return null;
+				LevelTwo level2 = this.level2_lastQuoteUnbound_bySymbol.GetAtKey(symbol, this, msig);
+				return level2.Bids;
+			} finally {
+				this.level2_lastQuoteUnbound_bySymbol.UnLockFor(this, msig);
+			}
+		}
+
+		public double LastQuote_getPriceForMarketOrder(string symbol) {
+			Quote lastQuote = this.LastQuote_getForSymbol(symbol);
 			if (lastQuote == null) return 0;
 			if (lastQuote.TradedAt == BidOrAsk.UNKNOWN) {
 				string msg = "NEVER_HAPPENED_SO_FAR LAST_QUOTE_MUST_BE_BID_OR_ASK lastQuote.TradeOccuredAt[" + lastQuote.TradedAt + "]=BidOrAsk.UNKNOWN";
@@ -115,9 +153,9 @@ namespace Sq1.Core.Streaming {
 			return lastQuote.TradedPrice;
 		}
 
-		public double BestBidGetForMarketOrder(string symbol) {
+		public double BestBid_getForMarketOrder(string symbol) {
 			double ret = -1;
-			Quote lastQuote = this.LastQuoteClone_getForSymbol(symbol);
+			Quote lastQuote = this.LastQuote_getForSymbol(symbol);
 			if (lastQuote == null) {
 				string msg = "LAST_TIME_I_HAD_IT_WHEN_Livesimulator_STORED_QUOTES_IN_QuikLivesimStreaming_WHILE_MarketLive_ASKED_QuikStreaming_TO_FILL_ALERT";
 				Assembler.PopupException(msg);
@@ -126,9 +164,9 @@ namespace Sq1.Core.Streaming {
 			ret = lastQuote.Bid;
 			return ret;
 		} 
-		public double BestAskGetForMarketOrder(string symbol) {
+		public double BestAsk_getForMarketOrder(string symbol) {
 			double ret = -1;
-			Quote lastQuote = this.LastQuoteClone_getForSymbol(symbol);
+			Quote lastQuote = this.LastQuote_getForSymbol(symbol);
 			if (lastQuote == null) {
 				string msg = "LAST_TIME_I_HAD_IT_WHEN_Livesimulator_STORED_QUOTES_IN_QuikLivesimStreaming_WHILE_MarketLive_ASKED_QuikStreaming_TO_FILL_ALERT";
 				Assembler.PopupException(msg);
@@ -138,27 +176,27 @@ namespace Sq1.Core.Streaming {
 			return ret;
 		}
 
-		public double BidOrAskFor(string Symbol, PositionLongShort direction) {
+		public double BidOrAsk_forDirection(string Symbol, PositionLongShort direction) {
 			if (direction == PositionLongShort.Unknown) {
 				string msg = "BidOrAskFor(" + Symbol + ", " + direction + "): Bid and Ask are wrong to return for [" + direction + "]";
 				throw new Exception(msg);
 			}
 			double price = (direction == PositionLongShort.Long)
-				? this.BestBidGetForMarketOrder(Symbol) : this.BestAskGetForMarketOrder(Symbol);
+				? this.BestBid_getForMarketOrder(Symbol) : this.BestAsk_getForMarketOrder(Symbol);
 			return price;
 		}
-		public virtual double GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(string symbol, Direction direction
+		public virtual double BidOrAsk_getAligned_forTidalOrCrossMarket_fromStreamingSnap(string symbol, Direction direction
 				, out OrderSpreadSide oss, bool forceCrossMarket) {
 			string msig = " //GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(" + symbol + ", " + direction + ")";
-			double priceLastQuote = this.LastQuoteGetPriceForMarketOrder(symbol);
+			double priceLastQuote = this.LastQuote_getPriceForMarketOrder(symbol);
 			if (priceLastQuote == 0) {
 				string msg = "QuickCheck ZERO priceLastQuote=" + priceLastQuote + " for Symbol=[" + symbol + "]"
 					+ " from streamingAdapter[" + this.streamingAdapter.Name + "].StreamingDataSnapshot";
 				Assembler.PopupException(msg);
 				//throw new Exception(msg);
 			}
-			double currentBid = this.BestBidGetForMarketOrder(symbol);
-			double currentAsk = this.BestAskGetForMarketOrder(symbol);
+			double currentBid = this.BestBid_getForMarketOrder(symbol);
+			double currentAsk = this.BestAsk_getForMarketOrder(symbol);
 			if (currentBid == 0) {
 				string msg = "ZERO currentBid=" + currentBid + " for Symbol=[" + symbol + "]"
 					+ " while priceLastQuote=[" + priceLastQuote + "]"
@@ -256,7 +294,7 @@ namespace Sq1.Core.Streaming {
 
 			//v1
 			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_DECEMBER_15TH_2014
-			double price1 = symbolInfo.AlignOrderToPriceLevel(price, direction, MarketLimitStop.Market);
+			double price1 = symbolInfo.AlignOrder_toPriceLevel(price, direction, MarketLimitStop.Market);
 			if (price1 != price) {
 				string msg3 = "FIX_DEFINITELY_DIFFERENT_POSTPONE_TILL_ORDER_EXECUTOR_BACK_FOR_QUIK_BROKER";
 				Assembler.PopupException(msg3 + msig, null);

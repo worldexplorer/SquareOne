@@ -278,8 +278,8 @@ namespace Sq1.Core.Execution {
 
 			// Bid/Ask Dictionaries are synchronized => no exceptions
 			if (alert.DataSource != null && alert.DataSource.StreamingAdapter != null) {
-				this.CurrentBid = alert.DataSource.StreamingAdapter.StreamingDataSnapshot.BestBidGetForMarketOrder(alert.Symbol);
-				this.CurrentAsk = alert.DataSource.StreamingAdapter.StreamingDataSnapshot.BestAskGetForMarketOrder(alert.Symbol);
+				this.CurrentBid = alert.DataSource.StreamingAdapter.StreamingDataSnapshot.BestBid_getForMarketOrder(alert.Symbol);
+				this.CurrentAsk = alert.DataSource.StreamingAdapter.StreamingDataSnapshot.BestAsk_getForMarketOrder(alert.Symbol);
 			}
 
 			this.Alert = alert;
@@ -463,8 +463,8 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public void AbsorbCurrentBidAskFromStreamingSnapshot(StreamingDataSnapshot snap) {
-			this.CurrentBid = snap.BestBidGetForMarketOrder(this.Alert.Symbol);
-			this.CurrentAsk = snap.BestAskGetForMarketOrder(this.Alert.Symbol);
+			this.CurrentBid = snap.BestBid_getForMarketOrder(this.Alert.Symbol);
+			this.CurrentAsk = snap.BestAsk_getForMarketOrder(this.Alert.Symbol);
 		}
 	}
 }

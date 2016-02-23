@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using System.Collections.Generic;
 
 using Sq1.Core.Execution;
 
@@ -25,6 +26,7 @@ namespace Sq1.Core.Support {
 					object				unlockedClass;
 					string				unlockedAfter;
 					Thread				unlockedThread;
+					Stack<string>		recursionDetector;
 
 		public ConcurrentWatchdog(string reasonToExist, ExecutionDataSnapshot snap = null) {
 			ReasonToExist			= reasonToExist;
@@ -34,11 +36,24 @@ namespace Sq1.Core.Support {
 			stopwatchLock			= new Stopwatch();
 			stopwatchUnlock			= new Stopwatch();
 			customerUnLockingQueue	= new object();
+			recursionDetector		= new Stack<string>();
 		}
 		public bool IsUnlocked { get {
 			bool unlocked = this.WaitUnlocked(0);
 			return unlocked;
 		} }
+
+		public string LockStack_asString { get {
+			string ret = "";
+			List<string> stackAsList = new List<string>(this.recursionDetector.ToArray());
+			stackAsList.Reverse();
+			foreach (string msig in stackAsList) {
+				if (ret != "") ret += "," + Environment.NewLine;
+				ret += msig;
+			}
+			return ret;
+		} }
+
 		public bool WaitUnlocked(int waitMillis = TIMEOUT_DEFAULT) {
 			bool unlocked = this.isFree.WaitOne(waitMillis);
 			return unlocked;
@@ -54,6 +69,13 @@ namespace Sq1.Core.Support {
 				this.sameThreadLocksRequestedStackDepth++;
 				return false;
 			}
+
+			if (this.recursionDetector.Contains(lockPurpose)) {
+				string msg = "YOU_ALREADY_LOCKED_ME_WITH_SAME_REASON[" + lockPurpose + "] lockStack[" + this.LockStack_asString + "] AVOIDING_STACK_OVERFLOW RECURSIVE_CALL";
+				Assembler.PopupException(msg);
+			}
+			this.recursionDetector.Push(lockPurpose);
+
 			lock (this.customerLockingQueue) {		// keep same-stack-return above first ever lock() {}
 				bool unlocked = this.isFree.WaitOne(waitMillis);
 				if (unlocked == false && this.Snap != null) {
@@ -96,7 +118,7 @@ namespace Sq1.Core.Support {
 				return true;
 			}
 		}
-		public bool UnLockFor(object owner, string releasingAfter = null, bool reportViolation = false,
+		public bool UnLockFor(object owner, string releasingAfter, bool reportViolation = false,
 						int waitMillis = TIMEOUT_DEFAULT, bool engageWaitingForEva = true) {
 			// lock(){} above WAS DEADLY when, between two stack frames, another thread locked me
 			// 1. Thread1,stack1shallow: locked, unlock to come on top level;
@@ -116,6 +138,19 @@ namespace Sq1.Core.Support {
 					if (releasingAfter != this.lockedPurposeFirstInTheStack) {
 						string msg2 = "releasingAfter[" + releasingAfter + "] != this.LockPurpose[" + this.lockedPurposeFirstInTheStack + "]";
 						Assembler.PopupException(msg2 + this.Ident, null, false);
+					}
+				}
+
+				if (this.recursionDetector.Contains(releasingAfter) == false) {
+					string msg1 = "YOU_NEVER_LOCKED_ME_WITH_SAME_REASON_YOU_ARE_RELEASING[" + releasingAfter + "] lockStack[" + this.LockStack_asString + "]";
+					Assembler.PopupException(msg1);
+				} else {
+					string lastLockReason = this.recursionDetector.Peek();
+					if (lastLockReason != releasingAfter) {
+						string msg1 = "MUST_BE_LAST_IN_INVOCATION_STACK[" + releasingAfter + "] lockStack[" + this.LockStack_asString + "]";
+						Assembler.PopupException(msg1);
+					} else {
+						this.recursionDetector.Pop();
 					}
 				}
 
