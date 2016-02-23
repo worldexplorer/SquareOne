@@ -14,41 +14,41 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 	public partial class QuikLevel2Control {
 		protected override void OnLoad(EventArgs e) {
 		//protected override void  OnControlAdded(ControlEventArgs e) {
-		    try {
+			try {
 				this.ddeTableDepth.OnDataStructureParsed_One			+= new EventHandler<XlDdeTableMonitoringEventArg<LevelTwo>>			(ddeTableDepth_OnDataStructureParsed_One);
 				this.ddeTableDepth.OnDataStructuresParsed_Table			+= new EventHandler<XlDdeTableMonitoringEventArg<List<LevelTwo>>>	(ddeTableDepth_OnDataStructuresParsed_Table_butAlwaysOneElementInList);
 				this.ddeTableDepth.QuikStreaming.OnConnectionStateChanged += new EventHandler<EventArgs>(this.quikStreaming_OnConnectionStateChanged);
-		        base.OnLoad(e);
+				base.OnLoad(e);
 				//base.OnControlAdded(e);
 
-		        base.PopulateLevel2ToTitle();
+				base.PopulateLevel2ToTitle();
 
 				if (this.ddeTableDepth.QuikStreaming.DdeMonitorPopupOnRestart) return;	// we are deserializing => popping up => no need to set the flag I'm to complying to
 				this.ddeTableDepth.QuikStreaming.DdeMonitorPopupOnRestart = true;
 				this.ddeTableDepth.QuikStreaming.DataSourceEditor.SerializeDataSource_saveAdapters();
-		    } catch (Exception ex) {
-		        string msg = "IS_DATASOURCE_EDITOR_NULL? this.quikStreaming.DataSourceEditor[" + this.ddeTableDepth.QuikStreaming.DataSourceEditor + "] //QuikLevel2Control.OnControlAdded()";
-		        Assembler.PopupException(msg, ex);
-		    }
+			} catch (Exception ex) {
+				string msg = "IS_DATASOURCE_EDITOR_NULL? this.quikStreaming.DataSourceEditor[" + this.ddeTableDepth.QuikStreaming.DataSourceEditor + "] //QuikLevel2Control.OnControlAdded()";
+				Assembler.PopupException(msg, ex);
+			}
 		}
 		public void OnFormClosing(FormClosingEventArgs e) {
 		//protected override void OnFormClosing(FormClosingEventArgs e) {
 		//protected override void OnControlRemoved(ControlEventArgs e) {
-		    try {
-		        //base.OnFormClosing(e);
+			try {
+				//base.OnFormClosing(e);
 				//base.OnControlRemoved(e);
-		        this.ddeTableDepth.QuikStreaming.OnConnectionStateChanged	-= new EventHandler<EventArgs>(this.quikStreaming_OnConnectionStateChanged);
-		        this.ddeTableDepth.OnDataStructureParsed_One				-= new EventHandler<XlDdeTableMonitoringEventArg<LevelTwo>>			(ddeTableDepth_OnDataStructureParsed_One);
-		        this.ddeTableDepth.OnDataStructuresParsed_Table				-= new EventHandler<XlDdeTableMonitoringEventArg<List<LevelTwo>>>	(ddeTableDepth_OnDataStructuresParsed_Table_butAlwaysOneElementInList);
+				this.ddeTableDepth.QuikStreaming.OnConnectionStateChanged	-= new EventHandler<EventArgs>(this.quikStreaming_OnConnectionStateChanged);
+				this.ddeTableDepth.OnDataStructureParsed_One				-= new EventHandler<XlDdeTableMonitoringEventArg<LevelTwo>>			(ddeTableDepth_OnDataStructureParsed_One);
+				this.ddeTableDepth.OnDataStructuresParsed_Table				-= new EventHandler<XlDdeTableMonitoringEventArg<List<LevelTwo>>>	(ddeTableDepth_OnDataStructuresParsed_Table_butAlwaysOneElementInList);
 
-		        if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;	// I closed the app, but user didn't click the Monitor and wants it be restored on appRestart
-		        if (this.ddeTableDepth.QuikStreaming.DdeMonitorPopupOnRestart == false) return;
-		        this.ddeTableDepth.QuikStreaming.DdeMonitorPopupOnRestart = false;
-		        this.ddeTableDepth.QuikStreaming.DataSourceEditor.SerializeDataSource_saveAdapters();
-		    } catch (Exception ex) {
-		        string msg = "IS_DATASOURCE_EDITOR_NULL? this.quikStreaming.DataSourceEditor[" + this.ddeTableDepth.QuikStreaming.DataSourceEditor + "] //QuikLevel2Control.OnControlRemoved()";
-		        Assembler.PopupException(msg, ex);
-		    }
+				if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;	// I closed the app, but user didn't click the Monitor and wants it be restored on appRestart
+				if (this.ddeTableDepth.QuikStreaming.DdeMonitorPopupOnRestart == false) return;
+				this.ddeTableDepth.QuikStreaming.DdeMonitorPopupOnRestart = false;
+				this.ddeTableDepth.QuikStreaming.DataSourceEditor.SerializeDataSource_saveAdapters();
+			} catch (Exception ex) {
+				string msg = "IS_DATASOURCE_EDITOR_NULL? this.quikStreaming.DataSourceEditor[" + this.ddeTableDepth.QuikStreaming.DataSourceEditor + "] //QuikLevel2Control.OnControlRemoved()";
+				Assembler.PopupException(msg, ex);
+			}
 		}
 
 
@@ -56,20 +56,20 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		void ddeTableDepth_OnDataStructuresParsed_Table_butAlwaysOneElementInList(object sender, XlDdeTableMonitoringEventArg<List<LevelTwo>> alwaysJustOneDom) {
 			string msig = " //level2_OnDataStructuresParsed_Table_butAlwaysOneElementInList(" + sender + ")";
 
-		    if (base.IsDisposed) return;
-		    if (this.InvokeRequired) {
-		        base.BeginInvoke((MethodInvoker)delegate { this.ddeTableDepth_OnDataStructuresParsed_Table_butAlwaysOneElementInList(sender, alwaysJustOneDom); });
-		        return;
-		    }
-		    // I paid the price of switching to GuiThread, but I don' have to worry if I already StopwatchRarifyingUIupdates.Restart()ed
-		    //if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.tableLevel2.QuikStreaming.DdeMonitorRefreshRateMs) return;
-		    //NOPE_RESTARTED_FOR_THE_WHOLE_CONTROL this.stopwatchRarifyingUIupdates.Restart();
+			if (base.IsDisposed) return;
+			if (this.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker)delegate { this.ddeTableDepth_OnDataStructuresParsed_Table_butAlwaysOneElementInList(sender, alwaysJustOneDom); });
+				return;
+			}
+			// I paid the price of switching to GuiThread, but I don' have to worry if I already StopwatchRarifyingUIupdates.Restart()ed
+			//if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.tableLevel2.QuikStreaming.DdeMonitorRefreshRateMs) return;
+			//NOPE_RESTARTED_FOR_THE_WHOLE_CONTROL this.stopwatchRarifyingUIupdates.Restart();
 
 			// finally Form and inner Control are in the same DLL!!
 			//DockContentImproved ddeMonitorForm = base.DdeMonitorForm_nullUnsafe;
 			//if (ddeMonitorForm != null) {
-			//    if (ddeMonitorForm.Visible == false) return;
-			//    if (ddeMonitorForm.IsCoveredOrAutoHidden) return;
+			//	if (ddeMonitorForm.Visible == false) return;
+			//	if (ddeMonitorForm.IsCoveredOrAutoHidden) return;
 			//}
 
 			// second BeginInvoke below is hell of overhead, but this one is light, and succeeds if the second fails => visible counters increase

@@ -42,26 +42,26 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		}
 
 		void tableQuotes_DataStructuresParsed_Table(object sender, XlDdeTableMonitoringEventArg<List<QuoteQuik>> e) {
-		    if (base.IsDisposed) return;
-		    if (this.InvokeRequired) {
-		        base.BeginInvoke((MethodInvoker)delegate { this.tableQuotes_DataStructuresParsed_Table(sender, e); });
-		        return;
-		    }
-		    // I paid the price of switching to GuiThread, but I don' have to worry if I already stopwatch.Restart()ed
-		    //if (this.StopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRateMs) return;
-		    //this.StopwatchRarifyingUIupdates.Restart();
+			if (base.IsDisposed) return;
+			if (this.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker)delegate { this.tableQuotes_DataStructuresParsed_Table(sender, e); });
+				return;
+			}
+			// I paid the price of switching to GuiThread, but I don' have to worry if I already stopwatch.Restart()ed
+			//if (this.StopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRateMs) return;
+			//this.StopwatchRarifyingUIupdates.Restart();
 
-		    this.QuikStreamingMonitorControl.OlvQuotes.SetObjects(e.DataStructureParsed);
-		    this.populateWindowTitle_grpStatuses();
+			this.QuikStreamingMonitorControl.OlvQuotes.SetObjects(e.DataStructureParsed);
+			this.populateWindowTitle_grpStatuses();
 
-		    // done in QuikStreamingMonitorControl.Populate_grpStatuses()
-		    //XlDdeTableMonitoreable<QuoteQuik> xlDdeTable = sender as XlDdeTableMonitoreable<QuoteQuik>;
-		    //if (xlDdeTable == null) return;
-		    //this.QuikStreamingMonitorControl.grpQuotes.Text = xlDdeTable.ToString();
+			// done in QuikStreamingMonitorControl.Populate_grpStatuses()
+			//XlDdeTableMonitoreable<QuoteQuik> xlDdeTable = sender as XlDdeTableMonitoreable<QuoteQuik>;
+			//if (xlDdeTable == null) return;
+			//this.QuikStreamingMonitorControl.grpQuotes.Text = xlDdeTable.ToString();
 		}
 		void tableQuotes_DataStructureParsed_One(object sender, XlDdeTableMonitoringEventArg<QuoteQuik> e) {
-		    // dont forget about the stopwatch
-		    // if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRate) return;
+			// dont forget about the stopwatch
+			// if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRate) return;
 		}
 
 		internal void PopulateWindowTitle_dataSourceName_market_quotesTopic() {

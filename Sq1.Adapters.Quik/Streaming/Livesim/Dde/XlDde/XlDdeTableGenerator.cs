@@ -94,13 +94,13 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 
 		// IRANAI_DES
 		//void ddePokeAsyncCallback(IAsyncResult ar) {
-		//    bool isCompleted_hopeNo = ar.IsCompleted;
-		//    bool completedSynchronously = ar.CompletedSynchronously;
-		//    bool isCompleted_hopeYes = ar.IsCompleted;
+		//	bool isCompleted_hopeNo = ar.IsCompleted;
+		//	bool completedSynchronously = ar.CompletedSynchronously;
+		//	bool isCompleted_hopeYes = ar.IsCompleted;
 			
-		//    string msg = "INVOKED_AT_END_POKE__I_WILL_USE_this.DdeClient.EndPoke(handle) which waits for the PokeResult.Complete";
-		//    string msig = " //QuikLivesimDdeClient.ddePokeAsyncCallback(" + ar.ToString() + ")";
-		//    //Assembler.PopupException(msg + msig, null, false);
+		//	string msg = "INVOKED_AT_END_POKE__I_WILL_USE_this.DdeClient.EndPoke(handle) which waits for the PokeResult.Complete";
+		//	string msig = " //QuikLivesimDdeClient.ddePokeAsyncCallback(" + ar.ToString() + ")";
+		//	//Assembler.PopupException(msg + msig, null, false);
 		//}
 
 		void client_Disconnected(object sender, DdeDisconnectedEventArgs e) {

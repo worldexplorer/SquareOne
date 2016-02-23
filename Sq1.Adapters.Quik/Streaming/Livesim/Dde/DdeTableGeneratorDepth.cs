@@ -29,7 +29,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 			//	base.XlWriter.StartNewRow();	// first row was already added as a header
 			//List<double> askKeys = new List<double>(levelTwoAsks.SafeCopy(this, msig).Keys);
 			//for (int i=0; i<askKeys.Count; i++) {
-			//    double priceLevel = askKeys[i];
+			//	double priceLevel = askKeys[i];
 			Dictionary<double, double> asksSafeCopy = levelTwoAsks.SafeCopy(this, msig);
 			int serno = 0;
 			foreach (KeyValuePair<double, double> volumeAskByPriceLevel in asksSafeCopy) {
@@ -39,7 +39,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 				base.XlWriter.Put("BUY_VOLUME",		null);
 				base.XlWriter.Put("PRICE",			priceLevel);
 				base.XlWriter.Put("SELL_VOLUME",	volumeAtPrice);
-			    if (serno < asksSafeCopy.Count - 1) base.XlWriter.StartNewRow();
+				if (serno < asksSafeCopy.Count - 1) base.XlWriter.StartNewRow();
 			}
 			//foreach (double priceLevel in levelTwoBids.InnerDictionary.Keys) {
 			foreach (KeyValuePair<double, double> volumeBidForPriceLevel in levelTwoBids.SafeCopy(this, msig)) {

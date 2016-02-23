@@ -600,7 +600,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			this.BrokerQuik.OrderProcessor.UpdateOrderStateByGuidNoPostProcess(KillerGUID, OrderState.KillerSubmitting, trans);
 
 			Trans2Quik.Result r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-			msgSubmitted = msig + r + "    " + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
+			msgSubmitted = msig + r + "	" + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
 			if (r == Trans2Quik.Result.SUCCESS) {
 				orderState = OrderState.KilledPending;
 			} else {
@@ -647,7 +647,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			////quikTransactionsAttemptedLog.Put("KillAll(1/3) KILL_ALL_FUTURES_ORDERS=" + trans);
 			//throw new Exception("NYI");
 			//r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-			//ret += "QuikTerminal(" + this.DllName + "):: " + r + "    " + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
+			//ret += "QuikTerminal(" + this.DllName + "):: " + r + "	" + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
 
 			//transId++;
 			//trans = ""
@@ -661,7 +661,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			//	+ "ACTION=KILL_ALL_STOP_ORDERS;";
 			////quikTransactionsAttemptedLog.Put("KillAll(2/3) KILL_ALL_STOP_ORDERS=" + trans);
 			//r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-			//ret += "QuikTerminal(" + this.DllName + "):: " + r + "    " + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
+			//ret += "QuikTerminal(" + this.DllName + "):: " + r + "	" + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
 
 			//transId++;
 			//trans = ""
@@ -675,7 +675,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			//	+ "ACTION=KILL_ALL_ORDERS;";
 			////quikTransactionsAttemptedLog.Put("KillAll(3/3) KILL_ALL_ORDERS=" + trans);
 			//r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-			//ret += "QuikTerminal(" + this.DllName + "):: " + r + "    " + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
+			//ret += "QuikTerminal(" + this.DllName + "):: " + r + "	" + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
 
 			msgSubmitted = (ret != "") ? ret : null;
 		}

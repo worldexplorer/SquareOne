@@ -68,5 +68,5 @@ namespace Sq1.Adapters.Quik.Streaming {
 			if (this.cbxStartDde.Text == btnTxtMustBe) return;
 				this.cbxStartDde.Text  = btnTxtMustBe;
 		}
-    }
+	}
 }

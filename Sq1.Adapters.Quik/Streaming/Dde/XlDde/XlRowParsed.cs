@@ -31,10 +31,10 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 				//if (value is float) {
 					ret = Convert.ToDouble(value);
 				//} else if (value is double) {
-				//    ret = (double)value;
+				//	ret = (double)value;
 				//} else {
-				//    // slowest?
-				//    Double.TryParse(value.ToString(), out ret);
+				//	// slowest?
+				//	Double.TryParse(value.ToString(), out ret);
 				//}
 			} catch (Exception ex) {
 				string msg = "IS_NOT_DOUBLE[" + value + "] //GetDouble(columnName[" + columnName + "], valueIfNotFound[" + valueIfNotFound + "], popup[" + popup + "])";

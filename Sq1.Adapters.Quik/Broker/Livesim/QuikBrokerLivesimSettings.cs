@@ -43,13 +43,13 @@ namespace Sq1.Adapters.Quik.Broker.Livesim {
 		//[JsonProperty]	public	bool	AdaperDisconnectEnabled;
 
 		public QuikBrokerLivesimSettings(Strategy strategy) : base(strategy) {
-		//    base.Initialize(strategy);
-		//    DelayBeforeFillEnabled = true;
-		//    OrderRejectionEnabled = true;
-		//    PartialFillEnabled = true;
-		//    OutOfOrderFillEnabled = true;
-		//    PriceDeviationForMarketOrdersEnabled = true;
-		//    AdaperDisconnectEnabled = true;
+		//	base.Initialize(strategy);
+		//	DelayBeforeFillEnabled = true;
+		//	OrderRejectionEnabled = true;
+		//	PartialFillEnabled = true;
+		//	OutOfOrderFillEnabled = true;
+		//	PriceDeviationForMarketOrdersEnabled = true;
+		//	AdaperDisconnectEnabled = true;
 		}
 	}
 }

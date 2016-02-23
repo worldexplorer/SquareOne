@@ -49,7 +49,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// NO_SERVER_ISNOT_STARTED_HERE_YET NB adding another DdeConversation into the registered DDE server - is NDDE capable of registering receiving topics on-the-fly?
 			this.DdeBatchSubscriber.TableIndividual_DepthOfMarket_ForSymbolAdd(symbol);
 			this.UpstreamConnectionState = this.UpstreamConnected
-				?    ConnectionState.UpstreamConnected_downstreamSubscribed
+				?	ConnectionState.UpstreamConnected_downstreamSubscribed
 				: ConnectionState.UpstreamDisconnected_downstreamSubscribed;
 		} }
 		public override void UpstreamUnSubscribe(string symbol) { lock (base.SymbolsSubscribedLock) {
@@ -64,7 +64,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			}
 			this.DdeBatchSubscriber.TableIndividual_DepthOfMarket_ForSymbolRemove(symbol);
 			this.UpstreamConnectionState = this.UpstreamConnected
-				?    ConnectionState.UpstreamConnected_downstreamUnsubscribed
+				?	ConnectionState.UpstreamConnected_downstreamUnsubscribed
 				: ConnectionState.UpstreamDisconnected_downstreamUnsubscribed;
 		} }
 		public override bool UpstreamIsSubscribed(string symbol) { lock (base.SymbolsSubscribedLock) {
@@ -87,11 +87,11 @@ namespace Sq1.Adapters.Quik.Streaming {
 				return;
 			}
 			//if (quote.PriceLastDeal == 0) {
-			//    string msg = "skipping pre-market quote since CHARTS will screw up painting price=0;"
-			//        + " quote=[" + quote + "]";
-			//    Assembler.PopupException(msg);
-			//    Assembler.PopupException(new Exception(msg));
-			//    return;
+			//	string msg = "skipping pre-market quote since CHARTS will screw up painting price=0;"
+			//		+ " quote=[" + quote + "]";
+			//	Assembler.PopupException(msg);
+			//	Assembler.PopupException(new Exception(msg));
+			//	return;
 			//}
 			if (string.IsNullOrEmpty(quote.Source)) quote.Source = "Quik.Source_INPRECISE";
 			QuoteQuik quoteQuik = QuoteQuik.SafeUpcast(quote);

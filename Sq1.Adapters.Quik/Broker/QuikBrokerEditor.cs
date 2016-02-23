@@ -69,7 +69,7 @@ namespace Sq1.Adapters.Quik.Broker {
 
 		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => brokerAdapterInstance.BrokerEditorInitialize() will call this
 		public BrokerQuikEditor(BrokerAdapter brokerQuik, IDataSourceEditor dataSourceEditor) : this() {
-		    base.Initialize(brokerQuik, dataSourceEditor);
+			base.Initialize(brokerQuik, dataSourceEditor);
 		}
 		public override void PushBrokerAdapterSettingsToEditor() {
 			this.Account = this.BrokerQuik.AccountAutoPropagate;
@@ -88,5 +88,5 @@ namespace Sq1.Adapters.Quik.Broker {
 			this.BrokerQuik.ReconnectTimeoutMillis = ReconnectTimeoutMillis;
 			//this.editor.QuikClientCode = QuikClientCode;
 		}
-    }
+	}
 }

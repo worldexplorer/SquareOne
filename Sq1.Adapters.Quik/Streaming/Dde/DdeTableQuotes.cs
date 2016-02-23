@@ -26,7 +26,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			// UPSTACK ALREADY_DOES_IT
 			//string msig = " //this[" + this + "].IncomingTableRow_convertToDataStructure_monitoreable(" + row + ")";
 			//foreach (string msg in row.ErrorMessages) {
-			//    Assembler.PopupException(msg + msig, null, false);
+			//	Assembler.PopupException(msg + msig, null, false);
 			//}
 
 			QuoteQuik quikQuote = new QuoteQuik(DateTime.Now);
@@ -58,12 +58,12 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 			double sizeParsed			= row.GetDouble("qty"			, double.NaN);
 			//if (lastQuoteDateTimeForVolume != quikQuote.ServerTime) {
-			//    lastQuoteDateTimeForVolume  = quikQuote.ServerTime;
-			    quikQuote.Size = sizeParsed;
+			//	lastQuoteDateTimeForVolume  = quikQuote.ServerTime;
+				quikQuote.Size = sizeParsed;
 			//} else {
-			//    string msg = "SHOULD_I_DELIVER_THE_DUPLIATE_QUOTE?";
-			//    Assembler.PopupException(msg, null, false);
-			//    return quikQuote;
+			//	string msg = "SHOULD_I_DELIVER_THE_DUPLIATE_QUOTE?";
+			//	Assembler.PopupException(msg, null, false);
+			//	return quikQuote;
 			//}
 			//if (lastQuoteSizeForVolume != sizeParsed) {
 			//	lastQuoteSizeForVolume = sizeParsed;
@@ -94,30 +94,30 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 						+ ".TimeZoneInfo.BaseUtcOffset[" + marketInfo.TimeZoneInfo.BaseUtcOffset + "]";
 				}
 				rowParsed.AddOrReplace("_ServerTime", ret);
-			    rowParsed.ErrorMessages.Add(errmsg + msig);
+				rowParsed.ErrorMessages.Add(errmsg + msig);
 				return;
 			}
 
 			string dateTimeReceived = dateReceived + " " + timeReceived;
 
 			try {
-			    ret = DateTime.Parse(dateTimeReceived);
+				ret = DateTime.Parse(dateTimeReceived);
 				rowParsed.AddOrReplace("_ServerTime", ret);
 				return;		// if not Parse()d fromAnyFormat then it'll throw and I'll continue with ParseExact()
 			} catch (Exception ex) {
-			    errmsg = "TROWN_DateTime.Parse(" + dateTimeReceived + "): " + ex.Message;
-			    rowParsed.ErrorMessages.Add(errmsg + msig);
+				errmsg = "TROWN_DateTime.Parse(" + dateTimeReceived + "): " + ex.Message;
+				rowParsed.ErrorMessages.Add(errmsg + msig);
 			}
 
 			string dateFormat = base.ColumnDefinitionsByNameLookup["TRADE_DATE_CODE"]	.ToDateParseFormat;
 			string timeFormat = base.ColumnDefinitionsByNameLookup["time"]				.ToTimeParseFormat;
 			string dateTimeFormat = dateFormat + " " + timeFormat;
 			try {
-			    ret = DateTime.ParseExact(dateTimeReceived, dateTimeFormat, CultureInfo.InvariantCulture);
+				ret = DateTime.ParseExact(dateTimeReceived, dateTimeFormat, CultureInfo.InvariantCulture);
 				rowParsed.AddOrReplace("_ServerTime", ret);
 			} catch (Exception ex) {
-			    errmsg = "TROWN_DateTime.ParseExact(" + dateTimeReceived + ", " + dateTimeFormat + "): " + ex.Message;
-			    rowParsed.ErrorMessages.Add(errmsg + msig);
+				errmsg = "TROWN_DateTime.ParseExact(" + dateTimeReceived + ", " + dateTimeFormat + "): " + ex.Message;
+				rowParsed.ErrorMessages.Add(errmsg + msig);
 			}
 		}
 

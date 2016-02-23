@@ -150,8 +150,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			this.ColumnClonesFoundByIndex.Clear();
 			foreach (XlColumn col in this.ColumnDefinitions) {
 				col.IndexFound = -1;
-                if (col.Mandatory == false) continue;
-                mandatoriesNotFound.Add(col);
+				if (col.Mandatory == false) continue;
+				mandatoriesNotFound.Add(col);
 			}
 
 			for (int colSerno = 0; colSerno < reader.ColumnsCount; colSerno++) {
@@ -240,24 +240,24 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 					continue;
 				}
 
-                object valueReceived = reader.ValueJustRead;
+				object valueReceived = reader.ValueJustRead;
 				if (valueReceived == null) {
 					string errmsg3 = "MUST_NOT_BE_NULL reader.ValueJustRead[" + reader.ValueJustRead + "] BlockType[" + reader.BlockType + "] FOR xlCol[" + xlCol.Name + "]";
 					Assembler.PopupException(errmsg3);
 				} else {
-				    if (reader.BlockType != xlCol.TypeExpected) {
-                        if (xlCol.TypeExpected == XlBlockType.Float && reader.BlockType == XlBlockType.String) {
-                            string valueReceivedAsString = valueReceived.ToString();
-                            float parsedAsFloat = float.NaN;
-                            float.TryParse(valueReceivedAsString, out parsedAsFloat);
-                            valueReceived = parsedAsFloat;
-                        } else {
-					        string errmsg3 = "AUTOCONVERT_UNAVAILABLE_FOR: GOT[" + reader.BlockType + "] INSTEAD_OF TypeExpected[" + xlCol.TypeExpected + "] FOR xlCol[" + xlCol.Name + "]";
-					        Assembler.PopupException(errmsg3, null, false);
-					        //continue;
-                        }
-				    }
-                }
+					if (reader.BlockType != xlCol.TypeExpected) {
+						if (xlCol.TypeExpected == XlBlockType.Float && reader.BlockType == XlBlockType.String) {
+							string valueReceivedAsString = valueReceived.ToString();
+							float parsedAsFloat = float.NaN;
+							float.TryParse(valueReceivedAsString, out parsedAsFloat);
+							valueReceived = parsedAsFloat;
+						} else {
+							string errmsg3 = "AUTOCONVERT_UNAVAILABLE_FOR: GOT[" + reader.BlockType + "] INSTEAD_OF TypeExpected[" + xlCol.TypeExpected + "] FOR xlCol[" + xlCol.Name + "]";
+							Assembler.PopupException(errmsg3, null, false);
+							//continue;
+						}
+					}
+				}
 
 				rowParsed.Add_popupIfDuplicate(xlCol.Name, valueReceived);
 			}

@@ -69,8 +69,8 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 
 		internal void Populate_grpStatuses() {
 			//if (this.quikStreaming.ToString().Contains("")) {
-			//    string msg = "TAKE_QUIK_STREAMING_FROM_DATASOURCE_NOT_A_DUMMY";
-			//    //Assembler.PopupException(msg);
+			//	string msg = "TAKE_QUIK_STREAMING_FROM_DATASOURCE_NOT_A_DUMMY";
+			//	//Assembler.PopupException(msg);
 			//}
 			this.grpQuotes.Text = this.quikStreaming.DdeBatchSubscriber.TableQuotes.ToString();
 			this.grpDom.Text	= this.quikStreaming.DdeBatchSubscriber.DomGroupboxTitle;

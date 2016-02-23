@@ -20,7 +20,7 @@ using Sq1.Adapters.Quik;
 namespace Sq1.Adapters.Quik.Streaming.Livesim {
 	[SkipInstantiationAt(Startup = true)]		// overriding LivesimStreaming's TRUE to have QuikStreamingLivesim appear in DataSourceEditor
 	public sealed partial class QuikStreamingLivesim : LivesimStreaming {
-		// reasonToExist =    "1) use LivesimForm as control "
+		// reasonToExist =	"1) use LivesimForm as control "
 		//					+ "2) instantiate QuikStreaming and make it run its DDE server "
 		//					+ "3) push quotes generated using DDE client";
 
@@ -58,8 +58,8 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			// disabled comparing to base.InitializeLivesim()
 			//LevelTwoGeneratorLivesim levelTwoGeneratorLivesim = this.LevelTwoGenerator as LevelTwoGeneratorLivesim;
 			//if (levelTwoGeneratorLivesim == null) {
-			//    string msg = "WHERE_AM_I? NPE_GUARANTEED";
-			//    Assembler.PopupException(msg);
+			//	string msg = "WHERE_AM_I? NPE_GUARANTEED";
+			//	Assembler.PopupException(msg);
 			//}
 			//levelTwoGeneratorLivesim.InitializeLevelTwo(symbolLivesimming);
 		}
@@ -98,8 +98,8 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			// 2) StreamingAdapter(base).PushQuoteGenerated(): StreamingDataSnapshot.LastQuoteCloneSetForSymbol(quote);
 			//		but QuikStreamingLivesim doesnt invoke base.PushQuoteGenerated(quote) because it shoots the quote to DDE and doesnt deal with Distributor
 			//if (this.StreamingDataSnapshot != null) {
-			//    string msg1 = "MUST_BE_NULL__ONLY_INITIALIZED_FOR_MarketLive_FOR_A_LIVESIM_SESSION__OTHERWIZE_MUST_BE_NULL";
-			//    Assembler.PopupException(msg1);
+			//	string msg1 = "MUST_BE_NULL__ONLY_INITIALIZED_FOR_MarketLive_FOR_A_LIVESIM_SESSION__OTHERWIZE_MUST_BE_NULL";
+			//	Assembler.PopupException(msg1);
 			//}
 			//NOT_USED_IN_LIVESIM_SINCE_NO_PUSH_QUOTE_INVOKED this.StreamingDataSnapshot = this.QuikStreamingOriginal.StreamingDataSnapshot;
 

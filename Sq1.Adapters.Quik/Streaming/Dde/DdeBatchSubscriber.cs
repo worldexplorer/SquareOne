@@ -116,8 +116,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 		// EXPECT_NPE_AFTER_YOU_INVOKED_IT
 		//public void Tables_CommonForAllSymbols_Remove() {
-		//    this.quikStreamingAdapter.DdeServer.TableRemove(this.TableQuotes.Topic);	// and they are going to GarbageCollector?... only because user renamed one symbol?...
-		//    this.quikStreamingAdapter.DdeServer.TableRemove(this.TableTrades.Topic);
+		//	this.quikStreamingAdapter.DdeServer.TableRemove(this.TableQuotes.Topic);	// and they are going to GarbageCollector?... only because user renamed one symbol?...
+		//	this.quikStreamingAdapter.DdeServer.TableRemove(this.TableTrades.Topic);
 		//}
 
 		internal void AllDdeMessagesReceivedCounter_reset() {
