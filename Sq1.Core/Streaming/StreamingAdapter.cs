@@ -352,11 +352,20 @@ namespace Sq1.Core.Streaming {
 					+ " StreamingAdapter.PushQuoteReceived() " + this.ToString();
 				Assembler.PopupException(msg + msig, ex);
 			}
+
+
 			try {
-				this.DataDistributor_replacedForLivesim.PushQuoteToDistributionChannels(quote);
+				this.DataDistributor_replacedForLivesim				.PushQuoteToDistributionChannels(quote);
 			} catch (Exception ex) {
-				string msg = "SOME_CONSUMERS_SOME_SCALEINTERVALS_FAILED_INSIDE"
+				string msg = "CHART_OR_STRATEGY__FAILED_INSIDE"
 					+ " DataDistributor.PushQuoteToDistributionChannels(" + quote + ")";
+				Assembler.PopupException(msg + msig, ex);
+			}
+			try {
+				this.DataDistributorSolidifiers_replacedForLivesim	.PushQuoteToDistributionChannels(quote);
+			} catch (Exception ex) {
+				string msg = "SOLIDIFIER__FAILED_INSIDE"
+					+ " DataDistributorSolidifiers.PushQuoteToDistributionChannels(" + quote + ")";
 				Assembler.PopupException(msg + msig, ex);
 			}
 		}

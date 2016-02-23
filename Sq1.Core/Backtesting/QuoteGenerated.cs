@@ -1,10 +1,10 @@
 ﻿using System;
-
-using Sq1.Core.DataTypes;
 using System.Text;
 
+using Sq1.Core.DataTypes;
+
 namespace Sq1.Core.Backtesting {
-	public class QuoteGenerated : Quote {
+	public sealed class QuoteGenerated : Quote {
 		public Bar			ParentBarSimulated;
 		public bool			HasParentBarSimulated			{ get { return this.ParentBarSimulated != null; } }
 		public new string	ParentBarIdent					{ get { return (this.HasParentBarSimulated) ? this.ParentBarSimulated.ParentBarsIdent : "NO_PARENT_BAR_SIMULATED"; } }

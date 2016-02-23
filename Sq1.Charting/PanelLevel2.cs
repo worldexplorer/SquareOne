@@ -214,15 +214,22 @@ namespace Sq1.Charting {
 			if (stripeHeightWillContainMeasuredText) {
 				int howManyAskPriceLevelsWillFit = (int) Math.Round(quoteAskYoffsetted / (double)pxPerPriceStep_Height);
 				int howManyBidPriceLevelsWillFit = (int) Math.Round((base.ClientRectangle.Height - quoteBidYofsetted) / (double)pxPerPriceStep_Height);
-
+				// they are not equal because of the height of the DomControl; spread is not accounted so I leave some space for the spread by trimming a longer moustache
 				int depthFittingToDisplayedHeight = Math.Min(howManyBidPriceLevelsWillFit, howManyAskPriceLevelsWillFit);
-				bool requestingLongerMoustaches =
-					depthFittingToDisplayedHeight >= asks_sortedCachedForOnePaint.Count &&
-					depthFittingToDisplayedHeight >= bids_sortedCachedForOnePaint.Count;
-
-				if (requestingLongerMoustaches == false) {
-					asks_sortedCachedForOnePaint = asks_sortedCachedForOnePaint.Clone_noDeeperThan(depthFittingToDisplayedHeight);
-					bids_sortedCachedForOnePaint = bids_sortedCachedForOnePaint.Clone_noDeeperThan(depthFittingToDisplayedHeight);
+				//v1
+				//bool requestingLongerMoustachesThanIhave =
+				//    depthFittingToDisplayedHeight >= asks_sortedCachedForOnePaint.Count ||
+				//    depthFittingToDisplayedHeight >= bids_sortedCachedForOnePaint.Count;
+				//if (requestingLongerMoustachesThanIhave == false) {
+				//    asks_sortedCachedForOnePaint = asks_sortedCachedForOnePaint.Clone_noDeeperThan(depthFittingToDisplayedHeight);
+				//    bids_sortedCachedForOnePaint = bids_sortedCachedForOnePaint.Clone_noDeeperThan(depthFittingToDisplayedHeight);
+				//}
+				//v2 cut moustaches separately
+				if (howManyAskPriceLevelsWillFit < depthFittingToDisplayedHeight) {
+				    asks_sortedCachedForOnePaint = asks_sortedCachedForOnePaint.Clone_noDeeperThan(howManyAskPriceLevelsWillFit);
+				}
+				if (howManyBidPriceLevelsWillFit < depthFittingToDisplayedHeight) {
+				    bids_sortedCachedForOnePaint = bids_sortedCachedForOnePaint.Clone_noDeeperThan(howManyBidPriceLevelsWillFit);
 				}
 			}
 

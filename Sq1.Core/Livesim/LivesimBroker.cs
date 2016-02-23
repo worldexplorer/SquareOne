@@ -16,7 +16,7 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Livesim {
 	// I_WANT_LIVESIM_STREAMING_BROKER_BE_AUTOASSIGNED_AND_VISIBLE_IN_DATASOURCE_EDITOR [SkipInstantiationAt(Startup = true)]
-	public abstract  partial class LivesimBroker : BacktestBroker, IDisposable {
+	public abstract partial class LivesimBroker : BacktestBroker, IDisposable {
 		[JsonIgnore]	public		List<Order>					OrdersSubmittedForOneLivesimBacktest	{ get; private set; }
 		[JsonIgnore]	protected	LivesimDataSource			LivesimDataSource						{ get { return base.DataSource as LivesimDataSource; } }
 		[JsonIgnore]	internal	LivesimBrokerSettings		LivesimBrokerSettings					{ get { return this.LivesimDataSource.Executor.Strategy.LivesimBrokerSettings; } }
