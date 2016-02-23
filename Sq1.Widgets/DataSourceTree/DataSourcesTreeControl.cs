@@ -299,17 +299,17 @@ namespace Sq1.Widgets.DataSourcesTree {
 			int indexFoundForSelectObject = this.OlvTree.VirtualListDataSource.GetObjectIndex(chartControl);
 
 			//if (indexFoundForSelectObject == -1) {
-			//    //Sq1.Core.DataSource has to notify Sq1.Widgets.DataSourcesTreeControl about a new chart added;
-			//    //I'm lazy to loop it through JsonRepository like OnDataSourceAdded / OnSymbolAdded
-			//    //so I'm just rebuilding the list making this.OlvTree.ChildrenGetter to DataSource.ChartsOpenForSymbol.FindContentsOf__nullUnsafe(symbol)
-			//    //var model = this.OlvTree.TreeModel;
-			//    this.OlvTree.RebuildAll(true);		// without Rebuild, OlvTree.SelectObject(chartControl) will also find index=-1
-			//    this.OlvTree.Expand(chartControl.SymbolOfDataSource);
-			//    this.OlvTree.Expand(chartControl);
-			//    this.OlvTree.EnsureModelVisible(chartControl);
-			//    indexFoundForSelectObject = this.OlvTree.VirtualListDataSource.GetObjectIndex(chartControl);
-			//    //var model2 = this.OlvTree.TreeModel;
-			//    //var lvi = this.OlvTree.ModelToItem(chartControl);
+			//	//Sq1.Core.DataSource has to notify Sq1.Widgets.DataSourcesTreeControl about a new chart added;
+			//	//I'm lazy to loop it through JsonRepository like OnDataSourceAdded / OnSymbolAdded
+			//	//so I'm just rebuilding the list making this.OlvTree.ChildrenGetter to DataSource.ChartsOpenForSymbol.FindContentsOf__nullUnsafe(symbol)
+			//	//var model = this.OlvTree.TreeModel;
+			//	this.OlvTree.RebuildAll(true);		// without Rebuild, OlvTree.SelectObject(chartControl) will also find index=-1
+			//	this.OlvTree.Expand(chartControl.SymbolOfDataSource);
+			//	this.OlvTree.Expand(chartControl);
+			//	this.OlvTree.EnsureModelVisible(chartControl);
+			//	indexFoundForSelectObject = this.OlvTree.VirtualListDataSource.GetObjectIndex(chartControl);
+			//	//var model2 = this.OlvTree.TreeModel;
+			//	//var lvi = this.OlvTree.ModelToItem(chartControl);
 			//}
 
 			//MUST_BE_HERE_ALL_3_LINES__WILL_100%_EXPAND
@@ -332,11 +332,11 @@ namespace Sq1.Widgets.DataSourcesTree {
 			//HideSelection=FALSE FIXED_IT_NOW_STAYS_SELECTED
 
 			//if (this.OlvTree.SelectedIndex == -1) {
-			//    string msg = "TRY_HARDER#1";
+			//	string msg = "TRY_HARDER#1";
 			//}
 			//object selectedObject = this.OlvTree.GetSelectedObject();
 			//if (selectedObject != chartControl) {
-			//    string msg = "TRY_HARDER#2";
+			//	string msg = "TRY_HARDER#2";
 			//}
 		}
 	}

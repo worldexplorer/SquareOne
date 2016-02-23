@@ -136,7 +136,7 @@ namespace Sq1.Widgets.Exceptions {
 			//I_WANTED_TO_CATCH_DockContent.AutoHiddenShownByMouseOver(),AutoHiddenNowDocked_BUT_GOT_WINFORMS_GARBAGE__WILL_USE_IT_THOUGH
 			//DockContentImproved parentAsDockContentImproved = this.parentAsDockContentImproved_nullUnsafe;
 			//if (parentAsDockContentImproved != null) {
-			//    if (parentAsDockContentImproved.IsCoveredOrAutoHidden) return;
+			//	if (parentAsDockContentImproved.IsCoveredOrAutoHidden) return;
 			//}
 			////if (base.Visible == false) return; 
 			string msg = "I_WAS_NOT_FLUSHING_TO_GUI_UNLESS_VISIBLE";

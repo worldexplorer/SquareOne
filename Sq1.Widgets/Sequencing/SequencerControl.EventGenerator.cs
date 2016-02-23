@@ -52,7 +52,7 @@ namespace Sq1.Widgets.Sequencing {
 				var eventArg = new SequencedBacktestsEventArgs(deserialized);
 				this.OnCorrelatorShouldPopulate(this, eventArg);
 			} catch (Exception ex) {
-                Assembler.PopupException("RaiseOnCorrelatorShouldOpen(" + deserialized.FileName + ":" + deserialized.Count + "deserialized)", ex);
+				Assembler.PopupException("RaiseOnCorrelatorShouldOpen(" + deserialized.FileName + ":" + deserialized.Count + "deserialized)", ex);
 			} finally {
 				this.olvBacktests.UseWaitCursor = false;
 			}

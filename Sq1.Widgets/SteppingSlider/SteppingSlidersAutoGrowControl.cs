@@ -76,19 +76,19 @@ namespace Sq1.Widgets.SteppingSlider {
 				//v1
 				//Dictionary<string, IndicatorParameter> parametersByName = this.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;	// dont make me calculate it twice 
 				//foreach (string indicatorNameDotParameterName in parametersByName.Keys) {																// #1
-				//    IndicatorParameter parameter = parametersByName[indicatorNameDotParameterName];														// #2
-				//    parameter.IndicatorName = indicatorNameDotParameterName.Substring(0, indicatorNameDotParameterName.IndexOf('.'));
-				//    SliderComboControl slider = this.SliderComboFactory(parameter, indicatorNameDotParameterName);
-				//    base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
+				//	IndicatorParameter parameter = parametersByName[indicatorNameDotParameterName];														// #2
+				//	parameter.IndicatorName = indicatorNameDotParameterName.Substring(0, indicatorNameDotParameterName.IndexOf('.'));
+				//	SliderComboControl slider = this.SliderComboFactory(parameter, indicatorNameDotParameterName);
+				//	base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
 				//}
 				//foreach (ScriptParameter parameter in this.Strategy.ScriptContextCurrent.ScriptParametersById.Values) {
-				//    SliderComboControl slider = this.SliderComboFactory(parameter);
-				//    base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
-				//    string mustBeMe = slider.Parent.ToString();
-				//    if (mustBeMe != this.ToString()) {
-				//        System.Diagnostics.Debugger.Break();
-				//        string msg = "WHO_THEN???";
-				//    }
+				//	SliderComboControl slider = this.SliderComboFactory(parameter);
+				//	base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
+				//	string mustBeMe = slider.Parent.ToString();
+				//	if (mustBeMe != this.ToString()) {
+				//		System.Diagnostics.Debugger.Break();
+				//		string msg = "WHO_THEN???";
+				//	}
 				//}
 
 				//v2

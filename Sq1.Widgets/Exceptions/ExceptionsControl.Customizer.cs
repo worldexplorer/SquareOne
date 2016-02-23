@@ -37,20 +37,20 @@ namespace Sq1.Widgets.Exceptions {
 }
 
 			//this.olvcTime.AspectGetter = delegate(object o) {
-			//    var ex = o as Exception;
-			//    if (ex == null) return o.ToString();
-			//    string messageOrNameOrTime = "";
-			//    // this.DataSnapshot is null when ExceptionsForm is used outside Sq1.Gui / MainForm / Assembler lifecycle
-			//    bool showTime = this.DataSnapshot != null ? this.DataSnapshot.TreeShowExceptionTime : true;
-			//    if (showTime) {
-			//        if (this.ExceptionTimes.ContainsKey(ex)) {
-			//            DateTime exTime = this.ExceptionTimes[ex];
-			//            messageOrNameOrTime = exTime.ToString(Assembler.DateTimeFormatLong);
-			//        } else {
-			//            messageOrNameOrTime = ex.GetType().Name;
-			//        }
-			//        messageOrNameOrTime += " | ";
-			//    }
-			//    messageOrNameOrTime += ex.Message;
-			//    return messageOrNameOrTime;
+			//	var ex = o as Exception;
+			//	if (ex == null) return o.ToString();
+			//	string messageOrNameOrTime = "";
+			//	// this.DataSnapshot is null when ExceptionsForm is used outside Sq1.Gui / MainForm / Assembler lifecycle
+			//	bool showTime = this.DataSnapshot != null ? this.DataSnapshot.TreeShowExceptionTime : true;
+			//	if (showTime) {
+			//		if (this.ExceptionTimes.ContainsKey(ex)) {
+			//			DateTime exTime = this.ExceptionTimes[ex];
+			//			messageOrNameOrTime = exTime.ToString(Assembler.DateTimeFormatLong);
+			//		} else {
+			//			messageOrNameOrTime = ex.GetType().Name;
+			//		}
+			//		messageOrNameOrTime += " | ";
+			//	}
+			//	messageOrNameOrTime += ex.Message;
+			//	return messageOrNameOrTime;
 			//};

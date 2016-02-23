@@ -106,14 +106,14 @@ namespace Sq1.Widgets.Sequencing {
 				, Path.Combine("Sequencer", this.sequencer.Executor.Strategy.RelPathAndNameForSequencerResults));
 
 			//public bool Initialize(string rootPath, string relFname,
-			//        string subfolder = "Workspaces", string workspaceName = "Default",
-			//        bool createNonExistingPath = true, bool createNonExistingFile = true) {
+			//		string subfolder = "Workspaces", string workspaceName = "Default",
+			//		bool createNonExistingPath = true, bool createNonExistingFile = true) {
 			//v1
 			// C:\SquareOne\Data-debug\Sequencer\Sq1.Strategies.Demo.dll\TwoMAsCompiled\SequencerDataSnapshot.json <== WRONG_KOZ_WILL_BE_LISTED_AS_SEQUENCED_BACKTEST
 			//this.sequencerDataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath, "SequencerDataSnapshot.json"
-			//    , "Sequencer"
-			//    , sequencer.Executor.Strategy.RelPathAndNameForSequencerResults	// WRONG_KOZ_WILL_BE_LISTED_AS_SEQUENCED_BACKTEST
-			//    );
+			//	, "Sequencer"
+			//	, sequencer.Executor.Strategy.RelPathAndNameForSequencerResults	// WRONG_KOZ_WILL_BE_LISTED_AS_SEQUENCED_BACKTEST
+			//	);
 			//v2
 			// C:\SquareOne\Data-debug\Sequencer\Sq1.Strategies.Demo.dll\TwoMAsCompiled.json
 			this.sequencerDataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath, sequencer.Executor.Strategy.StoredInJsonRelName
@@ -296,8 +296,8 @@ namespace Sq1.Widgets.Sequencing {
 			this.heightExpanded = splitterDistanceForTwoLines + inAdditionToTwo;
 			
 			//if (allParameterLinesToDraw <= 3) {
-			//    this.splitContainer1.SplitterDistance = splitterDistanceForTwoLines;
-			//    return;
+			//	this.splitContainer1.SplitterDistance = splitterDistanceForTwoLines;
+			//	return;
 			//}
 			//v1 this.statsAndHistoryExpand();
 			this.cbxExpanded.Checked = true;

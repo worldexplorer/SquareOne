@@ -74,15 +74,15 @@ namespace Sq1.Widgets {
 
 		//public	DockPanel	DockPanel { get; private set; }
 		//public new void Show(DockPanel dockPanelPassed) {
-		//    this.DockPanel = dockPanelPassed;
-		//    base.Show(this.DockPanel);
+		//	this.DockPanel = dockPanelPassed;
+		//	base.Show(this.DockPanel);
 		//}
 
 		public void ShowAsDocumentTabNotPane(DockPanel dockPanel) {
 			//v1 NOT_MOVING_TO_DOCUMENT_ON_RESTART
 			//if (this.IsShown) {
-			//    //this.ActivateDockContentPopupAutoHidden(false, true);
-			//    return;
+			//	//this.ActivateDockContentPopupAutoHidden(false, true);
+			//	return;
 			//}
 			if (this.IsShown && this.IsInDocumentArea) {
 				this.Activate();

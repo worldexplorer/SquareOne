@@ -61,12 +61,12 @@ namespace Sq1.Widgets.Correlation {
 				//int scanFirstLimit = 200;
 				//string symbolFound = null;
 				//foreach (SystemPerformanceRestoreAble firstScanned in this.sequencedOriginal.Backtests) {
-				//    if (string.IsNullOrEmpty(firstScanned.Symbol) == false) {
-				//        symbolFound = firstScanned.Symbol;
-				//    }
-				//    this.PriceFormat = firstScanned.PriceFormat;
-				//    if (string.IsNullOrEmpty(this.PriceFormat) == false) break;
-				//    if (++i >= scanFirstLimit) break;
+				//	if (string.IsNullOrEmpty(firstScanned.Symbol) == false) {
+				//		symbolFound = firstScanned.Symbol;
+				//	}
+				//	this.PriceFormat = firstScanned.PriceFormat;
+				//	if (string.IsNullOrEmpty(this.PriceFormat) == false) break;
+				//	if (++i >= scanFirstLimit) break;
 				//}
 				string symbolFound = this.sequencedOriginal.Symbol;
 				if (string.IsNullOrEmpty(symbolFound)) {
@@ -114,7 +114,7 @@ namespace Sq1.Widgets.Correlation {
 
 			this.PriceFormat = iUpdatedPriceFormat.PriceFormat;
 			foreach (OneParameterControl eachControl in this.allParameterControlsOpen.Values) {
-			    eachControl.OlvRebuildColumns();
+				eachControl.OlvRebuildColumns();
 			}
 		}
 

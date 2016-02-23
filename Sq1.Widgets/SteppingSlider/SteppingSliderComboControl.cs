@@ -143,8 +143,8 @@ namespace Sq1.Widgets.SteppingSlider {
 
 		//[Browsable(true)]	// this is for the Designer, but all its properties are tunneled explicitly via properties here
 		//public PanelFillSlider InnerPanelFillSlider {
-		//    get { return this.PanelFillSlider; }
-		//    set { this.PanelFillSlider = value; }
+		//	get { return this.PanelFillSlider; }
+		//	set { this.PanelFillSlider = value; }
 		//}
 
 		[Browsable(true)]

@@ -91,7 +91,7 @@ namespace Sq1.Widgets {
 				if (this.Scheduled) return;
 				this.Scheduled = true;		// ignore too frequent without waiting for GUI thread to kick in
 				this.guiInvoker.BeginInvoke((MethodInvoker)this.reschedule);
-			    return;
+				return;
 			}
 
 			this.Scheduled = true;	// if we were invoked from GUI thread

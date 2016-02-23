@@ -135,7 +135,7 @@ namespace Sq1.Widgets.SteppingSlider {
 					return;
 				} else {
 					//if (this.Strategy.ScriptContextsByName.ContainsKey(mniOpening.Text)) {
-					//    ctx = this.Strategy.ScriptContextsByName[mniOpening.Text];
+					//	ctx = this.Strategy.ScriptContextsByName[mniOpening.Text];
 					//}
 					this.mniltbScriptContextRenameTo	.TextRight = ctx.SpreadModelerPercent.ToString() + " %";
 					this.mniltbScriptContextDuplicateTo	.TextRight = ctx.SpreadModelerPercent.ToString() + " %";

@@ -19,31 +19,31 @@ namespace Sq1.Widgets.ToolStripImproved {
 		}
 		//[Browsable(true)]
 		//public Size DomainUpDownMaximumSize {
-		//    get { return this.DomainUpDownWithMouseEvents.MaximumSize; }
-		//    set { this.DomainUpDownWithMouseEvents.MaximumSize = value; }
+		//	get { return this.DomainUpDownWithMouseEvents.MaximumSize; }
+		//	set { this.DomainUpDownWithMouseEvents.MaximumSize = value; }
 		//}
 		//[Browsable(true)]
 		//public Size DomainUpDownSize {
-		//    get { return this.DomainUpDownWithMouseEvents.Size; }
-		//    set { this.DomainUpDownWithMouseEvents.Size = value; }
+		//	get { return this.DomainUpDownWithMouseEvents.Size; }
+		//	set { this.DomainUpDownWithMouseEvents.Size = value; }
 		//}
 		//[Browsable(true)]
 		//public Point DomainUpDownLocation {
-		//    get { return this.DomainUpDownWithMouseEvents.Location; }
-		//    set { this.DomainUpDownWithMouseEvents.Location = value; }
+		//	get { return this.DomainUpDownWithMouseEvents.Location; }
+		//	set { this.DomainUpDownWithMouseEvents.Location = value; }
 		//}
 
 		//int offsetTop = 0;
 		//[Browsable(true)]
 		//public int OffsetTop {
-		//    get { return this.offsetTop; }
-		//    set {
-		//        this.offsetTop = value;
-		//        this.DomainUpDownWithMouseEvents.Location = new Point(this.DomainUpDownWithMouseEvents.Location.X, this.DomainUpDownWithMouseEvents.Location.Y + value);
-		//        this.DomainUpDownWithMouseEvents.Size = new Size(this.DomainUpDownWithMouseEvents.Size.Width, this.DomainUpDownWithMouseEvents.Size.Height - value);
-		//        //this.DomainUpDownWithMouseEvents.MaximumSize = new Size(this.DomainUpDownWithMouseEvents.MaximumSize.Width, this.DomainUpDownWithMouseEvents.MaximumSize.Height - value);
-		//        this.DomainUpDownWithMouseEvents.PreferredSize = this.DomainUpDownWithMouseEvents.PreferredHeight - value;
-		//    }
+		//	get { return this.offsetTop; }
+		//	set {
+		//		this.offsetTop = value;
+		//		this.DomainUpDownWithMouseEvents.Location = new Point(this.DomainUpDownWithMouseEvents.Location.X, this.DomainUpDownWithMouseEvents.Location.Y + value);
+		//		this.DomainUpDownWithMouseEvents.Size = new Size(this.DomainUpDownWithMouseEvents.Size.Width, this.DomainUpDownWithMouseEvents.Size.Height - value);
+		//		//this.DomainUpDownWithMouseEvents.MaximumSize = new Size(this.DomainUpDownWithMouseEvents.MaximumSize.Width, this.DomainUpDownWithMouseEvents.MaximumSize.Height - value);
+		//		this.DomainUpDownWithMouseEvents.PreferredSize = this.DomainUpDownWithMouseEvents.PreferredHeight - value;
+		//	}
 		//}
 
 		public ToolStripItemNumericUpDownWithMouseEvents() : base(new NumericUpDownWithMouseEvents()) {
@@ -68,8 +68,8 @@ namespace Sq1.Widgets.ToolStripImproved {
 		
 		//[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		//public string Text {
-		//    get { return this.TextBox.Text; }
-		//    set { this.TextBox.Text = value; }
+		//	get { return this.TextBox.Text; }
+		//	set { this.TextBox.Text = value; }
 		//}
 	}
 }
