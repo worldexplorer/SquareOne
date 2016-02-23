@@ -86,10 +86,10 @@ namespace Sq1.Gui.Forms {
 				//DataDistributor			hopefullyLiveStreaming		= this.chartFormManager.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim;
 				//bool chartMustBeSubscribedToNewBars = contextChart.DownstreamSubscribed;
 				//if (chartMustBeSubscribedToNewBars) {
-				//    BarScaleInterval		scaleInterval_beforeChange	= contextChart.ScaleInterval;
-				//    //bool barsUnsubscribed	= hopefullyLiveStreaming.ConsumerBarUnsubscribe		(symbol_beforeChange, scaleInterval_beforeChange, amIsubscribed);
-				//    //bool quotesUnsubscribed = hopefullyLiveStreaming.ConsumerQuoteUnsubscribe	(symbol_beforeChange, scaleInterval_beforeChange, amIsubscribed);
-				//    amIsubscribed.StreamingUnsubscribe(reasonToSubscribeUnsubscribe);
+				//	BarScaleInterval		scaleInterval_beforeChange	= contextChart.ScaleInterval;
+				//	//bool barsUnsubscribed	= hopefullyLiveStreaming.ConsumerBarUnsubscribe		(symbol_beforeChange, scaleInterval_beforeChange, amIsubscribed);
+				//	//bool quotesUnsubscribed = hopefullyLiveStreaming.ConsumerQuoteUnsubscribe	(symbol_beforeChange, scaleInterval_beforeChange, amIsubscribed);
+				//	amIsubscribed.StreamingUnsubscribe(reasonToSubscribeUnsubscribe);
 				//}
 				#endregion
 				
@@ -99,11 +99,11 @@ namespace Sq1.Gui.Forms {
 
 				#region subscribed strategies are not allowed to swap the horses; chartsWithoutStrategies are updated by Bars.OnBarStreamingUpdatedMerged
 				//if (chartMustBeSubscribedToNewBars) {
-				//    string					symbol_afterChange			= contextChart.Symbol;
-				//    BarScaleInterval		scaleInterval_afterChange	= contextChart.ScaleInterval;
-				//    //bool barsSubscribed		= hopefullyLiveStreaming.ConsumerBarSubscribe	(symbol_afterChange, scaleInterval_afterChange, amIsubscribed, true);
-				//    //bool quotesSubscribed	= hopefullyLiveStreaming.ConsumerQuoteSubscribe	(symbol_afterChange, scaleInterval_afterChange, amIsubscribed, true);
-				//    amIsubscribed.StreamingSubscribe(reasonToSubscribeUnsubscribe);
+				//	string					symbol_afterChange			= contextChart.Symbol;
+				//	BarScaleInterval		scaleInterval_afterChange	= contextChart.ScaleInterval;
+				//	//bool barsSubscribed		= hopefullyLiveStreaming.ConsumerBarSubscribe	(symbol_afterChange, scaleInterval_afterChange, amIsubscribed, true);
+				//	//bool quotesSubscribed	= hopefullyLiveStreaming.ConsumerQuoteSubscribe	(symbol_afterChange, scaleInterval_afterChange, amIsubscribed, true);
+				//	amIsubscribed.StreamingSubscribe(reasonToSubscribeUnsubscribe);
 				//}
 				#endregion
 
@@ -139,15 +139,15 @@ namespace Sq1.Gui.Forms {
 				if (this.chartFormManager.SequencerForm.IsShown) this.chartFormManager.SequencerFormShow(true);
 			}
 
-            //if (this.chartFormManager.CorrelatorForm == null) {
-            if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.CorrelatorForm) == true) {
-                string msg = "don't even try to access CorrelatorConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
-                //Assembler.PopupException(msg, null, false);
-            } else {
-                if (this.chartFormManager.CorrelatorForm.IsShown) this.chartFormManager.CorrelatorFormShow(true);
-            }
+			//if (this.chartFormManager.CorrelatorForm == null) {
+			if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.CorrelatorForm) == true) {
+				string msg = "don't even try to access CorrelatorConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
+				//Assembler.PopupException(msg, null, false);
+			} else {
+				if (this.chartFormManager.CorrelatorForm.IsShown) this.chartFormManager.CorrelatorFormShow(true);
+			}
 
-            //if (this.chartFormManager.LivesimForm == null) {
+			//if (this.chartFormManager.LivesimForm == null) {
 			if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.LivesimForm) == true) {
 				string msg = "don't even try to access LivesimConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
 				//Assembler.PopupException(msg, null, false);

@@ -31,8 +31,8 @@ namespace Sq1.Gui.Forms {
 		}
 
 		// INVOKED_AFTER_DOCKCONTENT.DESERIALIZE_FROM_XML
-        internal void Initialize(ChartFormManager chartFormsManagerPassed) {
-            if (chartFormsManagerPassed == null) {
+		internal void Initialize(ChartFormManager chartFormsManagerPassed) {
+			if (chartFormsManagerPassed == null) {
 				string msg = "USE_DIFFERENT_VAR_NAME__DONT_PASS_CHART_FORMS_MANAGER=NULL:WindowTitlePullFromStrategy()_WILL_THROW";
 				Assembler.PopupException(msg);
 			}
@@ -63,7 +63,7 @@ namespace Sq1.Gui.Forms {
 				string windowTitle = "Correlator :: " + this.chartFormsManager.WhoImServing_moveMeToExecutor;
 				//if (this.chartFormsManager.Strategy.ActivatedFromDll == true) windowTitle += "-DLL";
 				//if (this.chartFormsManager.ScriptEditedNeedsSaving) {
-				//    windowTitle = ChartFormsManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
+				//	windowTitle = ChartFormsManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
 				//}
 				this.Text = windowTitle;
 			} catch (Exception ex) {
@@ -79,14 +79,14 @@ namespace Sq1.Gui.Forms {
 			//MOVED_INTO_Initialize()
 			//// UNSUBSCRIBE_FIRST__JUST_IN_CASE
 			//this.chartFormsManager.Executor.Correlator
-			//    .OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
-			//        -= new EventHandler<SequencedBacktestsEventArgs>(
-			//            correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
+			//	.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
+			//		-= new EventHandler<SequencedBacktestsEventArgs>(
+			//			correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
 
 			//this.chartFormsManager.Executor.Correlator
-			//    .OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
-			//        += new EventHandler<SequencedBacktestsEventArgs>(
-			//            correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
+			//	.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
+			//		+= new EventHandler<SequencedBacktestsEventArgs>(
+			//			correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
 
 			if (originalSequencedBacktests.Count == 0) return;
 
@@ -96,15 +96,15 @@ namespace Sq1.Gui.Forms {
 				, originalSequencedBacktests.SymbolScaleIntervalDataRange);
 			//v2 COULDNT_SET_SUBSET_PERCENTAGE
 			//Task letGuiDraw = new Task(delegate() {
-			//    this.CorrelatorControl.Initialize(originalSequencedBacktests
-			//        , this.chartFormsManager.Executor.Strategy.RelPathAndNameForSequencerResults
-			//        , originalSequencedBacktests.FileName);
-			//    // WAS_ALREADY_INVOKED??? this.chartFormsManager.Executor.Correlator
-			//    //	.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
+			//	this.CorrelatorControl.Initialize(originalSequencedBacktests
+			//		, this.chartFormsManager.Executor.Strategy.RelPathAndNameForSequencerResults
+			//		, originalSequencedBacktests.FileName);
+			//	// WAS_ALREADY_INVOKED??? this.chartFormsManager.Executor.Correlator
+			//	//	.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
 			//});
 			//letGuiDraw.ContinueWith(delegate {
-			//    string msg = "TASK_THREW";
-			//    Assembler.PopupException(msg + msig, letGuiDraw.Exception);
+			//	string msg = "TASK_THREW";
+			//	Assembler.PopupException(msg + msig, letGuiDraw.Exception);
 			//}, TaskContinuationOptions.OnlyOnFaulted);
 			//letGuiDraw.Start();
 

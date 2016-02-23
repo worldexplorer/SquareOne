@@ -448,8 +448,8 @@ namespace Sq1.Gui.Forms {
 			
 			//v2: I closed opened the app while streaming from StreamingMock and I want it streaming after app restart!!!
 			//if (context.DownstreamSubscribed && context.StreamingIsTriggeringScript && saveStrategyRequired == true) {	// saveStrategyRequired=true for all user-clicked GUI events
-			//    string msg = "I_SWITCHED_QUOTE_GENERATOR_DURING_LIVESIM I_REFUSE_TO_STOP_STREAMING__DISABLE_GUI_CONTROLS_THAT_TRIGGER_RELOADING_BARS";
-			//    Assembler.PopupException(msg + msig, null, false);
+			//	string msg = "I_SWITCHED_QUOTE_GENERATOR_DURING_LIVESIM I_REFUSE_TO_STOP_STREAMING__DISABLE_GUI_CONTROLS_THAT_TRIGGER_RELOADING_BARS";
+			//	Assembler.PopupException(msg + msig, null, false);
 			//}
 			
 			if (context.ScaleInterval.Scale == BarScale.Unknown) {
@@ -786,11 +786,11 @@ namespace Sq1.Gui.Forms {
 				SequencerControl sequencerControl = this.SequencerFormConditionalInstance.SequencerControl;
 				//v2 MOVED_TO_BacktestsReplaceWithCorrelated()
 				//if (sequencerControl.ShowOnlyCorrelatorChosenBacktests) {
-				//    CorrelatorControl correlatorControl = this.CorrelatorFormConditionalInstance.CorrelatorControl;
-				//    SequencedBacktests chosenOnly = correlatorControl.Correlator.SequencedBacktestsOriginalMinusParameterValuesUnchosen;
-				//    sequencerControl.BacktestsReplaceWithCorrelated(chosenOnly.BacktestsReadonly);
+				//	CorrelatorControl correlatorControl = this.CorrelatorFormConditionalInstance.CorrelatorControl;
+				//	SequencedBacktests chosenOnly = correlatorControl.Correlator.SequencedBacktestsOriginalMinusParameterValuesUnchosen;
+				//	sequencerControl.BacktestsReplaceWithCorrelated(chosenOnly.BacktestsReadonly);
 				//} else {
-				//    sequencerControl.BacktestsShowAll_regardlessWhatIsChosenInCorrelator();
+				//	sequencerControl.BacktestsShowAll_regardlessWhatIsChosenInCorrelator();
 				//}
 				CorrelatorControl correlatorControl = this.CorrelatorFormConditionalInstance.CorrelatorControl;
 				if (correlatorControl.Correlator.SequencedBacktestOriginal != null) {
