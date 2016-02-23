@@ -27,6 +27,12 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 			this.QuikStreamingMonitorControl.Initialize(this.quikStreaming, this.StopwatchRarifyingUIupdates);
 		}
 
+		//internal void RaiseOnDdeMonitorClosing(object sender, FormClosingEventArgs e) {
+		//    foreach (XlDdeTableMonitoreable<LevelTwo> eachLevel2 in this.Level2BySymbol.Values) {
+		//        TODO eachLevel2.Form(sender, e);
+		//    }
+		//}
+
 		void quikStreaming_OnConnectionStateChanged(object sender, EventArgs e) {
 			this.populateWindowTitle_grpStatuses();
 		}

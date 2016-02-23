@@ -59,13 +59,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 
 		[JsonIgnore]	private	QuikStreamingMonitorForm monitorForm;
 		[JsonIgnore]	public	QuikStreamingMonitorForm MonitorForm { get {
-				if (this.monitorForm == null) {
+				if (this.monitorForm == null || this.monitorForm.IsDisposed) {
 					this.monitorForm = new QuikStreamingMonitorForm(this);
-					//this.monitorForm.FormClosed += delegate(object sender, FormClosedEventArgs e) {
-					this.monitorForm.FormClosing += delegate(object sender, FormClosingEventArgs e) {
-						this.DdeBatchSubscriber.RaiseOnDdeMonitorClosing(sender, e);
-						this.monitorForm = null;
-					};
 				}
 				return this.monitorForm;
 			} }

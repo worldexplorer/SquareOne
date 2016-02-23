@@ -12,46 +12,6 @@ using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Streaming.Monitor {
 	public partial class QuikLevel2Control {
-		protected override void OnLoad(EventArgs e) {
-		//protected override void  OnControlAdded(ControlEventArgs e) {
-			try {
-				this.ddeTableDepth.OnDataStructureParsed_One			+= new EventHandler<XlDdeTableMonitoringEventArg<LevelTwo>>			(ddeTableDepth_OnDataStructureParsed_One);
-				this.ddeTableDepth.OnDataStructuresParsed_Table			+= new EventHandler<XlDdeTableMonitoringEventArg<List<LevelTwo>>>	(ddeTableDepth_OnDataStructuresParsed_Table_butAlwaysOneElementInList);
-				this.ddeTableDepth.QuikStreaming.OnConnectionStateChanged += new EventHandler<EventArgs>(this.quikStreaming_OnConnectionStateChanged);
-				base.OnLoad(e);
-				//base.OnControlAdded(e);
-
-				base.PopulateLevel2ToTitle();
-
-				if (this.ddeTableDepth.QuikStreaming.DdeMonitorPopupOnRestart) return;	// we are deserializing => popping up => no need to set the flag I'm to complying to
-				this.ddeTableDepth.QuikStreaming.DdeMonitorPopupOnRestart = true;
-				this.ddeTableDepth.QuikStreaming.DataSourceEditor.SerializeDataSource_saveAdapters();
-			} catch (Exception ex) {
-				string msg = "IS_DATASOURCE_EDITOR_NULL? this.quikStreaming.DataSourceEditor[" + this.ddeTableDepth.QuikStreaming.DataSourceEditor + "] //QuikLevel2Control.OnControlAdded()";
-				Assembler.PopupException(msg, ex);
-			}
-		}
-		public void OnFormClosing(FormClosingEventArgs e) {
-		//protected override void OnFormClosing(FormClosingEventArgs e) {
-		//protected override void OnControlRemoved(ControlEventArgs e) {
-			try {
-				//base.OnFormClosing(e);
-				//base.OnControlRemoved(e);
-				this.ddeTableDepth.QuikStreaming.OnConnectionStateChanged	-= new EventHandler<EventArgs>(this.quikStreaming_OnConnectionStateChanged);
-				this.ddeTableDepth.OnDataStructureParsed_One				-= new EventHandler<XlDdeTableMonitoringEventArg<LevelTwo>>			(ddeTableDepth_OnDataStructureParsed_One);
-				this.ddeTableDepth.OnDataStructuresParsed_Table				-= new EventHandler<XlDdeTableMonitoringEventArg<List<LevelTwo>>>	(ddeTableDepth_OnDataStructuresParsed_Table_butAlwaysOneElementInList);
-
-				if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;	// I closed the app, but user didn't click the Monitor and wants it be restored on appRestart
-				if (this.ddeTableDepth.QuikStreaming.DdeMonitorPopupOnRestart == false) return;
-				this.ddeTableDepth.QuikStreaming.DdeMonitorPopupOnRestart = false;
-				this.ddeTableDepth.QuikStreaming.DataSourceEditor.SerializeDataSource_saveAdapters();
-			} catch (Exception ex) {
-				string msg = "IS_DATASOURCE_EDITOR_NULL? this.quikStreaming.DataSourceEditor[" + this.ddeTableDepth.QuikStreaming.DataSourceEditor + "] //QuikLevel2Control.OnControlRemoved()";
-				Assembler.PopupException(msg, ex);
-			}
-		}
-
-
 		// copypaste from pushing DdeBatchSubscriber.EventConsumer
 		void ddeTableDepth_OnDataStructuresParsed_Table_butAlwaysOneElementInList(object sender, XlDdeTableMonitoringEventArg<List<LevelTwo>> alwaysJustOneDom) {
 			string msig = " //level2_OnDataStructuresParsed_Table_butAlwaysOneElementInList(" + sender + ")";
@@ -103,6 +63,7 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		}
 
 		void quikStreaming_OnConnectionStateChanged(object sender, EventArgs e) {
+			// doesn't print anything related to state of the streaming; prints "NEVER CONNECTED" or "RECEIVING" (which might get "DISCONNECTED" now)
 			base.PopulateLevel2ToTitle(this.ddeTableDepth.ToString());
 		}
 	}

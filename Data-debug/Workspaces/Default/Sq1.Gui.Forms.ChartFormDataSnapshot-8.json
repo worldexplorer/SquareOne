@@ -40,14 +40,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 44
+        "PanelHeight": 124
       },
       "PanelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 50,
+        "Distance": 130,
         "SplitterHeight": 6,
-        "PanelHeight": 148
+        "PanelHeight": 418
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -57,14 +57,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 64
+        "PanelHeight": 169
       },
       "multiSplitRowsVolumePrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 70,
+        "Distance": 175,
         "SplitterHeight": 6,
-        "PanelHeight": 128
+        "PanelHeight": 337
       }
     },
     "Name": "Default",

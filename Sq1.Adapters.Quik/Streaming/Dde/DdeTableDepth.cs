@@ -22,8 +22,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			this.symbol = symbol;
 			this.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(symbol);
 
-			this.levelTwoAsks = base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks_getForSymbol(this.symbol);
-			this.levelTwoBids = base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids_getForSymbol(this.symbol);
+			this.levelTwoAsks = base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks_getForSymbol_nullUnsafe(this.symbol);
+			this.levelTwoBids = base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids_getForSymbol_nullUnsafe(this.symbol);
 
 			if (this.levelTwoBids != null && this.levelTwoAsks != null) {
 				this.levelTwoProxy = new LevelTwo(this.levelTwoBids, this.levelTwoAsks, this.SymbolInfo);

@@ -63,7 +63,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			this.quikStreamingAdapter.DdeServer.TableRemove(ddeTableLevel2removing_asDdeTableDepth.Topic);
 
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
-			this.quikStreamingAdapter.MonitorForm.QuikStreamingMonitorControl.DomUserControl_deleteFor(ddeTableLevel2removing_asDdeTableDepth);
+			//this.quikStreamingAdapter.MonitorForm.QuikStreamingMonitorControl.domUserControls_deleteAll(ddeTableLevel2removing_asDdeTableDepth);
 			//WILL_IT_USE_ManualResetEvent(s)? level2.Dispose();
 		}
 		public bool SymbolIsSubscribedForLevel2(string symbol) {

@@ -26,7 +26,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 			bool readyToAccept = this.tablesByTopic.ContainsKey(topic);
 			if (readyToAccept == false) {
 				string msg = "QUIK_REQUESTS_TO_ACCEPT_TOPIC_IM_NOT_SUBSCRIBED_TO";
-				Assembler.PopupException(msg + msig, null, false);
+				Assembler.PopupException(msg + msig);
 			}
 			return readyToAccept;
 		}

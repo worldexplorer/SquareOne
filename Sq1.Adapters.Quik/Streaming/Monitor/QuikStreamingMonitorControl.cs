@@ -2,8 +2,10 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 using Sq1.Core;
+
 using Sq1.Widgets;
 using Sq1.Widgets.Level2;
 
@@ -13,6 +15,19 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 	public partial class QuikStreamingMonitorControl : UserControl {
 		QuikStreaming quikStreaming;
 
+		List<QuikLevel2Control> allQuikLevel2 { get {
+			List<QuikLevel2Control> ret = new List<QuikLevel2Control>();
+			foreach (UserControl mustBeQuikLevel2 in this.flpDoms.Controls) {
+				QuikLevel2Control quikLevel2 = mustBeQuikLevel2 as QuikLevel2Control;
+				if (quikLevel2 == null) {
+					string msg = "MUST_CONTAIN_ONLY_QuikLevel2Controls_WHILE_ONE_OF_flpDoms.Controls_IS " + mustBeQuikLevel2 + "]";
+					Assembler.PopupException(msg);
+					continue;
+				}
+			}
+			return ret;
+		} }
+
 		public QuikStreamingMonitorControl() {
 			InitializeComponent();
 			this.olvQuotesCustomize();
@@ -20,51 +35,33 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 
 		internal void Initialize(QuikStreaming quikStreamingPassed, Stopwatch stopwatchRarifyingUIupdates_passed) {
 			this.quikStreaming = quikStreamingPassed;
-
-			this.flpDoms.Controls.Clear();
-			foreach (DdeTableDepth eachDom in this.quikStreaming.DdeBatchSubscriber.Level2BySymbol.Values) {
-				//this.DomUserControl_createAddFor(eachDom);
-				QuikLevel2Control level2userControl = new QuikLevel2Control(eachDom, stopwatchRarifyingUIupdates_passed);
-				this.flpDoms.Controls.Add(level2userControl);
-			}
+			//this.flpDoms.Controls.Clear();
+			this.domUserControls_deleteAll();
+			this.domUserControls_createForEach_monitoreableLevelTwo(stopwatchRarifyingUIupdates_passed);
 		}
 
-		//internal void DomUserControl_createAddFor(DdeTableDepth tableLevel2) {
-		//	string msig = " //DomUserControl_createAddFor(" + tableLevel2.ToString() + ")";
-		//	DockContentImproved ddeMonitorForm = this.Parent as DockContentImproved;
-		//	if (ddeMonitorForm == null) {
-		//		string msg = "I_NEED_THE_UPPER_LEVEL_FORM_VISIBILITY_TO_NOT_TO_REPAINT_IF_FORM_IS_MINIMIZED_OR_NOT_SHOWN";
-		//		Assembler.PopupException(msg + msig);
-		//	}
-		//	QuikLevel2 level2userControl = new QuikLevel2(tableLevel2, ddeMonitorForm);
-		//	level2userControl.Initialize(this.quikStreaming, tableLevel2.SymbolInfo, tableLevel2.ToString(), ddeMonitorForm);
-		//	tableLevel2.UserControlMonitoringMe = level2userControl;
-		//	this.flpDoms.Controls.Add(level2userControl);
-		//}
-		internal void DomUserControl_deleteFor(DdeTableDepth tableLevel2) {
+		void domUserControls_createForEach_monitoreableLevelTwo(Stopwatch stopwatchRarifyingUIupdates_passed) {
+			foreach (DdeTableDepth eachDom in this.quikStreaming.DdeBatchSubscriber.Level2BySymbol.Values) {
+				QuikLevel2Control quikLevel2 = new QuikLevel2Control(eachDom, stopwatchRarifyingUIupdates_passed);
+				quikLevel2.MyTableDepth_subscribe();
+				this.flpDoms.Controls.Add(quikLevel2);
+			}
+		}
+		void domUserControls_deleteAll() {
 			if (base.InvokeRequired) {
-			   //at System.Windows.Forms.Control.get_Handle()
-			   //at System.Windows.Forms.Control.SetParentHandle(IntPtr value)
-			   //at System.Windows.Forms.Control.ControlCollection.Remove(Control value)
-			   //at Sq1.Adapters.Quik.Streaming.Monitor.QuikStreamingMonitorControl.DomUserControl_deleteFor(DdeTableDepth tableLevel2)
-			   //at Sq1.Adapters.Quik.Streaming.Dde.DdeBatchSubscriber.TableIndividual_DepthOfMarket_ForSymbolRemove(String symbol)
-			   //at Sq1.Adapters.Quik.Streaming.QuikStreaming.UpstreamUnSubscribe(String symbol)
-			   //at Sq1.Adapters.Quik.Streaming.QuikStreaming.upstreamUnsubscribeAllDataSourceSymbols(Boolean avoidDuplicates_openChartsAlreadyUnsubscribed)
-			   //at Sq1.Adapters.Quik.Streaming.QuikStreaming.UpstreamDisconnect()
-			   //at Sq1.Adapters.Quik.Streaming.Livesim.QuikStreamingLivesim.UpstreamDisconnect_LivesimTerminatedOrAborted()
-			   //at Sq1.Core.Livesim.Livesimulator.SimulationPostBarsRestore_overrideable() in C:\SquareOne\Sq1.Core\Livesim\Livesimulator.cs:line 240
-				base.BeginInvoke((MethodInvoker)delegate() { this.DomUserControl_deleteFor(tableLevel2); });
+				base.BeginInvoke((MethodInvoker)delegate() { this.domUserControls_deleteAll(); });
 				return;
 			}
-
-			string msig = " //DomUserControl_deleteFor(" + tableLevel2 + ")";
-			QuikLevel2Control domResizeable = tableLevel2.UserControlMonitoringMe as QuikLevel2Control;
-			if (domResizeable == null) {
-				string msg = "I_MUST_HAVE_BEEN_QuikLevel2_tableLevel2.WhereIamMonitored[" + tableLevel2.UserControlMonitoringMe + "]";
-				Assembler.PopupException(msg + msig);
-				return;
+			List<QuikLevel2Control> avoidingCollectionModifiedException = allQuikLevel2;
+			foreach (QuikLevel2Control quikLevel2 in avoidingCollectionModifiedException) {
+				quikLevel2.MyTableDepth_unsubscribe();
+				this.flpDoms.Controls.Remove(quikLevel2);
 			}
-			this.flpDoms.Controls.Remove(domResizeable);
+			if (this.flpDoms.Controls.Count > 0) {
+				string msg = "MUST_NEVER_HAPPEN__I_JUST_REMOVED_QUIK_LEVEL2S_ONE_BY_ONE";
+				Assembler.PopupException(msg);
+				this.flpDoms.Controls.Clear();
+			}
 		}
 
 		internal void Populate_grpStatuses() {

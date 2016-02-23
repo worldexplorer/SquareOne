@@ -24,7 +24,7 @@
     "DdeMonitorRefreshRateMs": 200,
     "DdeMonitorPopupOnRestart": true,
     "Level2RefreshRateMs": 200,
-    "UpstreamConnectedOnAppRestart": true
+    "UpstreamConnectedOnAppRestart": false
   },
   "BrokerAdapter": {
     "$type": "Sq1.Adapters.Quik.Broker.QuikBroker, Sq1.Adapters.Quik",

@@ -116,7 +116,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			
 			if (order.Alert.QuoteCreatedThisAlert == null) {
 				Quote lastMayNotBeTheCreatorHereHavingNoParentBars = this.StreamingAdapter.StreamingDataSnapshot
-					.LastQuoteClone_getForSymbol(order.Alert.Symbol);
+					.LastQuote_getForSymbol(order.Alert.Symbol);
 				order.Alert.QuoteCreatedThisAlert = lastMayNotBeTheCreatorHereHavingNoParentBars;
 				string msg2 = "AVOIDING_ORDER_MARKED_INCONSISTENT: " + order.Alert.QuoteCreatedThisAlert;
 				Assembler.PopupException(msg2, null, false);

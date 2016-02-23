@@ -46,6 +46,8 @@
 			this.Name = "QuikStreamingMonitorForm";
 			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockRight;
 			this.Text = "QUIK :: MOCK [Sq1-quotes]";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.QuikStreamingMonitorForm_FormClosing);
+			this.Load += new System.EventHandler(this.QuikStreamingMonitorForm_Load);
 			this.ResumeLayout(false);
 
 		}

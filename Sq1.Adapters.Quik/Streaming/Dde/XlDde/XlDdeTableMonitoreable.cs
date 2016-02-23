@@ -21,7 +21,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 		}
 
 		public XlDdeTableMonitoreable(string topic, QuikStreaming quikStreaming, List<XlColumn> columns, bool oneRowUpdates = false)
-			: base(topic, quikStreaming, columns, oneRowUpdates) {
+				: base(topic, quikStreaming, columns, oneRowUpdates) {
 			this.dataStructuresParsed = new List<T>();
 		}
 
