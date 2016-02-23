@@ -67,33 +67,33 @@ namespace Sq1.Core.Broker {
 			bool ret = false;
 #region copypaste from StreamingAdapter
 			//switch (this.UpstreamConnectionState) {
-			//    case ConnectionState.UnknownConnectionState:											ret = false;	break;
-			//    case ConnectionState.JustInitialized_solidifiersUnsubscribed:			ret = false;	break;
-			//    case ConnectionState.JustInitialized_solidifiersSubscribed:				ret = false;	break;
-			//    case ConnectionState.DisconnectedJustConstructed:						ret = false;	break;
+			//	case ConnectionState.UnknownConnectionState:											ret = false;	break;
+			//	case ConnectionState.JustInitialized_solidifiersUnsubscribed:			ret = false;	break;
+			//	case ConnectionState.JustInitialized_solidifiersSubscribed:				ret = false;	break;
+			//	case ConnectionState.DisconnectedJustConstructed:						ret = false;	break;
 
-			//    // used in QuikStreamingAdapter
-			//    case ConnectionState.UpstreamConnected_downstreamUnsubscribed:			ret = true;		break;
-			//    case ConnectionState.UpstreamConnected_downstreamSubscribed:			ret = true;		break;
-			//    case ConnectionState.UpstreamConnected_downstreamSubscribedAll:			ret = true;		break;
-			//    case ConnectionState.UpstreamConnected_downstreamUnsubscribedAll:		ret = true;		break;
-			//    case ConnectionState.UpstreamDisconnected_downstreamSubscribed:			ret = false;	break;
-			//    case ConnectionState.UpstreamDisconnected_downstreamUnsubscribed:		ret = false;	break;
+			//	// used in QuikStreamingAdapter
+			//	case ConnectionState.UpstreamConnected_downstreamUnsubscribed:			ret = true;		break;
+			//	case ConnectionState.UpstreamConnected_downstreamSubscribed:			ret = true;		break;
+			//	case ConnectionState.UpstreamConnected_downstreamSubscribedAll:			ret = true;		break;
+			//	case ConnectionState.UpstreamConnected_downstreamUnsubscribedAll:		ret = true;		break;
+			//	case ConnectionState.UpstreamDisconnected_downstreamSubscribed:			ret = false;	break;
+			//	case ConnectionState.UpstreamDisconnected_downstreamUnsubscribed:		ret = false;	break;
 
-			//    // used in QuikBrokerAdapter
-			//    case ConnectionState.SymbolSubscribed:					ret = true;		break;
-			//    case ConnectionState.SymbolUnsubscribed:				ret = true;		break;
-			//    case ConnectionState.ErrorConnectingNoRetriesAnymore:	ret = false;	break;
+			//	// used in QuikBrokerAdapter
+			//	case ConnectionState.SymbolSubscribed:					ret = true;		break;
+			//	case ConnectionState.SymbolUnsubscribed:				ret = true;		break;
+			//	case ConnectionState.ErrorConnectingNoRetriesAnymore:	ret = false;	break;
 
-			//    // used in QuikLivesimStreaming
+			//	// used in QuikLivesimStreaming
 
-			//    case ConnectionState.ConnectFailed:						ret = false;	break;
-			//    case ConnectionState.DisconnectFailed:					ret = false;	break;		// can still be connected but by saying NotConnected I prevent other attempt to subscribe symbols; use "Connect" button to resolve
+			//	case ConnectionState.ConnectFailed:						ret = false;	break;
+			//	case ConnectionState.DisconnectFailed:					ret = false;	break;		// can still be connected but by saying NotConnected I prevent other attempt to subscribe symbols; use "Connect" button to resolve
 
-			//    default:
-			//        Assembler.PopupException("ADD_HANDLER_FOR_NEW_ENUM_VALUE this.ConnectionState[" + this.UpstreamConnectionState + "]");
-			//        ret = false;
-			//        break;
+			//	default:
+			//		Assembler.PopupException("ADD_HANDLER_FOR_NEW_ENUM_VALUE this.ConnectionState[" + this.UpstreamConnectionState + "]");
+			//		ret = false;
+			//		break;
 			//}
 #endregion
 			return ret;

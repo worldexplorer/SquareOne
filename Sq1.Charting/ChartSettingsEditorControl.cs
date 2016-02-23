@@ -29,7 +29,7 @@ namespace Sq1.Charting {
 			this.chartSettings = chartControlsPassed;	// I_EXPECT_LIST_OF_CHART_FORMS_TO_REMAIN_SAME_INSTANCE__SO_EACH_NEXT_CHART_IS_OPEN_I_JUST_rebuildDropdown()
 			this.RebuildDropdown();
 			//if (this.repositorySerializerSymbolInfo.SymbolInfos.Count > 0) {
-			//    this.Initialize(this.repositorySerializerSymbolInfo.SymbolInfos[0]);
+			//	this.Initialize(this.repositorySerializerSymbolInfo.SymbolInfos[0]);
 			//}
 		}
 

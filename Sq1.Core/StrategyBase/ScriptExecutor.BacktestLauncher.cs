@@ -25,16 +25,16 @@ namespace Sq1.Core.StrategyBase {
 
 			// will only work for DataSource.Streaming=StreamingLivesimDefault; for quik will throw
 			//if (dataSourceFromBars == null) {
-			//    string msg = "MUST_NEVER_BE_NULL DataSource_fromBars[" + dataSourceFromBars + "]";
-			//    Assembler.PopupException(msg + msig);
-			//    this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
-			//    return;
+			//	string msg = "MUST_NEVER_BE_NULL DataSource_fromBars[" + dataSourceFromBars + "]";
+			//	Assembler.PopupException(msg + msig);
+			//	this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
+			//	return;
 			//}
 			//if (dataSourceFromBars.StreamingAsBacktest_nullUnsafe == null) {
-			//    string msg = "MUST_NEVER_BE_NULL DataSource_fromBars.StreamingAsBacktest_nullUnsafe[" + dataSourceFromBars.StreamingAsBacktest_nullUnsafe + "]";
-			//    Assembler.PopupException(msg + msig);
-			//    this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
-			//    return;
+			//	string msg = "MUST_NEVER_BE_NULL DataSource_fromBars.StreamingAsBacktest_nullUnsafe[" + dataSourceFromBars.StreamingAsBacktest_nullUnsafe + "]";
+			//	Assembler.PopupException(msg + msig);
+			//	this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
+			//	return;
 			//}
 
 			dataSourceFromBars.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(this, barsEmptyButWillGrow);
@@ -60,9 +60,9 @@ namespace Sq1.Core.StrategyBase {
 			}
 			// LEAVE_IT_AS_USER_SELECTED
 			//if (this.preBacktestBars != null) {
-			//    string msg = "NOT_SAVING_IsStreamingTriggeringScript=ON_FOR_BACKTEST"
-			//        + " preBacktestIsStreaming[" + this.preBacktestIsStreaming + "] preBacktestBars[" + this.preBacktestBars + "]";
-			//    //Assembler.PopupException(msg, null, false);
+			//	string msg = "NOT_SAVING_IsStreamingTriggeringScript=ON_FOR_BACKTEST"
+			//		+ " preBacktestIsStreaming[" + this.preBacktestIsStreaming + "] preBacktestBars[" + this.preBacktestBars + "]";
+			//	//Assembler.PopupException(msg, null, false);
 			//}
 			//this.IsStreamingTriggeringScript = true;
 
@@ -90,16 +90,16 @@ namespace Sq1.Core.StrategyBase {
 			DataSource dataSourceFromBars = this.DataSource_fromBars;
 			// will only work for DataSource.Streaming=StreamingLivesimDefault; for quik will throw
 			//if (dataSourceFromBars == null) {
-			//    string msg = "MUST_NEVER_BE_NULL DataSource_fromBars[" + dataSourceFromBars + "]";
-			//    Assembler.PopupException(msg + msig);
-			//    this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
-			//    return;
+			//	string msg = "MUST_NEVER_BE_NULL DataSource_fromBars[" + dataSourceFromBars + "]";
+			//	Assembler.PopupException(msg + msig);
+			//	this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
+			//	return;
 			//}
 			//if (dataSourceFromBars.StreamingAsBacktest_nullUnsafe == null) {
-			//    string msg = "MUST_NEVER_BE_NULL BacktestDataSource_fromBars_nullUnsafe.StreamingAsBacktest_nullUnsafe[" + this.DataSource_fromBars.StreamingAsBacktest_nullUnsafe + "]";
-			//    Assembler.PopupException(msg + msig);
-			//    this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
-			//    return;
+			//	string msg = "MUST_NEVER_BE_NULL BacktestDataSource_fromBars_nullUnsafe.StreamingAsBacktest_nullUnsafe[" + this.DataSource_fromBars.StreamingAsBacktest_nullUnsafe + "]";
+			//	Assembler.PopupException(msg + msig);
+			//	this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
+			//	return;
 			//}
 
 			dataSourceFromBars.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(this);

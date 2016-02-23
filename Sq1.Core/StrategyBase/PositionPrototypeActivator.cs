@@ -293,13 +293,13 @@ namespace Sq1.Core.StrategyBase {
 					//v1 ScriptExecutor trying be too smart
 					//proto.checkOffsetsThrowBeforeAbsorbing(proto.TakeProfitPositiveOffset, newStopLossNegativeOffset, newActivationOffset);
 					//if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
-					//    // NOPE!!! I WANT ALL ALERTS TO STAY IN HISTORY!!! just move SL in Alert, change Prices immediately; no orderKill/newOrder for StopLoss (Alerts don't have OrdersFollowed)
-					//    // PositionPrototypeActivator.checkThrowNewPriceMakesSense() made sure Alert!=null
-					//    // SL_WILL_BE_KILLED proto.StopLossAlertForAnnihilation.PriceScript = proto.OffsetToPrice(newStopLossNegativeOffset);
-					//    // SL_WILL_BE_KILLED proto.StopLossAlertForAnnihilation.PriceStopLimitActivation = proto.OffsetToPrice(newActivationOffset);
-					//    proto.SetNewStopLossOffsets(newStopLossNegativeOffset, newActivationOffset);
-					//    // TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
-					//    executor.BacktesterOrLivesimulator.BacktestDataSource.BrokerAsBacktest_nullUnsafe.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
+					//	// NOPE!!! I WANT ALL ALERTS TO STAY IN HISTORY!!! just move SL in Alert, change Prices immediately; no orderKill/newOrder for StopLoss (Alerts don't have OrdersFollowed)
+					//	// PositionPrototypeActivator.checkThrowNewPriceMakesSense() made sure Alert!=null
+					//	// SL_WILL_BE_KILLED proto.StopLossAlertForAnnihilation.PriceScript = proto.OffsetToPrice(newStopLossNegativeOffset);
+					//	// SL_WILL_BE_KILLED proto.StopLossAlertForAnnihilation.PriceStopLimitActivation = proto.OffsetToPrice(newActivationOffset);
+					//	proto.SetNewStopLossOffsets(newStopLossNegativeOffset, newActivationOffset);
+					//	// TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
+					//	executor.BacktesterOrLivesimulator.BacktestDataSource.BrokerAsBacktest_nullUnsafe.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
 					//} else {
 					//	this.executor.DataSource_fromBars.BrokerAdapter.MoveStopLossOverrideable(proto, newActivationOffset, newStopLossNegativeOffset);
 					//}
@@ -310,11 +310,11 @@ namespace Sq1.Core.StrategyBase {
 				case MarketLimitStop.Stop:
 					//v1 ScriptExecutor trying be too smart
 					//if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
-					//    proto.SetNewStopLossOffsets(newStopLossNegativeOffset, 0);
-					//    // TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
-					//    executor.MarketsimBacktest.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
+					//	proto.SetNewStopLossOffsets(newStopLossNegativeOffset, 0);
+					//	// TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
+					//	executor.MarketsimBacktest.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
 					//} else {
-					//    executor.DataSource_fromBars.BrokerAdapter.MoveStopLossOverrideable(proto, 0, newStopLossNegativeOffset);
+					//	executor.DataSource_fromBars.BrokerAdapter.MoveStopLossOverrideable(proto, 0, newStopLossNegativeOffset);
 					//}
 					//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
 					this.executor.DataSource_fromBars.BrokerAdapter.MoveStopLossOverrideable(proto, 0, newStopLossNegativeOffset);
@@ -342,14 +342,14 @@ namespace Sq1.Core.StrategyBase {
 
 			//v1 ScriptExecutor trying be too smart
 			//if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
-			//    // NOPE!!! I WANT ALL ALERTS TO STAY IN HISTORY!!! just move TP in Alert, change Prices immediately; no orderKill/newOrder for TakeProfit (Alerts don't have OrdersFollowed)
-			//    // PositionPrototypeActivator.checkThrowNewPriceMakesSense() made sure Alert!=null
-			//    // TP_WILL_BE_KILLED proto.TakeProfitAlertForAnnihilation.PriceScript = proto.OffsetToPrice(newTakeProfitPositiveOffset);
-			//    proto.SetNewTakeProfitOffset(newTakeProfitPositiveOffset);
-			//    // TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
-			//    this.executor.MarketsimBacktest.SimulateTakeProfitMoved(proto.TakeProfitAlertForAnnihilation);
+			//	// NOPE!!! I WANT ALL ALERTS TO STAY IN HISTORY!!! just move TP in Alert, change Prices immediately; no orderKill/newOrder for TakeProfit (Alerts don't have OrdersFollowed)
+			//	// PositionPrototypeActivator.checkThrowNewPriceMakesSense() made sure Alert!=null
+			//	// TP_WILL_BE_KILLED proto.TakeProfitAlertForAnnihilation.PriceScript = proto.OffsetToPrice(newTakeProfitPositiveOffset);
+			//	proto.SetNewTakeProfitOffset(newTakeProfitPositiveOffset);
+			//	// TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
+			//	this.executor.MarketsimBacktest.SimulateTakeProfitMoved(proto.TakeProfitAlertForAnnihilation);
 			//} else {
-			//    this.executor.DataSource_fromBars.BrokerAdapter.MoveTakeProfitOverrideable(proto, newTakeProfitPositiveOffset);
+			//	this.executor.DataSource_fromBars.BrokerAdapter.MoveTakeProfitOverrideable(proto, newTakeProfitPositiveOffset);
 			//}
 			//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
 			this.executor.DataSource_fromBars.BrokerAdapter.MoveTakeProfitOverrideable(proto, newTakeProfitPositiveOffset);

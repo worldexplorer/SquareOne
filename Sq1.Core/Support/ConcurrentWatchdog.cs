@@ -203,11 +203,11 @@ namespace Sq1.Core.Support {
 			}
 			//I_ABORT_GUI_THREAD_HERE?!?!???
 			//if (this.unlockedThread != null) {
-			//    try {
-			//        this.unlockedThread.Abort();
-			//    } catch (Exception ex) {
-			//        string msg = "DONT_RE_THROW";
-			//    }
+			//	try {
+			//		this.unlockedThread.Abort();
+			//	} catch (Exception ex) {
+			//		string msg = "DONT_RE_THROW";
+			//	}
 			//}
 			try {
 				this.stopwatchLock.Stop();

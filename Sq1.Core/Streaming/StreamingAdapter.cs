@@ -168,9 +168,9 @@ namespace Sq1.Core.Streaming {
 			//v1
 			//SymbolScaleDistributionChannel channel = this.DataDistributorSolidifiers_replacedForLivesim.GetDistributionChannelFor_nullUnsafe(symbol, this.DataSource.ScaleInterval);
 			//if (channel == null) {
-			//    string msg = "NONSENSE";
-			//    Assembler.PopupException(msg);
-			//    return;
+			//	string msg = "NONSENSE";
+			//	Assembler.PopupException(msg);
+			//	return;
 			//}
 			//channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
 			//MOVED_TO_SetQuotePumpThreadName_unpausePump_sinceNoMoreSubscribersWillFollowFor() channel.QuotePump.PusherUnpause();
@@ -178,11 +178,11 @@ namespace Sq1.Core.Streaming {
 			this.DataDistributorSolidifiers_replacedForLivesim.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(symbol, this.DataSource.ScaleInterval);
 		}
 		//protected virtual void SolidifierAllSymbolsUnsubscribe(bool throwOnAlreadySubscribed = true) {
-		//    List<string> oneSymbolImLivesimming = this.DataSource.Symbols;
-		//    //List<string> oneSymbolImLivesimming = this.LivesimStreaming.DataSource.Symbols;
-		//    foreach (string symbol in oneSymbolImLivesimming) {
-		//        this.SolidifierUnsubscribeOneSymbol_imLivesimming(symbol);
-		//    }
+		//	List<string> oneSymbolImLivesimming = this.DataSource.Symbols;
+		//	//List<string> oneSymbolImLivesimming = this.LivesimStreaming.DataSource.Symbols;
+		//	foreach (string symbol in oneSymbolImLivesimming) {
+		//		this.SolidifierUnsubscribeOneSymbol_imLivesimming(symbol);
+		//	}
 		//}
 
 		//public void SolidifierUnsubscribeOneSymbol_imLivesimming(string symbol = null) {
@@ -254,16 +254,16 @@ namespace Sq1.Core.Streaming {
 			if (this.DataDistributor_replacedForLivesim.DistributionChannels.Count == 0) {
 				this.RaiseOnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange(quote);
 
-			    string msg = "I_REFUSE_TO_PUSH_QUOTE NO_SOLIDIFIER_NOR_CHARTS_SUBSCRIBED";
-			    if (		this.LivesimStreaming_ownImplementation != null
-			             && this.LivesimStreaming_ownImplementation.Livesimulator != null
-			             && this.LivesimStreaming_ownImplementation.Livesimulator.ImRunningLivesim) {
-			        this.LivesimStreaming_ownImplementation.Livesimulator.AbortRunningBacktestWaitAborted(msg, 0);
-			    }
-			    if (this is LivesimStreaming) return;	//already reported "USER_DIDNT_CLICK_CHART>BARS>SUBSCRIBE"
-			    Assembler.PopupException(msg, null, false);
-			    //NO_TOO_MANY_CHANGES_TO_LOOSEN_ALL_CHECKS GO_AND_DO_IT__I_WILL_SEE_ORANGE_BACKGROUNG_IN_DATASOURCE_TREE
-			    return;
+				string msg = "I_REFUSE_TO_PUSH_QUOTE NO_SOLIDIFIER_NOR_CHARTS_SUBSCRIBED";
+				if (		this.LivesimStreaming_ownImplementation != null
+						 && this.LivesimStreaming_ownImplementation.Livesimulator != null
+						 && this.LivesimStreaming_ownImplementation.Livesimulator.ImRunningLivesim) {
+					this.LivesimStreaming_ownImplementation.Livesimulator.AbortRunningBacktestWaitAborted(msg, 0);
+				}
+				if (this is LivesimStreaming) return;	//already reported "USER_DIDNT_CLICK_CHART>BARS>SUBSCRIBE"
+				Assembler.PopupException(msg, null, false);
+				//NO_TOO_MANY_CHANGES_TO_LOOSEN_ALL_CHECKS GO_AND_DO_IT__I_WILL_SEE_ORANGE_BACKGROUNG_IN_DATASOURCE_TREE
+				return;
 			}
 
 			if (quote.ServerTime == DateTime.MinValue) {
@@ -310,7 +310,7 @@ namespace Sq1.Core.Streaming {
 						+ " upcoming quote.LocalTimeCreatedMillis[" + quote.LocalTimeCreated.ToString("HH:mm:ss.fff")
 						+ "] <= lastQuoteReceived.Symbol." + quote.Symbol + "["
 						+ lastQuote.LocalTimeCreated.ToString("HH:mm:ss.fff") + "]: DDE lagged somewhere?...";
-					Assembler.PopupException(msg + msig, null, false);
+					//Assembler.PopupException(msg + msig, null, false);
 				}
 
 				absnoPerSymbolNext = lastQuote.AbsnoPerSymbol + 1;
@@ -352,11 +352,20 @@ namespace Sq1.Core.Streaming {
 					+ " StreamingAdapter.PushQuoteReceived() " + this.ToString();
 				Assembler.PopupException(msg + msig, ex);
 			}
+
+
 			try {
-				this.DataDistributor_replacedForLivesim.PushQuoteToDistributionChannels(quote);
+				this.DataDistributor_replacedForLivesim				.PushQuoteToDistributionChannels(quote);
 			} catch (Exception ex) {
-				string msg = "SOME_CONSUMERS_SOME_SCALEINTERVALS_FAILED_INSIDE"
+				string msg = "CHART_OR_STRATEGY__FAILED_INSIDE"
 					+ " DataDistributor.PushQuoteToDistributionChannels(" + quote + ")";
+				Assembler.PopupException(msg + msig, ex);
+			}
+			try {
+				this.DataDistributorSolidifiers_replacedForLivesim	.PushQuoteToDistributionChannels(quote);
+			} catch (Exception ex) {
+				string msg = "SOLIDIFIER__FAILED_INSIDE"
+					+ " DataDistributorSolidifiers.PushQuoteToDistributionChannels(" + quote + ")";
 				Assembler.PopupException(msg + msig, ex);
 			}
 		}
@@ -501,17 +510,17 @@ namespace Sq1.Core.Streaming {
 
 		internal void UnsubscribeChart(string symbolSafe, BarScaleInterval scaleIntervalSafe, Charting.ChartStreamingConsumer chartStreamingConsumer, string msigForNpExceptions) {
 			if (this.DataDistributor_replacedForLivesim.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, false) == false) {
-			    Assembler.PopupException("CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_QUOTE" + msigForNpExceptions);
+				Assembler.PopupException("CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_QUOTE" + msigForNpExceptions);
 			} else {
-			    //Assembler.PopupException("UnSubscribing QuoteConsumer [" + this + "]  to " + plug + "  (was subscribed)");
-			    this.DataDistributor_replacedForLivesim.ConsumerQuoteUnsubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer);
+				//Assembler.PopupException("UnSubscribing QuoteConsumer [" + this + "]  to " + plug + "  (was subscribed)");
+				this.DataDistributor_replacedForLivesim.ConsumerQuoteUnsubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer);
 			}
 
 			if (this.DataDistributor_replacedForLivesim.ConsumerBarIsSubscribed(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, false) == false) {
-			    Assembler.PopupException("CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_BAR" + msigForNpExceptions);
+				Assembler.PopupException("CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_BAR" + msigForNpExceptions);
 			} else {
-			    //Assembler.PopupException("UnSubscribing BarsConsumer [" + this + "] to " + this.ToString() + " (was subscribed)");
-			    this.DataDistributor_replacedForLivesim.ConsumerBarUnsubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer);
+				//Assembler.PopupException("UnSubscribing BarsConsumer [" + this + "] to " + this.ToString() + " (was subscribed)");
+				this.DataDistributor_replacedForLivesim.ConsumerBarUnsubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer);
 			}
 		}
 		internal void SubscribeChart(string symbolSafe, BarScaleInterval scaleIntervalSafe, Charting.ChartStreamingConsumer chartStreamingConsumer, string msigForNpExceptions) {
@@ -533,17 +542,17 @@ namespace Sq1.Core.Streaming {
 				this.DataDistributor_replacedForLivesim.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, true);
 				//nonsense taken from ChartStreamingConsumer
 				//if (executorSafe.Bars == null) {
-				//    // in Initialize() this.ChartForm is requesting bars in a separate thread
-				//    this.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, true);
+				//	// in Initialize() this.ChartForm is requesting bars in a separate thread
+				//	this.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, true);
 				//} else {
-				//    // fully initialized, after streaming was stopped for a moment and resumed - append into PartialBar
-				//    if (double.IsNaN(streamingBarSafeCloneSafe.Open) == false) {
-				//        //streamingSafe.ConsumerBarRegister(symbolSafe, scaleIntervalSafe, this, streamingBarSafeCloneSafe);
-				//        this.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, true);
-				//    } else {
-				//        //streamingSafe.ConsumerBarRegister(symbolSafe, scaleIntervalSafe, this, lastStaticBarSafe);
-				//        this.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, true);
-				//    }
+				//	// fully initialized, after streaming was stopped for a moment and resumed - append into PartialBar
+				//	if (double.IsNaN(streamingBarSafeCloneSafe.Open) == false) {
+				//		//streamingSafe.ConsumerBarRegister(symbolSafe, scaleIntervalSafe, this, streamingBarSafeCloneSafe);
+				//		this.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, true);
+				//	} else {
+				//		//streamingSafe.ConsumerBarRegister(symbolSafe, scaleIntervalSafe, this, lastStaticBarSafe);
+				//		this.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, true);
+				//	}
 				//}
 			}
 		}

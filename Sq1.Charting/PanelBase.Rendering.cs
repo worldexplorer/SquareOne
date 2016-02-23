@@ -374,8 +374,8 @@ namespace Sq1.Charting {
 			bool candleUp = barYOpenInverted > barYCloseInverted;
 			if (candleUp) {
 				//if (candleUpFillBody == true) {
-				//    string msg = "MUST_BE_FALSE_HER fillDownCandleBody[" + candleUpFillBody + "]";
-				//    Assembler.PopupException(msg + msig);
+				//	string msg = "MUST_BE_FALSE_HER fillDownCandleBody[" + candleUpFillBody + "]";
+				//	Assembler.PopupException(msg + msig);
 				//}
 				candleBodyLower = barYCloseInverted;	// nope it's a black candle (falling price)
 				candleBodyHigher = barYOpenInverted;

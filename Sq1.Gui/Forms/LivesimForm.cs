@@ -68,7 +68,7 @@ namespace Sq1.Gui.Forms {
 			string windowTitle = "LiveSim :: " + this.chartFormManager.WhoImServing_moveMeToExecutor;
 			//if (this.chartFormsManager.Strategy.ActivatedFromDll == true) windowTitle += "-DLL";
 			//if (this.chartFormsManager.ScriptEditedNeedsSaving) {
-			//    windowTitle = ChartFormsManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
+			//	windowTitle = ChartFormsManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
 			//}
 			this.Text = windowTitle;
 		}

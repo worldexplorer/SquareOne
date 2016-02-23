@@ -298,12 +298,12 @@ namespace Sq1.Gui {
 
 					//WILL_NEED_TO_COLLECT_QUOTES_FOR_SYMBOLS_WITHOUT_STREAMING_CHARTS_OPEN
 					//if (cfmgr.DataSnapshot.ContextChart.IsStreaming == true) {
-					//    string msg = "CHART_SUBSCRIBED__BUT_SHOULD_CONNECT_AFTER_BACKTEST";
+					//	string msg = "CHART_SUBSCRIBED__BUT_SHOULD_CONNECT_AFTER_BACKTEST";
 					//} else {
 						//NO!!! will autoconnect once per DataSource, guided by Streaming.UpstreamConnectedOnAppRestart
 						//StreamingAdapter streaming = cfmgr.Executor.DataSource_fromBars.StreamingAdapter;
 						//if (streaming != null && (streaming is LivesimStreaming) == false && streaming.UpstreamConnectionState) {
-						//    streaming.UpstreamConnect();
+						//	streaming.UpstreamConnect();
 						//}
 					//}
 				}
@@ -366,11 +366,11 @@ namespace Sq1.Gui {
 
 				//WRONG_INVOKES_ON_LAYOUT 
 				//if (cfmgr.ChartForm.ClientRectangle.Width != cfmgr.ChartForm.ChartControl.ClientRectangle.Width) {
-				//    string msg = "YOU_FORGOT_TO_INVOKE_cfmgr.ChartForm[" + cfmgr.ChartForm + "].PerformLayout()";
-				//    #if DEBUG_HEAVY
-				//    Assembler.PopupException(msg, null, false);
-				//    #endif
-				//    //WRONG_INVOKES_ON_LAYOUT cfmgr.ChartForm.ChartControl.PerformLayout();
+				//	string msg = "YOU_FORGOT_TO_INVOKE_cfmgr.ChartForm[" + cfmgr.ChartForm + "].PerformLayout()";
+				//	#if DEBUG_HEAVY
+				//	Assembler.PopupException(msg, null, false);
+				//	#endif
+				//	//WRONG_INVOKES_ON_LAYOUT cfmgr.ChartForm.ChartControl.PerformLayout();
 				//}
 
 				if (cfmgr.ChartForm.ClientRectangle.Width != cfmgr.ChartForm.ChartControl.ClientRectangle.Width) {

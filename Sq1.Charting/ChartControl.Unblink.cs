@@ -69,17 +69,17 @@ namespace Sq1.Charting {
 		}
 
 		//public bool ChartIsSubscribed_toOwnNonNullBars_expensiveForEachQuote_useCtxChartDownstreamSubscribed { get {
-		//    bool ret = false;
-		//    if (this.Bars == null) return ret;
-		//    try {
-		//        ret = this.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim.ConsumerQuoteIsSubscribed(
-		//            this.Bars.Symbol, this.Bars.ScaleInterval, this.ChartStreamingConsumer, false);
-		//    } catch (Exception ex) {
-		//        string msg = "1)NYI__CHART_ROW_SHOULD_CHANGE_BACKGROUND_WHEN_NO_CHARTS_DISPLAY_THEM"
-		//            + " 2)YOU_CAN_NOT_SET_BACKGROUND_FOR_BTN_STREAMING_TRIGGERING_FOR_CHARTS_WITHOUT_STRATEGY";
-		//        Assembler.PopupException(msg, ex);
-		//    }
-		//    return ret;
+		//	bool ret = false;
+		//	if (this.Bars == null) return ret;
+		//	try {
+		//		ret = this.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim.ConsumerQuoteIsSubscribed(
+		//			this.Bars.Symbol, this.Bars.ScaleInterval, this.ChartStreamingConsumer, false);
+		//	} catch (Exception ex) {
+		//		string msg = "1)NYI__CHART_ROW_SHOULD_CHANGE_BACKGROUND_WHEN_NO_CHARTS_DISPLAY_THEM"
+		//			+ " 2)YOU_CAN_NOT_SET_BACKGROUND_FOR_BTN_STREAMING_TRIGGERING_FOR_CHARTS_WITHOUT_STRATEGY";
+		//		Assembler.PopupException(msg, ex);
+		//	}
+		//	return ret;
 		//} }
 	}
 }

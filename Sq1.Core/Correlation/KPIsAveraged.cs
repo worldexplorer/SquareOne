@@ -31,11 +31,11 @@ namespace Sq1.Core.Correlation {
 			this.Reset_addKPIs_getMyMembersReady(new List<KPIs>(backtestsWithMyValue.Values));
 		}
 		internal void Reset_addBacktests_getMyMembersReady(List<SystemPerformanceRestoreAble> backtestsWithMyValue) {
-		    List<KPIs> KPIsList = new List<KPIs>();
-		    foreach (SystemPerformanceRestoreAble eachBacktest in backtestsWithMyValue) {
-		        KPIsList.Add(eachBacktest);
-		    }
-		    this.Reset_addKPIs_getMyMembersReady(KPIsList);
+			List<KPIs> KPIsList = new List<KPIs>();
+			foreach (SystemPerformanceRestoreAble eachBacktest in backtestsWithMyValue) {
+				KPIsList.Add(eachBacktest);
+			}
+			this.Reset_addKPIs_getMyMembersReady(KPIsList);
 		}
 		internal void Reset_addKPIs_getMyMembersReady(List<KPIs> backtestsWithMyValue) {
 			this.Reset();

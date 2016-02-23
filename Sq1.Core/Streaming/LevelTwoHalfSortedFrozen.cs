@@ -57,7 +57,7 @@ namespace Sq1.Core.Streaming {
 					sortedFromSpreadToTheEdgeOfMarket_toCalculateLotsCumulative.Insert(0, keyValue);
 				}
 			} else {
-			    sortedFromSpreadToTheEdgeOfMarket_toCalculateLotsCumulative.AddRange(this);
+				sortedFromSpreadToTheEdgeOfMarket_toCalculateLotsCumulative.AddRange(this);
 			}
 
 			double prevLot = 0;

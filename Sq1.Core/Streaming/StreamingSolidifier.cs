@@ -3,6 +3,7 @@
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Streaming {
 	public class StreamingSolidifier : StreamingConsumer {
@@ -50,6 +51,13 @@ namespace Sq1.Core.Streaming {
 		#endregion
 
 		void replaceStreamingBar(Quote quote, bool ignoreIntervalForceReplaceBarImmediately = false) {
+			string msig = " //StreamingSolidifier.replaceStreamingBar(" + quote + ")";
+			if (quote is QuoteGenerated) {
+				string msg2 = "I_REFUSE_TO_STORE_QuoteGenerated_INTO_FILE [" + quote.Symbol + "].bar";
+				Assembler.PopupException(msg2 + msig);
+				return;
+			}
+
 			if (this.barStreamingLastDumpedLocal == DateTime.MinValue) {
 				this.barStreamingLastDumpedLocal = quote.LocalTimeCreated;
 			}
@@ -60,8 +68,8 @@ namespace Sq1.Core.Streaming {
 			string millisElapsed;
 			
 			if (quote.ParentBarStreaming == null) {
-				string msg2 = "STREAMING_SOLIDIFIER_FAILED_TO_STORE_LAST_QUOTE_AT_QUOTE_GENERATOR_STOPPED FIX_quote.ParentBarStreaming=null_HERE";
-				Assembler.PopupException(msg2, null, false);
+				string msg2 = "STREAMING_SOLIDIFIER_FAILED_TO_STORE_LAST_QUOTE FIX_quote.ParentBarStreaming=null_HERE";
+				Assembler.PopupException(msg2 + msig, null, false);
 				return;
 			}
 			
@@ -69,7 +77,7 @@ namespace Sq1.Core.Streaming {
 
 			int barsSaved = this.dataSource.BarAppendOrReplaceLast(quote.ParentBarStreaming, out millisElapsed);
 
-			string msig = " //StreamingSolidifier.replaceStreamingBar(" + quote.ParentBarStreaming.Close + ")";
+			msig = " //StreamingSolidifier.replaceStreamingBar(" + quote.ParentBarStreaming.Close + ")";
 			string msg = millisElapsed
 				+ " quote[" + quote.LocalTimeCreated.ToString("mm:ss.fff") + "]=>[" + this.barStreamingLastDumpedLocal.ToString("mm:ss.fff") + "]"
 				+ " secondsSinceLastDumped[" + secondsSinceLastDumped.ToString("N3") + "] >= dumpInterval[" + this.barStreamingDumpIntervalSeconds + "]";

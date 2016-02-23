@@ -30,10 +30,10 @@ namespace Sq1.Gui.Singletons {
 			//v2 ADDED_anyHasTime_FILTER__SAFE_ENOUGH_TO_SKIP_SOME_SINCE_ENDOFBACKTEST_WILL_RUIBUILD_FULLY  TOO_SLOW
 			//bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = false;
 			//foreach (Order order in e.Orders) {
-			//    if (order.Alert.IsBacktestingLivesimNow_FalseIfNoBacktester == false) break;
-			//    if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) continue;
-			//    safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = true;
-			//    break;
+			//	if (order.Alert.IsBacktestingLivesimNow_FalseIfNoBacktester == false) break;
+			//	if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) continue;
+			//	safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = true;
+			//	break;
 			//}
 			//if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
 
@@ -70,10 +70,10 @@ namespace Sq1.Gui.Singletons {
 
 			//bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = false;
 			//foreach (Order order in e.Orders) {
-			//    if (order.Alert.IsBacktestingLivesimNow_FalseIfNoBacktester == false) break;
-			//    //if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) continue;
-			//    safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = true;
-			//    break;
+			//	if (order.Alert.IsBacktestingLivesimNow_FalseIfNoBacktester == false) break;
+			//	//if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) continue;
+			//	safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = true;
+			//	break;
 			//}
 			//if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
 

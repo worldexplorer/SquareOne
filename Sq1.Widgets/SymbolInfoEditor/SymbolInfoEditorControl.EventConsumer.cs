@@ -74,11 +74,11 @@ namespace Sq1.Widgets.SymbolEditor {
 		}
 
 		//void repositoryJsonDataSource_OnDataSourceRenamed_refreshTitle(object sender, NamedObjectJsonEventArgs<DataSource> e) {
-		//    this.PopulateWithSymbol(e.Item
+		//	this.PopulateWithSymbol(e.Item
 		//}
 		//void repositoryJsonDataSource_OnDataSourceDeleted_closeSymbolInfoEditor(object sender, NamedObjectJsonEventArgs<DataSource> e) {
-		//    if (repositoryJsonDataSource_OnDataSourceDeleted_closeSymbolInfoEditor
-		//    this.ParentForm.Close();
+		//	if (repositoryJsonDataSource_OnDataSourceDeleted_closeSymbolInfoEditor
+		//	this.ParentForm.Close();
 		//}
 		void repositoryJsonDataSource_OnSymbolRenamed_refresh(object sender, DataSourceSymbolRenamedEventArgs e) {
 			string msig = " //repositoryJsonDataSource_OnSymbolRenamed_refresh(" + e.SymbolOld + "=>" + e.Symbol + ")";

@@ -82,11 +82,11 @@ namespace Sq1.Charting {
 		
 		//private TextureBrush bitmapTextureBrush_cached;
 		//public TextureBrush BitmapTextureBrush { get {
-		//        if (bitmapTextureBrush_cached == null && this.Bitmap != null) {
-		//            bitmapTextureBrush_cached = new TextureBrush(this.Bitmap, WrapMode.TileFlipY);	//, this.ClientRectangle
-		//        }
-		//        return bitmapTextureBrush_cached;
-		//    } }
+		//		if (bitmapTextureBrush_cached == null && this.Bitmap != null) {
+		//			bitmapTextureBrush_cached = new TextureBrush(this.Bitmap, WrapMode.TileFlipY);	//, this.ClientRectangle
+		//		}
+		//		return bitmapTextureBrush_cached;
+		//	} }
 		public Rectangle ClientRectangle { get { return new Rectangle(this.Xtransient, this.Ytransient,
 																		(this.bitmap == null) ? 0 : this.Width,
 																		(this.bitmap == null) ? 0 : this.Height); } }

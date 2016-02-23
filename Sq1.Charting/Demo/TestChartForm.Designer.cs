@@ -38,9 +38,9 @@
 			// statusStrip1
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1,
-            this.toolStripProgressBar1,
-            this.toolStripDropDownButton1});
+			this.toolStripStatusLabel1,
+			this.toolStripProgressBar1,
+			this.toolStripDropDownButton1});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 223);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(476, 22);
@@ -62,9 +62,9 @@
 			// toolStripDropDownButton1
 			// 
 			this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.item3ToolStripMenuItem,
-            this.item2ToolStripMenuItem,
-            this.item1ToolStripMenuItem});
+			this.item3ToolStripMenuItem,
+			this.item2ToolStripMenuItem,
+			this.item1ToolStripMenuItem});
 			this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
 			this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";

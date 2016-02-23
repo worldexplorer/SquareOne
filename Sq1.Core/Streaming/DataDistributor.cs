@@ -417,9 +417,9 @@ namespace Sq1.Core.Streaming {
 				return;
 			}
 			if (this.StreamingAdapter.QuotePumpSeparatePushingThreadEnabled) {
-			    channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.UpdateThreadNameAfterMaxConsumersSubscribed = true;
+				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.UpdateThreadNameAfterMaxConsumersSubscribed = true;
 				// SELF_MANAGED_BY_CHANNEL channel.QuoteQueue.PusherUnpause();
-			    channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.SetThreadName();
+				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.SetThreadName();
 			}
 		}
 

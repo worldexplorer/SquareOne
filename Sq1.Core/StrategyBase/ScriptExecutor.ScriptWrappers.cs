@@ -145,10 +145,10 @@ namespace Sq1.Core.StrategyBase {
 			}
 			//v1 ScriptExecutor trying be too smart
 			//if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == true) {
-			//    killed = this.MarketsimBacktest.AnnihilateCounterpartyAlert(alert);
-			//    //killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
+			//	killed = this.MarketsimBacktest.AnnihilateCounterpartyAlert(alert);
+			//	//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
 			//} else {
-			//    killed = this.AlertGenerator.AnnihilateCounterpartyAlert(alert);
+			//	killed = this.AlertGenerator.AnnihilateCounterpartyAlert(alert);
 			//}
 			//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
 			killed = this.DataSource_fromBars.BrokerAdapter.AnnihilateCounterpartyAlert(alert);
@@ -158,9 +158,9 @@ namespace Sq1.Core.StrategyBase {
 			//v1 ScriptExecutor trying be too smart
 			////if (this.Backtester.IsBacktestingNow) {
 			//if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
-			//    this.MarketsimBacktest.SimulateAlertKillPending(alert);
+			//	this.MarketsimBacktest.SimulateAlertKillPending(alert);
 			//} else {
-			//    this.AlertGenerator.AlertKillPending(alert);
+			//	this.AlertGenerator.AlertKillPending(alert);
 			//}
 			//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
 			this.DataSource_fromBars.BrokerAdapter.AlertKillPending(alert);

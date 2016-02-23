@@ -147,10 +147,10 @@ namespace Sq1.Core.Repositories {
 
 		//SNAP_IS_NOT_SERIALIZED_ANYMORE 
 		//internal void ReattachDataSnaphotsToOwnersStreamingAdapters() {
-		//    foreach (DataSource ds in base.ItemsAsList) {
-		//        if (ds.StreamingAdapter == null) continue;
-		//        ds.StreamingAdapter.StreamingDataSnapshot.InitializeWithStreaming(ds.StreamingAdapter);
-		//    }
+		//	foreach (DataSource ds in base.ItemsAsList) {
+		//		if (ds.StreamingAdapter == null) continue;
+		//		ds.StreamingAdapter.StreamingDataSnapshot.InitializeWithStreaming(ds.StreamingAdapter);
+		//	}
 		//}
 	}
 }

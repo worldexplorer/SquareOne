@@ -30,10 +30,10 @@ namespace Sq1.Core.DoubleBuffered {
 		public PanelDoubleBuffered() : base() {
 			Application.ApplicationExit += new EventHandler(disposeAndNullifyToRecreateInPaint);
 			//base.SetStyle( ControlStyles.AllPaintingInWmPaint
-			//             | ControlStyles.OptimizedDoubleBuffer
-			//        //	 | ControlStyles.UserPaint
-			//        //	 | ControlStyles.ResizeRedraw
-			//        , true);
+			//			 | ControlStyles.OptimizedDoubleBuffer
+			//		//	 | ControlStyles.UserPaint
+			//		//	 | ControlStyles.ResizeRedraw
+			//		, true);
 			this.graphicManager = BufferedGraphicsManager.Current;
 		}
 		void initializeBuffer() {

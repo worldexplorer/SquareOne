@@ -414,7 +414,7 @@ namespace Sq1.Core.DataTypes {
 		}
 		// I_HATE_SUCH_INTRANSPARENCY__ALMOST_INTRODUCED_FOR_List<Symbol>__BUT_IMPLEMENTED__MY_WAY_TO_AVOID_OVERRIDING_EQUALS
 		//public override bool Equals(object obj) {
-		//    return this.Symbol == (((SymbolInfo))obj));
+		//	return this.Symbol == (((SymbolInfo))obj));
 		//}
 
 

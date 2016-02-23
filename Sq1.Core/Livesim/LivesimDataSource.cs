@@ -23,8 +23,8 @@ namespace Sq1.Core.Livesim {
 			string msig = " //PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource() [" + this.ToString() + "]";
 			if (this.Executor.DataSource_fromBars.StreamingAdapter.LivesimStreaming_ownImplementation != null) {
 				base.StreamingAdapter = this.Executor.DataSource_fromBars.StreamingAdapter.LivesimStreaming_ownImplementation;
-			    string msg1 = "STREAMING_SUBSTITUTED_FOR_LIVESIM_DATASOURCE";
-			    Assembler.PopupException(msg1 + msig, null, false);
+				string msg1 = "STREAMING_SUBSTITUTED_FOR_LIVESIM_DATASOURCE";
+				Assembler.PopupException(msg1 + msig, null, false);
 			} else {
 				if (base.StreamingAsLivesim_nullUnsafe == null) {
 					if (this.Executor.DataSource_fromBars.StreamingAdapter is LivesimStreamingDefault) {
@@ -49,8 +49,8 @@ namespace Sq1.Core.Livesim {
 			}
 			if (this.Executor.DataSource_fromBars.BrokerAdapter.LivesimBroker_ownImplementation != null) {
 				base.BrokerAdapter = this.Executor.DataSource_fromBars.BrokerAdapter.LivesimBroker_ownImplementation;
-			    string msg1 = "BROKER_SUBSTITUTED_FOR_LIVESIM_DATASOURCE";
-			    Assembler.PopupException(msg1 + msig, null, false);
+				string msg1 = "BROKER_SUBSTITUTED_FOR_LIVESIM_DATASOURCE";
+				Assembler.PopupException(msg1 + msig, null, false);
 			} else {
 				if (this.BrokerAsLivesim_nullUnsafe == null) {
 					if (this.Executor.DataSource_fromBars.BrokerAdapter is LivesimBrokerDefault) {

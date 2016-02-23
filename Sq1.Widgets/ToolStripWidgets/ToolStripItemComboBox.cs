@@ -25,8 +25,8 @@ namespace Sq1.Widgets.ToolStripImproved {
 		}
 		//[Browsable(true)]
 		//public Size ComboBoxMinimumSize {
-		//    get { return this.ComboBox.MinimumSize; }
-		//    set { this.ComboBox.MinimumSize = value; }
+		//	get { return this.ComboBox.MinimumSize; }
+		//	set { this.ComboBox.MinimumSize = value; }
 		//}
 		[Browsable(true)]
 		public Size ComboBoxSize {
@@ -40,33 +40,33 @@ namespace Sq1.Widgets.ToolStripImproved {
 		}
 		[Browsable(true)]
 		public bool ComboBoxSorted {
-		    get { return this.ComboBox.Sorted; }
-		    set { this.ComboBox.Sorted = value; }
+			get { return this.ComboBox.Sorted; }
+			set { this.ComboBox.Sorted = value; }
 		}
 		[Browsable(true)]
 		[Editor("System.Windows.Forms.Design.ListControlStringCollectionEditor, System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
 		public ComboBox.ObjectCollection ComboBoxItems {
-		    get { return this.ComboBox.Items; }
+			get { return this.ComboBox.Items; }
 		}
 
 		[Browsable(true)]
 		public int ComboBoxSelectedIndex {
-		    get { return this.ComboBox.SelectedIndex; }
-		    set { this.ComboBox.SelectedIndex = value; }
+			get { return this.ComboBox.SelectedIndex; }
+			set { this.ComboBox.SelectedIndex = value; }
 		}
 
 		//int offsetTop = 0;
 		//[Browsable(true)]
 		//public int OffsetTop {
-		//    get { return this.offsetTop; }
-		//    set {
-		//        this.offsetTop = value;
-		//        //this.ComboBox.Location = new Point(this.ComboBox.Location.X, this.ComboBox.Location.Y + value);
-		//        //this.ComboBox.Size = new Size(this.ComboBox.Size.Width, this.ComboBox.Size.Height - value);
-		//        //this.ComboBox.ItemHeight = this.ComboBox.ItemHeight - value;
-		//        this.ComboBox.PreferredSize = this.ComboBox.PreferredHeight - value;
-		//    }
+		//	get { return this.offsetTop; }
+		//	set {
+		//		this.offsetTop = value;
+		//		//this.ComboBox.Location = new Point(this.ComboBox.Location.X, this.ComboBox.Location.Y + value);
+		//		//this.ComboBox.Size = new Size(this.ComboBox.Size.Width, this.ComboBox.Size.Height - value);
+		//		//this.ComboBox.ItemHeight = this.ComboBox.ItemHeight - value;
+		//		this.ComboBox.PreferredSize = this.ComboBox.PreferredHeight - value;
+		//	}
 		//}
 		
 
@@ -78,39 +78,39 @@ namespace Sq1.Widgets.ToolStripImproved {
 		}
 
 		void comboBox_DropDown(object sender, EventArgs e) {
-		    this.raiseDropDown();
+			this.raiseDropDown();
 		}
 		public event EventHandler<EventArgs> ComboBoxDropDown;
 		void raiseDropDown() {
-		    if (this.ComboBoxDropDown == null) return;
-		    try {	// downstack backtest throwing won't crash Release (Debug will halt) 
-		        this.ComboBoxDropDown(this, EventArgs.Empty);
-		    } catch (Exception ex) {
-		        Assembler.PopupException(null, ex);
-		    }
+			if (this.ComboBoxDropDown == null) return;
+			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
+				this.ComboBoxDropDown(this, EventArgs.Empty);
+			} catch (Exception ex) {
+				Assembler.PopupException(null, ex);
+			}
 		}
 
 
 		void comboBox_SelectedIndexChanged(object sender, EventArgs e) {
-		    this.raiseSelectedIndexChanged();
+			this.raiseSelectedIndexChanged();
 		}
 		public event EventHandler<EventArgs> ComboBoxSelectedIndexChanged;
 		void raiseSelectedIndexChanged() {
-		    if (this.ComboBoxSelectedIndexChanged == null) return;
-		    try {	// downstack backtest throwing won't crash Release (Debug will halt) 
-		        this.ComboBoxSelectedIndexChanged(this, EventArgs.Empty);
-		    } catch (Exception ex) {
-		        Assembler.PopupException(null, ex);
-		    }
+			if (this.ComboBoxSelectedIndexChanged == null) return;
+			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
+				this.ComboBoxSelectedIndexChanged(this, EventArgs.Empty);
+			} catch (Exception ex) {
+				Assembler.PopupException(null, ex);
+			}
 		}
 
 		// USAGE:
 		//public ChartSettingsEditorControl() {
-		//    InitializeComponent();
-		////    // DESIGNER_RESETS_TO_EDITABLE__LAZY_TO_TUNNEL_PROPERTIES_AND_EVENTS_IN_ToolStripItemComboBox.cs
-		////    this.toolStripItemComboBox1.ComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-		////    this.toolStripItemComboBox1.ComboBox.Sorted = true;
-		////    this.toolStripItemComboBox1.ComboBox.SelectedIndexChanged += new EventHandler(this.toolStripItemComboBox1_SelectedIndexChanged);
+		//	InitializeComponent();
+		////	// DESIGNER_RESETS_TO_EDITABLE__LAZY_TO_TUNNEL_PROPERTIES_AND_EVENTS_IN_ToolStripItemComboBox.cs
+		////	this.toolStripItemComboBox1.ComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+		////	this.toolStripItemComboBox1.ComboBox.Sorted = true;
+		////	this.toolStripItemComboBox1.ComboBox.SelectedIndexChanged += new EventHandler(this.toolStripItemComboBox1_SelectedIndexChanged);
 		//}
 
 	}

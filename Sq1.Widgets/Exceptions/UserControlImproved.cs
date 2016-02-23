@@ -13,9 +13,9 @@ namespace Sq1.Widgets.Exceptions {
 		ManualResetEvent waitForParentControlIsLoaded;
 		public bool ParentControlIsLoaded_Blocking { get {
 				//if (this.waitForParentControlIsLoaded.WaitOne(0) == true) {
-				//    string msg1 = "MUST_BE_INSTANTIATED_AS_NON_SIGNALLED_IN_CTOR()_#2 waitForParentControlIsLoaded.WaitOne(0)=[true]";
-				//    Assembler.PopupException(msg1);
-				//    return false;
+				//	string msg1 = "MUST_BE_INSTANTIATED_AS_NON_SIGNALLED_IN_CTOR()_#2 waitForParentControlIsLoaded.WaitOne(0)=[true]";
+				//	Assembler.PopupException(msg1);
+				//	return false;
 				//}
 				Stopwatch formLoaded = new Stopwatch();
 				formLoaded.Start();

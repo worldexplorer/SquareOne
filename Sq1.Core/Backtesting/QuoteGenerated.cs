@@ -1,10 +1,10 @@
 ﻿using System;
-
-using Sq1.Core.DataTypes;
 using System.Text;
 
+using Sq1.Core.DataTypes;
+
 namespace Sq1.Core.Backtesting {
-	public class QuoteGenerated : Quote {
+	public sealed class QuoteGenerated : Quote {
 		public Bar			ParentBarSimulated;
 		public bool			HasParentBarSimulated			{ get { return this.ParentBarSimulated != null; } }
 		public new string	ParentBarIdent					{ get { return (this.HasParentBarSimulated) ? this.ParentBarSimulated.ParentBarsIdent : "NO_PARENT_BAR_SIMULATED"; } }
@@ -132,13 +132,13 @@ namespace Sq1.Core.Backtesting {
 		}
 
 		//public static QuoteGenerated SafeUpcast(Quote quote) {
-		//    QuoteGenerated upcasted = quote as QuoteGenerated;
-		//    if (upcasted == null) {
-		//        string msg = "Should be of a type Sq1.Core.Backtesting.QuoteGenerated instead of Sq1.Core.DataTypes.Quote: "
-		//            + quote;
-		//        throw new Exception(msg);
-		//    }
-		//    return upcasted;
+		//	QuoteGenerated upcasted = quote as QuoteGenerated;
+		//	if (upcasted == null) {
+		//		string msg = "Should be of a type Sq1.Core.Backtesting.QuoteGenerated instead of Sq1.Core.DataTypes.Quote: "
+		//			+ quote;
+		//		throw new Exception(msg);
+		//	}
+		//	return upcasted;
 		//}
 	}
 }

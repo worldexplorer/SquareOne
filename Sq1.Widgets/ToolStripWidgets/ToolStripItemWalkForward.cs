@@ -29,20 +29,20 @@ namespace Sq1.Widgets.ToolStripImproved {
 		
 		////[DefaultValueAttribute(typeof(ProgressBar), null), Browsable(true)]
 		//public decimal ValueMin {
-		//    get { return this.TrackBarControl.ValueMin; }
-		//    set { this.TrackBarControl.ValueMin = value; }
+		//	get { return this.TrackBarControl.ValueMin; }
+		//	set { this.TrackBarControl.ValueMin = value; }
 		//}
 
 		////[DefaultValueAttribute(typeof(ProgressBar), null), Browsable(true)]
 		//public decimal ValueMax {
-		//    get { return this.TrackBarControl.ValueMax; }
-		//    set { this.TrackBarControl.ValueMax = value; }
+		//	get { return this.TrackBarControl.ValueMax; }
+		//	set { this.TrackBarControl.ValueMax = value; }
 		//}
 
 		////[DefaultValueAttribute(typeof(ProgressBar), null), Browsable(true)]
 		public decimal ValueCurrent {
-		    get { return this.WalkForwardControl.SliderComboControl.ValueCurrent; }
-		    set { this.WalkForwardControl.SliderComboControl.ValueCurrent = value; }
+			get { return this.WalkForwardControl.SliderComboControl.ValueCurrent; }
+			set { this.WalkForwardControl.SliderComboControl.ValueCurrent = value; }
 		}
 
 		public bool WalkForwardChecked {
@@ -57,8 +57,8 @@ namespace Sq1.Widgets.ToolStripImproved {
 
 		////[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public string LabelText {
-		    get { return this.WalkForwardControl.SliderComboControl.LabelText; }
-		    set { this.WalkForwardControl.SliderComboControl.LabelText = value; }
+			get { return this.WalkForwardControl.SliderComboControl.LabelText; }
+			set { this.WalkForwardControl.SliderComboControl.LabelText = value; }
 		}
 
 		public bool FillFromCurrentToMax {

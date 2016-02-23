@@ -174,191 +174,191 @@ namespace Sq1.Core.Correlation {
 		}
 
 		//internal void CalculateGlobalsForArtificial_Average() {
-		//    string msig = " //CalculateGlobalsForArtificial_Average()";
+		//	string msig = " //CalculateGlobalsForArtificial_Average()";
 
-		//    if (this.OneParameterAllValuesAveraged.OneParamOneValues.Count == 0) {
-		//        this.KPIsGlobal.Reset();
-		//        Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO" + msig);
-		//        return;
-		//    }
+		//	if (this.OneParameterAllValuesAveraged.OneParamOneValues.Count == 0) {
+		//		this.KPIsGlobal.Reset();
+		//		Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO" + msig);
+		//		return;
+		//	}
 
-		//    List<KPIs> KPIsList = new List<KPIs>();
-		//    foreach (OneParameterOneValue kpisForValue in this.OneParameterAllValuesAveraged.OneParamOneValues) {
-		//        KPIsList.Add(kpisForValue.KPIsGlobal);
-		//    }
-		//    this.KPIsGlobal.Reset_addKPIs_getMyMembersReady(KPIsList);
+		//	List<KPIs> KPIsList = new List<KPIs>();
+		//	foreach (OneParameterOneValue kpisForValue in this.OneParameterAllValuesAveraged.OneParamOneValues) {
+		//		KPIsList.Add(kpisForValue.KPIsGlobal);
+		//	}
+		//	this.KPIsGlobal.Reset_addKPIs_getMyMembersReady(KPIsList);
 		//}
 		//internal void CalculateLocalsAndDeltasForArtificial_Average() {
-		//    string msig = " //CalculateLocalsAndDeltasForArtificial_Average()";
+		//	string msig = " //CalculateLocalsAndDeltasForArtificial_Average()";
 
-		//    if (this.OneParameterAllValuesAveraged.OneParamValuesChosen.Count == 0) {
-		//        this.KPIsLocal.Reset();
-		//        this.kPIsLocalMinusGlobal_cached = null;
-		//        Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO" + msig);
-		//        return;
-		//    }
+		//	if (this.OneParameterAllValuesAveraged.OneParamValuesChosen.Count == 0) {
+		//		this.KPIsLocal.Reset();
+		//		this.kPIsLocalMinusGlobal_cached = null;
+		//		Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO" + msig);
+		//		return;
+		//	}
 
-		//    List<KPIs> KPIsList = new List<KPIs>();
-		//    foreach (OneParameterOneValue kpisForValue in this.OneParameterAllValuesAveraged.OneParamOneValues) {
-		//        KPIsList.Add(kpisForValue.KPIsLocal);
-		//    }
-		//    this.KPIsLocal.Reset_addKPIs_getMyMembersReady(KPIsList);
-		//    this.kPIsLocalMinusGlobal_cached = null;
+		//	List<KPIs> KPIsList = new List<KPIs>();
+		//	foreach (OneParameterOneValue kpisForValue in this.OneParameterAllValuesAveraged.OneParamOneValues) {
+		//		KPIsList.Add(kpisForValue.KPIsLocal);
+		//	}
+		//	this.KPIsLocal.Reset_addKPIs_getMyMembersReady(KPIsList);
+		//	this.kPIsLocalMinusGlobal_cached = null;
 
-		//    double checkLocalNetProfit = this.KPIsLocal.NetProfit;
+		//	double checkLocalNetProfit = this.KPIsLocal.NetProfit;
 		//}
 
 		//public override string ToString() {
-		//    string ret = this.ParameterNameValue + ":";
-		//    if (this.IsArtificialRow) {
-		//        ret += this.OneParameterAllValuesAveraged.OneParamOneValueByValues.Count + "paramValues";
-		//    } else {
-		//        ret += this.BacktestsWithMyValue.Count + "backtests";
-		//    }
-		//    return ret;
+		//	string ret = this.ParameterNameValue + ":";
+		//	if (this.IsArtificialRow) {
+		//		ret += this.OneParameterAllValuesAveraged.OneParamOneValueByValues.Count + "paramValues";
+		//	} else {
+		//		ret += this.BacktestsWithMyValue.Count + "backtests";
+		//	}
+		//	return ret;
 		//}
 
 		//internal void CalculateGlobalsForArtificial_Variance() {
-		//    List<double> positionsCount		= new List<double>();
-		//    List<double> positionAvgProfit	= new List<double>();
-		//    List<double> netProfit			= new List<double>();
-		//    List<double> winLossRatio		= new List<double>();
-		//    List<double> profitFactor		= new List<double>();
-		//    List<double> recoveryFactor		= new List<double>();
-		//    List<double> maxDrawDown		= new List<double>();
-		//    List<double> maxConsecWinners	= new List<double>();
-		//    List<double> maxConsecLosers	= new List<double>();
-		//    foreach (OneParameterOneValue eachValue in this.OneParameterAllValuesAveraged.OneParamOneValueByValues.Values) {
-		//        positionsCount		.Add(eachValue.KPIsGlobal.PositionsCount);
-		//        positionAvgProfit	.Add(eachValue.KPIsGlobal.PositionAvgProfit);
-		//        netProfit			.Add(eachValue.KPIsGlobal.NetProfit);
-		//        winLossRatio		.Add(eachValue.KPIsGlobal.WinLossRatio);
-		//        profitFactor		.Add(eachValue.KPIsGlobal.ProfitFactor);
-		//        recoveryFactor		.Add(eachValue.KPIsGlobal.RecoveryFactor);
-		//        maxDrawDown			.Add(eachValue.KPIsGlobal.MaxDrawDown);
-		//        maxConsecWinners	.Add(eachValue.KPIsGlobal.MaxConsecWinners);
-		//        maxConsecLosers		.Add(eachValue.KPIsGlobal.MaxConsecLosers);
-		//    }
-		//    this.KPIsGlobal.PositionsCount		= positionsCount	.Variance();
-		//    this.KPIsGlobal.PositionAvgProfit	= positionAvgProfit	.Variance();
-		//    this.KPIsGlobal.NetProfit			= netProfit			.Variance();
-		//    this.KPIsGlobal.WinLossRatio		= winLossRatio		.Variance();
-		//    this.KPIsGlobal.ProfitFactor		= profitFactor		.Variance();
-		//    this.KPIsGlobal.RecoveryFactor		= recoveryFactor	.Variance();
-		//    this.KPIsGlobal.MaxDrawDown			= maxDrawDown		.Variance();
-		//    this.KPIsGlobal.MaxConsecWinners	= maxConsecWinners	.Variance();
-		//    this.KPIsGlobal.MaxConsecLosers		= maxConsecLosers	.Variance();
+		//	List<double> positionsCount		= new List<double>();
+		//	List<double> positionAvgProfit	= new List<double>();
+		//	List<double> netProfit			= new List<double>();
+		//	List<double> winLossRatio		= new List<double>();
+		//	List<double> profitFactor		= new List<double>();
+		//	List<double> recoveryFactor		= new List<double>();
+		//	List<double> maxDrawDown		= new List<double>();
+		//	List<double> maxConsecWinners	= new List<double>();
+		//	List<double> maxConsecLosers	= new List<double>();
+		//	foreach (OneParameterOneValue eachValue in this.OneParameterAllValuesAveraged.OneParamOneValueByValues.Values) {
+		//		positionsCount		.Add(eachValue.KPIsGlobal.PositionsCount);
+		//		positionAvgProfit	.Add(eachValue.KPIsGlobal.PositionAvgProfit);
+		//		netProfit			.Add(eachValue.KPIsGlobal.NetProfit);
+		//		winLossRatio		.Add(eachValue.KPIsGlobal.WinLossRatio);
+		//		profitFactor		.Add(eachValue.KPIsGlobal.ProfitFactor);
+		//		recoveryFactor		.Add(eachValue.KPIsGlobal.RecoveryFactor);
+		//		maxDrawDown			.Add(eachValue.KPIsGlobal.MaxDrawDown);
+		//		maxConsecWinners	.Add(eachValue.KPIsGlobal.MaxConsecWinners);
+		//		maxConsecLosers		.Add(eachValue.KPIsGlobal.MaxConsecLosers);
+		//	}
+		//	this.KPIsGlobal.PositionsCount		= positionsCount	.Variance();
+		//	this.KPIsGlobal.PositionAvgProfit	= positionAvgProfit	.Variance();
+		//	this.KPIsGlobal.NetProfit			= netProfit			.Variance();
+		//	this.KPIsGlobal.WinLossRatio		= winLossRatio		.Variance();
+		//	this.KPIsGlobal.ProfitFactor		= profitFactor		.Variance();
+		//	this.KPIsGlobal.RecoveryFactor		= recoveryFactor	.Variance();
+		//	this.KPIsGlobal.MaxDrawDown			= maxDrawDown		.Variance();
+		//	this.KPIsGlobal.MaxConsecWinners	= maxConsecWinners	.Variance();
+		//	this.KPIsGlobal.MaxConsecLosers		= maxConsecLosers	.Variance();
 		//}
 
 		//internal void CalculateGlobalsForArtificial_Dispersion() {
-		//    List<double> positionsCount		= new List<double>();
-		//    List<double> positionAvgProfit	= new List<double>();
-		//    List<double> netProfit			= new List<double>();
-		//    List<double> winLossRatio		= new List<double>();
-		//    List<double> profitFactor		= new List<double>();
-		//    List<double> recoveryFactor		= new List<double>();
-		//    List<double> maxDrawDown		= new List<double>();
-		//    List<double> maxConsecWinners	= new List<double>();
-		//    List<double> maxConsecLosers	= new List<double>();
-		//    foreach (OneParameterOneValue eachValue in this.OneParameterAllValuesAveraged.OneParamOneValueByValues.Values) {
-		//        positionsCount		.Add(eachValue.KPIsGlobal.PositionsCount);
-		//        positionAvgProfit	.Add(eachValue.KPIsGlobal.PositionAvgProfit);
-		//        netProfit			.Add(eachValue.KPIsGlobal.NetProfit);
-		//        winLossRatio		.Add(eachValue.KPIsGlobal.WinLossRatio);
-		//        profitFactor		.Add(eachValue.KPIsGlobal.ProfitFactor);
-		//        recoveryFactor		.Add(eachValue.KPIsGlobal.RecoveryFactor);
-		//        maxDrawDown			.Add(eachValue.KPIsGlobal.MaxDrawDown);
-		//        maxConsecWinners	.Add(eachValue.KPIsGlobal.MaxConsecWinners);
-		//        maxConsecLosers		.Add(eachValue.KPIsGlobal.MaxConsecLosers);
-		//    }
-		//    this.KPIsGlobal.PositionsCount		= positionsCount	.StdDev();
-		//    this.KPIsGlobal.PositionAvgProfit	= positionAvgProfit	.StdDev();
-		//    this.KPIsGlobal.NetProfit			= netProfit			.StdDev();
-		//    this.KPIsGlobal.WinLossRatio		= winLossRatio		.StdDev();
-		//    this.KPIsGlobal.ProfitFactor		= profitFactor		.StdDev();
-		//    this.KPIsGlobal.RecoveryFactor		= recoveryFactor	.StdDev();
-		//    this.KPIsGlobal.MaxDrawDown			= maxDrawDown		.StdDev();
-		//    this.KPIsGlobal.MaxConsecWinners	= maxConsecWinners	.StdDev();
-		//    this.KPIsGlobal.MaxConsecLosers		= maxConsecLosers	.StdDev();
+		//	List<double> positionsCount		= new List<double>();
+		//	List<double> positionAvgProfit	= new List<double>();
+		//	List<double> netProfit			= new List<double>();
+		//	List<double> winLossRatio		= new List<double>();
+		//	List<double> profitFactor		= new List<double>();
+		//	List<double> recoveryFactor		= new List<double>();
+		//	List<double> maxDrawDown		= new List<double>();
+		//	List<double> maxConsecWinners	= new List<double>();
+		//	List<double> maxConsecLosers	= new List<double>();
+		//	foreach (OneParameterOneValue eachValue in this.OneParameterAllValuesAveraged.OneParamOneValueByValues.Values) {
+		//		positionsCount		.Add(eachValue.KPIsGlobal.PositionsCount);
+		//		positionAvgProfit	.Add(eachValue.KPIsGlobal.PositionAvgProfit);
+		//		netProfit			.Add(eachValue.KPIsGlobal.NetProfit);
+		//		winLossRatio		.Add(eachValue.KPIsGlobal.WinLossRatio);
+		//		profitFactor		.Add(eachValue.KPIsGlobal.ProfitFactor);
+		//		recoveryFactor		.Add(eachValue.KPIsGlobal.RecoveryFactor);
+		//		maxDrawDown			.Add(eachValue.KPIsGlobal.MaxDrawDown);
+		//		maxConsecWinners	.Add(eachValue.KPIsGlobal.MaxConsecWinners);
+		//		maxConsecLosers		.Add(eachValue.KPIsGlobal.MaxConsecLosers);
+		//	}
+		//	this.KPIsGlobal.PositionsCount		= positionsCount	.StdDev();
+		//	this.KPIsGlobal.PositionAvgProfit	= positionAvgProfit	.StdDev();
+		//	this.KPIsGlobal.NetProfit			= netProfit			.StdDev();
+		//	this.KPIsGlobal.WinLossRatio		= winLossRatio		.StdDev();
+		//	this.KPIsGlobal.ProfitFactor		= profitFactor		.StdDev();
+		//	this.KPIsGlobal.RecoveryFactor		= recoveryFactor	.StdDev();
+		//	this.KPIsGlobal.MaxDrawDown			= maxDrawDown		.StdDev();
+		//	this.KPIsGlobal.MaxConsecWinners	= maxConsecWinners	.StdDev();
+		//	this.KPIsGlobal.MaxConsecLosers		= maxConsecLosers	.StdDev();
 		//}
 
 		//internal void CalculateLocalsAndDeltasForArtificial_Dispersion() {
-		//    List<double> positionsCount		= new List<double>();
-		//    List<double> positionAvgProfit	= new List<double>();
-		//    List<double> netProfit			= new List<double>();
-		//    List<double> winLossRatio		= new List<double>();
-		//    List<double> profitFactor		= new List<double>();
-		//    List<double> recoveryFactor		= new List<double>();
-		//    List<double> maxDrawDown		= new List<double>();
-		//    List<double> maxConsecWinners	= new List<double>();
-		//    List<double> maxConsecLosers	= new List<double>();
-		//    foreach (OneParameterOneValue eachValue in this.OneParameterAllValuesAveraged.OneParamOneValueByValues.Values) {
-		//        positionsCount		.Add(eachValue.KPIsLocal.PositionsCount);
-		//        positionAvgProfit	.Add(eachValue.KPIsLocal.PositionAvgProfit);
-		//        netProfit			.Add(eachValue.KPIsLocal.NetProfit);
-		//        winLossRatio		.Add(eachValue.KPIsLocal.WinLossRatio);
-		//        profitFactor		.Add(eachValue.KPIsLocal.ProfitFactor);
-		//        recoveryFactor		.Add(eachValue.KPIsLocal.RecoveryFactor);
-		//        maxDrawDown			.Add(eachValue.KPIsLocal.MaxDrawDown);
-		//        maxConsecWinners	.Add(eachValue.KPIsLocal.MaxConsecWinners);
-		//        maxConsecLosers		.Add(eachValue.KPIsLocal.MaxConsecLosers);
-		//    }
-		//    this.KPIsLocal.PositionsCount		= positionsCount	.StdDev();
-		//    this.KPIsLocal.PositionAvgProfit	= positionAvgProfit	.StdDev();
-		//    this.KPIsLocal.NetProfit			= netProfit			.StdDev();
-		//    this.KPIsLocal.WinLossRatio			= winLossRatio		.StdDev();
-		//    this.KPIsLocal.ProfitFactor			= profitFactor		.StdDev();
-		//    this.KPIsLocal.RecoveryFactor		= recoveryFactor	.StdDev();
-		//    this.KPIsLocal.MaxDrawDown			= maxDrawDown		.StdDev();
-		//    this.KPIsLocal.MaxConsecWinners		= maxConsecWinners	.StdDev();
-		//    this.KPIsLocal.MaxConsecLosers		= maxConsecLosers	.StdDev();
-		//    this.kPIsLocalMinusGlobal_cached	= null;
+		//	List<double> positionsCount		= new List<double>();
+		//	List<double> positionAvgProfit	= new List<double>();
+		//	List<double> netProfit			= new List<double>();
+		//	List<double> winLossRatio		= new List<double>();
+		//	List<double> profitFactor		= new List<double>();
+		//	List<double> recoveryFactor		= new List<double>();
+		//	List<double> maxDrawDown		= new List<double>();
+		//	List<double> maxConsecWinners	= new List<double>();
+		//	List<double> maxConsecLosers	= new List<double>();
+		//	foreach (OneParameterOneValue eachValue in this.OneParameterAllValuesAveraged.OneParamOneValueByValues.Values) {
+		//		positionsCount		.Add(eachValue.KPIsLocal.PositionsCount);
+		//		positionAvgProfit	.Add(eachValue.KPIsLocal.PositionAvgProfit);
+		//		netProfit			.Add(eachValue.KPIsLocal.NetProfit);
+		//		winLossRatio		.Add(eachValue.KPIsLocal.WinLossRatio);
+		//		profitFactor		.Add(eachValue.KPIsLocal.ProfitFactor);
+		//		recoveryFactor		.Add(eachValue.KPIsLocal.RecoveryFactor);
+		//		maxDrawDown			.Add(eachValue.KPIsLocal.MaxDrawDown);
+		//		maxConsecWinners	.Add(eachValue.KPIsLocal.MaxConsecWinners);
+		//		maxConsecLosers		.Add(eachValue.KPIsLocal.MaxConsecLosers);
+		//	}
+		//	this.KPIsLocal.PositionsCount		= positionsCount	.StdDev();
+		//	this.KPIsLocal.PositionAvgProfit	= positionAvgProfit	.StdDev();
+		//	this.KPIsLocal.NetProfit			= netProfit			.StdDev();
+		//	this.KPIsLocal.WinLossRatio			= winLossRatio		.StdDev();
+		//	this.KPIsLocal.ProfitFactor			= profitFactor		.StdDev();
+		//	this.KPIsLocal.RecoveryFactor		= recoveryFactor	.StdDev();
+		//	this.KPIsLocal.MaxDrawDown			= maxDrawDown		.StdDev();
+		//	this.KPIsLocal.MaxConsecWinners		= maxConsecWinners	.StdDev();
+		//	this.KPIsLocal.MaxConsecLosers		= maxConsecLosers	.StdDev();
+		//	this.kPIsLocalMinusGlobal_cached	= null;
 
-		//    if (this.KPIsDelta.NetProfit == 0) {
-		//        int a = 0;
-		//    }
+		//	if (this.KPIsDelta.NetProfit == 0) {
+		//		int a = 0;
+		//	}
 
-		//    if (this.KPIsDelta.PositionsCount < 0) {
-		//        int a = 0;
-		//    }
+		//	if (this.KPIsDelta.PositionsCount < 0) {
+		//		int a = 0;
+		//	}
 
 		//}
 
 		//internal void CalculateLocalsAndDeltasForArtificial_Variance() {
-		//    List<double> positionsCount		= new List<double>();
-		//    List<double> positionAvgProfit	= new List<double>();
-		//    List<double> netProfit			= new List<double>();
-		//    List<double> winLossRatio		= new List<double>();
-		//    List<double> profitFactor		= new List<double>();
-		//    List<double> recoveryFactor		= new List<double>();
-		//    List<double> maxDrawDown = new List<double>();
-		//    List<double> maxConsecWinners = new List<double>();
-		//    List<double> maxConsecLosers = new List<double>();
-		//    foreach (OneParameterOneValue eachValue in this.OneParameterAllValuesAveraged.OneParamOneValueByValues.Values) {
-		//        positionsCount		.Add(eachValue.KPIsLocal.PositionsCount);
-		//        positionAvgProfit	.Add(eachValue.KPIsLocal.PositionAvgProfit);
-		//        netProfit			.Add(eachValue.KPIsLocal.NetProfit);
-		//        winLossRatio		.Add(eachValue.KPIsLocal.WinLossRatio);
-		//        profitFactor		.Add(eachValue.KPIsLocal.ProfitFactor);
-		//        recoveryFactor		.Add(eachValue.KPIsLocal.RecoveryFactor);
-		//        maxDrawDown			.Add(eachValue.KPIsLocal.MaxDrawDown);
-		//        maxConsecWinners	.Add(eachValue.KPIsLocal.MaxConsecWinners);
-		//        maxConsecLosers		.Add(eachValue.KPIsLocal.MaxConsecLosers);
-		//    }
-		//    this.KPIsLocal.PositionsCount		= positionsCount	.Variance();
-		//    this.KPIsLocal.PositionAvgProfit	= positionAvgProfit	.Variance();
-		//    this.KPIsLocal.NetProfit			= netProfit			.Variance();
-		//    this.KPIsLocal.WinLossRatio			= winLossRatio		.Variance();
-		//    this.KPIsLocal.ProfitFactor			= profitFactor		.Variance();
-		//    this.KPIsLocal.RecoveryFactor		= recoveryFactor	.Variance();
-		//    this.KPIsLocal.MaxDrawDown			= maxDrawDown		.Variance();
-		//    this.KPIsLocal.MaxConsecWinners		= maxConsecWinners	.Variance();
-		//    this.KPIsLocal.MaxConsecLosers		= maxConsecLosers	.Variance();
-		//    this.kPIsLocalMinusGlobal_cached	= null;
+		//	List<double> positionsCount		= new List<double>();
+		//	List<double> positionAvgProfit	= new List<double>();
+		//	List<double> netProfit			= new List<double>();
+		//	List<double> winLossRatio		= new List<double>();
+		//	List<double> profitFactor		= new List<double>();
+		//	List<double> recoveryFactor		= new List<double>();
+		//	List<double> maxDrawDown = new List<double>();
+		//	List<double> maxConsecWinners = new List<double>();
+		//	List<double> maxConsecLosers = new List<double>();
+		//	foreach (OneParameterOneValue eachValue in this.OneParameterAllValuesAveraged.OneParamOneValueByValues.Values) {
+		//		positionsCount		.Add(eachValue.KPIsLocal.PositionsCount);
+		//		positionAvgProfit	.Add(eachValue.KPIsLocal.PositionAvgProfit);
+		//		netProfit			.Add(eachValue.KPIsLocal.NetProfit);
+		//		winLossRatio		.Add(eachValue.KPIsLocal.WinLossRatio);
+		//		profitFactor		.Add(eachValue.KPIsLocal.ProfitFactor);
+		//		recoveryFactor		.Add(eachValue.KPIsLocal.RecoveryFactor);
+		//		maxDrawDown			.Add(eachValue.KPIsLocal.MaxDrawDown);
+		//		maxConsecWinners	.Add(eachValue.KPIsLocal.MaxConsecWinners);
+		//		maxConsecLosers		.Add(eachValue.KPIsLocal.MaxConsecLosers);
+		//	}
+		//	this.KPIsLocal.PositionsCount		= positionsCount	.Variance();
+		//	this.KPIsLocal.PositionAvgProfit	= positionAvgProfit	.Variance();
+		//	this.KPIsLocal.NetProfit			= netProfit			.Variance();
+		//	this.KPIsLocal.WinLossRatio			= winLossRatio		.Variance();
+		//	this.KPIsLocal.ProfitFactor			= profitFactor		.Variance();
+		//	this.KPIsLocal.RecoveryFactor		= recoveryFactor	.Variance();
+		//	this.KPIsLocal.MaxDrawDown			= maxDrawDown		.Variance();
+		//	this.KPIsLocal.MaxConsecWinners		= maxConsecWinners	.Variance();
+		//	this.KPIsLocal.MaxConsecLosers		= maxConsecLosers	.Variance();
+		//	this.kPIsLocalMinusGlobal_cached	= null;
 
-		//    if (this.KPIsDelta.NetProfit == 0) {
-		//        int a = 0;
-		//    }
+		//	if (this.KPIsDelta.NetProfit == 0) {
+		//		int a = 0;
+		//	}
 		//}
 	}
 }

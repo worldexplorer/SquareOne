@@ -158,8 +158,8 @@ namespace Sq1.Reporters {
 
 				//v1
 				//if (this.fontsByStyle_dontDisposeReusableGDI.ContainsKey(labelFontStyle) == false) {
-				//    Font font = new Font(this.Font, labelFontStyle);
-				//    this.fontsByStyle_dontDisposeReusableGDI.Add(labelFontStyle, font);
+				//	Font font = new Font(this.Font, labelFontStyle);
+				//	this.fontsByStyle_dontDisposeReusableGDI.Add(labelFontStyle, font);
 				//}
 				//lvi.Font = this.fontsByStyle_dontDisposeReusableGDI[labelFontStyle];
 				//v2
@@ -177,8 +177,8 @@ namespace Sq1.Reporters {
 
 			//v1
 			//if (this.fontsByStyle_dontDisposeReusableGDI.ContainsKey(itemFontStyle) == false) {
-			//    Font newFont = new Font(this.Font, itemFontStyle);
-			//    this.fontsByStyle_dontDisposeReusableGDI.Add(itemFontStyle, newFont);
+			//	Font newFont = new Font(this.Font, itemFontStyle);
+			//	this.fontsByStyle_dontDisposeReusableGDI.Add(itemFontStyle, newFont);
 			//}
 			//Font subLviFont = this.fontsByStyle_dontDisposeReusableGDI[itemFontStyle];
 			//v2
@@ -229,17 +229,17 @@ namespace Sq1.Reporters {
 			////v1 this.propagatePerformanceReport();
 			////v2 ACCELERATING_ON_POSITION_FILLED
 			//if (this.lvPerformance.Items.Count == 0) {
-			//     this.propagatePerformanceReport();
-			//     return;
+			//	 this.propagatePerformanceReport();
+			//	 return;
 			//}
 
 			//if (pokeUnit.PositionsOpened.Count == 0) return;
 
 			//// MINIMIZED_IF_STREAMING_QUOTE_DELAY<100ms_UNMINIMIZE_AND_WATCH__REALTIME_UNAFFECTED
 			////bool livesimStreamingIsSleeping = pokeUnit.PositionsOpened.AlertsEntry.GuiHasTimeToRebuild(
-			////    this, "Reporters.Performance.BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(WAIT)");
+			////	this, "Reporters.Performance.BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(WAIT)");
 			////if (livesimStreamingIsSleeping == false) {
-			////    return;
+			////	return;
 			////}
 			//if (base.Visible == false) return;		//DockContent is minimized / "autohidden"
 			//this.propagatePerformanceReport();

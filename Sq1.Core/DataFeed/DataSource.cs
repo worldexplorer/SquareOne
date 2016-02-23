@@ -63,11 +63,11 @@ namespace Sq1.Core.DataFeed {
 
 		//[JsonIgnore]	public Dictionary<string, List<ChartShadow>>		ChartsOpenForSymbol { get; private set; }
 		//[JsonIgnore]	public List<SymbolOfDataSource>	SymbolsWithBackRef	{ get {
-		//    List<SymbolOfDataSource> ret = new List<SymbolOfDataSource>();
-		//    foreach (string symbol in this.Symbols) {
-		//        ret.Add(new SymbolOfDataSource(symbol, this));
-		//    }
-		//    return ret;
+		//	List<SymbolOfDataSource> ret = new List<SymbolOfDataSource>();
+		//	foreach (string symbol in this.Symbols) {
+		//		ret.Add(new SymbolOfDataSource(symbol, this));
+		//	}
+		//	return ret;
 		//} }
 		[JsonIgnore]	public DictionaryManyToOne<SymbolOfDataSource, ChartShadow>		ChartsOpenForSymbol { get; private set; }
 

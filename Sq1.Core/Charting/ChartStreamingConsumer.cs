@@ -104,11 +104,11 @@ namespace Sq1.Core.Charting {
 				// I dont remember what I was testing disabled
 				//Assembler.PopupException("Subscribing BarsConsumer [" + this + "] to " + this.ToString() + " (wasn't registered)");
 				//if (executorSafe.Bars == null) {
-				//    string msg = "in Initialize() this.ChartForm is requesting bars in a separate thread";
-				//    Assembler.PopupException(msg);
+				//	string msg = "in Initialize() this.ChartForm is requesting bars in a separate thread";
+				//	Assembler.PopupException(msg);
 				//} else {
-				//    string msg = "fully initialized, after streaming was stopped for a moment and resumed - append into PartialBar";
-				//    Assembler.PopupException(msg);
+				//	string msg = "fully initialized, after streaming was stopped for a moment and resumed - append into PartialBar";
+				//	Assembler.PopupException(msg);
 				//}
 
 				streaming_nullReported.SubscribeChart(symbolSafe, scaleIntervalSafe, this, branch + base.MsigForNpExceptions);

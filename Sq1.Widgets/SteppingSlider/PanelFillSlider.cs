@@ -176,9 +176,9 @@ namespace Sq1.Widgets.SteppingSlider {
 			//SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.SupportsTransparentBackColor, true);
 			//base.BackColor = Color.FromArgb(0, 0, 0, 0);//Added this because image wasnt redrawn when resizing form
 			//this.SetStyle(
-			//    ControlStyles.UserPaint |
-			//    ControlStyles.AllPaintingInWmPaint |
-			//    ControlStyles.OptimizedDoubleBuffer, true);
+			//	ControlStyles.UserPaint |
+			//	ControlStyles.AllPaintingInWmPaint |
+			//	ControlStyles.OptimizedDoubleBuffer, true);
 		}
 		public decimal RoundToClosestStep(decimal rawValue) {
 			string msig = " //RoundToClosestStep(" + rawValue + ")";

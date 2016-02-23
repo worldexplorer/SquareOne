@@ -141,10 +141,10 @@ namespace Sq1.Widgets.Sequencing {
 			//this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync, symbolScaleRange);
 			//v3
 			//if (this.backtestsLocalEasierToSync.ProfitFactorAverage == 0) {
-			//    this.backtestsLocalEasierToSync.CalculateProfitFactorAverage();
+			//	this.backtestsLocalEasierToSync.CalculateProfitFactorAverage();
 			//}
 			//string fnameWithPFappended = FnameDateSizeColorPFavg.AppendProfitFactorAverage(
-			//    symbolScaleRange, this.backtestsLocalEasierToSync.ProfitFactorAverage);
+			//	symbolScaleRange, this.backtestsLocalEasierToSync.ProfitFactorAverage);
 			//this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync, fnameWithPFappended);
 			//v4
 			this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync);
@@ -242,10 +242,10 @@ namespace Sq1.Widgets.Sequencing {
 		void ctxOneBacktestResult_Opening(object sender, CancelEventArgs e) {
 			string msig = " /ctxOneBacktestResult_Opening()";
 			//if (this.sequencer.Executor.ExecutionDataSnapshot.CorrelatorFormIsVisible) {
-			//    this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Enabled = false;
-			//    this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked.Enabled = false;
-			//    // and show ALL even if we 1) clicked "chosen" 2) closed the CorrelatorForm
-			//    ...
+			//	this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Enabled = false;
+			//	this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked.Enabled = false;
+			//	// and show ALL even if we 1) clicked "chosen" 2) closed the CorrelatorForm
+			//	...
 			//}
 
 			SystemPerformanceRestoreAble sysPerfRestoreAble = (SystemPerformanceRestoreAble)this.olvBacktests.SelectedObject;
@@ -349,9 +349,9 @@ namespace Sq1.Widgets.Sequencing {
 		bool showAllScriptIndicatorParametersInSequencedBacktest;
 		void mni_showInSequencedBacktests_ScriptIndicatorParameters_All_Click(object sender, EventArgs e) {
 			//if (this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked == true) {
-			//    string msg = "ChartForm > Menu > Show Correlator > Click any checkbox to shrink again";
-			//    Assembler.PopupException(msg);
-			//    return;
+			//	string msg = "ChartForm > Menu > Show Correlator > Click any checkbox to shrink again";
+			//	Assembler.PopupException(msg);
+			//	return;
 			//}
 			//this.showAllScriptIndicatorParametersInOptimizationResults = this.mni_showAllScriptIndicatorParametersInOptimizationResults.Checked;
 			//this.olvParameters.Refresh();

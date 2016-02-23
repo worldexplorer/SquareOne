@@ -11,11 +11,11 @@ namespace Sq1.Core.Streaming {
 	public class StreamingDataSnapshot {
 		[JsonIgnore]	StreamingAdapter							streamingAdapter;
 		[JsonIgnore]	object										lockLastQuote;
-		[JsonProperty]	Dictionary<string, LevelTwo>	level2andLastQuoteUnboundClone_bySymbol;	// { get; private set; }
+		[JsonProperty]	Dictionary<string, LevelTwo>	level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS;	// { get; private set; }
 				public	long										Level2RefreshRate;
 		[JsonProperty]	public string								SymbolsSubscribedAndReceiving		{ get {
 				string ret = "";
-				foreach (string symbol in level2andLastQuoteUnboundClone_bySymbol.Keys) {
+				foreach (string symbol in this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.Keys) {
 					if (ret.Length > 0) ret += ",";
 					ret += symbol;
 					Quote lastClone = this.LastQuoteClone_getForSymbol(symbol);
@@ -30,7 +30,7 @@ namespace Sq1.Core.Streaming {
 			} }
 
 		StreamingDataSnapshot() {
-			level2andLastQuoteUnboundClone_bySymbol = new Dictionary<string, LevelTwo>();
+			level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS = new Dictionary<string, LevelTwo>();
 			lockLastQuote = new object();
 		}
 
@@ -48,10 +48,10 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		public void InitializeLastQuoteAndLevelTwoForSymbol(string symbol) { lock (this.lockLastQuote) {
-			if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(symbol) == false) {
-				this.level2andLastQuoteUnboundClone_bySymbol.Add(symbol, new LevelTwo(symbol));
+			if (this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.ContainsKey(symbol) == false) {
+				this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.Add(symbol, new LevelTwo(symbol));
 			}
-			Quote prevQuote = this.level2andLastQuoteUnboundClone_bySymbol[symbol].Initialize();
+			Quote prevQuote = this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[symbol].Initialize();
 		} }
 		public void LastQuoteClone_setForSymbol(Quote quote) { lock (this.lockLastQuote) {
 			string msig = " StreamingDataSnapshot.LastQuoteSetForSymbol(" + quote.ToString() + ")";
@@ -61,17 +61,17 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(quote.Symbol) == false) {
-				this.level2andLastQuoteUnboundClone_bySymbol.Add(quote.Symbol, null);
-				string msg = "SUBSCRIBER_SHOULD_HAVE_INVOKED_LastQuoteInitialize()__FOLLOW_THIS_LIFECYCLE__ITS_A_RELIGION_NOT_OPEN_FOR_DISCUSSION";
-				Assembler.PopupException(msg + msig);
+			if (this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.ContainsKey(quote.Symbol) == false) {
+				this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.Add(quote.Symbol, new LevelTwo(quote.Symbol));
+				string msg = "SUBSCRIBER_SHOULD_HAVE_INVOKED_InitializeLastQuoteReceived()__FOLLOW_THIS_LIFECYCLE__ITS_A_RELIGION_NOT_OPEN_FOR_DISCUSSION";
+				Assembler.PopupException(msg + msig, null, false);
 			}
 
-			Quote lastQuote = this.level2andLastQuoteUnboundClone_bySymbol[quote.Symbol].LastQuote;
+			Quote lastQuote = this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[quote.Symbol].LastQuote;
 			if (lastQuote == null) {
 				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR#2 symbol[" + quote.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
 				//Assembler.PopupException(msg, null, false);
-				this.level2andLastQuoteUnboundClone_bySymbol[quote.Symbol].LastQuote = quote;
+				this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[quote.Symbol].LastQuote = quote;
 				return;
 			}
 			if (lastQuote == quote) {
@@ -84,25 +84,25 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			this.level2andLastQuoteUnboundClone_bySymbol[quote.Symbol].LastQuote = quote;
+			this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[quote.Symbol].LastQuote = quote;
 		} }
-		public Quote LastQuoteClone_getForSymbol(string symbol) { lock (this.lockLastQuote) {
-				if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(symbol) == false) return null;
-				LevelTwo levelTwoAndLastQuote = this.level2andLastQuoteUnboundClone_bySymbol[symbol];
+		public Quote LastQuoteClone_getForSymbol(string symbol) { //lock (this.lockLastQuote) {
+				if (this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.ContainsKey(symbol) == false) return null;
+				LevelTwo levelTwoAndLastQuote = this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[symbol];
 				if (levelTwoAndLastQuote == null) return null;
 				Quote weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy = levelTwoAndLastQuote.LastQuote;
 				if (weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy == null) {
 					string msg = "MUST_NOT_BE_NULL_FOR_LIVESIM_TOO levelTwoAndLastQuote.LastQuote";
 				}
 				return weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy;
-			} }
+			} //}
 		public LevelTwoHalf LevelTwoAsks_getForSymbol(string symbol) { lock (this.lockLastQuote) {
-				if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(symbol) == false) return null;
-				return this.level2andLastQuoteUnboundClone_bySymbol[symbol].Asks;
+				if (this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.ContainsKey(symbol) == false) return null;
+				return this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[symbol].Asks;
 			} }
 		public LevelTwoHalf LevelTwoBids_getForSymbol(string symbol) { lock (this.lockLastQuote) {
-				if (this.level2andLastQuoteUnboundClone_bySymbol.ContainsKey(symbol) == false) return null;
-				return this.level2andLastQuoteUnboundClone_bySymbol[symbol].Bids;
+				if (this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS.ContainsKey(symbol) == false) return null;
+				return this.level2andLastQuoteUnboundClone_bySymbol_REFACTOR_CONCURRENT_REMOVE_LOCKS[symbol].Bids;
 			} }
 		public double LastQuoteGetPriceForMarketOrder(string symbol) {
 			Quote lastQuote = this.LastQuoteClone_getForSymbol(symbol);

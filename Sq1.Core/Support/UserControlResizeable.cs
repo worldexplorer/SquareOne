@@ -26,13 +26,13 @@ namespace Sq1.Core.Support {
 
 		// WinForms' runtime $exception	{"A circular control reference has been made. A control cannot be owned by or parented to itself."}
 		//public new ControlCollection Controls { get {
-		//    return this.UserControlInner.Controls;
+		//	return this.UserControlInner.Controls;
 		//} }
 
 		//private void oneParameterControl1_Paint(object sender, PaintEventArgs e) {
 		////protected void Paint(PaintEventArgs e) {
 		////	base.Paint(e);
-		//    this.UserControlInner.Paint(this, e);
+		//	this.UserControlInner.Paint(this, e);
 		//}
 
 		protected override void OnResize(EventArgs e) {

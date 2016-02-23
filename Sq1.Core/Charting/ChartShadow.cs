@@ -66,23 +66,23 @@ namespace Sq1.Core.Charting {
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-		    #region I loaded bars by click on the DataSourceTree=>Symbol; I want the ChartName to move from previous symbol to barsNotNull.Symbol
-		    // 1) ChartDeserialization
-		    // 2) Backtester.InitializeAndRun_step1or2()
-		    // 3) LIVESIM_START Livesimulator.executor_BacktesterContextInitializedStep2of4()
-		    // 4) LIVESIM_END Livesimulator.afterBacktesterComplete()
+			#region I loaded bars by click on the DataSourceTree=>Symbol; I want the ChartName to move from previous symbol to barsNotNull.Symbol
+			// 1) ChartDeserialization
+			// 2) Backtester.InitializeAndRun_step1or2()
+			// 3) LIVESIM_START Livesimulator.executor_BacktesterContextInitializedStep2of4()
+			// 4) LIVESIM_END Livesimulator.afterBacktesterComplete()
 
-		    if (removeChartShadowFromOldSymbolAndAddToLoadingBars && this.Bars != null)	this.ChartShadow_RemoveFromDataSource();
+			if (removeChartShadowFromOldSymbolAndAddToLoadingBars && this.Bars != null)	this.ChartShadow_RemoveFromDataSource();
 			if (this.Bars != null) {
 				this.Bars.OnBarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(this.bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
 			}
 
 			this.Bars = barsNotNull;
-		    if (removeChartShadowFromOldSymbolAndAddToLoadingBars)						this.ChartShadow_AddToDataSource();
-		    #endregion
+			if (removeChartShadowFromOldSymbolAndAddToLoadingBars)						this.ChartShadow_AddToDataSource();
+			#endregion
 
-		    // ChartForm wants to update last received quote datetime; FOR_NON_CORE_CONSUMERS_ONLY CORE_DEFINED_CONSUMERS_IMPLEMENT_IStreamingConsumer.ConsumeQuoteOfStreamingBar()
-		    this.Bars.OnBarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(this.bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
+			// ChartForm wants to update last received quote datetime; FOR_NON_CORE_CONSUMERS_ONLY CORE_DEFINED_CONSUMERS_IMPLEMENT_IStreamingConsumer.ConsumeQuoteOfStreamingBar()
+			this.Bars.OnBarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(this.bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
 		}
 		void bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm(object sender, BarEventArgs e) {
 			this.raiseOnBarStreamingUpdatedMerged(e);

@@ -53,8 +53,8 @@ namespace Sq1.Charting {
 			// splitContainerChartVsRange
 			// 
 			this.splitContainerChartVsRange.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.splitContainerChartVsRange.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainerChartVsRange.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
 			this.splitContainerChartVsRange.Location = new System.Drawing.Point(0, 0);

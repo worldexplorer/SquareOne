@@ -65,11 +65,11 @@ namespace Sq1.Reporters {
 			}
 			// ATAVISM RESTORED_BINARY_OLV INDUCES_UNNECESSARY_STRATEGY_SAVE
 			//if (base.SystemPerformance.Bars.IsIntraday) {
-			//    this.olvcEntryDate.Width = 120;
-			//    this.olvcExitDate.Width = 120;
+			//	this.olvcEntryDate.Width = 120;
+			//	this.olvcExitDate.Width = 120;
 			//} else {
-			//    this.olvcEntryDate.Width = 80;
-			//    this.olvcExitDate.Width = 80;
+			//	this.olvcEntryDate.Width = 80;
+			//	this.olvcExitDate.Width = 80;
 			//}
 
 			this.positionsAllReversedCached.Clear();
@@ -142,18 +142,18 @@ namespace Sq1.Reporters {
 			////v2
 			//bool livesimStreamingIsSleeping2 = positionsOpenedSafeCopy.AlertsEntry.GuiHasTimeToRebuild(this, "Reporters.Positions.BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)");
 			//if (livesimStreamingIsSleeping != livesimStreamingIsSleeping2) {
-			//    string msg = "NONSENSE";
-			//    //Assembler.PopupException(msg);
+			//	string msg = "NONSENSE";
+			//	//Assembler.PopupException(msg);
 			//}
 			//#endif
 			//if (livesimStreamingIsSleeping == false) {
-			//    return;
+			//	return;
 			//}
 			if (base.Visible == false) return;		//DockContent is minimized / "autohidden"
 			//v1 this.rebuildOLVproperly();
 			//DOESNT_INSERT__REPLACES_EXISTING_LISTVIEW_ITEMS_IF_FOUND_IN_MODEL this.olvPositions.RefreshObjects(safeCopy);
 			//v3
-            this.olvPositions.InsertObjects(0, safeCopy);
+			this.olvPositions.InsertObjects(0, safeCopy);
 		}
 		public override void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
 			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsClosed.SafeCopy(this, "BuildIncrementalOnPositionsOpenedClosed_step3of3(WAIT)");

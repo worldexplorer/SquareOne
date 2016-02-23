@@ -16,12 +16,12 @@ namespace Sq1.Widgets.Level2 {
 				string					windowTitle;
 
 		//public	DockContentImproved		DdeMonitorForm_nullUnsafe		{ get {
-		//    DockContentImproved ddeMonitorForm = this.Parent.Parent.Parent as DockContentImproved;
-		//    if (ddeMonitorForm == null) {
-		//        string msg = "I_NEED_THE_UPPER_LEVEL_FORM_VISIBILITY_TO_NOT_TO_REPAINT_IF_FORM_IS_MINIMIZED_OR_NOT_SHOWN";
-		//        Assembler.PopupException(msg + " //LevelTwoUserControl.DdeMonitorForm", null, false);
-		//    }
-		//    return ddeMonitorForm;
+		//	DockContentImproved ddeMonitorForm = this.Parent.Parent.Parent as DockContentImproved;
+		//	if (ddeMonitorForm == null) {
+		//		string msg = "I_NEED_THE_UPPER_LEVEL_FORM_VISIBILITY_TO_NOT_TO_REPAINT_IF_FORM_IS_MINIMIZED_OR_NOT_SHOWN";
+		//		Assembler.PopupException(msg + " //LevelTwoUserControl.DdeMonitorForm", null, false);
+		//	}
+		//	return ddeMonitorForm;
 		//} }
 
 		//Stopwatch			stopwatchRarifyingUIupdates;

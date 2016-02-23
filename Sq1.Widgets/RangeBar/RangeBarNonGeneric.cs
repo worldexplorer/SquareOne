@@ -69,10 +69,10 @@ namespace Sq1.Widgets.RangeBar {
 		
 		public RangeBarNonGeneric() {
 			//this.SetStyle(
-			//    ControlStyles.UserPaint |
-			//    ControlStyles.AllPaintingInWmPaint |
-			//    ControlStyles.OptimizedDoubleBuffer |
-			//    ControlStyles.ResizeRedraw, true);
+			//	ControlStyles.UserPaint |
+			//	ControlStyles.AllPaintingInWmPaint |
+			//	ControlStyles.OptimizedDoubleBuffer |
+			//	ControlStyles.ResizeRedraw, true);
 			this.RangeMin = 100;
 			this.RangeMax = 500;
 			this.ValueMin = 220;

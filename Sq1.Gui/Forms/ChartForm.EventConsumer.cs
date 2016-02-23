@@ -502,9 +502,9 @@ namespace Sq1.Gui.Forms {
 
 				//dont sync me now, I'm having just a good time
 				//if (strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim) {	// sync after click (paused or running)
-				//    this.ChartFormManager.LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters();
+				//	this.ChartFormManager.LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters();
 				//} else {
-				//    this.ChartFormManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters();
+				//	this.ChartFormManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters();
 				//}
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);

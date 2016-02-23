@@ -4,7 +4,7 @@ using Sq1.Core.DataFeed;
 namespace Sq1.Core.Backtesting {
 	public class BacktestDataSource : DataSource {
 		//public BacktestStreaming	StreamingAsBacktest_nullUnsafe	{ get { return base.StreamingAdapter	as BacktestStreaming; } }
-		//public BacktestBroker	    BrokerAsBacktest_nullUnsafe		{ get { return base   .BrokerAdapter	as BacktestBroker; } }
+		//public BacktestBroker		BrokerAsBacktest_nullUnsafe		{ get { return base   .BrokerAdapter	as BacktestBroker; } }
 
 		public BacktestDataSource() {
 			base.Name = "BacktestDataSource";

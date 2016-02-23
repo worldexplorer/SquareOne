@@ -74,13 +74,13 @@ namespace Sq1.Charting.MultiSplit {
 			return;
 			
 			//try {
-			//    for (int i=0; i<this.panels.Count; i++) {
-			//        Control panel = this.panels[i];
-			//        //panel.Invalidate();	// base.OnPaint() did it already
-			//    }
+			//	for (int i=0; i<this.panels.Count; i++) {
+			//		Control panel = this.panels[i];
+			//		//panel.Invalidate();	// base.OnPaint() did it already
+			//	}
 			//} catch (Exception ex) {
-			//    string msg = "CONTROL.INVALIDATE()_IS_VERY_UNLIKELY_TO_THROW //MultiSplitContainerGeneric<PANEL_BASE>.OnPaintBackground()";
-			//    Assembler.PopupException(msg, ex);
+			//	string msg = "CONTROL.INVALIDATE()_IS_VERY_UNLIKELY_TO_THROW //MultiSplitContainerGeneric<PANEL_BASE>.OnPaintBackground()";
+			//	Assembler.PopupException(msg, ex);
 			//}
 		}
 // USING_NON_DOUBLE_BUFFERED_TO_PAINT_RED_SPLITTER_BACKGROUND_ON_DRAGGING_USING_GRIP...
@@ -298,8 +298,8 @@ namespace Sq1.Charting.MultiSplit {
 			}
 			this.splitterStartedResizeOrDrag = splitter;
 			this.splitterStartedResizeOrDragPoint = this.VerticalizeAllLogic == false
-			    ? new Point(splitter.Location.X + e.X, splitter.Location.Y + e.Y - splitter.Height)
-			    : new Point(splitter.Location.X + e.X - splitter.Width, splitter.Location.Y + e.Y);
+				? new Point(splitter.Location.X + e.X, splitter.Location.Y + e.Y - splitter.Height)
+				: new Point(splitter.Location.X + e.X - splitter.Width, splitter.Location.Y + e.Y);
 			if (this.DebugSplitter) {
 				splitter.Text = this.splitterStartedResizeOrDragText;
 				splitter.Invalidate();		// makes the Text visible
@@ -426,8 +426,8 @@ namespace Sq1.Charting.MultiSplit {
 				int panelAboveMinimumHeight = this.MinimumPanelHeight;
 				//MultiSplitContainer multiSplitContainerAbove = panelAbove as MultiSplitContainer;
 				//if (multiSplitContainerAbove != null) {		// I avoid setting MinimalSize for the MultiSplitContainer itself
-				//    string msg = "CALCULATING_SUM_OF_MIN_HEIGHTS_AMONG_NESTED_PANELS__ABOVE_SPLITTER";
-				//    panelAboveMinimumHeight = multiSplitContainerAbove.MinimalPanelHeights_SumIfHorizontal_MaxIfVertical;
+				//	string msg = "CALCULATING_SUM_OF_MIN_HEIGHTS_AMONG_NESTED_PANELS__ABOVE_SPLITTER";
+				//	panelAboveMinimumHeight = multiSplitContainerAbove.MinimalPanelHeights_SumIfHorizontal_MaxIfVertical;
 				//} else {
 					if (panelAbove.MinimumSize != default(Size)) {
 						panelAboveMinimumHeight = panelAbove.MinimumSize.Height;
@@ -442,8 +442,8 @@ namespace Sq1.Charting.MultiSplit {
 				int panelBelowMinimumHeight = this.MinimumPanelHeight;
 				//MultiSplitContainer multiSplitContainerBelow = panelBelow as MultiSplitContainer;
 				//if (multiSplitContainerBelow != null) {		// I avoid setting MinimalSize for the MultiSplitContainer itself
-				//    string msg = "CALCULATING_SUM_OF_MIN_HEIGHTS_AMONG_NESTED_PANELS__BELOW_SPLITTER";
-				//    panelAboveMinimumHeight = multiSplitContainerBelow.MinimalPanelHeights_SumIfHorizontal_MaxIfVertical;
+				//	string msg = "CALCULATING_SUM_OF_MIN_HEIGHTS_AMONG_NESTED_PANELS__BELOW_SPLITTER";
+				//	panelAboveMinimumHeight = multiSplitContainerBelow.MinimalPanelHeights_SumIfHorizontal_MaxIfVertical;
 				//} else {
 					if (panelBelow.MinimumSize != default(Size)) {
 						panelBelowMinimumHeight = panelBelow.MinimumSize.Height;
@@ -463,9 +463,9 @@ namespace Sq1.Charting.MultiSplit {
 				//PanelBase panelBaseBelow = panelBelow as PanelBase;
 				//MultiSplitContainer multiSplitContainerBelow = panelBelow as MultiSplitContainer;
 				//if (panelBaseBelow != null) {
-				//    panelBaseBelow			.SetHeightIgnoreResize(panelBelowNewHeight);
+				//	panelBaseBelow			.SetHeightIgnoreResize(panelBelowNewHeight);
 				//} else if (multiSplitContainerBelow != null) {
-				//    multiSplitContainerBelow.SetHeightIgnoreResize(panelBelowNewHeight);
+				//	multiSplitContainerBelow.SetHeightIgnoreResize(panelBelowNewHeight);
 				//} else {
 					if (panelBelow.Height != panelBelowNewHeight) {
 						panelBelow.Height  = panelBelowNewHeight;	// will invoke OnResize() => Distribute()
@@ -484,9 +484,9 @@ namespace Sq1.Charting.MultiSplit {
 				//PanelBase panelBaseAbove = panelAbove as PanelBase;
 				//MultiSplitContainer multiSplitContainerAbove = panelAbove as MultiSplitContainer;
 				//if (panelBaseAbove != null) {
-				//    panelBaseAbove			.SetHeightIgnoreResize(panelAboveNewHeight);
+				//	panelBaseAbove			.SetHeightIgnoreResize(panelAboveNewHeight);
 				//} else if (multiSplitContainerAbove != null) {
-				//    multiSplitContainerAbove.SetHeightIgnoreResize(panelAboveNewHeight);
+				//	multiSplitContainerAbove.SetHeightIgnoreResize(panelAboveNewHeight);
 				//} else {
 					if (panelAbove.Height != panelAboveNewHeight) {
 						panelAbove.Height  = panelAboveNewHeight;	// will invoke OnResize() => Distribute()
@@ -508,8 +508,8 @@ namespace Sq1.Charting.MultiSplit {
 				int panelAboveMinimumWidth = this.MinimumPanelHeight;
 				//MultiSplitContainer multiSplitContainerAbove = panelAbove as MultiSplitContainer;
 				//if (multiSplitContainerAbove != null) {		// I avoid setting MinimalSize for the MultiSplitContainer itself
-				//    string msg = "CALCULATING_SUM_OF_MIN_WIDTHS_AMONG_NESTED_PANELS__ABOVE_SPLITTER";
-				//    panelAboveMinimumWidth = multiSplitContainerAbove.MinimalPanelWidths_SumIfVertical_MaxIfHorizontal;
+				//	string msg = "CALCULATING_SUM_OF_MIN_WIDTHS_AMONG_NESTED_PANELS__ABOVE_SPLITTER";
+				//	panelAboveMinimumWidth = multiSplitContainerAbove.MinimalPanelWidths_SumIfVertical_MaxIfHorizontal;
 				//} else {
 					if (panelAbove.MinimumSize != default(Size)) {
 						panelAboveMinimumWidth = panelAbove.MinimumSize.Width;
@@ -524,8 +524,8 @@ namespace Sq1.Charting.MultiSplit {
 				int panelBelowMinimumWidth = this.MinimumPanelHeight;
 				//MultiSplitContainer multiSplitContainerBelow = panelBelow as MultiSplitContainer;
 				//if (multiSplitContainerBelow != null) {		// I avoid setting MinimalSize for the MultiSplitContainer itself
-				//    string msg = "CALCULATING_SUM_OF_MIN_WIDTHS_AMONG_NESTED_PANELS__BELOW_SPLITTER";
-				//    panelBelowMinimumWidth = multiSplitContainerBelow.MinimalPanelWidths_SumIfVertical_MaxIfHorizontal;
+				//	string msg = "CALCULATING_SUM_OF_MIN_WIDTHS_AMONG_NESTED_PANELS__BELOW_SPLITTER";
+				//	panelBelowMinimumWidth = multiSplitContainerBelow.MinimalPanelWidths_SumIfVertical_MaxIfHorizontal;
 				//} else {
 					if (panelBelow.MinimumSize != default(Size)) {
 						panelBelowMinimumWidth = panelBelow.MinimumSize.Width;
@@ -546,9 +546,9 @@ namespace Sq1.Charting.MultiSplit {
 				//PanelBase panelBaseBelow = panelBelow as PanelBase;
 				//MultiSplitContainer multiSplitContainerBelow = panelBelow as MultiSplitContainer;
 				//if (panelBaseBelow != null) {
-				//    panelBaseBelow			.SetWidthIgnoreResize(panelBelowNewWidth);
+				//	panelBaseBelow			.SetWidthIgnoreResize(panelBelowNewWidth);
 				//} else if (multiSplitContainerBelow != null) {
-				//    multiSplitContainerBelow.SetWidthIgnoreResize(panelBelowNewWidth);
+				//	multiSplitContainerBelow.SetWidthIgnoreResize(panelBelowNewWidth);
 				//} else {
 					if (panelBelow.Width != panelBelowNewWidth) {
 						panelBelow.Width  = panelBelowNewWidth;	// will invoke OnResize() => Distribute()
@@ -567,9 +567,9 @@ namespace Sq1.Charting.MultiSplit {
 				//PanelBase panelBaseAbove = panelAbove as PanelBase;
 				//MultiSplitContainer multiSplitContainerAbove = panelAbove as MultiSplitContainer;
 				//if (panelBaseAbove != null) {
-				//    panelBaseAbove			.SetWidthIgnoreResize(panelAboveNewWidth);
+				//	panelBaseAbove			.SetWidthIgnoreResize(panelAboveNewWidth);
 				//} else if (multiSplitContainerAbove != null) {
-				//    multiSplitContainerAbove.SetWidthIgnoreResize(panelAboveNewWidth);
+				//	multiSplitContainerAbove.SetWidthIgnoreResize(panelAboveNewWidth);
 				//} else {
 					if (panelAbove.Width != panelAboveNewWidth) {
 						panelAbove.Width  = panelAboveNewWidth;	// will invoke OnResize() => Distribute()

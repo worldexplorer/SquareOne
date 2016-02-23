@@ -202,7 +202,7 @@ namespace Sq1.Widgets.Exceptions {
 		}
 
 		//public void FlushExceptionsToOLV_switchToGuiThread_atDockContentDeserialized() {
-		//    this.flushExceptionsToOLV_switchToGuiThread();
+		//	this.flushExceptionsToOLV_switchToGuiThread();
 		//}
 
 		void flushExceptionsToOLV_switchToGuiThread(object stateForTimerCallback = null) {

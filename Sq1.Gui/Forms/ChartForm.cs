@@ -34,9 +34,9 @@ namespace Sq1.Gui.Forms {
 			string ident = " [" + this.ChartFormManager.Executor.ToString() + "]";	// base.Text throws cross-thread exception, of course on Workspace reload
 			// POTENTIALLY_CAN_BE_INVOKED_AFTER_BEED_TRIGGERED_AS_LOADED, ExceptionsControl:UserControlImproved is a more obvious case
 			//if (this.waitForChartFormIsLoaded.WaitOne(0) == true) {
-			//    string msg1 = "MUST_BE_INSTANTIATED_AS_NON_SIGNALLED_IN_CTOR()_#2 waitForChartFormIsLoaded.WaitOne(0)=[true]";
-			//    Assembler.PopupException(msg1);
-			//    return false;
+			//	string msg1 = "MUST_BE_INSTANTIATED_AS_NON_SIGNALLED_IN_CTOR()_#2 waitForChartFormIsLoaded.WaitOne(0)=[true]";
+			//	Assembler.PopupException(msg1);
+			//	return false;
 			//}
 			Stopwatch formLoaded = new Stopwatch();
 			formLoaded.Start();

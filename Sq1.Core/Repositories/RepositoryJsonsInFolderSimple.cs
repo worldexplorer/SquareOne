@@ -96,13 +96,13 @@ namespace Sq1.Core.Repositories {
 			return ret;
 		}
 		//public bool ItemsFoundContainsName(string name) {
-		//    bool ret = false;
-		//    foreach (FnameDateSizeColorPFavg each in this.ItemsFound) {
-		//        if (each.NameWithMarker != name) continue;
-		//        ret = true;
-		//        break;
-		//    }
-		//    return ret;
+		//	bool ret = false;
+		//	foreach (FnameDateSizeColorPFavg each in this.ItemsFound) {
+		//		if (each.NameWithMarker != name) continue;
+		//		ret = true;
+		//		break;
+		//	}
+		//	return ret;
 		//}
 		public string AbsFnameFor(string fname) {
 			return Path.Combine(this.AbsPath, fname + this.Extension);

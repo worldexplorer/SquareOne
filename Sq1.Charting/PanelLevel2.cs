@@ -167,12 +167,12 @@ namespace Sq1.Charting {
 			double priceStep = panelPrice.PriceStep;
 
 			//string msgPixelsPerPriceStep = "Px[" + base.Height + "]/PriceStep[" + priceStep + "]=" 
-			//    + panelPrice.PixelsPerPriceStep3pxLeast_cached;
+			//	+ panelPrice.PixelsPerPriceStep3pxLeast_cached;
 			//base.DrawError(g, msgPixelsPerPriceStep);
 
 			//string msgCalc = "PixelsPerPriceStepMadeVisible_cached[" + panelPrice.PixelsPerPriceStep3pxLeast_cached
-			//    + "] = PriceLevelsShown_cached[" + panelPrice.PriceLevelsShown_cached
-			//    + "]/VisibleMaxPlusBottomSqueezer_cached[" + panelPrice.VisibleMaxPlusBottomSqueezer_cached + "]";
+			//	+ "] = PriceLevelsShown_cached[" + panelPrice.PriceLevelsShown_cached
+			//	+ "]/VisibleMaxPlusBottomSqueezer_cached[" + panelPrice.VisibleMaxPlusBottomSqueezer_cached + "]";
 			//base.DrawError(g, msgCalc);
 
 			LevelTwoHalfSortedFrozen asks_sortedCachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Asks_sortedCachedForOnePaint;
@@ -214,15 +214,22 @@ namespace Sq1.Charting {
 			if (stripeHeightWillContainMeasuredText) {
 				int howManyAskPriceLevelsWillFit = (int) Math.Round(quoteAskYoffsetted / (double)pxPerPriceStep_Height);
 				int howManyBidPriceLevelsWillFit = (int) Math.Round((base.ClientRectangle.Height - quoteBidYofsetted) / (double)pxPerPriceStep_Height);
-
+				// they are not equal because of the height of the DomControl; spread is not accounted so I leave some space for the spread by trimming a longer moustache
 				int depthFittingToDisplayedHeight = Math.Min(howManyBidPriceLevelsWillFit, howManyAskPriceLevelsWillFit);
-				bool requestingLongerMoustaches =
-					depthFittingToDisplayedHeight >= asks_sortedCachedForOnePaint.Count &&
-					depthFittingToDisplayedHeight >= bids_sortedCachedForOnePaint.Count;
-
-				if (requestingLongerMoustaches == false) {
-					asks_sortedCachedForOnePaint = asks_sortedCachedForOnePaint.Clone_noDeeperThan(depthFittingToDisplayedHeight);
-					bids_sortedCachedForOnePaint = bids_sortedCachedForOnePaint.Clone_noDeeperThan(depthFittingToDisplayedHeight);
+				//v1
+				//bool requestingLongerMoustachesThanIhave =
+				//	depthFittingToDisplayedHeight >= asks_sortedCachedForOnePaint.Count ||
+				//	depthFittingToDisplayedHeight >= bids_sortedCachedForOnePaint.Count;
+				//if (requestingLongerMoustachesThanIhave == false) {
+				//	asks_sortedCachedForOnePaint = asks_sortedCachedForOnePaint.Clone_noDeeperThan(depthFittingToDisplayedHeight);
+				//	bids_sortedCachedForOnePaint = bids_sortedCachedForOnePaint.Clone_noDeeperThan(depthFittingToDisplayedHeight);
+				//}
+				//v2 cut moustaches separately
+				if (howManyAskPriceLevelsWillFit < depthFittingToDisplayedHeight) {
+					asks_sortedCachedForOnePaint = asks_sortedCachedForOnePaint.Clone_noDeeperThan(howManyAskPriceLevelsWillFit);
+				}
+				if (howManyBidPriceLevelsWillFit < depthFittingToDisplayedHeight) {
+					bids_sortedCachedForOnePaint = bids_sortedCachedForOnePaint.Clone_noDeeperThan(howManyBidPriceLevelsWillFit);
 				}
 			}
 
@@ -239,8 +246,8 @@ namespace Sq1.Charting {
 
 			//double mouseOveredPrice = panelPrice.PanelValueForBarMouseOveredNaNunsafe;
 			//if (double.IsNaN(mouseOveredPrice) == false) {
-			//    int mouseOveredPriceY = panelPrice.ValueToYinverted(mouseOveredPrice) + pxPricePanelVertialOffset;
-			//    using (Pen brown = new Pen(Color.SaddleBrown)) g.DrawLine(brown, 0, mouseOveredPriceY, base.Width, mouseOveredPriceY);
+			//	int mouseOveredPriceY = panelPrice.ValueToYinverted(mouseOveredPrice) + pxPricePanelVertialOffset;
+			//	using (Pen brown = new Pen(Color.SaddleBrown)) g.DrawLine(brown, 0, mouseOveredPriceY, base.Width, mouseOveredPriceY);
 			//}
 
 			//using (Pen black = new Pen(Color.Black)) g.DrawLine(black, 0, pxPricePanelVertialOffset, base.Width, pxPricePanelVertialOffset);

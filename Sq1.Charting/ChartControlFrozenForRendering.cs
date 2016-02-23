@@ -164,14 +164,14 @@ namespace Sq1.Charting {
 			//string msg = "should I NOT assign this.AlertsPendingHistorySafeCopy=alertsPendingHistorySafeCopy?";
 			//Assembler.PopupException(msg + msig);
 			//if (null == pokeUnit.QuoteGeneratedThisUnit) {
-			//    msg = "NEVER_HAPPENED_SO_FAR pokeUnit.QuoteGeneratedThisUnit=null";
-			//    Assembler.PopupException(msg + msig);
-			//    return;
+			//	msg = "NEVER_HAPPENED_SO_FAR pokeUnit.QuoteGeneratedThisUnit=null";
+			//	Assembler.PopupException(msg + msig);
+			//	return;
 			//}
 			//if (null == pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming) {
-			//    msg = "NEVER_HAPPENED_SO_FAR pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming=null";
-			//    Assembler.PopupException(msg + msig);
-			//    return;
+			//	msg = "NEVER_HAPPENED_SO_FAR pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming=null";
+			//	Assembler.PopupException(msg + msig);
+			//	return;
 			//}
 			//int barIndex = pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming.ParentBarsIndex;
 			//this.AlertsPendingHistorySafeCopy.Add(barIndex, pokeUnit.AlertsNew.SafeCopy(this, "PendingRealtimeAdd(WAIT)"));

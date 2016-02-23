@@ -38,34 +38,34 @@ namespace Sq1.Charting.MultiSplit {
 		} }
 
 		//public int MinimalPanelWidths_SumIfVertical_MaxIfHorizontal { get {
-		//    int ret = 0;
-		//    foreach (PANEL_BASE panel in this.panels) {
-		//        if (panel.ToString().Contains("UNINITIALIZED")) {
-		//            string msg = "YOU_DIDNT_INITIALIZE_THE_PANEL_NAME";
-		//            Assembler.PopupException(msg);
-		//        }
-		//        if (this.VerticalizeAllLogic) {
-		//            ret += panel.MinimumSize.Width;
-		//        } else {
-		//            ret = Math.Max(ret, panel.MinimumSize.Width);
-		//        }
-		//    }
-		//    return ret;
+		//	int ret = 0;
+		//	foreach (PANEL_BASE panel in this.panels) {
+		//		if (panel.ToString().Contains("UNINITIALIZED")) {
+		//			string msg = "YOU_DIDNT_INITIALIZE_THE_PANEL_NAME";
+		//			Assembler.PopupException(msg);
+		//		}
+		//		if (this.VerticalizeAllLogic) {
+		//			ret += panel.MinimumSize.Width;
+		//		} else {
+		//			ret = Math.Max(ret, panel.MinimumSize.Width);
+		//		}
+		//	}
+		//	return ret;
 		//} }
 		//public int MinimalPanelHeights_SumIfHorizontal_MaxIfVertical { get {
-		//    int ret = 0;
-		//    foreach (PANEL_BASE panel in this.panels) {
-		//        if (panel.ToString().Contains("UNINITIALIZED")) {
-		//            string msg = "YOU_DIDNT_INITIALIZE_THE_PANEL_NAME";
-		//            Assembler.PopupException(msg);
-		//        }
-		//        if (this.VerticalizeAllLogic == false) {
-		//            ret += panel.MinimumSize.Height;
-		//        } else {
-		//            ret = Math.Max(ret, panel.MinimumSize.Height);
-		//        }
-		//    }
-		//    return ret;
+		//	int ret = 0;
+		//	foreach (PANEL_BASE panel in this.panels) {
+		//		if (panel.ToString().Contains("UNINITIALIZED")) {
+		//			string msg = "YOU_DIDNT_INITIALIZE_THE_PANEL_NAME";
+		//			Assembler.PopupException(msg);
+		//		}
+		//		if (this.VerticalizeAllLogic == false) {
+		//			ret += panel.MinimumSize.Height;
+		//		} else {
+		//			ret = Math.Max(ret, panel.MinimumSize.Height);
+		//		}
+		//	}
+		//	return ret;
 		//} }
 
 		MultiSplitContainerGeneric(bool verticalizeAllLogic = false, bool debugSplitter = false) {
@@ -106,18 +106,18 @@ namespace Sq1.Charting.MultiSplit {
 				string msg = "ONCE_PER_PANEL_LET_IT_DISTRIBUTE_COMMENTED WHAT_IF_YOU_FIND_ALL_AND_LINK_PANEL_BELOWs_HERE?...";
 				msg += " AssignPanelBelowAbove_setMinimalSize_fromPanelsList() and DistributePanelsAndSplitters() are invoked in ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized";
 				// Assembler.PopupException(msg);
-		        return;
+				return;
 			}
-		    if (this.splitters.Count < 1) {
-		        string msg = "YOU_NEED_TO_ADD_PANELS_BEFORE_HEIGHT_DISTRIBUTION";
-		        Assembler.PopupException(msg);
-		        return;
-		    }
-		    if (this.splitters.Count != this.panels.Count) {
-		        string msg = "YOU_GOT_MORE_PANELS_(DESERIALIZED)_THAN_SPLITTERS MUST_BE_EQUAL";
-		        Assembler.PopupException(msg);
-		        return;
-		    }
+			if (this.splitters.Count < 1) {
+				string msg = "YOU_NEED_TO_ADD_PANELS_BEFORE_HEIGHT_DISTRIBUTION";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (this.splitters.Count != this.panels.Count) {
+				string msg = "YOU_GOT_MORE_PANELS_(DESERIALIZED)_THAN_SPLITTERS MUST_BE_EQUAL";
+				Assembler.PopupException(msg);
+				return;
+			}
 			for (int i=0; i<this.panels.Count; i++) {
 				PANEL_BASE panel = this.panels[i];
 				if (panel == null) {
@@ -171,11 +171,11 @@ namespace Sq1.Charting.MultiSplit {
 		}
 
 		Dictionary<string, MultiSplitterProperties> distributeColumns() {
-		    int panelsWidthOriginal= 0;
-		    for (int i=0; i<this.splitters.Count; i++) {
+			int panelsWidthOriginal= 0;
+			for (int i=0; i<this.splitters.Count; i++) {
 				PANEL_BASE panel = this.panels[i];
-		        panelsWidthOriginal += panel.Width;		// mapanelsWidthOriginalgo beoynd base.Width but I will handle that on SetProperties()
-		    }
+				panelsWidthOriginal += panel.Width;		// mapanelsWidthOriginalgo beoynd base.Width but I will handle that on SetProperties()
+			}
 
 			int baseWidth = base.Width;
 			// we need proportional vertical fill when 1) a new panel was added, 2) an old panel was removed, 3) Initialize(List<Panel>), 4) OnResize
@@ -184,10 +184,10 @@ namespace Sq1.Charting.MultiSplit {
 			//panelsWidthEffective -= this.splitters.Count * 2;	// panel start NEXT pixel after splitter's boundary => each panel has 1px less space
 			double stretchVerticalK = (double) panelsWidthEffective / (double) panelsWidthOriginal;
 			
-		    int x = 0;
+			int x = 0;
 			int stealFromNextPanel = 0;
 			string lastPanelName = null;
-		    Dictionary<string, MultiSplitterProperties> ret = new Dictionary<string, MultiSplitterProperties>();
+			Dictionary<string, MultiSplitterProperties> ret = new Dictionary<string, MultiSplitterProperties>();
 
 			for (int i=0; i<this.splitters.Count; i++) {
 				PANEL_BASE panel = this.panels[i];
@@ -216,23 +216,23 @@ namespace Sq1.Charting.MultiSplit {
 				x += panelWidthStretched;
 			}
 
-		    int roundingError = Math.Abs(x - baseWidth);
-		    if (roundingError != 0) {
+			int roundingError = Math.Abs(x - baseWidth);
+			if (roundingError != 0) {
 				string msg = "YOUR_DISTRIBUTION_COEFFICIENT_WASNT_PRECISE LAST_PANEL_WIDTH_SUBTRACTED[" + roundingError + "]";	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
 				Assembler.PopupException(msg, null, false);
 
 				MultiSplitterProperties lastSplitterProp = ret[lastPanelName];
 				lastSplitterProp.PanelHeight -= roundingError;
-		    }
+			}
 			return ret;
 		}
 
 		Dictionary<string, MultiSplitterProperties> distributeRows() {
-		    int panelsHeightOriginal= 0;
-		    for (int i=0; i<this.splitters.Count; i++) {
+			int panelsHeightOriginal= 0;
+			for (int i=0; i<this.splitters.Count; i++) {
 				PANEL_BASE panel = this.panels[i];
-		        panelsHeightOriginal += panel.Height;		// mapanelsHeightOriginalgo beoynd base.Width but I will handle that on SetProperties()
-		    }
+				panelsHeightOriginal += panel.Height;		// mapanelsHeightOriginalgo beoynd base.Width but I will handle that on SetProperties()
+			}
 
 			int baseHeight = base.Height;
 			// we need proportional vertical fill when 1) a new panel was added, 2) an old panel was removed, 3) Initialize(List<Panel>), 4) OnResize
@@ -241,10 +241,10 @@ namespace Sq1.Charting.MultiSplit {
 			//BOTTOM_4PX_GRAY panelsHeightEffective -= this.splitters.Count * 2;	// panel start NEXT pixel after splitter's boundary => each panel has 1px less space
 			double stretchVerticalK = (double) panelsHeightEffective / (double) panelsHeightOriginal;
 			
-		    int y = 0;
+			int y = 0;
 			int stealFromNextPanel = 0;
 			string lastPanelName = null;
-		    Dictionary<string, MultiSplitterProperties> ret = new Dictionary<string, MultiSplitterProperties>();
+			Dictionary<string, MultiSplitterProperties> ret = new Dictionary<string, MultiSplitterProperties>();
 
 			for (int i=0; i<this.splitters.Count; i++) {
 				PANEL_BASE panel = this.panels[i];
@@ -273,14 +273,14 @@ namespace Sq1.Charting.MultiSplit {
 				y += panelHeightStretched;
 			}
 
-		    int roundingError = Math.Abs(y - baseHeight);
-		    if (roundingError != 0) {
+			int roundingError = Math.Abs(y - baseHeight);
+			if (roundingError != 0) {
 				string msg = "YOUR_DISTRIBUTION_COEFFICIENT_WASNT_PRECISE LAST_PANEL_HEIGHT_SUBTRACTED[" + roundingError + "]";	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
 				Assembler.PopupException(msg, null, false);
 
 				MultiSplitterProperties lastSplitterProp = ret[lastPanelName];
 				lastSplitterProp.PanelHeight -= roundingError;
-		    }
+			}
 			return ret;
 		}
 
