@@ -199,10 +199,10 @@ namespace Sq1.Charting {
 			this.hScrollBar.Value = this.hScrollBar.Maximum;
 		}
 		//public void DisposeBufferedGraphicsAndInvalidateAllPanels() {
-		//    foreach (PanelBase panel in this.panelsInvalidateAll) {
-		//        panel.disposeAndNullifyToRecreateInPaint();
-		//    }
-		//    this.InvalidateAllPanels();
+		//	foreach (PanelBase panel in this.panelsInvalidateAll) {
+		//		panel.disposeAndNullifyToRecreateInPaint();
+		//	}
+		//	this.InvalidateAllPanels();
 		//}
 		public override void InvalidateAllPanels() {
 			if (base.InvokeRequired) {
@@ -221,33 +221,33 @@ namespace Sq1.Charting {
 			//this.InvalidatedByStreamingKeepTooltipsOpen = false;
 		}
 		//public override void RefreshAllPanelsNonBlockingRefreshNotYetStarted() {
-		//    // RESETTING_ASAP_IN_THIS_THREAD_AND_SETTING_IN_GUI_THREAD__SWITCHING_IS_SLOW
-		//    // AVOIDING_signalledAlready==true_IN_RefreshAllPanelsFinidhesWaiterSignalledLivesimCanProceedToGenerateNewQuote()
-		//    // WILL_RESET_AFTER_WAIT(0)_GETS_CONTROL base.RefreshAllPanelsFinishedWaiterReset();
-		//    if (base.RefreshAllPanelsIsSignalled == true) {
-		//        string msg = "NO_SIGNALLING_HAPPENS_AFTER_QUOTE_BUT_ORDER_EXEC_ALSO_TRIGGERS_REPAINT_WHEN_LIVESIMULATION"
-		//            + " VERY_LAZY_GUI_THREAD_SIGNALLED_FOR_PREV_REPAINT_SO_LATE???"
-		//            + " MUST_BE_UNSIGNALLED_KOZ_IM_THE_ONLY_WHO_WILL_SIGNAL";
-		//        //Assembler.PopupException(msg, null, false);
-		//    }
-		//    if (base.InvokeRequired) {
-		//        base.BeginInvoke(new MethodInvoker(this.RefreshAllPanelsNonBlockingRefreshNotYetStarted));
-		//        return;
-		//    }
-		//    if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
-		//    //WHY??? this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
-		//    PanelBase panelThrew = null;
-		//    try {
-		//        foreach (PanelBase panel in this.panelsInvalidateAll) {
-		//            panelThrew = panel;
-		//            panel.Refresh();
-		//        }
-		//    } catch (Exception ex) {
-		//        string msg = "panelThrew[" + panelThrew.ToString() + "].Refresh() //RefreshAllPanelsNonBlockingRefreshNotYetStarted()";
-		//        Assembler.PopupException(msg, ex);
-		//    } finally {
-		//        base.RefreshAllPanelsFinishedWaiterNotifyAll();
-		//    }
+		//	// RESETTING_ASAP_IN_THIS_THREAD_AND_SETTING_IN_GUI_THREAD__SWITCHING_IS_SLOW
+		//	// AVOIDING_signalledAlready==true_IN_RefreshAllPanelsFinidhesWaiterSignalledLivesimCanProceedToGenerateNewQuote()
+		//	// WILL_RESET_AFTER_WAIT(0)_GETS_CONTROL base.RefreshAllPanelsFinishedWaiterReset();
+		//	if (base.RefreshAllPanelsIsSignalled == true) {
+		//		string msg = "NO_SIGNALLING_HAPPENS_AFTER_QUOTE_BUT_ORDER_EXEC_ALSO_TRIGGERS_REPAINT_WHEN_LIVESIMULATION"
+		//			+ " VERY_LAZY_GUI_THREAD_SIGNALLED_FOR_PREV_REPAINT_SO_LATE???"
+		//			+ " MUST_BE_UNSIGNALLED_KOZ_IM_THE_ONLY_WHO_WILL_SIGNAL";
+		//		//Assembler.PopupException(msg, null, false);
+		//	}
+		//	if (base.InvokeRequired) {
+		//		base.BeginInvoke(new MethodInvoker(this.RefreshAllPanelsNonBlockingRefreshNotYetStarted));
+		//		return;
+		//	}
+		//	if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+		//	//WHY??? this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
+		//	PanelBase panelThrew = null;
+		//	try {
+		//		foreach (PanelBase panel in this.panelsInvalidateAll) {
+		//			panelThrew = panel;
+		//			panel.Refresh();
+		//		}
+		//	} catch (Exception ex) {
+		//		string msg = "panelThrew[" + panelThrew.ToString() + "].Refresh() //RefreshAllPanelsNonBlockingRefreshNotYetStarted()";
+		//		Assembler.PopupException(msg, ex);
+		//	} finally {
+		//		base.RefreshAllPanelsFinishedWaiterNotifyAll();
+		//	}
 		//}
 		void scrollToBarSafely(int bar) {
 			if (bar > this.hScrollBar.Maximum) bar = this.hScrollBar.Maximum;
@@ -559,10 +559,10 @@ namespace Sq1.Charting {
 				return ret;
 			} }
 		//public Rectangle TooltipPriceClientRectangleOrEmptyIfInvisible { get {
-		//        Rectangle ret = Rectangle.Empty;
-		//        if (this.tooltipPrice.Visible == false) return ret;
-		//        return this.tooltipPrice.ClientRectangle;
-		//    } }
+		//		Rectangle ret = Rectangle.Empty;
+		//		if (this.tooltipPrice.Visible == false) return ret;
+		//		return this.tooltipPrice.ClientRectangle;
+		//	} }
 		public override void RangeBarCollapseToAccelerateLivesim() {
 			this.splitContainerChartVsRange.Panel2Collapsed = true;
 		}

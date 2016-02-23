@@ -48,8 +48,8 @@ namespace Sq1.Charting {
 			// propertyGrid1
 			// 
 			this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.propertyGrid1.CommandsVisibleIfAvailable = false;
 			this.propertyGrid1.Location = new System.Drawing.Point(0, -27);
 			this.propertyGrid1.Name = "propertyGrid1";
@@ -60,8 +60,8 @@ namespace Sq1.Charting {
 			// statusStrip1
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cbxSettings,
-            this.mniAbsorbFromChart});
+			this.cbxSettings,
+			this.mniAbsorbFromChart});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 515);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(234, 25);
@@ -99,14 +99,14 @@ namespace Sq1.Charting {
 			// ctxTemplateActions
 			// 
 			this.ctxTemplateActions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniLoad,
-            this.mniltbSaveCurrentAs,
-            this.toolStripSeparator2,
-            this.mniltbDuplicate,
-            this.mniltbRenameTo,
-            this.toolStripSeparator1,
-            this.mniAddNew,
-            this.mniDelete});
+			this.mniLoad,
+			this.mniltbSaveCurrentAs,
+			this.toolStripSeparator2,
+			this.mniltbDuplicate,
+			this.mniltbRenameTo,
+			this.toolStripSeparator1,
+			this.mniAddNew,
+			this.mniDelete});
 			this.ctxTemplateActions.MinimumSize = new System.Drawing.Size(300, 0);
 			this.ctxTemplateActions.Name = "ctxTemplateActions";
 			this.ctxTemplateActions.Size = new System.Drawing.Size(309, 156);
