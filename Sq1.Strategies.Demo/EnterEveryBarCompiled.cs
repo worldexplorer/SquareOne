@@ -61,8 +61,8 @@ namespace Sq1.Strategies.Demo {
 			//this.MAslow.LineColor = System.Drawing.Color.LightCoral;
 
 			//if (this.Executor.Sequencer.IsRunningNow == false) {
-			//    string msg = "SEQUENCER_IS_ALREADY_RUN_KOZ_4CORES-SPAWNED_EXECUTORS(WHOS_MY_FATER)_ARE_POINTING_TO_SAME_SEQUENCER";
-			//    Assembler.PopupException(msg);
+			//	string msg = "SEQUENCER_IS_ALREADY_RUN_KOZ_4CORES-SPAWNED_EXECUTORS(WHOS_MY_FATER)_ARE_POINTING_TO_SAME_SEQUENCER";
+			//	Assembler.PopupException(msg);
 			//}
 			testChartLabelDrawOnNextLineModify();
 		}
@@ -259,17 +259,17 @@ namespace Sq1.Strategies.Demo {
 			//}
 		}
 		//void testBarAnnotations(Bar barStaticFormed) {
-		//    int barIndex = barStaticFormed.ParentBarsIndex;
-		//    string labelText = barStaticFormed.DateTimeOpen.ToString("HH:mm");
-		//    labelText += " " + barStaticFormed.BarIndexAfterMidnightReceived + "/";
-		//    labelText += barStaticFormed.BarIndexExpectedSinceTodayMarketOpen + ":" + barStaticFormed.BarIndexExpectedMarketClosesTodaySinceMarketOpen;
-		//    //bool evenAboveOddBelow = true;
-		//    bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
-		//    base.Executor.ChartConditionalBarAnnotationDrawModify(
-		//        barIndex, "ann" + barIndex, labelText, this.fontConsolas7, Color.ForestGreen, Color.Empty, evenAboveOddBelow);
-		//    // checking labels stacking next upon (underneath) the previous
-		//    base.Executor.ChartConditionalBarAnnotationDrawModify(
-		//        barIndex, "ann2" + barIndex, labelText, this.fontConsolas7, Color.ForestGreen, Color.LightGray, evenAboveOddBelow);
+		//	int barIndex = barStaticFormed.ParentBarsIndex;
+		//	string labelText = barStaticFormed.DateTimeOpen.ToString("HH:mm");
+		//	labelText += " " + barStaticFormed.BarIndexAfterMidnightReceived + "/";
+		//	labelText += barStaticFormed.BarIndexExpectedSinceTodayMarketOpen + ":" + barStaticFormed.BarIndexExpectedMarketClosesTodaySinceMarketOpen;
+		//	//bool evenAboveOddBelow = true;
+		//	bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
+		//	base.Executor.ChartConditionalBarAnnotationDrawModify(
+		//		barIndex, "ann" + barIndex, labelText, this.fontConsolas7, Color.ForestGreen, Color.Empty, evenAboveOddBelow);
+		//	// checking labels stacking next upon (underneath) the previous
+		//	base.Executor.ChartConditionalBarAnnotationDrawModify(
+		//		barIndex, "ann2" + barIndex, labelText, this.fontConsolas7, Color.ForestGreen, Color.LightGray, evenAboveOddBelow);
 		//}
 	}
 }
