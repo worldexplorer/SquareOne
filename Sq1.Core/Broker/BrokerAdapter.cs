@@ -299,7 +299,7 @@ namespace Sq1.Core.Broker {
 
 			order.AbsorbCurrentBidAskFromStreamingSnapshot(this.StreamingAdapter.StreamingDataSnapshot);
 
-			double priceBestBidAsk = this.StreamingAdapter.StreamingDataSnapshot.BidOrAskFor(
+			double priceBestBidAsk = this.StreamingAdapter.StreamingDataSnapshot.BidOrAsk_forDirection(
 				order.Alert.Symbol, order.Alert.PositionLongShortFromDirection);
 				
 			switch (order.Alert.MarketLimitStop) {

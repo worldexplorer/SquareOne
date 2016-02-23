@@ -26,7 +26,7 @@ namespace Sq1.Core.StrategyBase {
 					this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnAlertNotSubmittedCallback(WAIT)");
 					this.Strategy.Script.OnAlertNotSubmittedCallback(alert, barNotSubmittedRelno);
 				} finally {
-					this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this);
+					this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnAlertNotSubmittedCallback(WAIT)");
 					this.ExecutionDataSnapshot.IsScriptRunningOnAlertNotSubmittedNonBlockingRead = false;
 				}
 			} catch (Exception e) {
@@ -58,7 +58,7 @@ namespace Sq1.Core.StrategyBase {
 				this.Strategy.Script.OnAlertKilledCallback(alert);
 			} finally {
 				this.ExecutionDataSnapshot.IsScriptRunningOnAlertKilledNonBlockingRead = false;
-				this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this);
+				this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)");
 			}
 		}
 
@@ -116,7 +116,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 
-			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteClone_getForSymbol(alertFilled.Symbol);
+			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuote_getForSymbol(alertFilled.Symbol);
 
 			int barFillRelno  = alertFilled.Bars.Count - 1;
 			if (barFillRelno != alertFilled.Bars.BarStreaming_nullUnsafe.ParentBarsIndex) {
@@ -352,7 +352,7 @@ namespace Sq1.Core.StrategyBase {
 					this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnAlertFilledCallback(WAIT)");
 					this.Strategy.Script.OnAlertFilledCallback(alertFilled);
 				} finally {
-					this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this);
+					this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnAlertFilledCallback(WAIT)");
 					this.ExecutionDataSnapshot.IsScriptRunningOnAlertFilledNonBlockingRead = false;
 				}
 			} catch (Exception e) {
@@ -368,7 +368,7 @@ namespace Sq1.Core.StrategyBase {
 							this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
 							this.Strategy.Script.OnPositionOpenedPrototypeSlTpPlacedCallback(alertFilled.PositionAffected);
 						} finally {
-							this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this);
+							this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
 							this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead = false;
 						}
 					} else {
@@ -377,7 +377,7 @@ namespace Sq1.Core.StrategyBase {
 							this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpenedCallback(WAIT)");
 							this.Strategy.Script.OnPositionOpenedCallback(alertFilled.PositionAffected);
 						} finally {
-							this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this);
+							this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
 							this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedNonBlockingRead = false;
 						}
 					}
@@ -393,7 +393,7 @@ namespace Sq1.Core.StrategyBase {
 						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnPositionClosedCallback(WAIT)");
 						this.Strategy.Script.OnPositionClosedCallback(alertFilled.PositionAffected);
 					} finally {
-						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this);
+						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnPositionClosedCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosedNonBlockingRead = false;
 					}
 				} catch (Exception e) {

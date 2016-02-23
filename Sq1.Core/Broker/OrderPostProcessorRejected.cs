@@ -50,7 +50,7 @@ namespace Sq1.Core.Broker {
 			}
 
 			double priceScript = replacement.Alert.DataSource.StreamingAdapter.StreamingDataSnapshot
-				.GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(
+				.BidOrAsk_getAligned_forTidalOrCrossMarket_fromStreamingSnap(
 				replacement.Alert.Bars.Symbol, replacement.Alert.Direction, out replacement.SpreadSide, true);
 
 			if (replacement.Alert.PositionAffected != null) {	// alert.PositionAffected = null when order created by chart-click-mni

@@ -164,7 +164,7 @@ namespace Sq1.Gui.Forms {
 					Assembler.PopupException(msg);
 					return;
 				}
-				quote = this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteClone_getForSymbol(this.ChartFormManager.Executor.Bars.Symbol);
+				quote = this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuote_getForSymbol(this.ChartFormManager.Executor.Bars.Symbol);
 			}
 			string btnText = this.ChartFormManager.StreamingButtonIdent;
 			if (quote != null) btnText += quote.StreamingButtonIdent;

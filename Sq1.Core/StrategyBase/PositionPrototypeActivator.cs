@@ -383,9 +383,9 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		public string ReasonWhyPlacingProtoDoesntMakeSense(PositionPrototype proto, bool internalCallee = false) {
-			double lastPrice = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteGetPriceForMarketOrder(proto.Symbol);
-			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteClone_getForSymbol(proto.Symbol);
-			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
+			double lastPrice = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuote_getPriceForMarketOrder(proto.Symbol);
+			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuote_getForSymbol(proto.Symbol);
+			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BidOrAsk_forDirection(proto.Symbol, proto.LongShort);
 			bool willBeExecutedImmediately = false;
 			MarketLimitStop planningEntryUsing = MarketConverter.EntryMarketLimitStopFromDirection(
 				this.executor.Bars.BarStreaming_nullUnsafeCloneReadonly.Close, proto.PriceEntry, proto.LongShort);
@@ -441,7 +441,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			string msg = "";
-			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
+			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BidOrAsk_forDirection(proto.Symbol, proto.LongShort);
 			double newStopLossPrice = proto.OffsetToPrice(newStopLossNegativeOffset);
 			//switch (proto.StopLossAlertForAnnihilation.MarketLimitStop) {
 			switch (marketLimitStopPlanned) {
@@ -484,7 +484,7 @@ namespace Sq1.Core.StrategyBase {
 					if (proto.StopLossAlertForAnnihilation != null) slDirectionAssumedOrActualIfFilled = proto.StopLossAlertForAnnihilation.Direction;
 					switch (slDirectionAssumedOrActualIfFilled) {
 						case Direction.Sell:
-							double ask = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BestAskGetForMarketOrder(proto.Symbol);
+							double ask = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BestAsk_getForMarketOrder(proto.Symbol);
 							if (newStopLossPrice > ask) {
 								msg = "NEW_STOP_PRICE_BELOW_ASK_WILL_BE_REJECTED_BY_MARKET"
 									+ " newStopLossPrice[" + newStopLossPrice + "] < Ask[" + ask + "] " + ident2
@@ -492,7 +492,7 @@ namespace Sq1.Core.StrategyBase {
 							}
 							break;
 						case Direction.Cover:
-							double bid = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BestBidGetForMarketOrder(proto.Symbol);
+							double bid = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BestBid_getForMarketOrder(proto.Symbol);
 							if (newStopLossPrice < bid) {
 								msg = "NEW_STOP_PRICE_ABOVE_BID_WILL_BE_REJECTED_BY_MARKET"
 									+ " newStopLossPrice[" + newStopLossPrice + "] > Bid[" + bid + "] " + ident2
@@ -535,8 +535,8 @@ namespace Sq1.Core.StrategyBase {
 				#endif
 				throw new Exception(msg1);
 			}
-			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteClone_getForSymbol(proto.Symbol);
-			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
+			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuote_getForSymbol(proto.Symbol);
+			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BidOrAsk_forDirection(proto.Symbol, proto.LongShort);
 			double newTakeProfitPrice = proto.OffsetToPrice(newTakeProfitPositiveOffset);
 			bool willBeExecutedImmediately = false;
 			string ident = "TakeProfit{old[" + proto.PriceTakeProfit + "]:new[" + newTakeProfitPrice + "]}";

@@ -146,7 +146,7 @@ namespace Sq1.Core.StrategyBase {
 			switch (entryMarketLimitStop) {
 				case MarketLimitStop.Market:
 					priceForMarketAlert = this.executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot
-						.GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(
+						.BidOrAsk_getAligned_forTidalOrCrossMarket_fromStreamingSnap(
 							this.executor.Bars.Symbol, direction, out priceSpreadSide, false);
 					break;
 				//MUST_DIE

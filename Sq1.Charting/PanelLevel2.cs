@@ -139,7 +139,7 @@ namespace Sq1.Charting {
 			}
 			Quote lastQuote = null;
 			if (this.errorDetected == false) {
-				lastQuote = this.StreamingDataSnapshot_nullUnsafe.LastQuoteClone_getForSymbol(base.ChartControl.Bars.Symbol);
+				lastQuote = this.StreamingDataSnapshot_nullUnsafe.LastQuote_getForSymbol(base.ChartControl.Bars.Symbol);
 				if (lastQuote == null) {
 					base.DrawError(g, "CONNECT_STREAMING__OR__CHART>BARS>SUBSCRIBE");
 					this.errorDetected = true;

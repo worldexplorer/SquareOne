@@ -260,7 +260,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException("quote[" + quote + "]'se Symbol is null or empty, returning");
 				return;
 			}
-			Quote lastQuote = this.StreamingAdapter.StreamingDataSnapshot.LastQuoteClone_getForSymbol(quote.Symbol);
+			Quote lastQuote = this.StreamingAdapter.StreamingDataSnapshot.LastQuote_getForSymbol(quote.Symbol);
 			List<SymbolScaleDistributionChannel> channelsForSymbol = this.GetDistributionChannels_allScaleIntervals_forSymbol(quote.Symbol);
 			foreach (SymbolScaleDistributionChannel channel in channelsForSymbol) {
 				// late quote should be within current StreamingBar, otherwize don't deliver for channel
@@ -287,7 +287,7 @@ namespace Sq1.Core.Streaming {
 					//+ " YOU_DIDNT_SUBSCRIBE_AFTER_DISTRIBUTION_CHANNELS_CLEAR"
 					//+ " MOST_LIKELY_YOU_ABORTED_BACKTEST_BY_CHANGING_SELECTORS_IN_GUI_FIX_HANDLERS"
 					;
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 				return channels;
 			}
 			channels = new List<SymbolScaleDistributionChannel>(this.DistributionChannels[symbol].Values);

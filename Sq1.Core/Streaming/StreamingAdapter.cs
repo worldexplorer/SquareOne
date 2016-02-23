@@ -131,7 +131,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public virtual void InitializeFromDataSource(DataSource dataSource) {
 			this.DataSource = dataSource;
-			this.StreamingDataSnapshot.InitializeLastQuoteReceived(this.DataSource.Symbols);
+			this.StreamingDataSnapshot.Initialize_levelTwo_forAllSymbolsInDataSource(this.DataSource.Symbols);
 			this.UpstreamConnectionState = ConnectionState.JustInitialized_solidifiersUnsubscribed;
 		}
 		protected virtual void SolidifierAllSymbolsSubscribe_onAppRestart() {
@@ -291,7 +291,7 @@ namespace Sq1.Core.Streaming {
 
 			long absnoPerSymbolNext = 0;
 
-			Quote lastQuote = this.StreamingDataSnapshot.LastQuoteClone_getForSymbol(quote.Symbol);
+			Quote lastQuote = this.StreamingDataSnapshot.LastQuote_getForSymbol(quote.Symbol);
 			if (lastQuote == null) {
 				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR#1 symbol[" + quote.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
 				Assembler.PopupException(msg + msig, null, false);
@@ -336,7 +336,7 @@ namespace Sq1.Core.Streaming {
 			//OUTDATED?... BacktestStreamingAdapter.EnrichGeneratedQuoteSaveSpreadInStreaming has updated lastQuote alredy...
 			//essence of PushQuoteReceived(); all above were pre-checks ensuring successfull completion of two lines below
 			// ALREADY_ENRICHED this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
-			this.StreamingDataSnapshot.LastQuoteClone_setForSymbol(quote);
+			this.StreamingDataSnapshot.LastQuote_setForSymbol(quote);
 
 			try {
 				bool thisIsLivesimDataSource	= this is LivesimDataSource;
@@ -377,7 +377,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public void UpstreamUnSubscribedFromSymbolPokeConsumersHelper(string symbol) {
 			List<SymbolScaleDistributionChannel> channels = this.DataDistributor_replacedForLivesim.GetDistributionChannels_allScaleIntervals_forSymbol(symbol);
-			Quote lastQuoteReceived = this.StreamingDataSnapshot.LastQuoteClone_getForSymbol(symbol);
+			Quote lastQuoteReceived = this.StreamingDataSnapshot.LastQuote_getForSymbol(symbol);
 			foreach (var channel in channels) {
 				channel.UpstreamUnSubscribedFromSymbolPokeConsumers(symbol, lastQuoteReceived);
 			}
