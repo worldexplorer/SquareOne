@@ -19,7 +19,7 @@ using Sq1.Adapters.Quik;
 
 namespace Sq1.Adapters.Quik.Streaming.Livesim {
 	[SkipInstantiationAt(Startup = true)]		// overriding LivesimStreaming's TRUE to have QuikStreamingLivesim appear in DataSourceEditor
-	public partial class QuikStreamingLivesim : LivesimStreaming {
+	public sealed partial class QuikStreamingLivesim : LivesimStreaming {
 		// reasonToExist =    "1) use LivesimForm as control "
 		//					+ "2) instantiate QuikStreaming and make it run its DDE server "
 		//					+ "3) push quotes generated using DDE client";

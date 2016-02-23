@@ -14,7 +14,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 		}
 
 		internal string GetString(string columnName, string valueIfNotFound, bool popup = true) {
-			if (this.popupIf_keyDoesNotExist(columnName, "string", popup)) return valueIfNotFound;
+			if (this.popupIf_keyDoesNotExist(columnName, "string", popup) == false) return valueIfNotFound;
 			object value = base[columnName];
 			if (value == null) value = valueIfNotFound;		// when XlType.Blank was received
 			//string ret = (string)value;
@@ -23,7 +23,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 		}
 
 		internal double GetDouble(string columnName, double valueIfNotFound, bool popup = true) {
-			if (this.popupIf_keyDoesNotExist(columnName, "double", popup)) return valueIfNotFound;
+			if (this.popupIf_keyDoesNotExist(columnName, "double", popup) == false) return valueIfNotFound;
 			object value = base[columnName];
 			if (value == null) value = valueIfNotFound;		// when XlType.Blank was received
 			double ret = double.NaN;
@@ -44,7 +44,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 		}
 
 		internal DateTime GetDateTime(string columnName, DateTime valueIfNotFound, bool popup = true) {
-			if (this.popupIf_keyDoesNotExist(columnName, "DateTime", popup)) return valueIfNotFound;
+			if (this.popupIf_keyDoesNotExist(columnName, "DateTime", popup) == false) return valueIfNotFound;
 			object value = base[columnName];
 			if (value == null) value = valueIfNotFound;		// when XlType.Blank was received
 			DateTime ret = (DateTime)value;
@@ -52,7 +52,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 		}
 
 		bool popupIf_keyDoesNotExist(string columnName, string typeExpected = "NOT_SPECIFIED", bool popup = true) {
-			if (base.ContainsKey(columnName)) return false;
+			if (base.ContainsKey(columnName)) return true;
 			if (popup == false) return false;
 
 			string msg = "NULL_VALUE_RECEIVED_DDE_FOR " + this.topicImServing + "[" + columnName + "]";
@@ -60,7 +60,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 				msg += " MUST_BE " + typeExpected;
 			}
 			Assembler.PopupException(msg, null, false);
-			return true;
+			return false;
 		}
 
 		internal void Add_popupIfDuplicate(string columnName, object value) {

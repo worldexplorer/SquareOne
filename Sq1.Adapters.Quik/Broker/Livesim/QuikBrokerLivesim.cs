@@ -16,7 +16,7 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Adapters.Quik.Broker.Livesim {
 	[SkipInstantiationAt(Startup = true)]		// overriding LivesimBroker's TRUE to have QuikStreamingLivesim appear in DataSourceEditor
-	public partial class QuikBrokerLivesim : LivesimBroker {
+	public sealed partial class QuikBrokerLivesim : LivesimBroker {
 				QuikBrokerLivesimSettings	settings { get { return base.LivesimDataSource.Executor.Strategy.LivesimBrokerSettings as QuikBrokerLivesimSettings; } }
 				object						threadEntryLockToHaveQuoteSentToThread;
 

@@ -36,7 +36,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			quikQuote.Bid				= row.GetDouble("bid"			, double.NaN);
 			quikQuote.Ask				= row.GetDouble("offer"			, double.NaN);
 
-			double	last				= row.GetDouble("last"			, double.NaN);
+			double	last				= row.GetDouble("last"			, double.NaN, false);
 			if (last == quikQuote.Bid) quikQuote.TradedAt = BidOrAsk.Bid;
 			if (last == quikQuote.Ask) quikQuote.TradedAt = BidOrAsk.Ask;
 			if (quikQuote.TradedAt == BidOrAsk.UNKNOWN) {
@@ -44,8 +44,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				Assembler.PopupException(msg, null, false);
 			}
 
-			quikQuote.FortsDepositBuy	= row.GetDouble("buydepo"		, double.NaN);
-			quikQuote.FortsDepositSell	= row.GetDouble("selldepo"		, double.NaN);
+			quikQuote.FortsDepositBuy	= row.GetDouble("buydepo"		, double.NaN, false);
+			quikQuote.FortsDepositSell	= row.GetDouble("selldepo"		, double.NaN, false);
 			quikQuote.FortsPriceMax		= row.GetDouble("high"			, double.NaN);
 			quikQuote.FortsPriceMin		= row.GetDouble("low"			, double.NaN);
 
