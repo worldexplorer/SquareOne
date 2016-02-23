@@ -146,18 +146,18 @@ namespace Sq1.Core.Execution {
 		//} }
 
 		//public bool GuiHasTimeToRebuild(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
-		//    lockPurpose += " //" + base.ReasonToExist + ".GuiHasTimeToRebuild";
-		//    try {
-		//        base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-		//        bool guiHasTime = false;
-		//        foreach (Alert alert in base.InnerList) {
-		//            guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
-		//            if (guiHasTime) break;
-		//        }
-		//        return guiHasTime;
-		//    } finally {
-		//        base.UnLockFor(owner, lockPurpose);
-		//    }
+		//	lockPurpose += " //" + base.ReasonToExist + ".GuiHasTimeToRebuild";
+		//	try {
+		//		base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+		//		bool guiHasTime = false;
+		//		foreach (Alert alert in base.InnerList) {
+		//			guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
+		//			if (guiHasTime) break;
+		//		}
+		//		return guiHasTime;
+		//	} finally {
+		//		base.UnLockFor(owner, lockPurpose);
+		//	}
 		//}
 		public new AlertList Clone(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			lockPurpose += " //" + base.ReasonToExist + "Clone()";

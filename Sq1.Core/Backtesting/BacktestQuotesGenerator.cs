@@ -406,11 +406,11 @@ namespace Sq1.Core.Backtesting {
 
 			//v1
 			//Quote quotePrevDowncasted = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
-			//    .LastQuoteCloneGetForSymbol(alert.Symbol);
+			//	.LastQuoteCloneGetForSymbol(alert.Symbol);
 			//QuoteGenerated quotePrev = quotePrevDowncasted as QuoteGenerated;
 			//if (quotePrev == null) {
-			//    string msg = "PREV_QUOTE_NULL";
-			//    Assembler.PopupException(msg + msig);
+			//	string msg = "PREV_QUOTE_NULL";
+			//	Assembler.PopupException(msg + msig);
 			//}
 
 			//v2

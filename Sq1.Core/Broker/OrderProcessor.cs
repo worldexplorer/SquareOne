@@ -79,8 +79,8 @@ namespace Sq1.Core.Broker {
 		Order createPropagateOrderFromAlert(Alert alert, bool setStatusSubmitting, bool emittedByScript) {
 			//MUST_DIE
 			//if (alert.MarketLimitStop == MarketLimitStop.AtClose) {
-			//    string msg = "NYI: alert.OrderType= OrderType.AtClose [" + alert + "]";
-			//    throw new Exception(msg);
+			//	string msg = "NYI: alert.OrderType= OrderType.AtClose [" + alert + "]";
+			//	throw new Exception(msg);
 			//}
 			Order newborn = new Order(alert, emittedByScript, false);
 			try {
@@ -278,9 +278,9 @@ namespace Sq1.Core.Broker {
 			// !!!THERE_MUST_BE_NO_DIFFERENCE_BETWEEN_LIVEISIMBROKER_AND_LIVEBROKER!!!
 			//bool brokerIsLivesim = (broker as LivesimBroker) != null;
 			//if (brokerIsLivesim) {
-			//    //broker.SubmitOrdersThreadEntry(new object[] { orders });
-			//    broker.SubmitOrders(orders);
-			//    return;
+			//	//broker.SubmitOrdersThreadEntry(new object[] { orders });
+			//	broker.SubmitOrders(orders);
+			//	return;
 			//}
 			// !!!THERE_MUST_BE_NO_DIFFERENCE_BETWEEN_LIVEISIMBROKER_AND_LIVEBROKER!!!
 			ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { orders });
@@ -865,57 +865,57 @@ namespace Sq1.Core.Broker {
 			killedTakeProfit.AppendMessage(msg + msig);
 		}
 		//public void InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter(Order orderWithNewState) {
-		//    ScriptExecutor executor = orderWithNewState.Alert.Strategy.Script.Executor;
-		//    ReporterPokeUnit afterHooksInvokedPokeUnit = new ReporterPokeUnit();
-		//    int hooksInvoked = this.OPPstatusCallbacks.InvokeOnceHooksForOrderStateAndDelete(orderWithNewState, afterHooksInvokedPokeUnit);
-		//    if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) return;
+		//	ScriptExecutor executor = orderWithNewState.Alert.Strategy.Script.Executor;
+		//	ReporterPokeUnit afterHooksInvokedPokeUnit = new ReporterPokeUnit();
+		//	int hooksInvoked = this.OPPstatusCallbacks.InvokeOnceHooksForOrderStateAndDelete(orderWithNewState, afterHooksInvokedPokeUnit);
+		//	if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) return;
 
-		//    List<Alert> alertsCreatedByHooks = afterHooksInvokedPokeUnit.AlertsNew.SafeCopy(this, "InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter(WAIT)");
-		//    if (alertsCreatedByHooks.Count == 0) {
-		//        string msg = "NOT_AN_ERROR: ZERO alerts from [" + hooksInvoked + "] hooks invoked; order[" + orderWithNewState + "]";
-		//        //this.PopupException(new Exception(msg));
-		//        return;
-		//    }
-		//    bool setStatusSubmitting = executor.IsStreamingTriggeringScript && executor.IsStrategyEmittingOrders;
-		//    this.CreateOrdersSubmitToBrokerAdapterInNewThreads(alertsCreatedByHooks, setStatusSubmitting, true);
-		//    //ONLY_ON_FILL orderWithNewState.Alert.Strategy.Script.Executor.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(afterHooksInvokedPokeUnit);
+		//	List<Alert> alertsCreatedByHooks = afterHooksInvokedPokeUnit.AlertsNew.SafeCopy(this, "InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter(WAIT)");
+		//	if (alertsCreatedByHooks.Count == 0) {
+		//		string msg = "NOT_AN_ERROR: ZERO alerts from [" + hooksInvoked + "] hooks invoked; order[" + orderWithNewState + "]";
+		//		//this.PopupException(new Exception(msg));
+		//		return;
+		//	}
+		//	bool setStatusSubmitting = executor.IsStreamingTriggeringScript && executor.IsStrategyEmittingOrders;
+		//	this.CreateOrdersSubmitToBrokerAdapterInNewThreads(alertsCreatedByHooks, setStatusSubmitting, true);
+		//	//ONLY_ON_FILL orderWithNewState.Alert.Strategy.Script.Executor.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(afterHooksInvokedPokeUnit);
 		//}
 
 		//[Obsolete("COMPLETE_MESS")]
 		//public void PostKillUsingKiller_forBothKillerAndVictim_removeAlertsPendingFromExecutorDataSnapshot(Order orderDeployedKilled_orKillerOrder, string msig) {
-		//    string msg = "";
-		//    if (orderDeployedKilled_orKillerOrder.State != OrderState.KillerDone) {
-		//        if (orderDeployedKilled_orKillerOrder.State == OrderState.KillerDone) {
-		//            if (orderDeployedKilled_orKillerOrder.VictimToBeKilled != null) {
-		//                msg = "unhealthy killer; VictimToBeKilled=null";
-		//            } else {
-		//                string msg1 = "healthy killer; we can use killer.Victim.Alert for one rabied victim having no Alert";
-		//            }
-		//        } else {
-		//            msg = "not a killer";
-		//            if (orderDeployedKilled_orKillerOrder.IsKiller == true) {
-		//                msg = "not a killer but claims to be a killer";
-		//            }
-		//        }
-		//        orderDeployedKilled_orKillerOrder.AppendMessage(msg + msig + " " + orderDeployedKilled_orKillerOrder);
-		//        return;
-		//    }
-		//    Alert alertForOrder = orderDeployedKilled_orKillerOrder.Alert;
-		//    if (alertForOrder == null) {
-		//        msg = "orderKilled.Alert=null; dunno what to remove from PendingAlerts";
-		//        orderDeployedKilled_orKillerOrder.AppendMessage(msg + msig + " " + orderDeployedKilled_orKillerOrder);
-		//        return;
-		//    }
-		//    ScriptExecutor executor = alertForOrder.Strategy.Script.Executor;
-		//    try {
-		//        executor.CallbackAlertKilledInvokeScriptNonReenterably(alertForOrder);
-		//        msg = orderDeployedKilled_orKillerOrder.State + " => AlertsPending.Remove.Remove(orderExecuted.Alert)'d";
-		//        orderDeployedKilled_orKillerOrder.AppendMessage(msg + msig);
-		//    } catch (Exception e) {
-		//        msg = orderDeployedKilled_orKillerOrder.State + " is a Cemetery but [" + e.Message + "]"
-		//            + "; comment the State out; alert[" + alertForOrder + "]";
-		//        orderDeployedKilled_orKillerOrder.AppendMessage(msg + msig);
-		//    }
+		//	string msg = "";
+		//	if (orderDeployedKilled_orKillerOrder.State != OrderState.KillerDone) {
+		//		if (orderDeployedKilled_orKillerOrder.State == OrderState.KillerDone) {
+		//			if (orderDeployedKilled_orKillerOrder.VictimToBeKilled != null) {
+		//				msg = "unhealthy killer; VictimToBeKilled=null";
+		//			} else {
+		//				string msg1 = "healthy killer; we can use killer.Victim.Alert for one rabied victim having no Alert";
+		//			}
+		//		} else {
+		//			msg = "not a killer";
+		//			if (orderDeployedKilled_orKillerOrder.IsKiller == true) {
+		//				msg = "not a killer but claims to be a killer";
+		//			}
+		//		}
+		//		orderDeployedKilled_orKillerOrder.AppendMessage(msg + msig + " " + orderDeployedKilled_orKillerOrder);
+		//		return;
+		//	}
+		//	Alert alertForOrder = orderDeployedKilled_orKillerOrder.Alert;
+		//	if (alertForOrder == null) {
+		//		msg = "orderKilled.Alert=null; dunno what to remove from PendingAlerts";
+		//		orderDeployedKilled_orKillerOrder.AppendMessage(msg + msig + " " + orderDeployedKilled_orKillerOrder);
+		//		return;
+		//	}
+		//	ScriptExecutor executor = alertForOrder.Strategy.Script.Executor;
+		//	try {
+		//		executor.CallbackAlertKilledInvokeScriptNonReenterably(alertForOrder);
+		//		msg = orderDeployedKilled_orKillerOrder.State + " => AlertsPending.Remove.Remove(orderExecuted.Alert)'d";
+		//		orderDeployedKilled_orKillerOrder.AppendMessage(msg + msig);
+		//	} catch (Exception e) {
+		//		msg = orderDeployedKilled_orKillerOrder.State + " is a Cemetery but [" + e.Message + "]"
+		//			+ "; comment the State out; alert[" + alertForOrder + "]";
+		//		orderDeployedKilled_orKillerOrder.AppendMessage(msg + msig);
+		//	}
 		//}
 
 		public void PostKillWithoutKiller_removeAlertsPendingFromExecutorDataSnapshot(Order orderPendingKilled, string msig) {

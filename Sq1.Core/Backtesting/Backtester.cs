@@ -330,9 +330,9 @@ namespace Sq1.Core.Backtesting {
 
 				// what Livesim-related code does in Backtester???
 				//if (streamingOriginal != null && streamingOriginal is LivesimStreaming == false) {
-				//    string msg2 = "MUST_BE_EMPTY_ORIGINAL_BARS.STREAMING ABSORBING_FROM_BACKTEST_COMPLETE";
-				//    Assembler.PopupException(msg2);
-				//    streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
+				//	string msg2 = "MUST_BE_EMPTY_ORIGINAL_BARS.STREAMING ABSORBING_FROM_BACKTEST_COMPLETE";
+				//	Assembler.PopupException(msg2);
+				//	streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
 				//}
 
 				DataDistributor distr = this.BacktestDataSource.StreamingAdapter.DataDistributor_replacedForLivesim;

@@ -21,7 +21,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		//[Obsolete("Sorry bro no parameter without the reason to exist => hopefully will go to Slider's tooltip");
 		//public ScriptParameter(int id, string name, double current, double min, double max, double increment)
-		//    : this(id, name, current, min, max, increment, "") {
+		//	: this(id, name, current, min, max, increment, "") {
 		//}
 		//public override string ToString() {
 		//	return this.Name + ":" + this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";

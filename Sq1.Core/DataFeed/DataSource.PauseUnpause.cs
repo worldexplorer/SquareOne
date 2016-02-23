@@ -113,16 +113,16 @@ namespace Sq1.Core.DataFeed {
 			return true;
 		}
 		//public bool PumpingPausedGet(Bars bars) {
-		//    DataDistributor distr = this.StreamingAdapter.DataDistributor;
-		//    SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
-		//    bool paused = channel.QuotePump.Paused;
-		//    return paused;
+		//	DataDistributor distr = this.StreamingAdapter.DataDistributor;
+		//	SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
+		//	bool paused = channel.QuotePump.Paused;
+		//	return paused;
 		//}
 		//public bool PumpingWaitUntilUnpaused(Bars bars, int maxWaitingMillis = 1000) {
-		//    DataDistributor distr = this.StreamingAdapter.DataDistributor;
-		//    SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
-		//    bool unpaused = channel.QuotePump.WaitUntilUnpaused(maxWaitingMillis);
-		//    return unpaused;
+		//	DataDistributor distr = this.StreamingAdapter.DataDistributor;
+		//	SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
+		//	bool unpaused = channel.QuotePump.WaitUntilUnpaused(maxWaitingMillis);
+		//	return unpaused;
 		//}
 		public bool PumpingWaitUntilPaused(Bars bars, int maxWaitingMillis = 1000) {
 			DataDistributor distr = this.StreamingAdapter.DataDistributor_replacedForLivesim;

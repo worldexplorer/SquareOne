@@ -27,11 +27,11 @@ namespace Sq1.Core.Livesim {
 		[JsonIgnore]	public		bool						IsDisposed								{ get; private set; }
 
 		//protected LivesimBroker() : base("DLL_SCANNER_INSTANTIATES_DUMMY_STREAMING") {
-		//    string msg = "IM_HERE_WHEN_DLL_SCANNER_INSTANTIATES_DUMMY_BROKER"
-		//        //+ "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
-		//        + "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_BROKER_ADAPTERS_FOUND"
-		//        + " example:QuikBrokerLivesim()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
-		//    base.Name = "LivesimBroker-child_ACTIVATOR_DLL-SCANNED";
+		//	string msg = "IM_HERE_WHEN_DLL_SCANNER_INSTANTIATES_DUMMY_BROKER"
+		//		//+ "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
+		//		+ "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_BROKER_ADAPTERS_FOUND"
+		//		+ " example:QuikBrokerLivesim()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
+		//	base.Name = "LivesimBroker-child_ACTIVATOR_DLL-SCANNED";
 		//}
 		public LivesimBroker(string reasonToExist) : base(reasonToExist) {
 			base.Name									= "LivesimBroker";
@@ -141,13 +141,13 @@ namespace Sq1.Core.Livesim {
 			//MOVED_TO_LivesimBrokerSpoiler
 			//int delayBeforeFill = 0;
 			//if (this.settings.DelayBeforeFillEnabled) {
-			//    delayBeforeFill = settings.DelayBeforeFillMillisMin;
-			//    if (settings.DelayBeforeFillMillisMax > 0) {
-			//        int range = Math.Abs(settings.DelayBeforeFillMillisMax - settings.DelayBeforeFillMillisMin);
-			//        double rnd0to1 = new Random().NextDouble();
-			//        int rangePart = (int)Math.Round(range * rnd0to1);
-			//        delayBeforeFill += rangePart;
-			//    }
+			//	delayBeforeFill = settings.DelayBeforeFillMillisMin;
+			//	if (settings.DelayBeforeFillMillisMax > 0) {
+			//		int range = Math.Abs(settings.DelayBeforeFillMillisMax - settings.DelayBeforeFillMillisMin);
+			//		double rnd0to1 = new Random().NextDouble();
+			//		int rangePart = (int)Math.Round(range * rnd0to1);
+			//		delayBeforeFill += rangePart;
+			//	}
 			//}
 
 			int delayBeforeFill = this.LivesimBrokerSpoiler.DelayBeforeFill_Calculate();
@@ -242,10 +242,10 @@ namespace Sq1.Core.Livesim {
 			//var dumped = snap.DumpPendingAlertsIntoPendingHistoryByBar();
 			//int dumped = snap.AlertsPending.ByBarPlaced.Count;
 			//if (dumped > 0) {
-			//    //string msg = "here is at least one reason why dumping on fresh quoteToReach makes sense"
-			//    //	+ " if we never reach this breakpoint the remove dump() from here"
-			//    //	+ " but I don't see a need to invoke it since we dumped pendings already after OnNewBarCallback";
-			//    string msg = "DUMPED_PRIOR_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
+			//	//string msg = "here is at least one reason why dumping on fresh quoteToReach makes sense"
+			//	//	+ " if we never reach this breakpoint the remove dump() from here"
+			//	//	+ " but I don't see a need to invoke it since we dumped pendings already after OnNewBarCallback";
+			//	string msg = "DUMPED_PRIOR_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
 			//}
 			int pendingCountPre = executor.ExecutionDataSnapshot.AlertsPending.Count;
 			//int pendingFilled = executor.MarketsimBacktest.SimulateFillAllPendingAlerts(

@@ -50,32 +50,32 @@ namespace Sq1.Core.Execution {
 		}
 		#region AVOIDING_HEADACHE_DISPOSING_THOSE
 		//public AlertList AlertsEntry { get {
-		//    AlertList ret = new AlertList("AlertsEntry", base.Snap);
-		//    foreach (List<Position> positionsOpened in this.ByEntryBarFilled.Values) {
-		//        foreach (Position position in positionsOpened) {
-		//            if (position.EntryAlert == null) continue;
-		//            ret.AddNoDupe(position.EntryAlert, this, "AlertsEntry(WAIT)");
-		//        }
-		//    }
-		//    return ret;
+		//	AlertList ret = new AlertList("AlertsEntry", base.Snap);
+		//	foreach (List<Position> positionsOpened in this.ByEntryBarFilled.Values) {
+		//		foreach (Position position in positionsOpened) {
+		//			if (position.EntryAlert == null) continue;
+		//			ret.AddNoDupe(position.EntryAlert, this, "AlertsEntry(WAIT)");
+		//		}
+		//	}
+		//	return ret;
 		//} }
 		//public AlertList AlertsExit { get {
-		//    AlertList ret = new AlertList("AlertsExit", base.Snap);
-		//    foreach (List<Position> positionsClosed in this.ByExitBarFilled.Values) {
-		//        foreach (Position position in positionsClosed) {
-		//            if (position.ExitAlert == null) continue;
-		//            ret.AddNoDupe(position.ExitAlert, this, "AlertsExit(WAIT)");
-		//        }
-		//    }
-		//    return ret;
+		//	AlertList ret = new AlertList("AlertsExit", base.Snap);
+		//	foreach (List<Position> positionsClosed in this.ByExitBarFilled.Values) {
+		//		foreach (Position position in positionsClosed) {
+		//			if (position.ExitAlert == null) continue;
+		//			ret.AddNoDupe(position.ExitAlert, this, "AlertsExit(WAIT)");
+		//		}
+		//	}
+		//	return ret;
 		//} }
 		//public AlertList AlertsOpenNow { get {
-		//    AlertList ret = new AlertList("AlertsOpenNow", base.Snap);
-		//    foreach (Position position in base.InnerList) {
-		//        if (position.ExitAlert == null) continue;
-		//        ret.AddNoDupe(position.ExitAlert, this, "AlertsOpenNow(WAIT)");
-		//    }
-		//    return ret;
+		//	AlertList ret = new AlertList("AlertsOpenNow", base.Snap);
+		//	foreach (Position position in base.InnerList) {
+		//		if (position.ExitAlert == null) continue;
+		//		ret.AddNoDupe(position.ExitAlert, this, "AlertsOpenNow(WAIT)");
+		//	}
+		//	return ret;
 		//} }
 		#endregion
 

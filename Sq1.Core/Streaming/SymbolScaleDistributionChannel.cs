@@ -386,21 +386,21 @@ namespace Sq1.Core.Streaming {
 		} }
 
 		//public string ConsumersQuoteAsShortString { get { lock (this.lockConsumersQuote) {
-		//            string ret = "";
-		//            foreach (IStreamingConsumer consumer in this.ConsumersQuote) {
-		//                if (ret != "") ret += ", ";
-		//                ret += consumer.Na();
-		//            }
-		//            return ret;
-		//        } } }
+		//			string ret = "";
+		//			foreach (IStreamingConsumer consumer in this.ConsumersQuote) {
+		//				if (ret != "") ret += ", ";
+		//				ret += consumer.Na();
+		//			}
+		//			return ret;
+		//		} } }
 		//public string ConsumersBarAsShortString { get { lock (this.lockConsumersBar) {
-		//            string ret = "";
-		//            foreach (IStreamingConsumer consumer in this.ConsumersBar) {
-		//                if (ret != "") ret += ", ";
-		//                ret += consumer.ToString();
-		//            }
-		//            return ret;
-		//        } } }
+		//			string ret = "";
+		//			foreach (IStreamingConsumer consumer in this.ConsumersBar) {
+		//				if (ret != "") ret += ", ";
+		//				ret += consumer.ToString();
+		//			}
+		//			return ret;
+		//		} } }
 		//public override string ToShortString() { return this.SymbolScaleInterval + ":Quotes[" + this.ConsumersQuoteAsShortString + "],Bars[" + this.ConsumersBarAsShortString + "]"; }
 
 		public bool ConsumersQuoteContains(StreamingConsumer consumer) { lock (this.lockConsumersQuote) { return this.ConsumersQuote.Contains(consumer); } }

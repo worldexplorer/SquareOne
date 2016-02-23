@@ -147,7 +147,7 @@ namespace Sq1.Core.Repositories {
 				File.WriteAllText(jsonAbsname, json);
 				// NO__USE_DeserializeJsonsInFolder()_MANUALLY_UPSTACK__AFTER_EACH_SerializeSingle();
 				//if (this.ItemsByName.ContainsKey(itemStored.Name) == false) {
-				//    this.ItemAdd(itemStored);
+				//	this.ItemAdd(itemStored);
 				//}
 			} catch (Exception ex) {
 				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::SerializeSingle(): ";

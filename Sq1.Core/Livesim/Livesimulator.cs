@@ -140,9 +140,9 @@ namespace Sq1.Core.Livesim {
 				int waitForGuiToSetBars_maxMillis = 5000;
 				bool barsAreSetInGui = this.barsAreSetInGuiThread.WaitOne(waitForGuiToSetBars_maxMillis);		// SOLVES__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM
 				if (barsAreSetInGui == false) {
-				    string msg = "GUI_HASNT_SET_BARS_AFTER_WAITING waitForGuiToSetBars_maxMillis[" + waitForGuiToSetBars_maxMillis + "]"
-				        + " HOPING_YOU_WONT_RECEIVE BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM";
-				    Assembler.PopupException(msg);
+					string msg = "GUI_HASNT_SET_BARS_AFTER_WAITING waitForGuiToSetBars_maxMillis[" + waitForGuiToSetBars_maxMillis + "]"
+						+ " HOPING_YOU_WONT_RECEIVE BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM";
+					Assembler.PopupException(msg);
 				}
 				#endregion
 
@@ -272,44 +272,44 @@ namespace Sq1.Core.Livesim {
 
 		public void CheckSubscribed_LivesimQuoteBarConsumer_toDataDistributor_replacedForLivesim() {
 			string					symbol		= base.BarsSimulating.Symbol;
-		    ScriptExecutor			executor	= this.Executor;
-		    LivesimQuoteBarConsumer	chartless	= this.LivesimQuoteBarConsumer;
-		    DataDistributor			distr		= this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim;
+			ScriptExecutor			executor	= this.Executor;
+			LivesimQuoteBarConsumer	chartless	= this.LivesimQuoteBarConsumer;
+			DataDistributor			distr		= this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim;
 
-		    if (symbol != executor.Bars.Symbol) {
-		        string msg1 = "WHEN_ARE_SYMBOLS_DIFFERENT??..";
-		        Assembler.PopupException(msg1);
-		    }
-		    List<SymbolScaleDistributionChannel> mustBeOneTimeframe = distr.GetDistributionChannels_allScaleIntervals_forSymbol(symbol);
-		    if (mustBeOneTimeframe.Count != 1) {
-		        string msg1 = "USER_DIDNT_CLICK_CHART>BARS>SUBSCRIBE [" + symbol + "] STARTING_LIVESIM_FOR:" + executor.ToString()
+			if (symbol != executor.Bars.Symbol) {
+				string msg1 = "WHEN_ARE_SYMBOLS_DIFFERENT??..";
+				Assembler.PopupException(msg1);
+			}
+			List<SymbolScaleDistributionChannel> mustBeOneTimeframe = distr.GetDistributionChannels_allScaleIntervals_forSymbol(symbol);
+			if (mustBeOneTimeframe.Count != 1) {
+				string msg1 = "USER_DIDNT_CLICK_CHART>BARS>SUBSCRIBE [" + symbol + "] STARTING_LIVESIM_FOR:" + executor.ToString()
 					//+ " BAD_JOB#1_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()"
 					;
-		        Assembler.PopupException(msg1, null, false);
-		    } else {
-		        SymbolScaleDistributionChannel mustBeChartSubscribedToQuotesAndBars = mustBeOneTimeframe[0];
-		        if (mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteCount != 1) {
-		            string msg1 = "BAD_JOB#2_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
-		            Assembler.PopupException(msg1);
-		        } else {
-		            bool mustBeChartSubscribedToQuotes = mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteContains(chartless);
-		            if (mustBeChartSubscribedToQuotes == false) {
-		                string msg1 = "BAD_JOB#3_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
-		                Assembler.PopupException(msg1);
-		            }
-		        }
+				Assembler.PopupException(msg1, null, false);
+			} else {
+				SymbolScaleDistributionChannel mustBeChartSubscribedToQuotesAndBars = mustBeOneTimeframe[0];
+				if (mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteCount != 1) {
+					string msg1 = "BAD_JOB#2_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
+					Assembler.PopupException(msg1);
+				} else {
+					bool mustBeChartSubscribedToQuotes = mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteContains(chartless);
+					if (mustBeChartSubscribedToQuotes == false) {
+						string msg1 = "BAD_JOB#3_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
+						Assembler.PopupException(msg1);
+					}
+				}
 
-		        if (mustBeChartSubscribedToQuotesAndBars.ConsumersBarCount != 1) {
-		            string msg1 = "BAD_JOB#4_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
-		            Assembler.PopupException(msg1);
-		        } else {
-		            bool mustBeChartSubscribedToBars = mustBeChartSubscribedToQuotesAndBars.ConsumersBarContains(chartless);
-		            if (mustBeChartSubscribedToBars == false) {
-		                string msg1 = "BAD_JOB#5_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
-		                Assembler.PopupException(msg1);
-		            }
-		        }
-		    }
+				if (mustBeChartSubscribedToQuotesAndBars.ConsumersBarCount != 1) {
+					string msg1 = "BAD_JOB#4_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
+					Assembler.PopupException(msg1);
+				} else {
+					bool mustBeChartSubscribedToBars = mustBeChartSubscribedToQuotesAndBars.ConsumersBarContains(chartless);
+					if (mustBeChartSubscribedToBars == false) {
+						string msg1 = "BAD_JOB#5_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
+						Assembler.PopupException(msg1);
+					}
+				}
+			}
 		}
 
 

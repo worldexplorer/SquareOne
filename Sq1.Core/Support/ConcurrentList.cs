@@ -12,11 +12,11 @@ namespace Sq1.Core.Support {
 			lockPurpose += " //" + this.ToString() + ".First_nullUnsafe()";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-			    if (ret != null) {
-			        string msg = "PARANOID I_WANT_NULL_HERE!!! NOT_TRUSTING_default(T)_AND_GENERIC_TYPE_CAN_NOT_BE_ASSIGNED_TO_NULL";
-			        Assembler.PopupException(msg);
-			    }
-			    if (this.InnerList.Count > 0) ret = this.InnerList[0];
+				if (ret != null) {
+					string msg = "PARANOID I_WANT_NULL_HERE!!! NOT_TRUSTING_default(T)_AND_GENERIC_TYPE_CAN_NOT_BE_ASSIGNED_TO_NULL";
+					Assembler.PopupException(msg);
+				}
+				if (this.InnerList.Count > 0) ret = this.InnerList[0];
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
 			}
@@ -27,30 +27,30 @@ namespace Sq1.Core.Support {
 			lockPurpose += " //" + this.ToString() + ".Last_nullUnsafe()";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-			    if (ret != null) {
-			        string msg = "PARANOID I_WANT_NULL_HERE!!! NOT_TRUSTING_default(T)_AND_GENERIC_TYPE_CAN_NOT_BE_ASSIGNED_TO_NULL";
-			        Assembler.PopupException(msg);
-			    }
-			    if (this.InnerList.Count > 0) ret = this.InnerList[this.InnerList.Count - 1];
+				if (ret != null) {
+					string msg = "PARANOID I_WANT_NULL_HERE!!! NOT_TRUSTING_default(T)_AND_GENERIC_TYPE_CAN_NOT_BE_ASSIGNED_TO_NULL";
+					Assembler.PopupException(msg);
+				}
+				if (this.InnerList.Count > 0) ret = this.InnerList[this.InnerList.Count - 1];
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
 			}
 			return ret;
 		}
 		public T PreLast_nullUnsafe(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
-		    T ret = default(T);
+			T ret = default(T);
 			lockPurpose += " //" + this.ToString() + ".PreLast_nullUnsafe()";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-			    if (ret != null) {
-			        string msg = "PARANOID I_WANT_NULL_HERE!!! NOT_TRUSTING_default(T)_AND_GENERIC_TYPE_CAN_NOT_BE_ASSIGNED_TO_NULL";
-			        Assembler.PopupException(msg);
-			    }
-			    if (this.InnerList.Count > 1) ret = this.InnerList[this.InnerList.Count - 2];
+				if (ret != null) {
+					string msg = "PARANOID I_WANT_NULL_HERE!!! NOT_TRUSTING_default(T)_AND_GENERIC_TYPE_CAN_NOT_BE_ASSIGNED_TO_NULL";
+					Assembler.PopupException(msg);
+				}
+				if (this.InnerList.Count > 1) ret = this.InnerList[this.InnerList.Count - 2];
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
 			}
-		    return ret;
+			return ret;
 		}
 		public List<T> SafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			List<T> ret = new List<T>();

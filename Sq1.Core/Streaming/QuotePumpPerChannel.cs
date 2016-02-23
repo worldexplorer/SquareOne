@@ -178,12 +178,12 @@ namespace Sq1.Core.Streaming {
 					mustBeHeartBeatInterval.Stop();
 					bool waitedLessThanHalfInterval = mustBeHeartBeatInterval.ElapsedMilliseconds < this.heartbeatTimeout / 2;
 					if (waitedLessThanHalfInterval
-					        //&& livesimThread
-					    ) {
-					    string msg = "I_MUST_BE_IN_LIVESIM_OR_REAL"
-					        + " mustBeHeartBeatInterval.ElapsedMilliseconds[" + mustBeHeartBeatInterval.ElapsedMilliseconds + "]"
-					        + " this.heartbeatTimeout[" + this.heartbeatTimeout + "]";
-					    //Assembler.PopupException(msg, null, false);
+							//&& livesimThread
+						) {
+						string msg = "I_MUST_BE_IN_LIVESIM_OR_REAL"
+							+ " mustBeHeartBeatInterval.ElapsedMilliseconds[" + mustBeHeartBeatInterval.ElapsedMilliseconds + "]"
+							+ " this.heartbeatTimeout[" + this.heartbeatTimeout + "]";
+						//Assembler.PopupException(msg, null, false);
 					}
 
 					if (this.exitPushingThreadRequested) {

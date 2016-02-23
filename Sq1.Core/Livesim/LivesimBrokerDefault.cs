@@ -13,8 +13,8 @@ namespace Sq1.Core.Livesim {
 		public LivesimBrokerDefault() : base("USED_FOR_DATASOURCE_EDITOR_DUMMY") {
 			string msg = "IM_HERE_WHEN_DLL_SCANNER_INSTANTIATES_DUMMY_STREAMING"
 				//+ "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
-		        + "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_STREAMING_ADAPTERS_FOUND"
-		        + " example:QuikLivesimBroker()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
+				+ "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_STREAMING_ADAPTERS_FOUND"
+				+ " example:QuikLivesimBroker()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
 			base.Name = "LivesimBrokerDefault-child_ACTIVATOR_DLL-SCANNED";
 		}
 

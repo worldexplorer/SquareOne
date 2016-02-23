@@ -383,17 +383,17 @@ namespace Sq1.Core.Charting {
 		//[JsonIgnore]	SolidBrush brushBackground;
 		//[Browsable(false)]
 		//[JsonIgnore]	public SolidBrush BrushBackground { get {
-		//        if (this.brushBackground == null) this.brushBackground = new SolidBrush(this.ChartColorBackground);
-		//        return this.brushBackground;
-		//    } }
+		//		if (this.brushBackground == null) this.brushBackground = new SolidBrush(this.ChartColorBackground);
+		//		return this.brushBackground;
+		//	} }
 
 		//[Browsable(false)]
 		//[JsonIgnore]	SolidBrush brushBackgroundReversed;
 		//[Browsable(false)]
 		//[JsonIgnore]	public SolidBrush BrushBackgroundReversed { get {
-		//        if (this.brushBackgroundReversed == null) this.brushBackgroundReversed = new SolidBrush(ColorReverse(this.ChartColorBackground));
-		//        return this.brushBackgroundReversed;
-		//    } }
+		//		if (this.brushBackgroundReversed == null) this.brushBackgroundReversed = new SolidBrush(ColorReverse(this.ChartColorBackground));
+		//		return this.brushBackgroundReversed;
+		//	} }
 
 		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushGutterRightBackground;

@@ -30,13 +30,13 @@ namespace Sq1.Core.Broker {
 				+ " 1) use base.BrokerEditorInitializeHelper()"
 				+ " 2) do base.BrokerEditorInstance=new FoobarBrokerEditor()");
 		}
-		//public void BrokerEditorInitializeHelper(IDataSourceEditor dataSourceEditor) {
-		//    if (this.DataSourceEditor != null) {
-		//        if (this.DataSourceEditor == dataSourceEditor) return;
-		//        string msg = "this.dataSourceEditor!=null, already initialized; should I overwrite it with another instance you provided?...";
-		//        throw new Exception(msg);
-		//    }
-		//    this.DataSourceEditor = dataSourceEditor;
-		//}
+		public void BrokerEditorInitializeHelper(IDataSourceEditor dataSourceEditor) {
+			if (this.dataSourceEditor != null) {
+				if (this.dataSourceEditor == dataSourceEditor) return;
+				string msg = "this.dataSourceEditor!=null, already initialized; should I overwrite it with another instance you provided?...";
+				throw new Exception(msg);
+			}
+			this.dataSourceEditor = dataSourceEditor;
+		}
 	}
 }

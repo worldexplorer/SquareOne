@@ -58,8 +58,8 @@ namespace Sq1.Core.Livesim {
 
 			if (whereItyped == this.txt_DelayBetweenSerialQuotesMin) {
 				if (parsedInt < 2) {	// at 2GHz/2core+hyperThreading(4) still allows to repaint chart fullscreen 2560x1600
-				    parsedInt = 2;		// otherwize GUI becomes completely irresponsive; Application.DoEvents will unleash guiHasTime while it doesn't
-				    whereItyped.Text = parsedInt.ToString();
+					parsedInt = 2;		// otherwize GUI becomes completely irresponsive; Application.DoEvents will unleash guiHasTime while it doesn't
+					whereItyped.Text = parsedInt.ToString();
 				}
 				this.livesimStreamingSettings.DelayBetweenSerialQuotesMin = parsedInt;
 

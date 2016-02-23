@@ -113,15 +113,15 @@ namespace Sq1.Core.Execution {
 				return backtester.ImBacktestingOrLivesimming;
 			} }
 		[JsonIgnore]	public	bool				IsBacktestingNoLivesimNow_FalseIfNoBacktester		{ get {
-		        Backtester	backtester = this.Backtester_nullUnsafeForDeserialized;
-		        if (backtester == null) return false;
-		        return backtester.ImRunningChartlessBacktesting;
-		    } }
+				Backtester	backtester = this.Backtester_nullUnsafeForDeserialized;
+				if (backtester == null) return false;
+				return backtester.ImRunningChartlessBacktesting;
+			} }
 		[JsonIgnore]	public	bool				IsBacktestingLivesimNow_FalseIfNoBacktester		{ get {
-		        Backtester	backtester = this.Backtester_nullUnsafeForDeserialized;
-		        if (backtester == null) return false;
-		        return this.Strategy.Script.Executor.BacktesterOrLivesimulator.ImRunningLivesim;
-		    }
+				Backtester	backtester = this.Backtester_nullUnsafeForDeserialized;
+				if (backtester == null) return false;
+				return this.Strategy.Script.Executor.BacktesterOrLivesimulator.ImRunningLivesim;
+			}
 		}
 		[JsonProperty]	public	BarScaleInterval	BarsScaleInterval				{ get; protected set; }
 		[JsonProperty]	public	OrderSpreadSide		OrderSpreadSide;
