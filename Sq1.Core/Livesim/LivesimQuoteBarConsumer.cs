@@ -29,18 +29,21 @@ namespace Sq1.Core.Livesim {
 		public override void ConsumeQuoteOfStreamingBar(Quote quote) {
 			bool guiHasTime = this.livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
 			ScriptExecutor executor = this.livesimulator.Executor;
-			ReporterPokeUnit pokeUnit_nullUnsafe = this.livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quote);
-			if (pokeUnit_nullUnsafe != null && pokeUnit_nullUnsafe.PositionsOpenNow.Count > 0) {
-				executor.PerformanceAfterBacktest.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(executor.ExecutionDataSnapshot.PositionsOpenNow);
-				if (guiHasTime) {
-					executor.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnit_nullUnsafe);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quote);
+			using (pokeUnit_nullUnsafe_dontForgetToDispose) {
+				if (	pokeUnit_nullUnsafe_dontForgetToDispose != null
+					 && pokeUnit_nullUnsafe_dontForgetToDispose.PositionsOpenNow.Count > 0) {
+					executor.PerformanceAfterBacktest.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(executor.ExecutionDataSnapshot.PositionsOpenNow);
+					if (guiHasTime) {
+						executor.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnit_nullUnsafe_dontForgetToDispose);
+					}
 				}
-			}
-			if (guiHasTime) {
-				// ALREADY_HANDLED_BY chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline
-				//executor.ChartShadow.Invalidate();
-				//executor.ChartShadow.InvalidateAllPanels();
-				//executor.ChartShadow.RefreshAllPanelsWaitFinishedSoLivesimCouldGenerateNewQuote(0);
+				if (guiHasTime) {
+					// ALREADY_HANDLED_BY chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline
+					//executor.ChartShadow.Invalidate();
+					//executor.ChartShadow.InvalidateAllPanels();
+					//executor.ChartShadow.RefreshAllPanelsWaitFinishedSoLivesimCouldGenerateNewQuote(0);
+				}
 			}
 		}
 		public override void ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
@@ -54,7 +57,10 @@ namespace Sq1.Core.Livesim {
 			}
 			msig += "(" + barLastFormed.ToString() + ")";
 			//v1 this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
-			ReporterPokeUnit pokeUnit_nullUnsafe = this.livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);
+			if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
+				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
+			}
 		}
 		#endregion
 

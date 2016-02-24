@@ -69,7 +69,7 @@ namespace Sq1.Gui.Forms {
 				//SHOULD_INCLUDE_FLOATWINDOW_OR_DOCKED_BUT_COVERED_BY_OTHER_FELLAS bool undockToOpen = editor.IsDocked || editor.IsDockedAutoHide;
 				//for DockedRightAutoHide+Folded, Control.Active=true (seems illogical)
 				//for DockedRightAutoHide+Folded, DockContent.IsHidden=false (seems illogical)
-				editorMustBeActivated = editor.IsCoveredOrAutoHidden;
+				editorMustBeActivated = editor.MustBeActivated;
 				return !editorMustBeActivated;
 			} }
 		
@@ -527,7 +527,7 @@ namespace Sq1.Gui.Forms {
 					+ " 2) an existing strategy.BacktestOnSelectorsChange=true (opened in a new chartform) failed compile upstack;"
 					+ " 3) an exisitng strategy.BacktestOnSelectorsChange=true (loaded non-default ScriptContext) failed to compile upstack;"
 					;
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 			this.BacktesterRunSimulation();
@@ -667,10 +667,10 @@ namespace Sq1.Gui.Forms {
 			if (willBacktest == false) {
 				// COPYFROM_StrategyCompileActivatePopulateSlidersShow()
 				if (this.Strategy.Script == null) {		 //&& this.Strategy.ActivatedFromDll
-					string msg = "COMPILE_AND_INITIALIZE_SCRIPT_THEN??...";
-					Assembler.PopupException(msg);
+					string msg = "COMPILE_AND_INITIALIZE_SCRIPT_THEN??... this.Strategy.Script=null";
+					Assembler.PopupException(msg, null, false);
 				} else {
-					this.Strategy.ScriptAndIndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
+					this.Strategy.ScriptAndIndicatorParametersReflected_absorbMergeFromCurrentContext_saveStrategy();
 				}
 				// candidate to be moved to MainForm.cs:156 into foreach (ChartFormsManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 				//this.SequencerFormShow(true);
@@ -928,7 +928,7 @@ namespace Sq1.Gui.Forms {
 			}
 			if (string.IsNullOrEmpty(this.Strategy.ScriptSourceCode)) {
 				string msg = "WONT_COMPILE_STRATEGY_HAS_EMPTY_SOURCE_CODE_PLEASE_TYPE_SOMETHING";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 			this.Strategy.CompileInstantiate();
@@ -955,10 +955,10 @@ namespace Sq1.Gui.Forms {
 			}
 
 			if (this.Strategy.Script == null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
-				string msg = "COMPILE_AND_INITIALIZE_SCRIPT_THEN??...";
-				Assembler.PopupException(msg);
+				string msg = "COMPILE_AND_INITIALIZE_SCRIPT_THEN??... this.Strategy.Script=null";
+				Assembler.PopupException(msg, null, false);
 			} else {
-				this.Strategy.ScriptAndIndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
+				this.Strategy.ScriptAndIndicatorParametersReflected_absorbMergeFromCurrentContext_saveStrategy();
 			}
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.PopulateSliders();

@@ -9,8 +9,6 @@ using Sq1.Core;
 using Sq1.Core.Serializers;
 using Sq1.Core.Support;
 
-using Sq1.Support;
-
 namespace Sq1.Widgets.Exceptions {
 	public partial class ExceptionsControl {
 				ExceptionsControlDataSnapshot				dataSnapshot;

@@ -55,7 +55,8 @@ namespace Sq1.Gui.FormFactories {
 				this.chartFormManager.StrategyCompileActivatePopulateSlidersShow();
 				this.chartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory(true);
 			} catch (Exception ex) {
-				Assembler.PopupException("COMPILING_STRATEGY_SOURCE_CODE_FAILED //ScriptEditorControl_OnCompile() << StrategyCompileActivatePopulateSlidersShow() has thrown", ex);
+				string msg = "COMPILING_STRATEGY_SOURCE_CODE_FAILED //ScriptEditorControl_OnCompile() << StrategyCompileActivatePopulateSlidersShow() has thrown";
+				Assembler.PopupException(msg, ex, false);
 			}
 		}
 		void scriptEditorControl_OnDebug(object sender, ScriptEditorEventArgs e) {

@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
+
 using Sq1.Core;
 using Sq1.Core.Broker;
 using Sq1.Core.Execution;
 using Sq1.Core.Serializers;
 using Sq1.Core.Support;
-using Sq1.Support;
 
 namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {

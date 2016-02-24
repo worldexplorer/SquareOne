@@ -82,9 +82,9 @@ namespace Sq1.Core.StrategyBase {
 				compilerParameters.IncludeDebugInformation = true;
 			}
 			compilerParameters.IncludeDebugInformation = false;
-			//compilerParameters.ReferencedAssemblies.Add("System.dll");
-			//compilerParameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
-			//compilerParameters.ReferencedAssemblies.Add("System.Drawing.dll");
+			compilerParameters.ReferencedAssemblies.Add("System.dll");
+			compilerParameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
+			compilerParameters.ReferencedAssemblies.Add("System.Drawing.dll");
 			this.addApplicationAssemblies(compilerParameters);
 			if (string.IsNullOrEmpty(dotNetReferences) == false) {
 				string[] referencesSplitted = dotNetReferences.Split(new char[] { ';' });

@@ -100,65 +100,66 @@ namespace Sq1.Core.StrategyBase {
 				positionsClosedSafe.Remove(posOpen, this, "BuildStatsOnBacktestFinished(WAIT)");
 			}
 			// at the end of backtest, I closed all positions, last may be still open 
-			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(null, null,
+			ReporterPokeUnit pokeUnit_dontForgetToDispose = new ReporterPokeUnit(null, null,
 					//this.Executor.ExecutionDataSnapshot.PositionsOpenNow,
 					this.Executor.ExecutionDataSnapshot.PositionsMaster,
 					positionsClosedSafe,
 					this.Executor.ExecutionDataSnapshot.PositionsOpenNow
 				);
-			
-			int absorbedLong	= this.SliceLong			.BuildStatsOnBacktestFinished(pokeUnit);
-			int absorbedShort	= this.SliceShort			.BuildStatsOnBacktestFinished(pokeUnit);
-			int absorbedBoth	= this.SlicesShortAndLong	.BuildStatsOnBacktestFinished(pokeUnit);
-			int absorbedBH		= this.SliceBuyHold			.BuildStatsOnBacktestFinished(pokeUnit);
+			using(pokeUnit_dontForgetToDispose) {
+				int absorbedLong	= this.SliceLong			.BuildStatsOnBacktestFinished(pokeUnit_dontForgetToDispose);
+				int absorbedShort	= this.SliceShort			.BuildStatsOnBacktestFinished(pokeUnit_dontForgetToDispose);
+				int absorbedBoth	= this.SlicesShortAndLong	.BuildStatsOnBacktestFinished(pokeUnit_dontForgetToDispose);
+				int absorbedBH		= this.SliceBuyHold			.BuildStatsOnBacktestFinished(pokeUnit_dontForgetToDispose);
 
-			Strategy strategy = this.Executor.Strategy;
-			Script script = strategy.Script;
-			if (script.ScriptParametersById_ReflectedCached == null) {
-				string msg = "CANT_GRAB_";
-				Assembler.PopupException(msg);
-				return;
-			}
-			//WRONG this.ScriptAndIndicatorParameterClonesByName.Clear();
-			this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished = new SortedDictionary<string, IndicatorParameter>();
-			this.ScriptParametersById_BuiltOnBacktestFinished = new SortedDictionary<int, ScriptParameter>();
-
-			string pids = script.ScriptParametersAsString;
-			foreach (ScriptParameter sp in script.ScriptParametersById_ReflectedCached.Values) {
-				if (this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(sp.Name)) {
-					string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_ScriptParameter[" + sp.Name + "]: " + pids;
+				Strategy strategy = this.Executor.Strategy;
+				Script script = strategy.Script;
+				if (script.ScriptParametersById_ReflectedCached == null) {
+					string msg = "CANT_GRAB_";
 					Assembler.PopupException(msg);
-					continue;
+					return;
 				}
-				ScriptParameter clone = sp.CloneAsScriptParameter("FOR_BuildStatsOnBacktestFinished");
-				this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Add(sp.Name, clone);
-				this.ScriptParametersById_BuiltOnBacktestFinished.Add(sp.Id, clone);
-			}
+				//WRONG this.ScriptAndIndicatorParameterClonesByName.Clear();
+				this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished = new SortedDictionary<string, IndicatorParameter>();
+				this.ScriptParametersById_BuiltOnBacktestFinished = new SortedDictionary<int, ScriptParameter>();
 
-			//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
-			string iids = script.IndicatorParametersAsString;
-			//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
-			foreach (IndicatorParameter ip in script.IndicatorsParameters_ReflectedCached.Values) {
-				if (this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(ip.FullName)) {
-					string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_IndicatorParameter[" + ip.Name + "]: " + iids;
-					Assembler.PopupException(msg);
-					continue;
+				string pids = script.ScriptParametersAsString;
+				foreach (ScriptParameter sp in script.ScriptParametersById_ReflectedCached.Values) {
+					if (this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(sp.Name)) {
+						string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_ScriptParameter[" + sp.Name + "]: " + pids;
+						Assembler.PopupException(msg);
+						continue;
+					}
+					ScriptParameter clone = sp.CloneAsScriptParameter("FOR_BuildStatsOnBacktestFinished");
+					this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Add(sp.Name, clone);
+					this.ScriptParametersById_BuiltOnBacktestFinished.Add(sp.Id, clone);
 				}
-				IndicatorParameter clone = ip.CloneAsIndicatorParameter("FOR_BuildStatsOnBacktestFinished#1");
-				this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Add(ip.FullName, clone);
-			}
 
-			this.IndicatorParametersByName_BuiltOnBacktestFinished = new Dictionary<string, List<IndicatorParameter>>();
-			ContextScript ctx = strategy.ScriptContextCurrent;
-			foreach (string iParamName in ctx.IndicatorParametersByName.Keys) {
-				List<IndicatorParameter> iParams = ctx.IndicatorParametersByName[iParamName];
-				List<IndicatorParameter> iParamsCloned = new List<IndicatorParameter>();
-				foreach (IndicatorParameter ip in iParams) {
-					IndicatorParameter clone = ip.CloneAsIndicatorParameter("FOR_BuildStatsOnBacktestFinished#2");
-					iParamsCloned.Add(clone);
+				//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
+				string iids = script.IndicatorParametersAsString;
+				//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
+				foreach (IndicatorParameter ip in script.IndicatorsParameters_ReflectedCached.Values) {
+					if (this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(ip.FullName)) {
+						string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_IndicatorParameter[" + ip.Name + "]: " + iids;
+						Assembler.PopupException(msg);
+						continue;
+					}
+					IndicatorParameter clone = ip.CloneAsIndicatorParameter("FOR_BuildStatsOnBacktestFinished#1");
+					this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Add(ip.FullName, clone);
 				}
-				this.IndicatorParametersByName_BuiltOnBacktestFinished.Add(iParamName, iParamsCloned);
-			}
+
+				this.IndicatorParametersByName_BuiltOnBacktestFinished = new Dictionary<string, List<IndicatorParameter>>();
+				ContextScript ctx = strategy.ScriptContextCurrent;
+				foreach (string iParamName in ctx.IndicatorParametersByName.Keys) {
+					List<IndicatorParameter> iParams = ctx.IndicatorParametersByName[iParamName];
+					List<IndicatorParameter> iParamsCloned = new List<IndicatorParameter>();
+					foreach (IndicatorParameter ip in iParams) {
+						IndicatorParameter clone = ip.CloneAsIndicatorParameter("FOR_BuildStatsOnBacktestFinished#2");
+						iParamsCloned.Add(clone);
+					}
+					this.IndicatorParametersByName_BuiltOnBacktestFinished.Add(iParamName, iParamsCloned);
+				}
+			}			
 		}
 		internal void BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(Position position) {
 			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {

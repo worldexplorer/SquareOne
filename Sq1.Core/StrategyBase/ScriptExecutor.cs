@@ -494,7 +494,7 @@ namespace Sq1.Core.StrategyBase {
 			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) return null;
 			
 			
-			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteForAlertsCreated,
+			ReporterPokeUnit pokeUnit_dontForgetToDispose = new ReporterPokeUnit(quoteForAlertsCreated,
 												this.ExecutionDataSnapshot.AlertsNewAfterExec		.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
 												this.ExecutionDataSnapshot.PositionsOpenedAfterExec	.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
 												this.ExecutionDataSnapshot.PositionsClosedAfterExec	.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
@@ -518,8 +518,8 @@ namespace Sq1.Core.StrategyBase {
 			this.EventGenerator.RaiseOnStrategyExecutedOneQuoteOrBarOrdersEmitted(ordersEmitted);
 			
 			// lets Execute() return non-null PokeUnit => Reporters are notified on quoteUpdatedPositions if !GuiIsBusy
-			if (pokeUnit.PositionsNowPlusOpenedPlusClosedAfterExecPlusAlertsNewCount == 0) return null;
-			return pokeUnit;
+			if (pokeUnit_dontForgetToDispose.PositionsNowPlusOpenedPlusClosedAfterExecPlusAlertsNewCount == 0) return null;
+			return pokeUnit_dontForgetToDispose;
 		}
 
 		void enrichAlertsWithQuoteCreated(List<Alert> alertsAfterStrategy, Quote quote) {
@@ -533,7 +533,7 @@ namespace Sq1.Core.StrategyBase {
 				int alertIsLateNbars = alert.PlacedBarIndex - quote.ParentBarStreaming.ParentBarsIndex;
 				if (alertIsLateNbars > 0) {
 					string msg = "I_REFUSE_TO_ENRICH_ALERT_WITH_QUOTE alertIsLateNbars[" + alertIsLateNbars + "] alert[" + alert + "]";
-					this.PopupException(msg);
+					this.PopupException(msg, null, false);
 					continue;
 				}
 				//alert.PositionSize = this.PositionSize;

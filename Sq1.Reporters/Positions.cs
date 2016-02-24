@@ -8,7 +8,6 @@ using Sq1.Core;
 using Sq1.Core.Charting;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
-using Sq1.Support;
 using Sq1.Core.Support;
 
 namespace Sq1.Reporters {

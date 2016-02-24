@@ -55,7 +55,7 @@ namespace Sq1.Gui.Forms {
 		}
 		void mniShowSourceCodeEditor_Click(object sender, System.EventArgs e) {
 			this.ctxStrategy.Visible = true;
-			if (this.MniShowSourceCodeEditor.Checked) {
+			if (this.MniShowSourceCodeEditor.Checked == false) {
 				// if autohidden => popup and keepAutoHidden=false
 				this.ChartFormManager.EditorFormShow(false);
 				this.ChartFormManager.MainForm.MainFormSerialize();

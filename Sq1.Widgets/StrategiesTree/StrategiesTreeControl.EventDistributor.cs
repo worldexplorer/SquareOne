@@ -49,7 +49,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		void RaiseOnStrategyCreated(string msig = null) {
 			if (this.OnStrategyCreated == null) {
 				string msg = "event OnStrategyCreated: no subscribers";
-				Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
 			this.OnStrategyCreated(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected));

@@ -3,12 +3,12 @@
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Execution {
-	public class ReporterPokeUnit {
-		public Quote			QuoteGeneratedThisUnit	{ get; protected set; }
-		public AlertList		AlertsNew				{ get; protected set; }
-		public PositionList		PositionsOpened			{ get; protected set; }
-		public PositionList		PositionsClosed			{ get; protected set; }
-		public PositionList		PositionsOpenNow		{ get; protected set; }
+	public class ReporterPokeUnit : IDisposable {
+		public Quote			QuoteGeneratedThisUnit	{ get; private set; }
+		public AlertList		AlertsNew				{ get; private set; }
+		public PositionList		PositionsOpened			{ get; private set; }
+		public PositionList		PositionsClosed			{ get; private set; }
+		public PositionList		PositionsOpenNow		{ get; private set; }
 		
 		public int				PositionsOpenedAfterExecPlusClosedCount							{ get { return this.PositionsOpened.Count + this.PositionsClosed.Count; } }
 		public int				PositionsOpenedAfterExecPlusClosedPlusAlertsNewCount			{ get { return this.PositionsOpenedAfterExecPlusClosedCount + this.AlertsNew.Count; } }
@@ -16,10 +16,10 @@ namespace Sq1.Core.Execution {
 		public int				PositionsNowPlusOpenedPlusClosedAfterExecPlusAlertsNewCount		{ get { return this.PositionsOpenedAfterExecPlusClosedPlusAlertsNewCount + this.PositionsOpenNow.Count; } }
 		
 		public ReporterPokeUnit() {
-			AlertsNew			= new AlertList("AlertsNew", null);
-			PositionsOpened		= new PositionList("PositionsOpened", null);
-			PositionsClosed		= new PositionList("PositionsClosed", null);
-			PositionsOpenNow	= new PositionList("PositionsOpenNow", null);
+			AlertsNew			= new AlertList			("AlertsNew_myOwn_canDispose", null);
+			PositionsOpened		= new PositionList("PositionsOpened_myOwn_canDispose", null);
+			PositionsClosed		= new PositionList("PositionsClosed_myOwn_canDispose", null);
+			PositionsOpenNow	= new PositionList("PositionsOpenNow_myOwn_canDispose", null);
 		}
 		public ReporterPokeUnit(Quote quote, AlertList alertsNew, PositionList positionsOpened, PositionList positionsClosed, PositionList positionsOpenNow = null) : this() {
 			if (quote				!= null) QuoteGeneratedThisUnit	= quote;
@@ -43,5 +43,22 @@ namespace Sq1.Core.Execution {
 				+ " PositionsClosed[" + this.PositionsClosed.Count + "]"
 				+ " PositionsOpenNow[" + this.PositionsOpenNow.Count + "]";
 		}
+
+		#region IDisposable Members
+		public void Dispose() {					// VS2010_DOES_NOT_DROP_IT_DOWN_IF_NOT_IMPLICITLY_PUBLIC void IDisposable.Dispose() {
+			//return;		// when I continue, closePositionsLeftOpenAfterBacktest() throws at the end of Backtest
+			if (this.DisposedWasAlreadyInvoked) {
+				string msg = "DONT_DISPOSE_THE_KITTEN_TWICE //ReporterPokeUnit().Dispose()";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.DisposedWasAlreadyInvoked			= true;
+			if (this.AlertsNew			.ReasonToExist.Contains("_myOwn_canDispose"))		this.AlertsNew			.Dispose();
+		    if (this.PositionsOpened	.ReasonToExist.Contains("_myOwn_canDispose"))		this.PositionsOpened	.Dispose();
+		    if (this.PositionsClosed	.ReasonToExist.Contains("_myOwn_canDispose"))		this.PositionsClosed	.Dispose();
+		    if (this.PositionsOpenNow	.ReasonToExist.Contains("_myOwn_canDispose"))		this.PositionsOpenNow	.Dispose();
+		}
+		public bool DisposedWasAlreadyInvoked { get; private set; }
+		#endregion
 	}
 }

@@ -260,8 +260,11 @@ namespace Sq1.Core.Livesim {
 			}
 			//executor.Script.OnNewQuoteCallback(quoteToReach);
 
-			ReporterPokeUnit pokeUnit_nullUnsafe = executor.ExecuteOnNewBarOrNewQuote(quoteAttachedToStreamingToConsumerBars);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = executor.ExecuteOnNewBarOrNewQuote(quoteAttachedToStreamingToConsumerBars);
 			//base.GeneratedQuoteEnrichSymmetricallyAndPush(quote, bar2simulate);
+			if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
+				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
+			}
 		}
 		void action_afterAlertFilled_beforeMovedAround(Alert alertFilled, double priceFilled, double qtyFilled) {
 			try {
