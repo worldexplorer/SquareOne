@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace Sq1.Support  {
+namespace Sq1.Core.Support  {
 	public class WindowsFormsUtils {
 		//http://stackoverflow.com/questions/76993/how-to-double-buffer-net-controls-on-a-form
 		public static void SetDoubleBuffered(Control c) {

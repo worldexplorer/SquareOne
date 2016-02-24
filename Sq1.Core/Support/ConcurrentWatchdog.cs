@@ -46,7 +46,7 @@ namespace Sq1.Core.Support {
 		public string LockStack_asString { get {
 			string ret = "";
 			List<string> stackAsList = new List<string>(this.recursionDetector.ToArray());
-			stackAsList.Reverse();
+			//LOOKS_LIKE_THEY_INSERT_RECENT_INTO_LIST__NO_NEED_TO_REVERSE stackAsList.Reverse();
 			foreach (string msig in stackAsList) {
 				if (ret != "") ret += "," + Environment.NewLine;
 				ret += msig;
@@ -70,18 +70,28 @@ namespace Sq1.Core.Support {
 				return false;
 			}
 
-			if (this.recursionDetector.Contains(lockPurpose)) {
-				string msg = "YOU_ALREADY_LOCKED_ME_WITH_SAME_REASON[" + lockPurpose + "] lockStack[" + this.LockStack_asString + "] AVOIDING_STACK_OVERFLOW RECURSIVE_CALL";
-				Assembler.PopupException(msg);
+			string msig = " //WaitAndLockFor(owner[" + owner + "] lockPurpose[" + lockPurpose + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
+			//string msig = "LOCK_REQUESTED_BY[" + owner.ToString() + "]_FOR[" + lockPurpose + "] ";
+			if (this.IsDisposed) {
+				string msg = "DISPOSED_WAS_AREADY_INVOKED#1 ";
+				Assembler.PopupException(msg + msig);
 			}
-			this.recursionDetector.Push(lockPurpose);
-
+			if (this.isFree == null) {
+				string msg = "DISPOSED_WAS_AREADY_INVOKED#2 isFree = null";
+				Assembler.PopupException(msg + msig);
+			}
 			lock (this.customerLockingQueue) {		// keep same-stack-return above first ever lock() {}
 				bool unlocked = this.isFree.WaitOne(waitMillis);
 				if (unlocked == false && this.Snap != null) {
 					this.Snap.BarkIfAnyScriptOverrideIsRunning("TRYING_TO_LOCK_FOR[" + lockPurpose + "]"
 						+ " while ALREADY_LOCKED_FOR[" + this.lockedPurposeFirstInTheStack + "]");
 				}
+
+				if (this.recursionDetector.Contains(lockPurpose)) {
+					string msg = "YOU_ALREADY_LOCKED_ME_WITH_SAME_REASON[" + lockPurpose + "] lockStack[" + this.LockStack_asString + "] AVOIDING_STACK_OVERFLOW RECURSIVE_CALL";
+					Assembler.PopupException(msg + msig, null, false);
+				}
+				this.recursionDetector.Push(lockPurpose);
 
 				bool hadToWaitWasLockedAtFirst = false;
 				this.stopwatchLock.Restart();
@@ -93,7 +103,6 @@ namespace Sq1.Core.Support {
 							;
 						this.isFree.WaitOne(waitMillis);
 					} else {
-						string msig = "LOCK_REQUESTED_BY[" + owner.ToString() + "]_FOR[" + lockPurpose + "] ";
 						while (unlocked == false) {
 							unlocked = this.isFree.WaitOne(waitMillis);
 							if (unlocked) break;
@@ -104,7 +113,6 @@ namespace Sq1.Core.Support {
 				}
 				this.stopwatchLock.Stop();
 				if (hadToWaitWasLockedAtFirst) {
-					string msig = "LOCK_REQUESTED_BY[" + owner.ToString() + "]_FOR[" + lockPurpose + "] ";
 					string msg = "AQUIRED_AFTER[" + this.stopwatchLock.ElapsedMilliseconds + "]ms ";
 					Assembler.PopupException(msig + msg + this.Ident, null, false);
 				}
@@ -131,44 +139,57 @@ namespace Sq1.Core.Support {
 					return false;
 				} // if no stacked locks from the same owner - unlock it! 6 last lines
 			}
+			string msig = " //UnLockFor(owner[" + owner + "] releasingAfter[" + releasingAfter + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
+			if (this.IsDisposed) {
+				string msg = "DISPOSED_WAS_AREADY_INVOKED#1 ";
+				Assembler.PopupException(msg + msig);
+			}
+			if (this.isFree == null) {
+				string msg = "DISPOSED_WAS_AREADY_INVOKED#2 isFree = null";
+				Assembler.PopupException(msg + msig);
+			}
+			// NEVER_USE_THIS__FIRST_CONCURRENT_ACCESS_LEADS_TO_DEADLOCK lock (this.customerLockingQueue) {		// keep same-stack-return above first ever lock() {}
 			lock (this.customerUnLockingQueue) {		// keep same-stack-return above first ever lock() {}
-				if (string.IsNullOrEmpty(releasingAfter)) {
-					releasingAfter = this.lockedPurposeFirstInTheStack;
+				//if (string.IsNullOrEmpty(releasingAfter)) {
+				//    releasingAfter = this.lockedPurposeFirstInTheStack;
+				//} else {
+				//    if (releasingAfter != this.lockedPurposeFirstInTheStack) {
+				//        string msg2 = "releasingAfter[" + releasingAfter + "] != this.LockPurpose[" + this.lockedPurposeFirstInTheStack + "]";
+				//        Assembler.PopupException(msg2 + this.Ident, null, false);
+				//    }
+				//}
+				string msg = null;
+				bool unlocked = this.isFree.WaitOne(0);
+				if (unlocked) {
+					msg = "MUST_BE_LOCKED__UNPROOF_OF_CONCEPT";
+					// DONT_WORRY__BE_HAPPY throw new Exception(msg + msig);
 				} else {
-					if (releasingAfter != this.lockedPurposeFirstInTheStack) {
-						string msg2 = "releasingAfter[" + releasingAfter + "] != this.LockPurpose[" + this.lockedPurposeFirstInTheStack + "]";
-						Assembler.PopupException(msg2 + this.Ident, null, false);
+					if (this.lockedClass != owner) {
+						msg = "YOU_MUST_BE_THE_SAME_OBJECT_WHO_LOCKED this.lockOwner[" + this.lockedClass + "] != owner[" + owner + "]";
+						throw new Exception(msg + msig);
+					}
+					if (this.lockedPurposeFirstInTheStack != releasingAfter) {
+						msg = "YOUR_UNLOCK_REASON_MUST_BE_THE_SAME_AS_LOCKED_REASON this.lockPurposeFirstInTheStack["
+							+ this.lockedPurposeFirstInTheStack + "] != releasingAfter[" + releasingAfter + "]";
+						throw new Exception(msg + msig);
 					}
 				}
 
 				if (this.recursionDetector.Contains(releasingAfter) == false) {
 					string msg1 = "YOU_NEVER_LOCKED_ME_WITH_SAME_REASON_YOU_ARE_RELEASING[" + releasingAfter + "] lockStack[" + this.LockStack_asString + "]";
-					Assembler.PopupException(msg1);
+					Assembler.PopupException(msg1 + msig, null, false);
 				} else {
 					string lastLockReason = this.recursionDetector.Peek();
 					if (lastLockReason != releasingAfter) {
-						string msg1 = "MUST_BE_LAST_IN_INVOCATION_STACK[" + releasingAfter + "] lockStack[" + this.LockStack_asString + "]";
-						Assembler.PopupException(msg1);
+						string msg1 = "MUST_BE_LAST_IN_INVOCATION_STACK[" + Environment.NewLine + Environment.NewLine
+							+ releasingAfter
+							+ Environment.NewLine + Environment.NewLine + "] lastLockReason[" + Environment.NewLine + Environment.NewLine
+							+ lastLockReason
+							+ Environment.NewLine + Environment.NewLine + "] lockStack[" + Environment.NewLine + Environment.NewLine
+							+ this.LockStack_asString + "]";
+						Assembler.PopupException(msg1 + msig, null, false);
 					} else {
 						this.recursionDetector.Pop();
-					}
-				}
-
-				string msg = null;
-				string youAre = " YOU_ARE_managed[" + Thread.CurrentThread.ManagedThreadId + "]owner[" + owner + "]releasingAfter[" + releasingAfter + "] ";
-				bool unlocked = this.isFree.WaitOne(0);
-				if (unlocked) {
-					msg = "MUST_BE_LOCKED_UNPROOF_OF_CONCEPT";
-					throw new Exception(msg);
-				} else {
-					if (this.lockedClass != owner) {
-						msg = "YOU_MUST_BE_THE_SAME_OBJECT_WHO_LOCKED this.lockOwner[" + this.lockedClass + "] != owner[" + owner + "]";
-						throw new Exception(msg);
-					}
-					if (this.lockedPurposeFirstInTheStack != releasingAfter) {
-						msg = "YOUR_UNLOCK_REASON_MUST_BE_THE_SAME_AS_LOCKED_REASON this.lockPurposeFirstInTheStack["
-							+ this.lockedPurposeFirstInTheStack + "] != releasingAfter[" + releasingAfter + "]";
-						throw new Exception(msg);
 					}
 				}
 
@@ -244,6 +265,7 @@ namespace Sq1.Core.Support {
 			//		string msg = "DONT_RE_THROW";
 			//	}
 			//}
+			this.IsDisposed = true;
 			try {
 				this.stopwatchLock.Stop();
 			} catch (Exception ex) {
@@ -258,11 +280,11 @@ namespace Sq1.Core.Support {
 			}
 			try {
 				this.isFree.Dispose();
+				this.isFree = null;	// I wanted to check this.isFree.IsDisposed() but a WaitHandle doesn't have it; so I nullify and check for null
 			} catch (Exception ex) {
 				string msg = "THREW_AT_this.isFree.Dispose()";
 				Assembler.PopupException(msg);
 			}
-			this.IsDisposed = true;
 		}
 		public bool IsDisposed { get; private set; }
 	}

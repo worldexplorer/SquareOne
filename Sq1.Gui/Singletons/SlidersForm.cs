@@ -2,8 +2,9 @@
 using System.Drawing;
 
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Support;
+
 using Sq1.Gui.Forms;
-using Sq1.Support;
 
 namespace Sq1.Gui.Singletons {
 	public partial class SlidersForm : DockContentSingleton<SlidersForm> {

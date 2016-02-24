@@ -62,7 +62,7 @@ namespace Sq1.Core.StrategyBase {
 			this.indicatorParametersByIndicator_ReflectionForced = true;
 
 			//v1
-			this.Executor.Strategy.ScriptAndIndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(saveStrategy_falseForSequencer);
+			this.Executor.Strategy.ScriptAndIndicatorParametersReflected_absorbMergeFromCurrentContext_saveStrategy(saveStrategy_falseForSequencer);
 			//v2
 			//this.AbsorbValuesFromCurrentContextAndReplacePointers();
 		}

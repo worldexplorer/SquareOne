@@ -165,7 +165,7 @@ namespace Sq1.Core.StrategyBase {
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategies.StrategySave(this);
 		}
 
-		public int ScriptAndIndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(bool saveStrategyFalseForDisposedExecutorsInSequencer = false) {
+		public int ScriptAndIndicatorParametersReflected_absorbMergeFromCurrentContext_saveStrategy(bool saveStrategyFalseForDisposedExecutorsInSequencer = false) {
 			int currentValuesAbsorbed = this.ScriptContextCurrent.ScriptParametersReflectedAbsorbFromCurrentContextReplace(
 					this.Script.ScriptParametersById_ReflectedCached);
 			if (currentValuesAbsorbed > 0 && saveStrategyFalseForDisposedExecutorsInSequencer == true) this.Serialize();

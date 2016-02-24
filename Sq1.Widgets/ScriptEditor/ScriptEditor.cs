@@ -11,6 +11,7 @@ using DigitalRune.Windows.TextEditor.Document;
 using DigitalRune.Windows.TextEditor.Formatting;
 using DigitalRune.Windows.TextEditor.Highlighting;
 using DigitalRune.Windows.TextEditor.Insight;
+
 using Sq1.Core;
 
 namespace Sq1.Widgets.ScriptEditor {

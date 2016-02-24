@@ -49,7 +49,10 @@ namespace Sq1.Core.Backtesting {
 				}
 			}
 			//this.backtester.Executor.Script.OnNewQuoteCallback(quoteToReach);
-			ReporterPokeUnit pokeUnit_nullUnsafe = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quote);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quote);
+			if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
+				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
+			}
 		}
 		public override void ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
 			string msig = " //BacktestQuoteBarConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended";
@@ -62,7 +65,10 @@ namespace Sq1.Core.Backtesting {
 			}
 			msig += "(" + barLastFormed.ToString() + ")";
 			//v1 this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
-			ReporterPokeUnit pokeUnit_nullUnsafe = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);
+			if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
+				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
+			}
 		}
 		#endregion
 

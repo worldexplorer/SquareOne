@@ -95,6 +95,31 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// OrdersTreeOLV
 			// 
+			this.OrdersTreeOLV.AllColumns.Add(this.colheGUID);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheReplacedByGUID);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheKilledByGUID);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheState);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheStateTime);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheBarNum);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheOrderCreated);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheSymbol);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheDirection);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheOrderType);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheSpreadSide);
+			this.OrdersTreeOLV.AllColumns.Add(this.colhePriceScript);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheSlippage);
+			this.OrdersTreeOLV.AllColumns.Add(this.colhePriceScriptRequested);
+			this.OrdersTreeOLV.AllColumns.Add(this.colhePriceFilled);
+			this.OrdersTreeOLV.AllColumns.Add(this.colhePriceDeposited);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheQtyRequested);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheQtyFilled);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheSernoSession);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheSernoExchange);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheStrategyName);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheSignalName);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheScale);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheAccount);
+			this.OrdersTreeOLV.AllColumns.Add(this.colheLastMessage);
 			this.OrdersTreeOLV.AllowColumnReorder = true;
 			this.OrdersTreeOLV.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.OrdersTreeOLV.CausesValidation = false;
@@ -126,6 +151,7 @@ namespace Sq1.Widgets.Execution {
             this.colheAccount,
             this.colheLastMessage});
 			this.OrdersTreeOLV.ContextMenuStrip = this.ctxOrder;
+			this.OrdersTreeOLV.Cursor = System.Windows.Forms.Cursors.Default;
 			this.OrdersTreeOLV.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.OrdersTreeOLV.FullRowSelect = true;
 			this.OrdersTreeOLV.HideSelection = false;
@@ -133,10 +159,11 @@ namespace Sq1.Widgets.Execution {
 			this.OrdersTreeOLV.IncludeHiddenColumnsInDataTransfer = true;
 			this.OrdersTreeOLV.Location = new System.Drawing.Point(0, 0);
 			this.OrdersTreeOLV.Name = "OrdersTreeOLV";
+			this.OrdersTreeOLV.OwnerDraw = true;
 			this.OrdersTreeOLV.ShowCommandMenuOnRightClick = true;
 			this.OrdersTreeOLV.ShowGroups = false;
 			this.OrdersTreeOLV.ShowItemToolTips = true;
-			this.OrdersTreeOLV.Size = new System.Drawing.Size(334, 416);
+			this.OrdersTreeOLV.Size = new System.Drawing.Size(334, 427);
 			this.OrdersTreeOLV.SmallImageList = this.imgListOrderDirection;
 			this.OrdersTreeOLV.TabIndex = 18;
 			this.OrdersTreeOLV.TintSortColumn = true;
@@ -165,14 +192,14 @@ namespace Sq1.Widgets.Execution {
 			this.colheReplacedByGUID.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colheReplacedByGUID.Text = "ReplcdBy";
 			this.colheReplacedByGUID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheReplacedByGUID.Width = 67;
+			this.colheReplacedByGUID.Width = 72;
 			// 
 			// colheKilledByGUID
 			// 
 			this.colheKilledByGUID.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colheKilledByGUID.Text = "KilledBy";
 			this.colheKilledByGUID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheKilledByGUID.Width = 67;
+			this.colheKilledByGUID.Width = 72;
 			// 
 			// colheState
 			// 
@@ -204,12 +231,12 @@ namespace Sq1.Widgets.Execution {
 			// colheDirection
 			// 
 			this.colheDirection.Text = "Direction";
-			this.colheDirection.Width = 51;
+			this.colheDirection.Width = 65;
 			// 
 			// colheOrderType
 			// 
 			this.colheOrderType.Text = "OrderType";
-			this.colheOrderType.Width = 56;
+			this.colheOrderType.Width = 52;
 			// 
 			// colheSpreadSide
 			// 
@@ -221,7 +248,7 @@ namespace Sq1.Widgets.Execution {
 			this.colhePriceScript.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colhePriceScript.Text = "$Script";
 			this.colhePriceScript.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colhePriceScript.Width = 53;
+			this.colhePriceScript.Width = 62;
 			// 
 			// colheSlippage
 			// 
@@ -235,21 +262,21 @@ namespace Sq1.Widgets.Execution {
 			this.colhePriceScriptRequested.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colhePriceScriptRequested.Text = "$Requested";
 			this.colhePriceScriptRequested.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colhePriceScriptRequested.Width = 51;
+			this.colhePriceScriptRequested.Width = 62;
 			// 
 			// colhePriceFilled
 			// 
 			this.colhePriceFilled.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colhePriceFilled.Text = "$Filled";
 			this.colhePriceFilled.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colhePriceFilled.Width = 53;
+			this.colhePriceFilled.Width = 62;
 			// 
 			// colhePriceDeposited
 			// 
 			this.colhePriceDeposited.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colhePriceDeposited.Text = "$Deposited";
 			this.colhePriceDeposited.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colhePriceDeposited.Width = 53;
+			this.colhePriceDeposited.Width = 62;
 			// 
 			// colheQtyRequested
 			// 
@@ -631,7 +658,7 @@ namespace Sq1.Widgets.Execution {
 			this.olvMessages.Name = "olvMessages";
 			this.olvMessages.ShowGroups = false;
 			this.olvMessages.ShowItemToolTips = true;
-			this.olvMessages.Size = new System.Drawing.Size(495, 416);
+			this.olvMessages.Size = new System.Drawing.Size(493, 427);
 			this.olvMessages.TabIndex = 5;
 			this.olvMessages.TintSortColumn = true;
 			this.olvMessages.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -672,7 +699,7 @@ namespace Sq1.Widgets.Execution {
 			// 
 			this.splitContainerMessagePane.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainerMessagePane.Panel2.Controls.Add(this.olvMessages);
-			this.splitContainerMessagePane.Size = new System.Drawing.Size(833, 416);
+			this.splitContainerMessagePane.Size = new System.Drawing.Size(831, 427);
 			this.splitContainerMessagePane.SplitterDistance = 334;
 			this.splitContainerMessagePane.TabIndex = 22;
 			// 
@@ -680,7 +707,7 @@ namespace Sq1.Widgets.Execution {
 			// 
 			this.Controls.Add(this.splitContainerMessagePane);
 			this.Name = "ExecutionTreeControl";
-			this.Size = new System.Drawing.Size(833, 416);
+			this.Size = new System.Drawing.Size(831, 427);
 			((System.ComponentModel.ISupportInitialize)(this.OrdersTreeOLV)).EndInit();
 			this.ctxOrder.ResumeLayout(false);
 			this.ctxColumns.ResumeLayout(false);

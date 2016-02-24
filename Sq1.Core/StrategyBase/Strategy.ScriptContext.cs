@@ -45,7 +45,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.ContextMarkCurrentInListByName(scriptContextName);
 			// if (shouldSave) this.Serialize();
-			this.ScriptAndIndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
+			this.ScriptAndIndicatorParametersReflected_absorbMergeFromCurrentContext_saveStrategy();
 		}
 		public void ContextMarkCurrentInListByName(string scriptContextName) {
 			this.checkThrowContextNameShouldExist(scriptContextName);

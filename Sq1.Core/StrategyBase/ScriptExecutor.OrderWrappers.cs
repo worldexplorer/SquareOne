@@ -321,98 +321,100 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 
-			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteFilledThisAlertNullForLive, alertsNewAfterAlertFilled,
+			ReporterPokeUnit pokeUnit_dontForgetToDispose = new ReporterPokeUnit(quoteFilledThisAlertNullForLive, alertsNewAfterAlertFilled,
 															 positionsOpenedAfterAlertFilled,
 															 positionsClosedAfterAlertFilled,
 															 null
 															);
-			//v1 this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
-			if (positionOpenedAfterAlertFilled != null) {
-				this.PerformanceAfterBacktest.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(positionOpenedAfterAlertFilled);
-				//if (alertFilled.GuiHasTimeRebuildReportersAndExecution) {
-					// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
-					this.EventGenerator.RaiseOnBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
-				//}
-			}
-			if (positionClosedAfterAlertFilled != null) {
-				this.PerformanceAfterBacktest.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(positionClosedAfterAlertFilled);
-				if (alertFilled.GuiHasTimeRebuildReportersAndExecution) {
-					// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
-					this.EventGenerator.RaiseOnBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
+			using(pokeUnit_dontForgetToDispose) {
+				//v1 this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
+				if (positionOpenedAfterAlertFilled != null) {
+					this.PerformanceAfterBacktest.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(positionOpenedAfterAlertFilled);
+					//if (alertFilled.GuiHasTimeRebuildReportersAndExecution) {
+						// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
+						this.EventGenerator.RaiseOnBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit_dontForgetToDispose);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
+					//}
 				}
-			}
-			this.ChartShadow.PositionsRealtimeAdd(pokeUnit);
-
-			// 4. Script event will generate a StopLossMove PostponedHook
-			//NOW_INLINE this.invokeScriptEvents(alertFilled);
-			if (this.Strategy.Script == null) return;
-			try {
-				try {
-					this.ExecutionDataSnapshot.IsScriptRunningOnAlertFilledNonBlockingRead = true;
-					this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnAlertFilledCallback(WAIT)");
-					this.Strategy.Script.OnAlertFilledCallback(alertFilled);
-				} finally {
-					this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnAlertFilledCallback(WAIT)");
-					this.ExecutionDataSnapshot.IsScriptRunningOnAlertFilledNonBlockingRead = false;
-				}
-			} catch (Exception e) {
-				string msg = "fix your OnAlertFilledCallback() in script[" + this.Strategy.Script.StrategyName + "]"
-					+ "; was invoked with alert[" + alertFilled + "]";
-				this.PopupException(msg, e);
-			}
-			if (alertFilled.IsEntryAlert) {
-				try {
-					if (alertFilled.PositionAffected.Prototype != null) {
-						try {
-							this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead = true;
-							this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
-							this.Strategy.Script.OnPositionOpenedPrototypeSlTpPlacedCallback(alertFilled.PositionAffected);
-						} finally {
-							this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
-							this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead = false;
-						}
-					} else {
-						try {
-							this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedNonBlockingRead = true;
-							this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpenedCallback(WAIT)");
-							this.Strategy.Script.OnPositionOpenedCallback(alertFilled.PositionAffected);
-						} finally {
-							this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
-							this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedNonBlockingRead = false;
-						}
+				if (positionClosedAfterAlertFilled != null) {
+					this.PerformanceAfterBacktest.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(positionClosedAfterAlertFilled);
+					if (alertFilled.GuiHasTimeRebuildReportersAndExecution) {
+						// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
+						this.EventGenerator.RaiseOnBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit_dontForgetToDispose);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
 					}
-				} catch (Exception e) {
-					string msg = "fix your ExecuteOnPositionOpened() in script[" + this.Strategy.Script.StrategyName + "]"
-						+ "; was invoked with PositionAffected[" + alertFilled.PositionAffected + "]";
-					this.PopupException(msg, e);
 				}
-			} else {
+				this.ChartShadow.PositionsRealtimeAdd(pokeUnit_dontForgetToDispose);
+
+				// 4. Script event will generate a StopLossMove PostponedHook
+				//NOW_INLINE this.invokeScriptEvents(alertFilled);
+				if (this.Strategy.Script == null) return;
 				try {
 					try {
-						this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosedNonBlockingRead = true;
-						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnPositionClosedCallback(WAIT)");
-						this.Strategy.Script.OnPositionClosedCallback(alertFilled.PositionAffected);
+						this.ExecutionDataSnapshot.IsScriptRunningOnAlertFilledNonBlockingRead = true;
+						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnAlertFilledCallback(WAIT)");
+						this.Strategy.Script.OnAlertFilledCallback(alertFilled);
 					} finally {
-						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnPositionClosedCallback(WAIT)");
-						this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosedNonBlockingRead = false;
+						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnAlertFilledCallback(WAIT)");
+						this.ExecutionDataSnapshot.IsScriptRunningOnAlertFilledNonBlockingRead = false;
 					}
 				} catch (Exception e) {
-					string msg = "fix your OnPositionClosedCallback() in script[" + this.Strategy.Script.StrategyName + "]"
-						+ "; was invoked with PositionAffected[" + alertFilled.PositionAffected + "]";
+					string msg = "fix your OnAlertFilledCallback() in script[" + this.Strategy.Script.StrategyName + "]"
+						+ "; was invoked with alert[" + alertFilled + "]";
 					this.PopupException(msg, e);
 				}
+				if (alertFilled.IsEntryAlert) {
+					try {
+						if (alertFilled.PositionAffected.Prototype != null) {
+							try {
+								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead = true;
+								this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
+								this.Strategy.Script.OnPositionOpenedPrototypeSlTpPlacedCallback(alertFilled.PositionAffected);
+							} finally {
+								this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
+								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead = false;
+							}
+						} else {
+							try {
+								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedNonBlockingRead = true;
+								this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpenedCallback(WAIT)");
+								this.Strategy.Script.OnPositionOpenedCallback(alertFilled.PositionAffected);
+							} finally {
+								this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
+								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedNonBlockingRead = false;
+							}
+						}
+					} catch (Exception e) {
+						string msg = "fix your ExecuteOnPositionOpened() in script[" + this.Strategy.Script.StrategyName + "]"
+							+ "; was invoked with PositionAffected[" + alertFilled.PositionAffected + "]";
+						this.PopupException(msg, e);
+					}
+				} else {
+					try {
+						try {
+							this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosedNonBlockingRead = true;
+							this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnPositionClosedCallback(WAIT)");
+							this.Strategy.Script.OnPositionClosedCallback(alertFilled.PositionAffected);
+						} finally {
+							this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnPositionClosedCallback(WAIT)");
+							this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosedNonBlockingRead = false;
+						}
+					} catch (Exception e) {
+						string msg = "fix your OnPositionClosedCallback() in script[" + this.Strategy.Script.StrategyName + "]"
+							+ "; was invoked with PositionAffected[" + alertFilled.PositionAffected + "]";
+						this.PopupException(msg, e);
+					}
+				}
+
+				// reasons for (alertsNewAfterExec.Count > 0) include:
+				// 2.1. PrototypeActivator::AlertFilledPlaceSlTpOrAnnihilateCounterparty
+				// 2.2. Script.OnAlertFilledCallback(alert)
+				// 2.3. Script.OnPositionOpenedPrototypeSlTpPlacedCallback(alert.PositionAffected)
+				// 2.4. Script.OnPositionClosedCallback(alert.PositionAffected)
+
+	//			if (pokeUnit.AlertsNew.Count > 0) {
+	//				string msg = "WANNA_CREATE_AND_SEND_ORDERS???MISSING_IN_LIVESIM invokeScriptEvents_EASILY_ACTIVATES_POSITION_PROTOTYPE_CREATING_TWO_ALERTS_NEW!! I_THOUGHT_NEW_ALERTS_ARE_CREATED_UPSTACK_BUT_APPARENTLY_IM_WRONG";
+	//				//Assembler.PopupException(msg, null, false);
+	//			}
 			}
-
-			// reasons for (alertsNewAfterExec.Count > 0) include:
-			// 2.1. PrototypeActivator::AlertFilledPlaceSlTpOrAnnihilateCounterparty
-			// 2.2. Script.OnAlertFilledCallback(alert)
-			// 2.3. Script.OnPositionOpenedPrototypeSlTpPlacedCallback(alert.PositionAffected)
-			// 2.4. Script.OnPositionClosedCallback(alert.PositionAffected)
-
-//			if (pokeUnit.AlertsNew.Count > 0) {
-//				string msg = "WANNA_CREATE_AND_SEND_ORDERS???MISSING_IN_LIVESIM invokeScriptEvents_EASILY_ACTIVATES_POSITION_PROTOTYPE_CREATING_TWO_ALERTS_NEW!! I_THOUGHT_NEW_ALERTS_ARE_CREATED_UPSTACK_BUT_APPARENTLY_IM_WRONG";
-//				//Assembler.PopupException(msg, null, false);
-//			}
 		}
 		void closePositionWithAlertClonedFromEntryBacktestEnded(Alert alert) {
 			string msig = " closePositionWithAlertClonedFromEntryBacktestEnded():";
