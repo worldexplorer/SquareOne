@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
+
 using Sq1.Core;
 using Sq1.Core.Execution;
 using Sq1.Core.Support;
@@ -61,19 +62,19 @@ namespace Sq1.Widgets.Execution {
 				return order.DerivedOrders;
 			};
 
-			this.colheAccount.AspectGetter = delegate(object o) {
+			this.olvcAccount.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheAccount.AspectGetter: order=null";
+				if (order == null) return "olvcAccount.AspectGetter: order=null";
 				return order.Alert.AccountNumber;
 			};
-			this.colheBarNum.AspectGetter = delegate(object o) {
+			this.olvcBarNum.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheBarNum.AspectGetter: order=null";
+				if (order == null) return "olvcBarNum.AspectGetter: order=null";
 				return order.Alert.PlacedBarIndex.ToString();
 			};
-			this.colheOrderCreated.AspectGetter = delegate(object o) {
+			this.olvcOrderCreated.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheDatetime.AspectGetter: order=null";
+				if (order == null) return "olvcDatetime.AspectGetter: order=null";
 				DateTime orderCreated;
 				if (this.mniToggleBrokerTime.Checked) {
 					orderCreated = (order.Alert.QuoteCreatedThisAlertServerTime != DateTime.MinValue)
@@ -87,131 +88,136 @@ namespace Sq1.Widgets.Execution {
 				}
 				return orderCreated.ToString(Assembler.DateTimeFormatLong);
 			};
-			this.colheSymbol.AspectGetter = delegate(object o) {
+			this.olvcSymbol.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheSymbol.AspectGetter: order=null";
+				if (order == null) return "olvcSymbol.AspectGetter: order=null";
 				return order.Alert.Symbol;
 			};
-			this.colheDirection.AspectGetter = delegate(object o) {
+			this.olvcDirection.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheDirection.AspectGetter: order=null";
+				if (order == null) return "olvcDirection.AspectGetter: order=null";
 				return order.IsKiller ? "KILLER" : order.Alert.Direction.ToString();
 			};
-			this.colheDirection.ImageGetter = delegate(object o) {
+			this.olvcDirection.ImageGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheDirection.ImageGetter: order=null";
+				if (order == null) return "olvcDirection.ImageGetter: order=null";
 				return (int)order.Alert.Direction - 1;
 			};
-			this.colheOrderType.AspectGetter = delegate(object o) {
+			this.olvcOrderType.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheOrderType.AspectGetter: order=null";
+				if (order == null) return "olvcOrderType.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.Alert.MarketLimitStop.ToString();
 			};
-			this.colheSpreadSide.AspectGetter = delegate(object o) {
+			this.olvcSpreadSide.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheSpreadSide.AspectGetter: order=null";
+				if (order == null) return "olvcSpreadSide.AspectGetter: order=null";
 				return order.IsKiller ? "" : formatOrderPriceSpreadSide(order, this.DataSnapshot.PricingDecimalForSymbol);
 			};
-			this.colhePriceScript.AspectGetter = delegate(object o) {
+			this.olvcPriceScript.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colhePriceScript.AspectGetter: order=null";
+				if (order == null) return "olvcPriceScript.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.Alert.PriceScript.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
-			this.colheSlippage.AspectGetter = delegate(object o) {
+			this.olvcSlippage.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheSlippage.AspectGetter: order=null";
+				if (order == null) return "olvcSlippage.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.SlippageFill.ToString();
 			};
-			this.colhePriceScriptRequested.AspectGetter = delegate(object o) {
+			this.olvcPriceScriptRequested.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colhePriceScriptRequested.AspectGetter: order=null";
+				if (order == null) return "olvcPriceScriptRequested.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.PriceRequested.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
-			this.colhePriceFilled.AspectGetter = delegate(object o) {
+			this.olvcPriceFilled.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colhePriceFilled.AspectGetter: order=null";
+				if (order == null) return "olvcPriceFilled.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.PriceFill.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
-			this.colheStateTime.AspectGetter = delegate(object o) {
+			this.olvcStateTime.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheStateTime.AspectGetter: order=null";
+				if (order == null) return "olvcStateTime.AspectGetter: order=null";
 				return order.StateUpdateLastTimeLocal.ToString(Assembler.DateTimeFormatLong);
 			};
-			this.colheState.AspectGetter = delegate(object o) {
+			this.olvcState.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheState.AspectGetter: order=null";
+				if (order == null) return "olvcState.AspectGetter: order=null";
 				//return (order.InStateExpectingCallbackFromBroker ? "* " : "") + order.State.ToString();
 				return order.State.ToString();
 			};
-//			this.colheState.FontGetter = delegate(object o) {
+//			this.olvcState.FontGetter = delegate(object o) {
 //				var order = o as Order;
 //				if (order == null) {
-//					Assembler.PopupException("colheState.FontGetter: order=null");
+//					Assembler.PopupException("olvcState.FontGetter: order=null");
 //					return null;
 //				}
 //				return (order.ExpectingCallbackFromBroker) ? this.fontBold : this.fontNormal;
 //			};
 			
-			this.colhePriceDeposited.AspectGetter = delegate(object o) {
+			this.olvcPriceDeposited.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colhePriceDeposited.AspectGetter: order=null";
+				if (order == null) return "olvcPriceDeposited.AspectGetter: order=null";
 				return (order.QtyFill == 0) ? "0" : order.Alert.PriceDeposited.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
-			this.colheQtyRequested.AspectGetter = delegate(object o) {
+			this.olvcQtyRequested.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheQtyRequested.AspectGetter: order=null";
+				if (order == null) return "olvcQtyRequested.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.QtyRequested.ToString();
 			};
-			this.colheQtyFilled.AspectGetter = delegate(object o) {
+			this.olvcQtyFilled.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheQtyFilled.AspectGetter: order=null";
+				if (order == null) return "olvcQtyFilled.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.QtyFill.ToString();
 			};
-			this.colheSernoSession.AspectGetter = delegate(object o) {
+			this.olvcSernoSession.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheSernoSession.AspectGetter: order=null";
+				if (order == null) return "olvcSernoSession.AspectGetter: order=null";
 				return order.SernoSession.ToString();
 			};
-			this.colheSernoExchange.AspectGetter = delegate(object o) {
+			this.olvcSernoExchange.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheSernoExchange.AspectGetter: order=null";
+				if (order == null) return "olvcSernoExchange.AspectGetter: order=null";
 				return order.SernoExchange.ToString();
 			};
-			this.colheGUID.AspectGetter = delegate(object o) {
+			this.olvcGUID.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheGUID.AspectGetter: order=null";
+				if (order == null) return "olvcGUID.AspectGetter: order=null";
 				return order.GUID;
 			};
-			this.colheKilledByGUID.AspectGetter = delegate(object o) {
+			this.olvcKilledByGUID.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheKilledByGUID.AspectGetter: order=null";
+				if (order == null) return "olvcKilledByGUID.AspectGetter: order=null";
 				return order.KillerGUID;
 			};
-			this.colheReplacedByGUID.AspectGetter = delegate(object o) {
+			this.olvcReplacedByGUID.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheReplacedByGUID.AspectGetter: order=null";
+				if (order == null) return "olvcReplacedByGUID.AspectGetter: order=null";
 				return order.ReplacedByGUID;
 			};
-			this.colheStrategyName.AspectGetter = delegate(object o) {
+			this.olvcBrokerName.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheStrategyName.AspectGetter: order=null";
+				if (order == null) return "olvcBrokerName.AspectGetter: order=null";
+				return order.BrokerName;
+			};
+			this.olvcStrategyName.AspectGetter = delegate(object o) {
+				var order = o as Order;
+				if (order == null) return "olvcStrategyName.AspectGetter: order=null";
 				return order.Alert.StrategyName;
 			};
-			this.colheSignalName.AspectGetter = delegate(object o) {
+			this.olvcSignalName.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheSignalName.AspectGetter: order=null";
+				if (order == null) return "olvcSignalName.AspectGetter: order=null";
 				return order.Alert.SignalName;
 			};
-			this.colheScale.AspectGetter = delegate(object o) {
+			this.olvcScale.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheScale.AspectGetter: order=null";
+				if (order == null) return "olvcScale.AspectGetter: order=null";
 				return (order.Alert.BarsScaleInterval == null)
 							? "Alert.BarsScaleInterval == null"
 							: order.Alert.BarsScaleInterval.ToString();
 			};
-			this.colheLastMessage.AspectGetter = delegate(object o) {
+			this.olvcLastMessage.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "colheLastMessage.AspectGetter: order=null";
+				if (order == null) return "olvcLastMessage.AspectGetter: order=null";
 				return order.LastMessage;
 			};
 		}
@@ -244,19 +250,19 @@ namespace Sq1.Widgets.Execution {
 				this.olvMessages.AllColumns.AddRange(allColumns);
 			}
 
-			this.colheMessageText.AspectGetter = delegate(object o) {
+			this.olvcMessageText.AspectGetter = delegate(object o) {
 				var omsg = o as OrderStateMessage;
-				if (omsg == null) return "colheMessageText.AspectGetter: omsg=null";
+				if (omsg == null) return "olvcMessageText.AspectGetter: omsg=null";
 				return omsg.Message;
 			};
-			this.colheMessageState.AspectGetter = delegate(object o) {
+			this.olvcMessageState.AspectGetter = delegate(object o) {
 				var omsg = o as OrderStateMessage;
-				if (omsg == null) return "colheMessageState.AspectGetter: omsg=null";
+				if (omsg == null) return "olvcMessageState.AspectGetter: omsg=null";
 				return omsg.State.ToString();
 			};
-			this.colheMessageDateTime.AspectGetter = delegate(object o) {
+			this.olvcMessageDateTime.AspectGetter = delegate(object o) {
 				var omsg = o as OrderStateMessage;
-				if (omsg == null) return "colheMessageDateTime.AspectGetter: omsg=null";
+				if (omsg == null) return "olvcMessageDateTime.AspectGetter: omsg=null";
 				return omsg.DateTime.ToString(Assembler.DateTimeFormatLong);
 			};
 		}
@@ -274,7 +280,7 @@ namespace Sq1.Widgets.Execution {
 			//v1 if (Assembler.InstanceInitialized.AlertsForChart.IsItemRegisteredForAnyContainer(order.Alert)) return;
 			//v2 ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL
 			if (order.Alert.Bars == null) e.Item.ForeColor = Color.DimGray;
-			if (order.Alert.MyBrokerIsLivesim) e.Item.BackColor = Color.Gainsboro;
+			// replaced with new column if (order.Alert.MyBrokerIsLivesim) e.Item.BackColor = Color.Gainsboro;
 		}
 		// WRONG WAY TO MOVE COLUMNS AROUND: AFTER I did RestoreState(), Column(3) is not State and I add State twice => exception
 //		public void MoveStateColumnToLeftmost() {
@@ -284,7 +290,7 @@ namespace Sq1.Widgets.Execution {
 //			this.OrdersTreeOLV.SetObjects(this.ordersTree.InnerOrderList);
 //			//NOT_NEEDED this.OrdersTree.RebuildAll(true);
 //			this.OrdersTreeOLV.Columns.RemoveAt(3);
-//			this.OrdersTreeOLV.Columns.Insert(0, this.colheState);
+//			this.OrdersTreeOLV.Columns.Insert(0, this.olvcState);
 //			//NOT_NEEDED this.OrdersTree.BuildList();
 //			//NOT_NEEDED this.RebuildAllTreeFocusOnTopmost();
 //		}

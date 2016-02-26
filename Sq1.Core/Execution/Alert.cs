@@ -258,6 +258,12 @@ namespace Sq1.Core.Execution {
 				return MarketConverter.BidOrAskWillFillAlert(this);
 			}}
 		
+		[JsonProperty]	public	string		BrokerName { get {
+			if (this.Bars == null) return "BARS_NULL";
+			if (this.DataSource == null) return "DATASOURCE_NULL";
+			if (this.DataSource.BrokerAdapter == null) return "BROKER_NULL";
+			return this.DataSource.BrokerAdapterName;
+		} }
 		[JsonProperty]	public	bool		MyBrokerIsLivesim { get {
 			if (this.Bars == null) return false;
 			if (this.DataSource == null) return false;

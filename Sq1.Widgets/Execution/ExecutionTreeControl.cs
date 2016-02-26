@@ -57,44 +57,45 @@ namespace Sq1.Widgets.Execution {
 		void buildMniShortcutsAfterInitializeComponent() {
 			columnsByFilter = new Dictionary<ToolStripMenuItem, List<OLVColumn>>();
 			columnsByFilter.Add(this.mniShowWhenWhat, new List<OLVColumn>() {
-				this.colheBarNum,
-				this.colheOrderCreated,
-				this.colheSymbol,
-				this.colheDirection,
-				this.colheOrderType
+				this.olvcBarNum,
+				this.olvcOrderCreated,
+				this.olvcSymbol,
+				this.olvcDirection,
+				this.olvcOrderType
 				});
 			columnsByFilter.Add(this.mniShowKilledReplaced, new List<OLVColumn>() {
-				this.colheReplacedByGUID,
-				this.colheKilledByGUID
+				this.olvcReplacedByGUID,
+				this.olvcKilledByGUID
 				});
 			columnsByFilter.Add(this.mniShowPrice, new List<OLVColumn>() {
-				this.colhePriceScript,
-				this.colheSpreadSide,
-				this.colhePriceScriptRequested,
-				this.colhePriceFilled
+				this.olvcPriceScript,
+				this.olvcSpreadSide,
+				this.olvcPriceScriptRequested,
+				this.olvcPriceFilled
 				});
 			columnsByFilter.Add(this.mniShowQty, new List<OLVColumn>() {
-				this.colheQtyRequested,
-				this.colheQtyFilled
+				this.olvcQtyRequested,
+				this.olvcQtyFilled
 				});
 			columnsByFilter.Add(this.mniShowExchange, new List<OLVColumn>() {
-				this.colhePriceDeposited,
-				this.colheSernoSession,
-				this.colheSernoExchange,
-				this.colheGUID,
-				this.colheReplacedByGUID,
-				this.colheKilledByGUID
+				this.olvcPriceDeposited,
+				this.olvcSernoSession,
+				this.olvcSernoExchange,
+				this.olvcGUID,
+				this.olvcReplacedByGUID,
+				this.olvcKilledByGUID
 				});
 			columnsByFilter.Add(this.mniShowOrigin, new List<OLVColumn>() {
-				this.colheStrategyName,
-				this.colheSignalName,
-				this.colheScale
+				this.olvcBrokerName,
+				this.olvcStrategyName,
+				this.olvcSignalName,
+				this.olvcScale
 				});
 			columnsByFilter.Add(this.mniShowPosition, new List<OLVColumn>() { });
 			columnsByFilter.Add(this.mniShowExtra, new List<OLVColumn>() {
 				});
 			columnsByFilter.Add(this.mniShowLastMessage, new List<OLVColumn>() {
-				this.colheLastMessage
+				this.olvcLastMessage
 				});
 		}
 		//former public void Initialize(), replaced by InitializeWithShadowTreeRebuilt();

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.Streaming;
 
 namespace Sq1.Core.Execution {
@@ -217,6 +218,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	static int absno = 0;
 		[JsonProperty]	public double CommissionFill				{ get; protected set; }
 		//[JsonIgnore]	public ManualResetEvent MreActiveCanCome	{ get; protected set; }		// JSON restore of a ManualResetEvent makes GC thread throw SEHException (thanx for a great free library anyway)
+		[JsonProperty]	public	string			BrokerName			{ get { return this.Alert.BrokerName; } }
 
  		public Order() {	// called by Json.Deserialize(); what if I'll make it protected?
 			GUID = newGUID();
