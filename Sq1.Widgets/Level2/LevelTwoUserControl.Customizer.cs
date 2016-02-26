@@ -62,6 +62,9 @@ namespace Sq1.Widgets.Level2 {
 		//Color	LevelTwoBidColorContour;
 		Color	LevelTwoSpreadColorBackground;
 
+		Color	LevelTwoLessThanPriceStepColorBackground;
+		Color	LevelTwoLessThanZeroColorBackground;
+
 		void olvDomCustomize_cellBackgound() {
 			// colors copypasted from ChartSettings.cs
 			//this.LevelTwoLotsColorForeground	= Color.Black;
@@ -70,6 +73,9 @@ namespace Sq1.Widgets.Level2 {
 			this.LevelTwoBidColorBackground		= Color.FromArgb(230, 255, 230);
 			//this.LevelTwoBidColorContour		= Color.FromArgb(this.LevelTwoBidColorBackground.R - 50, this.LevelTwoBidColorBackground.G - 50, this.LevelTwoBidColorBackground.B - 50);
 			this.LevelTwoSpreadColorBackground	= Color.Gainsboro;
+
+			this.LevelTwoLessThanPriceStepColorBackground	= Color.FromArgb(90, 200, 255);		// lightblue
+			this.LevelTwoLessThanZeroColorBackground		= Color.FromArgb(255, 160, 120);	// orange
 
 			this.OlvLevelTwo.FormatCell += new EventHandler<FormatCellEventArgs>(olvcLevelTwo_FormatCell);
 			this.OlvLevelTwo.UseCellFormatEvents = true;
@@ -85,6 +91,21 @@ namespace Sq1.Widgets.Level2 {
 			}
 			if (askPriceBid.BidOrAsk == BidOrAsk.UNKNOWN) {
 				e.SubItem.BackColor = this.LevelTwoSpreadColorBackground;
+
+				//it's SPREAD row that I inserted in LevelTwo.cs:138
+				double spread = askPriceBid.PriceLevel;
+
+				if (spread <= 0) {
+					e.SubItem.BackColor = this.LevelTwoLessThanZeroColorBackground;					// again orange - something is definitely wrong
+				} else {
+					if (this.symbolInfo.PriceStep > 0) {
+						if (spread < this.symbolInfo.PriceStep) {
+							e.SubItem.BackColor = this.LevelTwoLessThanPriceStepColorBackground;	// lightblue
+						}
+					} else {
+						e.SubItem.BackColor = this.LevelTwoLessThanZeroColorBackground;				// again orange - something is definitely wrong
+					}
+				}
 				return;
 			}
 			if (e.Column == this.olvAskCumulative) {

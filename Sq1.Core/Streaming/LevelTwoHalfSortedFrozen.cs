@@ -105,7 +105,7 @@ namespace Sq1.Core.Streaming {
 			return this.ReasonToExist + ":[" + base.Count + "]";
 		}
 
-		public LevelTwoHalfSortedFrozen Clone_noDeeperThan(int depthFittingToDisplayedHeight = -1) {
+		public LevelTwoHalfSortedFrozen Clone_noDeeperThan(int depthFittingToDisplayedHeight = -1, bool trimFromBeginning = false) {
 			if (depthFittingToDisplayedHeight == -1) depthFittingToDisplayedHeight = this.Count;
 			if (depthFittingToDisplayedHeight > this.Count) {
 				string msg = "DONT_REQUEST_ASK/BID_DEPTH_LONGER_THAN_I_HAVE"
@@ -114,9 +114,23 @@ namespace Sq1.Core.Streaming {
 				depthFittingToDisplayedHeight = this.Count;
 			}
 			Dictionary<double, double> shorterHalf = new Dictionary<double,double>(depthFittingToDisplayedHeight);
-			foreach (KeyValuePair<double, double> keyValue in this) {
-				shorterHalf.Add(keyValue.Key, keyValue.Value);
-				if (shorterHalf.Count >= depthFittingToDisplayedHeight) break;
+
+			if (trimFromBeginning) {
+				int howManyToSkip = 0;
+				if (this.Count > depthFittingToDisplayedHeight) {
+					howManyToSkip = this.Count - depthFittingToDisplayedHeight;
+				}
+				int i = 0;
+				foreach (KeyValuePair<double, double> keyValue in this) {
+					i++;
+					if (i < howManyToSkip) continue;
+					shorterHalf.Add(keyValue.Key, keyValue.Value);
+				}
+			} else {
+				foreach (KeyValuePair<double, double> keyValue in this) {
+					shorterHalf.Add(keyValue.Key, keyValue.Value);
+					if (shorterHalf.Count >= depthFittingToDisplayedHeight) break;
+				}
 			}
 
 			LevelTwoHalfSortedFrozen ret = new LevelTwoHalfSortedFrozen(this.BidOrAsk

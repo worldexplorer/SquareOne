@@ -15,31 +15,31 @@ namespace Sq1.Widgets.Execution {
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			this.OrdersTreeOLV = new BrightIdeasSoftware.TreeListView();
-			this.colheGUID = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheReplacedByGUID = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheKilledByGUID = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheState = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheStateTime = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheBarNum = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheOrderCreated = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheSymbol = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheDirection = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheOrderType = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheSpreadSide = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colhePriceScript = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheSlippage = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colhePriceScriptRequested = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colhePriceFilled = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colhePriceDeposited = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheQtyRequested = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheQtyFilled = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheSernoSession = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheSernoExchange = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheStrategyName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheSignalName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheScale = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheAccount = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheLastMessage = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcGUID = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcReplacedByGUID = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcKilledByGUID = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcState = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcStateTime = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcBarNum = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcOrderCreated = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcSymbol = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcDirection = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcOrderType = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcSpreadSide = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcPriceScript = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcSlippage = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcPriceScriptRequested = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcPriceFilled = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcPriceDeposited = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcQtyRequested = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcQtyFilled = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcSernoSession = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcSernoExchange = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcStrategyName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcSignalName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcScale = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcAccount = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcLastMessage = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.ctxOrder = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniKillPending = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniKillAllPending = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,10 +78,11 @@ namespace Sq1.Widgets.Execution {
 			this.mniRebuildAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.imgListOrderDirection = new System.Windows.Forms.ImageList(this.components);
 			this.olvMessages = new BrightIdeasSoftware.ObjectListView();
-			this.colheMessageDateTime = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheMessageState = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.colheMessageText = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMessageDateTime = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMessageState = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMessageText = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.splitContainerMessagePane = new System.Windows.Forms.SplitContainer();
+			this.olvcBrokerName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			((System.ComponentModel.ISupportInitialize)(this.OrdersTreeOLV)).BeginInit();
 			this.ctxOrder.SuspendLayout();
 			this.ctxColumns.SuspendLayout();
@@ -95,61 +96,63 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// OrdersTreeOLV
 			// 
-			this.OrdersTreeOLV.AllColumns.Add(this.colheGUID);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheReplacedByGUID);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheKilledByGUID);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheState);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheStateTime);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheBarNum);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheOrderCreated);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheSymbol);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheDirection);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheOrderType);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheSpreadSide);
-			this.OrdersTreeOLV.AllColumns.Add(this.colhePriceScript);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheSlippage);
-			this.OrdersTreeOLV.AllColumns.Add(this.colhePriceScriptRequested);
-			this.OrdersTreeOLV.AllColumns.Add(this.colhePriceFilled);
-			this.OrdersTreeOLV.AllColumns.Add(this.colhePriceDeposited);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheQtyRequested);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheQtyFilled);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheSernoSession);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheSernoExchange);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheStrategyName);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheSignalName);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheScale);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheAccount);
-			this.OrdersTreeOLV.AllColumns.Add(this.colheLastMessage);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcGUID);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcReplacedByGUID);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcKilledByGUID);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcBrokerName);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcState);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcStateTime);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcBarNum);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcOrderCreated);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcSymbol);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcDirection);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcOrderType);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcSpreadSide);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcPriceScript);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcSlippage);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcPriceScriptRequested);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcPriceFilled);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcPriceDeposited);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcQtyRequested);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcQtyFilled);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcSernoSession);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcSernoExchange);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcStrategyName);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcSignalName);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcScale);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcAccount);
+			this.OrdersTreeOLV.AllColumns.Add(this.olvcLastMessage);
 			this.OrdersTreeOLV.AllowColumnReorder = true;
 			this.OrdersTreeOLV.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.OrdersTreeOLV.CausesValidation = false;
 			this.OrdersTreeOLV.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
 			this.OrdersTreeOLV.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.colheGUID,
-            this.colheReplacedByGUID,
-            this.colheKilledByGUID,
-            this.colheState,
-            this.colheStateTime,
-            this.colheBarNum,
-            this.colheOrderCreated,
-            this.colheSymbol,
-            this.colheDirection,
-            this.colheOrderType,
-            this.colheSpreadSide,
-            this.colhePriceScript,
-            this.colheSlippage,
-            this.colhePriceScriptRequested,
-            this.colhePriceFilled,
-            this.colhePriceDeposited,
-            this.colheQtyRequested,
-            this.colheQtyFilled,
-            this.colheSernoSession,
-            this.colheSernoExchange,
-            this.colheStrategyName,
-            this.colheSignalName,
-            this.colheScale,
-            this.colheAccount,
-            this.colheLastMessage});
+            this.olvcGUID,
+            this.olvcReplacedByGUID,
+            this.olvcKilledByGUID,
+            this.olvcBrokerName,
+            this.olvcState,
+            this.olvcStateTime,
+            this.olvcBarNum,
+            this.olvcOrderCreated,
+            this.olvcSymbol,
+            this.olvcDirection,
+            this.olvcOrderType,
+            this.olvcSpreadSide,
+            this.olvcPriceScript,
+            this.olvcSlippage,
+            this.olvcPriceScriptRequested,
+            this.olvcPriceFilled,
+            this.olvcPriceDeposited,
+            this.olvcQtyRequested,
+            this.olvcQtyFilled,
+            this.olvcSernoSession,
+            this.olvcSernoExchange,
+            this.olvcStrategyName,
+            this.olvcSignalName,
+            this.olvcScale,
+            this.olvcAccount,
+            this.olvcLastMessage});
 			this.OrdersTreeOLV.ContextMenuStrip = this.ctxOrder;
 			this.OrdersTreeOLV.Cursor = System.Windows.Forms.Cursors.Default;
 			this.OrdersTreeOLV.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -180,157 +183,157 @@ namespace Sq1.Widgets.Execution {
 			this.OrdersTreeOLV.DoubleClick += new System.EventHandler(this.ordersTree_DoubleClick);
 			this.OrdersTreeOLV.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ordersTree_KeyDown);
 			// 
-			// colheGUID
+			// olvcGUID
 			// 
-			this.colheGUID.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheGUID.Text = "GUID";
-			this.colheGUID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheGUID.Width = 95;
+			this.olvcGUID.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcGUID.Text = "GUID";
+			this.olvcGUID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcGUID.Width = 95;
 			// 
-			// colheReplacedByGUID
+			// olvcReplacedByGUID
 			// 
-			this.colheReplacedByGUID.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheReplacedByGUID.Text = "ReplcdBy";
-			this.colheReplacedByGUID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheReplacedByGUID.Width = 72;
+			this.olvcReplacedByGUID.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcReplacedByGUID.Text = "ReplcdBy";
+			this.olvcReplacedByGUID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcReplacedByGUID.Width = 72;
 			// 
-			// colheKilledByGUID
+			// olvcKilledByGUID
 			// 
-			this.colheKilledByGUID.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheKilledByGUID.Text = "KilledBy";
-			this.colheKilledByGUID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheKilledByGUID.Width = 72;
+			this.olvcKilledByGUID.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcKilledByGUID.Text = "KilledBy";
+			this.olvcKilledByGUID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcKilledByGUID.Width = 72;
 			// 
-			// colheState
+			// olvcState
 			// 
-			this.colheState.Text = "OrderState";
-			this.colheState.Width = 111;
+			this.olvcState.Text = "OrderState";
+			this.olvcState.Width = 111;
 			// 
-			// colheStateTime
+			// olvcStateTime
 			// 
-			this.colheStateTime.Text = "LastOrderState";
-			this.colheStateTime.Width = 84;
+			this.olvcStateTime.Text = "LastOrderState";
+			this.olvcStateTime.Width = 84;
 			// 
-			// colheBarNum
+			// olvcBarNum
 			// 
-			this.colheBarNum.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheBarNum.Text = "#Bar";
-			this.colheBarNum.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheBarNum.Width = 52;
+			this.olvcBarNum.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcBarNum.Text = "#Bar";
+			this.olvcBarNum.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcBarNum.Width = 52;
 			// 
-			// colheOrderCreated
+			// olvcOrderCreated
 			// 
-			this.colheOrderCreated.Text = "Created";
-			this.colheOrderCreated.Width = 84;
+			this.olvcOrderCreated.Text = "Created";
+			this.olvcOrderCreated.Width = 84;
 			// 
-			// colheSymbol
+			// olvcSymbol
 			// 
-			this.colheSymbol.Text = "Symbol";
-			this.colheSymbol.Width = 42;
+			this.olvcSymbol.Text = "Symbol";
+			this.olvcSymbol.Width = 42;
 			// 
-			// colheDirection
+			// olvcDirection
 			// 
-			this.colheDirection.Text = "Direction";
-			this.colheDirection.Width = 65;
+			this.olvcDirection.Text = "Direction";
+			this.olvcDirection.Width = 65;
 			// 
-			// colheOrderType
+			// olvcOrderType
 			// 
-			this.colheOrderType.Text = "OrderType";
-			this.colheOrderType.Width = 52;
+			this.olvcOrderType.Text = "OrderType";
+			this.olvcOrderType.Width = 52;
 			// 
-			// colheSpreadSide
+			// olvcSpreadSide
 			// 
-			this.colheSpreadSide.Text = "SpreadSide";
-			this.colheSpreadSide.Width = 100;
+			this.olvcSpreadSide.Text = "SpreadSide";
+			this.olvcSpreadSide.Width = 100;
 			// 
-			// colhePriceScript
+			// olvcPriceScript
 			// 
-			this.colhePriceScript.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colhePriceScript.Text = "$Script";
-			this.colhePriceScript.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colhePriceScript.Width = 62;
+			this.olvcPriceScript.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcPriceScript.Text = "$Script";
+			this.olvcPriceScript.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcPriceScript.Width = 62;
 			// 
-			// colheSlippage
+			// olvcSlippage
 			// 
-			this.colheSlippage.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheSlippage.Text = "Slippage";
-			this.colheSlippage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheSlippage.Width = 30;
+			this.olvcSlippage.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcSlippage.Text = "Slippage";
+			this.olvcSlippage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcSlippage.Width = 30;
 			// 
-			// colhePriceScriptRequested
+			// olvcPriceScriptRequested
 			// 
-			this.colhePriceScriptRequested.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colhePriceScriptRequested.Text = "$Requested";
-			this.colhePriceScriptRequested.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colhePriceScriptRequested.Width = 62;
+			this.olvcPriceScriptRequested.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcPriceScriptRequested.Text = "$Requested";
+			this.olvcPriceScriptRequested.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcPriceScriptRequested.Width = 62;
 			// 
-			// colhePriceFilled
+			// olvcPriceFilled
 			// 
-			this.colhePriceFilled.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colhePriceFilled.Text = "$Filled";
-			this.colhePriceFilled.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colhePriceFilled.Width = 62;
+			this.olvcPriceFilled.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcPriceFilled.Text = "$Filled";
+			this.olvcPriceFilled.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcPriceFilled.Width = 62;
 			// 
-			// colhePriceDeposited
+			// olvcPriceDeposited
 			// 
-			this.colhePriceDeposited.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colhePriceDeposited.Text = "$Deposited";
-			this.colhePriceDeposited.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colhePriceDeposited.Width = 62;
+			this.olvcPriceDeposited.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcPriceDeposited.Text = "$Deposited";
+			this.olvcPriceDeposited.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcPriceDeposited.Width = 62;
 			// 
-			// colheQtyRequested
+			// olvcQtyRequested
 			// 
-			this.colheQtyRequested.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheQtyRequested.Text = "QRequested";
-			this.colheQtyRequested.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheQtyRequested.Width = 25;
+			this.olvcQtyRequested.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcQtyRequested.Text = "QRequested";
+			this.olvcQtyRequested.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcQtyRequested.Width = 25;
 			// 
-			// colheQtyFilled
+			// olvcQtyFilled
 			// 
-			this.colheQtyFilled.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheQtyFilled.Text = "QFilled";
-			this.colheQtyFilled.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheQtyFilled.Width = 25;
+			this.olvcQtyFilled.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcQtyFilled.Text = "QFilled";
+			this.olvcQtyFilled.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcQtyFilled.Width = 25;
 			// 
-			// colheSernoSession
+			// olvcSernoSession
 			// 
-			this.colheSernoSession.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheSernoSession.Text = "#Session";
-			this.colheSernoSession.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheSernoSession.Width = 36;
+			this.olvcSernoSession.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcSernoSession.Text = "#Session";
+			this.olvcSernoSession.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcSernoSession.Width = 36;
 			// 
-			// colheSernoExchange
+			// olvcSernoExchange
 			// 
-			this.colheSernoExchange.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheSernoExchange.Text = "#Exchange";
-			this.colheSernoExchange.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.colheSernoExchange.Width = 74;
+			this.olvcSernoExchange.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcSernoExchange.Text = "#Exchange";
+			this.olvcSernoExchange.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcSernoExchange.Width = 74;
 			// 
-			// colheStrategyName
+			// olvcStrategyName
 			// 
-			this.colheStrategyName.Text = "Strategy";
-			this.colheStrategyName.Width = 53;
+			this.olvcStrategyName.Text = "Strategy";
+			this.olvcStrategyName.Width = 53;
 			// 
-			// colheSignalName
+			// olvcSignalName
 			// 
-			this.colheSignalName.Text = "Signal";
-			this.colheSignalName.Width = 42;
+			this.olvcSignalName.Text = "Signal";
+			this.olvcSignalName.Width = 42;
 			// 
-			// colheScale
+			// olvcScale
 			// 
-			this.colheScale.Text = "Scale";
-			this.colheScale.Width = 40;
+			this.olvcScale.Text = "Scale";
+			this.olvcScale.Width = 40;
 			// 
-			// colheAccount
+			// olvcAccount
 			// 
-			this.colheAccount.Text = "Account";
-			this.colheAccount.Width = 40;
+			this.olvcAccount.Text = "Account";
+			this.olvcAccount.Width = 40;
 			// 
-			// colheLastMessage
+			// olvcLastMessage
 			// 
-			this.colheLastMessage.FillsFreeSpace = true;
-			this.colheLastMessage.Text = "LastMessage";
-			this.colheLastMessage.Width = 400;
+			this.olvcLastMessage.FillsFreeSpace = true;
+			this.olvcLastMessage.Text = "LastMessage";
+			this.olvcLastMessage.Width = 400;
 			// 
 			// ctxOrder
 			// 
@@ -645,9 +648,9 @@ namespace Sq1.Widgets.Execution {
 			this.olvMessages.CausesValidation = false;
 			this.olvMessages.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
 			this.olvMessages.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.colheMessageDateTime,
-            this.colheMessageState,
-            this.colheMessageText});
+            this.olvcMessageDateTime,
+            this.olvcMessageState,
+            this.olvcMessageText});
 			this.olvMessages.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olvMessages.EmptyListMsg = "";
 			this.olvMessages.FullRowSelect = true;
@@ -669,18 +672,18 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheMessageDateTime
 			// 
-			this.colheMessageDateTime.Text = "DateTime";
-			this.colheMessageDateTime.Width = 83;
+			this.olvcMessageDateTime.Text = "DateTime";
+			this.olvcMessageDateTime.Width = 83;
 			// 
 			// colheMessageState
 			// 
-			this.colheMessageState.Text = "State";
-			this.colheMessageState.Width = 101;
+			this.olvcMessageState.Text = "State";
+			this.olvcMessageState.Width = 101;
 			// 
 			// colheMessageText
 			// 
-			this.colheMessageText.Text = "Message";
-			this.colheMessageText.Width = 2211;
+			this.olvcMessageText.Text = "Message";
+			this.olvcMessageText.Width = 2211;
 			// 
 			// splitContainerMessagePane
 			// 
@@ -702,6 +705,11 @@ namespace Sq1.Widgets.Execution {
 			this.splitContainerMessagePane.Size = new System.Drawing.Size(831, 427);
 			this.splitContainerMessagePane.SplitterDistance = 334;
 			this.splitContainerMessagePane.TabIndex = 22;
+			// 
+			// olvcBrokerName
+			// 
+			this.olvcBrokerName.Text = "Broker";
+			this.olvcBrokerName.Width = 80;
 			// 
 			// ExecutionTreeControl
 			// 
@@ -732,9 +740,9 @@ namespace Sq1.Widgets.Execution {
 		private System.Windows.Forms.ToolStripMenuItem mniVisualOptions;
 		private System.Windows.Forms.ContextMenuStrip ctxListControl;
 		private System.Windows.Forms.SplitContainer splitContainerMessagePane;
-		private BrightIdeasSoftware.OLVColumn colheMessageText;
-		private BrightIdeasSoftware.OLVColumn colheMessageState;
-		private BrightIdeasSoftware.OLVColumn colheMessageDateTime;
+		private BrightIdeasSoftware.OLVColumn olvcMessageText;
+		private BrightIdeasSoftware.OLVColumn olvcMessageState;
+		private BrightIdeasSoftware.OLVColumn olvcMessageDateTime;
 		private BrightIdeasSoftware.ObjectListView olvMessages;
 		private System.Windows.Forms.ToolStripMenuItem mniKillPendingAllStopEmitting;
 		private System.Windows.Forms.ToolStripMenuItem mniStopEmergencyClose;
@@ -760,34 +768,35 @@ namespace Sq1.Widgets.Execution {
 		private System.Windows.Forms.ImageList imgListOrderDirection;
 		public BrightIdeasSoftware.TreeListView OrdersTreeOLV;
 		
-		private BrightIdeasSoftware.OLVColumn colheOrderCreated;
-		private BrightIdeasSoftware.OLVColumn colheBarNum;
-		private BrightIdeasSoftware.OLVColumn colhePriceScript;
-		private BrightIdeasSoftware.OLVColumn colheSernoSession;
-		private BrightIdeasSoftware.OLVColumn colheSernoExchange;
-		private BrightIdeasSoftware.OLVColumn colheGUID;
-		private BrightIdeasSoftware.OLVColumn colheReplacedByGUID;
-		private BrightIdeasSoftware.OLVColumn colheKilledByGUID;
-		private BrightIdeasSoftware.OLVColumn colheStateTime;
-		private BrightIdeasSoftware.OLVColumn colheState;
-		private BrightIdeasSoftware.OLVColumn colheSymbol;
-		private BrightIdeasSoftware.OLVColumn colheDirection;
-		private BrightIdeasSoftware.OLVColumn colheOrderType;
-		private BrightIdeasSoftware.OLVColumn colheQtyRequested;
-		private BrightIdeasSoftware.OLVColumn colhePriceScriptRequested;
-		private BrightIdeasSoftware.OLVColumn colheQtyFilled;
-		private BrightIdeasSoftware.OLVColumn colhePriceFilled;
-		private BrightIdeasSoftware.OLVColumn colhePriceDeposited;
-		private BrightIdeasSoftware.OLVColumn colheSlippage;
-		private BrightIdeasSoftware.OLVColumn colheSpreadSide;
-		private BrightIdeasSoftware.OLVColumn colheStrategyName;
-		private BrightIdeasSoftware.OLVColumn colheSignalName;
-		private BrightIdeasSoftware.OLVColumn colheScale;
-		private BrightIdeasSoftware.OLVColumn colheAccount;
-		private BrightIdeasSoftware.OLVColumn colheLastMessage;
+		private BrightIdeasSoftware.OLVColumn olvcOrderCreated;
+		private BrightIdeasSoftware.OLVColumn olvcBarNum;
+		private BrightIdeasSoftware.OLVColumn olvcPriceScript;
+		private BrightIdeasSoftware.OLVColumn olvcSernoSession;
+		private BrightIdeasSoftware.OLVColumn olvcSernoExchange;
+		private BrightIdeasSoftware.OLVColumn olvcGUID;
+		private BrightIdeasSoftware.OLVColumn olvcReplacedByGUID;
+		private BrightIdeasSoftware.OLVColumn olvcKilledByGUID;
+		private BrightIdeasSoftware.OLVColumn olvcStateTime;
+		private BrightIdeasSoftware.OLVColumn olvcState;
+		private BrightIdeasSoftware.OLVColumn olvcSymbol;
+		private BrightIdeasSoftware.OLVColumn olvcDirection;
+		private BrightIdeasSoftware.OLVColumn olvcOrderType;
+		private BrightIdeasSoftware.OLVColumn olvcQtyRequested;
+		private BrightIdeasSoftware.OLVColumn olvcPriceScriptRequested;
+		private BrightIdeasSoftware.OLVColumn olvcQtyFilled;
+		private BrightIdeasSoftware.OLVColumn olvcPriceFilled;
+		private BrightIdeasSoftware.OLVColumn olvcPriceDeposited;
+		private BrightIdeasSoftware.OLVColumn olvcSlippage;
+		private BrightIdeasSoftware.OLVColumn olvcSpreadSide;
+		private BrightIdeasSoftware.OLVColumn olvcStrategyName;
+		private BrightIdeasSoftware.OLVColumn olvcSignalName;
+		private BrightIdeasSoftware.OLVColumn olvcScale;
+		private BrightIdeasSoftware.OLVColumn olvcAccount;
+		private BrightIdeasSoftware.OLVColumn olvcLastMessage;
 		private ToolStripSeparator toolStripSeparator2;
 		private ToolStripMenuItem mniExpandAll;
 		private ToolStripMenuItem mniCollapseAll;
 		private ToolStripMenuItem mniRebuildAll;
+		private BrightIdeasSoftware.OLVColumn olvcBrokerName;
 	}
 }
