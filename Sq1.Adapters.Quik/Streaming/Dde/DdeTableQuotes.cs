@@ -31,12 +31,13 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 			QuoteQuik quikQuote = new QuoteQuik(DateTime.Now);
 			quikQuote.Source			= this.DdeConsumerClassName + " Topic[" + base.Topic + "]";
-			quikQuote.Symbol			= row.GetString("CODE"			, "NO_SYMBOL_RECEIVED_DDE");
-			quikQuote.SymbolClass		= row.GetString("CLASS_CODE"	, "NO_CLASS_CODE_RECEIVED_DDE");
-			quikQuote.Bid				= row.GetDouble("bid"			, double.NaN);
-			quikQuote.Ask				= row.GetDouble("offer"			, double.NaN);
+			quikQuote.Symbol			= row.Get<string>("CODE");
+			//quikQuote.Symbol			= row.Get<string>("CODE");
+			quikQuote.SymbolClass		= row.Get<string>("CLASS_CODE");
+			quikQuote.Bid				= row.Get<double>("bid");
+			quikQuote.Ask				= row.Get<double>("offer");
 
-			double	last				= row.GetDouble("last"			, double.NaN, false);
+			double	last				= row.Get<double>("last");
 			if (last == quikQuote.Bid) quikQuote.TradedAt = BidOrAsk.Bid;
 			if (last == quikQuote.Ask) quikQuote.TradedAt = BidOrAsk.Ask;
 			if (quikQuote.TradedAt == BidOrAsk.UNKNOWN) {
@@ -44,10 +45,10 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				Assembler.PopupException(msg, null, false);
 			}
 
-			quikQuote.FortsDepositBuy	= row.GetDouble("buydepo"		, double.NaN, false);
-			quikQuote.FortsDepositSell	= row.GetDouble("selldepo"		, double.NaN, false);
-			quikQuote.FortsPriceMax		= row.GetDouble("high"			, double.NaN);
-			quikQuote.FortsPriceMin		= row.GetDouble("low"			, double.NaN);
+			quikQuote.FortsDepositBuy	= row.Get<double>("buydepo");
+			quikQuote.FortsDepositSell	= row.Get<double>("selldepo");
+			quikQuote.FortsPriceMax		= row.Get<double>("high");
+			quikQuote.FortsPriceMin		= row.Get<double>("low");
 
 			this.reconstructServerTime_useNowAndTimezoneFromMarketInfo_ifNotFoundInRow(row);	// upstack@base check rowParsed.ErrorMessages 
 			quikQuote.ServerTime		= row.GetDateTime("_ServerTime"	, DateTime.Now);
@@ -56,7 +57,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			//	quote.ServerTime = qChangeTime;
 			//}
 
-			double sizeParsed			= row.GetDouble("qty"			, double.NaN);
+			double sizeParsed			= row.Get<double>("qty");
 			//if (lastQuoteDateTimeForVolume != quikQuote.ServerTime) {
 			//	lastQuoteDateTimeForVolume  = quikQuote.ServerTime;
 				quikQuote.Size = sizeParsed;
@@ -70,7 +71,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			//	quote.Size = sizeParsed;
 			//}
 
-			quikQuote.PriceStepFromDde	= row.GetDouble("SEC_PRICE_STEP"	, double.NaN);
+			quikQuote.PriceStepFromDde	= row.Get<double>("SEC_PRICE_STEP");
 			this.syncPriceStep_toSymbolInfo(quikQuote);
 
 			base.QuikStreaming.PushQuoteReceived(quikQuote);	//goes to another thread via PUMP and invokes strategies letting me go
@@ -109,8 +110,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				rowParsed.ErrorMessages.Add(errmsg + msig);
 			}
 
-			string dateFormat = base.ColumnDefinitionsByNameLookup["TRADE_DATE_CODE"]	.ToDateParseFormat;
-			string timeFormat = base.ColumnDefinitionsByNameLookup["time"]				.ToTimeParseFormat;
+			string dateFormat = base.ColumnDefinitionFor("TRADE_DATE_CODE")	.ToDateParseFormat;
+			string timeFormat = base.ColumnDefinitionFor("time")			.ToTimeParseFormat;
 			string dateTimeFormat = dateFormat + " " + timeFormat;
 			try {
 				ret = DateTime.ParseExact(dateTimeReceived, dateTimeFormat, CultureInfo.InvariantCulture);

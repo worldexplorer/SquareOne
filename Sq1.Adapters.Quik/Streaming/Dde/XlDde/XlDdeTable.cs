@@ -60,6 +60,14 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 				this.ColumnDefinitionsByNameLookup.Add(col.Name, col);
 			}
 		}
+		internal XlColumn ColumnDefinitionFor(string columnNameRequested, string invoker = " //INVOKER_UNKNOWN") {
+			if (this.ColumnDefinitionsByNameLookup.ContainsKey(columnNameRequested) == false) {
+				string msg = "DONT_REQUEST_COLUMN_YOU_DIDNT_DEFINE_IN_TableDefinitions.cs";
+				throw new Exception(msg + invoker);
+			}
+			XlColumn columnDefinition = this.ColumnDefinitionsByNameLookup[columnNameRequested];
+			return columnDefinition;
+		}
 
 		public void ParseDdeDeliveredMessage_pushToStreaming(byte[] data) {
 			this.LastDataReceived = DateTime.UtcNow;
@@ -212,7 +220,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			return columnsInMessageAsString;
 		}
 		protected virtual XlRowParsed parseRow(XlReader reader) {
-			XlRowParsed rowParsed = new XlRowParsed(this.DdeConsumerClassName);
+			XlRowParsed rowParsed = new XlRowParsed(this.DdeConsumerClassName, this.ColumnDefinitionsByNameLookup);
 			for (int col = 0; col < reader.ColumnsCount; col++) {
 				try {
 					reader.ReadNext();

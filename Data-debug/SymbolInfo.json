@@ -27,7 +27,7 @@
     "Level2ShowSpread": true,
     "Level2BidShowHoles": true,
     "Level2ShowCumulativesInsteadOfLots": false,
-    "Level2PriceLevels": 9
+    "Level2PriceLevels": 7
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
@@ -357,7 +357,7 @@
     "Level2ShowSpread": true,
     "Level2BidShowHoles": true,
     "Level2ShowCumulativesInsteadOfLots": false,
-    "Level2PriceLevels": 9
+    "Level2PriceLevels": 8
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",

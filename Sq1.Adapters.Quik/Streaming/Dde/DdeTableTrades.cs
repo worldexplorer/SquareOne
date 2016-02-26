@@ -12,12 +12,12 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 		protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
 			QuikTrade quikTrade			= new QuikTrade(this.DdeConsumerClassName + " Topic[" + base.Topic + "]");
 
-			quikTrade.Symbol			= row.GetString("SECCODE",		"SECCODE_NOT_FOUND");
-			quikTrade.SymbolClass		= row.GetString("CLASSCODE",	"CLASSCODE_NOT_FOUND");
+			quikTrade.Symbol			= row.Get<string>("SECCODE");
+			quikTrade.SymbolClass		= row.Get<string>("CLASSCODE");
 			//quikTrade.ServerTime		= new DateTime(rowParsed["TRADEDATE"] + " " + rowParsed["TRADETIME"]);
 
-			quikTrade.Price				= row.GetDouble("PRICE", double.NaN);
-			quikTrade.Quantity			= row.GetDouble("QTY", double.NaN);
+			quikTrade.Price				= row.Get<double>("PRICE");
+			quikTrade.Quantity			= row.Get<double>("QTY");
 
 			// HOW IT CAN BE ONLY BUY OR SELL? IT'S BOTH SIMULTANEOUSLY! IT CAN ONLY BE ONE OF THE TWO:
 			// 1) it was filled at bid (passive buyer  got filled by active crossmarket seller) or

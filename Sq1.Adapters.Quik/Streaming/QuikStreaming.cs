@@ -92,7 +92,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 		}
 
 		public override void InitializeDataSource_inverse(DataSource dataSource, bool subscribeSolidifier = true) {
-			base.Name					= "QuikStreaming-inititedFromDS";
+			base.Name					= "QuikStreaming";
 			base.ReasonToExist			= "INSTANCE_FOR[" + dataSource.Name + "]";
 			base.Level2RefreshRateMs	= this.DdeMonitorRefreshRateMs;	// DataSourceEditor.btnSave.click () will come here and RETURN if DdeServer has already been started => propagating user input before 
 

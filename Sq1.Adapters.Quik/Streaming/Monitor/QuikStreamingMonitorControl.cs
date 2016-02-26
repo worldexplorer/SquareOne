@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 using Sq1.Core;
+using Sq1.Core.DataTypes;
 
 using Sq1.Widgets;
 using Sq1.Widgets.Level2;
@@ -42,6 +43,8 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 
 		void domUserControls_createForEach_monitoreableLevelTwo(Stopwatch stopwatchRarifyingUIupdates_passed) {
 			foreach (DdeTableDepth eachDom in this.quikStreaming.DdeBatchSubscriber.Level2BySymbol.Values) {
+
+				if (eachDom.SymbolInfo.SecurityType == SecurityType.Index) continue;
 				QuikLevel2Control quikLevel2 = new QuikLevel2Control(eachDom, stopwatchRarifyingUIupdates_passed);
 				quikLevel2.MyTableDepth_subscribe();
 				this.flpDoms.Controls.Add(quikLevel2);

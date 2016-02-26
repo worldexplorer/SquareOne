@@ -11,6 +11,10 @@
 		public	bool			UpperLowerCaseSensitive;
 		public	bool			PrimaryKey_forSingleUpdates;
 
+		//mess starts here
+		public	object			ValueWhenNotReceived;
+		public	bool			PopupIf_keyDoesNotExist;
+
 		XlColumn() {
 			IndexFound				= -1;
 			Mandatory				= false;
@@ -18,11 +22,15 @@
 			PrimaryKey_forSingleUpdates = false;
 		}
 
-		public XlColumn(XlBlockType typeExpected, string name, bool mandatory = false, bool primaryKey = false) : this() {
-			TypeExpected = typeExpected;
-			Name = name;
-			Mandatory = mandatory;
-			PrimaryKey_forSingleUpdates = primaryKey;
+		public XlColumn(XlBlockType typeExpected, string name, bool mandatory = false,
+						object valueWhenNotReceived = null, bool popupIf_keyDoesNotExist = true,
+						bool primaryKey = false) : this() {
+			TypeExpected				= typeExpected;
+			Name						= name;
+			Mandatory					= mandatory;
+			PrimaryKey_forSingleUpdates	= primaryKey;
+			ValueWhenNotReceived		= valueWhenNotReceived;
+			PopupIf_keyDoesNotExist		= popupIf_keyDoesNotExist;
 		}
 
 		public XlColumn Clone() {
