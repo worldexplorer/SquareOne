@@ -63,7 +63,8 @@ namespace Sq1.Gui.Forms {
 				//v1 this.ChartFormManager.ScriptEditorFormConditionalInstance.ToggleAutoHide();
 				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.ScriptEditorForm)) {
 					string msg = "YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_SCRIPT_EDITOR_FORM_WAS_CLOSED_BY_X";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
+					this.ChartFormManager.ScriptEditorFormConditionalInstance.Show(this.DockPanel);
 				} else {
 					this.ChartFormManager.ScriptEditorForm.Close();
 				}

@@ -331,7 +331,8 @@ namespace Sq1.Core.Livesim {
 			this.OnQuoteReceived_zeroSubscribers_blinkDataSourceTreeWithOrange += new EventHandler<QuoteEventArgs>(livesimulator_OnQuoteReceived_zeroSubscribers_blinkDataSourceTreeWithOrange);
 
 			try {
-				base.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
+				//v1 base.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
+				base.Executor.Livesim_compileRun_trampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
 			} catch (Exception ex) {
 				string msg = "BARS_ARE_NULL YOU_PAUSED_A_WRONG_DISTRIBUTOR";
 				Assembler.PopupException(msg);

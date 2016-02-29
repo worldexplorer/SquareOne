@@ -493,7 +493,7 @@ namespace Sq1.Core.Backtesting {
 			this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar = clone.BacktestStrokesPerBar;
 			this.Executor.Strategy.Serialize();
 			if (this.Executor.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false) return;
-			this.Executor.BacktesterRunSimulationTrampoline(null, true);
+			this.Executor.BacktesterRun_trampoline(null, true);
 		}
 
 		public virtual void Dispose() {
