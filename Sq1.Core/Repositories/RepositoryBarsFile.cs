@@ -45,28 +45,7 @@ namespace Sq1.Core.Repositories {
 			this.Abspath = this.barsRepository.AbspathForSymbol(this.Symbol, throwIfDoesntExist, createIfDoesntExist);
 		}
 
-		public Bars BarsLoad_nullUnsafeThreadSafe_NOT_USED(DateTime dateFrom, DateTime dateTill, int maxBars) {
-			Bars barsAll = this.BarsLoadAll_nullUnsafeThreadSafe();
-			if (barsAll == null) return barsAll;
-			
-			//Assembler.PopupException("Loaded [ " + bars.Count + "] bars; symbol[" + this.Symbol + "] scaleInterval[" + this.BarsFolder.ScaleInterval + "]");
-			if (dateFrom == DateTime.MinValue && dateTill == DateTime.MaxValue && maxBars == 0) return barsAll;
-
-			string start = (dateFrom == DateTime.MinValue) ? "MIN" : dateFrom.ToString("dd-MMM-yyyy");
-			string end = (dateTill == DateTime.MaxValue) ? "MAX" : dateTill.ToString("dd-MMM-yyyy");
-			Bars bars = new Bars(barsAll.Symbol, barsAll.ScaleInterval, barsAll.ReasonToExist + " [" + start + "..." + end + "]max[" + maxBars + "]");
-			for (int i = 0; i < barsAll.Count; i++) {
-				if (maxBars > 0 && i >= maxBars) break;
-				Bar barAdding = barsAll[i];
-				bool skipThisBar = false;
-				if (dateFrom > DateTime.MinValue && barAdding.DateTimeOpen < dateFrom) skipThisBar = true;
-				if (dateTill < DateTime.MaxValue && barAdding.DateTimeOpen > dateTill) skipThisBar = true;
-				if (skipThisBar) continue;
-				bars.BarAppendBindStatic(barAdding.CloneDetached());
-			}
-			return bars;
-		}
-		public Bars BarsLoadAll_nullUnsafeThreadSafe(bool saveBarsIfThereWasFailedCheckOHLCV = true) {
+		public Bars BarsLoadAll_nullUnsafe_threadSafe(bool saveBarsIfThereWasFailedCheckOHLCV = true) {
 			Bars bars = null;
 			lock(this.fileReadWriteSequentialLock) {
 				if (File.Exists(this.Abspath) == false) {
@@ -230,14 +209,14 @@ namespace Sq1.Core.Repositories {
 				}
 			}
 			if (resaveRequired) {
-				int reSaved = this.BarsSaveThreadSafe(bars);
+				int reSaved = this.BarsSave_threadSafe(bars);
 				string msg2 = "RE-SAVED_TO_REMOVE_BARS_ALL_ZEROES reSaved[" + reSaved + "]";
 				Assembler.PopupException(msg2, null, false);
 			}
 
 			return bars;
 		}
-		public int BarsSaveThreadSafe(Bars bars) {
+		public int BarsSave_threadSafe(Bars bars) {
 			//BARS_INITIALIZED_EMPTY if (bars.Count == 0) return 0;
 			int barsSaved = -1;
 			lock (this.fileReadWriteSequentialLock) {
@@ -328,10 +307,10 @@ namespace Sq1.Core.Repositories {
 			return barsSaved;
 		}
 
-		public int BarAppendStaticOrReplaceStreamingThreadSafe(Bar barLastFormed) {
+		public int BarAppendStatic_orReplaceStreaming_threadSafe(Bar barLastFormed) {
 			int barsAppendedOrReplaced = -1;
 			lock (this.fileReadWriteSequentialLock) {
-				barsAppendedOrReplaced = this.barAppendStaticOrReplaceStreaming(barLastFormed);
+				barsAppendedOrReplaced = this.barAppendStatic_orReplaceStreaming(barLastFormed);
 				string msg = "barsAppendedOrReplaced[" + barsAppendedOrReplaced + "] " + this.Symbol + ":" + this.barsRepository.ScaleInterval;
 				Assembler.PopupException(msg, null, false);
 			}
@@ -339,15 +318,15 @@ namespace Sq1.Core.Repositories {
 		}
 
 		// for a daily chart, you may want to sync the streaming bar every 10 seconds (ASYNC_APPEND_TBI) otherwize you loose whole past day 
-		int barAppendStaticOrReplaceStreaming(Bar barLastFormedStaticOrCurrentStreaming) {
+		int barAppendStatic_orReplaceStreaming(Bar barLastFormedStatic_orCurrentStreaming) {
 			//starting from barFileCurrentVersion=3: seek to the end, read last Bar, overwrite if same date or append if greater; 0.1ms instead of reading all - appending - writing all
 			int saved = 0;
-			string msig = " barAppendStaticOrReplaceStreaming(" + barLastFormedStaticOrCurrentStreaming + ")=>[" + this.Abspath + "]";
+			string msig = " barAppendStaticOrReplaceStreaming(" + barLastFormedStatic_orCurrentStreaming + ")=>[" + this.Abspath + "]";
 
 			try {
-				barLastFormedStaticOrCurrentStreaming.CheckOHLCVthrow();	//	catching the exception will display stacktrace in ExceptionsForm
+				barLastFormedStatic_orCurrentStreaming.CheckOHLCVthrow();	//	catching the exception will display stacktrace in ExceptionsForm
 			} catch (Exception ex) {
-				string msg = "NOT_APPENDING_TO_FILE_THIS_BAR__FIX_WHO_GENERATED_IT_UPSTACK barAllZeroes barLastFormed[" + barLastFormedStaticOrCurrentStreaming + "]";
+				string msg = "NOT_APPENDING_TO_FILE_THIS_BAR__FIX_WHO_GENERATED_IT_UPSTACK barAllZeroes barLastFormed[" + barLastFormedStatic_orCurrentStreaming + "]";
 				Assembler.PopupException(msg + msig, ex, false);
 				return saved;
 			}
@@ -378,9 +357,9 @@ namespace Sq1.Core.Repositories {
 					// THIS_WAS_GENERATING_ZERO_BAR__YOU_WANTED_TO_PASS_NEGATIVE_VALUE_RELATIVE_TO_END_TO_SEEK_BACK_AND_ANALYZE_DATE_IF_STREAMING_SHOULD_BE_OVERWRITTEN_OR_STATIC_APPENDED fileStream.Seek(barSize, SeekOrigin.End);
 					fileStream.Seek(0, SeekOrigin.End);
 					long posEof = fileStream.Position;
-					myFirstBarEver_justAdd_withoutMerging = posEof > headerSize;		//bool imNOtGoingBackOverZero = barSize > posEof;
+					myFirstBarEver_justAdd_withoutMerging = posEof >= headerSize + barSize;		//bool imNOtGoingBackOverZero = barSize > posEof;
 					if (myFirstBarEver_justAdd_withoutMerging) {
-						fileStream.Seek(-barSize, SeekOrigin.Current);
+						fileStream.Seek(-barSize, SeekOrigin.End);
 					}
 				} catch (Exception ex) {
 					string msg = "2/4_FILESTREAM_SEEK_ONE_BAR_FROM_END_THROWN barSize[" + barSize + "]";
@@ -388,25 +367,25 @@ namespace Sq1.Core.Repositories {
 					return saved;
 				}
 
-				if (myFirstBarEver_justAdd_withoutMerging) {
+				if (myFirstBarEver_justAdd_withoutMerging == false) {
 					// 1/3 - read the date and see if the timestamp is the same as 
 					DateTime dateTimeOpenLastStored = new DateTime(binaryReader.ReadInt64());
-					if (dateTimeOpenLastStored > barLastFormedStaticOrCurrentStreaming.DateTimeOpen) {
+					if (barLastFormedStatic_orCurrentStreaming.DateTimeOpen < dateTimeOpenLastStored) {
 						string msg = "I_REFUSE_TO_STORE_BAR_EARLIER_THAN_LAST_STORED barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
-							+ barLastFormedStaticOrCurrentStreaming.DateTimeOpen + "] > dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
+							+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] > dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
 							+ " IMPOSSIBLE_TO_CATCH_UPSTACK_KOZ_SOLIDIFIER_DOESNT_KEEP_BARS";
 						Assembler.PopupException(msg, null, false);
 						return saved;
 					}
 					long fileStreamLength = fileStream.Length;
-					if (barLastFormedStaticOrCurrentStreaming.DateTimeOpen == dateTimeOpenLastStored) {
+					if (barLastFormedStatic_orCurrentStreaming.DateTimeOpen == dateTimeOpenLastStored) {
 						try {
 							long fileStreamPositionAfterSeekToLastBar = fileStream.Seek(-barSize, SeekOrigin.End);
-							string msg = "DEBUGGINNG__OVERWRITING_LAST_BAR_WITH_STREAMING barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
-								+ barLastFormedStaticOrCurrentStreaming.DateTimeOpen + "] == dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
+							string msg = "OVERWRITING_LAST_BAR_WITH_STREAMING barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
+								+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] == dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
 								+ " fileStreamPositionAfterSeekToLastBar[" + fileStreamPositionAfterSeekToLastBar + "] fileStreamLength[" + fileStreamLength + "]"
 								;
-							//Assembler.PopupException(msg, null, false);
+							Assembler.PopupException(msg, null, false);
 						} catch (Exception ex) {
 							string msg = "3/4_FILESTREAM_SEEK_ONE_BAR_FROM_END_THROWN barSize[" + barSize + "]";
 							Assembler.PopupException(msg + msig, ex);
@@ -415,11 +394,11 @@ namespace Sq1.Core.Repositories {
 					} else {
 						try {
 							long fileStreamPositionAfterSeekToEnd = fileStream.Seek(0, SeekOrigin.End);
-							string msg = "DEBUGGINNG__APPENDING_FRESHLY_FORMED_STATIC_BAR: barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
-								+ barLastFormedStaticOrCurrentStreaming.DateTimeOpen + "] > dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
+							string msg = "APPENDING_FRESHLY_FORMED_STATIC_BAR: barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
+								+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] > dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
 								+ " fileStreamPositionAfterSeekToEnd[" + fileStreamPositionAfterSeekToEnd + "] fileStreamLength[" + fileStreamLength + "]"
 								;
-							//Assembler.PopupException(msg, null, false);
+							Assembler.PopupException(msg, null, false);
 						} catch (Exception ex) {
 							string msg = "3/4_FILESTREAM_SEEK_END_THROWN";
 							Assembler.PopupException(msg + msig, ex);
@@ -428,12 +407,12 @@ namespace Sq1.Core.Repositories {
 					}
 				}
 				try {
-					binaryWriter.Write(barLastFormedStaticOrCurrentStreaming.DateTimeOpen.Ticks);
-					binaryWriter.Write(barLastFormedStaticOrCurrentStreaming.Open);
-					binaryWriter.Write(barLastFormedStaticOrCurrentStreaming.High);
-					binaryWriter.Write(barLastFormedStaticOrCurrentStreaming.Low);
-					binaryWriter.Write(barLastFormedStaticOrCurrentStreaming.Close);
-					binaryWriter.Write(barLastFormedStaticOrCurrentStreaming.Volume);
+					binaryWriter.Write(barLastFormedStatic_orCurrentStreaming.DateTimeOpen.Ticks);
+					binaryWriter.Write(barLastFormedStatic_orCurrentStreaming.Open);
+					binaryWriter.Write(barLastFormedStatic_orCurrentStreaming.High);
+					binaryWriter.Write(barLastFormedStatic_orCurrentStreaming.Low);
+					binaryWriter.Write(barLastFormedStatic_orCurrentStreaming.Close);
+					binaryWriter.Write(barLastFormedStatic_orCurrentStreaming.Volume);
 					saved++;
 				} catch (Exception ex) {
 					string msg = "4/4_BINARYWRITER_WRITER_THROWN";

@@ -167,13 +167,13 @@ namespace Sq1.Charting {
 				string ret = "FORMAT_FOR_BARS_UNDEFINED";
 				Bars bars = this.ChartControl.Bars;
 				switch (bars.ScaleInterval.Scale) {
-						case BarScale.Minute: ret = this.ChartControl.ChartSettings.GutterBottomDateFormatIntraday; break;
-						case BarScale.Daily: ret = this.ChartControl.ChartSettings.GutterBottomDateFormatDaily; break;
+					case BarScale.Minute: ret = this.ChartControl.ChartSettings.GutterBottomDateFormatIntraday; break;
+					case BarScale.Daily: ret = this.ChartControl.ChartSettings.GutterBottomDateFormatDaily; break;
 					case BarScale.Weekly:
 					case BarScale.Monthly:
-						case BarScale.Quarterly: ret = this.ChartControl.ChartSettings.GutterBottomDateFormatDaily; break;
-						case BarScale.Yearly: ret = this.ChartControl.ChartSettings.GutterBottomDateFormatYearly; break;
-						default: ret = "FORMAT_FOR_BARS_UNDEFINED"; break;
+					case BarScale.Quarterly: ret = this.ChartControl.ChartSettings.GutterBottomDateFormatDaily; break;
+					case BarScale.Yearly: ret = this.ChartControl.ChartSettings.GutterBottomDateFormatYearly; break;
+					default: ret = "FORMAT_FOR_BARS_UNDEFINED"; break;
 				}
 				return ret;
 			} }

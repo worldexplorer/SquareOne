@@ -2,16 +2,18 @@ using System;
 
 using Sq1.Core;
 using Sq1.Core.DataFeed;
+using Sq1.Widgets.DataSourceTree;
 
 namespace Sq1.Widgets.DataSourcesTree {
 	public partial class DataSourcesTreeControl {
 		//http://stackoverflow.com/questions/261660/how-do-i-set-an-image-for-some-but-not-all-nodes-in-a-treeview?rq=1
 		public event EventHandler<DataSourceEventArgs>			OnDataSourceSelected;
 		public event EventHandler<DataSourceSymbolEventArgs>	OnSymbolSelected;
+		public event EventHandler<ChartSelectedEventArgs>		OnChartSelected;
 
 		public event EventHandler<DataSourceSymbolEventArgs>	OnNewChartForSymbolClicked;
 		public event EventHandler<DataSourceSymbolEventArgs>	OnOpenStrategyForSymbolClicked;
-		public event EventHandler<DataSourceSymbolEventArgs>	OnBarsAnalyzerClicked;
+		public event EventHandler<DataSourceSymbolEventArgs>	OnBarsEditorClicked;
 		public event EventHandler<DataSourceSymbolEventArgs>	OnSymbolInfoEditorClicked;
 
 		public event EventHandler<DataSourceEventArgs>			OnDataSourceEditClicked;
@@ -21,7 +23,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void raiseOnDataSourceSelected() {
 			if (this.OnDataSourceSelected == null) {
 				string msg = "DataSourcesTree.treeListView_CellClick(): event OnDataSourceSelected: no subscribers";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg);
 				return;
 			}
 			this.OnDataSourceSelected(this, new DataSourceEventArgs(this.DataSourceSelected));
@@ -29,10 +31,18 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void raiseOnSymbolSelected() {
 			if (this.OnSymbolSelected == null) {
 				string msg = "DataSourcesTree.treeListView_CellClick(): event OnSymbolSelected: no subscribers";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg);
 				return;
 			}
 			this.OnSymbolSelected(this, new DataSourceSymbolEventArgs(this.DataSourceSelected, this.SymbolSelected));
+		}
+		void raiseOnChartSelected() {
+			if (this.OnChartSelected == null && this.DisplayingThirdLevel_withChartsOpen) {
+				string msg = "DataSourcesTree.treeListView_CellClick(): event OnChartSelected: no subscribers";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.OnChartSelected(this, new ChartSelectedEventArgs(this.ChartSelected));
 		}
 		
 		void raiseOnNewChartForSymbolClicked() {
@@ -43,13 +53,13 @@ namespace Sq1.Widgets.DataSourcesTree {
 			}
 			this.OnNewChartForSymbolClicked(this, new DataSourceSymbolEventArgs(this.DataSourceSelected, this.SymbolSelected));
 		}
-		void raiseOnBarsAnalyzerClicked() {
-			if (this.OnBarsAnalyzerClicked == null) {
-				string msg = "DataSourcesTree.mniBarsAnalyzerSymbol_Click(): event OnBarsAnalyzerClicked: no subscribers";
+		void raiseOnBarsEditorClicked() {
+			if (this.OnBarsEditorClicked == null) {
+				string msg = "DataSourcesTree.mniBarsEditorSymbol_Click(): event OnBarsEditorClicked: no subscribers";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.OnBarsAnalyzerClicked(this, new DataSourceSymbolEventArgs(this.DataSourceSelected, this.SymbolSelected));
+			this.OnBarsEditorClicked(this, new DataSourceSymbolEventArgs(this.DataSourceSelected, this.SymbolSelected));
 		}
 		void raiseOnOpenStrategyForSymbolClicked() {
 			if (this.OnOpenStrategyForSymbolClicked == null) {

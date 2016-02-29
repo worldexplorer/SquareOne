@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 using BrightIdeasSoftware;
 using ObjectListViewDemo;
+
 using Sq1.Core;
 
 namespace Sq1.Widgets.CsvImporter {

@@ -139,7 +139,7 @@ namespace Sq1.Core.DataFeed {
 				+ " {" + this.StreamingAdapterName + ":" + this.BrokerAdapterName + "}";
 		}
 
-		internal int BarAppendOrReplaceLast(Bar barLastFormed, out string millisElapsed) {
+		internal int BarAppend_orReplaceLast(Bar barLastFormed, out string millisElapsed) {
 			int ret = -1;
 			millisElapsed = "BAR_WASNT_SAVED";
 			if (barLastFormed == null) {
@@ -162,7 +162,7 @@ namespace Sq1.Core.DataFeed {
 			//v2 experimental
 			Stopwatch replaceLastBarTimer = new Stopwatch();
 			replaceLastBarTimer.Start();
-			ret = file.BarAppendStaticOrReplaceStreamingThreadSafe(barLastFormed);
+			ret = file.BarAppendStatic_orReplaceStreaming_threadSafe(barLastFormed);
 			replaceLastBarTimer.Stop();
 			millisElapsed = "BarAppendOrReplaceLast[" + barLastFormed.Symbol + "][" + ret + "](" + replaceLastBarTimer.ElapsedMilliseconds + ")ms";
 
@@ -175,7 +175,7 @@ namespace Sq1.Core.DataFeed {
 			Stopwatch replaceLastBarTimer = new Stopwatch();
 			replaceLastBarTimer.Start();
 
-			int barsSaved = barsFile.BarsSaveThreadSafe(bars);
+			int barsSaved = barsFile.BarsSave_threadSafe(bars);
 
 			replaceLastBarTimer.Stop();
 			millisElapsed = "BarsSave[" + bars.Count + "][" + barsSaved + "](" + replaceLastBarTimer.ElapsedMilliseconds + ")ms";
@@ -189,33 +189,8 @@ namespace Sq1.Core.DataFeed {
 			return barsSaved;
 		}
 
-		public Bars BarsLoadAndCompress(string symbolRq, BarScaleInterval scaleIntervalRq, out string millisElapsed) {
-			millisElapsed = "WASNT_LOADED";
-
-			Stopwatch readAllTimer = new Stopwatch();
-			readAllTimer.Start();
-	
-			Bars barsOriginal;
-			//BarsFolder perstFolder = new BarsFolder(this.BarsFolder.RootFolder, this.DataSource.ScaleInterval, true, "dts");
-			//RepositoryBarsPerst barsPerst = new RepositoryBarsPerst(perstFolder, symbol, false);
-			//ret = barsPerst.BarsRead();
-			//if (ret == null) {
-			RepositoryBarsFile barsFile = this.BarsRepository.DataFileForSymbol(symbolRq);
-			barsOriginal = barsFile.BarsLoadAll_nullUnsafeThreadSafe();
-			//}
-
-			readAllTimer.Stop();
-			if (barsOriginal == null) {
-				barsOriginal = new Bars(symbolRq, this.ScaleInterval, "FILE_NOT_FOUND_OR_EMPTY " + this.GetType().Name);
-				string msg = "BARS_NULL " + barsFile.Abspath + " //BarsLoadAndCompress(" + symbolRq + ":" + this.BarsRepository.ScaleInterval + "][NULL]bars[" + readAllTimer.ElapsedMilliseconds + "]msRead";
-				Assembler.PopupException(msg);
-			}
-			barsOriginal.DataSource = this;
-			barsOriginal.MarketInfo = this.MarketInfo;
-			barsOriginal.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(barsOriginal.Symbol);
-
-			millisElapsed = "BarsLoadAndCompress[" + barsOriginal.Symbol + ":" + barsOriginal.ScaleInterval + "]["
-				+ barsOriginal.Count + "]bars[" + readAllTimer.ElapsedMilliseconds + "]msRead";
+		public Bars BarsLoadAndCompress_nullUnsafe(string symbolRq, BarScaleInterval scaleIntervalRq, out string millisElapsed) {
+			Bars barsOriginal = BarsLoad_nullUnsafe(symbolRq, out millisElapsed);
 			if (barsOriginal.Count == 0) return barsOriginal;
 			if (scaleIntervalRq == barsOriginal.ScaleInterval) return barsOriginal;
 
@@ -241,6 +216,37 @@ namespace Sq1.Core.DataFeed {
 			millisElapsed += " ToLargerScaleInterval[" + barsCompressed.Symbol + ":" + barsCompressed.ScaleInterval + "][" + barsCompressed.Count + "]bars[" + compressTimer.ElapsedMilliseconds + "]msCompressed";
 
 			return barsCompressed;
+		}
+
+		public Bars BarsLoad_nullUnsafe(string symbolRq, out string millisElapsed) {
+			Bars ret;
+			millisElapsed = "WASNT_LOADED";
+
+			Stopwatch readAllTimer = new Stopwatch();
+			readAllTimer.Start();
+
+			//BarsFolder perstFolder = new BarsFolder(this.BarsFolder.RootFolder, this.DataSource.ScaleInterval, true, "dts");
+			//RepositoryBarsPerst barsPerst = new RepositoryBarsPerst(perstFolder, symbol, false);
+			//ret = barsPerst.BarsRead();
+			//if (ret == null) {
+			RepositoryBarsFile barsFile = this.BarsRepository.DataFileForSymbol(symbolRq);
+			ret = barsFile.BarsLoadAll_nullUnsafe_threadSafe();
+			//}
+
+			readAllTimer.Stop();
+			if (ret == null) {
+				ret = new Bars(symbolRq, this.ScaleInterval, "FILE_NOT_FOUND_OR_EMPTY " + this.GetType().Name);
+				string msg = "BARS_NULL " + barsFile.Abspath + " //BarsLoadAndCompress(" + symbolRq + ":" + this.BarsRepository.ScaleInterval + "][NULL]bars[" + readAllTimer.ElapsedMilliseconds + "]msRead";
+				Assembler.PopupException(msg);
+				return ret;
+			}
+			ret.DataSource = this;
+			ret.MarketInfo = this.MarketInfo;
+			ret.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(ret.Symbol);
+
+			millisElapsed = "BarsLoadAndCompress[" + ret.Symbol + ":" + ret.ScaleInterval + "]["
+				+ ret.Count + "]bars[" + readAllTimer.ElapsedMilliseconds + "]msRead";
+			return ret;
 		}
 	}
 }

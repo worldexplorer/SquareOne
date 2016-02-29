@@ -5,11 +5,13 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
+using WeifenLuo.WinFormsUI.Docking;
+
 using Sq1.Core;
 using Sq1.Core.StrategyBase;
+
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui {
 	public partial class MainForm {
@@ -40,6 +42,8 @@ namespace Sq1.Gui {
 					ret = SymbolInfoEditorForm.Instance;
 				} else if (persistedTypeFullName == typeof(ChartSettingsEditorForm).ToString()) {
 					ret = ChartSettingsEditorForm.Instance;
+				} else if (persistedTypeFullName == typeof(FuturesMergerForm).ToString()) {
+					//ret = FuturesMergerForm.Instance;
 				} else {
 					// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos
 					return this.handleClassesWithGetPersistStringOverridden(persistedTypeFullName);
@@ -159,10 +163,38 @@ namespace Sq1.Gui {
 
 				case ("DataSourceEditor"):
 					//Assembler.PopupException("DataSourceEditorForm: initializing with datasource[" + persistedParsedToHash["DataSourceEditing"] + "]");
-					DataSourceEditorForm instance = DataSourceEditorForm.Instance;
-					string dsName = persistedParsedToHash["DataSourceEditing"];
-					instance.Initialize(dsName, this.DockPanel);
-					ret = instance; 
+					DataSourceEditorForm dataSourceEditor_instance = DataSourceEditorForm.Instance;
+					string dataSourceEditor_dsName = persistedParsedToHash["DataSourceEditing"];
+					dataSourceEditor_instance.Initialize(dataSourceEditor_dsName, this.DockPanel);
+					ret = dataSourceEditor_instance;
+					break;
+
+				case ("BarsEditor"):
+					BarsEditorForm barsEditor_instance = BarsEditorForm.Instance;
+					string barsEditor_dsName = null;
+					string barsEditor_symbol = null;
+					bool barsEditor_dsName_exists = persistedParsedToHash.TryGetValue("DataSourceEditing"	, out barsEditor_dsName);
+					bool barsEditor_symbol_exists = persistedParsedToHash.TryGetValue("SymbolEditing"		, out barsEditor_symbol);
+					if (barsEditor_dsName == null || barsEditor_symbol == null) {
+						Assembler.PopupException("BarsEditorForm.Initialize(datasource[" + barsEditor_dsName + "], symbol[" + barsEditor_symbol + "])", null, false);
+						break;
+					}
+					barsEditor_instance.BarsEditorUserControl.LoadBars(barsEditor_dsName, barsEditor_symbol);
+					ret = barsEditor_instance;
+					break;
+
+				case ("FuturesMerger"):
+					FuturesMergerForm futuresMerger_instance = FuturesMergerForm.Instance;
+					string futuresMerger_dsName = null;
+					string futuresMerger_symbol = null;
+					bool futuresMerger_dsName_exists = persistedParsedToHash.TryGetValue("DataSourceEditing"	, out futuresMerger_dsName);
+					bool futuresMerger_symbol_exists = persistedParsedToHash.TryGetValue("SymbolEditing"		, out futuresMerger_symbol);
+					if (futuresMerger_dsName == null || futuresMerger_symbol == null) {
+						Assembler.PopupException("FuturesMergerForm.Initialize(datasource[" + futuresMerger_dsName + "], symbol[" + futuresMerger_symbol + "])", null, false);
+						break;
+					}
+					futuresMerger_instance.FuturesMergerUserControl.BarsEditorUserControl_top.LoadBars(futuresMerger_dsName, futuresMerger_symbol);
+					ret = futuresMerger_instance;
 					break;
 
 				default:

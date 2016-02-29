@@ -10,7 +10,7 @@ using Sq1.Core.Streaming;
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Widgets.Level2 {
-	public partial class LevelTwoUserControl : UserControlResizeable {
+	public partial class LevelTwoUserControl : UserControlTitled {
 				StreamingAdapter		streamingAdapter;
 				SymbolInfo				symbolInfo;
 				string					windowTitle;
@@ -26,7 +26,7 @@ namespace Sq1.Widgets.Level2 {
 
 		//Stopwatch			stopwatchRarifyingUIupdates;
 
-		public LevelTwoUserControl() {
+		public LevelTwoUserControl() : base() {
 			InitializeComponent();
 			//this.OlvLevelTwo.EmptyListMsg = "No Level2 Received Yet";
 			this.olvDomCustomize();
@@ -57,7 +57,7 @@ namespace Sq1.Widgets.Level2 {
 			}
 			this.OlvLevelTwo.RebuildColumns();
 
-			this.layoutUserControlResizeable();
+			//this.layoutUserControlResizeable();
 			this.PopulateLevel2ToTitle(this.windowTitle, true);
 		}
 		public void PopulateLevel2ToTitle(string windowTitle_passed = null, bool ignoreTimer = false) {
@@ -83,7 +83,7 @@ namespace Sq1.Widgets.Level2 {
 			//RESTART_ONLY_IN_ONE_PLACE_OTHERWIZE_THE_OTHER_NEVER_DOES_ANYTHING this.stopwatchRarifyingUIupdates.Restart();
 			//}
 
-			this.lblDomTitle.Text = this.windowTitle;
+			base.WindowTitle = this.windowTitle;
 		}
 
 		public void PopulateLevel2ToDomControl(LevelTwo levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl) {

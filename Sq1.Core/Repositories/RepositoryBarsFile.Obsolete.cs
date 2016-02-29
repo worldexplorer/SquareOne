@@ -62,7 +62,7 @@ namespace Sq1.Core.Repositories {
 		[Obsolete("replaced by barAppendStaticUnconditional()")]
 		int barAppendStaticFullCopySlow(Bar barLastFormed) {
 			//v1
-			Bars allBars = this.BarsLoadAll_nullUnsafeThreadSafe();
+			Bars allBars = this.BarsLoadAll_nullUnsafe_threadSafe();
 			if (allBars == null) {
 				allBars = new Bars(barLastFormed.Symbol, barLastFormed.ScaleInterval, "DUMMY: LoadBars()=null");
 			}
@@ -81,7 +81,7 @@ namespace Sq1.Core.Repositories {
 			}
 			
 			allBars.BarAppendBindStatic(barLastFormed);
-			int barsSaved = this.BarsSaveThreadSafe(allBars);
+			int barsSaved = this.BarsSave_threadSafe(allBars);
 			return barsSaved;
 		}
 		[Obsolete("BarAppendStaticUnconditionalThreadSafe() doesnt allow StreamingBar be saved every 10 seconds so there is risk of loosing current-day-bar after app restart")]
@@ -150,5 +150,27 @@ namespace Sq1.Core.Repositories {
 			return saved;
 		}
 		
+		public Bars BarsLoad_nullUnsafeThreadSafe_NOT_USED(DateTime dateFrom, DateTime dateTill, int maxBars) {
+			Bars barsAll = this.BarsLoadAll_nullUnsafe_threadSafe();
+			if (barsAll == null) return barsAll;
+			
+			//Assembler.PopupException("Loaded [ " + bars.Count + "] bars; symbol[" + this.Symbol + "] scaleInterval[" + this.BarsFolder.ScaleInterval + "]");
+			if (dateFrom == DateTime.MinValue && dateTill == DateTime.MaxValue && maxBars == 0) return barsAll;
+
+			string start = (dateFrom == DateTime.MinValue) ? "MIN" : dateFrom.ToString("dd-MMM-yyyy");
+			string end = (dateTill == DateTime.MaxValue) ? "MAX" : dateTill.ToString("dd-MMM-yyyy");
+			Bars bars = new Bars(barsAll.Symbol, barsAll.ScaleInterval, barsAll.ReasonToExist + " [" + start + "..." + end + "]max[" + maxBars + "]");
+			for (int i = 0; i < barsAll.Count; i++) {
+				if (maxBars > 0 && i >= maxBars) break;
+				Bar barAdding = barsAll[i];
+				bool skipThisBar = false;
+				if (dateFrom > DateTime.MinValue && barAdding.DateTimeOpen < dateFrom) skipThisBar = true;
+				if (dateTill < DateTime.MaxValue && barAdding.DateTimeOpen > dateTill) skipThisBar = true;
+				if (skipThisBar) continue;
+				bars.BarAppendBindStatic(barAdding.CloneDetached());
+			}
+			return bars;
+		}
+
 	}
 }

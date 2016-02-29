@@ -4,34 +4,37 @@ using System.IO;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
+
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
+
 using Sq1.Widgets.LabeledTextBox;
 using Sq1.Widgets.SteppingSlider;
+using Sq1.Widgets.RangeBar;
 
 namespace Sq1.Widgets.CsvImporter {
 	public partial class CsvImporterControl {
 		void importSourceFileBrowser_OnDirectoryChanged(object sender, DirectoryInfoEventArgs e) {
-			if (this.dataSnapshot.PathCsv == e.DirectoryInfo.FullName) return;
-			this.dataSnapshot.PathCsv = e.DirectoryInfo.FullName;
-			this.dataSnapshot.FileSelected = null;
-			this.dataSnapshotSerializer.Serialize();
+			if (this.csvDataSnapshot.PathCsv == e.DirectoryInfo.FullName) return;
+			this.csvDataSnapshot.PathCsv = e.DirectoryInfo.FullName;
+			this.csvDataSnapshot.FileSelected = null;
+			this.csvDataSnapshotSerializer.Serialize();
 		}
 		void importSourceFileBrowser_OnFileSelectedTryParse(object sender, ImportSourcePathInfo e) {
 			//if (this.dataSnapshot.FileSelectedAbsname == e.FSI.FullName) return;
-			this.dataSnapshot.PathCsv = Path.GetDirectoryName(e.FSI.FullName);
-			this.dataSnapshot.FileSelected = e.FSI.Name;
-			this.dataSnapshotSerializer.Serialize();
+			this.csvDataSnapshot.PathCsv = Path.GetDirectoryName(e.FSI.FullName);
+			this.csvDataSnapshot.FileSelected = e.FSI.Name;
+			this.csvDataSnapshotSerializer.Serialize();
 			bool success = this.stepsAllparseFromDataSnapshot();
 			e.ParsingFailedHightlightRed = !success;
 		}
 		void csvPreviewParsedRaw_DoubleClick(object sender, EventArgs e) {
-			if (this.dataSnapshot.FileSelected == null) {
+			if (this.csvDataSnapshot.FileSelected == null) {
 				this.olvCsvParsedRaw.EmptyListMsg = "Select a file in the left then Double Click here\r\nto open the file selected in Notepad";
 				return;
 			}
-			ObjectListViewDemo.ShellUtilities.Execute(this.dataSnapshot.FileSelectedAbsname, "edit");
+			ObjectListViewDemo.ShellUtilities.Execute(this.csvDataSnapshot.FileSelectedAbsname, "edit");
 		}
 		void mniEdit_Click(object sender, EventArgs e) {
 			this.csvPreviewParsedRaw_DoubleClick(sender, e);
@@ -98,7 +101,7 @@ namespace Sq1.Widgets.CsvImporter {
 					string selectedFormat = editor.SelectedItem as string;
 					if (selectedFormat == null) {
 						selectedFormat = editor.Text;	//user typed new value => add it to source list
-						this.dataSnapshot.AddFormatForTypeUnique(selectedFormat, iCatcherEdited.Parser.CsvType);
+						this.csvDataSnapshot.AddFormatForTypeUnique(selectedFormat, iCatcherEdited.Parser.CsvType);
 					}
 					if (selectedFormat == CsvTypeParser.FORMAT_VISUALIZE_EMPTY_STRING) selectedFormat = "";
 					iCatcherEdited.Parser.CsvTypeFormat = selectedFormat;
@@ -110,7 +113,7 @@ namespace Sq1.Widgets.CsvImporter {
 					break;
 			}
 			editor.SelectedIndexChanged -= cb_SelectedIndexChanged;
-			this.dataSnapshotSerializer.Serialize();
+			this.csvDataSnapshotSerializer.Serialize();
 
 			this.olvFieldSetup.RefreshObject(iCatcherEdited);
 			// Any updating will have been down in the SelectedIndexChanged event handler
@@ -144,23 +147,23 @@ namespace Sq1.Widgets.CsvImporter {
 						+ "] or this.ImportSourceSymbolDetected[" + this.symbolDetectedInCsv + "] should not be empty");
 				}
 
-				if (this.targetSymbolClicked != this.BarsParsed.Symbol) {
-					this.BarsParsed = new Bars(symbolClickedThenDetected, this.BarsParsed.ScaleInterval, this.BarsParsed.ReasonToExist);
+				if (this.targetSymbolClicked != this.barsParsed.Symbol) {
+					this.barsParsed = new Bars(symbolClickedThenDetected, this.barsParsed.ScaleInterval, this.barsParsed.ReasonToExist);
 					foreach (CsvBar csvBar in this.csvParsedByFormat) {
-						this.BarsParsed.BarCreateAppendBindStatic(csvBar.DateTime, csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume);
+						this.barsParsed.BarCreateAppendBindStatic(csvBar.DateTime, csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume);
 					}
 				}
 				bool overwrote = true;
-				if (this.targetDataSource.Symbols.Contains(this.BarsParsed.Symbol) == false) {
-					Assembler.InstanceInitialized.RepositoryJsonDataSources.SymbolAdd(this.targetDataSource, this.BarsParsed.Symbol);
+				if (this.targetDataSource.Symbols.Contains(this.barsParsed.Symbol) == false) {
+					Assembler.InstanceInitialized.RepositoryJsonDataSources.SymbolAdd(this.targetDataSource, this.barsParsed.Symbol);
 					overwrote = false;
 				}
 				string millisElapsed;
-				int barsSaved = this.targetDataSource.BarsSave(this.BarsParsed, out millisElapsed);
+				int barsSaved = this.targetDataSource.BarsSave(this.barsParsed, out millisElapsed);
 				string msg = overwrote ? "FullyReplaced" : "Imported";
 				msg += " [" + barsSaved + "]bars " + millisElapsed;
 				msg += " into DataSource[" + this.targetDataSource.Name + "]";
-				msg += " to Symbol[" + this.BarsParsed.Symbol + "]";
+				msg += " to Symbol[" + this.barsParsed.Symbol + "]";
 				this.btnImport.Text = msg;
 				this.btnImport.Enabled = true;
 				this.btnImport.BackColor = SystemColors.Control;
@@ -172,19 +175,19 @@ namespace Sq1.Widgets.CsvImporter {
 		}
 
 		void mniltbCsvSeparator_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
-			this.dataSnapshot.CsvDelimiter = e.StringUserTyped;
-			this.dataSnapshotSerializer.Serialize();
+			this.csvDataSnapshot.CsvDelimiter = e.StringUserTyped;
+			this.csvDataSnapshotSerializer.Serialize();
 			this.stepsAllparseFromDataSnapshot();
 		}
-		void dataSourcesTree1_OnDataSourceSelected(object sender, DataSourceEventArgs e) {
+		void dataSourcesTree_OnDataSourceSelected(object sender, DataSourceEventArgs e) {
 			this.targetDataSource = e.DataSource;
 			this.targetSymbolClicked = null;
-			this.syncImportButton();
+			this.populateImportButton();
 		}
-		void dataSourcesTree1_OnSymbolSelected(object sender, DataSourceSymbolEventArgs e) {
+		void dataSourcesTree_OnSymbolSelected(object sender, DataSourceSymbolEventArgs e) {
 			this.targetDataSource = e.DataSource;
 			this.targetSymbolClicked = e.Symbol;
-			this.syncImportButton();
+			this.populateImportButton();
 		}
 		void lnkDownload_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
 			//http://stackoverflow.com/questions/4261234/hyperlink-a-email-address-using-linklabel-in-c-sharp
@@ -192,6 +195,10 @@ namespace Sq1.Widgets.CsvImporter {
 			this.lnkDownload.LinkVisited = true;
 			string target = e.Link.LinkData as string;
 			System.Diagnostics.Process.Start(target);
+		}
+		void rangeBar_OnValueMaxChanged(object sender, RangeArgs<DateTime> e) {
+			BarDataRange userDragged_bBarDataRange = new BarDataRange(e.ValueMin, e.ValueMax);
+			this.bars_selectRange_flushToGui(userDragged_bBarDataRange);
 		}
 	}
 }

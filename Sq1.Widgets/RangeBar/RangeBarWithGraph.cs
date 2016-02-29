@@ -55,6 +55,9 @@ namespace Sq1.Widgets.RangeBar {
 			//NON_GENERIC_CHILD_SHOULD_CREATE_BUILDER
 			//this.GraphBuilder = new AsyncGraphBuilder<T>(this);
 		}
+		public void RebuildGraph_inNewThread() {
+			this.GraphBuilder.BuildGraph_inNewThread_andInvalidateDelayed();
+		}
 		protected override void OnResize(EventArgs e) {
 			try {
 				this.ResizeInitializedRebuildGraphVeryConditional();
@@ -89,13 +92,13 @@ namespace Sq1.Widgets.RangeBar {
 				return;
 			}
 			#endregion
-			this.GraphBuilder.BuildGraphInNewThreadAndInvalidateDelayed();
+			this.GraphBuilder.BuildGraph_inNewThread_andInvalidateDelayed();
 		}
 		protected override void DrawGraph(Graphics g) {
 			if (base.DesignMode) return;
 			if (this.GraphBuilder == null) return;
 			if (this.GraphBuilder.HasDataToDraw && this.GraphBuilder.ValueYinvertedForGraphicsWidth == null) {
-				this.GraphBuilder.BuildGraphInNewThreadAndInvalidate();
+				this.GraphBuilder.BuildGraph_inNewThread_andInvalidate();
 				return;
 			}
 			if (this.GraphBuilder.IsCalculating) {

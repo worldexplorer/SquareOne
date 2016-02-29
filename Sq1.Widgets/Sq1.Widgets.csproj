@@ -76,6 +76,10 @@
     <Compile Include="CsvImporter\CsvImporterControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="CsvImporter\CsvImporterControl.Customizer.cs">
+      <DependentUpon>CsvImporterControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="CsvImporter\CsvImporterControl.Designer.cs">
       <DependentUpon>CsvImporterControl.cs</DependentUpon>
     </Compile>
@@ -125,6 +129,7 @@
       <DependentUpon>MarketInfoEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="DataSourceTree\ChartSelectedEventArgs.cs" />
     <Compile Include="DataSourceTree\DataSourcesTreeControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -188,6 +193,26 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Execution\ExecutionTreeDataSnapshot.cs" />
+    <Compile Include="FuturesMerger\BarsEditorUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FuturesMerger\BarsEditorUserControl.Customizer.cs">
+      <DependentUpon>BarsEditorUserControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FuturesMerger\BarsEditorUserControl.Designer.cs">
+      <DependentUpon>BarsEditorUserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FuturesMerger\BarsEditorUserControl.EventConsumer.cs">
+      <DependentUpon>BarsEditorUserControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FuturesMerger\FuturesMergerUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FuturesMerger\FuturesMergerUserControl.Designer.cs">
+      <DependentUpon>FuturesMergerUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="LabeledTextBox\LabeledTextBoxControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -240,6 +265,14 @@
     </Compile>
     <Compile Include="Correlation\OneParameterControl.EventGenerator.cs">
       <DependentUpon>OneParameterControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="RangeBar\RangeBar.EventConsumer.cs">
+      <DependentUpon>RangeBar.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="RangeBar\RangeBar.EventGenerator.cs">
+      <DependentUpon>RangeBar.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Sequencing\SequencerControl.cs">
@@ -451,6 +484,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Execution\ExecutionTreeControl.resx">
       <DependentUpon>ExecutionTreeControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FuturesMerger\BarsEditorUserControl.resx">
+      <DependentUpon>BarsEditorUserControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FuturesMerger\FuturesMergerUserControl.resx">
+      <DependentUpon>FuturesMergerUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LabeledTextBox\LabeledTextBoxControl.resx">
       <DependentUpon>LabeledTextBoxControl.cs</DependentUpon>

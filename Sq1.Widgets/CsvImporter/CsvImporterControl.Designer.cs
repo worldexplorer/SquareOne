@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Sq1.Widgets.DataSourcesTree;
 
 namespace Sq1.Widgets.CsvImporter {
@@ -28,12 +29,14 @@ namespace Sq1.Widgets.CsvImporter {
 			this.splitContainer5 = new System.Windows.Forms.SplitContainer();
 			this.grpPreviewParsedByFormat = new System.Windows.Forms.GroupBox();
 			this.olvParsedByFormat = new BrightIdeasSoftware.FastObjectListView();
-			this.olvColumnDate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnOpen = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnHigh = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnLow = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnClose = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnVolume = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcUnalignable = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcSerno = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcDateTime = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcOpen = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcHigh = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcLow = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcClose = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcVolume = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.grpImportSettings = new System.Windows.Forms.GroupBox();
 			this.olvFieldSetup = new BrightIdeasSoftware.FastObjectListView();
 			this.columnHeader5 = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -42,9 +45,9 @@ namespace Sq1.Widgets.CsvImporter {
 			this.columnHeader8 = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.btnImport = new System.Windows.Forms.Button();
 			this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-			this.importSourceFileBrowser1 = new Sq1.Widgets.CsvImporter.ImportSourceFileBrowser();
+			this.importSourceFileBrowser = new Sq1.Widgets.CsvImporter.ImportSourceFileBrowser();
 			this.mniltbCsvSeparator = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
-			this.rangeBarDateTime1 = new Sq1.Widgets.RangeBar.RangeBarDateTime();
+			this.rangeBar = new Sq1.Widgets.RangeBar.RangeBarDateTime();
 			this.dataSourcesTree = new Sq1.Widgets.DataSourcesTree.DataSourcesTreeControl();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -80,23 +83,23 @@ namespace Sq1.Widgets.CsvImporter {
 			// splitContainer1.Panel1
 			// 
 			this.splitContainer1.Panel1.Controls.Add(this.lnkDownload);
-			this.splitContainer1.Panel1.Controls.Add(this.importSourceFileBrowser1);
+			this.splitContainer1.Panel1.Controls.Add(this.importSourceFileBrowser);
 			// 
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-			this.splitContainer1.Size = new System.Drawing.Size(657, 462);
-			this.splitContainer1.SplitterDistance = 170;
+			this.splitContainer1.Size = new System.Drawing.Size(699, 462);
+			this.splitContainer1.SplitterDistance = 136;
 			this.splitContainer1.TabIndex = 0;
 			// 
 			// lnkDownload
 			// 
-			this.lnkDownload.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.lnkDownload.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.lnkDownload.BackColor = System.Drawing.SystemColors.ControlLight;
 			this.lnkDownload.Location = new System.Drawing.Point(0, 441);
 			this.lnkDownload.Name = "lnkDownload";
-			this.lnkDownload.Size = new System.Drawing.Size(170, 21);
+			this.lnkDownload.Size = new System.Drawing.Size(136, 21);
 			this.lnkDownload.TabIndex = 1;
 			this.lnkDownload.TabStop = true;
 			this.lnkDownload.Text = "Download";
@@ -118,7 +121,7 @@ namespace Sq1.Widgets.CsvImporter {
 			// splitContainer2.Panel2
 			// 
 			this.splitContainer2.Panel2.Controls.Add(this.splitContainer5);
-			this.splitContainer2.Size = new System.Drawing.Size(483, 462);
+			this.splitContainer2.Size = new System.Drawing.Size(559, 462);
 			this.splitContainer2.SplitterDistance = 130;
 			this.splitContainer2.TabIndex = 26;
 			// 
@@ -129,7 +132,7 @@ namespace Sq1.Widgets.CsvImporter {
 			this.grpPreviewParsedRaw.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grpPreviewParsedRaw.Location = new System.Drawing.Point(0, 0);
 			this.grpPreviewParsedRaw.Name = "grpPreviewParsedRaw";
-			this.grpPreviewParsedRaw.Size = new System.Drawing.Size(483, 130);
+			this.grpPreviewParsedRaw.Size = new System.Drawing.Size(559, 130);
 			this.grpPreviewParsedRaw.TabIndex = 25;
 			this.grpPreviewParsedRaw.TabStop = false;
 			this.grpPreviewParsedRaw.Text = "Raw CSV | Select File in Filesystem in Left Panel";
@@ -137,25 +140,38 @@ namespace Sq1.Widgets.CsvImporter {
 			// olvCsvParsedRaw
 			// 
 			this.olvCsvParsedRaw.Activation = System.Windows.Forms.ItemActivation.OneClick;
+			this.olvCsvParsedRaw.AllColumns.Add(this.columnHeader1);
+			this.olvCsvParsedRaw.AllColumns.Add(this.columnHeader2);
+			this.olvCsvParsedRaw.AllColumns.Add(this.columnHeader3);
+			this.olvCsvParsedRaw.AllColumns.Add(this.columnHeader4);
+			this.olvCsvParsedRaw.AllowColumnReorder = true;
 			this.olvCsvParsedRaw.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.olvCsvParsedRaw.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
+			this.olvCsvParsedRaw.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.DoubleClick;
 			this.olvCsvParsedRaw.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3,
             this.columnHeader4});
 			this.olvCsvParsedRaw.ContextMenuStrip = this.ctxRaw;
+			this.olvCsvParsedRaw.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvCsvParsedRaw.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olvCsvParsedRaw.EmptyListMsgFont = new System.Drawing.Font("Consolas", 9.75F);
-			this.olvCsvParsedRaw.FullRowSelect = true;
-			this.olvCsvParsedRaw.GridLines = true;
 			this.olvCsvParsedRaw.HasCollapsibleGroups = false;
+			this.olvCsvParsedRaw.IncludeColumnHeadersInCopy = true;
 			this.olvCsvParsedRaw.Location = new System.Drawing.Point(3, 16);
 			this.olvCsvParsedRaw.Name = "olvCsvParsedRaw";
+			this.olvCsvParsedRaw.ShowCommandMenuOnRightClick = true;
 			this.olvCsvParsedRaw.ShowGroups = false;
-			this.olvCsvParsedRaw.Size = new System.Drawing.Size(477, 111);
+			this.olvCsvParsedRaw.Size = new System.Drawing.Size(553, 111);
 			this.olvCsvParsedRaw.TabIndex = 0;
+			this.olvCsvParsedRaw.TintSortColumn = true;
 			this.olvCsvParsedRaw.UseCompatibleStateImageBehavior = false;
+			this.olvCsvParsedRaw.UseExplorerTheme = true;
+			this.olvCsvParsedRaw.UseFilterIndicator = true;
+			this.olvCsvParsedRaw.UseFiltering = true;
+			this.olvCsvParsedRaw.UseHotItem = true;
+			this.olvCsvParsedRaw.UseTranslucentHotItem = true;
+			this.olvCsvParsedRaw.UseTranslucentSelection = true;
 			this.olvCsvParsedRaw.View = System.Windows.Forms.View.Details;
 			this.olvCsvParsedRaw.VirtualMode = true;
 			this.olvCsvParsedRaw.DoubleClick += new System.EventHandler(this.csvPreviewParsedRaw_DoubleClick);
@@ -166,12 +182,12 @@ namespace Sq1.Widgets.CsvImporter {
             this.mniltbCsvSeparator,
             this.mniEdit});
 			this.ctxRaw.Name = "ctxRaw";
-			this.ctxRaw.Size = new System.Drawing.Size(239, 50);
+			this.ctxRaw.Size = new System.Drawing.Size(181, 50);
 			// 
 			// mniEdit
 			// 
 			this.mniEdit.Name = "mniEdit";
-			this.mniEdit.Size = new System.Drawing.Size(238, 22);
+			this.mniEdit.Size = new System.Drawing.Size(180, 22);
 			this.mniEdit.Text = "Edit";
 			this.mniEdit.Click += new System.EventHandler(this.mniEdit_Click);
 			// 
@@ -193,9 +209,9 @@ namespace Sq1.Widgets.CsvImporter {
 			// splitContainer5.Panel2
 			// 
 			this.splitContainer5.Panel2.BackColor = System.Drawing.SystemColors.Control;
-			this.splitContainer5.Panel2.Controls.Add(this.rangeBarDateTime1);
+			this.splitContainer5.Panel2.Controls.Add(this.rangeBar);
 			this.splitContainer5.Panel2.Controls.Add(this.btnImport);
-			this.splitContainer5.Size = new System.Drawing.Size(483, 328);
+			this.splitContainer5.Size = new System.Drawing.Size(559, 328);
 			this.splitContainer5.SplitterDistance = 247;
 			this.splitContainer5.TabIndex = 11;
 			// 
@@ -204,74 +220,111 @@ namespace Sq1.Widgets.CsvImporter {
 			this.grpPreviewParsedByFormat.BackColor = System.Drawing.SystemColors.Control;
 			this.grpPreviewParsedByFormat.Controls.Add(this.olvParsedByFormat);
 			this.grpPreviewParsedByFormat.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.grpPreviewParsedByFormat.Location = new System.Drawing.Point(0, 59);
+			this.grpPreviewParsedByFormat.Location = new System.Drawing.Point(0, 63);
 			this.grpPreviewParsedByFormat.Name = "grpPreviewParsedByFormat";
-			this.grpPreviewParsedByFormat.Size = new System.Drawing.Size(483, 188);
+			this.grpPreviewParsedByFormat.Size = new System.Drawing.Size(559, 184);
 			this.grpPreviewParsedByFormat.TabIndex = 30;
 			this.grpPreviewParsedByFormat.TabStop = false;
 			this.grpPreviewParsedByFormat.Text = "Parsed By Format | Symbol[]  ScaleInerval[] BarsParsed.Count[]";
 			// 
 			// olvParsedByFormat
 			// 
-			this.olvParsedByFormat.AutoArrange = false;
+			this.olvParsedByFormat.AllColumns.Add(this.olvcUnalignable);
+			this.olvParsedByFormat.AllColumns.Add(this.olvcSerno);
+			this.olvParsedByFormat.AllColumns.Add(this.olvcDateTime);
+			this.olvParsedByFormat.AllColumns.Add(this.olvcOpen);
+			this.olvParsedByFormat.AllColumns.Add(this.olvcHigh);
+			this.olvParsedByFormat.AllColumns.Add(this.olvcLow);
+			this.olvParsedByFormat.AllColumns.Add(this.olvcClose);
+			this.olvParsedByFormat.AllColumns.Add(this.olvcVolume);
+			this.olvParsedByFormat.AllowColumnReorder = true;
 			this.olvParsedByFormat.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.olvParsedByFormat.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
+			this.olvParsedByFormat.CellEditEnterChangesRows = true;
+			this.olvParsedByFormat.CellEditTabChangesRows = true;
 			this.olvParsedByFormat.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.olvColumnDate,
-            this.olvColumnOpen,
-            this.olvColumnHigh,
-            this.olvColumnLow,
-            this.olvColumnClose,
-            this.olvColumnVolume});
+            this.olvcUnalignable,
+            this.olvcSerno,
+            this.olvcDateTime,
+            this.olvcOpen,
+            this.olvcHigh,
+            this.olvcLow,
+            this.olvcClose,
+            this.olvcVolume});
+			this.olvParsedByFormat.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvParsedByFormat.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olvParsedByFormat.EmptyListMsgFont = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.olvParsedByFormat.FullRowSelect = true;
-			this.olvParsedByFormat.GridLines = true;
 			this.olvParsedByFormat.HasCollapsibleGroups = false;
 			this.olvParsedByFormat.Location = new System.Drawing.Point(3, 16);
 			this.olvParsedByFormat.Name = "olvParsedByFormat";
-			this.olvParsedByFormat.ShowGroups = false;
-			this.olvParsedByFormat.Size = new System.Drawing.Size(477, 169);
+			this.olvParsedByFormat.ShowCommandMenuOnRightClick = true;
+			this.olvParsedByFormat.ShowItemCountOnGroups = true;
+			this.olvParsedByFormat.Size = new System.Drawing.Size(553, 165);
 			this.olvParsedByFormat.TabIndex = 10;
+			this.olvParsedByFormat.TintSortColumn = true;
 			this.olvParsedByFormat.UseCompatibleStateImageBehavior = false;
+			this.olvParsedByFormat.UseExplorerTheme = true;
+			this.olvParsedByFormat.UseFilterIndicator = true;
+			this.olvParsedByFormat.UseFiltering = true;
+			this.olvParsedByFormat.UseHotItem = true;
+			this.olvParsedByFormat.UseTranslucentHotItem = true;
+			this.olvParsedByFormat.UseTranslucentSelection = true;
 			this.olvParsedByFormat.View = System.Windows.Forms.View.Details;
 			this.olvParsedByFormat.VirtualMode = true;
 			// 
-			// olvColumnDate
+			// olvcUnalignable
 			// 
-			this.olvColumnDate.AspectName = "DateTime";
-			this.olvColumnDate.AspectToStringFormat = "{0:yyyy-MMM-dd HH:mm:ss}";
-			this.olvColumnDate.Text = "DateTime";
-			this.olvColumnDate.Width = 120;
+			this.olvcUnalignable.Text = "unalignable";
+			this.olvcUnalignable.Width = 1;
 			// 
-			// olvColumnOpen
+			// olvcSerno
 			// 
-			this.olvColumnOpen.AspectName = "Open";
-			this.olvColumnOpen.Text = "Open";
-			this.olvColumnOpen.Width = 75;
+			this.olvcSerno.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcSerno.Text = "#";
+			this.olvcSerno.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcSerno.Width = 45;
 			// 
-			// olvColumnHigh
+			// olvcDateTime
 			// 
-			this.olvColumnHigh.AspectName = "High";
-			this.olvColumnHigh.Text = "High";
-			this.olvColumnHigh.Width = 75;
+			this.olvcDateTime.AspectToStringFormat = "{0:yyyy-MMM-dd HH:mm:ss}";
+			this.olvcDateTime.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcDateTime.Text = "DateTime";
+			this.olvcDateTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcDateTime.Width = 100;
 			// 
-			// olvColumnLow
+			// olvcOpen
 			// 
-			this.olvColumnLow.AspectName = "Low";
-			this.olvColumnLow.Text = "Low";
-			this.olvColumnLow.Width = 75;
+			this.olvcOpen.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcOpen.Text = "Open";
+			this.olvcOpen.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcOpen.Width = 75;
 			// 
-			// olvColumnClose
+			// olvcHigh
 			// 
-			this.olvColumnClose.AspectName = "Close";
-			this.olvColumnClose.Text = "Close";
-			this.olvColumnClose.Width = 75;
+			this.olvcHigh.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcHigh.Text = "High";
+			this.olvcHigh.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcHigh.Width = 75;
 			// 
-			// olvColumnVolume
+			// olvcLow
 			// 
-			this.olvColumnVolume.AspectName = "Volume";
-			this.olvColumnVolume.Text = "Volume";
+			this.olvcLow.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcLow.Text = "Low";
+			this.olvcLow.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcLow.Width = 75;
+			// 
+			// olvcClose
+			// 
+			this.olvcClose.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcClose.Text = "Close";
+			this.olvcClose.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcClose.Width = 75;
+			// 
+			// olvcVolume
+			// 
+			this.olvcVolume.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcVolume.Text = "Volume";
+			this.olvcVolume.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// grpImportSettings
 			// 
@@ -280,17 +333,21 @@ namespace Sq1.Widgets.CsvImporter {
 			this.grpImportSettings.Dock = System.Windows.Forms.DockStyle.Top;
 			this.grpImportSettings.Location = new System.Drawing.Point(0, 0);
 			this.grpImportSettings.Name = "grpImportSettings";
-			this.grpImportSettings.Size = new System.Drawing.Size(483, 59);
+			this.grpImportSettings.Size = new System.Drawing.Size(559, 63);
 			this.grpImportSettings.TabIndex = 28;
 			this.grpImportSettings.TabStop = false;
 			this.grpImportSettings.Text = "CSV Columns => DateTime, Open, High, Low, Close, Volume settings";
 			// 
 			// olvFieldSetup
 			// 
-			this.olvFieldSetup.Activation = System.Windows.Forms.ItemActivation.OneClick;
-			this.olvFieldSetup.AutoArrange = false;
+			this.olvFieldSetup.AllColumns.Add(this.columnHeader5);
+			this.olvFieldSetup.AllColumns.Add(this.columnHeader6);
+			this.olvFieldSetup.AllColumns.Add(this.columnHeader7);
+			this.olvFieldSetup.AllColumns.Add(this.columnHeader8);
 			this.olvFieldSetup.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.olvFieldSetup.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.SingleClick;
+			this.olvFieldSetup.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.DoubleClick;
+			this.olvFieldSetup.CellEditEnterChangesRows = true;
+			this.olvFieldSetup.CellEditTabChangesRows = true;
 			this.olvFieldSetup.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader5,
             this.columnHeader6,
@@ -302,11 +359,17 @@ namespace Sq1.Widgets.CsvImporter {
 			this.olvFieldSetup.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.olvFieldSetup.Location = new System.Drawing.Point(3, 16);
 			this.olvFieldSetup.Name = "olvFieldSetup";
-			this.olvFieldSetup.Scrollable = false;
+			this.olvFieldSetup.ShowCommandMenuOnRightClick = true;
 			this.olvFieldSetup.ShowGroups = false;
-			this.olvFieldSetup.Size = new System.Drawing.Size(477, 40);
+			this.olvFieldSetup.Size = new System.Drawing.Size(553, 44);
 			this.olvFieldSetup.TabIndex = 6;
+			this.olvFieldSetup.TintSortColumn = true;
 			this.olvFieldSetup.UseCompatibleStateImageBehavior = false;
+			this.olvFieldSetup.UseExplorerTheme = true;
+			this.olvFieldSetup.UseFiltering = true;
+			this.olvFieldSetup.UseHotItem = true;
+			this.olvFieldSetup.UseTranslucentHotItem = true;
+			this.olvFieldSetup.UseTranslucentSelection = true;
 			this.olvFieldSetup.View = System.Windows.Forms.View.Details;
 			this.olvFieldSetup.VirtualMode = true;
 			this.olvFieldSetup.CellEditFinishing += new BrightIdeasSoftware.CellEditEventHandler(this.olvFieldSetup_CellEditFinishing);
@@ -314,12 +377,12 @@ namespace Sq1.Widgets.CsvImporter {
 			// 
 			// btnImport
 			// 
-			this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.btnImport.Enabled = false;
 			this.btnImport.Location = new System.Drawing.Point(-1, 55);
 			this.btnImport.Name = "btnImport";
-			this.btnImport.Size = new System.Drawing.Size(484, 23);
+			this.btnImport.Size = new System.Drawing.Size(560, 23);
 			this.btnImport.TabIndex = 9;
 			this.btnImport.Text = "Map CSV columns to Date,Open,High,Low,Close,Volume";
 			this.btnImport.UseVisualStyleBackColor = true;
@@ -339,65 +402,68 @@ namespace Sq1.Widgets.CsvImporter {
 			// 
 			this.splitContainer3.Panel2.Controls.Add(this.dataSourcesTree);
 			this.splitContainer3.Size = new System.Drawing.Size(802, 462);
-			this.splitContainer3.SplitterDistance = 657;
+			this.splitContainer3.SplitterDistance = 699;
 			this.splitContainer3.TabIndex = 1;
 			// 
-			// importSourceFileBrowser1
+			// importSourceFileBrowser
 			// 
-			this.importSourceFileBrowser1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.importSourceFileBrowser1.BackColor = System.Drawing.SystemColors.Control;
-			this.importSourceFileBrowser1.Location = new System.Drawing.Point(0, 0);
-			this.importSourceFileBrowser1.Name = "importSourceFileBrowser1";
-			this.importSourceFileBrowser1.Size = new System.Drawing.Size(170, 440);
-			this.importSourceFileBrowser1.TabIndex = 0;
-			this.importSourceFileBrowser1.OnFileSelectedTryParse += new System.EventHandler<Sq1.Widgets.CsvImporter.ImportSourcePathInfo>(this.importSourceFileBrowser_OnFileSelectedTryParse);
-			this.importSourceFileBrowser1.OnDirectoryChanged += new System.EventHandler<Sq1.Widgets.CsvImporter.DirectoryInfoEventArgs>(this.importSourceFileBrowser_OnDirectoryChanged);
+			this.importSourceFileBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.importSourceFileBrowser.BackColor = System.Drawing.SystemColors.Control;
+			this.importSourceFileBrowser.Location = new System.Drawing.Point(0, 0);
+			this.importSourceFileBrowser.Name = "importSourceFileBrowser";
+			this.importSourceFileBrowser.Size = new System.Drawing.Size(136, 440);
+			this.importSourceFileBrowser.TabIndex = 0;
+			this.importSourceFileBrowser.OnFileSelectedTryParse += new System.EventHandler<Sq1.Widgets.CsvImporter.ImportSourcePathInfo>(this.importSourceFileBrowser_OnFileSelectedTryParse);
+			this.importSourceFileBrowser.OnDirectoryChanged += new System.EventHandler<Sq1.Widgets.CsvImporter.DirectoryInfoEventArgs>(this.importSourceFileBrowser_OnDirectoryChanged);
 			// 
 			// mniltbCsvSeparator
 			// 
 			this.mniltbCsvSeparator.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbCsvSeparator.InputFieldAlignedRight = false;
+			this.mniltbCsvSeparator.InputFieldBackColor = System.Drawing.SystemColors.Info;
 			this.mniltbCsvSeparator.InputFieldEditable = true;
+			this.mniltbCsvSeparator.InputFieldMultiline = true;
 			this.mniltbCsvSeparator.InputFieldOffsetX = 90;
 			this.mniltbCsvSeparator.InputFieldValue = ",";
 			this.mniltbCsvSeparator.InputFieldWidth = 20;
 			this.mniltbCsvSeparator.Name = "mniltbCsvSeparator";
-			this.mniltbCsvSeparator.Size = new System.Drawing.Size(178, 21);
-			this.mniltbCsvSeparator.TextLeft = "CSV Separator:";
+			this.mniltbCsvSeparator.OffsetTop = 0;
+			this.mniltbCsvSeparator.Size = new System.Drawing.Size(120, 21);
+			this.mniltbCsvSeparator.TextLeft = "CSV Separator";
 			this.mniltbCsvSeparator.TextLeftOffsetX = 0;
-			this.mniltbCsvSeparator.TextLeftWidth = 86;
+			this.mniltbCsvSeparator.TextLeftWidth = 83;
 			this.mniltbCsvSeparator.TextRed = false;
-			this.mniltbCsvSeparator.TextRight = "~= 121pips";
+			this.mniltbCsvSeparator.TextRight = "";
 			this.mniltbCsvSeparator.TextRightOffsetX = 113;
-			this.mniltbCsvSeparator.TextRightWidth = 68;
+			this.mniltbCsvSeparator.TextRightWidth = 4;
 			this.mniltbCsvSeparator.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCsvSeparator_UserTyped);
 			// 
-			// rangeBarDateTime1
+			// rangeBar
 			// 
-			this.rangeBarDateTime1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.rangeBarDateTime1.BackColor = System.Drawing.Color.AliceBlue;
-			this.rangeBarDateTime1.ColorBgOutsideMouseOver = System.Drawing.Color.LightBlue;
-			this.rangeBarDateTime1.ColorBgOutsideRange = System.Drawing.Color.LightSteelBlue;
-			this.rangeBarDateTime1.ColorFgGraph = System.Drawing.Color.DarkSalmon;
-			this.rangeBarDateTime1.Enabled = false;
-			this.rangeBarDateTime1.ForeColor = System.Drawing.Color.Black;
-			this.rangeBarDateTime1.GraphMinHeightGoUnderLabels = 20F;
-			this.rangeBarDateTime1.GraphPenWidth = 1F;
-			this.rangeBarDateTime1.Location = new System.Drawing.Point(0, 2);
-			this.rangeBarDateTime1.Name = "rangeBarDateTime1";
-			this.rangeBarDateTime1.RangeMax = new System.DateTime(2013, 5, 12, 0, 0, 0, 0);
-			this.rangeBarDateTime1.RangeMin = new System.DateTime(2010, 5, 12, 0, 0, 0, 0);
-			this.rangeBarDateTime1.RangeScaleLabelDistancePx = 0;
-			this.rangeBarDateTime1.ScalePenWidth = 1F;
-			this.rangeBarDateTime1.Size = new System.Drawing.Size(483, 47);
-			this.rangeBarDateTime1.TabIndex = 10;
-			this.rangeBarDateTime1.ValueFormat = "dd-MMM-yy";
-			this.rangeBarDateTime1.ValueMax = new System.DateTime(2012, 5, 12, 0, 0, 0, 0);
-			this.rangeBarDateTime1.ValueMin = new System.DateTime(2011, 5, 12, 0, 0, 0, 0);
+			this.rangeBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.rangeBar.BackColor = System.Drawing.Color.AliceBlue;
+			this.rangeBar.ColorBgOutsideMouseOver = System.Drawing.Color.LightBlue;
+			this.rangeBar.ColorBgOutsideRange = System.Drawing.Color.LightSteelBlue;
+			this.rangeBar.ColorFgGraph = System.Drawing.Color.DarkSalmon;
+			this.rangeBar.Enabled = false;
+			this.rangeBar.ForeColor = System.Drawing.Color.Black;
+			this.rangeBar.GraphMinHeightGoUnderLabels = 20F;
+			this.rangeBar.GraphPenWidth = 1F;
+			this.rangeBar.Location = new System.Drawing.Point(0, 0);
+			this.rangeBar.Name = "rangeBar";
+			this.rangeBar.RangeMax = new System.DateTime(2013, 5, 12, 0, 0, 0, 0);
+			this.rangeBar.RangeMin = new System.DateTime(2010, 5, 12, 0, 0, 0, 0);
+			this.rangeBar.RangeScaleLabelDistancePx = 0;
+			this.rangeBar.ScalePenWidth = 1F;
+			this.rangeBar.Size = new System.Drawing.Size(559, 56);
+			this.rangeBar.TabIndex = 10;
+			this.rangeBar.ValueFormat = "dd-MMM-yy";
+			this.rangeBar.ValueMax = new System.DateTime(2012, 5, 12, 0, 0, 0, 0);
+			this.rangeBar.ValueMin = new System.DateTime(2011, 5, 12, 0, 0, 0, 0);
 			// 
 			// dataSourcesTree
 			// 
@@ -406,11 +472,11 @@ namespace Sq1.Widgets.CsvImporter {
 			this.dataSourcesTree.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dataSourcesTree.Location = new System.Drawing.Point(0, 0);
 			this.dataSourcesTree.Name = "dataSourcesTree";
-			this.dataSourcesTree.Size = new System.Drawing.Size(141, 462);
+			this.dataSourcesTree.Size = new System.Drawing.Size(99, 462);
 			this.dataSourcesTree.TabIndex = 0;
 			this.dataSourcesTree.TreeFirstColumnNameText = "Name";
-			this.dataSourcesTree.OnDataSourceSelected += new System.EventHandler<Sq1.Core.DataFeed.DataSourceEventArgs>(this.dataSourcesTree1_OnDataSourceSelected);
-			this.dataSourcesTree.OnSymbolSelected += new System.EventHandler<Sq1.Core.DataFeed.DataSourceSymbolEventArgs>(this.dataSourcesTree1_OnSymbolSelected);
+			this.dataSourcesTree.OnDataSourceSelected += new System.EventHandler<Sq1.Core.DataFeed.DataSourceEventArgs>(this.dataSourcesTree_OnDataSourceSelected);
+			this.dataSourcesTree.OnSymbolSelected += new System.EventHandler<Sq1.Core.DataFeed.DataSourceSymbolEventArgs>(this.dataSourcesTree_OnSymbolSelected);
 			// 
 			// CsvImporterControl
 			// 
@@ -450,7 +516,7 @@ namespace Sq1.Widgets.CsvImporter {
 		private System.Windows.Forms.ToolStripMenuItem mniEdit;
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbCsvSeparator;
 		private System.Windows.Forms.ContextMenuStrip ctxRaw;
-		private Sq1.Widgets.CsvImporter.ImportSourceFileBrowser importSourceFileBrowser1;
+		private Sq1.Widgets.CsvImporter.ImportSourceFileBrowser importSourceFileBrowser;
 		private BrightIdeasSoftware.OLVColumn columnHeader8;
 		private BrightIdeasSoftware.OLVColumn columnHeader7;
 		private BrightIdeasSoftware.OLVColumn columnHeader6;
@@ -469,14 +535,16 @@ namespace Sq1.Widgets.CsvImporter {
 		private System.Windows.Forms.SplitContainer splitContainer5;
 		private System.Windows.Forms.GroupBox grpPreviewParsedByFormat;
 		private BrightIdeasSoftware.FastObjectListView olvParsedByFormat;
-		private BrightIdeasSoftware.OLVColumn olvColumnDate;
-		private BrightIdeasSoftware.OLVColumn olvColumnOpen;
-		private BrightIdeasSoftware.OLVColumn olvColumnHigh;
-		private BrightIdeasSoftware.OLVColumn olvColumnLow;
-		private BrightIdeasSoftware.OLVColumn olvColumnClose;
-		private BrightIdeasSoftware.OLVColumn olvColumnVolume;
-		private RangeBar.RangeBarDateTime rangeBarDateTime1;
+		private BrightIdeasSoftware.OLVColumn olvcDateTime;
+		private BrightIdeasSoftware.OLVColumn olvcOpen;
+		private BrightIdeasSoftware.OLVColumn olvcHigh;
+		private BrightIdeasSoftware.OLVColumn olvcLow;
+		private BrightIdeasSoftware.OLVColumn olvcClose;
+		private BrightIdeasSoftware.OLVColumn olvcVolume;
+		private RangeBar.RangeBarDateTime rangeBar;
 		private System.Windows.Forms.Button btnImport;
 		private DataSourcesTreeControl dataSourcesTree;
+		private BrightIdeasSoftware.OLVColumn olvcUnalignable;
+		private BrightIdeasSoftware.OLVColumn olvcSerno;
 	}
 }

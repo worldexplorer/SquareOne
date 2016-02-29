@@ -45,7 +45,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public override void ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated_WILL_BE_NULL) {
 			string millisSavingTook;
-			int barsSaved = this.dataSource.BarAppendOrReplaceLast(barLastFormed, out millisSavingTook);
+			int barsSaved = this.dataSource.BarAppend_orReplaceLast(barLastFormed, out millisSavingTook);
 			string msg = millisSavingTook + "; DataSource[" + this.dataSource.Name + "] received barLastFormed[" + barLastFormed + "] from streaming";
 		}
 		#endregion
@@ -75,7 +75,7 @@ namespace Sq1.Core.Streaming {
 			
 			//lastQuoteReceived.SetParentBarStreaming(quoteConsumer.ConsumerBarsToAppendInto.BarStreaming);
 
-			int barsSaved = this.dataSource.BarAppendOrReplaceLast(quote.ParentBarStreaming, out millisElapsed);
+			int barsSaved = this.dataSource.BarAppend_orReplaceLast(quote.ParentBarStreaming, out millisElapsed);
 
 			msig = " //StreamingSolidifier.replaceStreamingBar(" + quote.ParentBarStreaming.Close + ")";
 			string msg = millisElapsed

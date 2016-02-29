@@ -5,6 +5,7 @@ using System.Windows.Forms;
 
 using WeifenLuo.WinFormsUI.Docking;
 using Sq1.Core;
+using System.Collections.Generic;
 
 namespace Sq1.Widgets {
 	public class DockContentImproved : DockContent {
@@ -104,7 +105,38 @@ namespace Sq1.Widgets {
 			this.Show(dockPanel, DockState.Document);
 		}
 
-		public void ShowOnTopOf(DockContentImproved existingFormThatIWillCover) {
+
+		Dictionary <DockState, List<DockPane>> panesByDockState(DockPanel dockPanel) {
+			Dictionary <DockState, List<DockPane>> panesByDockState = new Dictionary<DockState, List<DockPane>>();
+			foreach (DockPane eachPane in dockPanel.Panes) {
+				if (panesByDockState.ContainsKey(eachPane.DockState) == false) {
+					panesByDockState.Add(eachPane.DockState, new List<DockPane>());
+				}
+				List<DockPane> panesForMyDockState = panesByDockState[eachPane.DockState];
+				panesForMyDockState.Add(eachPane);
+			}
+			return panesByDockState;
+		}
+		public void ShowStackedHinted(DockPanel dockPanel) {
+			DockPane targetPane_firstContent = null;
+
+			Dictionary <DockState, List<DockPane>> panesByDockState = this.panesByDockState(dockPanel);
+			if (panesByDockState.ContainsKey(base.ShowHint) == false) {
+				base.Show(this);
+				return;
+			}
+			List<DockPane> panesForMyDockState = panesByDockState[base.ShowHint];
+			targetPane_firstContent = panesForMyDockState[0];
+
+			base.Show(dockPanel);
+
+			int tabToTheLeft = 0;
+			int tabToTheRight = -1;
+			base.DockTo(targetPane_firstContent, DockStyle.Fill, tabToTheLeft);
+	
+			base.Activate();
+		}
+		public void ShowOnTopOf(DockContent existingFormThatIWillCover) {
 			//existingFormThatIWillCover.Show(this);
 			//base.Show(this.DockHandler.Pane, existingFormThatIWillCover);
 			if (existingFormThatIWillCover.DockPanel == null) return;
@@ -115,7 +147,7 @@ namespace Sq1.Widgets {
 				//var notParent1 = base.Pane;
 				//var notParent2 = base.PanelPane;
 				//var notParent3 = this.DockHandler.PreviousActive;
-				var parent = this.DockHandler.PreviousActive.DockHandler.Pane;
+				DockPane parent = this.DockHandler.PreviousActive.DockHandler.Pane;
 				//var dockedRight = base.DockPanel.Panes[4]; 
 				//var whichPaneIsDockedRight = base.DockPanel;	// 14 panes "under" 14 forms open and docked everywhere
 				int tabToTheLeft = 0;
@@ -128,12 +160,12 @@ namespace Sq1.Widgets {
 				base.Activate();
 			}
 		}
-		public void ShowOnTopOfMe(DockContentImproved willCoverMe) {
-			//base.Show(willCoverMe.DockHandler.Pane, this);
-			willCoverMe.Show(this.DockPanel, this.DockState);
-			willCoverMe.DockTo(base.DockPanel.Panes[0], DockStyle.Fill, 0);
-			//willCoverMe.Activate();
-		}
+		//public void ShowOnTopOfMe(DockContentImproved willCoverMe) {
+		//    //base.Show(willCoverMe.DockHandler.Pane, this);
+		//    willCoverMe.Show(this.DockPanel, this.DockState);
+		//    willCoverMe.DockTo(base.DockPanel.Panes[0], DockStyle.Fill, 0);
+		//    //willCoverMe.Activate();
+		//}
 		
 		#region taken from Exceptions, TODO use variables from this class (replace first steps of explorations with DockContentImproved's methods)
 		public void ShowPopupSwitchToGuiThreadRunDelegateInIt(Delegate runInGuiThread = null) {

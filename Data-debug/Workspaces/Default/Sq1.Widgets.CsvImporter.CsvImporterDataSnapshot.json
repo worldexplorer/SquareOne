@@ -1,0 +1,129 @@
+{
+  "$type": "Sq1.Widgets.CsvImporter.CsvImporterDataSnapshot, Sq1.Widgets",
+  "DownloadButtonURL": "http://www.finam.ru/analysis/profile0000300007/",
+  "PathCsv": "C:\\SquareOne\\_finam",
+  "FileSelected": "SPFB.RTS-3.16_151201_160225.txt",
+  "fieldSetupCurrentName": "Default",
+  "FieldSetupsByName": {
+    "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Widgets.CsvImporter.FieldSetup, Sq1.Widgets]], mscorlib",
+    "Default": [
+      {
+        "$type": "Sq1.Widgets.CsvImporter.ColumnCatcher, Sq1.Widgets",
+        "ColumnSerno": 0,
+        "Parser": {
+          "$type": "Sq1.Widgets.CsvImporter.CsvTypeParser, Sq1.Widgets",
+          "CsvType": 1,
+          "CsvTypeFormat": ""
+        }
+      },
+      {
+        "$type": "Sq1.Widgets.CsvImporter.ColumnCatcher, Sq1.Widgets",
+        "ColumnSerno": 1,
+        "Parser": {
+          "$type": "Sq1.Widgets.CsvImporter.CsvTypeParser, Sq1.Widgets",
+          "CsvType": 10,
+          "CsvTypeFormat": ""
+        }
+      },
+      {
+        "$type": "Sq1.Widgets.CsvImporter.ColumnCatcher, Sq1.Widgets",
+        "ColumnSerno": 2,
+        "Parser": {
+          "$type": "Sq1.Widgets.CsvImporter.CsvTypeParser, Sq1.Widgets",
+          "CsvType": 3,
+          "CsvTypeFormat": "yyyyMMdd"
+        }
+      },
+      {
+        "$type": "Sq1.Widgets.CsvImporter.ColumnCatcher, Sq1.Widgets",
+        "ColumnSerno": 3,
+        "Parser": {
+          "$type": "Sq1.Widgets.CsvImporter.CsvTypeParser, Sq1.Widgets",
+          "CsvType": 4,
+          "CsvTypeFormat": "HHmmss"
+        }
+      },
+      {
+        "$type": "Sq1.Widgets.CsvImporter.ColumnCatcher, Sq1.Widgets",
+        "ColumnSerno": 4,
+        "Parser": {
+          "$type": "Sq1.Widgets.CsvImporter.CsvTypeParser, Sq1.Widgets",
+          "CsvType": 5,
+          "CsvTypeFormat": ""
+        }
+      },
+      {
+        "$type": "Sq1.Widgets.CsvImporter.ColumnCatcher, Sq1.Widgets",
+        "ColumnSerno": 5,
+        "Parser": {
+          "$type": "Sq1.Widgets.CsvImporter.CsvTypeParser, Sq1.Widgets",
+          "CsvType": 6,
+          "CsvTypeFormat": ""
+        }
+      },
+      {
+        "$type": "Sq1.Widgets.CsvImporter.ColumnCatcher, Sq1.Widgets",
+        "ColumnSerno": 6,
+        "Parser": {
+          "$type": "Sq1.Widgets.CsvImporter.CsvTypeParser, Sq1.Widgets",
+          "CsvType": 7,
+          "CsvTypeFormat": ""
+        }
+      },
+      {
+        "$type": "Sq1.Widgets.CsvImporter.ColumnCatcher, Sq1.Widgets",
+        "ColumnSerno": 7,
+        "Parser": {
+          "$type": "Sq1.Widgets.CsvImporter.CsvTypeParser, Sq1.Widgets",
+          "CsvType": 8,
+          "CsvTypeFormat": ""
+        }
+      },
+      {
+        "$type": "Sq1.Widgets.CsvImporter.ColumnCatcher, Sq1.Widgets",
+        "ColumnSerno": 8,
+        "Parser": {
+          "$type": "Sq1.Widgets.CsvImporter.CsvTypeParser, Sq1.Widgets",
+          "CsvType": 9,
+          "CsvTypeFormat": ""
+        }
+      }
+    ]
+  },
+  "CsvFieldTypeFormatsAvailable": {
+    "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib]], mscorlib",
+    "Open,High,Low,Close,Volume": [
+      "",
+      "#,###.##",
+      "#.###,##"
+    ],
+    "Date": [
+      "<TRY_ALL>",
+      "d",
+      "D",
+      "d/M/yyyy",
+      "dd/MM/yy",
+      "dd/MM/yyyy",
+      "MM-dd-yy",
+      "yyyyMMdd",
+      "yyyy-MM-dd",
+      "yyyy-MMM-dd"
+    ],
+    "Time": [
+      "<TRY_ALL>",
+      "h:mm tt",
+      "h:mm tt",
+      "h:mm:ss tt",
+      "HH':'mm':'ss 'GMT'",
+      "HH':'mm':'ss'Z'",
+      "HHmmss",
+      "hmmss",
+      "t",
+      "T",
+      "'T'HH':'mm':'ss",
+      "THHmmssZ"
+    ]
+  },
+  "CsvDelimiter": ",",
+  "FieldSetupCurrentName": "Default"
+}

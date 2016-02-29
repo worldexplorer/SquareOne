@@ -54,7 +54,7 @@ namespace Sq1.Widgets.RangeBar {
 			//DOESNT_HELP_TO_DRAW_FIRST_TIME_AFTER_INITIALIZED this.Invalidate();
 		}
 
-		public void Initialize(BarsUnscaled barsAllAvailable, BarsUnscaled barsActivated = null) {
+		public void Initialize(BarsUnscaled barsAllAvailable, BarsUnscaled barsActivated = null, bool triggerRebuildGraph = true) {
 			if (barsActivated == null) barsActivated = barsAllAvailable; 
 			if (barsAllAvailable.BarFirst == null) {
 				string msg = "barsAllAvailable.FirstStaticBar=null; barsAllAvailable[" + barsAllAvailable + "]";
@@ -80,8 +80,9 @@ namespace Sq1.Widgets.RangeBar {
 			base.ValueMax = lastBarActivated;
 
 			base.GraphBuilder.Initialize(barsAllAvailable);
-			//DOESNT_HELP_TO_DRAW_FIRST_TIME_AFTER_INITIALIZED this.Invalidate();
+			//DOESNT_HELP_TO_DRAW_FIRST_TIME_AFTER_INITIALIZED base.Invalidate(); base.Refresh();
+			if (triggerRebuildGraph == false) return;
+			this.RebuildGraph_inNewThread();
 		}
-
 	}
 }

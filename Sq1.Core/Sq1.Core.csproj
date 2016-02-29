@@ -443,6 +443,20 @@
     <Compile Include="Support\UserControlResizeable.Designer.cs">
       <DependentUpon>UserControlResizeable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Support\UserControlTitled.EventConsumer.cs">
+      <DependentUpon>UserControlTitled.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Support\UserControlTitled.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Support\UserControlTitled.Customizer.cs">
+      <DependentUpon>UserControlTitled.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Support\UserControlTitled.Designer.cs">
+      <DependentUpon>UserControlTitled.cs</DependentUpon>
+    </Compile>
     <Compile Include="Support\WindowsFormsUtils.cs" />
     <Compile Include="DataTypes\Bar.cs" />
     <Compile Include="DataTypes\BarDataRange.cs" />
@@ -506,6 +520,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Support\UserControlResizeable.resx">
       <DependentUpon>UserControlResizeable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Support\UserControlTitled.resx">
+      <DependentUpon>UserControlTitled.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
