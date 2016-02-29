@@ -34,18 +34,18 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			}
 
 			try {
-				if (typeof(T) == typeof(string)) {
-					//valueWhenNotReceived_nullUnsafe = (T) columnDefinition.ValueWhenNotReceived;
-				} else if (typeof(T) == typeof(double)) {
-					if (double.IsNaN(columnDefinition.ValueWhenNotReceived)) {
-						valueWhenNotReceived_nullUnsafe = double.NaN;
-					}
-				} else if (typeof(T) == typeof(DateTime)) {
-					if (double.IsNaN(columnDefinition.ValueWhenNotReceived == DateTime.MinValue) {
-					valueWhenNotReceived_nullUnsafe = (T) columnDefinition.ValueWhenNotReceived;
-				} else {
-					valueWhenNotReceived_nullUnsafe = (T) columnDefinition.ValueWhenNotReceived;
-				}
+				//if (typeof(T) == typeof(string)) {
+				//    //valueWhenNotReceived_nullUnsafe = (T) columnDefinition.ValueWhenNotReceived;
+				//} else if (typeof(T) == typeof(double)) {
+				//    if (double.IsNaN(columnDefinition.ValueWhenNotReceived)) {
+				//        valueWhenNotReceived_nullUnsafe = double.NaN;
+				//    }
+				//} else if (typeof(T) == typeof(DateTime)) {
+				//    if (double.IsNaN(columnDefinition.ValueWhenNotReceived == DateTime.MinValue) {
+				//    valueWhenNotReceived_nullUnsafe = (T) columnDefinition.ValueWhenNotReceived;
+				//} else {
+				//    valueWhenNotReceived_nullUnsafe = (T) columnDefinition.ValueWhenNotReceived;
+				//}
 				if (valueWhenNotReceived_nullUnsafe == null) {
 					string msg = "FAILED_TO_CONVERT_columnDefinition.ValueWhenNotReceived_TO_TYPE_REQUESTED CHECK_TableDefinitions.cs_FOR_columnNameRequested";
 					throw new Exception(msg + msig);

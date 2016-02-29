@@ -40,37 +40,37 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 124
+        "PanelHeight": 60
       },
       "PanelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 130,
+        "Distance": 66,
         "SplitterHeight": 6,
-        "PanelHeight": 418
+        "PanelHeight": 303
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
       "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "panelLevel2": {
+      "multiSplitRowsVolumePrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 169
+        "PanelHeight": 1004
       },
-      "multiSplitRowsVolumePrice": {
+      "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 175,
+        "Distance": 1010,
         "SplitterHeight": 6,
-        "PanelHeight": 337
+        "PanelHeight": 169
       }
     },
     "Name": "Default",
     "StrategyName": "CHART_ONLY",
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 11,
+    "BarWidthIncludingPadding": 10,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -111,7 +111,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 490,
+    "ScrollPositionAtBarIndex": 459,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
