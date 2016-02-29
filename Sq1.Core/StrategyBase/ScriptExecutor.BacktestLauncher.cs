@@ -151,7 +151,26 @@ namespace Sq1.Core.StrategyBase {
 			}
 			if (this.ChartShadow != null) this.ChartShadow.PaintAllowedDuringLivesimOrAfterBacktestFinished = true;
 		}
-		public void BacktesterRunSimulationTrampoline(Action<ScriptExecutor> executeAfterSimulationEvenIfIFailed = null, bool inNewThread = true) {
+
+		public void Livesim_compileRun_trampoline(Action<ScriptExecutor> executeAfterSimulationEvenIfIFailed = null, bool inNewThread = true) {
+			// copypaste & refactor from ChartFormManager:StrategyCompileActivateBeforeShow()
+			if (this.Strategy.ActivatedFromDll == false) {
+				if (string.IsNullOrEmpty(this.Strategy.ScriptSourceCode)) {
+					string msg = "WONT_COMPILE_STRATEGY_HAS_EMPTY_SOURCE_CODE_PLEASE_TYPE_SOMETHING";
+					Assembler.PopupException(msg, null, false);
+					return;
+				}
+				this.Strategy.CompileInstantiate();
+				if (this.Strategy.Script != null) {
+					this.Strategy.Script.Initialize(this);
+					this.Sequencer.RaiseScriptRecompiledUpdateHeaderPostponeColumnsRebuild();
+					this.Sequencer.Initialize();
+				}
+			}
+			this.BacktesterRun_trampoline(executeAfterSimulationEvenIfIFailed, inNewThread);
+		}
+
+		public void BacktesterRun_trampoline(Action<ScriptExecutor> executeAfterSimulationEvenIfIFailed = null, bool inNewThread = true) {
 			if (this.Strategy == null) {
 				string msg = "WILL_NOT_EXECUTE_BACKTESTER: Executor.Strategy=null; " + this;
 				#if DEBUG

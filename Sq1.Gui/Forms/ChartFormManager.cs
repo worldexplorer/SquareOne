@@ -545,7 +545,7 @@ namespace Sq1.Gui.Forms {
 			this.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(
 				"ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain", true, false);
 		}
-		public void BacktesterRunSimulation(bool subscribeUpstreamOnWorkspaceRestore = false) {
+		public void BacktesterRunSimulation(bool subscribeUpstreamOnWorkspaceRestore = false, Action<ScriptExecutor> actionLivesim_orBacktest = null) {
 			try {
 				//AVOIDING_"Collection was modified; enumeration operation may not execute."_BY_SETTING___PaintAllowed=false
 				//WILL_CALL_LATER_IN_Backtester.SimulationPreBarsSubstitute() this.Executor.ChartShadow.PaintAllowedDuringLivesimOrAfterBacktestFinished = false;	//WONT_BE_SET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
@@ -555,12 +555,15 @@ namespace Sq1.Gui.Forms {
 				}
 				if (subscribeUpstreamOnWorkspaceRestore == true) {
 					//v1 LOSING_ARROWS_AND_REPORTERS_SINCE_INVOKED_TWICE
-					this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterCompleteOnceOnWorkspaceRestore), true);
+					if (actionLivesim_orBacktest == null) {
+						actionLivesim_orBacktest = new Action<ScriptExecutor>(this.afterBacktesterCompleteOnceOnWorkspaceRestore);
+					}
+					this.Executor.BacktesterRun_trampoline(actionLivesim_orBacktest, true);
 					//this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
 				} else {
 					//v1 this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
 					//v2 
-					this.Executor.BacktesterRunSimulationTrampoline(null, true);
+					this.Executor.BacktesterRun_trampoline(null, true);
 				}
 			} catch (Exception ex) {
 				string msg = "RUN_SIMULATION_TRAMPOLINE_FAILED for Strategy[" + this.Strategy + "] on Bars[" + this.Executor.Bars + "]";

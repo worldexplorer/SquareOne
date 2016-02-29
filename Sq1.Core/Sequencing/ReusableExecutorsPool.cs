@@ -124,7 +124,7 @@ namespace Sq1.Core.Sequencing {
 				//WHOLE REASON OF THIS POOL IS TO DISPOSE ALERTS launchingIdle.ExecutionDataSnapshot.Initialize();	// LEAKED_HANDLES_HUNTER for v2
 				//string ctxParamsAsString = launchingIdle.ToStringWithCurrentParameters();
 
-				launchingIdle.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
+				launchingIdle.BacktesterRun_trampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
 			}
 		} }
 		void afterBacktesterComplete(ScriptExecutor executorFinished) { lock (this.oneLockForAllLists) {

@@ -74,6 +74,11 @@ namespace Sq1.Core.Repositories {
 		}
 		public void RescanFolderStoreNamesFound() {
 			this.ItemsFound.Clear();
+			if (this.AbsPath == null) {
+				string msg = "REINIT_SEQUENCER_AFTER_CHANGE_OF_STRATEGY_FOR_CHART INVOKE_SequencerControl.Initialize()";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
 			string[] absFileNames = Directory.GetFiles(this.AbsPath, this.Mask);
 			for (int i = 0; i < absFileNames.Length; i++) {
 				string absFileName = absFileNames[i];
