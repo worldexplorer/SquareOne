@@ -2,6 +2,7 @@ using System;
 
 using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
+using System.Collections.Generic;
 
 namespace Sq1.Core.DataTypes {
 	//v1 public partial class Bars : BarsUnscaledSortedList {
@@ -9,21 +10,23 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public static int InstanceAbsno = 0;
 		
 		[JsonIgnore]	public	string				SymbolHumanReadable;
-		[JsonIgnore]	public	string				SymbolAndDataSource		{ get {
+		[JsonIgnore]	public	string				SymbolAndDataSource			{ get {
 			string ret = this.Symbol;
 			if (this.DataSource != null) ret += " :: " + this.DataSource.Name;
 			return ret;
 		} }
-		[JsonIgnore]	public	BarScaleInterval	ScaleInterval			{ get; private set; }
+		[JsonIgnore]	public	BarScaleInterval	ScaleInterval				{ get; private set; }
 
 		[JsonIgnore]	public	MarketInfo			MarketInfo;
 		[JsonIgnore]	public	DataSource			DataSource;
 
-		[JsonIgnore]	public	bool				IsIntraday				{ get { return this.ScaleInterval.IsIntraday; } }
-		[JsonIgnore]	public	string				SymbolIntervalScale		{ get { return "[" + this.Symbol + " " + this.ScaleInterval.ToString() + "]"; } }
-		[JsonIgnore]	public	string				IntervalScaleCount		{ get { return "[" + this.ScaleInterval + "][" + base.Count + "]bars"; } }
+		[JsonIgnore]	public	bool				IsIntraday					{ get { return this.ScaleInterval.IsIntraday; } }
+		[JsonIgnore]	public	string				SymbolIntervalScale			{ get { return "[" + this.Symbol + " " + this.ScaleInterval.ToString() + "]"; } }
+		[JsonIgnore]	public	string				SymbolIntervalScaleCount	{ get { return this.SymbolIntervalScale + " [" + base.Count + "]bars"; } }
+		[JsonIgnore]	public	string				IntervalScaleCount			{ get { return "[" + this.ScaleInterval + "][" + base.Count + "]bars"; } }
+		[JsonIgnore]	public	string				SymbolIntervalScaleCount_dataSourceName { get { return SymbolIntervalScaleCount + " :: " + this.DataSource.Name; } }
 
-		[JsonIgnore]	public	Bar					BarStreaming_nullUnsafe	{ get; private set; }
+		[JsonIgnore]	public	Bar					BarStreaming_nullUnsafe		{ get; private set; }
 		[JsonIgnore]	public	Bar					BarStreaming_nullUnsafeCloneReadonly { get {
 				//v1
 //				Bar lastStatic = this.BarStaticLast;
@@ -53,23 +56,29 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		} }
 
-		[JsonIgnore]	public	string				ClonedFromInstance			{ get; private set; }
+		[JsonIgnore]	public	string				ClonedFromInstanceName		{ get; private set; }
 		[JsonIgnore]	public	string				InstanceAndReasonForClone	{ get {
 			string ret = this.MyInstanceAsString;
-			if (string.IsNullOrEmpty(this.ClonedFromInstance) == false) ret += ":" + this.ClonedFromInstance;
+			if (string.IsNullOrEmpty(this.ClonedFromInstanceName) == false) ret += ":" + this.ClonedFromInstanceName;
 			return ret;
 		} }
 
-		public Bars SafeCopy_oneCopyForEachDisposableExecutors(string reasonToExist) { lock (base.BarsLock) {
-			Bars ret = new Bars(this.Symbol, this.ScaleInterval, "SafeToUseOneCopyForAllDisposableExecutors");
+		[JsonIgnore]	public	List<Bar>			InnerBars_exposedOnlyForEditor		{ get; private set; }
+
+		public Bars SafeCopy_oneCopyForEachDisposableExecutors(string reasonToExist, bool exposeInnerBars_forEditor = false) { lock (base.BarsLock) {
+			//Bars ret = new Bars(this.Symbol, this.ScaleInterval, "SafeCopy_oneCopyForEachDisposableExecutors");
+			Bars clone = new Bars(this.Symbol, this.ScaleInterval, reasonToExist);
 			foreach (Bar each in this.BarsList) {
 				Bar cloneBar = each.CloneDetached();
-				ret.BarAppendBind(cloneBar);
+				clone.BarAppendBind(cloneBar);
 			}
-			ret.DataSource = this.DataSource;
-			ret.MarketInfo = this.MarketInfo;
-			base.ReasonToExist = reasonToExist + "_CLONED_FROM_" + base.ReasonToExist;
-			return ret;
+			clone.DataSource = this.DataSource;
+			clone.MarketInfo = this.MarketInfo;
+			//base.ReasonToExist = reasonToExist + "_CLONED_FROM_" + base.ReasonToExist;
+			if (exposeInnerBars_forEditor) {
+				clone.InnerBars_exposedOnlyForEditor = clone.BarsList;
+			}
+			return clone;
 		} }
 
 		Bars(string symbol, string reasonToExist = "NOREASON") : base(symbol, reasonToExist) {
@@ -95,7 +104,7 @@ namespace Sq1.Core.DataTypes {
 			ret.BarAppendBindStatic(firstBar_noParentBackRef);
 			return ret;
 		}
-		public Bars CloneBars_zeroBarsInside(string reasonToExist = null, BarScaleInterval scaleIntervalConvertingTo = null) {
+		public Bars CloneBars_zeroBarsInside(string reasonToExist = null, BarScaleInterval scaleIntervalConvertingTo = null, bool exposedInnerBars_forEditor = false) {
 			if (scaleIntervalConvertingTo == null) scaleIntervalConvertingTo = this.ScaleInterval;
 			if (string.IsNullOrEmpty(reasonToExist)) reasonToExist = "InitializedFrom(" + this.ReasonToExist + ")";
 			reasonToExist += this.InstanceScaleCount;
@@ -104,10 +113,10 @@ namespace Sq1.Core.DataTypes {
 			ret.MarketInfo = this.MarketInfo;
 			ret.SymbolInfo = this.SymbolInfo;
 			ret.DataSource = this.DataSource;
-			ret.ClonedFromInstance = this.InstanceScaleCount;
+			ret.ClonedFromInstanceName = this.InstanceScaleCount;
 			return ret;
 		}
-		public Bar BarStreamingCreateNewOrAbsorb(Bar barToMergeToStreaming) { lock (base.BarsLock) {
+		public Bar BarStreaming_createNewOrAbsorb(Bar barToMergeToStreaming) { lock (base.BarsLock) {
 			bool shouldAppend = this.BarLast == null || barToMergeToStreaming.DateTimeOpen >= this.BarLast.DateTimeNextBarOpenUnconditional;
 			if (shouldAppend) {	// if this.BarStreaming == null I'll have just one bar in Bars which will be streaming and no static 
 				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, barToMergeToStreaming.DateTimeOpen);
@@ -279,15 +288,15 @@ namespace Sq1.Core.DataTypes {
 				open = close;
 			}
 		}
-		public Bars SelectRange(BarDataRange dataRangeRq) {
+		public Bars Clone_selectRange(BarDataRange dataRangeRq, bool exposeInnerBars_forEditor = false) {
 			DateTime startDate = DateTime.MinValue;
 			DateTime endDate = DateTime.MaxValue;
 			dataRangeRq.FillStartEndDate(out startDate, out endDate);
-			if (startDate == DateTime.MinValue && endDate == DateTime.MaxValue && dataRangeRq.RecentBars == 0) return this;
+			if (startDate == DateTime.MinValue && endDate == DateTime.MaxValue && dataRangeRq.Range != BarRange.AllData && dataRangeRq.RecentBars == 0) return this;
 
 			//v1 string reasonForClone = this.ReasonToExist + " [" + dataRangeRq.ToString() + "]";
-			string reasonForClone = "RANGE_SELECTED[" + dataRangeRq.ToString() + "]";
-			Bars ret = this.CloneBars_zeroBarsInside(reasonForClone, this.ScaleInterval);
+			string reasonForCloning = "RANGE_SELECTED[" + dataRangeRq.ToString() + "]";
+			Bars clone = this.CloneBars_zeroBarsInside(reasonForCloning, this.ScaleInterval, exposeInnerBars_forEditor);
 			int recentIndexStart = 0;
 			if (dataRangeRq.RecentBars > 0) recentIndexStart = this.Count - dataRangeRq.RecentBars;  
 			for (int i=0; i<this.Count; i++) {
@@ -297,9 +306,12 @@ namespace Sq1.Core.DataTypes {
 				if (startDate > DateTime.MinValue && barAdding.DateTimeOpen < startDate) skipThisBar = true; 
 				if (endDate < DateTime.MaxValue && barAdding.DateTimeOpen > endDate) skipThisBar = true;
 				if (skipThisBar) continue;
-				ret.BarAppendBindStatic(barAdding.CloneDetached());
+				clone.BarAppendBindStatic(barAdding.CloneDetached());
 			}
-			return ret;
+			if (exposeInnerBars_forEditor) {
+				clone.InnerBars_exposedOnlyForEditor = clone.BarsList;
+			}
+			return clone;
 		}
 		
 		void checkThrowCanConvert(BarScaleInterval scaleIntervalTo) {
@@ -336,6 +348,18 @@ namespace Sq1.Core.DataTypes {
 				}
 			}
 			return barsConverted;
+		}
+
+		public string Save() {
+			string millisElapsed = "DIDNT_EVEN_START_WRITING_TO_FILE";
+
+			if (this.DataSource == null) {
+				string msg = "";
+				Assembler.PopupException(msg, null, false);
+				return millisElapsed;
+			}
+			this.DataSource.BarsSave(this, out millisElapsed);
+			return millisElapsed;
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		private ToolStripMenuItem mniDataSourceEdit;
 		public ContextMenuStrip ctxSymbol;
 		public ToolStripMenuItem mniNewChartSymbol;
-		public ToolStripMenuItem mniSymbolBarsAnalyzer;
+		public ToolStripMenuItem mniSymbolBarsEditor;
 		public ToolStripMenuItem mniOpenStrategySymbol;
 		private ToolStripSeparator sepSymbol;
 		private ToolStripMenuItem mniSymbolRemove;
@@ -48,7 +48,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mniOpenStrategySymbol = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniSymbolInfoEditor = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniSymbolBarsAnalyzer = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniSymbolBarsEditor = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniSymbolFuturesMerger = new System.Windows.Forms.ToolStripMenuItem();
 			this.sepSymbol = new System.Windows.Forms.ToolStripSeparator();
 			this.mniSymbolRemove = new System.Windows.Forms.ToolStripMenuItem();
@@ -239,7 +239,7 @@ namespace Sq1.Widgets.DataSourcesTree {
             this.mniOpenStrategySymbol,
             this.toolStripSeparator3,
             this.mniSymbolInfoEditor,
-            this.mniSymbolBarsAnalyzer,
+            this.mniSymbolBarsEditor,
             this.mniSymbolFuturesMerger,
             this.sepSymbol,
             this.mniSymbolRemove,
@@ -276,14 +276,13 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mniSymbolInfoEditor.Text = "Symbol Editor for [RIM3]";
 			this.mniSymbolInfoEditor.Click += new System.EventHandler(this.mniSymbolInfoEditor_Click);
 			// 
-			// mniSymbolBarsAnalyzer
+			// mniSymbolBarsEditor
 			// 
-			this.mniSymbolBarsAnalyzer.Enabled = false;
-			this.mniSymbolBarsAnalyzer.ImageTransparentColor = System.Drawing.Color.Fuchsia;
-			this.mniSymbolBarsAnalyzer.Name = "mniSymbolBarsAnalyzer";
-			this.mniSymbolBarsAnalyzer.Size = new System.Drawing.Size(305, 22);
-			this.mniSymbolBarsAnalyzer.Text = "Bar Analyzer for  [RIM3]";
-			this.mniSymbolBarsAnalyzer.Click += new System.EventHandler(this.mniBarsAnalyzerSymbol_Click);
+			this.mniSymbolBarsEditor.ImageTransparentColor = System.Drawing.Color.Fuchsia;
+			this.mniSymbolBarsEditor.Name = "mniSymbolBarsEditor";
+			this.mniSymbolBarsEditor.Size = new System.Drawing.Size(305, 22);
+			this.mniSymbolBarsEditor.Text = "Bars Editor for [RIM3]";
+			this.mniSymbolBarsEditor.Click += new System.EventHandler(this.mniBarsEditorSymbol_Click);
 			// 
 			// mniSymbolFuturesMerger
 			// 

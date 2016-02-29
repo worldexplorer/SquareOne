@@ -19,6 +19,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				//string symbol = o as string;
 				//if (symbol != null) return true;
 
+				if (this.DisplayingThirdLevel_withChartsOpen == false) return false;
 				SymbolOfDataSource symbol = o as SymbolOfDataSource;
 				if (symbol != null) {
 					List<ChartShadow> charts = symbol.DataSource.ChartsOpenForSymbol.FindContentsOf__nullUnsafe(symbol);
@@ -34,6 +35,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				//string symbol = o as string;
 				//if (symbol != null && dataSource.ChartsOpenForSymbol.ContainsKey(symbol)) return dataSource.ChartsOpenForSymbol[symbol];
 
+				if (this.DisplayingThirdLevel_withChartsOpen == false) return null;
 				SymbolOfDataSource symbol = o as SymbolOfDataSource;
 				if (symbol != null) {
 					List<ChartShadow> charts = symbol.DataSource.ChartsOpenForSymbol.FindContentsOf__nullUnsafe(symbol);
@@ -84,8 +86,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 				if (o == null) return "NULL_olvcTimeFrame.AspectGetter";
 
 				DataSource dataSource = o as DataSource;
-				//if (dataSource != null) return dataSource.ScaleInterval.AsStringShort_cached;
-				if (dataSource != null) return null;
+				// CSV_IMPORTER_NEEDS_IT if (dataSource != null) return null;
+				if (dataSource != null) return dataSource.ScaleInterval.AsStringShort_cached;
 					
 				//string symbol = o as string;
 				SymbolOfDataSource symbol = o as SymbolOfDataSource;

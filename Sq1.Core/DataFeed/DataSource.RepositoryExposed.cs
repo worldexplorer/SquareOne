@@ -31,13 +31,13 @@ namespace Sq1.Core.DataFeed {
 				string abspathSource = dataSourceFrom.BarsRepository.AbspathForSymbol(symbolToCopy);
 				this.BarsRepository.SymbolDataFileCopy(symbolToCopy, abspathSource);
 				RepositoryBarsFile filePickedUp = this.BarsRepository.DataFileForSymbol(symbolToCopy);
-				Assembler.PopupException("BARS_SAVED_UNCOMPRESSED: " + filePickedUp.BarsLoadAll_nullUnsafeThreadSafe().Count + msig, null, false);
+				Assembler.PopupException("BARS_SAVED_UNCOMPRESSED: " + filePickedUp.BarsLoadAll_nullUnsafe_threadSafe().Count + msig, null, false);
 			} else {
 				string millisElapsedLoadCompress;
-				Bars barsCompressed = dataSourceFrom.BarsLoadAndCompress(symbolToCopy, dataSourceTo.ScaleInterval, out millisElapsedLoadCompress);
+				Bars barsCompressed = dataSourceFrom.BarsLoadAndCompress_nullUnsafe(symbolToCopy, dataSourceTo.ScaleInterval, out millisElapsedLoadCompress);
 				this.BarsRepository.SymbolDataFileAdd(symbolToCopy, true);
 				RepositoryBarsFile fileToSaveTo = this.BarsRepository.DataFileForSymbol(symbolToCopy);
-				int barsSaved = fileToSaveTo.BarsSaveThreadSafe(barsCompressed);
+				int barsSaved = fileToSaveTo.BarsSave_threadSafe(barsCompressed);
 				Assembler.PopupException("BARS_SAVED_COMPRESSED: " + barsSaved + msig + millisElapsedLoadCompress, null, false);
 			}
 			this.Symbols.Add(symbolToCopy);

@@ -21,7 +21,7 @@ namespace Sq1.Core.Streaming {
 			}
 			//Bar barDetached = barLastFormedUnattached.CloneDetached();
 			//Bar barStreamingBound = bars.BarStreamingCreateNewOrAbsorb(barDetached);
-			Bar barStreamingBound = bars.BarStreamingCreateNewOrAbsorb(barLastFormedUnattached);
+			Bar barStreamingBound = bars.BarStreaming_createNewOrAbsorb(barLastFormedUnattached);
 
 			if (barStreamingBound != bars.BarLast) {
 				string msg = "MUST_NEVER_HAPPEN_barStreamingBound != consumer.ConsumerBarsToAppendInto.BarLast";
@@ -75,7 +75,7 @@ namespace Sq1.Core.Streaming {
 					+ " FIRST_STREAMING_QUOTE_PER_BACKTEST_ON_STREAMINGLESS_BARS_JUST_FORKED_FROM_BARS_ORIGINAL_AT_BACKTEST_INITIALIZATION";
 				//v1 I_LEFT_QUOTE_UNATTACHED_UPSTACK,ATTACHING_TO_FACTORY_HERE
 				//v1 this.consumer.ConsumerBarsToAppendInto.BarStreamingCreateNewOrAbsorb(quoteCloneSernoEnrichedFactoryUnattachedStreamingBar.ParentBarStreaming);
-				Bar streamingCreatedUnattached = bars.BarStreamingCreateNewOrAbsorb(this.StreamingBarFactoryUnattached.BarStreamingUnattached);
+				Bar streamingCreatedUnattached = bars.BarStreaming_createNewOrAbsorb(this.StreamingBarFactoryUnattached.BarStreamingUnattached);
 				if (streamingCreatedUnattached != bars.BarStreaming_nullUnsafe) {
 					string msg2 = "MUST_BE_THE_SAME_BAR PARANOID_CHECK";
 					Assembler.PopupException(msg2);

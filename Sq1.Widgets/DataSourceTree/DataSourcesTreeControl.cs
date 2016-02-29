@@ -20,15 +20,19 @@ namespace Sq1.Widgets.DataSourcesTree {
 
 		public	DataSource								DataSourceSelected	{ get; private set; }
 		public	string									SymbolSelected		{ get; private set; }
+		public	ChartShadow								ChartSelected		{ get; private set; }
 
 				bool									ignoreExpandCollapseEventsDuringInitializationOrUninitialized;
 				DataSourceTreeDataSnapshot				dataSnapshot;
 				Serializer<DataSourceTreeDataSnapshot>	dataSnapshotSerializer;
 
-		public string TreeFirstColumnNameText {
+		public	string TreeFirstColumnNameText {
 			get { return this.olvcName.Text; }
 			set { this.olvcName.Text = value; }
 		}
+
+		public	bool									DisplayingThirdLevel_withChartsOpen { get; private set; }
+
 
 		[Browsable(true)]
 		public bool AppendMarketToDataSourceName { get; set; }
@@ -55,8 +59,9 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = true;
 			this.mniSymbolCopyToAnotherDataSource.DropDownItems.Add("CAUSING_SUBMENU_TRIANGLE_TO_APPEAR__WILL_BE_CLEARED_ON_OPENING");
 		}
-		public void Initialize(RepositoryJsonDataSources dataSourceRepository) {
+		public void Initialize(RepositoryJsonDataSources dataSourceRepository, bool addThirdLevel_withChartsOpen = true) {
 			this.dataSourceRepository = dataSourceRepository;
+			this.DisplayingThirdLevel_withChartsOpen = addThirdLevel_withChartsOpen;
 
 			try {
 				bool createdNewFile = this.dataSnapshotSerializer.Initialize(this.dataSourceRepository.RootPath,
@@ -165,19 +170,28 @@ namespace Sq1.Widgets.DataSourcesTree {
 				return;
 			}
 			try {
-			//if ((this.tree.SelectedObject is NullReferenceException) == false) {
 				// first time loaded, nothing is selected event after right click; (SelectedObject as DataSource) was NullReferenceException 
+				ChartShadow chartShadowClicked = this.OlvTree.SelectedObject as ChartShadow;
+				if (chartShadowClicked != null) {
+					this.ChartSelected = chartShadowClicked;
+					this.DataSourceSelected = null;
+					this.SymbolSelected = null;
+					return;
+				}
+
 				DataSource dataSourceClicked = this.OlvTree.SelectedObject as DataSource;
 				if (dataSourceClicked != null) {
 					this.DataSourceSelected = dataSourceClicked;
 					this.SymbolSelected = null;
+					this.ChartSelected = null;
 					return;
 				}
-			//}
 			} catch (NullReferenceException) {
 				string msg = "OLV_INTERNAL_EXCEPTION?...";
 				Assembler.PopupException(msg + msig, null, false);
 			}
+
+			this.ChartSelected = null;
 			string symbol = null;
 			DataSource dataSourceParent = this.OlvTree.SelectedObject as DataSource;
 			int indexCurrent = 0;

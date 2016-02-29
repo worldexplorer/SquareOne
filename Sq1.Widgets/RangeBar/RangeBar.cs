@@ -7,78 +7,53 @@ using Sq1.Core.DoubleBuffered;
 using Sq1.Core;
 
 namespace Sq1.Widgets.RangeBar {
-	public abstract class RangeBar<T> : UserControlDoubleBuffered {
-		public event EventHandler<RangeArgs<T>> ValueMinChanged;
-		public event EventHandler<RangeArgs<T>> ValueMaxChanged;
-		public event EventHandler<RangeArgs<T>> ValuesMinAndMaxChanged;
-		public event EventHandler<RangeArgs<T>> ValueMouseOverChanged;
+	public abstract partial class RangeBar<T> : UserControlDoubleBuffered {		
+		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]		public T RangeMin {get; set;}
+		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]		public T RangeMax {get; set;}
+		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]		public T ValueMin {get; set;}
+		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]		public T ValueMax {get; set;}
+		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]		public int RangeScaleLabelDistancePx {get; set;}
+		[Browsable(true)]													public Padding PaddingInner;
+		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]		protected string valueFormat;
 		
-		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]
-		public T RangeMin {get; set;}
-		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]
-		public T RangeMax {get; set;}
-		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]
-		public T ValueMin {get; set;}
-		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]
-		public T ValueMax {get; set;}
-
-		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]
-		public int RangeScaleLabelDistancePx {get; set;}
-	
-		[Browsable(true)]
-		public Padding PaddingInner;
-
-		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]
-		protected string valueFormat;
 		public string ValueFormat {
 			get { if (valueFormat == null) return "0.#";  return valueFormat; }
 			set { this.valueFormat = value; }
 		}
 
-		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]
-		public Color ColorBgOutsideRange { get; set; }
+		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]		public Color ColorBgOutsideRange { get; set; }
 		
-		private SolidBrush brushOutsideRange;
-		protected SolidBrush BrushOutsideRange {
-			get {
+		SolidBrush brushOutsideRange;
+		protected SolidBrush BrushOutsideRange { get {
 				//if (this.ColorBgOutsideRange == null) this.ColorBgOutsideRange = Color.LightSteelBlue;
 				if (this.brushOutsideRange == null) this.brushOutsideRange = new SolidBrush(this.ColorBgOutsideRange);
 				return this.brushOutsideRange;
-			}
-		}
+		} }
 
-		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]
-		public Color ColorBgOutsideMouseOver { get; set; }
+		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]		public Color ColorBgOutsideMouseOver { get; set; }
 		
-		private SolidBrush brushMouseOverOutsideRange;
-		protected SolidBrush BrushMouseOverOutsideRange {
-			get {
+		SolidBrush brushMouseOverOutsideRange;
+		protected SolidBrush BrushMouseOverOutsideRange { get {
 				//if (this.ColorBgOutsideMouseOver == null) this.ColorBgOutsideMouseOver = Color.LightBlue;
 				if (this.brushMouseOverOutsideRange == null) this.brushMouseOverOutsideRange = new SolidBrush(this.ColorBgOutsideMouseOver);
 				return this.brushMouseOverOutsideRange;
-			}
-		}
+			} }
 
-		private SolidBrush brushFgText;
-		protected SolidBrush BrushFgText {
-			get {
+		SolidBrush brushFgText;
+		protected SolidBrush BrushFgText { get {
 				//if (this.ForeColor == null) this.ForeColor = Color.Black;
 				if (this.brushFgText == null) this.brushFgText = new SolidBrush(base.ForeColor);
 				return this.brushFgText; 
-			}
-		}
+			} }
 		
 
-		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]
-		public float ScalePenWidth {get; set;}
-		private Pen penFgText;
-		protected Pen PenFgText {
-			get {
+		[Browsable(true), DefaultValueAttribute(typeof(TextBox), null)]		public float ScalePenWidth {get; set;}
+		Pen penFgText;
+		protected Pen PenFgText { get {
 				//if (this.ForeColor == null) this.ForeColor = Color.Black;
 				if (this.penFgText == null) this.penFgText = new Pen(base.ForeColor, this.ScalePenWidth);
 				return this.penFgText; 
-			}
-		}
+			} }
 
 		public virtual string RangeMinFormatted { get { return this.Format(this.RangeMin); } }
 		public virtual string RangeMaxFormatted { get { return this.Format(this.RangeMax); } }
@@ -350,101 +325,7 @@ namespace Sq1.Widgets.RangeBar {
 		//DOUBLEBUFFERED_ALREADY_PAINTS_BACKCOLOR protected override void OnPaintBackgroundDoubleBuffered (PaintEventArgs e) {
 		//	e.Graphics.Clear(base.BackColor);
 		//}
-		protected override void OnMouseEnter(EventArgs e) {
-			this.mouseOver = true;
-			this.dragging = false;
-			base.Invalidate();
-			base.OnMouseEnter(e);
-		}
-		protected override void OnMouseLeave(EventArgs e) {
-			this.mouseOver = false;
-			this.dragging = false;
-			base.Invalidate();	// visuals first!!!
-			this.ValueMouseOverRangePercentage = -1;
-			this.RaiseValueMouseOverChanged();
-			base.OnMouseLeave(e);
-		}		
-		protected override void OnMouseDown(MouseEventArgs e) {
-			if (e.Button != MouseButtons.Left) return;
-			this.dragButtonPressed = true;
-			this.dragging = false;
-		}
-		protected override void OnMouseUp(MouseEventArgs e) {
-			string msig = " //OnMouseUp() " + this.ToString();
-			if (e.Button != MouseButtons.Left) return;
-			try {
-				if (this.ValueMouseOverRangePercentage > 1) {
-					string msg = "NEVER_OBSERVED_BEFORE Houston we have a problem";
-					Assembler.PopupException(msg + msig);
-				}
-				if (this.dragging == false) {
-					if (this.ValueMouseOverRangePercentage < this.ValueMinMaxMedianPercentage) {
-						this.ValueMin = this.ValueMouseOverFromRangePercentage;
-						base.Invalidate();	// visuals first!!!
-						this.RaiseValueMinChanged();
-					} else {
-						this.ValueMax = this.ValueMouseOverFromRangePercentage;
-						base.Invalidate();	// visuals first!!!
-						this.RaiseValueMaxChanged();
-					}
-				} else {
-					// handling dragEnd here
-					float dragSmaller = this.dragStartedPercentage;
-					float dragGreater = this.ValueMouseOverRangePercentage;
-					if (dragSmaller > dragGreater) {
-						dragSmaller = this.ValueMouseOverRangePercentage;
-						dragGreater = this.dragStartedPercentage;
-					}
-					// fixed using XbecomesNegativeWhileDragging
-					//if (dragSmaller < 0) dragSmaller = 0;		// when we released Left mouse button beyond  left edge of the RangeBar control
-					//if (dragGreater > 1) dragGreater = 1; 		// when we released Left mouse button beyond right edge of the RangeBar control
-					this.ValueMin = this.ValueFromPercentage(dragSmaller);
-					this.ValueMax = this.ValueFromPercentage(dragGreater);
-					this.dragStartedPercentage = -1;
-					this.dragging = false;
-					base.Invalidate();	// visuals first!!!
-					this.RaiseValuesMinAndMaxChanged();
-				}
-				this.dragButtonPressed = false;
-			} catch (Exception ex) {
-				string msg = "WindProc won't catch your exceptions; keep a breakpoint here";
-				Assembler.PopupException(msg + msig, ex);
-				throw ex;
-			}
-			base.OnMouseUp(e);
-		}
-		protected override void OnMouseMove(MouseEventArgs e) {
-			try {
-				if (this.dragging) {
-					// should drag a little for me to consider the user is really dragging anything
-					if (Math.Abs(dragStartedX - e.X) < this.dragStartSensitivity) return;
-					int XnotBeyond0width = e.X;
-					if (e.X < 0) XnotBeyond0width = 0;
-					if (e.X > base.Width) XnotBeyond0width = base.Width;
-					this.ValueMouseOverRangePercentage = this.XonGraphicsToPercentage(XnotBeyond0width);
-				} else {
-					this.ValueMouseOverRangePercentage = this.XonGraphicsToPercentage(e.X);
-				}
-				
-				if (this.dragButtonPressed == false) {
-					base.Invalidate();	// visuals first!!!
-					this.RaiseValueMouseOverChanged();
-					base.OnMouseMove(e);
-					return;
-				}
-				if (this.dragging == false) {
-					// first move after this.mousePressed means DRAG!! wasn't in UserControl due to ambiguity between OnMouseMove and OnMouseDrag, probably 
-					this.dragStartedX = e.X;
-					this.dragStartedPercentage = this.XonGraphicsToPercentage(e.X);
-					this.dragging = true;
-				}
-				base.Invalidate();	// visuals first!!!
-				base.OnMouseMove(e);
-			} catch (Exception ex) {
-				string msg = "WindProc won't catch your exceptions; keep a breakpoint here";
-				throw ex;
-			}
-		}
+
 		public int RoundInt(double d) {
 			return (int)Math.Round(d);
 		}
@@ -456,33 +337,6 @@ namespace Sq1.Widgets.RangeBar {
 				//if (components != null) components.Dispose();
 			}
 			base.Dispose(disposing);
-		}
-		protected virtual void RaiseValueMinChanged() {
-			if (this.ValueMinChanged == null) return;
-			RangeArgs<T> args = this.CreateEventArgsSnapshot();
-			this.ValueMinChanged(this, args);
-		}
-		protected virtual void RaiseValueMaxChanged() {
-			if (this.ValueMaxChanged == null) return;
-			RangeArgs<T> args = this.CreateEventArgsSnapshot();
-			this.ValueMaxChanged(this, args);
-		}
-		protected virtual void RaiseValuesMinAndMaxChanged() {
-			if (this.ValuesMinAndMaxChanged == null) return;
-			RangeArgs<T> args = this.CreateEventArgsSnapshot();
-			this.ValuesMinAndMaxChanged(this, args);
-		}
-		protected virtual void RaiseValueMouseOverChanged() {
-			if (this.ValueMouseOverChanged == null) return;
-			RangeArgs<T> args = this.CreateEventArgsSnapshot();
-			this.ValueMouseOverChanged(this, args);
-		}
-		private RangeArgs<T> CreateEventArgsSnapshot() {
-			return new RangeArgs<T>(this.RangeMin, this.RangeMinFormatted,
-							 		this.RangeMax, this.RangeMaxFormatted,
-							 		this.ValueMin, this.ValueMinFormatted,
-							 		this.ValueMax, this.ValueMaxFormatted,
-									this.ValueMouseOverFromRangePercentage, this.ValueMouseOverFormatted);
 		}
 
 		//public abstract T XonGraphicsToValue(int currentXposition);

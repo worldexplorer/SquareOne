@@ -51,7 +51,6 @@
             this.olvcVersion,
             this.olvcSize,
             this.olvcDate,
-            this.olvcAuthors,
             this.olvcLicense,
             this.olvcCommit,
             this.olvcForkMe});
@@ -95,6 +94,8 @@
 			// 
 			// olvcAuthors
 			// 
+			this.olvcAuthors.DisplayIndex = 4;
+			this.olvcAuthors.IsVisible = false;
 			this.olvcAuthors.Text = "Authors";
 			this.olvcAuthors.Width = 100;
 			// 

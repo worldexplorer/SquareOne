@@ -4,6 +4,65 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
 	public partial class Bar {
+
+		#region long story short
+		[JsonIgnore]			SymbolInfo	symbolInfo_nullUnsafe					{ get {
+			SymbolInfo ret = this.symbolInfo_fromParentBars_nullUnsafe;
+			if (ret == null) {
+				ret = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfo_nullUnsafe(this.Symbol);
+			}
+			return ret;
+		} }
+		[JsonIgnore]			SymbolInfo	symbolInfo_fromParentBars_nullUnsafe	{ get {
+			SymbolInfo ret = null;
+			if (this.ParentBars				== null) return ret;
+			if (this.ParentBars.SymbolInfo	== null) return ret;
+			ret = this.ParentBars.SymbolInfo;
+			return ret;
+		} }
+
+		[JsonIgnore]	protected	string		PriceFormat	{ get {
+			SymbolInfo symbolInfo = this.symbolInfo_nullUnsafe;
+			return symbolInfo != null ? symbolInfo.PriceFormat : "N2";
+		} }
+		[JsonIgnore]	protected	string		VolumeFormat	{ get {
+			SymbolInfo symbolInfo = this.symbolInfo_nullUnsafe;
+			return symbolInfo != null ? symbolInfo.PriceFormat : "N0";
+		} }
+		[JsonIgnore]	protected	string		DateTimeFormat	{ get {
+			string ret = Assembler.DateTimeFormatToMinutesSeconds_noYear;	// less than a minute
+			switch (this.ScaleInterval.Scale) {
+				case BarScale.Unknown:
+				case BarScale.Tick:
+				case BarScale.Second:		ret = Assembler.DateTimeFormatToMinutesSeconds_noYear; break;
+
+				case BarScale.Minute:
+				case BarScale.Hour:			ret = Assembler.DateTimeFormatToMinutes_noYear; break;
+				
+				case BarScale.Daily:
+				case BarScale.Weekly:
+				case BarScale.Monthly:
+				case BarScale.Quarterly:
+				case BarScale.Yearly:		ret = Assembler.DateTimeFormatToDays; break;
+
+				default: 
+					string msg = "YOU_ADDED_NEW_TIMEFRAME_BUT_DIDNT_DEFINE_DATETIME_FORMAT_FOR_IT";
+					Assembler.PopupException(msg);
+					ret = Assembler.DateTimeFormatToMinutesSeconds_noYear;
+					break;
+			}
+			return ret;
+		} }
+		#endregion
+
+		[JsonProperty]	public	string	DateTimeOpen_formatted	{ get { return string.Format("{0:" + this.DateTimeFormat + "}", this.DateTimeOpen); } }
+		[JsonProperty]	public	string	Open_formatted			{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Open); } }
+		[JsonProperty]	public	string	High_formatted			{ get { return string.Format("{0:" + this.PriceFormat + "}", this.High); } }
+		[JsonProperty]	public	string	Low_formatted			{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Low); } }
+		[JsonProperty]	public	string	Close_formatted			{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Close); } }
+		[JsonProperty]	public	string	Volume_formatted		{ get { return string.Format("{0:" + this.VolumeFormat + "}", this.Volume); } }
+
+	
 		[JsonIgnore]	public bool IsBarStreaming { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: IsStreamingBar: Bar[" + this + "].HasParentBars=false");

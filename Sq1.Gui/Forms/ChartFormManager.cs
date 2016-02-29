@@ -271,7 +271,9 @@ namespace Sq1.Gui.Forms {
 			ret.ChartFormEventsToChartFormManagerAttach();
 			
 			// DONT_MOVE_OUTSIDE_CHART_FORM_FACTORY you open a chartNoStrategy, then load a strategy, then another one => you get 3 invocations of ChartForm_FormClosed()  
-			ret.FormClosed += this.MainForm.MainFormEventManager.ChartForm_FormClosed;
+			ret.FormClosed			+= this.MainForm.MainFormEventManager.ChartForm_FormClosed;
+			ret.OnBarsEditorClicked += new EventHandler<DataSourceSymbolEventArgs>(this.MainForm.MainFormEventManager.ChartForm_OnBarsEditorClicked);
+
 			ret.AppendReportersMenuItems(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
 			return ret;
 		}
@@ -467,7 +469,7 @@ namespace Sq1.Gui.Forms {
 			bool willBacktest = !wontBacktest;
 			if (loadNewBars) {
 				string millisElapsedLoadCompress;
-				Bars barsAll = dataSource.BarsLoadAndCompress(symbol, context.ScaleInterval, out millisElapsedLoadCompress);
+				Bars barsAll = dataSource.BarsLoadAndCompress_nullUnsafe(symbol, context.ScaleInterval, out millisElapsedLoadCompress);
 				//string stats = millisElapsedLoadCompress + " //dataSource[" + dataSource.ToString()
 				//	+ "].BarsLoadAndCompress(" + symbol + ", " + context.ScaleInterval + ") ";
 				//Assembler.PopupException(stats, null, false);
@@ -477,7 +479,7 @@ namespace Sq1.Gui.Forms {
 				}
 
 				if (context.DataRange == null) context.DataRange = new BarDataRange();
-				Bars barsClicked = barsAll.SelectRange(context.DataRange);
+				Bars barsClicked = barsAll.Clone_selectRange(context.DataRange);
 				
 				if (this.Executor.Bars != null) {
 					this.Executor.Bars.DataSource.OnDataSourceEditedChartsDisplayedShouldRunBacktestAgain -=
@@ -1094,5 +1096,17 @@ namespace Sq1.Gui.Forms {
 			this.IsDisposed = true;
 		}
 		public bool IsDisposed { get; private set; }
+
+		internal void UserSelectedRange_loadBars_backtest_populate(BarDataRange newRange) {
+			Bars barsUserSelected = this.Executor.Bars.Clone_selectRange(newRange);
+			if (barsUserSelected == null || barsUserSelected.Count == 0) {
+				string msg = "USER_SELECTED_NULL_OR_EMPTY_BARS";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			this.Executor.SetBars(barsUserSelected);
+			this.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("ChartRangeBar_AnyValueChanged");
+			this.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+		}
 	}
 }

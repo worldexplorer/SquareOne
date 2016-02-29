@@ -4,16 +4,15 @@ using System.Windows.Forms;
 
 using BrightIdeasSoftware;
 using Newtonsoft.Json;
+
 using Sq1.Core;
 
 namespace Sq1.Widgets.CsvImporter {
 	public class ColumnCatcher {
-		public int ColumnSerno;
-		public CsvTypeParser Parser;
-		[JsonIgnore]
-		public CsvImporterDataSnapshot DataSnapshot;
-		[JsonIgnore]
-		public CsvFieldType CsvTypeContentSuggested = CsvFieldType.Unknown;
+						public	int						ColumnSerno;
+						public	CsvTypeParser			Parser;
+		[JsonIgnore]	public	CsvImporterDataSnapshot	DataSnapshot;
+		[JsonIgnore]	public	CsvFieldType			CsvTypeContentSuggested = CsvFieldType.Unknown;
 			
 		public ColumnCatcher() {
 			this.Parser = new CsvTypeParser();
@@ -113,7 +112,8 @@ namespace Sq1.Widgets.CsvImporter {
 				//int index2 = cb.Items.IndexOf(this.CsvTypeContentSuggested);
 				cb.SelectedIndex = index1;
 			} catch (Exception ex) {
-				Assembler.PopupException("olvFieldSetup_CellEditStarting(): cb.SelectedIndex=[" + this.Parser.CsvType + "] failed");
+				string msg = "olvFieldSetup_CellEditStarting(): cb.SelectedIndex=[" + this.Parser.CsvType + "] failed";
+				Assembler.PopupException(msg, ex);
 			}
 			return cb;
 		}
@@ -129,7 +129,8 @@ namespace Sq1.Widgets.CsvImporter {
 					cb.SelectedIndex = indexToHighlight;
 				}
 			} catch (Exception ex) {
-				Assembler.PopupException("olvFieldSetup_CellEditStarting(): cb.SelectedIndex=[" + this.Parser.CsvType + "] failed");
+				string msg = "olvFieldSetup_CellEditStarting(): cb.SelectedIndex=[" + this.Parser.CsvType + "] failed";
+				Assembler.PopupException(msg, ex);
 			}
 			return cb;
 		}

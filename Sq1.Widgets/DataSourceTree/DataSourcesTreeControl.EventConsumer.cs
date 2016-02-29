@@ -18,12 +18,19 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void tree_CellClick(object sender, CellClickEventArgs e) {
 			if (e.RowIndex == -1) return;
 			this.syncSymbolAndDataSourceSelectedFromRowIndexClicked(e.RowIndex);
+
 			if (this.SymbolSelected != null) {
 				this.raiseOnSymbolSelected();
 				//this.tree.RebuildAll(true);
-			} else {
+			} else if (this.OnDataSourceSelected != null) {
 				this.raiseOnDataSourceSelected();
+			} else if (this.ChartSelected != null) {
+				this.raiseOnChartSelected();
+			} else {
+				string msg = "USER_EXPANDED_THE_TREE NOTHING_VALUABLE_SELECTED__CANT_RAISE_EVENT //DataSourcesTreeControl.tree_CellClick()";
+				//Assembler.PopupException(msg);
 			}
+
 			this.OlvTree.RebuildAll(true);		// needed for Chart to get removed from old Symbol and move to the Symbol clicked; not needed without level3
 		}
 		void tree_CellRightClick(object sender, CellRightClickEventArgs e) {
@@ -49,9 +56,9 @@ namespace Sq1.Widgets.DataSourcesTree {
 				string newExisting = (true) ? "New" : "Existing";	//chart != null
 				this.mniNewChartSymbol.Text = newExisting + " Chart for [" + this.SymbolSelected + "]";
 				this.mniOpenStrategySymbol	.Text = "New Strategy for [" + this.SymbolSelected + "]";
-				this.mniSymbolBarsAnalyzer	.Text = "Bars Analyzer for [" + this.SymbolSelected + "]";
+				this.mniSymbolBarsEditor	.Text = "Bars Editor for [" + this.SymbolSelected + "]";
 				this.mniSymbolInfoEditor	.Text = "Symbol Editor for [" + this.SymbolSelected + "]";
-				this.mniSymbolBarsAnalyzer	.Text = "Bar Analyzer for [" + this.SymbolSelected + "]";
+				this.mniSymbolBarsEditor	.Text = "Bar Editor for [" + this.SymbolSelected + "]";
 				this.mniSymbolFuturesMerger	.Text = "Futures Merger for [" + this.SymbolSelected + "]";
 				this.mniSymbolRemove		.Text = "Remove [" + this.SymbolSelected + "] from [" + this.DataSourceSelected.Name + "] DataSource";
 				this.mniltbSymbolRenameTo	.TextLeft = "Rename [" + this.SymbolSelected + "] to";
@@ -102,8 +109,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void mniNewChartSymbol_Click(object sender, EventArgs e) {
 			this.raiseOnNewChartForSymbolClicked();
 		}
-		void mniBarsAnalyzerSymbol_Click(object sender, EventArgs e) {
-			this.raiseOnBarsAnalyzerClicked();
+		void mniBarsEditorSymbol_Click(object sender, EventArgs e) {
+			this.raiseOnBarsEditorClicked();
 		}
 		void mniOpenStrategySymbol_Click(object sender, EventArgs e) {
 			this.raiseOnOpenStrategyForSymbolClicked();

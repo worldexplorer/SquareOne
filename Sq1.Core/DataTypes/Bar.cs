@@ -4,33 +4,24 @@ using System.Text;
 
 using Newtonsoft.Json;
 
-//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK using Perst;
-
 namespace Sq1.Core.DataTypes {
-	public partial class Bar {	//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK : TimeSeriesTick
-		//I_WONT_POINT_BAR.SYMBOL_TO_PARENTBARS.SYMBOL_FOR_BAR_DETACHED_SUPPORT
-		[JsonProperty]	public string Symbol { get; internal set; }		// protected=>internal so that BarsUnscaled can rename each bar
-		//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK [Transient]
-		[JsonProperty]	public BarScaleInterval ScaleInterval { get; protected set; }
-		//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK [Transient]
-		[JsonProperty]	public DateTime DateTimeOpen { get; protected set; }
-		//[JsonIgnore]
-		//public long Time { get { return this.DateTimeOpen.ToBinary(); } }
-		//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK [Transient]
-		[JsonProperty]	public DateTime DateTimeNextBarOpenUnconditional { get; protected set; }
-		//[PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK Transient]
-		[JsonProperty]	public DateTime DateTimePreviousBarOpenUnconditional { get; protected set; }
+	public partial class Bar {
+		[JsonProperty]	public	string		Symbol				{ get; internal set; }		// protected=>internal so that BarsUnscaled can rename each bar
+		[JsonProperty]	public	BarScaleInterval ScaleInterval	{ get; protected set; }
+		[JsonProperty]	public	DateTime	DateTimeOpen		{ get; protected set; }
+		[JsonProperty]	public	DateTime	DateTimeNextBarOpenUnconditional		{ get; protected set; }
+		[JsonProperty]	public	DateTime	DateTimePreviousBarOpenUnconditional	{ get; protected set; }
 		
-		[JsonProperty]	public double Open;
-		[JsonProperty]	public double High;
-		[JsonProperty]	public double Low;
-		[JsonProperty]	public double Close;
-		[JsonProperty]	public double Volume;
+		[JsonProperty]	public	double	Open;
+		[JsonProperty]	public	double	High;
+		[JsonProperty]	public	double	Low;
+		[JsonProperty]	public	double	Close;
+		[JsonProperty]	public	double	Volume;
 
-		[JsonIgnore]	public Bars ParentBars { get; protected set; }
-		[JsonIgnore]	public int ParentBarsIndex { get; protected set; }
-		[JsonIgnore]	public bool HasParentBars { get { return this.ParentBars != null; } }
-		[JsonProperty]	public string ParentBarsIdent { get {
+		[JsonIgnore]	public	Bars	ParentBars			{ get; protected set; }
+		[JsonIgnore]	public	int		ParentBarsIndex		{ get; protected set; }
+		[JsonIgnore]	public	bool	HasParentBars		{ get { return this.ParentBars != null; } }
+		[JsonProperty]	public	string	ParentBarsIdent		{ get {
 				if (this.HasParentBars == false) return "NO_PARENT_BARS";
 				StringBuilder sb = new StringBuilder("StaticBar");
 				//if (this.ParentBarsIndex <  this.ParentBars.Count - 1) ret = this.ParentBarsIndex.ToString();

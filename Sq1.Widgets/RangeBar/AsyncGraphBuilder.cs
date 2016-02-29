@@ -53,10 +53,10 @@ namespace Sq1.Widgets.RangeBar {
 			this.timerSystem.Close();
 			this.timerSystem.Dispose();
 		}
-		public void BuildGraphInNewThreadAndInvalidateDelayed() {
+		public void BuildGraph_inNewThread_andInvalidateDelayed() {
 			//ticksWhenLastResized = DateTime.Now.Ticks;
 			if (this.millisAfterLastResizeToBuildAsync == 0) {
-				this.BuildGraphInNewThreadAndInvalidate();
+				this.BuildGraph_inNewThread_andInvalidate();
 				return;
 			}
 			if (this.IsCalculating) return;
@@ -69,19 +69,19 @@ namespace Sq1.Widgets.RangeBar {
 		public void OnTimerElapsed( Object source, ElapsedEventArgs e ) {
 			this.timerSystem.Stop();
 			this.timerStarted = false;
-			ThreadPool.QueueUserWorkItem(new WaitCallback(this.BuildGraphInNewThreadAndInvalidate));
+			ThreadPool.QueueUserWorkItem(new WaitCallback(this.BuildGraph_inNewThread_andInvalidate));
 		}
-		public void BuildGraphInNewThreadAndInvalidate(object state=null) {
+		public void BuildGraph_inNewThread_andInvalidate(object state=null) {
 			if (this.IsCalculating) {
 				this.AbortCalculation = true;
 				this.areCalculationsAborted.WaitOne();
 				this.AbortCalculation = false;
 			}
-			this.BuildGraphTimeConsuming();
+			this.BuildGraph_timeConsuming();
 			//REASON_FOR_INFINITE_LOOP_DONT_UNCOMMENT_NOR_DELETE
 			this.RangeBarWithGraph.Invalidate();
 		}
-		protected void BuildGraphTimeConsuming() {
+		protected void BuildGraph_timeConsuming() {
 			string msig = " //AsyncGraphBuilder<T>.BuildGraphTimeConsuming()";
 			if (this.RangeBarWithGraph.BufferedGraphics == null) return;
 			if (this.HasDataToDraw == false) {
@@ -147,7 +147,7 @@ namespace Sq1.Widgets.RangeBar {
 				bool resizedWith = newCalculationRequest != alreadyCalculated; 
 				bool resizedHeight = (int)g.VisibleClipBounds.Height != this.PrevCalculationHeight; 
 				if (resizedWith || resizedHeight) {
-					this.BuildGraphTimeConsuming();
+					this.BuildGraph_timeConsuming();
 					if (this.ValueYinvertedForGraphicsWidth == null) return;	//happens when spilling empty chart	HasDataToDraw=false
 				}
 			} else {

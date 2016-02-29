@@ -217,6 +217,38 @@ namespace Sq1.Gui {
 				Assembler.PopupException("mniChartSettingsEditor_Click()", ex);
 			}
 		}
+		void mniBarsEditor_Click(object sender, System.EventArgs e) {
+			try {
+				//if (this.mniSymbolInfoEditor.Checked == false) {
+				if (BarsEditorForm.Instance.IsShown == false) {
+					//BarsEditorForm.Instance.Show(this.DockPanel);
+					BarsEditorForm.Instance.ShowStackedHinted(this.DockPanel);
+					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = true;
+				} else {
+					BarsEditorForm.Instance.Hide();
+					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = false;
+				}
+				this.MainFormSerialize();
+			} catch (Exception ex) {
+				Assembler.PopupException("mniBarsEditor_Click()", ex);
+			}
+		}
+		void mniFuturesMerger_Click(object sender, System.EventArgs e) {
+			try {
+				//if (this.mniSymbolInfoEditor.Checked == false) {
+				if (FuturesMergerForm.Instance.IsShown == false) {
+					FuturesMergerForm.Instance.Show(this.DockPanel);
+					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = true;
+				} else {
+					FuturesMergerForm.Instance.Hide();
+					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = false;
+				}
+				this.MainFormSerialize();
+			} catch (Exception ex) {
+				Assembler.PopupException("mniFuturesMerger_Click()", ex);
+			}
+		}
+		
 		
 		//http://stackoverflow.com/questions/2272019/how-to-display-a-windows-form-in-full-screen-on-top-of-the-taskbar
 		Rectangle boundsBeforeGoingFullScreen;

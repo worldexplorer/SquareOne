@@ -36,8 +36,11 @@ namespace Sq1.Core {
 		public RepositoryJsonChartSettingsTemplates			RepositoryJsonChartSettingsTemplates;
 
 		public	const string							DateTimeFormatIndicatorHasNoValuesFor	= "yyyy-MMM-dd ddd HH:mm";
+		public	const string							DateTimeFormatToDays					= "yyyy-MMM-dd";
+		//public	const string							DateTimeFormatToHours					= "yyyy-MMM-dd HH";
 		public	const string							DateTimeFormatToMinutes					= "yyyy-MMM-dd HH:mm";
-		public	const string							DateTimeFormatToMinutesSeconds_noYear	= "yyyy-MMM-dd HH:mm:ss";
+		public	const string							DateTimeFormatToMinutes_noYear			= "MMM-dd HH:mm:ss";
+		public	const string							DateTimeFormatToMinutesSeconds_noYear	= "MMM-dd HH:mm:ss";
 		public	const string							DateTimeFormatLong						= "HH:mm:ss.fff ddd dd MMM yyyy";
 		public	const string							DateTimeFormatLongFilename				= "yyyy-MMM-dd_ddd_HH.mm.ss";
 		

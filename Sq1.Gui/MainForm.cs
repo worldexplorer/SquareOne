@@ -81,6 +81,8 @@ namespace Sq1.Gui {
 				ExecutionForm				.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor);
 				CsvImporterForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSources);
 				SymbolInfoEditorForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositorySymbolInfos, Assembler.InstanceInitialized.RepositoryJsonDataSources);
+				BarsEditorForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSources);
+				FuturesMergerForm			.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSources);
 
 				this.WorkspacesManager = new MainFormWorkspacesManager(this, Assembler.InstanceInitialized.WorkspacesRepository);
 			} catch (Exception ex) {
@@ -444,6 +446,8 @@ namespace Sq1.Gui {
 			CsvImporterForm			.Instance.VisibleChanged	+= delegate { this.mniCsvImporter			.Checked = CsvImporterForm			.Instance.Visible; };
 			SymbolInfoEditorForm	.Instance.VisibleChanged	+= delegate { this.mniSymbolInfoEditor		.Checked = SymbolInfoEditorForm		.Instance.Visible; };
 			ChartSettingsEditorForm	.Instance.VisibleChanged	+= delegate { this.mniChartSettingsEditor	.Checked = ChartSettingsEditorForm	.Instance.Visible; };
+			BarsEditorForm			.Instance.VisibleChanged	+= delegate { this.mniBarsEditor			.Checked = BarsEditorForm			.Instance.Visible; };
+			FuturesMergerForm		.Instance.VisibleChanged	+= delegate { this.mniFuturesMerger			.Checked = FuturesMergerForm		.Instance.Visible; };
 
 			this.MainFormEventManager = new MainFormEventManager(this);
 
@@ -457,7 +461,7 @@ namespace Sq1.Gui {
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceSelected			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceSelected;
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnNewChartForSymbolClicked		+= this.MainFormEventManager.DataSourcesTree_OnNewChartForSymbolClicked;
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnOpenStrategyForSymbolClicked	+= this.MainFormEventManager.DataSourcesTree_OnOpenStrategyForSymbolClicked;
-			DataSourcesForm.Instance.DataSourcesTreeControl.OnBarsAnalyzerClicked			+= this.MainFormEventManager.DataSourcesTree_OnBarsAnalyzerClicked;
+			DataSourcesForm.Instance.DataSourcesTreeControl.OnBarsEditorClicked				+= this.MainFormEventManager.DataSourcesTree_OnBarsEditorClicked;
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnSymbolInfoEditorClicked		+= this.MainFormEventManager.DataSourcesTree_OnSymbolInfoEditorClicked;
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceEditClicked			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceEditClicked;
 			//DataSourcesForm.Instance.DataSourcesTree.OnDataSourceDeleteClicked			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceDeletedClicked;

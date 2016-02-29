@@ -146,9 +146,19 @@ namespace Sq1.Gui {
 					StrategiesForm.Instance.Activate();
 				}
 			} catch (Exception ex) {
-				string msg = "ChartFormsManagers.Remove() didn't go trought? duplicates";
+				string msg = "ChartFormsManagers.Remove() didn't go throught? duplicates";
 				Assembler.PopupException(msg, ex);
 			}
+		}
+
+		public void ChartForm_OnBarsEditorClicked(object sender, DataSourceSymbolEventArgs e) {
+			string msig = " //ChartForm_OnBarsEditorClicked()";
+			if (BarsEditorForm.Instance.IsShown) {
+				BarsEditorForm.Instance.ActivateDockContentPopupAutoHidden(false, true);
+			} else {
+				BarsEditorForm.Instance.ShowStackedHinted(this.mainForm.DockPanel);
+			}
+			BarsEditorForm.Instance.BarsEditorUserControl.LoadBars(e.DataSource.Name, e.Symbol, false, true);
 		}
 		#endregion
 		//v1
@@ -266,7 +276,14 @@ namespace Sq1.Gui {
 		}
 
 		#region DataSourcesTree
-		internal void DataSourcesTree_OnBarsAnalyzerClicked(object sender, DataSourceSymbolEventArgs e) {
+		internal void DataSourcesTree_OnBarsEditorClicked(object sender, DataSourceSymbolEventArgs e) {
+			string msig = " //DataSourcesTree_OnBarsEditorClicked()";
+			if (BarsEditorForm.Instance.IsShown) {
+				BarsEditorForm.Instance.ActivateDockContentPopupAutoHidden(false, true);
+			} else {
+				BarsEditorForm.Instance.ShowStackedHinted(this.mainForm.DockPanel);
+			}
+			BarsEditorForm.Instance.BarsEditorUserControl.LoadBars(e.DataSource.Name, e.Symbol, false, true);
 		}
 		internal void DataSourcesTree_OnSymbolInfoEditorClicked(object sender, DataSourceSymbolEventArgs e) {
 			string msig = " //DataSourcesTree_OnSymbolInfoEditorClicked()";

@@ -7,13 +7,13 @@ using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Charting;
+using Sq1.Core.Streaming;
 
 using Sq1.Widgets.RangeBar;
 using Sq1.Widgets;
 
 using Sq1.Gui.Singletons;
-using Sq1.Core.Charting;
-using Sq1.Core.Streaming;
 
 
 namespace Sq1.Gui.Forms {
@@ -281,11 +281,10 @@ namespace Sq1.Gui.Forms {
 
 			this.chartFormManager.OnBacktestedOrLivesimmed();
 		}
-		internal void ChartRangeBar_AnyValueChanged(object sender, RangeArgs<DateTime> e) {
-			BarDataRange newRange = new BarDataRange(e.ValueMin.Date, e.ValueMax.Date);
+		internal void ChartRangeBar_OnAnyValueChanged(object sender, RangeArgs<DateTime> e) {
+			BarDataRange newRange = new BarDataRange(e.ValueMin, e.ValueMax);
 			try {
-				this.chartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("ChartRangeBar_AnyValueChanged");
-				this.chartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.chartFormManager.UserSelectedRange_loadBars_backtest_populate(newRange);
 			} catch (Exception ex) {
 				Assembler.PopupException("ChartRangeBar_AnyValueChanged", ex);
 			}

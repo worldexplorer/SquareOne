@@ -522,11 +522,15 @@ namespace Sq1.Gui.Forms {
 			this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
 		}
 
-		void ChartControl_OnPumpPaused(object sender, EventArgs e) {
+		void chartControl_OnPumpPaused(object sender, EventArgs e) {
 			this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = false;
 		}
-		void ChartControl_OnPumpUnPaused(object sender, EventArgs e) {
+		void chartControl_OnPumpUnPaused(object sender, EventArgs e) {
 			this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = true;
+		}
+
+		void mniEditBars_Click(object sender, EventArgs e) {
+			this.raiseOnBarsEditorClicked();
 		}
 	}
 }

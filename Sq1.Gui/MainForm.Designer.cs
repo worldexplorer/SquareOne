@@ -35,11 +35,13 @@
 			this.menuItemVersionsCredits = new Sq1.Widgets.VersionsCredits.MenuItemVersionsCredits();
 			this.mniSaveScreenshot = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+			this.mniDistributedBacktester = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniFuturesMerger = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniBarsEditor = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniChartSettingsEditor = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniSymbolInfoEditor = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniCsvImporter = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniExecution = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniSliders = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniStrategies = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,6 +66,7 @@
 			this.MniltbWorklspaceNewBlank = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.MniWorkspaceDelete = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctxTools.SuspendLayout();
 			this.ctxVersionsCredits.SuspendLayout();
 			this.mainFormStatusStrip.SuspendLayout();
@@ -76,11 +79,13 @@
             this.mniVersionsAndCredits,
             this.mniSaveScreenshot,
             this.toolStripSeparator4,
+            this.mniDistributedBacktester,
+            this.mniFuturesMerger,
             this.mniBarsEditor,
             this.mniChartSettingsEditor,
             this.mniSymbolInfoEditor,
-            this.toolStripSeparator2,
             this.mniCsvImporter,
+            this.toolStripSeparator2,
             this.mniExecution,
             this.mniSliders,
             this.mniStrategies,
@@ -89,7 +94,7 @@
             this.toolStripSeparator1,
             this.mniExit});
 			this.ctxTools.Name = "ctxmsTools";
-			this.ctxTools.Size = new System.Drawing.Size(230, 308);
+			this.ctxTools.Size = new System.Drawing.Size(230, 352);
 			// 
 			// mniVersionsAndCredits
 			// 
@@ -105,6 +110,7 @@
 			this.ctxVersionsCredits.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemVersionsCredits});
 			this.ctxVersionsCredits.Name = "ctxVersionsCredits";
+			this.ctxVersionsCredits.OwnerItem = this.mniVersionsAndCredits;
 			this.ctxVersionsCredits.ShowImageMargin = false;
 			this.ctxVersionsCredits.Size = new System.Drawing.Size(816, 306);
 			// 
@@ -129,12 +135,26 @@
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
 			this.toolStripSeparator4.Size = new System.Drawing.Size(226, 6);
 			// 
+			// mniDistributedBacktester
+			// 
+			this.mniDistributedBacktester.Enabled = false;
+			this.mniDistributedBacktester.Name = "mniDistributedBacktester";
+			this.mniDistributedBacktester.Size = new System.Drawing.Size(229, 22);
+			this.mniDistributedBacktester.Text = "Distributed Backtester";
+			// 
+			// mniFuturesMerger
+			// 
+			this.mniFuturesMerger.Name = "mniFuturesMerger";
+			this.mniFuturesMerger.Size = new System.Drawing.Size(229, 22);
+			this.mniFuturesMerger.Text = "Futures Merger";
+			this.mniFuturesMerger.Click += new System.EventHandler(this.mniFuturesMerger_Click);
+			// 
 			// mniBarsEditor
 			// 
-			this.mniBarsEditor.Enabled = false;
 			this.mniBarsEditor.Name = "mniBarsEditor";
 			this.mniBarsEditor.Size = new System.Drawing.Size(229, 22);
 			this.mniBarsEditor.Text = "Bars Editor";
+			this.mniBarsEditor.Click += new System.EventHandler(this.mniBarsEditor_Click);
 			// 
 			// mniChartSettingsEditor
 			// 
@@ -150,17 +170,17 @@
 			this.mniSymbolInfoEditor.Text = "Symbol Info Editor";
 			this.mniSymbolInfoEditor.Click += new System.EventHandler(this.mniSymbolInfoEditor_Click);
 			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(226, 6);
-			// 
 			// mniCsvImporter
 			// 
 			this.mniCsvImporter.Name = "mniCsvImporter";
 			this.mniCsvImporter.Size = new System.Drawing.Size(229, 22);
 			this.mniCsvImporter.Text = "CSV Importer";
 			this.mniCsvImporter.Click += new System.EventHandler(this.mniCsvImporter_Click);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(226, 6);
 			// 
 			// mniExecution
 			// 
@@ -173,7 +193,6 @@
 			// mniSliders
 			// 
 			this.mniSliders.Name = "mniSliders";
-			this.mniSliders.ShortcutKeys = System.Windows.Forms.Keys.F2;
 			this.mniSliders.Size = new System.Drawing.Size(229, 22);
 			this.mniSliders.Text = "Script Parameters";
 			this.mniSliders.Click += new System.EventHandler(this.mniSliders_Click);
@@ -314,6 +333,7 @@
 			// ctxWindows
 			// 
 			this.ctxWindows.Name = "ctxWindows";
+			this.ctxWindows.OwnerItem = this.mniWindows;
 			this.ctxWindows.ShowImageMargin = false;
 			this.ctxWindows.Size = new System.Drawing.Size(36, 4);
 			this.ctxWindows.Opening += new System.ComponentModel.CancelEventHandler(this.ctxWindowsOpening);
@@ -332,6 +352,7 @@
 			// CtxWorkspaces
 			// 
 			this.CtxWorkspaces.Name = "ctxWorkspaces";
+			this.CtxWorkspaces.OwnerItem = this.mniWorkSpaces;
 			this.CtxWorkspaces.Size = new System.Drawing.Size(61, 4);
 			// 
 			// btnFullScreen
@@ -444,6 +465,11 @@
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
 			this.toolStripSeparator3.Size = new System.Drawing.Size(182, 6);
 			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(229, 22);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -492,7 +518,7 @@
 		private System.Windows.Forms.ToolStripMenuItem mniSymbolInfoEditor;
 		private System.Windows.Forms.ToolStripMenuItem mniChartSettingsEditor;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-		private System.Windows.Forms.ToolStripMenuItem mniBarsEditor;
+		private System.Windows.Forms.ToolStripMenuItem mniFuturesMerger;
 		public System.Windows.Forms.ContextMenuStrip CtxWorkspacesModify;
 		public Widgets.LabeledTextBox.MenuItemLabeledTextBox MniltbWorklspaceRenameTo;
 		public Widgets.LabeledTextBox.MenuItemLabeledTextBox MniltbWorklspaceDuplicateTo;
@@ -505,5 +531,8 @@
 		private System.Windows.Forms.ContextMenuStrip ctxVersionsCredits;
 		private Widgets.VersionsCredits.MenuItemVersionsCredits menuItemVersionsCredits;
 		private System.Windows.Forms.ToolStripMenuItem mniSaveScreenshot;
+		private System.Windows.Forms.ToolStripMenuItem mniBarsEditor;
+		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem mniDistributedBacktester;
 	}
 }

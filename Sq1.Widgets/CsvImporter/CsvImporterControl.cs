@@ -6,65 +6,75 @@ using System.Windows.Forms;
 
 using BrightIdeasSoftware;
 using CsvHelper;
+
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Repositories;
 using Sq1.Core.Serializers;
 
+using Sq1.Widgets.RangeBar;
+
 namespace Sq1.Widgets.CsvImporter {
 	public partial class CsvImporterControl : UserControl {
-		string btnImportOriginalMessage;
-		CsvImporterDataSnapshot dataSnapshot;
-		Serializer<CsvImporterDataSnapshot> dataSnapshotSerializer;
-		RepositoryJsonDataSources DataSourceRepository;
+		string								btnImportOriginalMessage;
+		CsvImporterDataSnapshot				csvDataSnapshot;
+		Serializer<CsvImporterDataSnapshot> csvDataSnapshotSerializer;
+		RepositoryJsonDataSources			DataSourceRepository;
 
-		private string targetSymbolClicked;
-		private DataSource targetDataSource;
+		string								targetSymbolClicked;
+		DataSource							targetDataSource;
 		
 		public CsvImporterControl() {
 			InitializeComponent();
-			this.btnImportOriginalMessage = this.btnImport.Text;
-			this.olvColGenParsedRaw = new Dictionary<OLVColumn, ColumnCatcher>();
-			this.olvColGenFieldSetup = new Dictionary<OLVColumn, ColumnCatcher>();
-			this.dataSnapshotSerializer = new Serializer<CsvImporterDataSnapshot>();
-			LinkLabel.Link link = new LinkLabel.Link();
-			link.LinkData = "http://www.finam.ru/analysis/profile0000300007/";
-			this.lnkDownload.Links.Add(link);				
+			this.btnImportOriginalMessage			= this.btnImport.Text;
+			this.olvColGenParsedRaw					= new Dictionary<OLVColumn, ColumnCatcher>();
+			this.olvColGenFieldSetup				= new Dictionary<OLVColumn, ColumnCatcher>();
+			this.csvDataSnapshotSerializer			= new Serializer<CsvImporterDataSnapshot>();
+			this.rangeBar.OnValueMaxChanged			+= new EventHandler<RangeArgs<DateTime>>(rangeBar_OnValueMaxChanged);
+			this.rangeBar.OnValueMinChanged			+= new EventHandler<RangeArgs<DateTime>>(rangeBar_OnValueMaxChanged);
+			this.rangeBar.OnValuesMinAndMaxChanged	+= new EventHandler<RangeArgs<DateTime>>(rangeBar_OnValueMaxChanged);
+			this.olvParsedByFormat_customize();
 		}
 		public void Initialize(RepositoryJsonDataSources dataSourceRepository) {
 			this.DataSourceRepository = dataSourceRepository;
-			bool createdNewFile = this.dataSnapshotSerializer.Initialize(this.DataSourceRepository.RootPath,
+			bool createdNewFile = this.csvDataSnapshotSerializer.Initialize(this.DataSourceRepository.RootPath,
 												   "Sq1.Widgets.CsvImporter.CsvImporterDataSnapshot.json", "Workspaces",
 												   Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded, true, true);
 
 			//this.dataSnapshot = new CsvImporterDataSnapshot();
-			this.dataSnapshot = this.dataSnapshotSerializer.Deserialize();
-			foreach (var each in this.dataSnapshot.FieldSetupCurrent) {
-				each.DataSnapshot = this.dataSnapshot;
+			this.csvDataSnapshot = this.csvDataSnapshotSerializer.Deserialize();
+
+			LinkLabel.Link link = new LinkLabel.Link();
+			link.LinkData = this.csvDataSnapshot.DownloadButtonURL;
+			this.lnkDownload.Links.Clear();
+			this.lnkDownload.Links.Add(link);				
+
+			foreach (var each in this.csvDataSnapshot.FieldSetupCurrent) {
+				each.DataSnapshot = this.csvDataSnapshot;
 			}
-			this.mniltbCsvSeparator.InputFieldValue = this.dataSnapshot.CsvConfiguration.Delimiter;
+			this.mniltbCsvSeparator.InputFieldValue = this.csvDataSnapshot.CsvConfiguration.Delimiter;
 
-			this.importSourceFileBrowser1.PopulateListFromCsvPath(this.dataSnapshot.PathCsv);
+			this.importSourceFileBrowser.PopulateListFromCsvPath(this.csvDataSnapshot.PathCsv);
 
-			if (this.dataSnapshot.FileSelected != null) {
+			if (this.csvDataSnapshot.FileSelected != null) {
 				this.stepsAllparseFromDataSnapshot();
-				this.importSourceFileBrowser1.SelectFile(this.dataSnapshot.FileSelected);
+				this.importSourceFileBrowser.SelectFile(this.csvDataSnapshot.FileSelected);
 			}
-			this.dataSourcesTree.Initialize(this.DataSourceRepository);
+			this.dataSourcesTree.Initialize(this.DataSourceRepository, false);
 			this.dataSourcesTree.TreeFirstColumnNameText = "Import To (Symbol / DataSource):";
 		}
 
 		bool stepsAllparseFromDataSnapshot() {
 			Cursor.Current = Cursors.WaitCursor;
 			try {
-				var fsi = new FileInfo(this.dataSnapshot.FileSelectedAbsname);
+				var fsi = new FileInfo(this.csvDataSnapshot.FileSelectedAbsname);
 				var pi = new ImportSourcePathInfo(fsi);
 				this.step1parseFileInfo(pi);
 			} catch (Exception ex) {
 				this.olvCsvParsedRaw.Reset();
 				this.olvCsvParsedRaw.EmptyListMsg = "step1parseFileInfo\r\n[" + ex.Message + "]"
-					+ "\r\nin new ImportSourcePathInfo(new FileInfo(" + this.dataSnapshot.FileSelected + "))";
+					+ "\r\nin new ImportSourcePathInfo(new FileInfo(" + this.csvDataSnapshot.FileSelected + "))";
 				//Assembler.PopupException("step1parseFileInfo()", ex);
 				this.olvParsedByFormat.SetObjects(null);
 				this.olvParsedByFormat.EmptyListMsg = "";
@@ -78,7 +88,7 @@ namespace Sq1.Widgets.CsvImporter {
 			} catch (Exception ex) {
 				this.olvParsedByFormat.SetObjects(null);
 				this.olvParsedByFormat.EmptyListMsg = "step2syncCsvRawToFieldSetup\r\n[" + ex.Message + "]"
-					+ "\r\nfor [" + this.dataSnapshot.FileSelected + "]";
+					+ "\r\nfor [" + this.csvDataSnapshot.FileSelected + "]";
 				Assembler.PopupException("step2syncCsvRawToFieldSetup()", ex);
 				this.disableRangeBarAndBtnImport();
 				Cursor.Current = Cursors.Default;
@@ -98,7 +108,7 @@ namespace Sq1.Widgets.CsvImporter {
 				this.step3syncCsvRawAndFieldSetupToParsedByFormat();
 			} catch (Exception ex) {
 				this.olvParsedByFormat.SetObjects(null);
-				this.olvParsedByFormat.EmptyListMsg = "step3syncCsvRawAndFieldSetupToParsedByFormat\r\n[" + ex.Message + "]" + "\r\nfor [" + this.dataSnapshot.FileSelected + "]";
+				this.olvParsedByFormat.EmptyListMsg = "step3syncCsvRawAndFieldSetupToParsedByFormat\r\n[" + ex.Message + "]" + "\r\nfor [" + this.csvDataSnapshot.FileSelected + "]";
 				Assembler.PopupException("step3syncCsvRawAndFieldSetupToParsedByFormat()", ex);
 				this.disableRangeBarAndBtnImport();
 				Cursor.Current = Cursors.Default;
@@ -109,7 +119,7 @@ namespace Sq1.Widgets.CsvImporter {
 		public List<List<string>> readCsvToMatrix(string filename) {
 			List<List<string>> ret = new List<List<string>>();
 			using (StreamReader textReader = new StreamReader(filename)) {
-				var csv = new CsvReader(textReader, this.dataSnapshot.CsvConfiguration);
+				var csv = new CsvReader(textReader, this.csvDataSnapshot.CsvConfiguration);
 				while (csv.Read()) {
 					string[] fields = csv.CurrentRecord;
 					ret.Add(new List<string>(fields));
@@ -119,9 +129,9 @@ namespace Sq1.Widgets.CsvImporter {
 		}
 		
 		List<List<string>> csvUnnamed;
-		private Dictionary<OLVColumn, ColumnCatcher> olvColGenParsedRaw;
+		Dictionary<OLVColumn, ColumnCatcher> olvColGenParsedRaw;
 		void step1parseFileInfo(ImportSourcePathInfo e) {
-			this.dataSnapshot.FileSelected = e.FSI.Name;
+			this.csvDataSnapshot.FileSelected = e.FSI.Name;
 			this.csvUnnamed = readCsvToMatrix(e.FSI.FullName);
 			string status = " Rows[" + this.csvUnnamed.Count + "]";
 			if (this.csvUnnamed.Count == 0) {
@@ -160,11 +170,11 @@ namespace Sq1.Widgets.CsvImporter {
 				//olvColumn.Width = width;
 				//if (i == maxColumns-1) olvColumn.FillsFreeSpace = true;
 				ColumnCatcher iCatcher;
-				if (this.dataSnapshot.FieldSetupCurrent.Count >= i+1) {
-					iCatcher = this.dataSnapshot.FieldSetupCurrent[i];
+				if (this.csvDataSnapshot.FieldSetupCurrent.Count >= i+1) {
+					iCatcher = this.csvDataSnapshot.FieldSetupCurrent[i];
 				} else {
-					iCatcher = new ColumnCatcher(i, this.dataSnapshot);
-					this.dataSnapshot.FieldSetupCurrent.Add(iCatcher);
+					iCatcher = new ColumnCatcher(i, this.csvDataSnapshot);
+					this.csvDataSnapshot.FieldSetupCurrent.Add(iCatcher);
 				}
 				olvColumn.AspectGetter = iCatcher.AspectGetterParsedRaw;
 				this.olvCsvParsedRaw.Columns.Add(olvColumn);
@@ -176,28 +186,31 @@ namespace Sq1.Widgets.CsvImporter {
 			this.olvCsvParsedRaw.AutoResizeColumns();
 		}
 
-		private Dictionary<OLVColumn, ColumnCatcher> olvColGenFieldSetup;
+		Dictionary<OLVColumn, ColumnCatcher> olvColGenFieldSetup;
 		void step2syncCsvRawToFieldSetup() {
 			this.olvFieldSetup.Reset();
 			this.olvColGenFieldSetup.Clear();
-			foreach (var olvRaw in this.olvColGenParsedRaw.Keys) {
+			foreach (OLVColumn olvRaw in this.olvColGenParsedRaw.Keys) {
 				ColumnCatcher iCatcher = this.olvColGenParsedRaw[olvRaw];
-				var olvColumnSetup = new OLVColumn();
+				OLVColumn olvColumnSetup = new OLVColumn();
 				olvColumnSetup.Name = "FieldSetupColumn_" + (iCatcher.ColumnSerno + 1);
 				olvColumnSetup.Text = "FieldSetup " + (iCatcher.ColumnSerno + 1);
 				olvColumnSetup.Width = olvRaw.Width;
 				olvColumnSetup.AspectGetter = iCatcher.AspectGetterFieldSetup;
 				this.olvFieldSetup.Columns.Add(olvColumnSetup);
 				this.olvColGenFieldSetup.Add(olvColumnSetup, iCatcher);
+
+				//olvRaw.Wi
 			}
-			this.olvFieldSetup.SetObjects(this.dataSnapshot.OLVModel);
+			this.olvFieldSetup.SetObjects(this.csvDataSnapshot.OLVModel);
+			//this.olvColGenParsedRaw.
 		}
 		void step3syncCsvRawAndFieldSetupToParsedByFormat() {
 			List<CsvBar> csvParsedByFormat = new List<CsvBar>();
 			string symbol = null;
 			BarScaleInterval scaleInterval = null;
 			bool allCsvBarsHaveDOHLCV = true;
-			string dateAndTimeFormatsGlued = this.dataSnapshot.FieldSetupCurrent.DateAndTimeFormatsGlued;
+			string dateAndTimeFormatsGlued = this.csvDataSnapshot.FieldSetupCurrent.DateAndTimeFormatsGlued;
 			
 			foreach (OLVColumn each in this.olvParsedByFormat.Columns) {
 				each.HeaderForeColor = Color.Black;
@@ -209,7 +222,7 @@ namespace Sq1.Widgets.CsvImporter {
 					//foreach (string cell in row) {
 					for (int i=0; i<row.Count; i++) {
 						string cell = row[i];
-						var iColumn = this.dataSnapshot.FieldSetupCurrent[i];
+						var iColumn = this.csvDataSnapshot.FieldSetupCurrent[i];
 						try {
 							iColumn.Parser.ParseAndPushThrows(cell, newCsvBar, dateAndTimeFormatsGlued);
 						} catch (Exception ex) {
@@ -258,8 +271,8 @@ namespace Sq1.Widgets.CsvImporter {
 					throw ex;
 				}
 			}
-			this.olvParsedByFormat.SetObjects(csvParsedByFormat);
-
+			// MOVED_TO_STEP4=>bars_selectRange_flushToGui this.olvParsedByFormat.SetObjects(csvParsedByFormat);
+			
 			if (allCsvBarsHaveDOHLCV == false || csvParsedByFormat.Count == 0) {
 				this.disableRangeBarAndBtnImport();
 				return;
@@ -271,15 +284,15 @@ namespace Sq1.Widgets.CsvImporter {
 			this.step4createBarsDisplayChart();
 		}
 		void disableRangeBarAndBtnImport() {
-			this.rangeBarDateTime1.Reset();
-			this.rangeBarDateTime1.Enabled = false;
+			this.rangeBar.Reset();
+			this.rangeBar.Enabled = false;
 			//this.btnImport.Enabled = true;	//make btnImport.Text and .BackColor repaint when was disabled before changing
 			//this.btnImport.Text = this.btnImportOriginalMessage;
 			//this.btnImport.BackColor = SystemColors.Control;
 			//this.btnImport.Enabled = false;
 			//this.btnImport.Invalidate();		//btnImport.Enabled = true works better
-			this.BarsParsed = null;
-			this.syncImportButton();
+			this.barsParsed = null;
+			this.populateImportButton();
 		}
 		BarScaleInterval findMinimalInterval(List<CsvBar> csvParsedByFormat, int takeFirstBarsLimit = 10) {
 			BarScaleInterval ret = BarScaleInterval.MaxValue;
@@ -296,11 +309,22 @@ namespace Sq1.Widgets.CsvImporter {
 		}
 
 		List<CsvBar> csvParsedByFormat;
-		Bars BarsParsed;
+		Bars barsParsed;
+		Bars barsParsed_rangeSelectedForImport;
 		string symbolDetectedInCsv;
 		BarScaleInterval scaleIntervalDetectedInCsv;
 		BarScaleInterval scaleIntervalMinimalScanned;
 		void step4createBarsDisplayChart() {
+			this.barsParsed = new Bars(this.symbolDetectedInCsv, this.scaleIntervalDetectedInCsv, this.csvDataSnapshot.FileSelectedAbsname);
+			//BarsUnscaled barsParsed = new BarsUnscaled(symbol, this.dataSnapshot.FileSelectedAbsname);
+			foreach (CsvBar csvBar in this.csvParsedByFormat) {
+				this.barsParsed.BarCreateAppendBindStatic(csvBar.DateTime, csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume);
+			}
+
+			this.bars_selectRange_flushToGui(new BarDataRange());
+		}
+
+		void populateGrpPreviewParsedByFormat(int barsCount) {
 			string status = " Symbol[" + this.symbolDetectedInCsv + "]";
 
 			BarScaleInterval csvScaleInterval = this.scaleIntervalDetectedInCsv;
@@ -315,28 +339,14 @@ namespace Sq1.Widgets.CsvImporter {
 			int posToAppend = statusOld.IndexOf('|');
 			//if (posToAppend < 0) posToAppend = 0;
 			string prefix = statusOld.Substring(0, posToAppend+1); // no exception thrown even if posToAppend=-1 (not found)
-			this.grpPreviewParsedByFormat.Text = prefix + status;
-
-			this.BarsParsed = new Bars(this.symbolDetectedInCsv, csvScaleInterval, this.dataSnapshot.FileSelectedAbsname);
-			//BarsUnscaled barsParsed = new BarsUnscaled(symbol, this.dataSnapshot.FileSelectedAbsname);
-			foreach (CsvBar csvBar in this.csvParsedByFormat) {
-				this.BarsParsed.BarCreateAppendBindStatic(csvBar.DateTime, csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume);
-			}
 
 			//status += " BarsParsed.Count[" + this.BarsParsed.Count + "]";
-			status += " Bars[" + this.BarsParsed.Count + "]";
+			status += " Bars[" + barsCount + "]";
 			this.grpPreviewParsedByFormat.Text = prefix + status;
-
-
-			this.rangeBarDateTime1.Enabled = true;
-			this.rangeBarDateTime1.Initialize(this.BarsParsed);
-
-			this.syncImportButton();
 		}
-
-		private void syncImportButton() {
+		void populateImportButton() {
 			this.btnImport.Enabled = true;	//make btnImport.Text and .BackColor repaint when was disabled before changing
-			if (this.BarsParsed == null) {
+			if (this.barsParsed_rangeSelectedForImport == null) {
 				this.btnImport.Text = this.btnImportOriginalMessage;
 				this.btnImport.BackColor = SystemColors.Control;
 				this.btnImport.Enabled = false;
@@ -355,8 +365,8 @@ namespace Sq1.Widgets.CsvImporter {
 				this.btnImport.Enabled = false;
 				return;
 			}
-			if (this.targetDataSource.ScaleInterval != this.BarsParsed.ScaleInterval) {
-				msg = "SELECT_DATASOURCE_WITH_SCALE_" + this.BarsParsed.ScaleInterval;
+			if (this.targetDataSource.ScaleInterval != this.barsParsed_rangeSelectedForImport.ScaleInterval) {
+				msg = "SELECT_DATASOURCE_WITH_SCALE_" + this.barsParsed_rangeSelectedForImport.ScaleInterval;
 				msg += "_INSTEAD_OF_" + this.targetDataSource.ScaleInterval;
 				this.btnImport.Text = msg;
 				this.btnImport.BackColor = Color.MistyRose;
@@ -364,9 +374,9 @@ namespace Sq1.Widgets.CsvImporter {
 				return;
 			}
 			msg = "Import";
-			msg += " [" + this.BarsParsed.Count;
-			if (this.csvParsedByFormat.Count != this.BarsParsed.Count) {
-				msg += ":" + this.csvParsedByFormat.Count;
+			msg += " [" + this.barsParsed_rangeSelectedForImport.Count;
+			if (this.csvParsedByFormat.Count != this.barsParsed_rangeSelectedForImport.Count) {
+				msg += "/" + this.csvParsedByFormat.Count;
 			}
 			msg += "] bars";
 			msg += " into DataSource[" + this.targetDataSource.Name + "]";
@@ -382,6 +392,19 @@ namespace Sq1.Widgets.CsvImporter {
 			this.btnImport.Enabled = true;
 			this.btnImport.BackColor = Color.LightGreen;
 		}
+
+		void bars_selectRange_flushToGui(BarDataRange rangeToShow) {
+			this.barsParsed_rangeSelectedForImport = this.barsParsed.Clone_selectRange(rangeToShow, true);
+			this.rangeBar.Initialize(this.barsParsed, this.barsParsed_rangeSelectedForImport);
+
+			this.olvParsedByFormat.SetObjects(this.barsParsed_rangeSelectedForImport.InnerBars_exposedOnlyForEditor);
+			this.rangeBar.Enabled = true;
+
+			this.populateGrpPreviewParsedByFormat(this.barsParsed_rangeSelectedForImport.Count);
+			this.populateImportButton();
+		}
+
+
 //		void improveColumnTypeGuess(int linesToAnalyzeRQ = 10, bool distributedEvenly = false, bool highlightCheched = true) {
 //			int firstLine = 0;
 //			int firstLineOffsetToGetNext = 1;
