@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
 using Sq1.Core;
+
 using Sq1.Widgets;
 using Sq1.Widgets.DataSourceEditor;
 
@@ -25,7 +26,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 			if (imEditorControl != null) imEditorForm = imEditorControl.Parent as DockContentImproved;
 			if (imEditorForm != null && imEditorForm.DockPanel != null) {
 				//dataSourceEditorForm.ShowAsSiblingTabOnTopOfMe(this.quikStreamingAdapter.MonitorForm);
-				this.quikStreamingAdapter.MonitorForm.ShowOnTopOf(imEditorForm);
+				//this.quikStreamingAdapter.MonitorForm.ShowOnTopOf(imEditorForm);
+				this.quikStreamingAdapter.MonitorForm.ShowStackedHinted(imEditorForm.DockPanel);
 			//}
 			//if (myParent != null && myParent.MainFormDockPanel_forDdeMonitor != null) {
 			//	this.quikStreamingAdapter.MonitorForm.Show(myParent.MainFormDockPanel_forDdeMonitor, dataSourceEditorForm.DockState);

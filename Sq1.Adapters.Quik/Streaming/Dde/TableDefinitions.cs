@@ -28,8 +28,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				new XlColumn(XlBlockType.String,	"TRADE_DATE_CODE",	false,	DateTime.MinValue)	{ ToDateParseFormat = "dd.MM.yyyy" },	// mention some format to indicate it's a Date, I'll try to parse from anything first and then I'll try the mentioned one
 				new XlColumn(XlBlockType.String,	"time",				false,	DateTime.MinValue)	{ ToTimeParseFormat = "HH:mm:ss" },		// mention some format to indicate it's a Time, I'll try to parse from anything first and then I'll try the mentioned one
 
-				new XlColumn(XlBlockType.Float,		"selldepo",			false,	double.NaN),
-				new XlColumn(XlBlockType.Float,		"buydepo",			false,	double.NaN),
+				new XlColumn(XlBlockType.Float,		"selldepo",			false,	double.NaN,						false),
+				new XlColumn(XlBlockType.Float,		"buydepo",			false,	double.NaN,						false),
 				new XlColumn(XlBlockType.Float,		"qty",				true,	double.NaN),
 				new XlColumn(XlBlockType.Float,		"high",				false,	double.NaN),
 				new XlColumn(XlBlockType.Float,		"low",				false,	double.NaN),
