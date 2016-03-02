@@ -122,7 +122,7 @@ namespace Sq1.Widgets {
 
 			Dictionary <DockState, List<DockPane>> panesByDockState = this.panesByDockState(dockPanel);
 			if (panesByDockState.ContainsKey(base.ShowHint) == false) {
-				base.Show(this);
+				base.Show(dockPanel);
 				return;
 			}
 			List<DockPane> panesForMyDockState = panesByDockState[base.ShowHint];

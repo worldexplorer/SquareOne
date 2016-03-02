@@ -92,8 +92,9 @@ namespace Sq1.Core.Charting {
 			bool downstreamBeforeWeStarted_mustBeUnSubscribed = this.DownstreamSubscribed;
 			if (downstreamBeforeWeStarted_mustBeUnSubscribed
 						&& Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == true) {
-				string msg = "CHART_STREAMING_ALREADY_SUBSCRIBED_OR_FORGOT_TO_DISCONNECT REMOVE_INVOCATION_UPSTACK";
-				Assembler.PopupException(msg + base.MsigForNpExceptions);
+				string msg = "CHART_STREAMING_ALREADY_SUBSCRIBED_OR_FORGOT_TO_DISCONNECT REMOVE_INVOCATION_UPSTACK"
+					+ " HAPPENS_AFTER_USER_LOADED_ANOTHER_STRATEGY_FOR_CHART_WITHOUT_UNSUBSCRIBING";
+				Assembler.PopupException(msg + base.MsigForNpExceptions, null, false);
 				// RESET_IsStreaming=subscribed return;
 			}
 

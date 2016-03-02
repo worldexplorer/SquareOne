@@ -103,7 +103,7 @@ namespace Sq1.Core.StrategyBase {
 						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnStreamingTriggeringScriptTurnedOnCallback(WAIT)");
 						this.Strategy.Script.OnStreamingTriggeringScriptTurnedOnCallback();
 					} finally {
-						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnStreamingTriggeringScriptTurnedOffCallback(WAIT)");
+						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnStreamingTriggeringScriptTurnedOnCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOnNonBlockingRead = false;
 					}
 				} else {
@@ -153,7 +153,7 @@ namespace Sq1.Core.StrategyBase {
 						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnStrategyEmittingOrdersTurnedOffCallback(WAIT)");
 						this.Strategy.Script.OnStrategyEmittingOrdersTurnedOffCallback();
 					} finally {
-						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnStrategyEmittingOrdersTurnedOnCallback(WAIT)");
+						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnStrategyEmittingOrdersTurnedOffCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOffNonBlockingRead = false;
 					}
 				}
@@ -166,15 +166,13 @@ namespace Sq1.Core.StrategyBase {
 					pct = this.Strategy.ScriptContextCurrent.SpreadModelerPercent;
 					ret = pct + "%";
 				}
-				if (this.Bars != null) {
-					Bar lastBar = this.Bars.BarStaticLast_nullUnsafe;
-					if (lastBar != null) {
-						double lastClose = lastBar.Close;
-						double spreadPips = lastClose * pct / 100d;
-						spreadPips = this.Bars.SymbolInfo.AlignToPriceLevel(spreadPips);
-						ret = "~= " + spreadPips;
-					}
-				}
+				if (this.Bars == null) return ret;
+				Bar lastBar = this.Bars.BarStaticLast_nullUnsafe;
+				if (lastBar == null) return ret;
+				double lastClose = lastBar.Close;
+				double spreadPips = lastClose * pct / 100d;
+				spreadPips = this.Bars.SymbolInfo.AlignToPriceLevel(spreadPips);
+				ret = "~= " + spreadPips + "pips, for lastClose[" + lastBar.Close_formatted + "]";
 				return ret;
 			} }
 

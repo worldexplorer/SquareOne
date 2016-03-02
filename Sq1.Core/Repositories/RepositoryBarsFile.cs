@@ -367,7 +367,7 @@ namespace Sq1.Core.Repositories {
 					return saved;
 				}
 
-				if (myFirstBarEver_justAdd_withoutMerging == false) {
+				if (myFirstBarEver_justAdd_withoutMerging) {
 					// 1/3 - read the date and see if the timestamp is the same as 
 					DateTime dateTimeOpenLastStored = new DateTime(binaryReader.ReadInt64());
 					if (barLastFormedStatic_orCurrentStreaming.DateTimeOpen < dateTimeOpenLastStored) {

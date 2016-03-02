@@ -95,8 +95,7 @@ namespace Sq1.Gui.Forms {
             this.mnitlbPositionSizeSharesConstantEachTrade,
             this.mnitlbPositionSizeDollarsEachTradeConstant});
 			this.ctxBacktest.Name = "ctxBacktest";
-			this.ctxBacktest.OwnerItem = this.DdbBacktest;
-			this.ctxBacktest.Size = new System.Drawing.Size(429, 248);
+			this.ctxBacktest.Size = new System.Drawing.Size(429, 270);
 			this.ctxBacktest.Opening += new System.ComponentModel.CancelEventHandler(this.ctxBacktest_Opening);
 			// 
 			// mniStrokes
@@ -124,19 +123,19 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbSpreadGeneratorPct.InputFieldBackColor = System.Drawing.SystemColors.Info;
 			this.mnitlbSpreadGeneratorPct.InputFieldEditable = true;
 			this.mnitlbSpreadGeneratorPct.InputFieldMultiline = true;
-			this.mnitlbSpreadGeneratorPct.InputFieldOffsetX = 100;
+			this.mnitlbSpreadGeneratorPct.InputFieldOffsetX = 80;
 			this.mnitlbSpreadGeneratorPct.InputFieldValue = "0.005";
-			this.mnitlbSpreadGeneratorPct.InputFieldWidth = 60;
+			this.mnitlbSpreadGeneratorPct.InputFieldWidth = 50;
 			this.mnitlbSpreadGeneratorPct.Name = "mnitlbSpreadGeneratorPct";
 			this.mnitlbSpreadGeneratorPct.OffsetTop = 0;
-			this.mnitlbSpreadGeneratorPct.Size = new System.Drawing.Size(230, 21);
-			this.mnitlbSpreadGeneratorPct.TextLeft = "Spread %price";
+			this.mnitlbSpreadGeneratorPct.Size = new System.Drawing.Size(236, 21);
+			this.mnitlbSpreadGeneratorPct.TextLeft = "Set Spread as";
 			this.mnitlbSpreadGeneratorPct.TextLeftOffsetX = 0;
-			this.mnitlbSpreadGeneratorPct.TextLeftWidth = 84;
+			this.mnitlbSpreadGeneratorPct.TextLeftWidth = 78;
 			this.mnitlbSpreadGeneratorPct.TextRed = false;
-			this.mnitlbSpreadGeneratorPct.TextRight = "~= 121pips";
-			this.mnitlbSpreadGeneratorPct.TextRightOffsetX = 163;
-			this.mnitlbSpreadGeneratorPct.TextRightWidth = 70;
+			this.mnitlbSpreadGeneratorPct.TextRight = "%price ~= 121pips";
+			this.mnitlbSpreadGeneratorPct.TextRightOffsetX = 130;
+			this.mnitlbSpreadGeneratorPct.TextRightWidth = 109;
 			this.mnitlbSpreadGeneratorPct.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbSpreadGeneratorPct_UserTyped);
 			// 
 			// mniFillOutsideQuoteSpreadParanoidCheckThrow
@@ -214,7 +213,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldMultiline = true;
 			this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldOffsetX = 80;
 			this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldValue = "0.0005";
-			this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldWidth = 85;
+			this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldWidth = 50;
 			this.mnitlbPositionSizeSharesConstantEachTrade.Name = "mnitlbPositionSizeSharesConstantEachTrade";
 			this.mnitlbPositionSizeSharesConstantEachTrade.OffsetTop = 0;
 			this.mnitlbPositionSizeSharesConstantEachTrade.Size = new System.Drawing.Size(175, 21);
@@ -223,7 +222,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextLeftWidth = 43;
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextRed = false;
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextRight = "";
-			this.mnitlbPositionSizeSharesConstantEachTrade.TextRightOffsetX = 168;
+			this.mnitlbPositionSizeSharesConstantEachTrade.TextRightOffsetX = 133;
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextRightWidth = 4;
 			this.mnitlbPositionSizeSharesConstantEachTrade.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbPositionSizeSharesConstantEachTrade_UserTyped);
 			// 
@@ -236,7 +235,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldMultiline = true;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldOffsetX = 80;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldValue = "0.0005";
-			this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldWidth = 85;
+			this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldWidth = 50;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.Name = "mnitlbPositionSizeDollarsEachTradeConstant";
 			this.mnitlbPositionSizeDollarsEachTradeConstant.OffsetTop = 0;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.Size = new System.Drawing.Size(175, 21);
@@ -245,7 +244,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextLeftWidth = 82;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextRed = false;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextRight = "";
-			this.mnitlbPositionSizeDollarsEachTradeConstant.TextRightOffsetX = 168;
+			this.mnitlbPositionSizeDollarsEachTradeConstant.TextRightOffsetX = 133;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextRightWidth = 4;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbPositionSizeDollarsConstantEachTrade_UserTyped);
 			// 
@@ -270,7 +269,7 @@ namespace Sq1.Gui.Forms {
             this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim});
 			this.MniShowLivesim.Name = "MniShowLivesim";
 			this.MniShowLivesim.ShortcutKeys = System.Windows.Forms.Keys.F10;
-			this.MniShowLivesim.Size = new System.Drawing.Size(283, 22);
+			this.MniShowLivesim.Size = new System.Drawing.Size(284, 22);
 			this.MniShowLivesim.Text = "Show Live Simulator";
 			this.MniShowLivesim.Click += new System.EventHandler(this.mniShowLivesim_Click);
 			// 
@@ -285,17 +284,17 @@ namespace Sq1.Gui.Forms {
 			// toolStripSeparator3
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(280, 6);
+			this.toolStripSeparator3.Size = new System.Drawing.Size(281, 6);
 			// 
 			// toolStripSeparator9
 			// 
 			this.toolStripSeparator9.Name = "toolStripSeparator9";
-			this.toolStripSeparator9.Size = new System.Drawing.Size(280, 6);
+			this.toolStripSeparator9.Size = new System.Drawing.Size(281, 6);
 			// 
 			// mniStrategyRemove
 			// 
 			this.mniStrategyRemove.Name = "mniStrategyRemove";
-			this.mniStrategyRemove.Size = new System.Drawing.Size(283, 22);
+			this.mniStrategyRemove.Size = new System.Drawing.Size(284, 22);
 			this.mniStrategyRemove.Text = "Remove Strategy From Chart";
 			this.mniStrategyRemove.Click += new System.EventHandler(this.mniStrategyRemove_Click);
 			// 
@@ -304,7 +303,7 @@ namespace Sq1.Gui.Forms {
 			this.mniStrategyName.Enabled = false;
 			this.mniStrategyName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.mniStrategyName.Name = "mniStrategyName";
-			this.mniStrategyName.Size = new System.Drawing.Size(283, 22);
+			this.mniStrategyName.Size = new System.Drawing.Size(284, 22);
 			this.mniStrategyName.Text = "TwoMAsCompiled :: myStrategies.DLL";
 			// 
 			// MniShowSourceCodeEditor
@@ -312,7 +311,7 @@ namespace Sq1.Gui.Forms {
 			this.MniShowSourceCodeEditor.CheckOnClick = true;
 			this.MniShowSourceCodeEditor.Name = "MniShowSourceCodeEditor";
 			this.MniShowSourceCodeEditor.ShortcutKeys = System.Windows.Forms.Keys.F4;
-			this.MniShowSourceCodeEditor.Size = new System.Drawing.Size(283, 22);
+			this.MniShowSourceCodeEditor.Size = new System.Drawing.Size(284, 22);
 			this.MniShowSourceCodeEditor.Text = "Show Source Code Editor";
 			this.MniShowSourceCodeEditor.Click += new System.EventHandler(this.mniShowSourceCodeEditor_Click);
 			// 
@@ -321,7 +320,7 @@ namespace Sq1.Gui.Forms {
 			this.MniShowSequencer.CheckOnClick = true;
 			this.MniShowSequencer.Name = "MniShowSequencer";
 			this.MniShowSequencer.ShortcutKeys = System.Windows.Forms.Keys.F8;
-			this.MniShowSequencer.Size = new System.Drawing.Size(283, 22);
+			this.MniShowSequencer.Size = new System.Drawing.Size(284, 22);
 			this.MniShowSequencer.Text = "Show Sequencer";
 			this.MniShowSequencer.Click += new System.EventHandler(this.mniShowSequencer_Click);
 			// 
@@ -330,7 +329,7 @@ namespace Sq1.Gui.Forms {
 			this.MniShowCorrelator.CheckOnClick = true;
 			this.MniShowCorrelator.Name = "MniShowCorrelator";
 			this.MniShowCorrelator.ShortcutKeys = System.Windows.Forms.Keys.F9;
-			this.MniShowCorrelator.Size = new System.Drawing.Size(283, 22);
+			this.MniShowCorrelator.Size = new System.Drawing.Size(284, 22);
 			this.MniShowCorrelator.Text = "Show Correlator";
 			this.MniShowCorrelator.Click += new System.EventHandler(this.mniShowCorrelator_Click);
 			// 
@@ -350,28 +349,28 @@ namespace Sq1.Gui.Forms {
             this.MniShowSourceCodeEditor});
 			this.ctxStrategy.Name = "ctxPositionSize";
 			this.ctxStrategy.OwnerItem = this.DdbStrategy;
-			this.ctxStrategy.Size = new System.Drawing.Size(284, 214);
+			this.ctxStrategy.Size = new System.Drawing.Size(285, 214);
 			this.ctxStrategy.Opening += new System.ComponentModel.CancelEventHandler(this.ctxStrategy_Opening);
 			// 
 			// mniStrategyContextLoad
 			// 
 			this.mniStrategyContextLoad.Enabled = false;
 			this.mniStrategyContextLoad.Name = "mniStrategyContextLoad";
-			this.mniStrategyContextLoad.Size = new System.Drawing.Size(283, 22);
+			this.mniStrategyContextLoad.Size = new System.Drawing.Size(284, 22);
 			this.mniStrategyContextLoad.Text = "NYI Load Script Context...";
 			// 
 			// MniShowSprintMonitor
 			// 
 			this.MniShowSprintMonitor.Enabled = false;
 			this.MniShowSprintMonitor.Name = "MniShowSprintMonitor";
-			this.MniShowSprintMonitor.Size = new System.Drawing.Size(283, 22);
+			this.MniShowSprintMonitor.Size = new System.Drawing.Size(284, 22);
 			this.MniShowSprintMonitor.Text = "Show Sprint Monitor";
 			// 
 			// MniShowExecution
 			// 
 			this.MniShowExecution.Enabled = false;
 			this.MniShowExecution.Name = "MniShowExecution";
-			this.MniShowExecution.Size = new System.Drawing.Size(283, 22);
+			this.MniShowExecution.Size = new System.Drawing.Size(284, 22);
 			this.MniShowExecution.Text = "Show Order Execution";
 			// 
 			// DdbStrategy
@@ -434,7 +433,7 @@ namespace Sq1.Gui.Forms {
             this.mniShowBarRange});
 			this.ctxBars.Name = "ctxScaleInterval";
 			this.ctxBars.OwnerItem = this.DdbBars;
-			this.ctxBars.Size = new System.Drawing.Size(252, 344);
+			this.ctxBars.Size = new System.Drawing.Size(252, 322);
 			this.ctxBars.Opening += new System.ComponentModel.CancelEventHandler(this.ctxBars_Opening);
 			// 
 			// mniBarsSymbolDataSource
@@ -502,7 +501,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbYearly.InputFieldWidth = 40;
 			this.mnitlbYearly.Name = "mnitlbYearly";
 			this.mnitlbYearly.OffsetTop = 0;
-			this.mnitlbYearly.Size = new System.Drawing.Size(91, 21);
+			this.mnitlbYearly.Size = new System.Drawing.Size(88, 21);
 			this.mnitlbYearly.TextLeft = "Yearly";
 			this.mnitlbYearly.TextLeftOffsetX = 47;
 			this.mnitlbYearly.TextLeftWidth = 41;
@@ -524,7 +523,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbMonthly.InputFieldWidth = 40;
 			this.mnitlbMonthly.Name = "mnitlbMonthly";
 			this.mnitlbMonthly.OffsetTop = 0;
-			this.mnitlbMonthly.Size = new System.Drawing.Size(104, 21);
+			this.mnitlbMonthly.Size = new System.Drawing.Size(96, 21);
 			this.mnitlbMonthly.TextLeft = "Monthly";
 			this.mnitlbMonthly.TextLeftOffsetX = 47;
 			this.mnitlbMonthly.TextLeftWidth = 54;
@@ -546,7 +545,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbWeekly.InputFieldWidth = 40;
 			this.mnitlbWeekly.Name = "mnitlbWeekly";
 			this.mnitlbWeekly.OffsetTop = 0;
-			this.mnitlbWeekly.Size = new System.Drawing.Size(97, 21);
+			this.mnitlbWeekly.Size = new System.Drawing.Size(95, 21);
 			this.mnitlbWeekly.TextLeft = "Weekly";
 			this.mnitlbWeekly.TextLeftOffsetX = 47;
 			this.mnitlbWeekly.TextLeftWidth = 47;
@@ -568,7 +567,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbDaily.InputFieldWidth = 40;
 			this.mnitlbDaily.Name = "mnitlbDaily";
 			this.mnitlbDaily.OffsetTop = 0;
-			this.mnitlbDaily.Size = new System.Drawing.Size(86, 21);
+			this.mnitlbDaily.Size = new System.Drawing.Size(85, 21);
 			this.mnitlbDaily.TextLeft = "Daily";
 			this.mnitlbDaily.TextLeftOffsetX = 47;
 			this.mnitlbDaily.TextLeftWidth = 35;
@@ -590,7 +589,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbHourly.InputFieldWidth = 40;
 			this.mnitlbHourly.Name = "mnitlbHourly";
 			this.mnitlbHourly.OffsetTop = 0;
-			this.mnitlbHourly.Size = new System.Drawing.Size(95, 21);
+			this.mnitlbHourly.Size = new System.Drawing.Size(89, 21);
 			this.mnitlbHourly.TextLeft = "Hourly";
 			this.mnitlbHourly.TextLeftOffsetX = 47;
 			this.mnitlbHourly.TextLeftWidth = 45;
@@ -612,7 +611,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbMinutes.InputFieldWidth = 40;
 			this.mnitlbMinutes.Name = "mnitlbMinutes";
 			this.mnitlbMinutes.OffsetTop = 0;
-			this.mnitlbMinutes.Size = new System.Drawing.Size(104, 21);
+			this.mnitlbMinutes.Size = new System.Drawing.Size(98, 21);
 			this.mnitlbMinutes.TextLeft = "Minutes";
 			this.mnitlbMinutes.TextLeftOffsetX = 47;
 			this.mnitlbMinutes.TextLeftWidth = 52;
@@ -639,7 +638,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbShowLastBars.InputFieldWidth = 40;
 			this.mnitlbShowLastBars.Name = "mnitlbShowLastBars";
 			this.mnitlbShowLastBars.OffsetTop = 0;
-			this.mnitlbShowLastBars.Size = new System.Drawing.Size(107, 21);
+			this.mnitlbShowLastBars.Size = new System.Drawing.Size(105, 21);
 			this.mnitlbShowLastBars.TextLeft = "Last Bars";
 			this.mnitlbShowLastBars.TextLeftOffsetX = 47;
 			this.mnitlbShowLastBars.TextLeftWidth = 55;
