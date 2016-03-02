@@ -29,21 +29,27 @@ namespace Sq1.Core.Backtesting {
 				spreadAligned = symbolInfo.PriceStep;
 			}
 			
-			if (barSimulated.HighLowDistance < spreadAligned) {
-				string msg = "barSimulated.HighLowDistance[" + barSimulated.HighLowDistance + "] < spreadAligned[" + spreadAligned + "]...";
-				Assembler.PopupException(msg, null, false);
-			}
-
-			if (openOrClosePrice - spreadAligned >= barSimulated.Low) {
-				quote.Ask = openOrClosePrice; 
-				quote.Bid = quote.Ask - spreadAligned;
-			} else {
-				quote.Bid = openOrClosePrice; 
+			if (barSimulated.HighLowDistance == 0) {
+				double halfSpread = spreadAligned / 2d;
+				halfSpread = symbolInfo.AlignToPriceLevel(halfSpread, PriceLevelRoundingMode.RoundToClosest); 
+				quote.Bid = openOrClosePrice - halfSpread;
 				quote.Ask = quote.Bid + spreadAligned;
-				if (openOrClosePrice + spreadAligned > barSimulated.High) {
-					string msg = "openOrClosePrice[" + openOrClosePrice + "] +- spreadAligned[" + spreadAligned + "]"
-						+ " is beyond Low[" + barSimulated.Low + "]...High[" + barSimulated.High + "]";
+			} else {
+				if (barSimulated.HighLowDistance < spreadAligned) {
+					string msg = "barSimulated.HighLowDistance[" + barSimulated.HighLowDistance + "] < spreadAligned[" + spreadAligned + "]...";
 					Assembler.PopupException(msg, null, false);
+				}
+				if (openOrClosePrice - spreadAligned >= barSimulated.Low) {
+					quote.Ask = openOrClosePrice; 
+					quote.Bid = quote.Ask - spreadAligned;
+				} else {
+					quote.Bid = openOrClosePrice; 
+					quote.Ask = quote.Bid + spreadAligned;
+					if (openOrClosePrice + spreadAligned > barSimulated.High) {
+						string msg = "openOrClosePrice[" + openOrClosePrice + "] +- spreadAligned[" + spreadAligned + "]"
+							+ " is beyond Low[" + barSimulated.Low + "]...High[" + barSimulated.High + "]";
+						Assembler.PopupException(msg, null, false);
+					}
 				}
 			}
 

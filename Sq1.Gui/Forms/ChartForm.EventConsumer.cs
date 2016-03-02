@@ -398,7 +398,7 @@ namespace Sq1.Gui.Forms {
 				
 				ContextScript context = this.ChartFormManager.Strategy.ScriptContextCurrent;
 				context.SpreadModelerPercent = userTypedDouble;
-				this.mnitlbSpreadGeneratorPct.TextRight = this.ChartFormManager.Executor.SpreadPips + " pips";
+				this.mnitlbSpreadGeneratorPct.TextRight = "%price " + this.ChartFormManager.Executor.SpreadPips;
 				
 				if (this.ChartFormManager.Executor.BacktesterOrLivesimulator.BacktestDataSource == null) {
 					this.ChartFormManager.Executor.BacktesterOrLivesimulator.InitializeQuoteGenerator();

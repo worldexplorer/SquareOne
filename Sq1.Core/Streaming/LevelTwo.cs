@@ -129,10 +129,12 @@ namespace Sq1.Core.Streaming {
 			if (this.symbolInfo.Level2ShowSpread) {
 				double spread = double.NaN;
 				if (double.IsNaN(priceLastAdded) == false) {
+					List<double> priceLevelsAsks = new List<double>(asksFrozen_asc.Keys);
 					List<double> priceLevelsBids = new List<double>(bidsFrozen_desc.Keys);
-					if (priceLevelsBids.Count > 0) {
-						double firstBid = priceLevelsBids[0];
-						spread = priceLastAdded - firstBid;
+					if (priceLevelsAsks.Count > 0 && priceLevelsBids.Count > 0) {
+						double bestAsk = priceLevelsAsks[0];
+						double bestBid = priceLevelsBids[priceLevelsBids.Count - 1];
+						spread = bestAsk - bestBid;
 					}
 				}
 				LevelTwoEachLine spreadRow = new LevelTwoEachLine(BidOrAsk.UNKNOWN, spread);
