@@ -84,7 +84,7 @@ namespace Sq1.Widgets.FuturesMerger {
 				DataSource dataSource_nullUnsafe = this.repositoryJsonDataSources.DataSourceFind_nullUnsafe(dataSourceName);
 				if (dataSource_nullUnsafe == null) {
 					string msg = "DATASOURCE_NOT_FOUND_IN_REPOSITORY";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}
 				string millisElapsed = "";

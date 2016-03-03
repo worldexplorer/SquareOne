@@ -30,7 +30,7 @@ namespace Sq1.Core.StrategyBase {
 		public	Sequencer						Sequencer					{ get; protected set; }
 		public	Livesimulator					Livesimulator				{ get; protected set; }
 		public	string							LastBacktestStatus;
-		public	ConcurrentWatchdog				ScriptIsRunningCantAlterInternalLists	{ get; protected set; }
+		public	ConcurrentWatchdog				ScriptIsRunning_cantAlterInternalLists	{ get; protected set; }
 		public	Correlator						Correlator					{ get; private set; }
 		#endregion
 		
@@ -100,19 +100,19 @@ namespace Sq1.Core.StrategyBase {
 				if (value == true) {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOnNonBlockingRead = true;
-						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnStreamingTriggeringScriptTurnedOnCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStreamingTriggeringScriptTurnedOnCallback(WAIT)");
 						this.Strategy.Script.OnStreamingTriggeringScriptTurnedOnCallback();
 					} finally {
-						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnStreamingTriggeringScriptTurnedOnCallback(WAIT)");
+						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnStreamingTriggeringScriptTurnedOffCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOnNonBlockingRead = false;
 					}
 				} else {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOffNonBlockingRead = true;
-						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnStreamingTriggeringScriptTurnedOffCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStreamingTriggeringScriptTurnedOffCallback(WAIT)");
 						this.Strategy.Script.OnStreamingTriggeringScriptTurnedOffCallback();
 					} finally {
-						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnStreamingTriggeringScriptTurnedOffCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnStreamingTriggeringScriptTurnedOffCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOffNonBlockingRead = false;
 					}
 				}
@@ -141,19 +141,19 @@ namespace Sq1.Core.StrategyBase {
 				if (value == true) {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOnNonBlockingRead = true;
-						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnStrategyEmittingOrdersTurnedOnCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStrategyEmittingOrdersTurnedOnCallback(WAIT)");
 						this.Strategy.Script.OnStrategyEmittingOrdersTurnedOnCallback();
 					} finally {
-						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnStrategyEmittingOrdersTurnedOnCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnStrategyEmittingOrdersTurnedOnCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOnNonBlockingRead = false;
 					}
 				} else {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOffNonBlockingRead = true;
-						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnStrategyEmittingOrdersTurnedOffCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStrategyEmittingOrdersTurnedOffCallback(WAIT)");
 						this.Strategy.Script.OnStrategyEmittingOrdersTurnedOffCallback();
 					} finally {
-						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnStrategyEmittingOrdersTurnedOffCallback(WAIT)");
+						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnStrategyEmittingOrdersTurnedOnCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOffNonBlockingRead = false;
 					}
 				}
@@ -188,7 +188,7 @@ namespace Sq1.Core.StrategyBase {
 			Livesimulator				= new Livesimulator(this);
 			OrderProcessor				= Assembler.InstanceInitialized.OrderProcessor;
 			PerformanceAfterBacktest	= new SystemPerformance(this);
-			ScriptIsRunningCantAlterInternalLists = new ConcurrentWatchdog("WAITING_FOR_SCRIPT_OVERRIDDEN_METHOD_TO_RETURN");
+			ScriptIsRunning_cantAlterInternalLists = new ConcurrentWatchdog("WAITING_FOR_SCRIPT_OVERRIDDEN_METHOD_TO_RETURN");
 			Correlator					= new Correlator(this);
 		}
 
@@ -321,12 +321,12 @@ namespace Sq1.Core.StrategyBase {
 				try {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnNewQuoteNonBlockingRead = true;
-						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnNewQuoteOfStreamingBarCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnNewQuoteOfStreamingBarCallback(WAIT)");
 						if (this.IsStreamingTriggeringScript) {
 							this.Strategy.Script.OnNewQuoteOfStreamingBarCallback(quoteForAlertsCreated);
 						}
 					} finally {
-						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnNewQuoteOfStreamingBarCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnNewQuoteOfStreamingBarCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnNewQuoteNonBlockingRead = false;
 					}
 					//alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.DumpPendingAlertsIntoPendingHistoryByBar();
@@ -366,13 +366,13 @@ namespace Sq1.Core.StrategyBase {
 				try {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
-						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
 						if (this.IsStreamingTriggeringScript) {
 							// TODO: What about Script.onQuote, onAlertFilled, onPositionClosed/Opened? - should they also NOT be invoked?
 							this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLast_nullUnsafe);
 						}
 					} finally {
-						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
 					}
 					this.EventGenerator.RaiseOnStrategyExecutedOneBar(this.Bars.BarStaticLast_nullUnsafe);
@@ -756,7 +756,7 @@ namespace Sq1.Core.StrategyBase {
 			this.BacktesterOrLivesimulator				.Dispose();
 			this.Sequencer								.Dispose();
 			this.Livesimulator							.Dispose();
-			this.ScriptIsRunningCantAlterInternalLists	.Dispose();
+			this.ScriptIsRunning_cantAlterInternalLists	.Dispose();
 
 			// ALREADY_DISPOSED_IN_ChartFormsManager.Dispose_workspaceReloading() this.ChartShadow							.Dispose();
 
@@ -764,7 +764,7 @@ namespace Sq1.Core.StrategyBase {
 			this.BacktesterOrLivesimulator				= null;
 			this.Sequencer								= null;
 			this.Livesimulator							= null;
-			this.ScriptIsRunningCantAlterInternalLists	= null;
+			this.ScriptIsRunning_cantAlterInternalLists	= null;
 			this.ChartShadow							= null;
 
 			this.OrderProcessor		= null;
