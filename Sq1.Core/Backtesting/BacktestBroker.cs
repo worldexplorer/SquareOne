@@ -1,4 +1,6 @@
-﻿using Sq1.Core.Accounting;
+﻿using Newtonsoft.Json;
+
+using Sq1.Core.Accounting;
 using Sq1.Core.Broker;
 using Sq1.Core.Support;
 using Sq1.Core.Execution;
@@ -8,8 +10,8 @@ using Sq1.Core.Livesim;
 namespace Sq1.Core.Backtesting {
 	[SkipInstantiationAt(Startup = true)]
 	public class BacktestBroker : BrokerAdapter {
-		public	BacktestMarketsim		BacktestMarketsim	{ get; protected set; }
-		public	ScriptExecutor			ScriptExecutor		{ get; private set; }
+		[JsonIgnore]	public	BacktestMarketsim		BacktestMarketsim	{ get; protected set; }
+		[JsonIgnore]	public	ScriptExecutor			ScriptExecutor		{ get; private set; }
 
 		public BacktestBroker(string reasonToExist) : base(reasonToExist) {
 			base.Name = "BacktestBrokerAdapter";
