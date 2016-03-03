@@ -466,6 +466,16 @@ namespace Sq1.Core.DataTypes {
 			return true;
 		}
 		public bool ContainsBidAskForQuoteGenerated(Quote quote, bool feedingGarbageAndIknowItDontBreak = false) {
+			if (this.HighLowDistance == 0) {
+				if (quote.Bid > this.Open || quote.Ask < this.Open) {
+					string msg = "FIRST_QUOTE_OF_THE_BAR MUST_HAVE_BID_OR_ASK_EQUALS_TO_OPEN(WHY_NOT_MORE_ELABORATE?)"
+						+ " FOR_QUOTE_GENERATED_I_HOPE_OPEN_IS_IN_THE_MIDDLE_OF_QUOTE'S_SPREAD";
+					Assembler.PopupException(msg, null, false);
+					return false;
+				}
+				return true;
+			}
+
 			if (quote.Spread > this.HighLowDistance) {
 				string msg = "CONSIDER_REDUCING_SPREAD_SIZE_IN_Chart>Strategy>SpreadModeler"
 					+ " quote.Spread[" + quote.Spread + "] > this.HighLowDistance[" + this.HighLowDistance + "]"

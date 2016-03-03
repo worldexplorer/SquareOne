@@ -70,7 +70,7 @@ namespace Sq1.Core.DoubleBuffered {
 			} catch (Exception ex) {
 				string msg = "PANEL_DOUBLE_BUFFERED.OnPaint()_HAS_PROBLEMS_WITH_DOUBLE_BUFFERING_API"
 					+ " OTHERWIZE_REFACTOR_CHILDREN_TO_CATCH_THEIR_OWN_EXCEPTIONS";
-				Assembler.PopupException(msg, ex);
+				Assembler.PopupException(msg, ex, false);
 			}
 		}
 		protected override void OnPaintBackground(PaintEventArgs pe) {

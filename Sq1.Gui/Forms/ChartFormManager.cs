@@ -388,12 +388,17 @@ namespace Sq1.Gui.Forms {
 				//v1 if (this.Strategy.ScriptContextCurrent.IsStreaming) {
 				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
 				ContextChart ctx = this.ContextCurrentChartOrStrategy;
-				if (ctx.DownstreamSubscribed) {
-					string reason = "contextChart[" + ctx.ToString() + "].DownstreamSubscribed=true;"
-						+ " OnApprestartBacktest will launch in another thread and I can't postpone subscription until it finishes"
-						+ " so the Pump should set paused now because UpstreamSubscribe should not invoke ChartFormStreamingConsumer"
-						+ " whenever StreamingAdapter is ready, but only after all ScaleSymbol consuming backtesters are complete";
-					this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
+				if (ctx.DownstreamSubscribed != this.ChartForm.ChartControl.ChartStreamingConsumer.DownstreamSubscribed) {
+					if (ctx.DownstreamSubscribed) {
+						string reason = "contextChart[" + ctx.ToString() + "].DownstreamSubscribed=true;"
+							+ " OnApprestartBacktest will launch in another thread and I can't postpone subscription until it finishes"
+							+ " so the Pump should set paused now because UpstreamSubscribe should not invoke ChartFormStreamingConsumer"
+							+ " whenever StreamingAdapter is ready, but only after all ScaleSymbol consuming backtesters are complete";
+						this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
+					} else {
+						string reason = "contextChart[" + ctx.ToString() + "].DownstreamSubscribed=false;";
+						this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingUnsubscribe(reason);
+					}
 				}
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
