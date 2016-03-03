@@ -114,6 +114,7 @@ namespace Sq1.Gui {
 			Assembler.ExceptionsDuringApplicationShutdown_PopupNotepad();
 		}
 
+		#region ctxTools
 		void mniExceptions_Click(object sender, EventArgs e) {
 			try {
 				if (this.mniExceptions.Checked == false) {
@@ -122,6 +123,7 @@ namespace Sq1.Gui {
 					ExceptionsForm.Instance.Hide();
 				}
 				this.MainFormSerialize();
+				this.ctxTools.Show();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniExceptions_Click()", ex);
 			}
@@ -134,6 +136,7 @@ namespace Sq1.Gui {
 					DataSourcesForm.Instance.Hide();
 				}
 				this.MainFormSerialize();
+				this.ctxTools.Show();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniSymbols_Click()", ex);
 			}
@@ -146,6 +149,7 @@ namespace Sq1.Gui {
 					SlidersForm.Instance.Hide();
 				}
 				this.MainFormSerialize();
+				this.ctxTools.Show();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniSliders_Click()", ex);
 			}
@@ -158,6 +162,7 @@ namespace Sq1.Gui {
 					StrategiesForm.Instance.Hide();
 				}
 				this.MainFormSerialize();
+				this.ctxTools.Show();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniStrategies_Click()", ex);
 			}
@@ -171,6 +176,7 @@ namespace Sq1.Gui {
 					ExecutionForm.Instance.Hide();
 				}
 				this.MainFormSerialize();
+				this.ctxTools.Show();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniExecution_Click()", ex);
 			}
@@ -183,6 +189,7 @@ namespace Sq1.Gui {
 					CsvImporterForm.Instance.Hide();
 				}
 				this.MainFormSerialize();
+				this.ctxTools.Show();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniCsvImporter_Click()", ex);
 			}
@@ -198,6 +205,7 @@ namespace Sq1.Gui {
 					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = false;
 				}
 				this.MainFormSerialize();
+				this.ctxTools.Show();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniSymbolInfoEditor_Click()", ex);
 			}
@@ -213,6 +221,7 @@ namespace Sq1.Gui {
 					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = false;
 				}
 				this.MainFormSerialize();
+				this.ctxTools.Show();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniChartSettingsEditor_Click()", ex);
 			}
@@ -229,6 +238,7 @@ namespace Sq1.Gui {
 					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = false;
 				}
 				this.MainFormSerialize();
+				this.ctxTools.Show();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniBarsEditor_Click()", ex);
 			}
@@ -244,12 +254,13 @@ namespace Sq1.Gui {
 					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = false;
 				}
 				this.MainFormSerialize();
+				this.ctxTools.Show();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniFuturesMerger_Click()", ex);
 			}
 		}
-		
-		
+		#endregion
+
 		//http://stackoverflow.com/questions/2272019/how-to-display-a-windows-form-in-full-screen-on-top-of-the-taskbar
 		Rectangle boundsBeforeGoingFullScreen;
 		void btnFullScreen_Click(object sender, EventArgs e) {

@@ -23,10 +23,10 @@ namespace Sq1.Core.StrategyBase {
 				if (this.Strategy.Script == null) return;
 				try {
 					this.ExecutionDataSnapshot.IsScriptRunningOnAlertNotSubmittedNonBlockingRead = true;
-					this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnAlertNotSubmittedCallback(WAIT)");
+					this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnAlertNotSubmittedCallback(WAIT)");
 					this.Strategy.Script.OnAlertNotSubmittedCallback(alert, barNotSubmittedRelno);
 				} finally {
-					this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnAlertNotSubmittedCallback(WAIT)");
+					this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnAlertNotSubmittedCallback(WAIT)");
 					this.ExecutionDataSnapshot.IsScriptRunningOnAlertNotSubmittedNonBlockingRead = false;
 				}
 			} catch (Exception e) {
@@ -42,7 +42,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			try {
 				//v1 NO!!! DIRECT_KILLED_TO_EXECUTOR_UPSTACK alert.Strategy.Script.OnAlertKilledCallback(alert);
-				this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)");
+				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)");
 				if (this.ExecutionDataSnapshot.AlertsPending.Contains(alert, this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)")) {
 					bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)");
 					if (removed) alert.IsKilled = true;
@@ -58,7 +58,7 @@ namespace Sq1.Core.StrategyBase {
 				this.Strategy.Script.OnAlertKilledCallback(alert);
 			} finally {
 				this.ExecutionDataSnapshot.IsScriptRunningOnAlertKilledNonBlockingRead = false;
-				this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)");
+				this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)");
 			}
 		}
 
@@ -68,16 +68,16 @@ namespace Sq1.Core.StrategyBase {
 
 			//avoiding two alertsFilled and messing script-overrides; despite all script invocations downstack are sequential, guaranteed for 1 alertFilled
 			try {
-				this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
-				this.callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(alertFilled, quoteFilledThisAlertNullForLive,
+				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
+				this.callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(alertFilled, quoteFilledThisAlertNullForLive,
 																					 priceFill, qtyFill, slippageFill, commissionFill);
 			} finally {
-				this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
+				this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
 			}
 			// filled alerts should be immediately be reflected with an arrow on PricePanel
 			this.ChartShadow.InvalidateAllPanels();
 		}
-		void callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(Alert alertFilled, Quote quoteFilledThisAlertNullForLive,
+		void callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(Alert alertFilled, Quote quoteFilledThisAlertNullForLive,
 																			 double priceFill, double qtyFill, double slippageFill, double commissionFill) {
 			string msig = " callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
 
@@ -350,10 +350,10 @@ namespace Sq1.Core.StrategyBase {
 				try {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnAlertFilledNonBlockingRead = true;
-						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnAlertFilledCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnAlertFilledCallback(WAIT)");
 						this.Strategy.Script.OnAlertFilledCallback(alertFilled);
 					} finally {
-						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnAlertFilledCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnAlertFilledCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnAlertFilledNonBlockingRead = false;
 					}
 				} catch (Exception e) {
@@ -366,19 +366,19 @@ namespace Sq1.Core.StrategyBase {
 						if (alertFilled.PositionAffected.Prototype != null) {
 							try {
 								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead = true;
-								this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
+								this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
 								this.Strategy.Script.OnPositionOpenedPrototypeSlTpPlacedCallback(alertFilled.PositionAffected);
 							} finally {
-								this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
+								this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
 								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead = false;
 							}
 						} else {
 							try {
 								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedNonBlockingRead = true;
-								this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpenedCallback(WAIT)");
+								this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpenedCallback(WAIT)");
 								this.Strategy.Script.OnPositionOpenedCallback(alertFilled.PositionAffected);
 							} finally {
-								this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
+								this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
 								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedNonBlockingRead = false;
 							}
 						}
@@ -391,10 +391,10 @@ namespace Sq1.Core.StrategyBase {
 					try {
 						try {
 							this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosedNonBlockingRead = true;
-							this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnPositionClosedCallback(WAIT)");
+							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionClosedCallback(WAIT)");
 							this.Strategy.Script.OnPositionClosedCallback(alertFilled.PositionAffected);
 						} finally {
-							this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnPositionClosedCallback(WAIT)");
+							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionClosedCallback(WAIT)");
 							this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosedNonBlockingRead = false;
 						}
 					} catch (Exception e) {
