@@ -372,7 +372,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			OrderProcessorDataSnapshot snap = this.BrokerQuik.OrderProcessor.DataSnapshot;
 			//v1
 			string logOrEmpty = "";
-			Order order = snap.ScanRecentForGUID(GUID.ToString(), snap.LanesForCallbackOrderState, out logOrEmpty);
+			Order order = snap.ScanRecent_forGUID(GUID.ToString(), snap.LanesForCallbackOrderState, out logOrEmpty);
 			//v2
 			//Order order = snap.OrdersAll.ScanRecentForGUID(GUID.ToString());
 

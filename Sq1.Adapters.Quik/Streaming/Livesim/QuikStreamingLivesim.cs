@@ -196,21 +196,21 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			this.QuikLivesimBatchPublisher.SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(base.LevelTwoGenerator.LevelTwoAsks, base.LevelTwoGenerator.LevelTwoBids);
 			this.QuikLivesimBatchPublisher.SendQuote_DdeClientPokesDdeServer_waitServerProcessed(quote);
 
-			#region otherwize injectQuotesToFillPendings doesn't get invoked (copypaste from LivesimStreaming)
-			AlertList notYetScheduled = base.LivesimBrokerSnap.AlertsNotYetScheduledForDelayedFillBy(quote);
-			if (notYetScheduled.Count > 0) {
-				if (quote.ParentBarStreaming != null) {
-					string msg = "I_MUST_HAVE_IT_UNATTACHED_HERE";
-					Assembler.PopupException(msg);
-				}
-				base.LivesimBroker.ConsumeQuoteUnattached_toFillPending(quote, notYetScheduled);
-			} else {
-				string msg = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
-			}
+			#region MOVED_TO_InvokeScript_onNewBar_onNewQuote() otherwize injectQuotesToFillPendings doesn't get invoked (copypaste from LivesimStreaming)
+			//AlertList notYetScheduled = base.LivesimBrokerSnap.Alerts_thatQuoteWillFill_forSchedulingDelayedFill(quote);
+			//if (notYetScheduled.Count > 0) {
+			//    if (quote.ParentBarStreaming != null) {
+			//        string msg = "I_MUST_HAVE_IT_UNATTACHED_HERE";
+			//        Assembler.PopupException(msg);
+			//    }
+			//    base.LivesimBroker.ConsumeQuoteUnattached_toFillPending(quote, notYetScheduled);
+			//} else {
+			//    string msg = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
+			//}
+			#endregion
 
 			base.LivesimStreamingSpoiler.Spoil_after_PushQuoteGenerated();
 			this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
-			#endregion
 		}
 
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {

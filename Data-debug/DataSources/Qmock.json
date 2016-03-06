@@ -49,6 +49,6 @@
   "MarketName": "FORTS",
   "Name": "Qmock",
   "StreamingAdapterName": "QuikStreaming",
-  "BrokerAdapterName": "Quik Broker",
+  "BrokerAdapterName": "QuikBroker",
   "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\Qmock"
 }

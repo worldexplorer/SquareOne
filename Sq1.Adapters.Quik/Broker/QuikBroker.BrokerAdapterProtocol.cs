@@ -101,7 +101,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			string msg = "killerStateFromTerminal[" + killerStateFromTerminal + "]"
 				+ " msgSubmittedFromTerminal[" + msgSubmittedFromTerminal + "]"
 				+ " sernoSessionFromTerminal[" + sernoSessionFromTerminal + "]";
-			base.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(killerOrder, msig + msg);
+			base.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(killerOrder, msig + msg);
 
 			// don't set State.KillPending to Killer!!! Killer has KillSubmitting->BulletFlying->KillerDone
 			//base.OrderManager.UpdateOrderStateAndPostProcess(killerOrder,

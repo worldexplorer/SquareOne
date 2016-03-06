@@ -120,12 +120,12 @@ namespace Sq1.Adapters.Quik.Broker {
 			if (newOrderStateReceived == OrderState.KillerDone || newOrderStateReceived == OrderState.Rejected) {
 				if (fillPrice != 0) {
 					string msg = "QUIK_HINTS_ON_SOMETHING fillPrice[" + fillPrice + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
-					this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(order, msg);
+					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msg);
 					fillPrice = 0;
 				}
 				if (fillQnty != 0) {
 					string msg = "QUIK_HINTS_ON_SOMETHING fillQnty[" + fillPrice + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
-					this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(order, msg);
+					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msg);
 					fillQnty = 0;
 				}
 			}
