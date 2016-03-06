@@ -27,7 +27,7 @@ namespace Sq1.Adapters.Quik.Broker {
 		}
 		public override void Disconnect() { QuikTerminal.DisconnectDll(); }
 
-		public override void OrderSubmit(Order order) {
+		public override void Submit(Order order) {
 			//Debugger.Break();
 			string msig = " //" + Name + "::OrderSubmit():"
 				+ " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
@@ -54,7 +54,7 @@ namespace Sq1.Adapters.Quik.Broker {
 				default:
 					msg = " No MarketLimitStop[" + order.Alert.MarketLimitStop + "] handler for order[" + order.ToString() + "]"
 						+ "; must be one of those: Market/Limit/Stop";
-					this.OrderProcessor.UpdateOrderStateAndPostProcess(order,
+					this.OrderProcessor.UpdateOrderState_postProcess(order,
 						new OrderStateMessage(order, OrderState.Error, msig + msg));
 					throw new Exception(msig + msg);
 			}
@@ -74,9 +74,9 @@ namespace Sq1.Adapters.Quik.Broker {
 			order.SernoSession = sernoSessionFromTerminal;
 
 			OrderStateMessage newState = new OrderStateMessage(order, orderStateFromTerminalMustGetSubmitted, msg + msig);
-			base.OrderProcessor.UpdateOrderStateAndPostProcess(order, newState);
+			base.OrderProcessor.UpdateOrderState_postProcess(order, newState);
 		}
-		public override void OrderKillSubmit(Order victimOrder) {
+		public override void Kill(Order victimOrder) {
 			string msig = Name + "::OrderKillSubmit():"
 				+ "State[" + victimOrder.State + "]"
 				+ " [" + victimOrder.Alert.Symbol + "/" + victimOrder.Alert.SymbolClass + "]"
@@ -101,7 +101,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			string msg = "killerStateFromTerminal[" + killerStateFromTerminal + "]"
 				+ " msgSubmittedFromTerminal[" + msgSubmittedFromTerminal + "]"
 				+ " sernoSessionFromTerminal[" + sernoSessionFromTerminal + "]";
-			base.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(killerOrder, msig + msg);
+			base.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(killerOrder, msig + msg);
 
 			// don't set State.KillPending to Killer!!! Killer has KillSubmitting->BulletFlying->KillerDone
 			//base.OrderManager.UpdateOrderStateAndPostProcess(killerOrder,
@@ -110,7 +110,7 @@ namespace Sq1.Adapters.Quik.Broker {
 		public override void CancelReplace(Order order, Order newOrder) {
 			throw new Exception("TODO: don't forget to implement before going live!");
 		}
-		public override void OrderPreSubmitEnrichBrokerSpecificInjection(Order order) {
+		public override void OrderEnrich_preSubmit_brokerSpecificInjection(Order order) {
 			string msig = " //BrokerQuik.OrderPreSubmitEnrichBrokerSpecificInjection(" + order.ToString() + ")";
 			string msg = "";
 			

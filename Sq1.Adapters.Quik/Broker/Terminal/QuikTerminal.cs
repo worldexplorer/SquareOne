@@ -427,7 +427,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			if (newOrderStateReceived == OrderState.FilledPartially || newOrderStateReceived == OrderState.Filled) {
 				//v1 this.BrokerQuik.OrderProcessor.PostProcessOrderState(order, priceFilled, qtyFilled);
 				OrderStateMessage omsg = new OrderStateMessage(order, "BrokerQuik_UpdateOrderStateAndPostProcess:: " + newOrderStateReceived + "::" + this.DllName);
-				this.BrokerQuik.OrderProcessor.UpdateOrderStateAndPostProcess(order, omsg, priceFilled, qtyFilled);
+				this.BrokerQuik.OrderProcessor.UpdateOrderState_postProcess(order, omsg, priceFilled, qtyFilled);
 			}
 		}
 /* Функция TRANS2QUIK_TRANSACTIONS_REPLY_CALLBACK
@@ -478,7 +478,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 				newState = OrderState.ErrorSubmittingBroker;
 			}
 			OrderStateMessage newOrderState = new OrderStateMessage(orderSubmitting, newState, msg2);
-			BrokerQuik.OrderProcessor.UpdateOrderStateAndPostProcess(orderSubmitting, newOrderState);
+			BrokerQuik.OrderProcessor.UpdateOrderState_postProcess(orderSubmitting, newOrderState);
 		}
 		public virtual void SendTransactionOrderAsync(char opBuySell, char typeMarketLimitStop,
 				string SecCode, string ClassCode, double price, int quantity,
@@ -512,7 +512,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 
 			orderStateOut = OrderState.PreSubmit;
 			string trans = this.getOrderCommand(opBuySell, typeMarketLimitStop, SecCode, ClassCode, price, quantity, GUID, out SernoSession);
-			this.BrokerQuik.OrderProcessor.UpdateOrderStateByGuidNoPostProcess(GUID, orderStateOut, trans);
+			this.BrokerQuik.OrderProcessor.UpdateOrderStateByGuid_dontPostProcess(GUID, orderStateOut, trans);
 
 			Trans2Quik.Result r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out this.error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 			msgSubmittedOut = "r[" + r + "] callbackErrorMsg[" + this.callbackErrorMsg + "] error[" + error + "]";
@@ -597,7 +597,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			}
 
 			string trans = this.getOrderKillCommand(SecCode, ClassCode, victimWasStopOrder, VictimGUID, SernoExchangeVictim, out SernoSession);
-			this.BrokerQuik.OrderProcessor.UpdateOrderStateByGuidNoPostProcess(KillerGUID, OrderState.KillerSubmitting, trans);
+			this.BrokerQuik.OrderProcessor.UpdateOrderStateByGuid_dontPostProcess(KillerGUID, OrderState.KillerSubmitting, trans);
 
 			Trans2Quik.Result r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 			msgSubmitted = msig + r + "	" + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");

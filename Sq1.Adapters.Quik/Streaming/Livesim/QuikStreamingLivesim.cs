@@ -201,9 +201,9 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			if (notYetScheduled.Count > 0) {
 				if (quote.ParentBarStreaming != null) {
 					string msg = "I_MUST_HAVE_IT_UNATTACHED_HERE";
-					//Assembler.PopupException(msg);
+					Assembler.PopupException(msg);
 				}
-				base.LivesimBroker.ConsumeQuoteOfStreamingBarToFillPending(quote, notYetScheduled);
+				base.LivesimBroker.ConsumeQuoteUnattached_toFillPending(quote, notYetScheduled);
 			} else {
 				string msg = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
 			}

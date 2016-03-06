@@ -34,16 +34,16 @@ namespace Sq1.Adapters.Quik.Broker {
 		}
 
 		public QuikBroker() : base() {		// base() will be invoked anyways by .NET, just wanna make it obvious (reminder)
-			base.Name = "Quik BrokerDummy";
-			base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
-			this.QuikTerminal = new QuikTerminal(this);
-			this.QuikDllName = this.QuikTerminal.DllName;
+			base.Name			= "QuikBroker-DllScanned";
+			base.Icon			= (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
+			this.QuikTerminal	= new QuikTerminal(this);
+			this.QuikDllName	= this.QuikTerminal.DllName;
 
 			this.AccountMicexAutoPopulated = new Account("QUIK_MICEX_ACCTNR_NOT_SET", -1001);
 			base.OrderCallbackDupesChecker = new OrderCallbackDupesCheckerQuik(this);
 		}
 		public override void InitializeDataSource_inverse(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
-			base.Name = "Quik Broker";
+			base.Name = "QuikBroker";
 
 			if (base.LivesimBroker_ownImplementation == null) {
 				base.LivesimBroker_ownImplementation	= new QuikBrokerLivesim("OWN_IMPLEMENTATION_USED_FOR_LIVESIM_NOT_DUMMY");
@@ -82,7 +82,7 @@ namespace Sq1.Adapters.Quik.Broker {
 				//OrderStateMessage sameStateOmsg = new OrderStateMessage(order, order.State, msg);
 				//this.OrderManager.UpdateTradeStateAndPostProcess(order, sameStateOmsg, priceFill, qtyFill);
 				OrderStateMessage sameStateOmsg = new OrderStateMessage(order, OrderState.TradeStatus, msg);
-				this.OrderProcessor.UpdateOrderStateAndPostProcess(order, sameStateOmsg, priceFill, qtyFill);
+				this.OrderProcessor.UpdateOrderState_postProcess(order, sameStateOmsg, priceFill, qtyFill);
 				order.DateServerLastFillUpdate = tradeDate;
 
 				// workaround: calc "implied" slippage from executed price, instead of assumed for LimitCrossMarket
@@ -120,12 +120,12 @@ namespace Sq1.Adapters.Quik.Broker {
 			if (newOrderStateReceived == OrderState.KillerDone || newOrderStateReceived == OrderState.Rejected) {
 				if (fillPrice != 0) {
 					string msg = "QUIK_HINTS_ON_SOMETHING fillPrice[" + fillPrice + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
-					this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg);
+					this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(order, msg);
 					fillPrice = 0;
 				}
 				if (fillQnty != 0) {
 					string msg = "QUIK_HINTS_ON_SOMETHING fillQnty[" + fillPrice + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
-					this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg);
+					this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(order, msg);
 					fillQnty = 0;
 				}
 			}
@@ -150,7 +150,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			//	return;
 			//}
 
-			base.OrderProcessor.UpdateOrderStateDontPostProcess(order, omsg);
+			base.OrderProcessor.UpdateOrderState_dontPostProcess(order, omsg);
 			//base.CallbackOrderStateReceived(order);
 		}
 
@@ -178,13 +178,13 @@ namespace Sq1.Adapters.Quik.Broker {
 			string msg = state + " " + message;
 			Assembler.DisplayConnectionStatus(state, msg);
 		}
-		public override string ModifyOrderTypeAccordingToMarketOrderAsBrokerSpecificInjection(Order order) {
+		public override string ModifyOrderType_accordingToMarketOrder_asBrokerSpecificInjection(Order order) {
 			string msg = "";
 			if (order.Alert.QuoteCreatedThisAlert == null) {
 				msg = "ORDER_MARKED_INCONSISTENT__order.Alert.QuoteCreatedThisAlert=null SymbolInfo["
 					 + order.Alert.Symbol + "/" + order.Alert.SymbolClass + "]";
 				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-				base.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderState);
+				base.OrderProcessor.UpdateOrderState_postProcess(order, newOrderState);
 				throw new Exception(msg);
 			}
 			QuoteQuik quikQuote = order.Alert.QuoteCreatedThisAlert as QuoteQuik;
@@ -202,7 +202,7 @@ namespace Sq1.Adapters.Quik.Broker {
 								+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
 								+ " (Slippage=" + order.SlippageFill + ")";
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-							this.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderState);
+							this.OrderProcessor.UpdateOrderState_postProcess(order, newOrderState);
 							#if DEBUG
 							Debugger.Break();
 							#endif
@@ -221,7 +221,7 @@ namespace Sq1.Adapters.Quik.Broker {
 								+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
 								+ " (Slippage=" + order.SlippageFill + ")";
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-							this.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderState);
+							this.OrderProcessor.UpdateOrderState_postProcess(order, newOrderState);
 							#if DEBUG
 							Debugger.Break();
 							#endif
