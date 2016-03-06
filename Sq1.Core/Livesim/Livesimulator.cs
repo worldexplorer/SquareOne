@@ -186,7 +186,7 @@ namespace Sq1.Core.Livesim {
 				#endregion
 
 				if (this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesim_nullUnsafe != null) {
-					this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.PushSymbolInfoToLevel2generator(this.Executor.Bars.SymbolInfo);
+					this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.PushSymbolInfo_toLevelTwoGenerator(this.Executor.Bars.SymbolInfo);
 				} else {
 					string msg = "Livesim/noStreaming was still generating LevelTwo directly in the StreamingDataSnapshot";
 				}

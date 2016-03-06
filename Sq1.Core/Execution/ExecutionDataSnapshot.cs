@@ -52,7 +52,7 @@ namespace Sq1.Core.Execution {
 			this.PositionsClosedAfterExec	.DisposeTwoRelatedAlertsWaitHandlesAndClear(this, "Initialize(WAIT)");
 			this.PositionsOpenNow			.DisposeTwoRelatedAlertsWaitHandlesAndClear(this, "Initialize(WAIT)");
 		} }
-		internal void PreExecutionOnNewBarOrNewQuoteClear() { lock (this.positionsMasterLock) {
+		internal void Clear_priorTo_InvokeScript_onNewBar_onNewQuote() { lock (this.positionsMasterLock) {
 			this.AlertsNewAfterExec.Clear(this, "PreExecutionOnNewBarOrNewQuoteClear(WAIT)");
 			this.PositionsOpenedAfterExec.Clear(this, "PreExecutionOnNewBarOrNewQuoteClear(WAIT)");
 			this.PositionsClosedAfterExec.Clear(this, "PreExecutionOnNewBarOrNewQuoteClear(WAIT)");

@@ -29,14 +29,14 @@ namespace Sq1.Core.Broker {
 		public void ReplaceRejectedOrder(Order rejectedOrderToReplace) {
 			if (rejectedOrderToReplace.State != OrderState.Rejected) {
 				string msg = "will not ReplaceRejectedOrder(" + rejectedOrderToReplace + ") which is not Rejected; continuing";
-				this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(rejectedOrderToReplace, msg);
 				Assembler.PopupException(msg);
 				return;
 			}
 			if (rejectedOrderToReplace.Alert.Bars.SymbolInfo.ReSubmitRejected == false) {
 				string msg = "SymbolInfo[" + rejectedOrderToReplace.Alert.Symbol + "/" + rejectedOrderToReplace.Alert.SymbolClass + "].ReSubmitRejected==false"
 					+ " will not ReplaceRejectedOrder(" + rejectedOrderToReplace + "); continuing";
-				this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(rejectedOrderToReplace, msg);
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -66,7 +66,7 @@ namespace Sq1.Core.Broker {
 			}
 			string msg_replacement = "This is a replacement for order["
 				+ replacement.ReplacementForGUID + "]; SlippageIndex[" + replacement.SlippageIndex + "]";
-			this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(replacement, msg_replacement);
+			this.orderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(replacement, msg_replacement);
 
 			if (replacement.noMoreSlippagesAvailable) {
 				AddMessageNoMoreSlippagesAvailable(replacement);
@@ -87,7 +87,7 @@ namespace Sq1.Core.Broker {
 			Order replacement = this.findReplacementOrderForRejectedOrder(rejectedOrderToReplace);
 			if (replacement != null) {
 				string msg = "Rejected[" + rejectedOrderToReplace + "] already has a replacement[" + replacement + "] with State[" + replacement.State + "]; ignored rejection duplicates from broker";
-				this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(rejectedOrderToReplace, msg);
 				return null;
 			}
 			//DateTime todayDate = DateTime.Now.Date;

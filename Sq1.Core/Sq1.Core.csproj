@@ -303,10 +303,10 @@
     <Compile Include="StrategyBase\ScriptExecutor.BacktestLauncher.cs">
       <DependentUpon>ScriptExecutor.cs</DependentUpon>
     </Compile>
-    <Compile Include="StrategyBase\ScriptExecutor.InvokersBroker.cs">
+    <Compile Include="StrategyBase\ScriptExecutor.BrokerCallbacks.cs">
       <DependentUpon>ScriptExecutor.cs</DependentUpon>
     </Compile>
-    <Compile Include="StrategyBase\ScriptExecutor.InvokersStreaming.cs">
+    <Compile Include="StrategyBase\ScriptExecutor.StreamingCallbacks.cs">
       <DependentUpon>ScriptExecutor.cs</DependentUpon>
     </Compile>
     <Compile Include="StrategyBase\ScriptExecutor.ScriptHelpers.cs">

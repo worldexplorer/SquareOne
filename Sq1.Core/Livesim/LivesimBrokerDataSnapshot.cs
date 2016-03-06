@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using Sq1.Core.Backtesting;
 using Sq1.Core.Execution;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Livesim {
 	public class LivesimBrokerDataSnapshot : IDisposable {
@@ -25,7 +26,7 @@ namespace Sq1.Core.Livesim {
 		//	}
 		//	return ret;
 		//} }
-		public AlertList AlertsNotYetScheduledForDelayedFillBy(QuoteGenerated quote) {
+		public AlertList Alerts_thatQuoteWillFill_forSchedulingDelayedFill(Quote quote) {		//QuoteGenerated quote
 			BacktestMarketsim marketsim = this.livesimDataSource.BrokerAsBacktest_nullUnsafe.BacktestMarketsim;
 
 			AlertList ret = new AlertList("ALERTS_PENDING_MINUS_SCHEDULED_FOR_DELAYED_FILL", null);
@@ -38,7 +39,7 @@ namespace Sq1.Core.Livesim {
 				bool filled = marketsim.CheckAlertWillBeFilledByQuote(eachPending, quote, out priceFill, out slippageFill);
 				if (filled == false) continue;
 
-				ret.AddNoDupe(eachPending, this, "AlertsNotYetScheduledForDelayedFillBy(WAIT)");
+				ret.AddNoDupe(eachPending, this, "Alerts_thatQuoteWillFill_forSchedulingDelayedFill(WAIT)");
 			}
 			return ret;
 		}

@@ -329,7 +329,7 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 			// OrderFollowed=null when executeStrategyBacktestEntryPoint() is in the call stack
-			this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
+			this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
 		}
 		public void RemovePendingExitAlerts_closePositionsBacktestLeftHanging(Alert alert) {
 			string msig = "RemovePendingExitAlertAndClosePositionAfterBacktestLeftItHanging(): ";
