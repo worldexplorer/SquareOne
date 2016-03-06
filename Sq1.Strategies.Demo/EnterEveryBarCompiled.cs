@@ -198,7 +198,7 @@ namespace Sq1.Strategies.Demo {
 			}
 		}
 		
-		public override void OnStreamingTriggeringScriptTurnedOnCallback() {
+		public override void OnStreamingTriggeringScript_turnedOn_callback() {
 			string msg = "SCRIPT_IS_NOW_AWARE_THAT_STREAMING_ADAPDER_WILL_TRIGGER_SCRIPT_METHODS"
 				+ " ScriptContextCurrent.IsStreamingTriggeringScript[" + this.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript+ "]";
 			Assembler.PopupException(msg, null, false);
@@ -208,18 +208,18 @@ namespace Sq1.Strategies.Demo {
 			string msg2 = "here you can probably sync your actual open positions on the broker side with backtest-opened ghosts";
 			Assembler.PopupException(msg2, null, false);
 		}
-		public override void OnStreamingTriggeringScriptTurnedOffCallback() {
+		public override void OnStreamingTriggeringScript_turnedOff_callback() {
 			string msg = "SCRIPT_IS_NOW_AWARE_THAT_STREAMING_ADAPDER_WILL_NOT_TRIGGER_SCRIPT_METHODS"
 				+ " ScriptContextCurrent.IsStreamingTriggeringScript[" + this.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript+ "]";
 			Assembler.PopupException(msg, null, false);
 		}
 		
-		public override void OnStrategyEmittingOrdersTurnedOnCallback() {
+		public override void OnStrategyEmittingOrders_turnedOn_callback() {
 			string msg = "SCRIPT_IS_NOW_AWARE_THAT_ORDERS_WILL_START_SHOOTING_THROUGH_BROKER_ADAPDER"
 				+ " ScriptContextCurrent.StrategyEmittingOrders[" + this.Strategy.ScriptContextCurrent.StrategyEmittingOrders+ "]";
 			Assembler.PopupException(msg, null, false);
 		}
-		public override void OnStrategyEmittingOrdersTurnedOffCallback() {
+		public override void OnStrategyEmittingOrders_turnedOff_callback() {
 			string msg = "SCRIPT_IS_NOW_AWARE_THAT_ORDERS_WILL_STOP_SHOOTING_THROUGH_BROKER_ADAPDER"
 				+ " ScriptContextCurrent.StrategyEmittingOrders[" + this.Strategy.ScriptContextCurrent.StrategyEmittingOrders+ "]";
 			Assembler.PopupException(msg, null, false);

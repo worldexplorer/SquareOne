@@ -102,7 +102,7 @@ namespace Sq1.Core.StrategyBase {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOnNonBlockingRead = true;
 						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStreamingTriggeringScriptTurnedOnCallback(WAIT)");
-						this.Strategy.Script.OnStreamingTriggeringScriptTurnedOnCallback();
+						this.Strategy.Script.OnStreamingTriggeringScript_turnedOn_callback();
 					} finally {
 						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnStreamingTriggeringScriptTurnedOnCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOnNonBlockingRead = false;
@@ -111,7 +111,7 @@ namespace Sq1.Core.StrategyBase {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOffNonBlockingRead = true;
 						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStreamingTriggeringScriptTurnedOffCallback(WAIT)");
-						this.Strategy.Script.OnStreamingTriggeringScriptTurnedOffCallback();
+						this.Strategy.Script.OnStreamingTriggeringScript_turnedOff_callback();
 					} finally {
 						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnStreamingTriggeringScriptTurnedOffCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOffNonBlockingRead = false;
@@ -144,7 +144,7 @@ namespace Sq1.Core.StrategyBase {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOnNonBlockingRead = true;
 						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStrategyEmittingOrdersTurnedOnCallback(WAIT)");
-						this.Strategy.Script.OnStrategyEmittingOrdersTurnedOnCallback();
+						this.Strategy.Script.OnStrategyEmittingOrders_turnedOn_callback();
 					} finally {
 						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnStrategyEmittingOrdersTurnedOnCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOnNonBlockingRead = false;
@@ -153,7 +153,7 @@ namespace Sq1.Core.StrategyBase {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOffNonBlockingRead = true;
 						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStrategyEmittingOrdersTurnedOffCallback(WAIT)");
-						this.Strategy.Script.OnStrategyEmittingOrdersTurnedOffCallback();
+						this.Strategy.Script.OnStrategyEmittingOrders_turnedOff_callback();
 					} finally {
 						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnStrategyEmittingOrdersTurnedOffCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOffNonBlockingRead = false;

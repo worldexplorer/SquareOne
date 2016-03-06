@@ -135,7 +135,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.mniStrategyEdit.ImageTransparentColor = System.Drawing.Color.Fuchsia;
 			this.mniStrategyEdit.Name = "mniStrategyEdit";
 			this.mniStrategyEdit.Size = new System.Drawing.Size(235, 22);
-			this.mniStrategyEdit.Text = "NYI Edit Source Code";
+			this.mniStrategyEdit.Text = "Edit Script";
 			this.mniStrategyEdit.Click += new System.EventHandler(this.mniStrategyEdit_Click);
 			// 
 			// mniStrategyDuplicate
