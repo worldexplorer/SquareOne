@@ -1,16 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Threading;
 
 using Newtonsoft.Json;
 
-using Sq1.Core.Accounting;
-using Sq1.Core.DataFeed;
 using Sq1.Core.Execution;
-using Sq1.Core.Streaming;
-using Sq1.Core.Livesim;
-using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Broker {
 	public partial class BrokerAdapter {

@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
 		Quote quoteExecutedLast;
 		Bar barStaticExecutedLast;
+
 		public ReporterPokeUnit InvokeScript_onNewBar_onNewQuote(Quote quoteForAlertsCreated, bool onNewQuoteTrue_onNewBarFalse = true) {
 			if (this.Strategy == null) {
 				string msg1 = "I_REFUSE_TO_EXECUTE_SCRIPT STRATEGY_IS_NULL";
@@ -23,24 +25,24 @@ namespace Sq1.Core.StrategyBase {
 				return null;
 			}
 
-			this.ExecutionDataSnapshot.PreExecutionOnNewBarOrNewQuoteClear();
+			this.ExecutionDataSnapshot.Clear_priorTo_InvokeScript_onNewBar_onNewQuote();
 
 			//if (quote != null) {
 			bool invokedNoErrors = false;
 			if (onNewQuoteTrue_onNewBarFalse == true) {
-				invokedNoErrors = invokeScript_onNewQuote(quoteForAlertsCreated);
+				invokedNoErrors = this.invokeScript_onNewQuote(quoteForAlertsCreated);
+				this.fillPendings_onEachQuote_skipIfNonLivesimBroker(quoteForAlertsCreated);
 			} else {
-				invokedNoErrors = invokeScript_onNewBar(quoteForAlertsCreated);
+				invokedNoErrors = this.invokeScript_onNewBar(quoteForAlertsCreated);
 			}
 			if (invokedNoErrors == false) return null;
 
 			string msg5 = "DONT_REMOVE_ALERT_SHOULD_LEAVE_ITS_TRAIL_DURING_LIFETIME_TO_PUT_UNFILLED_DOTS_ON_CHART";
 			//int alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.DumpPendingAlertsIntoPendingHistoryByBar();
-//			int alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.AlertsPending.Count;
-//			if (alertsDumpedForStreamingBar > 0) {
-//				msg += " DUMPED_AFTER_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
-//			}
-
+			//int alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.AlertsPending.Count;
+			//if (alertsDumpedForStreamingBar > 0) {
+			//    msg += " DUMPED_AFTER_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
+			//}
 
 			// what's updated after Exec: non-volatile, kept un-reset until executor.Initialize():
 			//this.ExecutionDataSnapshot.PositionsMaster.ByEntryBarFilled (unique)
@@ -168,6 +170,22 @@ namespace Sq1.Core.StrategyBase {
 			// lets Execute() return non-null PokeUnit => Reporters are notified on quoteUpdatedPositions if !GuiIsBusy
 			if (pokeUnit_dontForgetToDispose.PositionsNow_plusOpened_plusClosedAfterExec_plusAlertsNew_count == 0) return null;
 			return pokeUnit_dontForgetToDispose;
+		}
+
+		void fillPendings_onEachQuote_skipIfNonLivesimBroker(Quote quoteForAlertsCreated) {
+			LivesimBroker defaultOrderFiller = this.DataSource_fromBars.BrokerAdapter as LivesimBroker;
+			if (defaultOrderFiller == null) return;
+
+			AlertList willBeFilled = defaultOrderFiller.DataSnapshot.Alerts_thatQuoteWillFill_forSchedulingDelayedFill(quoteForAlertsCreated);
+			if (willBeFilled.Count == 0) {
+				string msg1 = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
+				return;
+			}
+			if (quoteForAlertsCreated.ParentBarStreaming != null) {
+				string msg = "I_MUST_HAVE_IT_UNATTACHED_HERE";
+				//Assembler.PopupException(msg);
+			}
+			defaultOrderFiller.ConsumeQuoteUnattached_toFillPending(quoteForAlertsCreated, willBeFilled);
 		}
 
 		bool invokeScript_onNewBar(Quote quoteForAlertsCreated) {

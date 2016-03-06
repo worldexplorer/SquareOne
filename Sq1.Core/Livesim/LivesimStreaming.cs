@@ -23,8 +23,8 @@ namespace Sq1.Core.Livesim {
 		[JsonIgnore]	internal	LivesimStreamingSettings	LivesimStreamingSettings	{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
 
 		//v2 HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2
-		[JsonIgnore]	protected	LivesimBroker				LivesimBroker				{ get { return this.livesimDataSource.BrokerAsLivesim_nullUnsafe; } }
-		[JsonIgnore]	protected	LivesimBrokerDataSnapshot	LivesimBrokerSnap			{ get { return this.livesimDataSource.BrokerAsLivesim_nullUnsafe.DataSnapshot; } }
+		//[JsonIgnore]	protected	LivesimBroker				LivesimBroker				{ get { return this.livesimDataSource.BrokerAsLivesim_nullUnsafe; } }
+		//[JsonIgnore]	protected	LivesimBrokerDataSnapshot	LivesimBrokerSnap			{ get { return this.livesimDataSource.BrokerAsLivesim_nullUnsafe.DataSnapshot; } }
 
 		[JsonIgnore]	protected	LevelTwoGenerator			LevelTwoGenerator;
 		[JsonIgnore]	protected	LivesimStreamingSpoiler		LivesimStreamingSpoiler;
@@ -71,7 +71,7 @@ namespace Sq1.Core.Livesim {
 		}
 
 		// invoked after LivesimFormShow(), but must have meaning "Executor.Bars changed"...
-		public void PushSymbolInfoToLevel2generator(SymbolInfo symbolInfo_fromExecutor) {
+		public void PushSymbolInfo_toLevelTwoGenerator(SymbolInfo symbolInfo_fromExecutor) {
 			int howMany = this.LivesimStreamingSettings.LevelTwoLevelsToGenerate;
 			this.LevelTwoGenerator.Initialize(symbolInfo_fromExecutor, howMany);
 		}
@@ -95,17 +95,17 @@ namespace Sq1.Core.Livesim {
 			this.LevelTwoGenerator.GenerateForQuote(quote);
 			base.PushQuoteGenerated(quote);
 	
-			//v2 HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2
-			AlertList notYetScheduled = this.LivesimBrokerSnap.AlertsNotYetScheduledForDelayedFillBy(quote);
-			if (notYetScheduled.Count > 0) {
-				if (quote.ParentBarStreaming != null) {
-					string msg = "I_MUST_HAVE_IT_UNATTACHED_HERE";
-					//Assembler.PopupException(msg);
-				}
-				this.LivesimBroker.ConsumeQuoteUnattached_toFillPending(quote, notYetScheduled);
-			} else {
-				string msg = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
-			}
+			//v2 MOVED_TO_InvokeScript_onNewBar_onNewQuote() HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2
+			//AlertList notYetScheduled = this.LivesimBrokerSnap.Alerts_thatQuoteWillFill_forSchedulingDelayedFill(quote);
+			//if (notYetScheduled.Count > 0) {
+			//    if (quote.ParentBarStreaming != null) {
+			//        string msg = "I_MUST_HAVE_IT_UNATTACHED_HERE";
+			//        //Assembler.PopupException(msg);
+			//    }
+			//    this.LivesimBroker.ConsumeQuoteUnattached_toFillPending(quote, notYetScheduled);
+			//} else {
+			//    string msg = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
+			//}
 
 			this.LivesimStreamingSpoiler.Spoil_after_PushQuoteGenerated();
 			this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;

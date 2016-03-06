@@ -442,13 +442,13 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "can't close PositionAffected and remove Position from PositionsOpenNow"
 					+ ": alert.PositionAffected=null for alert [" + alert + "]";
 				//throw new Exception(msig + msg);
-				this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
+				this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
 				return false;
 			}
 			if (alert.IsExitAlert) {
 				string msg = "Sorry I don't serve alerts.IsExitAlert=true, only .IsEntryAlert's: alert [" + alert + "]";
 				//throw new Exception(msig + msg);
-				this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
+				this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
 				return false;
 			}
 			if (checkPositionOpenNow == true) {
@@ -460,7 +460,7 @@ namespace Sq1.Core.StrategyBase {
 					}
 					string msg = "CHECK_POSITION_OPEN_NOW Sorry I serve only BarRelnoFilled==-1"
 						+ " otherwize alert.FillPositionAffectedEntryOrExitRespectively() with throw: alert [" + alert + "]";
-					this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
+					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
 					return false;
 				}
 				if (alert.PositionAffected.ExitFilledBarIndex > -1) {
@@ -469,7 +469,7 @@ namespace Sq1.Core.StrategyBase {
 					}
 					string msg = "CHECK_POSITION_OPEN_NOW Sorry I serve only alert.PositionAffected.ExitBar==-1"
 						+ " otherwize PositionAffected.FillExitAlert() will throw: alert [" + alert + "]";
-					this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
+					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
 					return false;
 				}
 			} else {
@@ -477,11 +477,11 @@ namespace Sq1.Core.StrategyBase {
 				if (alert.PositionAffected.EntryFilledBarIndex != -1) {
 					string msg = "DUPE: can't do my job: alert.PositionAffected.EntryBar!=-1 for alert [" + alert + "]";
 					//throw new Exception(msig + msg);
-					this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
+					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
 					//return;
 				} else {
 					string msg = "Forcibly closing at EntryBar=[" + barFill + "]";
-					this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
+					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
 				}
 
 			}

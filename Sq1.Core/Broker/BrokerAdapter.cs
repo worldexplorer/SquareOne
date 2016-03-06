@@ -199,7 +199,7 @@ namespace Sq1.Core.Broker {
 			foreach (Order order in ordersToExecute) {
 				string msg = "Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
 					+ " SernoSession[" + order.SernoSession + "]";
-				this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(order, msig + msg);
+				this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msig + msg);
 
 				//Order orderSimilar = this.OrderProcessor.DataSnapshot.OrdersPending.FindSimilarNotSamePendingOrder(order);
 				//// Orders.All.ContainForSure: Order orderSimilar = this.OrderProcessor.DataSnapshot.OrdersAll.FindSimilarNotSamePendingOrder(order);
@@ -214,11 +214,11 @@ namespace Sq1.Core.Broker {
 					this.OrderPreSubmitEnrichCheckThrow(order);
 				} catch (Exception ex) {
 					Assembler.PopupException(msg, ex, false);
-					this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(order, msig + ex.Message + " //" + msg);
+					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msig + ex.Message + " //" + msg);
 					if (order.State == OrderState.IRefuseOpenTillEmergencyCloses) {
 						msg = "looks good, OrderPreSubmitChecker() caught the EmergencyLock exists";
 						Assembler.PopupException(msg + msig, ex, false);
-						this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(order, msig + msg);
+						this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msig + msg);
 					}
 					continue;
 				}

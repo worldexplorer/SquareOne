@@ -7,8 +7,8 @@ using Sq1.Core.Serializers;
 namespace Sq1.Core.Broker {
 	public class OrderProcessorDataSnapshot {
 		// REASON_TO_EXIST: having lanes makes order lookups faster; by having order state I know which List I'll be looking for GUID
-		// useful application is when 100,000 orders are filled sucessfully and I received a UpdatePending notification for GUID=99,999
-		// CemeteryHealty would contain all
+		// useful when 100,000 orders are filled sucessfully and I received a UpdatePending notification for GUID=99,999 SCAN_FROM_END_OF_LIST?
+		// CemeteryHealthy would contain all
 		public OrderLaneByState		OrdersSubmitting							{ get; private set; }
 		public OrderLaneByState		OrdersPending								{ get; private set; }
 		public OrderLaneByState		OrdersPendingFailed							{ get; private set; }
@@ -133,25 +133,25 @@ namespace Sq1.Core.Broker {
 		}
 
 		public void SwitchLanes_forOrder_postStatusUpdate(Order orderNowAfterUpdate, OrderState orderStatePriorToUpdate) { lock (this.orderSwitchingLanesLock) {
-				string msig = " //OrderProcessorDataSnapshot::SwitchLanesForOrderPostStatusUpdate()";
-				OrderLaneByState orderLaneBeforeStateUpdate = this.SuggestLaneByOrderState_nullUnsafe(orderStatePriorToUpdate);
-				OrderLaneByState  orderLaneAfterStateUpdate = this.SuggestLaneByOrderState_nullUnsafe(orderNowAfterUpdate.State);
-				if (orderLaneBeforeStateUpdate == orderLaneAfterStateUpdate) return;
-				if (orderLaneBeforeStateUpdate != null) {
-					try {
-						orderLaneBeforeStateUpdate.Remove(orderNowAfterUpdate);
-					} catch (Exception ex) {
-						Assembler.PopupException("FAILED_TO_REMOVE orderNowAfterUpdate=[" + orderNowAfterUpdate + "]" + msig, ex, false);
-					}
+			string msig = " //OrderProcessorDataSnapshot::SwitchLanesForOrderPostStatusUpdate()";
+			OrderLaneByState orderLaneBeforeStateUpdate = this.SuggestLaneByOrderState_nullUnsafe(orderStatePriorToUpdate);
+			OrderLaneByState  orderLaneAfterStateUpdate = this.SuggestLaneByOrderState_nullUnsafe(orderNowAfterUpdate.State);
+			if (orderLaneBeforeStateUpdate == orderLaneAfterStateUpdate) return;
+			if (orderLaneBeforeStateUpdate != null) {
+				try {
+					orderLaneBeforeStateUpdate.Remove(orderNowAfterUpdate);
+				} catch (Exception ex) {
+					Assembler.PopupException("FAILED_TO_REMOVE orderNowAfterUpdate=[" + orderNowAfterUpdate + "]" + msig, ex, false);
 				}
-				if (orderLaneAfterStateUpdate != null) {
-					try {
-						orderLaneAfterStateUpdate.Insert(orderNowAfterUpdate);
-					} catch (Exception ex) {
-						Assembler.PopupException("FAILED_TO_INSERT orderNowAfterUpdate=[" + orderNowAfterUpdate + "]" + msig, ex, false);
-					}
+			}
+			if (orderLaneAfterStateUpdate != null) {
+				try {
+					orderLaneAfterStateUpdate.Insert(orderNowAfterUpdate);
+				} catch (Exception ex) {
+					Assembler.PopupException("FAILED_TO_INSERT orderNowAfterUpdate=[" + orderNowAfterUpdate + "]" + msig, ex, false);
 				}
-			} }
+			}
+		} }
 		//public OrderLaneByState FindStateLaneDoesntContain(Order order) {
 		//	OrderLaneByState expectedToNotContain = this.SuggestLaneByOrderState(order.State);
 		//	if (expectedToNotContain.Contains(order)) {
@@ -162,7 +162,7 @@ namespace Sq1.Core.Broker {
 		//	return expectedToNotContain;
 		//}
 
-		public Order ScanRecentForGUID(string GUID, List<OrderLane> lanes, out string logOrEmpty) {
+		public Order ScanRecent_forGUID(string GUID, List<OrderLane> lanes, out string logOrEmpty) {
 			Order ret = null;
 			logOrEmpty = "";
 

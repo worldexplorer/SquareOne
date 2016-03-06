@@ -128,7 +128,8 @@ namespace Sq1.Core.Livesim {
 			t.Start();		// WHO_DOES t.Dispose() ?
 		}
 
-		public void ConsumeQuoteUnattached_toFillPending(QuoteGenerated quoteUnattachedVolatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
+		//public void ConsumeQuoteUnattached_toFillPending(QuoteGenerated quoteUnattachedVolatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
+		public void ConsumeQuoteUnattached_toFillPending(Quote quoteUnattachedVolatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
 			ScriptExecutor executor = this.LivesimDataSource.Executor;
 			ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
 			if (snap.AlertsPending.Count == 0) {
@@ -165,7 +166,8 @@ namespace Sq1.Core.Livesim {
 				} catch (Exception ex) {
 					Assembler.PopupException("CANT_SET_THREAD_NAME //LivesimBroker", ex, false);
 				}
-				QuoteGenerated quoteUnattachedLocalScoped = quoteUnattachedVolatilePointer;
+				//QuoteGenerated quoteUnattachedLocalScoped = quoteUnattachedVolatilePointer;
+				Quote quoteUnattachedLocalScoped = quoteUnattachedVolatilePointer;
 				quotePointerCaptured.Set();
 
 				executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = true;
@@ -202,7 +204,8 @@ namespace Sq1.Core.Livesim {
 			List<Alert> safe = willBeFilled.SafeCopy(this, "//ConsumeQuoteUnattached_toFillPending()");
 			this.DataSnapshot.AlertsScheduledForDelayedFill.AddRange(safe, this, "ConsumeQuoteUnattached_toFillPending(WAIT)");
 		} }
-		void consumeQuoteUnattached_toFillPendingAsync(QuoteGenerated quoteUnattached, AlertList expectingToFill) {
+		//void consumeQuoteUnattached_toFillPendingAsync(QuoteGenerated quoteUnattached, AlertList expectingToFill) {
+		void consumeQuoteUnattached_toFillPendingAsync(Quote quoteUnattached, AlertList expectingToFill) {
 			ScriptExecutor executor = this.LivesimDataSource.Executor;
 			Bar barStreaming = executor.Bars.BarStreaming_nullUnsafe;
 			if (barStreaming == null) {
@@ -222,7 +225,8 @@ namespace Sq1.Core.Livesim {
 				return;
 			}
 
-			QuoteGenerated quoteAttachedToStreamingToConsumerBars = quoteUnattached.DeriveIdenticalButFresh();
+			//QuoteGenerated quoteAttachedToStreamingToConsumerBars = quoteUnattached.DeriveIdenticalButFresh();
+			Quote quoteAttachedToStreamingToConsumerBars = quoteUnattached.Clone();
 			quoteAttachedToStreamingToConsumerBars.SetParentBarStreaming(barStreaming);
 			// same pointer gets a cloned quote ATTACHED; anyone is listening for the change? it's not OUT
 			//quoteUnattached = quoteAttachedToStreamingToConsumerBars;
