@@ -22,7 +22,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				if (this.DisplayingThirdLevel_withChartsOpen == false) return false;
 				SymbolOfDataSource symbol = o as SymbolOfDataSource;
 				if (symbol != null) {
-					List<ChartShadow> charts = symbol.DataSource.ChartsOpenForSymbol.FindContentsOf__nullUnsafe(symbol);
+					List<ChartShadow> charts = symbol.DataSource.ChartsOpenForSymbol.FindContentsOf_nullUnsafe(symbol);
 					return charts.Count > 0;
 				}
 
@@ -38,7 +38,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				if (this.DisplayingThirdLevel_withChartsOpen == false) return null;
 				SymbolOfDataSource symbol = o as SymbolOfDataSource;
 				if (symbol != null) {
-					List<ChartShadow> charts = symbol.DataSource.ChartsOpenForSymbol.FindContentsOf__nullUnsafe(symbol);
+					List<ChartShadow> charts = symbol.DataSource.ChartsOpenForSymbol.FindContentsOf_nullUnsafe(symbol);
 					return charts;
 				}
 
@@ -56,7 +56,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 
 			this.olvcName.ImageGetter = delegate(object o) {
 				DataSource dataSource = o as DataSource;
-				if (dataSource != null) return this.getProviderImageIndexForDataSource(dataSource);
+				if (dataSource != null) return this.getProviderImageIndex_forDataSource(dataSource);
 				return null;
 			};
 			this.olvcName.AspectGetter = delegate(object o) {

@@ -189,7 +189,7 @@ namespace Sq1.Gui.Forms {
 			//				, this.ChartForm.ChartControl, null, Assembler.InstanceInitialized.OrderProcessor, Assembler.InstanceInitialized.StatusReporter);
 			this.Executor					= new ScriptExecutor("EXECUTOR_FOR_AN_OPENED_CHART_UNCLONED");
 			this.Executor.EventGenerator.OnStrategyPreExecuteOneQuote	+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyPreExecuteOneQuote_updateBtnStreamingText);
-			this.Executor.EventGenerator.OnStrategyExecutedOneQuote		+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree);
+			this.Executor.EventGenerator.OnStrategyExecuted_oneQuote		+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree);
 
 			this.ReportersFormsManager		= new ReportersFormsManager(this);
 
@@ -409,7 +409,7 @@ namespace Sq1.Gui.Forms {
 		public void PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(
 					string msig, bool loadNewBars = true, bool skipBacktest = false, bool saveStrategyOrCtx = true) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
-			this.Executor.BacktesterAbortIfRunningRestoreContext();
+			this.Executor.BacktesterAbortIfRunning_restoreContext();
 
 			ContextChart context = this.ContextCurrentChartOrStrategy;
 			if (context == null) {

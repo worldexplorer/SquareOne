@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
+//using System.Threading;
+using System.Threading.Tasks;
 
 using Sq1.Core.Accounting;
 using Sq1.Core.Execution;
@@ -29,7 +30,7 @@ namespace Sq1.Core.Broker {
 			this.DataSnapshot.Initialize(rootPath);
 		}
 
-		bool isExitOrderConsistentLogInconsistency(Order order) {
+		bool isExitOrderConsistent_logInconsistency(Order order) {
 			bool exitOrderHasNoErrors = true;
 			string errormsg = "";
 			Position positionShouldBeFilled = order.Alert.PositionAffected;
@@ -76,7 +77,7 @@ namespace Sq1.Core.Broker {
 			}
 			return exitOrderHasNoErrors;
 		}
-		Order createPropagateOrderFromAlert(Alert alert, bool setStatusSubmitting, bool emittedByScript) {
+		Order createOrder_propagate_fromAlert(Alert alert, bool setStatusSubmitting, bool emittedByScript) {
 			//MUST_DIE
 			//if (alert.MarketLimitStop == MarketLimitStop.AtClose) {
 			//	string msg = "NYI: alert.OrderType= OrderType.AtClose [" + alert + "]";
@@ -88,17 +89,17 @@ namespace Sq1.Core.Broker {
 			} catch (Exception e) {
 				string msg = "hoping that MarketOrderAs.MarketMinMax influenced order.Alert.MarketLimitStop["
 					+ newborn.Alert.MarketLimitStop + "]=MarketLimitStop.Limit for further match; PREV=" + newborn.LastMessage;
-				this.AppendOrderMessageAndPropagateCheckThrowOrderNull(newborn, msg);
+				this.AppendOrderMessage_propagate_checkThrowOrderNull(newborn, msg);
 			}
 			if (alert.IsExitAlert) {
-				if (this.isExitOrderConsistentLogInconsistency(newborn) == false) {
-					this.DataSnapshot.OrderInsertNotifyGuiAsync(newborn);
+				if (this.isExitOrderConsistent_logInconsistency(newborn) == false) {
+					this.DataSnapshot.OrderInsert_notifyGuiAsync(newborn);
 					string reason = newborn.LastMessage;
 					string msg = "ALERT_INCONSISTENT_ORDER_PROCESSOR_DIDNT_SUBMIT reason[" + reason + "] " + alert;
 					Assembler.PopupException(msg, null, false);
 
 					string msg2 = "IM_USING_ALERTS_EXIT_BAR_NOW__NOT_STREAMING__DO_I_HAVE_TO_ADJUST_HERE?";
-					alert.Strategy.Script.Executor.RemovePendingExitAlertAndClosePositionAfterBacktestLeftItHanging(alert);
+					alert.Strategy.Script.Executor.RemovePendingExitAlerts_closePositionsBacktestLeftHanging(alert);
 					msg = "DID_I_CLOSE_THIS_PENDING_ALERT_HAVING_NO_LIVE_POSITION? " + alert;
 					Assembler.PopupException(msg, null, false);
 					return null;
@@ -111,7 +112,7 @@ namespace Sq1.Core.Broker {
 			string newbornMessage = "alert[" + alert + "]";
 
 			if (setStatusSubmitting == true) {
-				if (newborn.hasBrokerAdapter("CreatePropagateOrderFromAlert(): ") == false) {
+				if (newborn.hasBrokerAdapter("createOrder_propagate_fromAlert(): ") == false) {
 					string msg = "ORDER_HAS_NO_BROKER_ADAPDER__SELECT_AND_CONFIGURE_IN_DATASOURCE_EDITOR__DLL_MIGHT_HAVE_DISAPPEARED";
 					Assembler.PopupException(msg);
 					return null;
@@ -123,8 +124,8 @@ namespace Sq1.Core.Broker {
 				//	newbornOrderState = OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted;
 				//}
 			}
-			this.UpdateOrderStateDontPostProcess(newborn, new OrderStateMessage(newborn, newbornOrderState, newbornMessage));
-			this.DataSnapshot.OrderInsertNotifyGuiAsync(newborn);
+			this.UpdateOrderState_dontPostProcess(newborn, new OrderStateMessage(newborn, newbornOrderState, newbornMessage));
+			this.DataSnapshot.OrderInsert_notifyGuiAsync(newborn);
 			return newborn;
 		}
 		public List<Order> CreateOrders_submitToBrokerAdapter_inNewThreads(List<Alert> alertsBatch, bool setStatusSubmitting, bool emittedByScript) {
@@ -139,24 +140,24 @@ namespace Sq1.Core.Broker {
 			bool ordersOpeningAllSameDirection = true;
 			PositionLongShort ordersOpeningPositionLongShort = PositionLongShort.Unknown;
 
-			List<Order> ordersAgnostic = new List<Order>();
-			List<Order> ordersClosing = new List<Order>();
-			List<Order> ordersOpening = new List<Order>();
+			List<Order> orders_polarSequenceAgnostic = new List<Order>();
+			List<Order> orders_polarClosingFirst = new List<Order>();
+			List<Order> orders_polarOpeningSecond = new List<Order>();
 			BrokerAdapter broker = null;
 			foreach (Alert alert in alertsBatch) {
 				// I only needed alert.OrderFollowed=newOrder... mb even CreatePropagateOrderFromAlert() should be reduced for backtest
 				if (alert.Strategy.Script.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
 					string msg = "BACKTEST_DOES_NOT_SUBMIT_ORDERS__CHECK_QUIK_MOCK_FOR_LIVE_SIMULATION";
 					Assembler.PopupException(msg);
-					alert.Strategy.Script.Executor.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg);
+					alert.Strategy.Script.Executor.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted(msg);
 					continue;
 				}
 
 				Order newOrder;
 				try {
-					newOrder = this.createPropagateOrderFromAlert(alert, setStatusSubmitting, emittedByScript);
+					newOrder = this.createOrder_propagate_fromAlert(alert, setStatusSubmitting, emittedByScript);
 				} catch (Exception ex) {
-					string msg = "THROWN_this.CreatePropagateOrderFromAlert";
+					string msg = "THROWN_this.createPropagateOrder_fromAlert";
 					Assembler.PopupException(msg, ex, true);
 					continue;
 				}
@@ -167,14 +168,14 @@ namespace Sq1.Core.Broker {
 				}
 				if (newOrder.State != OrderState.Submitting) {
 					if (newOrder.State == OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted) {
-						alert.Strategy.Script.Executor.CreatedOrderWontBePlacedPastDueInvokeScriptNonReenterably(alert, alert.Bars.Count);
+						alert.Strategy.Script.Executor.CallbackCreatedOrder_wontBePlacedPastDue_invokeScript_nonReenterably(alert, alert.Bars.Count);
 						continue;
 					}
 					if (newOrder.State == OrderState.EmitOrdersNotClicked) continue;
 					//if (newOrder.Alert.Strategy.Script.Executor.IsAutoSubmitting == true
 					//&& newOrder.Alert.Strategy.Script.Executor.IsStreaming == true
 					//&& newOrder.FromAutoTrading == true
-					string msg = "Unexpected newOrder.State[" + newOrder.State + "] from CreatePropagateOrderFromAlert()";
+					string msg = "Unexpected newOrder.State[" + newOrder.State + "] from CreatedOrder_wontBePlacedPastDue_invokeScript_nonReenterably()";
 					Assembler.PopupException(msg, null, false);
 					continue;
 				}
@@ -189,14 +190,14 @@ namespace Sq1.Core.Broker {
 				}
 				if (alert.Bars.SymbolInfo.SameBarPolarCloseThenOpen) {
 					if (alert.IsExitAlert) {
-						ordersClosing.Add(newOrder);
+						orders_polarClosingFirst.Add(newOrder);
 						if (ordersClosingPositionLongShort == PositionLongShort.Unknown) {
 							ordersClosingPositionLongShort = newOrder.Alert.PositionLongShortFromDirection;
 						} else {
 							if (ordersClosingPositionLongShort != newOrder.Alert.PositionLongShortFromDirection) ordersClosingAllSameDirection = false;
 						}
 					} else {
-						ordersOpening.Add(newOrder);
+						orders_polarOpeningSecond.Add(newOrder);
 						if (ordersOpeningPositionLongShort == PositionLongShort.Unknown) {
 							ordersOpeningPositionLongShort = newOrder.Alert.PositionLongShortFromDirection;
 						} else {
@@ -204,88 +205,103 @@ namespace Sq1.Core.Broker {
 						}
 					}
 				} else {
-					ordersAgnostic.Add(newOrder);
+					orders_polarSequenceAgnostic.Add(newOrder);
 				}
 			}
-			if (ordersAgnostic.Count == 0 && (ordersClosing.Count + ordersOpening.Count) == 0) {
+			if (orders_polarSequenceAgnostic.Count == 0 && (orders_polarClosingFirst.Count + orders_polarOpeningSecond.Count) == 0) {
 				string msg = "NO_ORDERS_TO_SUBMIT newBornOrdersToSubmit.Count=0 while alertsBatch.Count[" + alertsBatch.Count + "]>0 "
-					+ ": ordersAgnostic.Count[" + ordersAgnostic.Count + "]"
-					+ " && ordersClosing.Count[" + ordersClosing.Count + "]"
-					+   "  ordersOpening.Count[" + ordersOpening.Count + "]";
+					+ ": orders_polarSequenceAgnostic.Count[" + orders_polarSequenceAgnostic.Count + "]"
+					+ " && orders_polarClosingFirst.Count[" + orders_polarClosingFirst.Count + "]"
+					+   "  orders_polarOpeningSecond.Count[" + orders_polarOpeningSecond.Count + "]";
 				//ALREADY_COMPLAINED Assembler.PopupException(msg, null, false);
-				return ordersAgnostic;
+				return orders_polarSequenceAgnostic;
 			}
 
-			if (ordersAgnostic.Count > 0 && (ordersClosing.Count > 0 || ordersOpening.Count > 0)) {
+			if (orders_polarSequenceAgnostic.Count > 0 && (orders_polarClosingFirst.Count > 0 || orders_polarOpeningSecond.Count > 0)) {
 				string msg = "got mix of orderAware/Agnostic securities in AlertsBatch"
-					+ "ordersAgnostic[" + ordersAgnostic.Count + "] :: ordersClosing[" + ordersClosing.Count
-					+ "] ordersOpening[" + ordersOpening.Count+ "]";
+					+ "orders_polarSequenceAgnostic[" + orders_polarSequenceAgnostic.Count + "] :: orders_polarClosingFirst[" + orders_polarClosingFirst.Count
+					+ "] orders_polarOpeningSecond[" + orders_polarOpeningSecond.Count+ "]";
 				Assembler.PopupException(msg);
-				return ordersAgnostic;
+				return orders_polarSequenceAgnostic;
 			}
 
-			if (ordersAgnostic.Count > 0) {
-				string msg = "Scheduling SubmitOrdersThreadEntry ordersAgnostic[" + ordersAgnostic.Count + "] through [" + broker + "]";
+			if (orders_polarSequenceAgnostic.Count > 0) {
+				string msg = "Scheduling SubmitOrdersThreadEntry orders_polarSequenceAgnostic[" + orders_polarSequenceAgnostic.Count + "] through [" + broker + "]";
 				//Assembler.PopupException(msg, null, false);
-				this.SubmitToBrokerAdapter_inNewThreadOrStraight(ordersAgnostic, broker);
-				return ordersAgnostic;
+				this.SubmitToBrokerAdapter_inNewThread(orders_polarSequenceAgnostic, broker);
+				return orders_polarSequenceAgnostic;
 			}
-			if (ordersClosing.Count > 0 && ordersOpening.Count == 0) {
-				string msg = "Scheduling SubmitOrdersThreadEntry ordersClosing[" + ordersClosing.Count + "] through [" + broker + "]";
+			if (orders_polarClosingFirst.Count > 0 && orders_polarOpeningSecond.Count == 0) {
+				string msg = "Scheduling SubmitOrdersThreadEntry orders_polarClosingFirst[" + orders_polarClosingFirst.Count + "] through [" + broker + "]";
 				Assembler.PopupException(msg, null, false);
-				this.SubmitToBrokerAdapter_inNewThreadOrStraight(ordersClosing, broker);
-				return ordersClosing;
+				this.SubmitToBrokerAdapter_inNewThread(orders_polarClosingFirst, broker);
+				return orders_polarClosingFirst;
 			}
-			if (ordersClosing.Count == 0 && ordersOpening.Count > 0) {
-				string msg = "Scheduling SubmitOrdersThreadEntry ordersOpening[" + ordersOpening.Count + "] through [" + broker + "]";
+			if (orders_polarClosingFirst.Count == 0 && orders_polarOpeningSecond.Count > 0) {
+				string msg = "Scheduling SubmitOrdersThreadEntry orders_polarOpeningSecond[" + orders_polarOpeningSecond.Count + "] through [" + broker + "]";
 				Assembler.PopupException(msg, null, false);
 				//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersOpening });
-				this.SubmitToBrokerAdapter_inNewThreadOrStraight(ordersOpening, broker);
-				return ordersClosing;
+				this.SubmitToBrokerAdapter_inNewThread(orders_polarOpeningSecond, broker);
+				return orders_polarOpeningSecond;
 			}
 
 			if (ordersClosingAllSameDirection == true && ordersOpeningAllSameDirection == true) {
 				if (ordersClosingPositionLongShort != ordersOpeningPositionLongShort) {
-					this.OPPsequencer.InitializeSequence(ordersClosing, ordersOpening);
-					string msg = "Scheduling SubmitOrdersThreadEntry ordersClosing[" + ordersClosing.Count
-						+ "] through [" + broker + "], then  ordersOpening[" + ordersOpening.Count + "]";
+					this.OPPsequencer.InitializeSequence(orders_polarClosingFirst, orders_polarOpeningSecond);
+					string msg = "Scheduling SubmitOrdersThreadEntry orders_polarClosingFirst[" + orders_polarClosingFirst.Count
+						+ "] through [" + broker + "], then  orders_polarOpeningSecond[" + orders_polarOpeningSecond.Count + "]";
 					Assembler.PopupException(msg, null, false);
 					//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersClosing });
-					this.SubmitToBrokerAdapter_inNewThreadOrStraight(ordersClosing, broker);
-					return ordersClosing;
+					this.SubmitToBrokerAdapter_inNewThread(orders_polarClosingFirst, broker);
+					return orders_polarClosingFirst;
 				} else {
-					List<Order> ordersMerged = new List<Order>(ordersClosing);
-					ordersMerged.AddRange(ordersOpening);
+					List<Order> ordersMerged = new List<Order>(orders_polarClosingFirst);
+					ordersMerged.AddRange(orders_polarOpeningSecond);
 					string msg = "Scheduling SubmitOrdersThreadEntry ordersMerged[" + ordersMerged.Count + "] through [" + broker + "]";
 					Assembler.PopupException(msg, null, false);
 					//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersMerged });
-					this.SubmitToBrokerAdapter_inNewThreadOrStraight(ordersClosing, broker);
-					return ordersClosing;
+					this.SubmitToBrokerAdapter_inNewThread(ordersMerged, broker);
+					return ordersMerged;
 				}
 			}
-			string msg2 = "DONT_PASS_NULL_AS_LIST_OF_ORDERS_TO_EVENT_CONSUMERS"
+			string msg2 = "UNTESTED_COMPLAIN DONT_PASS_NULL_AS_LIST_OF_ORDERS_TO_EVENT_CONSUMERS"
 				+ " DANGEROUS MIX, NOT OPTIMIZED: Scheduling SubmitOrdersThreadEntry"
-				+ " ordersAgnostic[" + ordersAgnostic.Count + "] through [" + broker + "]"
-				+ " (ordersClosingAllSameLongOrShort=[" + ordersClosingAllSameDirection + "]"
-				+ " && ordersOpeningAllSameLongOrShort=[" + ordersClosingAllSameDirection + "]"
+				+ " orders_polarSequenceAgnostic[" + orders_polarSequenceAgnostic.Count + "] through [" + broker + "]"
+				+ " (ordersClosingAllSameDirection=[" + ordersClosingAllSameDirection + "]"
+				+ " && ordersClosingAllSameDirection=[" + ordersClosingAllSameDirection + "]"
 				+ " && ordersClosingPositionLongShort[" + ordersClosingPositionLongShort + "]"
 				+ " != ordersOpeningPositionLongShort[" + ordersOpeningPositionLongShort + "]) == FALSE";
 			Assembler.PopupException(msg2);
 			return null;
 		}
 
-		public void SubmitToBrokerAdapter_inNewThreadOrStraight(List<Order> orders, BrokerAdapter broker) {
+		public void SubmitToBrokerAdapter_inNewThread(List<Order> orders, BrokerAdapter broker) {
+			string msig = " //SubmitToBrokerAdapter_inNewThread(" + broker + ")";
+			if (orders.Count == 0) {
+				string msg = "DONT_SUMBIT_orders.Count==0";
+				Assembler.PopupException(msg);
+			}
+			Order firstOrder = orders[0];
+			msig = " //SubmitToBrokerAdapter_inNewThread(" + firstOrder.Alert.dataSourceName + ", " + broker + ")";
+
 			// !!!THERE_MUST_BE_NO_DIFFERENCE_BETWEEN_LIVEISIMBROKER_AND_LIVEBROKER!!!
-			//bool brokerIsLivesim = (broker as LivesimBroker) != null;
-			//if (brokerIsLivesim) {
-			//	//broker.SubmitOrdersThreadEntry(new object[] { orders });
-			//	broker.SubmitOrders(orders);
-			//	return;
-			//}
+			bool brokerIsLivesim = (broker as LivesimBroker) != null;
+			if (brokerIsLivesim) {
+				//broker.SubmitOrdersThreadEntry(new object[] { orders });
+				//broker.SubmitOrders(orders);
+				//return;
+				
+				string msg1 = "";
+				//Assembler.PopupException(msg1, null, false);
+			}
 			// !!!THERE_MUST_BE_NO_DIFFERENCE_BETWEEN_LIVEISIMBROKER_AND_LIVEBROKER!!!
-			ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { orders });
+			//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { orders });
+			Task taskEmittingOrders = new Task(delegate {
+				broker.SubmitOrders_threadEntry(orders);
+			});
+			taskEmittingOrders.Start();
 		}
-		BrokerAdapter extractSameBrokerAdapterThrowIfDifferent(List<Order> orders, string callerMethod) {
+		BrokerAdapter extractSameBrokerAdapter_throwIfDifferent(List<Order> orders, string callerMethod) {
 			BrokerAdapter broker = null;
 			foreach (Order order in orders) {
 				if (order.hasBrokerAdapter(callerMethod) == false) {
@@ -312,13 +328,13 @@ namespace Sq1.Core.Broker {
 			if (account.CashAvailable <= 0) {
 				string msg = "ACCOUNT_CASH_ZERO";
 				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-				this.UpdateOrderStateAndPostProcess(order, newOrderState);
+				this.UpdateOrderState_postProcess(order, newOrderState);
 				return false;
 			}
 			return true;
 		}
 		Order createKillerOrder(Order victimOrder) {
-			string msig = " //CreateKillerOrder()";
+			string msig = " //createKillerOrder()";
 			if (victimOrder == null) {
 				string msg = "DONT_ANNOY_KILLER_IF_YOU_DONT_WANT_TO_KILL_ANYONE victimOrder=null";
 				Assembler.PopupException(msg + msig);
@@ -332,13 +348,13 @@ namespace Sq1.Core.Broker {
 			//this.RemovePendingAlertsForVictimOrderMustBePostKill(victimOrder, msig);
 
 			Order killerOrder = victimOrder.DeriveKillerOrder();
-			this.DataSnapshot.OrderInsertNotifyGuiAsync(killerOrder);
+			this.DataSnapshot.OrderInsert_notifyGuiAsync(killerOrder);
 			//this.RaiseOrderReplacementOrKillerCreatedForVictim(victimOrder);
 			this.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>() {victimOrder});
 			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
 			return killerOrder;
 		}
-		public void KillOrderUsingKillerOrder(Order victimOrder) {
+		public void KillOrder_usingKillerOrder(Order victimOrder) {
 			Order killerOrder = this.createKillerOrder(victimOrder);
 			//killerOrder.FromAutoTrading = false;
 			if (killerOrder.hasBrokerAdapter("KillOrder():") == false) {
@@ -346,9 +362,9 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException(msg);
 				return;
 			};
-			killerOrder.Alert.DataSource.BrokerAdapter.OrderKillSubmitUsingKillerOrder(killerOrder);
+			killerOrder.Alert.DataSource.BrokerAdapter.Kill_usingKiller(killerOrder);
 		}
-		public Order UpdateOrderStateByGuidNoPostProcess(string orderGUID, OrderState orderState, string message) {
+		public Order UpdateOrderStateByGuid_dontPostProcess(string orderGUID, OrderState orderState, string message) {
 			Order orderFound = this.DataSnapshot.OrdersSubmitting.ScanRecentForGUID(orderGUID);
 			if (orderFound == null) {
 				 orderFound = this.DataSnapshot.OrdersAll.ScanRecentForGUID(orderGUID, true);
@@ -362,13 +378,13 @@ namespace Sq1.Core.Broker {
 			OrderState orderStateAbsorbed = (orderState == OrderState.LeaveTheSame) ? orderFound.State : orderState;
 			if (orderStateAbsorbed != orderFound.State) {
 				OrderStateMessage osm = new OrderStateMessage(orderFound, orderStateAbsorbed, message);
-				this.UpdateOrderStateDontPostProcess(orderFound, osm);
+				this.UpdateOrderState_dontPostProcess(orderFound, osm);
 			} else {
-				this.AppendOrderMessageAndPropagateCheckThrowOrderNull(orderFound, message);
+				this.AppendOrderMessage_propagate_checkThrowOrderNull(orderFound, message);
 			}
 			return orderFound;
 		}
-		void appendOrderMessageAndPropagate(Order order, OrderStateMessage omsg) {
+		void appendOrderMessage_propagate(Order order, OrderStateMessage omsg) {
 			//log.Debug(omsg.Message);
 			if (string.IsNullOrEmpty(omsg.Message)) {
 				string msg = "I_REFUSE_TO_APPEND_AND_DISPLAY_EMPTY_MESSAGE omsg[" + omsg.ToString() + "]";
@@ -379,16 +395,16 @@ namespace Sq1.Core.Broker {
 			if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) return;
 			this.RaiseOrderMessageAddedExecutionFormNotification(this, omsg);
 		}
-		public void AppendOrderMessageAndPropagateCheckThrowOrderNull(Order order, string msg) {
+		public void AppendOrderMessage_propagate_checkThrowOrderNull(Order order, string msg) {
 			if (order == null) {
 				throw new Exception("order=NULL! you don't want to get NullPointerException and debug it");
 			}
 			OrderStateMessage omsg = new OrderStateMessage(order, order.State, msg);
-			this.appendOrderMessageAndPropagate(order, omsg);
+			this.appendOrderMessage_propagate(order, omsg);
 		}
 
-		void postProcessVictimOrder(Order victimOrder, OrderStateMessage newStateOmsg) {
-			this.UpdateOrderStateDontPostProcess(victimOrder, newStateOmsg);
+		void postProcess_victimOrder(Order victimOrder, OrderStateMessage newStateOmsg) {
+			this.UpdateOrderState_dontPostProcess(victimOrder, newStateOmsg);
 			switch (victimOrder.State) {
 				case OrderState.KillPendingPreSubmit:
 				case OrderState.KillPendingSubmitting:
@@ -402,18 +418,18 @@ namespace Sq1.Core.Broker {
 					break;
 				case OrderState.KilledPending:
 					if (victimOrder.FindStateInOrderMessages(OrderState.SLAnnihilated)) {
-						this.UpdateOrderStateDontPostProcess(victimOrder,
+						this.UpdateOrderState_dontPostProcess(victimOrder,
 							new OrderStateMessage(victimOrder, OrderState.SLAnnihilated,
 								"Setting State to the reason why it was killed"));
 					}
 					if (victimOrder.FindStateInOrderMessages(OrderState.TPAnnihilated)) {
-						this.UpdateOrderStateDontPostProcess(victimOrder,
+						this.UpdateOrderState_dontPostProcess(victimOrder,
 							new OrderStateMessage(victimOrder, OrderState.TPAnnihilated,
 								"Setting State to the reason why it was killed"));
 					}
 
 					Order killerOrder = victimOrder.KillerOrder;
-					this.UpdateOrderStateDontPostProcess(killerOrder,
+					this.UpdateOrderState_dontPostProcess(killerOrder,
 						new OrderStateMessage(killerOrder, OrderState.KillerDone,
 							"Victim.Killed => Killer.KillerDone"));
 					break;
@@ -430,14 +446,14 @@ namespace Sq1.Core.Broker {
 					break;
 			}
 		}
-		void postProcessKillerOrder(Order killerOrder, OrderStateMessage newStateOmsg) {
+		void postProcess_killerOrder(Order killerOrder, OrderStateMessage newStateOmsg) {
 			switch (killerOrder.State) {
 				case OrderState.JustConstructed:
 				case OrderState.KillerPreSubmit:
 				case OrderState.KillerSubmitting:
 				case OrderState.KillerBulletFlying:
 				case OrderState.KillerDone:
-					this.UpdateOrderStateDontPostProcess(killerOrder, newStateOmsg);
+					this.UpdateOrderState_dontPostProcess(killerOrder, newStateOmsg);
 					break;
 				default:
 					string msg = "no handler for killerOrder[" + killerOrder + "]'s state[" + killerOrder.State + "]"
@@ -449,7 +465,7 @@ namespace Sq1.Core.Broker {
 			}
 		}
 		object orderUpdateLock = new object();
-		public void UpdateOrderStateDontPostProcess(Order order, OrderStateMessage newStateOmsg) { lock (this.orderUpdateLock) {
+		public void UpdateOrderState_dontPostProcess(Order order, OrderStateMessage newStateOmsg) { lock (this.orderUpdateLock) {
 			if (newStateOmsg.Order != order) {
 				string msg = "sorry for athavism, but OrderStateMessage.Order should be equal to order here";
 				throw new Exception(msg);
@@ -465,10 +481,10 @@ namespace Sq1.Core.Broker {
 				//throw new Exception(msg);
 			}
 			if (order.State == newStateOmsg.State) {
-				string msg = "Replace with AppendOrderMessage()! UpdateOrderStateNoPostProcess(): got the same OrderState[" + order.State + "]?";
+				string msg = "Replace with AppendOrderMessage()! UpdateOrderState_dontPostProcess(): got the same OrderState[" + order.State + "]?";
 				//ROUGH_BRO throw new Exception(msg);
 				Assembler.PopupException(msg);
-				this.appendOrderMessageAndPropagate(order, newStateOmsg);
+				this.appendOrderMessage_propagate(order, newStateOmsg);
 				return;
 			}
 
@@ -481,16 +497,16 @@ namespace Sq1.Core.Broker {
 			OrderState orderStatePriorToUpdate = order.State;
 			order.State = newStateOmsg.State;
 			order.StateUpdateLastTimeLocal = newStateOmsg.DateTime;
-			this.DataSnapshot.SwitchLanesForOrderPostStatusUpdate(order, orderStatePriorToUpdate);
+			this.DataSnapshot.SwitchLanes_forOrder_postStatusUpdate(order, orderStatePriorToUpdate);
 
 			if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) return;
 			this.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>(){order});
-			this.appendOrderMessageAndPropagate(order, newStateOmsg);
+			this.appendOrderMessage_propagate(order, newStateOmsg);
 			// REPLACED_WITH_OUTER_this.orderUpdateLock if (order.State == OrderState.Submitted) order.MreActiveCanCome.Set();}
 		} }
-		public void UpdateOrderStateAndPostProcess(Order order, OrderStateMessage newStateOmsg,
+		public void UpdateOrderState_postProcess(Order order, OrderStateMessage newStateOmsg,
 								double priceFill = 0, double qtyFill = 0) { lock (this.orderUpdateLock) {
-			string msig = "UpdateOrderStateAndPostProcess(): ";
+			string msig = "UpdateOrderState_postProcess(): ";
 			try {
 				if (order == null) {
 					string msg = "POSSIBLE_END_OF_LIVESIM_LATE_FILL_AFTER_CTX_RESTORED_LIVEBROKER_GONE " + newStateOmsg.ToString();
@@ -498,11 +514,11 @@ namespace Sq1.Core.Broker {
 					return;
 				}
 				if (order.VictimToBeKilled != null) {
-					this.postProcessKillerOrder(order, newStateOmsg);
+					this.postProcess_killerOrder(order, newStateOmsg);
 					return;
 				}
 				if (order.KillerOrder != null) {
-					this.postProcessVictimOrder(order, newStateOmsg);
+					this.postProcess_victimOrder(order, newStateOmsg);
 					return;
 				}
 				if (order.hasBrokerAdapter("UpdateOrderStateAndPostProcess():") == false) {
@@ -515,7 +531,7 @@ namespace Sq1.Core.Broker {
 					string prePostErrorMsg = "BrokerAdapter CALLBACK DUPE: Status[" + newStateOmsg.State + "] delivered for EmergencyCloseLimitReached "
 						//+ "; skipping PostProcess for [" + order + "]"
 						;
-					this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, prePostErrorMsg);
+					this.AppendOrderMessage_propagate_checkThrowOrderNull(order, prePostErrorMsg);
 					return;
 				}
 				if (newStateOmsg.State == OrderState.Rejected && order.InStateEmergency) {
@@ -523,7 +539,7 @@ namespace Sq1.Core.Broker {
 						+ " order.inEmergencyState[" + order.State + "] "
 						//+ "; skipping PostProcess for [" + order + "]"
 						;
-					this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, prePostErrorMsg);
+					this.AppendOrderMessage_propagate_checkThrowOrderNull(order, prePostErrorMsg);
 					return;
 				}
 
@@ -532,7 +548,7 @@ namespace Sq1.Core.Broker {
 					string whyIthinkBrokerIsSpammingMe = dupesChecker.OrderCallbackIsDupeReson(order, newStateOmsg, priceFill, qtyFill);
 					if (string.IsNullOrEmpty(whyIthinkBrokerIsSpammingMe) == false) {
 						string msgChecker = "SKIPPING_POSTPROCESS_DUPE[" + whyIthinkBrokerIsSpammingMe + "]; for [" + order + "]";
-						this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msgChecker);
+						this.AppendOrderMessage_propagate_checkThrowOrderNull(order, msgChecker);
 						return;
 					}
 				}
@@ -552,9 +568,9 @@ namespace Sq1.Core.Broker {
 					}
 				}
 				if (order.State == newStateOmsg.State) {
-					this.appendOrderMessageAndPropagate(order, newStateOmsg);
+					this.appendOrderMessage_propagate(order, newStateOmsg);
 				} else {
-					this.UpdateOrderStateDontPostProcess(order, newStateOmsg);
+					this.UpdateOrderState_dontPostProcess(order, newStateOmsg);
 				}
 				this.postProcessOrderState(order, priceFill, qtyFill);
 			} catch (Exception ex) {
@@ -629,7 +645,7 @@ namespace Sq1.Core.Broker {
 					if (order.IsEmergencyClose) {
 						this.OPPemergency.RemoveEmergencyLockFilled(order);
 					}
-					this.OPPsequencer.OrderFilledUnlockSequenceSubmitOpening(order);
+					this.OPPsequencer.OrderFilled_unlockSequence_submitOpening(order);
 					try {
 						order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptNonReenterably(order.Alert, null,
 							order.PriceFill, order.QtyFill, order.SlippageFill, order.CommissionFill);
@@ -671,7 +687,7 @@ namespace Sq1.Core.Broker {
 								+ " ReplacedByGUID[" + order.ReplacedByGUID + "]"
 								//+ "; skipping PostProcess for [" + order + "]"
 								;
-							this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg);
+							this.AppendOrderMessage_propagate_checkThrowOrderNull(order, msg);
 							this.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>(){order});
 							return;
 						}
@@ -731,33 +747,33 @@ namespace Sq1.Core.Broker {
 			}
 		}
 
-		public void MoveStopLoss(PositionPrototype proto, double newActivationOffset, double newStopLossNegativeOffset) {
-			if (proto.StopLossAlertForAnnihilation == null) {
+		public void StopLossMove(PositionPrototype proto, double newActivationOffset, double newStopLoss_negativeOffset) {
+			if (proto.StopLossAlert_forMoveAndAnnihilation == null) {
 				string msg = "I refuse to move StopLoss order because proto.StopLossAlertForAnnihilation=null";
 				throw new Exception(msg);
 			}
-			if (proto.StopLossAlertForAnnihilation.OrderFollowed == null) {
+			if (proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed == null) {
 				string msg = "I refuse to move StopLoss order because proto.StopLossAlertForAnnihilation.OrderFollowed=null";
 				throw new Exception(msg);
 			}
 
-			Order order2killAndReplace = proto.StopLossAlertForAnnihilation.OrderFollowed;
+			Order order2killAndReplace = proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed;
 
 			OrderState stateBeforeActiveAssummingSubmitting = order2killAndReplace.State;
 			OrderState stateBeforeKilledAssumingActive = OrderState.Unknown;
 
-			string msig = "MoveStopLoss(" + proto.StopLossActivationNegativeOffset + "/" + proto.StopLossNegativeOffset
-				+ "=>" + newActivationOffset + "/" + newStopLossNegativeOffset + "): ";
+			string msig = "StopLossMove(" + proto.StopLossActivation_negativeOffset + "/" + proto.StopLoss_negativeOffset
+				+ "=>" + newActivationOffset + "/" + newStopLoss_negativeOffset + "): ";
 
 			// 1. hook onKilled=>submitNew
 			OrderPostProcessorStateHook stopLossGotKilledHook = new OrderPostProcessorStateHook("StopLossGotKilledHook",
 				order2killAndReplace, OrderState.KilledPending,
 				delegate(Order stopLossKilled, ReporterPokeUnit pokeUnit) {
-					string msg = msig + "StopLossGotKilledHook(): invoking OnStopLossKilledCreateNewStopLossAndAddToPokeUnit() "
+					string msg = msig + "StopLossGotKilledHook(): invoking onStopLossKilled_createNewStopLoss_andAddToPokeUnit() "
 						+ "[" + stateBeforeKilledAssumingActive + "] => "
 						+ "[" + stopLossKilled.State + "]";
 					stopLossKilled.AppendMessage(msg);
-					this.onStopLossKilledCreateNewStopLossAndAddToPokeUnit(stopLossKilled, newActivationOffset, newStopLossNegativeOffset, pokeUnit);
+					this.onStopLossKilled_createNewStopLoss_andAddToPokeUnit(stopLossKilled, newActivationOffset, newStopLoss_negativeOffset, pokeUnit);
 				}
 			);
 
@@ -765,55 +781,55 @@ namespace Sq1.Core.Broker {
 			OrderPostProcessorStateHook stopLossReceivedActiveCallback = new OrderPostProcessorStateHook("StopLossReceivedActiveCallback",
 				order2killAndReplace, OrderState.WaitingBrokerFill,
 				delegate(Order stopLossToBeKilled, ReporterPokeUnit pokeUnit) {
-					string msg = msig + "StopLossReceivedActiveCallback(): invoking KillOrderUsingKillerOrder() "
+					string msg = msig + "StopLossReceivedActiveCallback(): invoking KillOrder_usingKillerOrder() "
 						+ " [" + stateBeforeActiveAssummingSubmitting + "] => "
 						+ "[" + stopLossToBeKilled.State + "]";
 					stopLossToBeKilled.AppendMessage(msg);
 					stateBeforeKilledAssumingActive = stopLossToBeKilled.State;
-					this.KillOrderUsingKillerOrder(order2killAndReplace);
+					this.KillOrder_usingKillerOrder(order2killAndReplace);
 				}
 			);
 
 			this.OPPstatusCallbacks.AddStateChangedHook(stopLossReceivedActiveCallback);
 			this.OPPstatusCallbacks.AddStateChangedHook(stopLossGotKilledHook);
 
-			this.AppendOrderMessageAndPropagateCheckThrowOrderNull(proto.StopLossAlertForAnnihilation.OrderFollowed, msig + "hooked stopLossReceivedActiveCallback() and stopLossGotKilledHook()");
+			this.AppendOrderMessage_propagate_checkThrowOrderNull(proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed, msig + "hooked stopLossReceivedActiveCallback() and stopLossGotKilledHook()");
 		}
-		void onStopLossKilledCreateNewStopLossAndAddToPokeUnit(Order killedStopLoss, double newActivationOffset, double newStopLossNegativeOffset, ReporterPokeUnit pokeUnit) {
-			string msig = "OnStopLossKilledCreateNewStopLossAndAddToPokeUnit(): ";
+		void onStopLossKilled_createNewStopLoss_andAddToPokeUnit(Order killedStopLoss, double newActivationOffset, double newStopLossNegativeOffset, ReporterPokeUnit pokeUnit) {
+			string msig = "onStopLossKilled_createNewStopLoss_andAddToPokeUnit(): ";
 			ScriptExecutor executor = killedStopLoss.Alert.Strategy.Script.Executor;
 			Position position = killedStopLoss.Alert.PositionAffected;
 			// resetting proto.SL to NULL is a legal permission to set new StopLossAlert for SellOrCoverRegisterAlerts()
-			position.Prototype.StopLossAlertForAnnihilation = null;
+			position.Prototype.StopLossAlert_forMoveAndAnnihilation = null;
 			// resetting position.ExitAlert is a legal permission to for SimulateRealtimeOrderFill() to not to throw "I refuse to tryFill an ExitOrder"
 			position.ExitAlert = null;
 			// set new SL+SLa as new targets for Activator
 			string msg = position.Prototype.ToString();
 			position.Prototype.SetNewStopLossOffsets(newStopLossNegativeOffset, newActivationOffset);
 			msg += " => " + position.Prototype.ToString();
-			Alert replacement = executor.PositionPrototypeActivator.CreateStopLossFromPositionPrototype(position);
+			Alert replacement = executor.PositionPrototypeActivator.CreateStopLoss_fromPositionPrototype(position);
 			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter();
 			//this.CreateOrdersSubmitToBrokerAdapterInNewThreadGroups(new List<Alert>() {replacement}, true, true);
 			pokeUnit.AlertsNew.AddNoDupe(replacement, this, "onStopLossKilledCreateNewStopLossAndAddToPokeUnit(WAIT)");
 			msg += " newAlert[" + replacement + "]";
 			killedStopLoss.AppendMessage(msg + msig);
 		}
-		public void MoveTakeProfit(PositionPrototype proto, double newTakeProfitPositiveOffset) {
-			if (proto.TakeProfitAlertForAnnihilation == null) {
+		public void TakeProfitMove(PositionPrototype proto, double newTakeProfit_positiveOffset) {
+			if (proto.TakeProfitAlert_forMoveAndAnnihilation == null) {
 				string msg = "I refuse to move TakeProfit order because proto.TakeProfitAlertForAnnihilation=null";
 				throw new Exception(msg);
 			}
-			if (proto.TakeProfitAlertForAnnihilation.OrderFollowed == null) {
+			if (proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed == null) {
 				string msg = "I refuse to move TakeProfit order because proto.TakeProfitAlertForAnnihilation.OrderFollowed=null";
 				throw new Exception(msg);
 			}
 
-			Order order2killAndReplace = proto.TakeProfitAlertForAnnihilation.OrderFollowed;
+			Order order2killAndReplace = proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed;
 
 			OrderState stateBeforeActiveAssummingSubmitting = order2killAndReplace.State;
 			OrderState stateBeforeKilledAssumingActive = OrderState.Unknown;
 
-			string msig = "MoveTakeProfit(" + proto.TakeProfitPositiveOffset + "=>" + newTakeProfitPositiveOffset + "): ";
+			string msig = "TakeProfitMove(" + proto.TakeProfit_positiveOffset + "=>" + newTakeProfit_positiveOffset + "): ";
 
 			// 1. hook onKilled=>submitNew
 			OrderPostProcessorStateHook takeProfitGotKilledHook = new OrderPostProcessorStateHook("TakeProfitGotKilledHook",
@@ -823,7 +839,7 @@ namespace Sq1.Core.Broker {
 						+ " [" + stateBeforeKilledAssumingActive + "] => "
 						+ "[" + takeProfitKilled.State + "]";
 					takeProfitKilled.AppendMessage(msg);
-					this.onTakeProfitKilledCreateNewTakeProfitAndAddToPokeUnit(takeProfitKilled, newTakeProfitPositiveOffset, pokeUnit);
+					this.onTakeProfitKilled_createNewTakeProfit_addToPokeUnit(takeProfitKilled, newTakeProfit_positiveOffset, pokeUnit);
 				}
 			);
 
@@ -836,89 +852,36 @@ namespace Sq1.Core.Broker {
 						+ "[" + takeProfitToBeKilled.State + "]";
 					takeProfitToBeKilled.AppendMessage(msg);
 					stateBeforeKilledAssumingActive = takeProfitToBeKilled.State;
-					this.KillOrderUsingKillerOrder(order2killAndReplace);
+					this.KillOrder_usingKillerOrder(order2killAndReplace);
 				}
 			);
 
 			this.OPPstatusCallbacks.AddStateChangedHook(takeProfitReceivedActiveCallback);
 			this.OPPstatusCallbacks.AddStateChangedHook(takeProfitGotKilledHook);
 
-			this.AppendOrderMessageAndPropagateCheckThrowOrderNull(proto.TakeProfitAlertForAnnihilation.OrderFollowed, msig + ": hooked takeProfitReceivedActiveCallback() and takeProfitGotKilledHook()");
+			this.AppendOrderMessage_propagate_checkThrowOrderNull(proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed, msig + ": hooked takeProfitReceivedActiveCallback() and takeProfitGotKilledHook()");
 		}
-		void onTakeProfitKilledCreateNewTakeProfitAndAddToPokeUnit(Order killedTakeProfit, double newTakeProfitPositiveOffset, ReporterPokeUnit pokeUnit) {
-			string msig = "OnTakeProfitKilledCreateNewTakeProfitAndAddToPokeUnit(): ";
+		void onTakeProfitKilled_createNewTakeProfit_addToPokeUnit(Order killedTakeProfit, double newTakeProfitPositiveOffset, ReporterPokeUnit pokeUnit) {
+			string msig = "onTakeProfitKilled_createNewTakeProfit_addToPokeUnit(): ";
 			ScriptExecutor executor = killedTakeProfit.Alert.Strategy.Script.Executor;
 			Position position = killedTakeProfit.Alert.PositionAffected;
 			// resetting proto.SL to NULL is a legal permission to set new TakeProfitAlert for SellOrCoverRegisterAlerts()
-			position.Prototype.TakeProfitAlertForAnnihilation = null;
+			position.Prototype.TakeProfitAlert_forMoveAndAnnihilation = null;
 			// resetting position.ExitAlert is a legal permission to for SimulateRealtimeOrderFill() to not to throw "I refuse to tryFill an ExitOrder"
 			position.ExitAlert = null;
 			// set new SL+SLa as new targets for Activator
 			string msg = position.Prototype.ToString();
 			position.Prototype.SetNewTakeProfitOffset(newTakeProfitPositiveOffset);
 			msg += " => " + position.Prototype.ToString();
-			Alert replacement = executor.PositionPrototypeActivator.CreateTakeProfitFromPositionPrototype(position);
+			Alert replacement = executor.PositionPrototypeActivator.CreateTakeProfit_fromPositionPrototype(position);
 			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter();
 			//this.CreateOrdersSubmitToBrokerAdapterInNewThreadGroups(new List<Alert>() { replacement }, true, true);
-			pokeUnit.AlertsNew.AddNoDupe(replacement, this, "onTakeProfitKilledCreateNewTakeProfitAndAddToPokeUnit(WAIT)");
+			pokeUnit.AlertsNew.AddNoDupe(replacement, this, "onTakeProfitKilled_createNewTakeProfit_addToPokeUnit(WAIT)");
 			msg += " newAlert[" + replacement + "]";
 			killedTakeProfit.AppendMessage(msg + msig);
 		}
-		//public void InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter(Order orderWithNewState) {
-		//	ScriptExecutor executor = orderWithNewState.Alert.Strategy.Script.Executor;
-		//	ReporterPokeUnit afterHooksInvokedPokeUnit = new ReporterPokeUnit();
-		//	int hooksInvoked = this.OPPstatusCallbacks.InvokeOnceHooksForOrderStateAndDelete(orderWithNewState, afterHooksInvokedPokeUnit);
-		//	if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) return;
 
-		//	List<Alert> alertsCreatedByHooks = afterHooksInvokedPokeUnit.AlertsNew.SafeCopy(this, "InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter(WAIT)");
-		//	if (alertsCreatedByHooks.Count == 0) {
-		//		string msg = "NOT_AN_ERROR: ZERO alerts from [" + hooksInvoked + "] hooks invoked; order[" + orderWithNewState + "]";
-		//		//this.PopupException(new Exception(msg));
-		//		return;
-		//	}
-		//	bool setStatusSubmitting = executor.IsStreamingTriggeringScript && executor.IsStrategyEmittingOrders;
-		//	this.CreateOrdersSubmitToBrokerAdapterInNewThreads(alertsCreatedByHooks, setStatusSubmitting, true);
-		//	//ONLY_ON_FILL orderWithNewState.Alert.Strategy.Script.Executor.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(afterHooksInvokedPokeUnit);
-		//}
-
-		//[Obsolete("COMPLETE_MESS")]
-		//public void PostKillUsingKiller_forBothKillerAndVictim_removeAlertsPendingFromExecutorDataSnapshot(Order orderDeployedKilled_orKillerOrder, string msig) {
-		//	string msg = "";
-		//	if (orderDeployedKilled_orKillerOrder.State != OrderState.KillerDone) {
-		//		if (orderDeployedKilled_orKillerOrder.State == OrderState.KillerDone) {
-		//			if (orderDeployedKilled_orKillerOrder.VictimToBeKilled != null) {
-		//				msg = "unhealthy killer; VictimToBeKilled=null";
-		//			} else {
-		//				string msg1 = "healthy killer; we can use killer.Victim.Alert for one rabied victim having no Alert";
-		//			}
-		//		} else {
-		//			msg = "not a killer";
-		//			if (orderDeployedKilled_orKillerOrder.IsKiller == true) {
-		//				msg = "not a killer but claims to be a killer";
-		//			}
-		//		}
-		//		orderDeployedKilled_orKillerOrder.AppendMessage(msg + msig + " " + orderDeployedKilled_orKillerOrder);
-		//		return;
-		//	}
-		//	Alert alertForOrder = orderDeployedKilled_orKillerOrder.Alert;
-		//	if (alertForOrder == null) {
-		//		msg = "orderKilled.Alert=null; dunno what to remove from PendingAlerts";
-		//		orderDeployedKilled_orKillerOrder.AppendMessage(msg + msig + " " + orderDeployedKilled_orKillerOrder);
-		//		return;
-		//	}
-		//	ScriptExecutor executor = alertForOrder.Strategy.Script.Executor;
-		//	try {
-		//		executor.CallbackAlertKilledInvokeScriptNonReenterably(alertForOrder);
-		//		msg = orderDeployedKilled_orKillerOrder.State + " => AlertsPending.Remove.Remove(orderExecuted.Alert)'d";
-		//		orderDeployedKilled_orKillerOrder.AppendMessage(msg + msig);
-		//	} catch (Exception e) {
-		//		msg = orderDeployedKilled_orKillerOrder.State + " is a Cemetery but [" + e.Message + "]"
-		//			+ "; comment the State out; alert[" + alertForOrder + "]";
-		//		orderDeployedKilled_orKillerOrder.AppendMessage(msg + msig);
-		//	}
-		//}
-
-		public void PostKillWithoutKiller_removeAlertsPendingFromExecutorDataSnapshot(Order orderPendingKilled, string msig) {
+		public void KillPendingWithoutKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(Order orderPendingKilled, string msig) {
 			if (orderPendingKilled.State != OrderState.KilledPending) {
 				string msg = "I_SERVE_ONLY_OrderState.KilledPending";
 				Assembler.PopupException(msg);
@@ -932,7 +895,7 @@ namespace Sq1.Core.Broker {
 			}
 			ScriptExecutor executor = alertForOrder.Strategy.Script.Executor;
 			try {
-				executor.CallbackAlertKilledInvokeScriptNonReenterably(alertForOrder);
+				executor.CallbackAlertKilled_invokeScript_nonReenterably(alertForOrder);
 				string msg = orderPendingKilled.State + " => AlertsPending.Remove.Remove(orderExecuted.Alert)'d";
 				orderPendingKilled.AppendMessage(msg + msig);
 			} catch (Exception e) {
@@ -941,7 +904,7 @@ namespace Sq1.Core.Broker {
 				orderPendingKilled.AppendMessage(msg + msig);
 			}
 		}
-		public void KillPendingOrderWithoutKiller(Order orderPending) {
+		public void PendingOrder_killWithoutKiller(Order orderPending) {
 			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
 
 			string msgPending = "EXPECTING_THREE_MESSAGES_FROM_BROKER_FOR[" + orderPending + "] "
@@ -949,9 +912,9 @@ namespace Sq1.Core.Broker {
 				+ OrderState.KillPendingSubmitted + ">"
 				+ OrderState.KilledPending;
 			OrderStateMessage omsg = new OrderStateMessage(orderPending, OrderState.KillPendingPreSubmit, msgPending);
-			this.UpdateOrderStateAndPostProcess(orderPending, omsg);
+			this.UpdateOrderState_postProcess(orderPending, omsg);
 
-			orderPending.Alert.DataSource.BrokerAdapter.OrderPendingKillWithoutKillerSubmit(orderPending);
+			orderPending.Alert.DataSource.BrokerAdapter.KillPending_withoutKiller(orderPending);
 		}
 	}
 }

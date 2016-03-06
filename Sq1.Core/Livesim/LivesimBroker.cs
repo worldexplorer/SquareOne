@@ -53,10 +53,10 @@ namespace Sq1.Core.Livesim {
 			return emptyEditor;
 		}
 
-		public override void OrderSubmit(Order order) {
+		public override void Submit(Order order) {
 			this.OrdersSubmittedForOneLivesimBacktest.Add(order);
 			string msg = "IS_ASYNC_CALLBACK_NEEDED? THREAD_ID " + Thread.CurrentThread.ManagedThreadId;
-			base.OrderProcessor.UpdateOrderStateByGuidNoPostProcess(order.GUID, OrderState.Submitted, msg);
+			base.OrderProcessor.UpdateOrderStateByGuid_dontPostProcess(order.GUID, OrderState.Submitted, msg);
 		}
 
 //		public override void OrderKillSubmitUsingKillerOrder(Order killerOrder) {
@@ -76,7 +76,7 @@ namespace Sq1.Core.Livesim {
 //			this.OrderProcessor.UpdateOrderStateAndPostProcess(killerOrder, omsgKiller);
 //		}
 
-		public override void OrderPendingKillWithoutKillerSubmit(Order orderPendingToKill) {
+		public override void KillPending_withoutKiller(Order orderPendingToKill) {
 			string msig = " //LivesimBroker.OrderPendingKillWithoutKillerSubmit()";
 			
 			string orderGUID = orderPendingToKill.GUID;
@@ -87,10 +87,10 @@ namespace Sq1.Core.Livesim {
 			}
 
 			var omsg2 = new OrderStateMessage(orderPendingToKill, OrderState.KillPendingSubmitting, "Step#2");
-			base.OrderProcessor.UpdateOrderStateDontPostProcess(orderPendingToKill, omsg2);
+			base.OrderProcessor.UpdateOrderState_dontPostProcess(orderPendingToKill, omsg2);
 
 			var omsg3 = new OrderStateMessage(orderPendingToKill, OrderState.KillPendingSubmitted, "Step#3");
-			base.OrderProcessor.UpdateOrderStateDontPostProcess(orderPendingToKill, omsg3);
+			base.OrderProcessor.UpdateOrderState_dontPostProcess(orderPendingToKill, omsg3);
 
 			int delay = 0;
 			if (this.LivesimBrokerSettings.KillPendingDelayEnabled) {
@@ -104,8 +104,8 @@ namespace Sq1.Core.Livesim {
 			}
 			if (delay == 0) {
 				var omsg = new OrderStateMessage(orderPendingToKill, OrderState.KilledPending, "DELAY_PENDING_KILL_ZERO");
-				base.OrderProcessor.UpdateOrderStateDontPostProcess(orderPendingToKill, omsg);
-				base.OrderProcessor.PostKillWithoutKiller_removeAlertsPendingFromExecutorDataSnapshot(orderPendingToKill, msig);
+				base.OrderProcessor.UpdateOrderState_dontPostProcess(orderPendingToKill, omsg);
+				base.OrderProcessor.KillPendingWithoutKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(orderPendingToKill, msig);
 				return;
 			}
 
@@ -118,8 +118,8 @@ namespace Sq1.Core.Livesim {
 
 				Thread.Sleep(delay);
 				var omsg = new OrderStateMessage(orderPendingToKill, OrderState.KilledPending, "DELAY_PENDING_KILL[" + delay + "]ms");
-				base.OrderProcessor.UpdateOrderStateDontPostProcess(orderPendingToKill, omsg);
-				base.OrderProcessor.PostKillWithoutKiller_removeAlertsPendingFromExecutorDataSnapshot(orderPendingToKill, msig);
+				base.OrderProcessor.UpdateOrderState_dontPostProcess(orderPendingToKill, omsg);
+				base.OrderProcessor.KillPendingWithoutKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(orderPendingToKill, msig);
 			});
 			t.ContinueWith(delegate {
 				string msg = "TASK_THREW";
@@ -128,11 +128,11 @@ namespace Sq1.Core.Livesim {
 			t.Start();		// WHO_DOES t.Dispose() ?
 		}
 
-		public void ConsumeQuoteOfStreamingBarToFillPending(QuoteGenerated quoteUnattachedVolatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
+		public void ConsumeQuoteUnattached_toFillPending(QuoteGenerated quoteUnattachedVolatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
 			ScriptExecutor executor = this.LivesimDataSource.Executor;
 			ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
 			if (snap.AlertsPending.Count == 0) {
-				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //ConsumeQuoteOfStreamingBarToFillPending(" + willBeFilled + ") ";
+				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //ConsumeQuoteUnattached_toFillPending(" + willBeFilled + ") ";
 				//DISABLED_TO_SEE_WHAT_THAT_WILL_BRING
 				Assembler.PopupException(msg, null, false);
 				return;
@@ -152,7 +152,7 @@ namespace Sq1.Core.Livesim {
 
 			int delayBeforeFill = this.LivesimBrokerSpoiler.DelayBeforeFill_Calculate();
 			if (delayBeforeFill == 0) {
-				this.consumeQuoteOfStreamingBarToFillPendingAsync(quoteUnattachedVolatilePointer, willBeFilled);
+				this.consumeQuoteUnattached_toFillPendingAsync(quoteUnattachedVolatilePointer, willBeFilled);
 				return;
 			}
 
@@ -179,11 +179,11 @@ namespace Sq1.Core.Livesim {
 					//Assembler.PopupException(msg);
 					return;
 				}
-				this.consumeQuoteOfStreamingBarToFillPendingAsync(quoteUnattachedLocalScoped, willBeFilled);
+				this.consumeQuoteUnattached_toFillPendingAsync(quoteUnattachedLocalScoped, willBeFilled);
 				executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
 			});
 			t.ContinueWith(delegate {
-				string msg = "TASK_THREW_LivesimBroker.consumeQuoteOfStreamingBarToFillPendingAsync()";
+				string msg = "TASK_THREW_LivesimBroker.consumeQuoteUnattached_toFillPendingAsync()";
 				Assembler.PopupException(msg, t.Exception);
 			}, TaskContinuationOptions.OnlyOnFaulted);
 			t.Start();		// WHO_DOES t.Dispose() ?
@@ -199,10 +199,10 @@ namespace Sq1.Core.Livesim {
 				Assembler.PopupException(msg);
 			}
 
-			List<Alert> safe = willBeFilled.SafeCopy(this, "//ConsumeQuoteOfStreamingBarToFillPending()");
-			this.DataSnapshot.AlertsScheduledForDelayedFill.AddRange(safe, this, "ConsumeQuoteOfStreamingBarToFillPending(WAIT)");
+			List<Alert> safe = willBeFilled.SafeCopy(this, "//ConsumeQuoteUnattached_toFillPending()");
+			this.DataSnapshot.AlertsScheduledForDelayedFill.AddRange(safe, this, "ConsumeQuoteUnattached_toFillPending(WAIT)");
 		} }
-		void consumeQuoteOfStreamingBarToFillPendingAsync(QuoteGenerated quoteUnattached, AlertList expectingToFill) {
+		void consumeQuoteUnattached_toFillPendingAsync(QuoteGenerated quoteUnattached, AlertList expectingToFill) {
 			ScriptExecutor executor = this.LivesimDataSource.Executor;
 			Bar barStreaming = executor.Bars.BarStreaming_nullUnsafe;
 			if (barStreaming == null) {
@@ -217,7 +217,7 @@ namespace Sq1.Core.Livesim {
 			}
 			ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
 			if (snap.AlertsPending.Count == 0) {
-				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //consumeQuoteOfStreamingBarToFillPendingAsync(" + expectingToFill + ")";
+				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //consumeQuoteUnattached_toFillPendingAsync(" + expectingToFill + ")";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
@@ -260,7 +260,7 @@ namespace Sq1.Core.Livesim {
 			}
 			//executor.Script.OnNewQuoteCallback(quoteToReach);
 
-			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = executor.ExecuteOnNewBarOrNewQuote(quoteAttachedToStreamingToConsumerBars);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = executor.InvokeScript_onNewBar_onNewQuote(quoteAttachedToStreamingToConsumerBars);
 			//base.GeneratedQuoteEnrichSymmetricallyAndPush(quote, bar2simulate);
 			if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
 				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
@@ -283,7 +283,7 @@ namespace Sq1.Core.Livesim {
 			}
 			OrderStateMessage osm = new OrderStateMessage(order, OrderState.Filled, "LIVESIM_FILLED_THROUGH_MARKETSIM_BACKTEST");
 			OrderProcessor orderProcessor = Assembler.InstanceInitialized.OrderProcessor;
-			orderProcessor.UpdateOrderStateAndPostProcess(order, osm, priceFilled, qtyFilled);
+			orderProcessor.UpdateOrderState_postProcess(order, osm, priceFilled, qtyFilled);
 			if (alertFilled.PriceFilledThroughPosition != priceFilled) {
 				string msg = "WHO_FILLS_POSITION_PRICE_FILLED_THEN?";
 			}

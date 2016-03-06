@@ -195,7 +195,7 @@ namespace Sq1.Core.Streaming {
 
 				if (barConsumer is StreamingSolidifier) {
 					try {
-						barConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStreamingUnattached, quoteSernoEnrichedWithUnboundStreamingBar);
+						barConsumer.ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(barStreamingUnattached, quoteSernoEnrichedWithUnboundStreamingBar);
 					} catch (Exception ex) {
 						string msg = "BOUND_BAR_PUSH_FAILED " + barStreamingUnattached.ToString();
 						Assembler.PopupException(msg + msig, ex);
@@ -254,7 +254,7 @@ namespace Sq1.Core.Streaming {
 						Assembler.PopupException(msg, null, false);
 						continue;
 					}
-					barConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStaticLast, quoteWithStreamingBarBound);
+					barConsumer.ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(barStaticLast, quoteWithStreamingBarBound);
 				} catch (Exception ex) {
 					string msg = "BOUND_BAR_PUSH_FAILED " + barStreamingAttached.ToString();
 					Assembler.PopupException(msg + msig, ex);

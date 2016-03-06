@@ -69,7 +69,7 @@ namespace Sq1.Core.StrategyBase {
 			return ret;
 		}
 
-		public Script CompileSourceReturnInstance(string sourceCode, string dotNetReferences) { lock (this.avoidingMessIfInstantiatedInAssembler) {
+		public Script CompileSource_returnInstance(string sourceCode, string dotNetReferences) { lock (this.avoidingMessIfInstantiatedInAssembler) {
 			CodeDomProvider codeDomProvider = new CSharpCodeProvider();
 			CompilerParameters compilerParameters = new CompilerParameters();
 			compilerParameters.GenerateExecutable = false;

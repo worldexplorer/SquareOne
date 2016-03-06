@@ -137,7 +137,7 @@ namespace Sq1.Core.Charting {
 			}
 			return this.reverse[alert];
 		}
-		public List<ALERTS> FindContentsOf__nullUnsafe(CHART chart) {
+		public List<ALERTS> FindContentsOf_nullUnsafe(CHART chart) {
 			string msig = " //DictionaryManyToOne::FindContents(chart[" + chart + "])";
 			if (this.lookup.ContainsKey(chart) == false) {
 				string msg = "NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
@@ -152,7 +152,7 @@ namespace Sq1.Core.Charting {
 		internal List<ALERTS> RenameKey(CHART oldSymbolName, CHART newSymbolName) {
 			List<ALERTS> chartShadowsAffected_alreadySavedStrategyOrCtx_invokedRaiseChartSettingsChangedContainerShouldSerialize = new List<ALERTS>();
 
-			List<ALERTS> chartShadowsOpenForSymbolOfDataSource = this.FindContentsOf__nullUnsafe(oldSymbolName);
+			List<ALERTS> chartShadowsOpenForSymbolOfDataSource = this.FindContentsOf_nullUnsafe(oldSymbolName);
 			List<ALERTS> avoidingCollectionModified = new List<ALERTS>(chartShadowsOpenForSymbolOfDataSource);
 			foreach (ALERTS chartShadow in avoidingCollectionModified) {
 				if (this.IsRegistered(newSymbolName)) {

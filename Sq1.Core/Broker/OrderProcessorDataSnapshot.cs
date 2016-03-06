@@ -71,7 +71,7 @@ namespace Sq1.Core.Broker {
 			this.SerializerLogrotateOrders.StartSerializerThread();
 		}
 
-		public void OrderInsertNotifyGuiAsync(Order orderToAdd) {
+		public void OrderInsert_notifyGuiAsync(Order orderToAdd) {
 			string msg = "HEY_I_REACHED_THIS_POINT__NO_EXCEPTIONS_SO_FAR?";
 			//Debugger.Break();
 			//#D_HANGS Assembler.PopupException(msg);
@@ -132,7 +132,7 @@ namespace Sq1.Core.Broker {
 			return null;
 		}
 
-		public void SwitchLanesForOrderPostStatusUpdate(Order orderNowAfterUpdate, OrderState orderStatePriorToUpdate) { lock (this.orderSwitchingLanesLock) {
+		public void SwitchLanes_forOrder_postStatusUpdate(Order orderNowAfterUpdate, OrderState orderStatePriorToUpdate) { lock (this.orderSwitchingLanesLock) {
 				string msig = " //OrderProcessorDataSnapshot::SwitchLanesForOrderPostStatusUpdate()";
 				OrderLaneByState orderLaneBeforeStateUpdate = this.SuggestLaneByOrderState_nullUnsafe(orderStatePriorToUpdate);
 				OrderLaneByState  orderLaneAfterStateUpdate = this.SuggestLaneByOrderState_nullUnsafe(orderNowAfterUpdate.State);

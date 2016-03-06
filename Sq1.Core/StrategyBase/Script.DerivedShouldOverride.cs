@@ -8,36 +8,36 @@ namespace Sq1.Core.StrategyBase {
 		// REASON_TO_EXIST: methods to override in derived strategy
 		public virtual void InitializeBacktest() {
 		}
-		public virtual void OnNewQuoteOfStreamingBarCallback(Quote quoteNewArrived) {
+		public virtual void OnNewQuoteOfStreamingBar_callback(Quote quoteNewArrived) {
 		}
-		public virtual void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barNewStaticArrived) {
+		public virtual void OnBarStaticLastFormed_whileStreamingBarWithOneQuoteAlreadyAppended_callback(Bar barNewStaticArrived) {
 			string msg = "SCRIPT_DERIVED_MUST_IMPLEMENT Script[" + this.GetType().FullName + "]: public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar)";
 			throw new Exception(msg);
 		}
-		public virtual void OnAlertFilledCallback(Alert alertFilled) {
+		public virtual void OnAlertFilled_callback(Alert alertFilled) {
 		}
-		public virtual void OnAlertKilledCallback(Alert alertKilled) {
+		public virtual void OnAlertKilled_callback(Alert alertKilled) {
 		}
-		public virtual void OnAlertNotSubmittedCallback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
+		public virtual void OnAlertNotSubmitted_callback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
 		}
-		public virtual void OnPositionOpenedCallback(Position positionOpened) {
+		public virtual void OnPositionOpened_callback(Position positionOpened) {
 		}
-		public virtual void OnPositionOpenedPrototypeSlTpPlacedCallback(Position positionOpenedByPrototype) {
+		public virtual void OnPositionOpened_prototypeSlTpPlaced_callback(Position positionOpenedByPrototype) {
 		}
-		public virtual void OnPositionClosedCallback(Position positionClosed) {
+		public virtual void OnPositionClosed_callback(Position positionClosed) {
 		}
 		//public virtual void ExecuteOnStopLossNegativeOffsetUpdateActivationSucceeded(Position position, PositionPrototype proto) {
 		//}
 		//public virtual void ExecuteOnStopLossNegativeOffsetUpdateActivationFailed(Position position, PositionPrototype proto) {
 		//}
 
-		public virtual void OnStreamingTriggeringScriptTurnedOnCallback() {
+		public virtual void OnStreamingTriggeringScript_turnedOn_callback() {
 		}
-		public virtual void OnStreamingTriggeringScriptTurnedOffCallback() {
+		public virtual void OnStreamingTriggeringScript_turnedOff_callback() {
 		}
-		public virtual void OnStrategyEmittingOrdersTurnedOnCallback() {
+		public virtual void OnStrategyEmittingOrders_turnedOn_callback() {
 		}
-		public virtual void OnStrategyEmittingOrdersTurnedOffCallback() {
+		public virtual void OnStrategyEmittingOrders_turnedOff_callback() {
 		}
 	}
 }

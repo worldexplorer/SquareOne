@@ -13,7 +13,7 @@ namespace Sq1.Strategies.Demo {
 			if (this.Executor.Sequencer.IsRunningNow) return;
 			
 			Color bg = (barStaticFormed.Open > barStaticFormed.Close) ? Color.LightGreen : Color.LightSalmon;
-			base.Executor.ChartConditionalBarBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
+			base.Executor.ChartConditional_barBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
 		}
 		void testBarAnnotationsMarkBarsShiftedDueToMissedBar(Bar barStaticFormed) {
 			if (this.Executor.Sequencer.IsRunningNow) return;
@@ -31,17 +31,17 @@ namespace Sq1.Strategies.Demo {
 			//	barIndex, "ann1" + barIndex, labelTime, font, Color.Black, Color.Empty, evenAboveOddBelow);
 
 			string labelReceived = "#" + barStaticFormed.BarIndexAfterMidnightReceived;
-			base.Executor.ChartConditionalBarAnnotationDrawModify(
+			base.Executor.ChartConditional_barAnnotationDrawModify(
 				barIndex, "annReceived" + barIndex, labelReceived, this.fontArial7,
 				Color.Black, Color.Empty, evenAboveOddBelow, stickToHorizontalEdgesOfChart);
 			
 			string labelExpAfterOpen = "ao" + barStaticFormed.BarIndexExpectedSinceTodayMarketOpen;
-			base.Executor.ChartConditionalBarAnnotationDrawModify(
+			base.Executor.ChartConditional_barAnnotationDrawModify(
 				barIndex, "annAfterOpen" + barIndex, labelExpAfterOpen,
 				this.fontArial7, Color.Black, Color.Empty, evenAboveOddBelow, stickToHorizontalEdgesOfChart);
 			
 			string labelExpBeforeClose = "bc" + barStaticFormed.BarIndexExpectedMarketClosesTodaySinceMarketOpen;
-			base.Executor.ChartConditionalBarAnnotationDrawModify(
+			base.Executor.ChartConditional_barAnnotationDrawModify(
 				barIndex, "annBeforeClose" + barIndex, labelExpBeforeClose,
 				this.fontArial7, Color.Black, Color.Empty, evenAboveOddBelow, stickToHorizontalEdgesOfChart);
 		}

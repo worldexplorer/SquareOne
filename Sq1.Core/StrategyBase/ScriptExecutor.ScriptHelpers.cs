@@ -13,10 +13,10 @@ namespace Sq1.Core.StrategyBase {
 //			return BuyOrShortAlertCreateRegister(entryBar, stopOrLimitPrice, entrySignalName,
 //												 direction, entryMarketLimitStop, false);
 //		}
-		public Position BuyOrShortAlertCreateRegister(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
+		public Position BuyOrShort_alertCreateRegister(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
 													  Direction direction, MarketLimitStop entryMarketLimitStop, bool registerInNew = true) {
 			string msig = " //BuyOrShortAlertCreateRegister(stopOrLimitPrice[" + stopOrLimitPrice+ "], entrySignalName[" + entrySignalName + "], entryBar[" + entryBar + "])";
-			this.CheckThrowAlertCanBeCreated(entryBar, msig);
+			this.checkThrow_alertCanBeCreated(entryBar, msig);
 
 			Alert alert = null;
 			// real-time streaming should create its own Position after an Order gets filled
@@ -44,15 +44,15 @@ namespace Sq1.Core.StrategyBase {
 			alert.PositionAffected = pos;
 			return pos;
 		}
-		public Alert SellOrCoverAlertCreateDontRegisterInNew(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
+		public Alert SellOrCover_alertCreate_dontRegisterInNew(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
 															 Direction direction, MarketLimitStop exitMarketLimitStop) {
-			return this.SellOrCoverAlertCreateRegister(exitBar, position, stopOrLimitPrice, signalName,
+			return this.SellOrCover_alertCreateRegister(exitBar, position, stopOrLimitPrice, signalName,
 													   direction, exitMarketLimitStop, false);
 		}
-		public Alert SellOrCoverAlertCreateRegister(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
+		public Alert SellOrCover_alertCreateRegister(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
 													Direction direction, MarketLimitStop exitMarketLimitStop, bool registerInNewAfterExec = true) {
 
-			this.CheckThrowAlertCanBeCreated(exitBar, "BARS.BARSTREAMING_OR_BARS.BARLASTSTATIC_IS_NULL_SellOrCoverAlertCreateRegister() ");
+			this.checkThrow_alertCanBeCreated(exitBar, "BARS.BARSTREAMING_OR_BARS.BARLASTSTATIC_IS_NULL_SellOrCoverAlertCreateRegister() ");
 			if (position == null) {
 				#if DEBUG
 				Debugger.Break();
@@ -63,7 +63,7 @@ namespace Sq1.Core.StrategyBase {
 			Alert alert = null;
 			if (position.Prototype != null) {
 				if (signalName.Contains("protoTakeProfitExit")
-					&& position.Prototype.TakeProfitAlertForAnnihilation != null
+					&& position.Prototype.TakeProfitAlert_forMoveAndAnnihilation != null
 					&& this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
 					string msg = "I won't create another protoTakeProfitExit because"
 						+ " position.Prototype.TakeProfitAlertForAnnihilation != null"
@@ -72,7 +72,7 @@ namespace Sq1.Core.StrategyBase {
 					return position.ExitAlert;
 				}
 				if (signalName.Contains("protoStopLossExit")
-					&& position.Prototype.StopLossAlertForAnnihilation != null
+					&& position.Prototype.StopLossAlert_forMoveAndAnnihilation != null
 					&& this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
 					string msg = "I won't create another protoStopLossExit because"
 						+ " position.Prototype.StopLossAlertForAnnihilation != null"
@@ -113,7 +113,7 @@ namespace Sq1.Core.StrategyBase {
 
 			return alert;
 		}
-		public void CheckThrowAlertCanBeCreated(Bar entryBar, string msig) {
+		void checkThrow_alertCanBeCreated(Bar entryBar, string msig) {
 			string invoker = (new StackFrame(3, true).GetMethod().Name) + "(): ";
 			if (this.Bars == null) {
 				#if DEBUG
@@ -128,7 +128,7 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msig + " for Bars=[" + this.Bars + "]" + invoker);
 			}
 		}
-		public bool AnnihilateCounterpartyAlertDispatched(Alert alert) {
+		public bool AlertCounterparty_annihilate_dispatched(Alert alert) {
 			if (alert == null) {
 				string msg = "don't invoke KillAlert with alert=null; check for TP=0 or SL=0 prior to invocation";
 				#if DEBUG
@@ -151,10 +151,10 @@ namespace Sq1.Core.StrategyBase {
 			//	killed = this.AlertGenerator.AnnihilateCounterpartyAlert(alert);
 			//}
 			//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
-			killed = this.DataSource_fromBars.BrokerAdapter.AnnihilateCounterpartyAlert(alert);
+			killed = this.DataSource_fromBars.BrokerAdapter.AlertCounterparty_annihilate(alert);
 			return killed;
 		}
-		public void AlertKillPending(Alert alert) {
+		public void AlertPending_kill(Alert alert) {
 			//v1 ScriptExecutor trying be too smart
 			////if (this.Backtester.IsBacktestingNow) {
 			//if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
@@ -163,7 +163,7 @@ namespace Sq1.Core.StrategyBase {
 			//	this.AlertGenerator.AlertKillPending(alert);
 			//}
 			//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
-			this.DataSource_fromBars.BrokerAdapter.AlertKillPending(alert);
+			this.DataSource_fromBars.BrokerAdapter.AlertPending_kill(alert);
 		}
 	}
 }

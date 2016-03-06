@@ -156,7 +156,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				this.imageIndexByStreamingAdapterType.Add(adapter.GetType(), providerIconImageIndex);
 			}
 		}
-		int getProviderImageIndexForDataSource(DataSource dataSource) {
+		int getProviderImageIndex_forDataSource(DataSource dataSource) {
 			StreamingAdapter adapter = dataSource.StreamingAdapter;
 			if (adapter == null) return -1;
 			if (this.imageIndexByStreamingAdapterType.ContainsKey(adapter.GetType()) == false) return -1;

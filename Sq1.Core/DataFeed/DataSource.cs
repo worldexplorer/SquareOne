@@ -244,7 +244,7 @@ namespace Sq1.Core.DataFeed {
 			ret.MarketInfo = this.MarketInfo;
 			ret.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(ret.Symbol);
 
-			millisElapsed = "BarsLoadAndCompress[" + ret.Symbol + ":" + ret.ScaleInterval + "]["
+			millisElapsed = "BarsLoad_nullUnsafe[" + ret.Symbol + ":" + ret.ScaleInterval + "]["
 				+ ret.Count + "]bars[" + readAllTimer.ElapsedMilliseconds + "]msRead";
 			return ret;
 		}

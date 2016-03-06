@@ -258,7 +258,7 @@ namespace Sq1.Core.Streaming {
 				if (		this.LivesimStreaming_ownImplementation != null
 						 && this.LivesimStreaming_ownImplementation.Livesimulator != null
 						 && this.LivesimStreaming_ownImplementation.Livesimulator.ImRunningLivesim) {
-					this.LivesimStreaming_ownImplementation.Livesimulator.AbortRunningBacktestWaitAborted(msg, 0);
+					this.LivesimStreaming_ownImplementation.Livesimulator.AbortRunningBacktest_waitAborted(msg, 0);
 				}
 				if (this is LivesimStreaming) return;	//already reported "USER_DIDNT_CLICK_CHART>BARS>SUBSCRIBE"
 				Assembler.PopupException(msg, null, false);

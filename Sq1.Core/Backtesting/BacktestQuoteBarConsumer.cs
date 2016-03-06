@@ -49,13 +49,13 @@ namespace Sq1.Core.Backtesting {
 				}
 			}
 			//this.backtester.Executor.Script.OnNewQuoteCallback(quoteToReach);
-			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quote);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.InvokeScript_onNewBar_onNewQuote(quote);
 			if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
 				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
 			}
 		}
-		public override void ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
-			string msig = " //BacktestQuoteBarConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended";
+		public override void ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
+			string msig = " //BacktestQuoteBarConsumer.ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended";
 			if (barLastFormed == null) {
 				string msg = "THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING"
 					+ " Backtester starts generating quotes => first StreamingBar is added;"
@@ -65,7 +65,7 @@ namespace Sq1.Core.Backtesting {
 			}
 			msig += "(" + barLastFormed.ToString() + ")";
 			//v1 this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
-			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.InvokeScript_onNewBar_onNewQuote(quoteForAlertsCreated, false);
 			if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
 				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
 			}

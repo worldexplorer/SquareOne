@@ -128,8 +128,8 @@ namespace Sq1.Core.Execution {
 		public bool IsExitFilledWithPrototypedAlert { get {
 				this.checkThrowPrototypeNotNullAndIsExitFilled();
 				bool oneSideFilled =
-					this.ExitAlert == this.Prototype.StopLossAlertForAnnihilation ||
-					this.ExitAlert == this.Prototype.TakeProfitAlertForAnnihilation;
+					this.ExitAlert == this.Prototype.StopLossAlert_forMoveAndAnnihilation ||
+					this.ExitAlert == this.Prototype.TakeProfitAlert_forMoveAndAnnihilation;
 				return oneSideFilled;
 			} }
 		protected void checkThrowPrototypeNotNullAndIsExitFilled() {
@@ -148,17 +148,17 @@ namespace Sq1.Core.Execution {
 		}
 		public bool IsExitFilledByPrototypedStopLoss { get {
 				this.checkThrowPrototypeNotNullAndIsExitFilled();
-				if (this.ExitAlert == this.Prototype.StopLossAlertForAnnihilation) return true;
+				if (this.ExitAlert == this.Prototype.StopLossAlert_forMoveAndAnnihilation) return true;
 				return false;
 			} }
 		public bool IsExitFilledByPrototypedTakeProfit { get {
 				this.checkThrowPrototypeNotNullAndIsExitFilled();
-				if (this.ExitAlert == this.Prototype.TakeProfitAlertForAnnihilation) return true;
+				if (this.ExitAlert == this.Prototype.TakeProfitAlert_forMoveAndAnnihilation) return true;
 				return false;
 			} }
 		public Alert PrototypedExitCounterpartyAlert { get {
-				if (this.IsExitFilledByPrototypedTakeProfit) return this.Prototype.StopLossAlertForAnnihilation;
-				if (this.IsExitFilledByPrototypedStopLoss) return this.Prototype.TakeProfitAlertForAnnihilation;
+				if (this.IsExitFilledByPrototypedTakeProfit) return this.Prototype.StopLossAlert_forMoveAndAnnihilation;
+				if (this.IsExitFilledByPrototypedStopLoss) return this.Prototype.TakeProfitAlert_forMoveAndAnnihilation;
 				string msg = "Prototyped position closed by some prototype-unrelated alert[" + this.ExitAlert + "]";
 				#if DEBUG
 				Debugger.Break();

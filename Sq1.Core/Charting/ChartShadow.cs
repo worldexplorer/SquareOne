@@ -160,7 +160,7 @@ namespace Sq1.Core.Charting {
 
 
 		public virtual void PendingHistoryBacktestAdd(Dictionary<int, AlertList> alertsPendingHistorySafeCopy) { }
-		public virtual void AlertsPlacedRealtimeAdd(List<Alert> alertsNewPlaced) { }
+		public virtual void AlertsPlaced_addRealtime(List<Alert> alertsNewPlaced) { }
 
 		public virtual OnChartObjectOperationStatus LineDrawModify(
 				string id, int barStart, double priceStart, int barEnd, double priceEnd,

@@ -106,10 +106,10 @@ namespace Sq1.Core.StrategyBase {
 
 			this.EventGenerator.RaiseOnBacktesterContextRestoredAfterExecutingAllBars_step4of4(null);
 		}
-		public void BacktesterAbortIfRunningRestoreContext() {
+		public void BacktesterAbortIfRunning_restoreContext() {
 			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) return;
 			// TODO INTRODUCE_NEW_MANUAL_RESET_SO_THAT_NEW_BACKTEST_WAITS_UNTIL_TERMINATION_OF_THIS_METHOD_TO_AVOID_BROKEN_DISTRIBUTION_CHANNELS
-			this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted("USER_CHANGED_SELECTORS_IN_GUI_NEW_BACKTEST_IS_ALMOST_TASK.SCHEDULED");
+			this.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted("USER_CHANGED_SELECTORS_IN_GUI_NEW_BACKTEST_IS_ALMOST_TASK.SCHEDULED");
 			//ALREADY_RESTORED_BY_simulationPostBarsRestore() this.BacktestContextRestore();
 		}
 		public void BacktesterRunSimulation_threadEntry_exceptionCatcher() {
@@ -194,7 +194,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
-				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted("ALREADY_BACKTESTING_this.Backtester.IsBacktestingNow");
+				this.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted("ALREADY_BACKTESTING_this.Backtester.IsBacktestingNow");
 			}
 
 			//???????
@@ -268,10 +268,10 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		[Obsolete("REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014 replaced by Alert.PriceAligned,PriceStopActivationAligned - all served by SymbolInfo.AlignAlertToPriceLevelSimplified")]
-		public double AlignAlertPriceToPriceLevel(Bars bars, double orderPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
+		public double AlertPrice_alignToPriceLevel(Bars bars, double orderPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
 			if (this.Strategy.ScriptContextCurrent.NoDecimalRoundingForLimitStopPrice) return orderPrice;
 			if (bars == null) bars = this.Bars;
-			orderPrice = bars.SymbolInfo.AlignAlertToPriceLevel(orderPrice, buyOrShort, positionLongShort0, marketLimitStop0);
+			orderPrice = bars.SymbolInfo.Alert_alignToPriceLevel(orderPrice, buyOrShort, positionLongShort0, marketLimitStop0);
 			return orderPrice;
 		}
 

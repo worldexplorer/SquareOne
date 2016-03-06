@@ -117,7 +117,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void CompileInstantiate() {
 			if (this.ActivatedFromDll) return;
-			this.Script = this.ScriptCompiler.CompileSourceReturnInstance(this.ScriptSourceCode, this.DotNetReferences);
+			this.Script = this.ScriptCompiler.CompileSource_returnInstance(this.ScriptSourceCode, this.DotNetReferences);
 		}
 
 		public Strategy CloneWithNewGuid() {
@@ -153,7 +153,7 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 			try {
-				this.Script.SwitchToDefaultContextByAbsorbingScriptAndIndicatorParametersFromSelfCloneConstructed();
+				this.Script.SwitchToDefaultContext_byAbsorbingScriptAndIndicatorParameters_fromSelfCloneConstructed();
 				//ALREADY_SAVED_BY_LINE_ABOVE this.Serialize();
 				string msg = "Successfully reset ScriptContextCurrentName[" + this.ScriptContextCurrentName + "] for strategy[" + this + "]";
 				Assembler.DisplayStatus(msg);

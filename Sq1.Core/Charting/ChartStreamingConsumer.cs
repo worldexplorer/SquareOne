@@ -167,7 +167,7 @@ namespace Sq1.Core.Charting {
 		}
 		public override void UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
 		}
-		public override void ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
+		public override void ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
 			if (barLastFormed == null) {
 				string msg = "WRONG_SHOW_BRO";
 				Assembler.PopupException(msg);
@@ -209,7 +209,7 @@ namespace Sq1.Core.Charting {
 						.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe, barsSafe);
 
 					// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
-					ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
+					ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = executorSafe.InvokeScript_onNewBar_onNewQuote(quoteForAlertsCreated, false);	//new Quote());
 					//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 					if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
 						pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
@@ -285,7 +285,7 @@ namespace Sq1.Core.Charting {
 			// #1/4 launch update in GUI thread
 			//MOVED_TO_chartControl_BarAddedUpdated_ShouldTriggerRepaint chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = quote.Clone();
 			// TUNNELLED_TO_CHART_FORMS_MANAGER chartFormSafe.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(quote);
-			executorSafe.EventGenerator.RaiseOnStrategyPreExecuteOneQuote(quote);
+			executorSafe.EventGenerator.RaiseOnStrategyPreExecute_oneQuote(quote);
 
 			// #2/4 execute strategy in the thread of a StreamingAdapter (DDE server for MockQuickProvider)
 			if (executorSafe.Strategy != null) {
@@ -299,7 +299,7 @@ namespace Sq1.Core.Charting {
 							.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe, barsSafe);
 
 						// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
-						ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = executorSafe.ExecuteOnNewBarOrNewQuote(quote, true);
+						ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = executorSafe.InvokeScript_onNewBar_onNewQuote(quote, true);
 						//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 						if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
 							pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();

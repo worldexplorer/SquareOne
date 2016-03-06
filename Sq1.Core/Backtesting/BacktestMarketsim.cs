@@ -33,7 +33,7 @@ namespace Sq1.Core.Backtesting {
 
 			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
 			//v1
-			double entryPriceOut1 = this.backtestBroker.ScriptExecutor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryAlert.PriceScript, true,
+			double entryPriceOut1 = this.backtestBroker.ScriptExecutor.AlertPrice_alignToPriceLevel(entryAlert.Bars, entryAlert.PriceScript, true,
 				entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
 			if (entryPriceOut1 != entryAlert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
@@ -180,7 +180,7 @@ namespace Sq1.Core.Backtesting {
 
 			//v1
 			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
-			double exitPriceOut1 = this.backtestBroker.ScriptExecutor.AlignAlertPriceToPriceLevel(
+			double exitPriceOut1 = this.backtestBroker.ScriptExecutor.AlertPrice_alignToPriceLevel(
 				exitAlert.Bars, exitAlert.PriceScript, false,
 				exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
 			if (exitPriceOut1 != exitAlert.PriceScriptAligned) {
@@ -250,7 +250,7 @@ namespace Sq1.Core.Backtesting {
 					//v1
 					#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
 					// we aligned priceStopActivation before we stored it in exitAlert  
-					double priceStopActivationAligned1 = this.backtestBroker.ScriptExecutor.AlignAlertPriceToPriceLevel(
+					double priceStopActivationAligned1 = this.backtestBroker.ScriptExecutor.AlertPrice_alignToPriceLevel(
 						exitAlert.Bars, exitAlert.PriceStopLimitActivation, false,
 						exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
 					if (priceStopActivationAligned1 != exitAlert.PriceStopLimitActivationAligned) {
@@ -399,12 +399,12 @@ namespace Sq1.Core.Backtesting {
 			foreach (Alert alert in alertsPendingSafeCopy) {
 				if (alert.IsFilled && alert.IsExitAlert && alert.PositionAffected.Prototype != null) {
 					bool thisAlertWasAnnihilated = false;
-					if (alert.PositionAffected.ExitAlert == alert.PositionAffected.Prototype.StopLossAlertForAnnihilation
-							&& alert == alert.PositionAffected.Prototype.TakeProfitAlertForAnnihilation) {
+					if (alert.PositionAffected.ExitAlert == alert.PositionAffected.Prototype.StopLossAlert_forMoveAndAnnihilation
+							&& alert == alert.PositionAffected.Prototype.TakeProfitAlert_forMoveAndAnnihilation) {
 						thisAlertWasAnnihilated = true;
 					}
-					if (alert.PositionAffected.ExitAlert == alert.PositionAffected.Prototype.TakeProfitAlertForAnnihilation
-							&& alert == alert.PositionAffected.Prototype.StopLossAlertForAnnihilation) {
+					if (alert.PositionAffected.ExitAlert == alert.PositionAffected.Prototype.TakeProfitAlert_forMoveAndAnnihilation
+							&& alert == alert.PositionAffected.Prototype.StopLossAlert_forMoveAndAnnihilation) {
 						thisAlertWasAnnihilated = true;
 					}
 					if (thisAlertWasAnnihilated) continue;
@@ -638,21 +638,21 @@ namespace Sq1.Core.Backtesting {
 			return filled;
 		}
 
-		public void SimulateStopLossMoved(Alert alertToBeKilled) {
-			Alert replacement = this.backtestBroker.ScriptExecutor.PositionPrototypeActivator.CreateStopLossFromPositionPrototype(alertToBeKilled.PositionAffected);
-			bool removed = this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Remove(alertToBeKilled, this, "SimulateStopLossMoved(WAIT)");
-			//ALREADY_ADDED_BY AlertEnrichedRegister
-			// this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.ByBarExpectedFillAddNoDupe(alertToBeKilled);
-			// this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.AddNoDupe(replacement);
+		public void StopLoss_simulateMoved(Alert alertToBeKilled) {
+		    Alert replacement = this.backtestBroker.ScriptExecutor.PositionPrototypeActivator.CreateStopLoss_fromPositionPrototype(alertToBeKilled.PositionAffected);
+		    bool removed = this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Remove(alertToBeKilled, this, "SimulateStopLossMoved(WAIT)");
+		    //ALREADY_ADDED_BY AlertEnrichedRegister
+		    // this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.ByBarExpectedFillAddNoDupe(alertToBeKilled);
+		    // this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.AddNoDupe(replacement);
 		}
-		public void SimulateTakeProfitMoved(Alert alertToBeKilled) {
-			Alert replacement = this.backtestBroker.ScriptExecutor.PositionPrototypeActivator.CreateTakeProfitFromPositionPrototype(alertToBeKilled.PositionAffected);
-			bool removed = this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Remove(alertToBeKilled, this, "SimulateTakeProfitMoved(WAIT)");
-			//ALREADY_ADDED_BY AlertEnrichedRegister
-			// this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.ByBarExpectedFillAddNoDupe(alertToBeKilled);
-			// this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.AddNoDupe(replacement);
+		public void TakeProfit_simulateMoved(Alert alertToBeKilled) {
+		    Alert replacement = this.backtestBroker.ScriptExecutor.PositionPrototypeActivator.CreateTakeProfit_fromPositionPrototype(alertToBeKilled.PositionAffected);
+		    bool removed = this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Remove(alertToBeKilled, this, "SimulateTakeProfitMoved(WAIT)");
+		    //ALREADY_ADDED_BY AlertEnrichedRegister
+		    // this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.ByBarExpectedFillAddNoDupe(alertToBeKilled);
+		    // this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.AddNoDupe(replacement);
 		}
-		public bool AnnihilateCounterpartyAlert(Alert alert) {
+		public bool AlertCounterparty_annihilate(Alert alert) {
 			if (this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Contains(alert, this, "AnnihilateCounterpartyAlert(WAIT)") == false) {
 				string msg = "ANNIHILATE_COUNTERPARTY_ALREADY_REMOVED " + alert;	//ExecSnap.AlertsPending not synchronized: already removed
 				throw new Exception(msg);
@@ -664,9 +664,9 @@ namespace Sq1.Core.Backtesting {
 			return true;
 		}
 		
-		public void SimulateAlertKillPending(Alert alert) {
+		public void AlertPending_simulateKill(Alert alert) {
 			alert.IsKilled = true;
-			this.backtestBroker.ScriptExecutor.CallbackAlertKilledInvokeScriptNonReenterably(alert);
+			this.backtestBroker.ScriptExecutor.CallbackAlertKilled_invokeScript_nonReenterably(alert);
 		}
 	}
 }

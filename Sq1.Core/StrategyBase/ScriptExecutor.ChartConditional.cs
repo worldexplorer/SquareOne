@@ -32,7 +32,7 @@ namespace Sq1.Core.StrategyBase {
 //			if (this.ChartShadow == null) return;
 //			this.ChartShadow.PendingRealtimeAdd(pokeUnit);
 //		}
-		public void ChartConditionalBarAnnotationDrawModify(
+		public void ChartConditional_barAnnotationDrawModify(
 				int barIndex, string barAnnotationId, string barAnnotationText,
 				Font font, Color colorForeground, Color colorBackground, bool aboveBar = true, 
 				int verticalPadding = 5, bool reportDidntChangeStatus = false) {
@@ -41,36 +41,36 @@ namespace Sq1.Core.StrategyBase {
 				font, colorForeground, colorBackground, aboveBar, 
 				verticalPadding, reportDidntChangeStatus);
 		}
-		public OnChartObjectOperationStatus ChartConditionalLineDrawModify(
+		public OnChartObjectOperationStatus ChartConditional_lineDrawModify(
 				string id, int barStart, double priceStart, int barEnd, double priceEnd,
 				Color color, int width, bool debugParametersDidntChange = false) {
 			if (this.ChartShadow == null) return OnChartObjectOperationStatus.OnChartObjectJustCreated;
 			return this.ChartShadow.LineDrawModify(id, barStart, priceStart, barEnd, priceEnd,
 				color, width, debugParametersDidntChange);
 		}
-		public void ChartConditionalBarBackgroundSet(int barsIndex, Color colorBg) {
+		public void ChartConditional_barBackgroundSet(int barsIndex, Color colorBg) {
 			if (this.ChartShadow == null) return;
 			this.ChartShadow.BarBackgroundSet(barsIndex, colorBg);
 		}
-		public Color ChartConditionalBarBackgroundGet(int barIndex) {
+		public Color ChartConditional_barBackgroundGet(int barIndex) {
 			if (this.ChartShadow == null) return Color.Empty;
 			return this.ChartShadow.BarBackgroundGet(barIndex);
 		}
-		public bool ChartConditionalBarForegroundSet(int barIndex, Color colorFg) {
+		public bool ChartConditional_barForegroundSet(int barIndex, Color colorFg) {
 			if (this.ChartShadow == null) return true;
 			return this.ChartShadow.BarForegroundSet(barIndex, colorFg);
 		}
-		public Color ChartConditionalBarForegroundGet(int barIndex) {
+		public Color ChartConditional_barForegroundGet(int barIndex) {
 			if (this.ChartShadow == null) return Color.Empty;
 			return this.ChartShadow.BarForegroundGet(barIndex);
 		}
-		public OnChartObjectOperationStatus ChartConditionalChartLabelDrawOnNextLineModify(
+		public OnChartObjectOperationStatus ChartConditional_chartLabelDrawOnNextLineModify(
 				string labelId, string labelText,
 				Font font, Color colorFore, Color colorBack) {
 			if (this.ChartShadow == null) return OnChartObjectOperationStatus.OnChartObjectJustCreated;
 			return this.ChartShadow.ChartLabelDrawOnNextLineModify(labelId, labelText, font, colorFore, colorBack);
 		}
-		public HostPanelForIndicator ChartConditionalHostPanelForIndicatorGet(Indicator indicatorInstance) {
+		public HostPanelForIndicator ChartConditional_hostPanelForIndicatorGet(Indicator indicatorInstance) {
 			if (this.ChartShadow == null) return null;
 			return this.ChartShadow.HostPanelForIndicatorGet(indicatorInstance);
 		}

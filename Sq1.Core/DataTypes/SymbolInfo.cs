@@ -206,7 +206,7 @@ namespace Sq1.Core.DataTypes {
 		}
 
 		[Obsolete("REMOVE_ONCE_NEW_ALIGNMENT_MATURES_DECEMBER_15TH_2014 used only in tidal calculations")]
-		public double AlignOrder_toPriceLevel(double orderPrice, Direction direction, MarketLimitStop marketLimitStop) {
+		public double Order_alignToPriceLevel(double orderPrice, Direction direction, MarketLimitStop marketLimitStop) {
 			bool entryNotExit = true;
 			PositionLongShort positionLongShortV1 = PositionLongShort.Long;
 			switch (direction) {
@@ -234,9 +234,9 @@ namespace Sq1.Core.DataTypes {
 				string msg = "DEFINITELY_DIFFERENT_POSTPONE_TILL_ORDER_EXECUTOR_BACK_FOR_QUIK_BROKER";
 				//Debugger.Break();
 			}
-			return this.AlignAlertToPriceLevel(orderPrice, entryNotExit, positionLongShortV1, marketLimitStop);
+			return this.Alert_alignToPriceLevel(orderPrice, entryNotExit, positionLongShortV1, marketLimitStop);
 		}
-		public double AlignAlertToPriceLevel(double alertPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
+		public double Alert_alignToPriceLevel(double alertPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
 			PriceLevelRoundingMode roundingMode;
 			switch (marketLimitStop0) {
 				case MarketLimitStop.Limit:
@@ -263,7 +263,7 @@ namespace Sq1.Core.DataTypes {
 			}
 			return this.AlignToPriceLevel(alertPrice, roundingMode);
 		}
-		public double AlignAlertToPriceLevelSimplified(double alertPrice, Direction direction, MarketLimitStop marketLimitStop) {
+		public double Alert_alignToPriceLevel_simplified(double alertPrice, Direction direction, MarketLimitStop marketLimitStop) {
 			PriceLevelRoundingMode roundingMode = PriceLevelRoundingMode.DontRoundPrintLowerUpper;
 			switch (marketLimitStop) {
 				case MarketLimitStop.Limit:
@@ -398,7 +398,7 @@ namespace Sq1.Core.DataTypes {
 			return (double)ret;
 		}
 
-		public double PriceRoundFractionsBeyondDecimals(double orderPrice) {
+		public double PriceRound_fractionsBeyondDecimals(double orderPrice) {
 			double decimalPointShifterBeforeRounding = Math.Pow(10, this.PriceDecimals);		// 2 => 100
 			// assuming this.DecimalsPrice=2: orderPrice=156.633,27272 => 15.663.327,272 => 15.663.327 => 156.633,27[tailTruncated] 
 			double ret = Math.Round(orderPrice * decimalPointShifterBeforeRounding, 0) / decimalPointShifterBeforeRounding;

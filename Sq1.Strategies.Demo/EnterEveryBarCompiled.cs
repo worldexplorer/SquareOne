@@ -70,10 +70,10 @@ namespace Sq1.Strategies.Demo {
 			if (this.Executor.Sequencer.IsRunningNow) return;
 			//DISPOSE_OR_TURN_TO_CLASS_VAR Font font = new Font(FontFamily.GenericMonospace, 8, FontStyle.Bold);
 			//base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", "test[" + test+ "]", font, Color.Brown, Color.Empty);
-			base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", "test["
+			base.Executor.ChartConditional_chartLabelDrawOnNextLineModify("labelTest", "test["
 				+ this.test.ValueCurrent + "]", this.fontConsolas8bold, Color.Brown, Color.Beige);
 		}
-		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
+		public override void OnNewQuoteOfStreamingBar_callback(Quote quote) {
 			//double slowStreaming = this.MAslow.BarClosesProxied.StreamingValue;
 			//double slowStatic = this.MAslow.ClosesProxyEffective.LastStaticValue;
 			//DateTime slowStaticDate = this.MAslow.ClosesProxyEffective.LastStaticDate;
@@ -100,7 +100,7 @@ namespace Sq1.Strategies.Demo {
 				return;
 			}
 		}
-		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
+		public override void OnBarStaticLastFormed_whileStreamingBarWithOneQuoteAlreadyAppended_callback(Bar barStaticFormed) {
 			//this.testBarAnnotations(barStaticFormed);
 			//Thread.Sleep(500);
 
@@ -198,7 +198,7 @@ namespace Sq1.Strategies.Demo {
 			}
 		}
 		
-		public override void OnStreamingTriggeringScriptTurnedOnCallback() {
+		public override void OnStreamingTriggeringScript_turnedOn_callback() {
 			string msg = "SCRIPT_IS_NOW_AWARE_THAT_STREAMING_ADAPDER_WILL_TRIGGER_SCRIPT_METHODS"
 				+ " ScriptContextCurrent.IsStreamingTriggeringScript[" + this.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript+ "]";
 			Assembler.PopupException(msg, null, false);
@@ -208,52 +208,52 @@ namespace Sq1.Strategies.Demo {
 			string msg2 = "here you can probably sync your actual open positions on the broker side with backtest-opened ghosts";
 			Assembler.PopupException(msg2, null, false);
 		}
-		public override void OnStreamingTriggeringScriptTurnedOffCallback() {
+		public override void OnStreamingTriggeringScript_turnedOff_callback() {
 			string msg = "SCRIPT_IS_NOW_AWARE_THAT_STREAMING_ADAPDER_WILL_NOT_TRIGGER_SCRIPT_METHODS"
 				+ " ScriptContextCurrent.IsStreamingTriggeringScript[" + this.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript+ "]";
 			Assembler.PopupException(msg, null, false);
 		}
 		
-		public override void OnStrategyEmittingOrdersTurnedOnCallback() {
+		public override void OnStrategyEmittingOrders_turnedOn_callback() {
 			string msg = "SCRIPT_IS_NOW_AWARE_THAT_ORDERS_WILL_START_SHOOTING_THROUGH_BROKER_ADAPDER"
 				+ " ScriptContextCurrent.StrategyEmittingOrders[" + this.Strategy.ScriptContextCurrent.StrategyEmittingOrders+ "]";
 			Assembler.PopupException(msg, null, false);
 		}
-		public override void OnStrategyEmittingOrdersTurnedOffCallback() {
+		public override void OnStrategyEmittingOrders_turnedOff_callback() {
 			string msg = "SCRIPT_IS_NOW_AWARE_THAT_ORDERS_WILL_STOP_SHOOTING_THROUGH_BROKER_ADAPDER"
 				+ " ScriptContextCurrent.StrategyEmittingOrders[" + this.Strategy.ScriptContextCurrent.StrategyEmittingOrders+ "]";
 			Assembler.PopupException(msg, null, false);
 		}
 
 		
-		public override void OnAlertFilledCallback(Alert alertFilled) {
+		public override void OnAlertFilled_callback(Alert alertFilled) {
 			if (alertFilled.FilledBarIndex == 12) {
 				//Debugger.Break();
 			}
 		}
-		public override void OnAlertKilledCallback(Alert alertKilled) {
+		public override void OnAlertKilled_callback(Alert alertKilled) {
 			#if DEBUG
 			Debugger.Break();
 			#endif
 		}
-		public override void OnAlertNotSubmittedCallback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
+		public override void OnAlertNotSubmitted_callback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
 			#if DEBUG
 			Debugger.Break();
 			#endif
 		}
-		public override void OnPositionOpenedCallback(Position positionOpened) {
+		public override void OnPositionOpened_callback(Position positionOpened) {
 			//if (positionOpened.EntryFilledBarIndex == 37) {
 			//	#if DEBUG
 			//	Debugger.Break();
 			//	#endif
 			//}
 		}
-		public override void OnPositionOpenedPrototypeSlTpPlacedCallback(Position positionOpenedByPrototype) {
+		public override void OnPositionOpened_prototypeSlTpPlaced_callback(Position positionOpenedByPrototype) {
 			#if DEBUG
 			Debugger.Break();
 			#endif
 		}
-		public override void OnPositionClosedCallback(Position positionClosed) {
+		public override void OnPositionClosed_callback(Position positionClosed) {
 			//if (positionClosed.EntryFilledBarIndex == 37) {
 			//	Debugger.Break();
 			//}

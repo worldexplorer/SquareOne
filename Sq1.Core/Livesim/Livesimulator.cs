@@ -104,7 +104,7 @@ namespace Sq1.Core.Livesim {
 					string msg = "STREAMING_ADAPTER_MUST_BE_AT_LEAST_StreamingLivesimDefault"
 						+ " ASSIGN_IT_IN_DATASOURCE_EDITOR_FOR[" + this.Executor.DataSource_fromBars + "]";
 					Assembler.PopupException(msg);
-					base.AbortRunningBacktestWaitAborted(msg, 0);
+					base.AbortRunningBacktest_waitAborted(msg, 0);
 					return;
 				}
 
@@ -230,7 +230,7 @@ namespace Sq1.Core.Livesim {
 					string msg = "STREAMING_ADAPTER_MUST_BE_AT_LEAST_StreamingLivesimDefault"
 						+ " ASSIGN_IT_IN_DATASOURCE_EDITOR_FOR[" + this.Executor.DataSource_fromBars + "]";
 					Assembler.PopupException(msg);
-					base.AbortRunningBacktestWaitAborted(msg, 0);
+					base.AbortRunningBacktest_waitAborted(msg, 0);
 					return;
 				}
 
@@ -385,10 +385,10 @@ namespace Sq1.Core.Livesim {
 						msg = "AVOIDING_TO_WAIT_FOREVER: LivesimStreaming.GeneratedQuoteEnrichSymmetricallyAndPush() " + msg;
 						unpausedMre.Set();
 					}
-					base.AbortRunningBacktestWaitAborted(msg + msig);
+					base.AbortRunningBacktest_waitAborted(msg + msig);
 				} else {
 					string msg2 = "LIVESIM_HAS_SINGLE_THREADED_QUOTE_PUMP__NOT_EVEN_USED_IN_QuikLivesimStreaming DONT_REQUEST_AND_DONT_WAIT_JUST_CONTINUE";
-					base.AbortRunningBacktestWaitAborted(msg2 + msig, 0);
+					base.AbortRunningBacktest_waitAborted(msg2 + msig, 0);
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException("USER_OR_MAINFORM_CLICKED_STOP_IN_LIVESIM_FORM" + msig, ex);

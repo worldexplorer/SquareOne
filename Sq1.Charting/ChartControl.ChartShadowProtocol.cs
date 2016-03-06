@@ -140,7 +140,7 @@ namespace Sq1.Charting {
 		public override void PendingHistoryBacktestAdd(Dictionary<int, AlertList> alertsPendingHistorySafeCopy) {
 			this.ScriptExecutorObjects.AlertsPlacedBacktestAdd(alertsPendingHistorySafeCopy);
 		}
-		public override void AlertsPlacedRealtimeAdd(List<Alert> alertsNewPlaced) {
+		public override void AlertsPlaced_addRealtime(List<Alert> alertsNewPlaced) {
 			this.ScriptExecutorObjects.AlertsPlacedRealtimeAdd(alertsNewPlaced);
 		}
 		public override void AlertsPendingStillNotFilledForBarAdd(int barIndex, List<Alert> alertsPendingAtCurrentBarSafeCopy) {

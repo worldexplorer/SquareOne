@@ -29,14 +29,14 @@ namespace Sq1.Core.Broker {
 		public void ReplaceRejectedOrder(Order rejectedOrderToReplace) {
 			if (rejectedOrderToReplace.State != OrderState.Rejected) {
 				string msg = "will not ReplaceRejectedOrder(" + rejectedOrderToReplace + ") which is not Rejected; continuing";
-				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(rejectedOrderToReplace, msg);
 				Assembler.PopupException(msg);
 				return;
 			}
 			if (rejectedOrderToReplace.Alert.Bars.SymbolInfo.ReSubmitRejected == false) {
 				string msg = "SymbolInfo[" + rejectedOrderToReplace.Alert.Symbol + "/" + rejectedOrderToReplace.Alert.SymbolClass + "].ReSubmitRejected==false"
 					+ " will not ReplaceRejectedOrder(" + rejectedOrderToReplace + "); continuing";
-				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(rejectedOrderToReplace, msg);
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -66,7 +66,7 @@ namespace Sq1.Core.Broker {
 			}
 			string msg_replacement = "This is a replacement for order["
 				+ replacement.ReplacementForGUID + "]; SlippageIndex[" + replacement.SlippageIndex + "]";
-			this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(replacement, msg_replacement);
+			this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(replacement, msg_replacement);
 
 			if (replacement.noMoreSlippagesAvailable) {
 				AddMessageNoMoreSlippagesAvailable(replacement);
@@ -87,7 +87,7 @@ namespace Sq1.Core.Broker {
 			Order replacement = this.findReplacementOrderForRejectedOrder(rejectedOrderToReplace);
 			if (replacement != null) {
 				string msg = "Rejected[" + rejectedOrderToReplace + "] already has a replacement[" + replacement + "] with State[" + replacement.State + "]; ignored rejection duplicates from broker";
-				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(rejectedOrderToReplace, msg);
 				return null;
 			}
 			//DateTime todayDate = DateTime.Now.Date;
@@ -101,7 +101,7 @@ namespace Sq1.Core.Broker {
 				return null;
 			}
 			Order replacementOrder = rejectedOrderToReplace.DeriveReplacementOrder();
-			this.orderProcessor.DataSnapshot.OrderInsertNotifyGuiAsync(replacementOrder);
+			this.orderProcessor.DataSnapshot.OrderInsert_notifyGuiAsync(replacementOrder);
 			this.orderProcessor.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>(){rejectedOrderToReplace});
 			//this.orderProcessor.RaiseOrderReplacementOrKillerCreatedForVictim(this, rejectedOrderToReplace);
 			return replacementOrder;
@@ -127,14 +127,14 @@ namespace Sq1.Core.Broker {
 			string msg = "Scheduling SubmitOrdersThreadEntry [" + replacementOrder.ToString() + "] slippageIndex["
 				+ replacementOrder.SlippageIndex + "] through [" + replacementOrder.Alert.DataSource.BrokerAdapter + "]";
 			OrderStateMessage newOrderState = new OrderStateMessage(replacementOrder, OrderState.PreSubmit, msg);
-			this.orderProcessor.UpdateOrderStateAndPostProcess(replacementOrder, newOrderState);
+			this.orderProcessor.UpdateOrderState_postProcess(replacementOrder, newOrderState);
 
 			//this.BrokerAdapter.SubmitOrdersThreadEntry(ordersFromAlerts);
 			//ThreadPool.QueueUserWorkItem(new WaitCallback(replacementOrder.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
 			//	new object[] { new List<Order>() { replacementOrder } });
 			List<Order> replacementOrder_oneInTheList = new List<Order>() { replacementOrder };
 			BrokerAdapter broker = replacementOrder.Alert.DataSource.BrokerAdapter;
-			this.orderProcessor.SubmitToBrokerAdapter_inNewThreadOrStraight(replacementOrder_oneInTheList, broker);
+			this.orderProcessor.SubmitToBrokerAdapter_inNewThread(replacementOrder_oneInTheList, broker);
 
 			//this.orderProcessor.UpdateActiveOrdersCountEvent();
 		}
@@ -146,7 +146,7 @@ namespace Sq1.Core.Broker {
 			Assembler.PopupException(msg2);
 			//orderProcessor.updateOrderStatusError(orderExecuted, OrderState.RejectedLimitReached, msg2);
 			OrderStateMessage newOrderStateRejected = new OrderStateMessage(order, OrderState.RejectedLimitReached, msg2);
-			this.orderProcessor.UpdateOrderStateAndPostProcess(order, newOrderStateRejected);
+			this.orderProcessor.UpdateOrderState_postProcess(order, newOrderStateRejected);
 		}
 	}
 }

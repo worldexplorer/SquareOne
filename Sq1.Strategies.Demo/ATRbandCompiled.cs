@@ -32,7 +32,7 @@ namespace Sq1.Strategies.Demo {
 		}
 		public override void InitializeBacktest() {
 		}
-		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
+		public override void OnBarStaticLastFormed_whileStreamingBarWithOneQuoteAlreadyAppended_callback(Bar barStaticFormed) {
 		}
 //		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 //		}
