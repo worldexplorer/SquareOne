@@ -14,10 +14,10 @@ namespace Sq1.Core.Broker {
 				ordersEatable.Add(order);
 				string msg = "Submitting Eatable Order From Gui";
 				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.Submitting, msg);
-				this.UpdateOrderStateAndPostProcess(order, newOrderState);
+				this.UpdateOrderState_postProcess(order, newOrderState);
 			}
 			if (ordersEatable.Count > 0) {
-				BrokerAdapter broker = extractSameBrokerAdapterThrowIfDifferent(ordersEatable, "SubmitEatableOrders(): ");
+				BrokerAdapter broker = extractSameBrokerAdapter_throwIfDifferent(ordersEatable, "SubmitEatableOrders(): ");
 				broker.SubmitOrders(ordersEatable);
 			}
 			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
@@ -42,9 +42,9 @@ namespace Sq1.Core.Broker {
 				string msg = "NO_PENDING_ORDERS_TO_CANCEL__SHOULD_I_CHECK_ANOTHER_LANE?... ordersPendingToKill.Count[" + ordersPendingToKill.Count + "]";
 				return;
 			}
-			BrokerAdapter broker = this.extractSameBrokerAdapterThrowIfDifferent(ordersPendingToKill, "CancelAllPending(): ");
+			BrokerAdapter broker = this.extractSameBrokerAdapter_throwIfDifferent(ordersPendingToKill, "CancelAllPending(): ");
 			foreach (Order pendingOrder in ordersPendingToKill) {
-				this.KillPendingOrderWithoutKiller(pendingOrder);
+				this.PendingOrder_killWithoutKiller(pendingOrder);
 			}
 		}
 //		public void CancelReplaceOrder(Order orderToReplace, Order orderReplacement) {

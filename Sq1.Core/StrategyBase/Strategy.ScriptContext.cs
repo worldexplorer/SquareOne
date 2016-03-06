@@ -131,7 +131,7 @@ namespace Sq1.Core.StrategyBase {
 
 				//v2
 				if (this.Script != null) {
-					this.Script.SwitchToDefaultContextByAbsorbingScriptAndIndicatorParametersFromSelfCloneConstructed();
+					this.Script.SwitchToDefaultContext_byAbsorbingScriptAndIndicatorParameters_fromSelfCloneConstructed();
 				} else {
 					this.ContextSwitchCurrentToNamedAndSerialize(ContextScript.DEFAULT_NAME, false);
 				}

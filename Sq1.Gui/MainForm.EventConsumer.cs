@@ -87,7 +87,7 @@ namespace Sq1.Gui {
 					Task t = new Task(delegate() {
 						Thread.CurrentThread.Name = "ABORTING_LIVESIM livesimRunning[" + livesimRunning.ToString() + "]";
 						int oneMinute = 60 * 1000;
-						livesimRunning.AbortRunningBacktestWaitAborted(msig, oneMinute);
+						livesimRunning.AbortRunningBacktest_waitAborted(msig, oneMinute);
 						int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim.DistributionChannels.Count;
 						if (mustBeZero_AbortedOk != 0) {
 							string msg = "mustBeZero_AbortedOk[" + mustBeZero_AbortedOk + "]";

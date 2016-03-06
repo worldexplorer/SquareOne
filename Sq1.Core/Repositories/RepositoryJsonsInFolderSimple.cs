@@ -73,6 +73,11 @@ namespace Sq1.Core.Repositories {
 			this.RescanFolderStoreNamesFound();
 		}
 		public void RescanFolderStoreNamesFound() {
+			if (string.IsNullOrEmpty(this.AbsPath)) {
+				string msg = "PRIOR_TO_CHANGING_STRATEGY_FOR_CHART__YOU_DIDNT_INITIALIZE_HIDDEN_SequencerControl.cs:line136";
+				Assembler.PopupException(msg);
+				return;
+			}
 			this.ItemsFound.Clear();
 			if (this.AbsPath == null) {
 				string msg = "REINIT_SEQUENCER_AFTER_CHANGE_OF_STRATEGY_FOR_CHART INVOKE_SequencerControl.Initialize()";

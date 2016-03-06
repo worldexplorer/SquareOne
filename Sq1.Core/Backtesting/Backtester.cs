@@ -113,7 +113,7 @@ namespace Sq1.Core.Backtesting {
 				}
 
 				Bar bar = this.BarsOriginal[barNo];
-				this.generateQuotesForBarAndPush(bar);
+				this.generateQuotes_forBar_push(bar);
 				this.BarsSimulatedSoFar++;
 				if (this.BarsSimulatedSoFar % repaintableChunk == 0) {
 					this.Executor.EventGenerator.RaiseOnBacktesterSimulatedChunk_step3of4();
@@ -138,7 +138,7 @@ namespace Sq1.Core.Backtesting {
 				: "";					// "BACKTESTED_ALL_REQUIRED_BARS";
 			return msg;
 		}
-		public void AbortRunningBacktestWaitAborted(string whyAborted, int millisecondsToWait = 3000) {
+		public void AbortRunningBacktest_waitAborted(string whyAborted, int millisecondsToWait = 3000) {
 			if (this.ImBacktestingOrLivesimming == false) return;
 
 			//bool abortIsAlreadyRequested = this.RequestingBacktestAbort.WaitOne(0);
@@ -163,7 +163,7 @@ namespace Sq1.Core.Backtesting {
 			if (this.ImRunningLivesim) return;
 			this.ExceptionsHappenedSinceBacktestStarted++;
 			if (this.ExceptionsHappenedSinceBacktestStarted < this.Executor.Strategy.ExceptionsLimitToAbortBacktest) return;
-			this.AbortRunningBacktestWaitAborted("AbortBacktestIfExceptionsLimitReached[" + this.Executor.Strategy.ExceptionsLimitToAbortBacktest + "]");
+			this.AbortRunningBacktest_waitAborted("AbortBacktestIfExceptionsLimitReached[" + this.Executor.Strategy.ExceptionsLimitToAbortBacktest + "]");
 		}
 		void closePositionsLeftOpenAfterBacktest() {
 			//return;
@@ -177,7 +177,7 @@ namespace Sq1.Core.Backtesting {
 					//	this.Executor.RemovePendingExitAlertPastDueClosePosition(alertPending);
 					//}
 					//bool removed = this.Executor.ExecutionDataSnapshot.AlertsPending.Remove(alertPending);
-					this.Executor.AlertKillPending(alertPending);
+					this.Executor.AlertPending_kill(alertPending);
 				} catch (Exception ex) {
 					string msg = "NOT_AN_ERROR BACKTEST_POSITION_FINALIZER: check innerException: most likely you got POSITION_ALREADY_CLOSED on counterparty alert's force-close?";
 					this.Executor.PopupException(msg, ex, false);
@@ -205,7 +205,7 @@ namespace Sq1.Core.Backtesting {
 				//v4
 				if (positionOpen.ExitAlert == null) continue;
 				try {
-					this.Executor.RemovePendingExitAlertAndClosePositionAfterBacktestLeftItHanging(positionOpen.ExitAlert);
+					this.Executor.RemovePendingExitAlerts_closePositionsBacktestLeftHanging(positionOpen.ExitAlert);
 				} catch (Exception ex) {
 					Assembler.PopupException("closePositionsLeftOpenAfterBacktest()", ex, false);
 				}
@@ -368,7 +368,7 @@ namespace Sq1.Core.Backtesting {
 				}
 			}
 		}
-		void generateQuotesForBarAndPush(Bar bar2simulate) {
+		void generateQuotes_forBar_push(Bar bar2simulate) {
 			if (bar2simulate == null) return;
 			if (bar2simulate.IsBarStreaming && double.IsNaN(bar2simulate.Open)) {
 				string msg = "IRRELEVANT_PARTIAL_VALUES_WERE_DEPRECATED it's ok for Bars.LastBar from Repository to have no PartialValues;"

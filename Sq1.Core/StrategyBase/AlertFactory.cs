@@ -25,7 +25,7 @@ namespace Sq1.Core.StrategyBase {
 
 			// ALREADY_ALIGNED_AFTER GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming
 			//v2
-			double entryPriceScript = entryBar.ParentBars.SymbolInfo.AlignAlertToPriceLevelSimplified(priceScriptOrStreaming, direction, entryMarketLimitStop);
+			double entryPriceScript = entryBar.ParentBars.SymbolInfo.Alert_alignToPriceLevel_simplified(priceScriptOrStreaming, direction, entryMarketLimitStop);
 
 			//#if DEBUG
 			////v1
@@ -72,7 +72,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			//v2
-			double exitPriceScript = exitBar.ParentBars.SymbolInfo.AlignAlertToPriceLevelSimplified(priceScriptOrStreaming, direction, exitMarketLimitStop);
+			double exitPriceScript = exitBar.ParentBars.SymbolInfo.Alert_alignToPriceLevel_simplified(priceScriptOrStreaming, direction, exitMarketLimitStop);
 
 			//#if DEBUG
 			////v1
@@ -194,8 +194,8 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "position ClosedByStopLoss@" + alert.PriceScript + ", annihilating TakeProfit";
 				newOrderState = new OrderStateMessage(alert.OrderFollowed, OrderState.TPAnnihilated, msg);
 			}
-			executor.OrderProcessor.UpdateOrderStateDontPostProcess(alert.OrderFollowed, newOrderState);
-			executor.OrderProcessor.KillPendingOrderWithoutKiller(alert.OrderFollowed);
+			executor.OrderProcessor.UpdateOrderState_dontPostProcess(alert.OrderFollowed, newOrderState);
+			executor.OrderProcessor.PendingOrder_killWithoutKiller(alert.OrderFollowed);
 
 			//string msg2 = "MARKET_LIVE_ASSUMES_A_CALLBACK_REMOVES_FROM_DATASNAPSHOT_AFTER_BROKER_SAYS_YES_HE_KILLED_PENDING";
 			//Assembler.PopupException(msg2);
@@ -206,7 +206,7 @@ namespace Sq1.Core.StrategyBase {
 		public bool AlertKillPending(Alert alert) {
 			string msg = "AlertKillPending";
 			//OrderStateMessage newOrderState = new OrderStateMessage(alert.OrderFollowed, OrderState.KillerSubmitting, msg);
-			executor.OrderProcessor.KillPendingOrderWithoutKiller(alert.OrderFollowed);
+			executor.OrderProcessor.PendingOrder_killWithoutKiller(alert.OrderFollowed);
 			return false;
 		}
 		

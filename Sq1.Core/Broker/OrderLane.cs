@@ -123,7 +123,7 @@ namespace Sq1.Core.Broker {
 				if (this.InnerOrderList.Contains(orderRemoving) == false) {
 					if (popupIfDoesntContain && orderRemoving.Alert.MyBrokerIsLivesim == false) {
 						string msg = "LANE_DOESNT_CONTAIN_ORDER_YOU_WILLING_TO_REMOVE " + this.ToStringCount() + " orderRemoving" + orderRemoving;
-						Assembler.PopupException(msg);
+						Assembler.PopupException(msg, null, false);
 					}
 					continue;
 				}

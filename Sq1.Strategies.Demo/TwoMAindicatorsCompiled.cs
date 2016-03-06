@@ -25,7 +25,7 @@ namespace Sq1.Strategies.Demo {
 
 		public override void InitializeBacktest() {
 		}
-		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
+		public override void OnBarStaticLastFormed_whileStreamingBarWithOneQuoteAlreadyAppended_callback(Bar barStaticFormed) {
 			if (this.Executor.Sequencer.IsRunningNow) return;
 
 			this.testBarBackground(barStaticFormed);

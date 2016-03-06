@@ -4,22 +4,22 @@ using System.Text;
 
 namespace Sq1.Core.Execution {
 	public class PositionPrototype {
-		public readonly string Symbol;
-		public readonly PositionLongShort LongShort;
-		public double PriceEntry { get; protected set; }
-		public double StopLossNegativeOffset;	// { get; protected set; }
-		public double StopLossActivationNegativeOffset { get; protected set; }
-		public double TakeProfitPositiveOffset { get; protected set; }
-		public double PriceStopLossActivation { get { return this.OffsetToPrice(this.StopLossActivationNegativeOffset); } }
-		public double PriceStopLoss { get { return this.OffsetToPrice(this.StopLossNegativeOffset); } }
-		public double PriceTakeProfit { get { return this.OffsetToPrice(this.TakeProfitPositiveOffset); } }
+		public readonly	string Symbol;
+		public readonly	PositionLongShort LongShort;
+		public double	PriceEntry							{ get; protected set; }
+		public double	StopLoss_negativeOffset;			// { get; protected set; }
+		public double	StopLossActivation_negativeOffset	{ get; protected set; }
+		public double	TakeProfit_positiveOffset			{ get; protected set; }
+		public double	PriceStopLossActivation				{ get { return this.OffsetToPrice(this.StopLossActivation_negativeOffset); } }
+		public double	PriceStopLoss						{ get { return this.OffsetToPrice(this.StopLoss_negativeOffset); } }
+		public double	PriceTakeProfit						{ get { return this.OffsetToPrice(this.TakeProfit_positiveOffset); } }
 
-		public Alert StopLossAlertForAnnihilation;
-		public Alert TakeProfitAlertForAnnihilation;
+		public Alert	StopLossAlert_forMoveAndAnnihilation;
+		public Alert	TakeProfitAlert_forMoveAndAnnihilation;
 		
-		public string SignalEntry = "";
-		public string SignalStopLoss = "";
-		public string SignalTakeProfit = "";
+		public string	SignalEntry = "";
+		public string	SignalStopLoss = "";
+		public string	SignalTakeProfit = "";
 
 		public PositionPrototype(string symbol, PositionLongShort positionLongShort, double priceEntry,
 				double takeProfitPositiveOffset,
@@ -38,15 +38,15 @@ namespace Sq1.Core.Execution {
 		}
 
 		public void SetNewTakeProfitOffset(double newTakeProfitPositiveOffset) {
-			this.checkTPOffsetThrowBeforeAbsorbing(newTakeProfitPositiveOffset);
-			this.TakeProfitPositiveOffset = newTakeProfitPositiveOffset;
+			this.checkTPOffset_throwBeforeAbsorbing(newTakeProfitPositiveOffset);
+			this.TakeProfit_positiveOffset = newTakeProfitPositiveOffset;
 		}
 		public void SetNewStopLossOffsets(double newStopLossNegativeOffset, double stopLossActivationNegativeOffset) {
-			this.checkSLOffsetsThrowBeforeAbsorbing(newStopLossNegativeOffset, stopLossActivationNegativeOffset);
-			this.StopLossActivationNegativeOffset = stopLossActivationNegativeOffset;
-			this.StopLossNegativeOffset = newStopLossNegativeOffset;
+			this.checkSLOffsets_throwBeforeAbsorbing(newStopLossNegativeOffset, stopLossActivationNegativeOffset);
+			this.StopLossActivation_negativeOffset = stopLossActivationNegativeOffset;
+			this.StopLoss_negativeOffset = newStopLossNegativeOffset;
 		}
-		public void checkTPOffsetThrowBeforeAbsorbing(double takeProfitPositiveOffset) {
+		public void checkTPOffset_throwBeforeAbsorbing(double takeProfitPositiveOffset) {
 			if (takeProfitPositiveOffset < 0) {
 				string msg = "WRONG USAGE OF PositionPrototype.ctor()!"
 					+ " PositionPrototype should contain positive offset for TakeProfit";
@@ -56,7 +56,7 @@ namespace Sq1.Core.Execution {
 				throw new Exception(msg);
 			}
 		}
-		public void checkSLOffsetsThrowBeforeAbsorbing(double stopLossNegativeOffset, double stopLossActivationNegativeOffset) {
+		public void checkSLOffsets_throwBeforeAbsorbing(double stopLossNegativeOffset, double stopLossActivationNegativeOffset) {
 			if (stopLossNegativeOffset > 0) {
 				string msg = "WRONG USAGE OF PositionPrototype.ctor()!"
 					+ " PositionPrototype should contain negative offset for StopLoss";
@@ -93,14 +93,14 @@ namespace Sq1.Core.Execution {
 		//	this.StopLossNegativeOffset = newStopLossNegativeOffset;
 		//}
 
-		public double CalcActivationOffsetForNewClosing(double newStopLossNegativeOffset) {
+		public double CalcActivationOffset_forNewClosing(double newStopLossNegativeOffset) {
 			// for a long position, activation price is above closing price
-			double currentDistance = this.StopLossActivationNegativeOffset - this.StopLossNegativeOffset;
+			double currentDistance = this.StopLossActivation_negativeOffset - this.StopLoss_negativeOffset;
 			return newStopLossNegativeOffset + currentDistance;
 		}
 
 		public double CalcStopLossDifference(double newStopLossNegativeOffset) {
-			return newStopLossNegativeOffset - this.StopLossNegativeOffset;
+			return newStopLossNegativeOffset - this.StopLoss_negativeOffset;
 		}
 
 		public double OffsetToPrice(double newActivationOffset) {
@@ -129,9 +129,9 @@ namespace Sq1.Core.Execution {
 		public bool IsIdenticalTo(PositionPrototype proto) {
 			return this.LongShort == proto.LongShort
 				&& this.PriceEntry == proto.PriceEntry
-				&& this.TakeProfitPositiveOffset == proto.TakeProfitPositiveOffset
-				&& this.StopLossNegativeOffset == proto.StopLossNegativeOffset
-				&& this.StopLossActivationNegativeOffset == proto.StopLossActivationNegativeOffset;
+				&& this.TakeProfit_positiveOffset == proto.TakeProfit_positiveOffset
+				&& this.StopLoss_negativeOffset == proto.StopLoss_negativeOffset
+				&& this.StopLossActivation_negativeOffset == proto.StopLossActivation_negativeOffset;
 		}
 		public override string ToString() {
 //			return this.LongShort + " Entry[" + this.PriceEntry + "]TP[" + this.TakeProfitPositiveOffset + "]SL["
@@ -141,11 +141,11 @@ namespace Sq1.Core.Execution {
 			msg.Append(" Entry[");
 			msg.Append(this.PriceEntry);
 			msg.Append("]TP[");
-			msg.Append(this.TakeProfitPositiveOffset);
+			msg.Append(this.TakeProfit_positiveOffset);
 			msg.Append("]SL[");
-			msg.Append(this.StopLossNegativeOffset);
+			msg.Append(this.StopLoss_negativeOffset);
 			msg.Append("]SLA[");
-			msg.Append(this.StopLossActivationNegativeOffset + "]");
+			msg.Append(this.StopLossActivation_negativeOffset + "]");
 			return msg.ToString();
 		}
 

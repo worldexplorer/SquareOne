@@ -10,10 +10,10 @@ namespace Sq1.Core.Execution {
 		public PositionList		PositionsClosed			{ get; private set; }
 		public PositionList		PositionsOpenNow		{ get; private set; }
 		
-		public int				PositionsOpenedAfterExecPlusClosedCount							{ get { return this.PositionsOpened.Count + this.PositionsClosed.Count; } }
-		public int				PositionsOpenedAfterExecPlusClosedPlusAlertsNewCount			{ get { return this.PositionsOpenedAfterExecPlusClosedCount + this.AlertsNew.Count; } }
+		public int				Positions_openedAfterExec_plusClosed_count							{ get { return this.PositionsOpened.Count + this.PositionsClosed.Count; } }
+		public int				Positions_openedAfterExec_plusClosed_plusAlertsNew_count			{ get { return this.Positions_openedAfterExec_plusClosed_count + this.AlertsNew.Count; } }
 		// lets Execute() return non-null PokeUnit => Reporters are notified on quoteUpdatedPositions if !GuiIsBusy
-		public int				PositionsNowPlusOpenedPlusClosedAfterExecPlusAlertsNewCount		{ get { return this.PositionsOpenedAfterExecPlusClosedPlusAlertsNewCount + this.PositionsOpenNow.Count; } }
+		public int				PositionsNow_plusOpened_plusClosedAfterExec_plusAlertsNew_count		{ get { return this.Positions_openedAfterExec_plusClosed_plusAlertsNew_count + this.PositionsOpenNow.Count; } }
 		
 		public ReporterPokeUnit() {
 			AlertsNew			= new AlertList			("AlertsNew_myOwn_canDispose", null);

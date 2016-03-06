@@ -15,7 +15,7 @@ namespace Sq1.Core.Streaming {
 		public abstract	void	UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart);
 		public abstract	void	UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop);
 		public abstract	void	ConsumeQuoteOfStreamingBar(Quote quote);
-		public abstract	void	ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated);
+		public abstract	void	ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated);
 
 
 		public abstract	ScriptExecutor	Executor			{ get; }

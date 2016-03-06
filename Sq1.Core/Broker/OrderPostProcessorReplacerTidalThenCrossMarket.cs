@@ -23,7 +23,7 @@ namespace Sq1.Core.Broker {
 					"sequence initialized: [" + sequenced.State + "]=>[" + OrderState.SubmittingSequenced + "]"
 					+ " for [" + ordersOpen.Count + "] fellow ordersOpen"
 					+ " by [" + ordersClose.Count + "]ordersClose");
-				this.orderProcessor.UpdateOrderStateAndPostProcess(sequenced, omsg);
+				this.orderProcessor.UpdateOrderState_postProcess(sequenced, omsg);
 			}
 		}
 		public void OrderFilledUnlockSequenceSubmitOpening(Order order) {
@@ -39,18 +39,18 @@ namespace Sq1.Core.Broker {
 						List<Order> ordersOpen = this.ordersCloseOpen[ordersCloseFound];
 						this.ordersCloseOpen.Remove(ordersCloseFound);
 						if (ordersOpen.Count == 0) continue;
-						this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order,
+						this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(order,
 							"last CloseOpenSequence order filled, unlocking submission of [" + ordersOpen.Count + "]ordersOpen");
 						foreach (Order submitting in ordersOpen) {
 							OrderStateMessage omsg = new OrderStateMessage(submitting, OrderState.Submitting,
 								"sequence cleared: [" + submitting.State + "]=>[" + OrderState.Submitting + "]"
 								+ " for [" + ordersOpen.Count + "] fellow ordersOpen"
 								+ " by orderClose=[" + order + "]");
-							this.orderProcessor.UpdateOrderStateAndPostProcess(submitting, omsg);
+							this.orderProcessor.UpdateOrderState_postProcess(submitting, omsg);
 						}
 						BrokerAdapter broker = ordersOpen[0].Alert.DataSource.BrokerAdapter;
 						//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersOpen });
-						this.orderProcessor.SubmitToBrokerAdapter_inNewThreadOrStraight(ordersOpen, broker);
+						this.orderProcessor.SubmitToBrokerAdapter_inNewThread(ordersOpen, broker);
 					}
 				}
 			}

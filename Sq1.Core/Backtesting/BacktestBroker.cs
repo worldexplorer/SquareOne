@@ -14,7 +14,7 @@ namespace Sq1.Core.Backtesting {
 		[JsonIgnore]	public	ScriptExecutor			ScriptExecutor		{ get; private set; }
 
 		public BacktestBroker(string reasonToExist) : base(reasonToExist) {
-			base.Name = "BacktestBrokerAdapter";
+			base.Name						= "BacktestBrokerAdapter";
 			this.BacktestMarketsim			= new BacktestMarketsim(this);
 			base.AccountAutoPropagate		= new Account("BACKTEST_ACCOUNT", -1000);
 			base.AccountAutoPropagate.Initialize(this);
@@ -25,14 +25,17 @@ namespace Sq1.Core.Backtesting {
 			this.BacktestMarketsim.Initialize();
 		}
 
-		public override void MoveStopLossOverrideable(PositionPrototype proto, double newActivationOffset, double newStopLossNegativeOffset) {
-			this.BacktestMarketsim.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
+		public override void StopLossMove_overrideable(PositionPrototype proto, double newActivationOffset, double newStopLossNegativeOffset) {
+			this.BacktestMarketsim.StopLoss_simulateMoved(proto.StopLossAlert_forMoveAndAnnihilation);
 		}
-		public override bool AnnihilateCounterpartyAlert(Alert alert) {
-			return this.BacktestMarketsim.AnnihilateCounterpartyAlert(alert);
+		public override void TakeProfitMove_overrideable(PositionPrototype proto, double newTakeProfit_positiveOffset) {
+			this.BacktestMarketsim.TakeProfit_simulateMoved(proto.TakeProfitAlert_forMoveAndAnnihilation);
 		}
-		public override void AlertKillPending(Alert alert) {
-			this.BacktestMarketsim.SimulateAlertKillPending(alert);
+		public override bool AlertCounterparty_annihilate(Alert alert) {
+			return this.BacktestMarketsim.AlertCounterparty_annihilate(alert);
+		}
+		public override void AlertPending_kill(Alert alert) {
+			this.BacktestMarketsim.AlertPending_simulateKill(alert);
 		}
 
 		public bool ImLivesimBroker { get {

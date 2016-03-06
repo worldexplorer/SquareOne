@@ -144,7 +144,7 @@ namespace Sq1.Widgets.Execution {
 		void mniOrderKill_Click(object sender, EventArgs e) {
 			if (this.OrdersSelected.Count == 0) return;
 			foreach (Order pendingOrder in this.OrdersSelected) {
-				Assembler.InstanceInitialized.OrderProcessor.KillPendingOrderWithoutKiller(pendingOrder);
+				Assembler.InstanceInitialized.OrderProcessor.PendingOrder_killWithoutKiller(pendingOrder);
 			}
 		}
 		void mniOrdersCancel_Click(object sender, EventArgs e) {

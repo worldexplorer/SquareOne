@@ -64,11 +64,11 @@ namespace Sq1.Charting {
 			foreach (Alert pending in alertsPending) {
 				Pen pen = penPending;
 				if (pending.PositionAffected != null && pending.PositionAffected.Prototype != null) {
-					if (pending == pending.PositionAffected.Prototype.StopLossAlertForAnnihilation) {
+					if (pending == pending.PositionAffected.Prototype.StopLossAlert_forMoveAndAnnihilation) {
 						//Assembler.PopupException("SL_CIRCLE_RED");
 						pen = penSL;
 					}
-					if (pending == pending.PositionAffected.Prototype.TakeProfitAlertForAnnihilation) {
+					if (pending == pending.PositionAffected.Prototype.TakeProfitAlert_forMoveAndAnnihilation) {
 						//Assembler.PopupException("TP_CIRCLE_GREEN");
 						pen = penTP;
 					}

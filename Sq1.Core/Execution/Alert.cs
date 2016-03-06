@@ -395,7 +395,7 @@ namespace Sq1.Core.Execution {
 				string msg = "ATTACH_SYMBOL_INFO_TO_BARS__TO_CALCULATE_PRICE_SCRIPT_ALIGNED";
 				Assembler.PopupException(msg);
 			} else {
-				this.PriceScriptAligned = this.Bars.SymbolInfo.AlignAlertToPriceLevelSimplified(this.PriceScript, this.Direction, this.MarketLimitStop);
+				this.PriceScriptAligned = this.Bars.SymbolInfo.Alert_alignToPriceLevel_simplified(this.PriceScript, this.Direction, this.MarketLimitStop);
 			}
 
 			if (this.PriceScriptAligned < 0) {
@@ -520,7 +520,7 @@ namespace Sq1.Core.Execution {
 		}
 		public	virtual void AbsorbFromExecutorAfterCreatedByMarketReal(ScriptExecutor executor) {
 		}
-		public	void FillPositionAffectedEntryOrExitRespectively(Bar barFill, int barFillRelno,
+		public	void FillPositionAffected_entryOrExit_respectively(Bar barFill, int barFillRelno,
 				double priceFill, double qtyFill, double slippageFill, double commissionFill) {
 			//if (this.BarRelnoFilled != -1) {
 			if (this.FilledBar != null) {

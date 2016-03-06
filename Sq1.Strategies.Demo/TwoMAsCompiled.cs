@@ -61,10 +61,10 @@ namespace Sq1.Strategies.Demo {
 			#endif
 		}
 
-		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
+		public override void OnNewQuoteOfStreamingBar_callback(Quote quote) {
 			this.printQuoteTypeOncePerBacktest(quote);
 		}
-		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
+		public override void OnBarStaticLastFormed_whileStreamingBarWithOneQuoteAlreadyAppended_callback(Bar barStaticFormed) {
 			if (this.Executor.Sequencer.IsRunningNow == false) {
 				this.drawLinesSample(barStaticFormed);
 				//this.testBarBackground(barStaticFormed);
@@ -121,17 +121,17 @@ namespace Sq1.Strategies.Demo {
 				Position shortPlaced = base.ShortAtMarket(barStreaming, msg);
 			}
 		}
-		public override void OnAlertFilledCallback(Alert alertFilled) {
+		public override void OnAlertFilled_callback(Alert alertFilled) {
 		}
-		public override void OnAlertKilledCallback(Alert alertKilled) {
+		public override void OnAlertKilled_callback(Alert alertKilled) {
 		}
-		public override void OnAlertNotSubmittedCallback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
+		public override void OnAlertNotSubmitted_callback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
 		}
-		public override void OnPositionOpenedCallback(Position positionOpened) {
+		public override void OnPositionOpened_callback(Position positionOpened) {
 		}
-		public override void OnPositionOpenedPrototypeSlTpPlacedCallback(Position positionOpenedByPrototype) {
+		public override void OnPositionOpened_prototypeSlTpPlaced_callback(Position positionOpenedByPrototype) {
 		}
-		public override void OnPositionClosedCallback(Position positionClosed) {
+		public override void OnPositionClosed_callback(Position positionClosed) {
 		}
 	}
 }

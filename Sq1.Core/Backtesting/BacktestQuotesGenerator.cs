@@ -377,7 +377,7 @@ namespace Sq1.Core.Backtesting {
 
 			#if DEBUG
 			//v1
-			double priceScriptAligned1 = this.backtester.Executor.AlignAlertPriceToPriceLevel(alert.Bars, alert.PriceScript, true,
+			double priceScriptAligned1 = this.backtester.Executor.AlertPrice_alignToPriceLevel(alert.Bars, alert.PriceScript, true,
 				alert.PositionLongShortFromDirection, alert.MarketLimitStop);
 			//quick check
 			if (priceScriptAligned1 != alert.PriceScript) {

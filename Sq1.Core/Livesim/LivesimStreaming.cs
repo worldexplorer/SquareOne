@@ -102,7 +102,7 @@ namespace Sq1.Core.Livesim {
 					string msg = "I_MUST_HAVE_IT_UNATTACHED_HERE";
 					//Assembler.PopupException(msg);
 				}
-				this.LivesimBroker.ConsumeQuoteOfStreamingBarToFillPending(quote, notYetScheduled);
+				this.LivesimBroker.ConsumeQuoteUnattached_toFillPending(quote, notYetScheduled);
 			} else {
 				string msg = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
 			}

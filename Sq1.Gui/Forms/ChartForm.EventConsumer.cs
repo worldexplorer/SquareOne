@@ -461,7 +461,7 @@ namespace Sq1.Gui.Forms {
 		}
 
 		void TsiProgressBarETA_Click(object sender, EventArgs e) {
-			this.ChartFormManager.Executor.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted("Backtest Aborted by clicking on progress bar");
+			this.ChartFormManager.Executor.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted("Backtest Aborted by clicking on progress bar");
 		}
 		protected override void OnMouseUp(MouseEventArgs e) {
 			if (base.DesignMode) return;

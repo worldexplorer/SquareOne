@@ -66,7 +66,7 @@ namespace Sq1.Core.StrategyBase {
 			} }
 		#endregion
 
-		public bool IsStreamingTriggeringScript {
+		public	bool	IsStreamingTriggeringScript {
 			get {
 				if (this.Strategy == null) {
 					//v1 return this.isStreamingWhenNoStrategyLoaded
@@ -97,13 +97,14 @@ namespace Sq1.Core.StrategyBase {
 					this.Strategy.Serialize();
 				}
 				
+				if (this.Strategy.Script == null) return;	// koz the rest is only about notifying script (which may not be compiled if user typed an error in the ScriptEditor and Script didn't compile)
 				if (value == true) {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOnNonBlockingRead = true;
 						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStreamingTriggeringScriptTurnedOnCallback(WAIT)");
 						this.Strategy.Script.OnStreamingTriggeringScriptTurnedOnCallback();
 					} finally {
-						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnStreamingTriggeringScriptTurnedOffCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnStreamingTriggeringScriptTurnedOnCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOnNonBlockingRead = false;
 					}
 				} else {
@@ -118,7 +119,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 		}
-		public bool IsStrategyEmittingOrders {
+		public	bool	IsStrategyEmittingOrders {
 			get {
 				if (this.Strategy == null) {
 					//v1 return this.isEmittingOrdersWhenNoStrategyLoaded
@@ -138,6 +139,7 @@ namespace Sq1.Core.StrategyBase {
 				this.Strategy.ScriptContextCurrent.StrategyEmittingOrders = value;
 				this.Strategy.Serialize();
 				
+				if (this.Strategy.Script == null) return;	// koz the rest is only about notifying script (which may not be compiled if user typed an error in the ScriptEditor and Script didn't compile)
 				if (value == true) {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOnNonBlockingRead = true;
@@ -153,13 +155,13 @@ namespace Sq1.Core.StrategyBase {
 						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStrategyEmittingOrdersTurnedOffCallback(WAIT)");
 						this.Strategy.Script.OnStrategyEmittingOrdersTurnedOffCallback();
 					} finally {
-						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this, "OnStrategyEmittingOrdersTurnedOnCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnStrategyEmittingOrdersTurnedOffCallback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOffNonBlockingRead = false;
 					}
 				}
 			}
 		}
-		public	string		SpreadPips	{ get {
+		public	string	SpreadPips	{ get {
 				string ret = "CANT_REACH_BARS_NOR_CURRENT_CONTEXT";
 				double pct = -1;
 				if (this.Strategy != null) {
@@ -278,249 +280,8 @@ namespace Sq1.Core.StrategyBase {
 			// Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRenamed +=
 			//	new EventHandler<DataSourceSymbolEventArgs>(Assembler_InstanceInitialized_RepositoryJsonDataSource_OnSymbolRenamed);
 		}
-		Quote quoteExecutedLast;
-		Bar barStaticExecutedLast;
-		public ReporterPokeUnit ExecuteOnNewBarOrNewQuote(Quote quoteForAlertsCreated, bool onNewQuoteTrue_onNewBarFalse = true) {
-			if (this.Strategy == null) {
-				string msg1 = "I_REFUSE_TO_EXECUTE_SCRIPT YOU_DIDNT_CHECK_MY_STRATEGY_IS_NULL";
-				Assembler.PopupException(msg1);
-				return null;
-			}
-			if (this.Strategy.Script == null) return null;
-			this.ExecutionDataSnapshot.PreExecutionOnNewBarOrNewQuoteClear();
 
-			//if (quote != null) {
-			if (onNewQuoteTrue_onNewBarFalse == true) {
-				if (this.quoteExecutedLast != null) {
-					long mustBeOne = quoteForAlertsCreated.AbsnoPerSymbol - quoteExecutedLast.AbsnoPerSymbol;
-					if (mustBeOne == 0) {
-						string msg2 = "DUPE_IN_SCRIPT_INVOCATION__INDICATORS_WONT_COMPLAIN_TOO";
-						Assembler.PopupException(msg2, null, false);
-						return null;
-					}
-					if (mustBeOne > 1) {
-						long skipped = mustBeOne - 1;
-						string msg2 = "HOLE_IN_SCRIPT_INVOCATION";
-						Assembler.PopupException(msg2, null, false);
-						return null;
-					}
-				} else {
-					if (this.BacktesterOrLivesimulator.ImBacktestingOrLivesimming == false) {
-						string msg4 = "IM_AT_APPRESTART_BACKTEST_PRIOR_TO_LIVE__HERE_I_SHOULD_HAVE_EXECUTED_ON_LASTBAR__DID_SO_AT_BRO_THIS_IS_NONSENSE!!!FINALLY";
-					}
-				}
-				//INDICATOR_ADDING_STREAMING_DOESNT_KNOW_FROM_QUOTE_WHAT_DATE_OPEN_TO_PUT
-				foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
-					try {
-						indicator.OnNewStreamingQuote(quoteForAlertsCreated);
-					} catch (Exception ex) {
-						Assembler.PopupException("INDICATOR_ON_NEW_STREAMING_QUOTE " + indicator.ToString(), ex);
-					}
-				}
-
-				try {
-					try {
-						this.ExecutionDataSnapshot.IsScriptRunningOnNewQuoteNonBlockingRead = true;
-						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnNewQuoteOfStreamingBarCallback(WAIT)");
-						if (this.IsStreamingTriggeringScript) {
-							this.Strategy.Script.OnNewQuoteOfStreamingBarCallback(quoteForAlertsCreated);
-						}
-					} finally {
-						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnNewQuoteOfStreamingBarCallback(WAIT)");
-						this.ExecutionDataSnapshot.IsScriptRunningOnNewQuoteNonBlockingRead = false;
-					}
-					//alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.DumpPendingAlertsIntoPendingHistoryByBar();
-					//if (alertsDumpedForStreamingBar > 0) {
-					//	string msg = "ITS OK HERE since prev quote has created prototype-based alerts"
-					//		+ "I WANT DUMP TO BE VALID ONLY IN onNewBar case only!!!"
-					//		+ " " + alertsDumpedForStreamingBar + " alerts Dumped for " + quote;
-					//}
-					this.EventGenerator.RaiseOnStrategyExecutedOneQuote(quoteForAlertsCreated);
-				} catch (Exception ex) {
-					string msig = " //Script[" + this.Strategy.Script.GetType().Name + "].OnNewQuoteCallback(" + quoteForAlertsCreated + ")";
-					this.PopupException(ex.Message + msig, ex);
-				}
-			} else {
-				if (this.barStaticExecutedLast != null) {
-					int mustBeOne = this.Bars.BarStaticLast_nullUnsafe.ParentBarsIndex - this.barStaticExecutedLast.ParentBarsIndex;
-					if (mustBeOne == 0) {
-						string msg2 = "DUPE_IN_SCRIPT_INVOCATION__INDICATORS_WILL_COMPLAIN_TOO";
-						Assembler.PopupException(msg2, null, false);
-						return null;
-					}
-					if (mustBeOne > 1) {
-						int skipped = mustBeOne - 1;
-						string msg2 = "HOLE_IN_SCRIPT_INVOCATION INDICATORS_WILL_COMPLAIN_TOO ALERTS_WILL_MISTMATCH_BARS ExecuteOnNewBar()_SKIPPED=[" + skipped + "]";
-						Assembler.PopupException(msg2, null, false);
-						return null;
-					}
-				}
-				foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
-					try {
-						indicator.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended(this.Bars.BarStaticLast_nullUnsafe);
-					} catch (Exception ex) {
-						Assembler.PopupException("INDICATOR_ON_NEW_BAR " + indicator.ToString(), ex);
-					}
-				}
-
-				try {
-					try {
-						this.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
-						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
-						if (this.IsStreamingTriggeringScript) {
-							// TODO: What about Script.onQuote, onAlertFilled, onPositionClosed/Opened? - should they also NOT be invoked?
-							this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLast_nullUnsafe);
-						}
-					} finally {
-						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
-						this.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
-					}
-					this.EventGenerator.RaiseOnStrategyExecutedOneBar(this.Bars.BarStaticLast_nullUnsafe);
-					this.barStaticExecutedLast = this.Bars.BarStaticLast_nullUnsafe;
-				} catch (Exception ex) {
-					string msig = " //Script[" + this.Strategy.Script.GetType().Name
-						+ "].OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(" + quoteForAlertsCreated + ")";
-					this.PopupException(ex.Message + msig, ex);
-				}
-			}
-
-			string msg5 = "DONT_REMOVE_ALERT_SHOULD_LEAVE_ITS_TRAIL_DURING_LIFETIME_TO_PUT_UNFILLED_DOTS_ON_CHART";
-			//int alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.DumpPendingAlertsIntoPendingHistoryByBar();
-//			int alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.AlertsPending.Count;
-//			if (alertsDumpedForStreamingBar > 0) {
-//				msg += " DUMPED_AFTER_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
-//			}
-
-
-			// what's updated after Exec: non-volatile, kept un-reset until executor.Initialize():
-			//this.ExecutionDataSnapshot.PositionsMaster.ByEntryBarFilled (unique)
-			//this.ExecutionDataSnapshot.PositionsMaster
-			//this.PositionsOnlyActive
-			//this.AlertsMaster
-			//this.AlertsNewAfterExec
-
-			// what's new for this iteration: volatile, cleared before next Exec):
-			//this.AlertsNewAfterExec
-			//this.ExecutionDataSnapshot.PositionsOpenedAfterExec
-			//this.ExecutionDataSnapshot.PositionsClosedAfterExec
-
-			Bar barStreaming_nullUnsafe = this.Bars.BarStreaming_nullUnsafe;
-			List<Alert> alertsPendingAtCurrentBarSafeCopy = this.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "ExecuteOnNewBarOrNewQuote(WAIT)");
-			if (barStreaming_nullUnsafe != null && alertsPendingAtCurrentBarSafeCopy.Count > 0) {
-				this.ChartShadow.AlertsPendingStillNotFilledForBarAdd(barStreaming_nullUnsafe.ParentBarsIndex, alertsPendingAtCurrentBarSafeCopy);
-			}
-
-			List<Alert> alertsNewAfterExecSafeCopy = this.ExecutionDataSnapshot.AlertsNewAfterExec.SafeCopy(this, "ExecuteOnNewBarOrNewQuote(WAIT)");
-			List<Order> ordersEmitted = null;
-
-			if (this.ChartShadow != null) {
-				//bool guiHasTime = false;
-				foreach (Alert alert in alertsNewAfterExecSafeCopy) {
-					try {
-						Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, alert);
-						//if (guiHasTime == false) guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
-					} catch (Exception ex) {
-						string msg = "ADDING_TO_DICTIONARY_MANY_TO_ONE";
-						Assembler.PopupException(msg, ex);
-					}
-				}
-			} else {
-				if (this.Sequencer.IsRunningNow == false) {
-					string msg = "CHART_SHADOW_MUST_BE_NULL_ONLY_WHEN_OPTIMIZING__BACKTEST_AND_LIVESIM_MUST_HAVE_CHART_SHADOW_ASSOCIATED";
-					Assembler.PopupException(msg);
-				}
-			}
-
-			if (alertsNewAfterExecSafeCopy.Count > 0) {
-				this.enrichAlertsWithQuoteCreated(alertsNewAfterExecSafeCopy, quoteForAlertsCreated);
-				//bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
-
-				// for backtest only => btnEmirOrders.Checked isn't analyzed at all
-				if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
-					this.ChartShadow.AlertsPlacedRealtimeAdd(alertsNewAfterExecSafeCopy);
-					this.ExecutionDataSnapshot.AlertsNewAfterExec.Clear(this, "ExecuteOnNewBarOrNewQuote(WAIT)");
-					return null;
-				}
-
-				// for 1) LivesimStreamingDefault + DONT_Emit, 2) LivesimStreamingQuik + DONT_Emit
-				if (this.BacktesterOrLivesimulator.ImRunningLivesim && this.IsStrategyEmittingOrders == false) {
-					this.ChartShadow.AlertsPlacedRealtimeAdd(alertsNewAfterExecSafeCopy);
-					this.ExecutionDataSnapshot.AlertsNewAfterExec.Clear(this, "ExecuteOnNewBarOrNewQuote(WAIT)");
-					return null;
-				}
-
-				// for LivesimStreamingDefault + EMIT, LivesimStreamingQuik + EMIT, Live with/without EMIT => goes here
-				if (this.IsStrategyEmittingOrders) {
-					string msg2 = "Breakpoint";
-					//#D_FREEZE Assembler.PopupException(msg2);
-					//Debugger.Break();
-					ContextScript ctx = this.Strategy.ScriptContextCurrent;
-
-					//bool noNeedToUnpauseLivesimKozItsNeverPaused = this.Bars.DataSource is LivesimDataSource;
-					bool noNeedToUnpauseLivesimKozItsNeverPaused = this.DataSource_fromBars.BrokerAsLivesim_nullUnsafe != null;
-					if (noNeedToUnpauseLivesimKozItsNeverPaused == false) {
-						//MOVED_TO_ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
-						// ^^^ this.DataSource.PausePumpingFor(this.Bars, true);		// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
-						bool paused = this.Bars.DataSource.PumpingWaitUntilPaused(this.Bars, 0);
-						if (paused == true) {
-							string msg3 = "YES_I_PAUSED_THIS_PUMP_MYSELF_UPSTACK_IN_PumpPauseNeighborsIfAnyFor()"
-								+ "YOU_WANT_ONE_STRATEGY_PER_SYMBOL_LIVE MAKE_SURE_YOU_HAVE_ONLY_ONE_SYMBOL:INTERVAL_ACROSS_ALL_OPEN_CHARTS PUMP_SHOULD_HAVE_BEEN_PAUSED_EARLIER"
-								+ " in ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
-							//Assembler.PopupException(msg3, null, false);
-						}
-					}
-					ordersEmitted = this.OrderProcessor.CreateOrders_submitToBrokerAdapter_inNewThreads(alertsNewAfterExecSafeCopy
-						, true // setStatusSubmitting
-						, true);
-					//MOVED_TO_ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
-					// ^^^ this.DataSource.UnPausePumpingFor(this.Bars, true);	// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
-
-					foreach (Alert alert in alertsNewAfterExecSafeCopy) {
-						if (alert.OrderFollowed != null) continue;
-						bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "ExecuteOnNewBarOrNewQuote(WAIT)");
-						if (removed == false) {
-							string msg3 = "FAILED_TO_REMOVE_INCONSISTENT_ALERT_FROM_PENDING removed=" + removed;
-							Assembler.PopupException(msg3);
-						}
-					}
-					this.ChartShadow.AlertsPlacedRealtimeAdd(alertsNewAfterExecSafeCopy);
-				}
-
-			}
-
-			if (this.BacktesterOrLivesimulator.WasBacktestAborted) return null;
-			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) return null;
-			
-			
-			ReporterPokeUnit pokeUnit_dontForgetToDispose = new ReporterPokeUnit(quoteForAlertsCreated,
-												this.ExecutionDataSnapshot.AlertsNewAfterExec		.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
-												this.ExecutionDataSnapshot.PositionsOpenedAfterExec	.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
-												this.ExecutionDataSnapshot.PositionsClosedAfterExec	.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
-												this.ExecutionDataSnapshot.PositionsOpenNow			.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)") );
-
-			//MOVED_UPSTACK_TO_LivesimQuoteBarConsumer
-			//if (this.Backtester.IsBacktestRunning && this.Backtester.IsLivesimRunning) {
-			//	// FROM_ChartFormStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
-			//	if (pokeUnit.PositionsOpenNow.Count > 0) {
-			//		this.Performance.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(this.ExecutionDataSnapshot.PositionsOpenNow);
-			//		if (guiHasTime) {
-			//			this.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnit);
-			//		}
-			//	}
-			//}
-
-			//if (this.Backtester.IsBacktestingNow) return pokeUnit;
-			// NOPE PositionsMaster grows only in Callback: do this before this.OrderProcessor.CreateOrdersSubmitToBrokerAdapterInNewThreads() to avoid REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert
-			// NOPE_REALTIME_FILLS_POSITIONS_ON_CALLBACK this.AddPositionsJustCreatedUnfilledToChartShadowAndPushToReportersAsyncUnsafe(pokeUnit);
-
-			this.EventGenerator.RaiseOnStrategyExecutedOneQuoteOrBarOrdersEmitted(ordersEmitted);
-			
-			// lets Execute() return non-null PokeUnit => Reporters are notified on quoteUpdatedPositions if !GuiIsBusy
-			if (pokeUnit_dontForgetToDispose.PositionsNowPlusOpenedPlusClosedAfterExecPlusAlertsNewCount == 0) return null;
-			return pokeUnit_dontForgetToDispose;
-		}
-
-		void enrichAlertsWithQuoteCreated(List<Alert> alertsAfterStrategy, Quote quote) {
+		void enrichAlerts_withQuoteCreated(List<Alert> alertsAfterStrategy, Quote quote) {
 			if (quote == null) return;
 			foreach (Alert alert in alertsAfterStrategy) {
 				if (quote.HasParentBar == false) {
@@ -543,14 +304,6 @@ namespace Sq1.Core.StrategyBase {
 		public void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
 			Assembler.PopupException(msg, ex, debuggingBreak);
 			//this.Backtester.AbortBacktestIfExceptionsLimitReached();
-		}
-
-		public double OrderCommissionCalculate(Direction direction, MarketLimitStop marketLimitStop, double price, double shares, Bars bars) {
-			double ret = 0;
-			if (this.Strategy.ScriptContextCurrent.ApplyCommission && this.CommissionCalculator != null) {
-				ret = this.CommissionCalculator.CalculateCommission(direction, marketLimitStop, price, shares, bars);
-			}
-			return ret;
 		}
 
 		//NOW_INLINE void invokeScriptEvents(Alert alertFilled) {}
@@ -576,9 +329,9 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 			// OrderFollowed=null when executeStrategyBacktestEntryPoint() is in the call stack
-			this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(alert.OrderFollowed, msig + msg);
+			this.OrderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
 		}
-		public void RemovePendingExitAlertAndClosePositionAfterBacktestLeftItHanging(Alert alert) {
+		public void RemovePendingExitAlerts_closePositionsBacktestLeftHanging(Alert alert) {
 			string msig = "RemovePendingExitAlertAndClosePositionAfterBacktestLeftItHanging(): ";
 			this.removePendingExitAlert(alert, msig);
 			//bool checkPositionOpenNow = true;
@@ -592,7 +345,7 @@ namespace Sq1.Core.StrategyBase {
 			//v4 alert.Bars.BarStreamingCreateNewOrAbsorb(this.Bars.BarStreaming);
 			//v5 IM_USING_ALERTS_EXIT_BAR_NOW__NOT_STREAMING
 			Bar barFill = (alert.PlacedBar != null) ? alert.PlacedBar : alert.Bars.BarStaticLast_nullUnsafe;
-			alert.FillPositionAffectedEntryOrExitRespectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
+			alert.FillPositionAffected_entryOrExit_respectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
 			alert.SignalName += " RemovePendingExitAlertClosePosition " + Alert.FORCEFULLY_CLOSED_BACKTEST_LAST_POSITION;
 			// REFACTORED_POSITION_HAS_AN_ALERT_AFTER_ALERTS_CONSTRUCTOR we can exit by TP or SL - position doesn't have an ExitAlert assigned until Position.EntryAlert was filled!!!
 			//alert.PositionAffected.ExitAlertAttach(alert);
@@ -605,7 +358,7 @@ namespace Sq1.Core.StrategyBase {
 
 			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerAdapter knows to pass Bar here?...
 			Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreaming_nullUnsafeCloneReadonly : alert.Bars.BarStaticLast_nullUnsafe;
-			alert.FillPositionAffectedEntryOrExitRespectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
+			alert.FillPositionAffected_entryOrExit_respectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
 			alert.SignalName += " RemovePendingEntryAlertClosePosition " + Alert.FORCEFULLY_CLOSED_BACKTEST_LAST_POSITION;
 		}
 
@@ -622,7 +375,7 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "DONT_SET_SAME_BARS";
 			}
 			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
-				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted("CLICKED_ON_OTHER_BARS_WHILE_BACKTESTING");
+				this.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted("CLICKED_ON_OTHER_BARS_WHILE_BACKTESTING");
 			}
 
 			//v2, ATTACHED_TO_BARS.DATASOURCE.SYMBOLRENAMED_INSTEAD_OF_DATASOURCE_REPOSITORY
@@ -723,6 +476,13 @@ namespace Sq1.Core.StrategyBase {
 					roundedLots100 = 100.0;
 				}
 				ret = roundedLots100;
+			}
+			return ret;
+		}
+		public double OrderCommissionCalculate(Direction direction, MarketLimitStop marketLimitStop, double price, double shares, Bars bars) {
+			double ret = 0;
+			if (this.Strategy.ScriptContextCurrent.ApplyCommission && this.CommissionCalculator != null) {
+				ret = this.CommissionCalculator.CalculateCommission(direction, marketLimitStop, price, shares, bars);
 			}
 			return ret;
 		}

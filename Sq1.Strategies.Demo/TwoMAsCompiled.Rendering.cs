@@ -18,7 +18,7 @@ namespace Sq1.Strategies.Demo {
 			// one line is drawn across one day regardless of timeframe: just the date is enough to "address" the line 
 			string lineId = barFirstForCurrentTradingDay.DateTimeOpen.ToString("yyyy-MMM-dd");
 			//Debugger.Break();
-			base.Executor.ChartConditionalLineDrawModify(lineId,
+			base.Executor.ChartConditional_lineDrawModify(lineId,
 				barFirstForCurrentTradingDay.ParentBarsIndex, dayOpenedAtPrice,
 				barStaticFormed.ParentBarsIndex, dayOpenedAtPrice,
 				Color.Blue, 1);
@@ -38,7 +38,7 @@ namespace Sq1.Strategies.Demo {
 			
 			
 			if (barStaticFormed == barFirstForCurrentTradingDay) {
-				OnChartObjectOperationStatus status = base.Executor.ChartConditionalLineDrawModify(lineId + "_brown",
+				OnChartObjectOperationStatus status = base.Executor.ChartConditional_lineDrawModify(lineId + "_brown",
 					barStaticFormed.ParentBarsIndex, lowerLimit,
 					barStaticFormed.ParentBarsIndex, upperLimit,
 					Color.Brown, 3);
@@ -71,7 +71,7 @@ namespace Sq1.Strategies.Demo {
 			labelText += " " + barStaticFormed.BarIndexAfterMidnightReceived + "/";
 			labelText += barStaticFormed.BarIndexExpectedSinceTodayMarketOpen + ":" + barStaticFormed.BarIndexExpectedMarketClosesTodaySinceMarketOpen;
 			bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
-			base.Executor.ChartConditionalBarAnnotationDrawModify(
+			base.Executor.ChartConditional_barAnnotationDrawModify(
 				barIndex, "ann" + barIndex, labelText, this.fontArial6, Color.ForestGreen, Color.Empty, evenAboveOddBelow);
 		}
 	}

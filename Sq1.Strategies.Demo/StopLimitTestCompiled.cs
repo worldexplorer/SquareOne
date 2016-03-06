@@ -12,10 +12,10 @@ namespace Sq1.Strategies.Demo {
 		public override void InitializeBacktest() {
 			//this.PadBars(0);
 		}
-		public override void OnNewQuoteOfStreamingBarCallback(Quote quoteNewArrived) {
+		public override void OnNewQuoteOfStreamingBar_callback(Quote quoteNewArrived) {
 			this.placePrototypeOncePositionClosed(quoteNewArrived.ParentBarStreaming);
 		}
-		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barNewStaticArrived) {
+		public override void OnBarStaticLastFormed_whileStreamingBarWithOneQuoteAlreadyAppended_callback(Bar barNewStaticArrived) {
 			//this.placePrototypeOncePositionClosed(barNewStaticArrived);
 		}
 		private void placePrototypeOncePositionClosed(Bar bar) {
@@ -66,42 +66,42 @@ namespace Sq1.Strategies.Demo {
 			PositionPrototype proto = protoLong;
 			base.Executor.PositionPrototypeActivator.PlaceOnce(proto);
 		}
-		public override void OnAlertFilledCallback(Alert alertFilled) {
+		public override void OnAlertFilled_callback(Alert alertFilled) {
 			if (alertFilled.IsExitAlert) return;
 			Position position = alertFilled.PositionAffected;
 		}
-		public override void OnAlertKilledCallback(Alert alertKilled) {
+		public override void OnAlertKilled_callback(Alert alertKilled) {
 			//Debugger.Break();
 		}
-		public override void OnAlertNotSubmittedCallback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
+		public override void OnAlertNotSubmitted_callback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
 			string msig = " //OnAlertNotSubmittedCallback(" + alertNotSubmitted + ", " + barNotSubmittedRelno + ")";
 			Assembler.PopupException("NEVER_HAPPENED_SO_FAR " + msig);
 		}
-		public override void OnPositionOpenedPrototypeSlTpPlacedCallback(Position positionOpenedProto) {
+		public override void OnPositionOpened_prototypeSlTpPlaced_callback(Position positionOpenedProto) {
 			PositionPrototype proto = positionOpenedProto.Prototype;
 			if (proto == null) return;
 
-			double currentStopLossNegativeOffset = proto.StopLossNegativeOffset;
+			double currentStopLossNegativeOffset = proto.StopLoss_negativeOffset;
 			double newStopLossNegativeOffset = currentStopLossNegativeOffset - 20;
 			//string msg = base.Executor.PositionPrototypeActivator.ReasonWhyNewStopLossOffsetDoesntMakeSense(positionOpenedProto, newStopLossNegativeOffset);
 			//if (String.IsNullOrEmpty(msg)) {
-				base.Executor.PositionPrototypeActivator.StopLossNewNegativeOffsetUpdateActivate(positionOpenedProto, newStopLossNegativeOffset);
+				base.Executor.PositionPrototypeActivator.StopLoss_newNegativeOffset_updateActivate(positionOpenedProto, newStopLossNegativeOffset);
 			//} else {
 			//	base.Executor.PopupException(new Exception("WONT_UPDATE_STOPLOSS: " + msg));
 			//}
 
-			double newTakeProfitPositiveOffset = proto.TakeProfitPositiveOffset + 50;
+			double newTakeProfitPositiveOffset = proto.TakeProfit_positiveOffset + 50;
 			//msg = base.Executor.PositionPrototypeActivator.ReasonWhyNewTakeProfitOffsetDoesntMakeSense(positionOpenedProto, newTakeProfitPositiveOffset);
 			//if (String.IsNullOrEmpty(msg)) {
-				base.Executor.PositionPrototypeActivator.TakeProfitNewPositiveOffsetUpdateActivate(positionOpenedProto, newTakeProfitPositiveOffset);
+				base.Executor.PositionPrototypeActivator.TakeProfit_newPositiveOffset_updateActivate(positionOpenedProto, newTakeProfitPositiveOffset);
 			//} else {
 			//	base.Executor.PopupException(new Exception("WONT_UPDATE_TAKEPROFIT: " + msg));
 			//}
 		}
-		public override void OnPositionClosedCallback(Position positionClosed) {
+		public override void OnPositionClosed_callback(Position positionClosed) {
 			//Debugger.Break();
 		}
-		public override void OnPositionOpenedCallback(Position positionOpened) {
+		public override void OnPositionOpened_callback(Position positionOpened) {
 			string msg = " NEVER_INVOKED_SINCE_I_USE_POSITION_PROTOTYPES_ONLY no direct BuyAt* or SellAt*";
 			Assembler.PopupException(msg);
 		}

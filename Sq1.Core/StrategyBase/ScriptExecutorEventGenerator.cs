@@ -12,9 +12,9 @@ namespace Sq1.Core.StrategyBase {
 		public event EventHandler<EventArgs>		OnBacktesterContextRestoredAfterExecutingAllBars_step4of4;
 
 		public event EventHandler<QuoteEventArgs>	OnStrategyPreExecuteOneQuote;
-		public event EventHandler<QuoteEventArgs>	OnStrategyExecutedOneQuote;
-		public event EventHandler<BarEventArgs>		OnStrategyExecutedOneBar;
-		public event EventHandler<EventArgs>		OnStrategyExecutedOneQuoteOrBarOrdersEmitted;
+		public event EventHandler<QuoteEventArgs>	OnStrategyExecuted_oneQuote;
+		public event EventHandler<BarEventArgs>		OnStrategyExecuted_oneBar;
+		public event EventHandler<EventArgs>		OnStrategyExecuted_oneQuoteOrBar_ordersEmitted;
 
 		public event EventHandler<ReporterPokeUnitEventArgs>	OnBrokerFilledAlertsOpeningForPositions_step1of3;
 		//YOU_KNOW_I_HATE_UNNECESSARY_EVENTS!!!__INVOKING_DIRECTLY_UpdateOpenPositionsDueToStreamingNewQuote()
@@ -79,8 +79,8 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 		
-		public void RaiseOnStrategyPreExecuteOneQuote(Quote quoteForAlertsCreated) {
-			if (this.OnStrategyExecutedOneQuote == null) return;
+		public void RaiseOnStrategyPreExecute_oneQuote(Quote quoteForAlertsCreated) {
+			if (this.OnStrategyPreExecuteOneQuote == null) return;
 			try {
 				this.OnStrategyPreExecuteOneQuote(this, new QuoteEventArgs(quoteForAlertsCreated));
 			} catch (Exception ex) {
@@ -88,17 +88,32 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		public void RaiseOnStrategyExecutedOneQuote(Quote quoteForAlertsCreated) {
-			if (this.OnStrategyExecutedOneQuote == null) return;
-			this.OnStrategyExecutedOneQuote(this, new QuoteEventArgs(quoteForAlertsCreated));
+		public void RaiseOnStrategyExecuted_oneQuote(Quote quoteForAlertsCreated) {
+			if (this.OnStrategyExecuted_oneQuote == null) return;
+			try {
+				this.OnStrategyExecuted_oneQuote(this, new QuoteEventArgs(quoteForAlertsCreated));
+			} catch (Exception ex) {
+				string msg = "//OnStrategyExecuted_oneQuote()";
+				Assembler.PopupException(msg, ex);
+			}
 		}
-		public void RaiseOnStrategyExecutedOneBar(Bar bar) {
-			if (this.OnStrategyExecutedOneBar == null) return;
-			this.OnStrategyExecutedOneBar(this, new BarEventArgs(bar));
+		public void RaiseOnStrategyExecuted_oneBar(Bar bar) {
+			if (this.OnStrategyExecuted_oneBar == null) return;
+			try {
+				this.OnStrategyExecuted_oneBar(this, new BarEventArgs(bar));
+			} catch (Exception ex) {
+				string msg = "//OnStrategyExecuted_oneBar()";
+				Assembler.PopupException(msg, ex);
+			}
 		}
-		public void RaiseOnStrategyExecutedOneQuoteOrBarOrdersEmitted(List<Order> ordersEmitted) {
-			if (this.OnStrategyExecutedOneQuoteOrBarOrdersEmitted == null) return;
-			this.OnStrategyExecutedOneQuoteOrBarOrdersEmitted(this, new OrdersListEventArgs(ordersEmitted));
+		public void RaiseOnStrategyExecuted_oneQuoteOrBar_ordersEmitted(List<Order> ordersEmitted) {
+			if (this.OnStrategyExecuted_oneQuoteOrBar_ordersEmitted == null) return;
+			try {
+				this.OnStrategyExecuted_oneQuoteOrBar_ordersEmitted(this, new OrdersListEventArgs(ordersEmitted));
+			} catch (Exception ex) {
+				string msg = "//RaiseOnStrategyExecuted_oneQuoteOrBar_ordersEmitted()";
+				Assembler.PopupException(msg, ex);
+			}
 		}
 
 		public void RaiseOnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_tunnelToInterChartForm(Quote quote) {

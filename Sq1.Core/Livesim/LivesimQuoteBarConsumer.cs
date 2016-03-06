@@ -29,7 +29,7 @@ namespace Sq1.Core.Livesim {
 		public override void ConsumeQuoteOfStreamingBar(Quote quote) {
 			bool guiHasTime = this.livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
 			ScriptExecutor executor = this.livesimulator.Executor;
-			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quote);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.livesimulator.Executor.InvokeScript_onNewBar_onNewQuote(quote);
 			using (pokeUnit_nullUnsafe_dontForgetToDispose) {
 				if (	pokeUnit_nullUnsafe_dontForgetToDispose != null
 					 && pokeUnit_nullUnsafe_dontForgetToDispose.PositionsOpenNow.Count > 0) {
@@ -46,7 +46,7 @@ namespace Sq1.Core.Livesim {
 				}
 			}
 		}
-		public override void ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
+		public override void ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
 			string msig = " //BacktestQuoteBarConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended";
 			if (barLastFormed == null) {
 				string msg = "THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING"
@@ -57,7 +57,7 @@ namespace Sq1.Core.Livesim {
 			}
 			msig += "(" + barLastFormed.ToString() + ")";
 			//v1 this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
-			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.livesimulator.Executor.InvokeScript_onNewBar_onNewQuote(quoteForAlertsCreated, false);
 			if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
 				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
 			}

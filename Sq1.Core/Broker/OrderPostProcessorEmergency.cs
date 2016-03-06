@@ -49,7 +49,7 @@ namespace Sq1.Core.Broker {
 			if (this.emergencyLocks.Contains(emergencyLock) == false) {
 				string msg = "no EmergencyLock to remove: multiple QUIK callbacks? if u can find [" + msgPost
 					+ "] earlier in thisOrder.Messages then it's ok";
-				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(filledEmergencyOrder, msg);
+				this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(filledEmergencyOrder, msg);
 				Assembler.PopupException(msg);
 				//throw new Exception(msg);
 				return;
@@ -59,7 +59,7 @@ namespace Sq1.Core.Broker {
 				this.emergencyLocks.Remove(emergencyLock);
 			}
 			OrderStateMessage omsgPost = new OrderStateMessage(filledEmergencyOrder, stateCompletedOrInterrupted, msgPost);
-			this.orderProcessor.UpdateOrderStateAndPostProcess(filledEmergencyOrder, omsgPost);
+			this.orderProcessor.UpdateOrderState_postProcess(filledEmergencyOrder, omsgPost);
 		}
 		public void AddLockAndCreateEmergencyReplacementAndResubmitFor(Order rejectedExitOrder) {
 			int emergencyCloseAttemptsMax = rejectedExitOrder.Alert.Bars.SymbolInfo.EmergencyCloseAttemptsMax;
@@ -77,7 +77,7 @@ namespace Sq1.Core.Broker {
 			bool isEmergencyClosingNow = (reason4lock != null);
 			if (isEmergencyClosingNow) {
 				msg = "ALREADY LOCKED (Rejected dupe?): " + msg;
-				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedExitOrder, msg);
+				this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(rejectedExitOrder, msg);
 				return;
 			}
 
@@ -123,18 +123,18 @@ namespace Sq1.Core.Broker {
 			if (millis > 0) {
 				string msg = "Emergency sleeping millis[" + millis + "] before " + changeState;
 				OrderStateMessage omsg = new OrderStateMessage(rejectedExitOrder, newState, msg);
-				this.orderProcessor.UpdateOrderStateAndPostProcess(rejectedExitOrder, omsg);
+				this.orderProcessor.UpdateOrderState_postProcess(rejectedExitOrder, omsg);
 				Thread.Sleep(millis);
 			}
 
 			string msg2 = changeState + " after having slept millis[" + millis + "]";
 			if (rejectedExitOrder.State == newState) {
 				// announced "sleeping xxx before"
-				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedExitOrder, msg2);
+				this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(rejectedExitOrder, msg2);
 			} else {
 				// didnt announce "sleeping xxx before"
 				OrderStateMessage omsg2 = new OrderStateMessage(rejectedExitOrder, newState, msg2);
-				this.orderProcessor.UpdateOrderStateAndPostProcess(rejectedExitOrder, omsg2);
+				this.orderProcessor.UpdateOrderState_postProcess(rejectedExitOrder, omsg2);
 			}
 			this.submitReplacementOrderFor(rejectedExitOrder);
 		}
@@ -143,7 +143,7 @@ namespace Sq1.Core.Broker {
 			if (replacement == null) {
 				string msgNoReplacement = "got NULL from CreateEmergencyCloseOrderInsteadOfRejected() for (" + rejectedOrderToReplace + "); ";
 				Assembler.PopupException(msgNoReplacement);
-				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedOrderToReplace, msgNoReplacement);
+				this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(rejectedOrderToReplace, msgNoReplacement);
 				return;
 			}
 
@@ -163,7 +163,7 @@ namespace Sq1.Core.Broker {
 				string serno = "#[" + replacement.EmergencyCloseAttemptSerno + "]/[" + emergencyCloseAttemptsMax + "]";
 				string msg_replacement = "This is an EMERGENCY replacement " + serno + " for order["
 					+ replacement.EmergencyReplacementForGUID + "]; SlippageIndex[" + replacement.SlippageIndex + "]";
-				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(replacement, msg_replacement);
+				this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(replacement, msg_replacement);
 
 				if (replacement.hasSlippagesDefined && replacement.noMoreSlippagesAvailable) {
 					addMessageNoMoreSlippagesAvailable(replacement);
@@ -177,17 +177,17 @@ namespace Sq1.Core.Broker {
 				string msg = "Scheduling SubmitOrdersThreadEntry [" + replacement.ToString() + "] slippageIndex["
 					+ replacement.SlippageIndex + "] through [" + replacement.Alert.DataSource.BrokerAdapter + "]";
 				OrderStateMessage omsg = new OrderStateMessage(replacement, OrderState.PreSubmit, msg);
-				this.orderProcessor.UpdateOrderStateAndPostProcess(replacement, omsg);
+				this.orderProcessor.UpdateOrderState_postProcess(replacement, omsg);
 
 				//ThreadPool.QueueUserWorkItem(new WaitCallback(replacement.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
 				//	new object[] { new List<Order>() { replacement } });
 				List<Order> replacementOrder_oneInTheList = new List<Order>() { replacement };
 				BrokerAdapter broker = replacement.Alert.DataSource.BrokerAdapter;
-				this.orderProcessor.SubmitToBrokerAdapter_inNewThreadOrStraight(replacementOrder_oneInTheList, broker);
+				this.orderProcessor.SubmitToBrokerAdapter_inNewThread(replacementOrder_oneInTheList, broker);
 			} catch (Exception e) {
 				Assembler.PopupException("Replacement wasn't submitted [" + replacement + "]", e);
 				OrderStateMessage omsg2 = new OrderStateMessage(replacement, OrderState.Error, e.Message);
-				this.orderProcessor.UpdateOrderStateAndPostProcess(replacement, omsg2);
+				this.orderProcessor.UpdateOrderState_postProcess(replacement, omsg2);
 			}
 		}
 		Order createEmergencyCloseOrderInsteadOfRejected(Order rejectedOrderToReplace) {
@@ -200,7 +200,7 @@ namespace Sq1.Core.Broker {
 				string msg = "Rejected[" + rejectedOrderToReplace + "] already has a"
 					+ " emergencyReplacement[" + emergencyReplacement + "] with State[" + emergencyReplacement.State + "];"
 					+ " ignoring rejection duplicates";
-				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(rejectedOrderToReplace, msg);
 				return null;
 			}
 			if (rejectedOrderToReplace.hasBrokerAdapter("CreateEmergencyCloseOrderInsteadOfRejected(): ") == false) {
@@ -220,7 +220,7 @@ namespace Sq1.Core.Broker {
 			DateTime serverTimeNow = rejectedOrderToReplace.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
 			emergencyReplacement.CreatedBrokerTime = serverTimeNow;
 
-			this.orderProcessor.DataSnapshot.OrderInsertNotifyGuiAsync(emergencyReplacement);
+			this.orderProcessor.DataSnapshot.OrderInsert_notifyGuiAsync(emergencyReplacement);
 			this.orderProcessor.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>(){rejectedOrderToReplace});
 	
 			return emergencyReplacement;
@@ -249,7 +249,7 @@ namespace Sq1.Core.Broker {
 			OrderPostProcessorEmergencyLock emergencyLock = new OrderPostProcessorEmergencyLock(order);
 			if (this.emergencyLocks.Contains(emergencyLock) == false) {
 				string msg = "who removed EmergencyLock before EmergencyCloseComplete?! " + emergencyLock.ToString();
-				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg);
+				this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(order, msg);
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
@@ -263,7 +263,7 @@ namespace Sq1.Core.Broker {
 				+ "]>= EmergencyCloseAttemptsMax[" + emergencyCloseAttemptsMax + "]"
 				+ " emergencyReplacement[" + rejectedExitOrder + "]";
 			OrderStateMessage omsg = new OrderStateMessage(rejectedExitOrder, OrderState.EmergencyCloseLimitReached, msg);
-			this.orderProcessor.UpdateOrderStateAndPostProcess(rejectedExitOrder, omsg);
+			this.orderProcessor.UpdateOrderState_postProcess(rejectedExitOrder, omsg);
 			throw new Exception(msg);
 		}
 		void throwLogIfEmergencyCloseInterrupted(Order replacementOrder) {
@@ -274,7 +274,7 @@ namespace Sq1.Core.Broker {
 			string msg = "InterruptedEmergencyLockReasons.Contains reason4lock[" + reason4lock + "] for replacementOrder[" + replacementOrder + "]";
 			Assembler.PopupException(msg);
 			OrderStateMessage newOrderStateRejected = new OrderStateMessage(replacementOrder, OrderState.EmergencyCloseUserInterrupted, msg);
-			this.orderProcessor.UpdateOrderStateAndPostProcess(replacementOrder, newOrderStateRejected);
+			this.orderProcessor.UpdateOrderState_postProcess(replacementOrder, newOrderStateRejected);
 			throw new Exception(msg);
 		}
 		void addMessageNoMoreSlippagesAvailable(Order order) {
@@ -285,7 +285,7 @@ namespace Sq1.Core.Broker {
 			Assembler.PopupException(msg2);
 			//orderProcessor.updateOrderStatusError(orderExecuted, OrderState.RejectedLimitReached, msg2);
 			OrderStateMessage newOrderStateRejected = new OrderStateMessage(order, OrderState.RejectedLimitReached, msg2);
-			this.orderProcessor.UpdateOrderStateAndPostProcess(order, newOrderStateRejected);
+			this.orderProcessor.UpdateOrderState_postProcess(order, newOrderStateRejected);
 		}
 	}
 }

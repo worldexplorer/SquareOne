@@ -70,10 +70,10 @@ namespace Sq1.Strategies.Demo {
 			if (this.Executor.Sequencer.IsRunningNow) return;
 			//DISPOSE_OR_TURN_TO_CLASS_VAR Font font = new Font(FontFamily.GenericMonospace, 8, FontStyle.Bold);
 			//base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", "test[" + test+ "]", font, Color.Brown, Color.Empty);
-			base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", "test["
+			base.Executor.ChartConditional_chartLabelDrawOnNextLineModify("labelTest", "test["
 				+ this.test.ValueCurrent + "]", this.fontConsolas8bold, Color.Brown, Color.Beige);
 		}
-		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
+		public override void OnNewQuoteOfStreamingBar_callback(Quote quote) {
 			//double slowStreaming = this.MAslow.BarClosesProxied.StreamingValue;
 			//double slowStatic = this.MAslow.ClosesProxyEffective.LastStaticValue;
 			//DateTime slowStaticDate = this.MAslow.ClosesProxyEffective.LastStaticDate;
@@ -100,7 +100,7 @@ namespace Sq1.Strategies.Demo {
 				return;
 			}
 		}
-		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
+		public override void OnBarStaticLastFormed_whileStreamingBarWithOneQuoteAlreadyAppended_callback(Bar barStaticFormed) {
 			//this.testBarAnnotations(barStaticFormed);
 			//Thread.Sleep(500);
 
@@ -226,34 +226,34 @@ namespace Sq1.Strategies.Demo {
 		}
 
 		
-		public override void OnAlertFilledCallback(Alert alertFilled) {
+		public override void OnAlertFilled_callback(Alert alertFilled) {
 			if (alertFilled.FilledBarIndex == 12) {
 				//Debugger.Break();
 			}
 		}
-		public override void OnAlertKilledCallback(Alert alertKilled) {
+		public override void OnAlertKilled_callback(Alert alertKilled) {
 			#if DEBUG
 			Debugger.Break();
 			#endif
 		}
-		public override void OnAlertNotSubmittedCallback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
+		public override void OnAlertNotSubmitted_callback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
 			#if DEBUG
 			Debugger.Break();
 			#endif
 		}
-		public override void OnPositionOpenedCallback(Position positionOpened) {
+		public override void OnPositionOpened_callback(Position positionOpened) {
 			//if (positionOpened.EntryFilledBarIndex == 37) {
 			//	#if DEBUG
 			//	Debugger.Break();
 			//	#endif
 			//}
 		}
-		public override void OnPositionOpenedPrototypeSlTpPlacedCallback(Position positionOpenedByPrototype) {
+		public override void OnPositionOpened_prototypeSlTpPlaced_callback(Position positionOpenedByPrototype) {
 			#if DEBUG
 			Debugger.Break();
 			#endif
 		}
-		public override void OnPositionClosedCallback(Position positionClosed) {
+		public override void OnPositionClosed_callback(Position positionClosed) {
 			//if (positionClosed.EntryFilledBarIndex == 37) {
 			//	Debugger.Break();
 			//}

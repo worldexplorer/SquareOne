@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
+using System.Threading.Tasks;
 
 using Sq1.Core.Execution;
 
@@ -23,7 +23,7 @@ namespace Sq1.Core.Broker {
 						"sequence initialized: [" + sequenced.State + "]=>[" + OrderState.SubmittingSequenced + "]"
 						+ " for [" + ordersOpen.Count + "] fellow ordersOpen"
 						+ " by [" + ordersClose.Count + "]ordersClose");
-					this.orderProcessor.UpdateOrderStateAndPostProcess(sequenced, omsg);
+					this.orderProcessor.UpdateOrderState_postProcess(sequenced, omsg);
 				}
 			}
 		}
@@ -42,7 +42,7 @@ namespace Sq1.Core.Broker {
 				}
 			}
 		}
-		public void OrderFilledUnlockSequenceSubmitOpening(Order orderClosed) {
+		public void OrderFilled_unlockSequence_submitOpening(Order orderClosed) {
 			List<List<Order>> lockingClosesFound = new List<List<Order>>();
 			lock (this.dictionaryLock) {
 				// if among all the keys we have an order, then we should have Open orders sequenced
@@ -59,7 +59,7 @@ namespace Sq1.Core.Broker {
 					// delete the list of locks from global dictionary
 					List<Order> ordersOpen = this.sequencerLockCloseOpen[lockingCloseFound];
 					this.sequencerLockCloseOpen.Remove(lockingCloseFound);
-					this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(orderClosed,
+					this.orderProcessor.AppendOrderMessage_propagate_checkThrowOrderNull(orderClosed,
 						"last CloseOpenSequence order filled, unlocking submission of [" 
 						+ ordersOpen.Count + "]ordersOpen");
 					if (ordersOpen.Count == 0) continue;
@@ -70,11 +70,19 @@ namespace Sq1.Core.Broker {
 							"sequence cleared: [" + submitting.State + "]=>[" + OrderState.Submitting + "]"
 							+ " for [" + ordersOpen.Count + "] fellow ordersOpen"
 							+ " by orderClose=[" + orderClosed + "]");
-						this.orderProcessor.UpdateOrderStateAndPostProcess(submitting, omsg);
+						this.orderProcessor.UpdateOrderState_postProcess(submitting, omsg);
 					}
-					BrokerAdapter broker = ordersOpen[0].Alert.DataSource.BrokerAdapter;
-					ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntryDelayed),
-						new object[] { ordersOpen, ordersOpen[0].Alert.Bars.SymbolInfo.SequencedOpeningAfterClosedDelayMillis });
+
+					Alert alertFirst = ordersOpen[0].Alert;
+					BrokerAdapter broker = alertFirst.DataSource.BrokerAdapter;
+					//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrders_threadEntry_delayed),
+					//    new object[] { ordersOpen, ordersOpen[0].Alert.Bars.SymbolInfo.SequencedOpeningAfterClosedDelayMillis });
+
+					int millis = alertFirst.Bars.SymbolInfo.SequencedOpeningAfterClosedDelayMillis;
+					Task taskEmittingOrders = new Task(delegate {
+						broker.SubmitOrders_threadEntry_delayed(ordersOpen, millis);
+					});
+					taskEmittingOrders.Start();
 				}
 			}
 		}

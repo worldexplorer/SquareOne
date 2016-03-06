@@ -43,7 +43,7 @@ namespace Sq1.Core.Streaming {
 		public override void ConsumeQuoteOfStreamingBar(Quote quote) {
 			this.replaceStreamingBar(quote);
 		}
-		public override void ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated_WILL_BE_NULL) {
+		public override void ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated_WILL_BE_NULL) {
 			string millisSavingTook;
 			int barsSaved = this.dataSource.BarAppend_orReplaceLast(barLastFormed, out millisSavingTook);
 			string msg = millisSavingTook + "; DataSource[" + this.dataSource.Name + "] received barLastFormed[" + barLastFormed + "] from streaming";

@@ -312,7 +312,7 @@ namespace Sq1.Core.Indicators {
 			ret = true;
 			return ret;
 		}
-		public virtual void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar newStaticBar) {
+		public virtual void OnBarStaticLastFormed_whileStreamingBarWithOneQuoteAlreadyAppended(Bar newStaticBar) {
 			string msig = " //OnNewStaticBarFormed(" + newStaticBar.ToString() + ")";
 			bool canRunCalculation = this.canRunCalculation(true);
 			if (canRunCalculation == false) {

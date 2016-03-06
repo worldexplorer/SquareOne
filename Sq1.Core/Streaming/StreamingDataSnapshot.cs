@@ -293,11 +293,11 @@ namespace Sq1.Core.Streaming {
 			}
 			symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(symbol);
 			//v2
-			price = symbolInfo.AlignAlertToPriceLevelSimplified(price, direction, MarketLimitStop.Market);
+			price = symbolInfo.Alert_alignToPriceLevel_simplified(price, direction, MarketLimitStop.Market);
 
 			//v1
 			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_DECEMBER_15TH_2014
-			double price1 = symbolInfo.AlignOrder_toPriceLevel(price, direction, MarketLimitStop.Market);
+			double price1 = symbolInfo.Order_alignToPriceLevel(price, direction, MarketLimitStop.Market);
 			if (price1 != price) {
 				string msg3 = "FIX_DEFINITELY_DIFFERENT_POSTPONE_TILL_ORDER_EXECUTOR_BACK_FOR_QUIK_BROKER";
 				Assembler.PopupException(msg3 + msig, null);

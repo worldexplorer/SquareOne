@@ -221,13 +221,13 @@ namespace Sq1.Core.StrategyBase {
 				// otherwize GetHostPanelForIndicator created a new one for an indicator with default Indicator parameters;
 				// example: MultiSplitterPropertiesByPanelName["ATR (Period:9[1..11/2])"] exists, while default Period for ATR is 5 => new PanelIndicator will be created
 				// final goal is to avoid (splitterPropertiesByPanelName.Count != this.panels.Count) in SplitterPropertiesByPanelNameSet() and (splitterFound == null)  
-				HostPanelForIndicator priceOrItsOwnPanel = this.Executor.ChartConditionalHostPanelForIndicatorGet(indicatorInstance);
+				HostPanelForIndicator priceOrItsOwnPanel = this.Executor.ChartConditional_hostPanelForIndicatorGet(indicatorInstance);
 				indicatorInstance.Initialize(priceOrItsOwnPanel);
 			}
 		}
 		#endregion
 
-		public void SwitchToDefaultContextByAbsorbingScriptAndIndicatorParametersFromSelfCloneConstructed() {
+		public void SwitchToDefaultContext_byAbsorbingScriptAndIndicatorParameters_fromSelfCloneConstructed() {
 			object selfCloneConstructed = Activator.CreateInstance(this.GetType());	//default ctor invoked where developer is supposed to add ScriptAndIndicatorParameters into new This
 			Script clone = selfCloneConstructed as Script;
 			if (clone == null) {
