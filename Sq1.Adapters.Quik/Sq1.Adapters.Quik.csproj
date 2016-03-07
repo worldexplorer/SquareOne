@@ -237,6 +237,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="QuikSetup.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\imgQuikStaticProvider.bmp" />
     <Content Include="Resources\imgQuikStreamingProvider.bmp" />
     <Content Include="Sq1.Adapters.Quik-LICENSE.txt">
