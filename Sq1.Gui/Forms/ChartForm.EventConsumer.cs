@@ -165,7 +165,7 @@ namespace Sq1.Gui.Forms {
 					string msg = "CHART_WITHOUT_STRATEGY_IS_ALWAYS_STREAMING_I_JUST_IGNORED??_BUTTON_UNCLICK";
 				}
 				//WHO_ELSE_NEEDS_IT? this.RaiseStreamingButtonStateChanged();
-				this.PropagateSelectorsDisabledIfStreaming_forCurrentChart();
+				this.PropagateSelectors_disabledIfStreaming_forCurrentChart();
 			} catch (Exception ex) {
 				Assembler.PopupException(ex.Message);
 			}
@@ -439,7 +439,7 @@ namespace Sq1.Gui.Forms {
 					Assembler.PopupException(msg);
 				}
 				this.populateCtxMniBars_streamingConnectionState_orange();
-				this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
+				this.PrintQuoteTimestamp_onStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
 				if (nowStreaming != this.mniSubscribedToStreamingAdapterQuotesBars.Checked) {
 					string msg = "MUST_BE_SYNCHRONIZED_BUT_STAYS_UNSYNC nowStreaming[" + nowStreaming
 						+ "] != this.mniSubscribedToStreamingAdapterQuotesBars.Checked[" + this.mniSubscribedToStreamingAdapterQuotesBars.Checked + "]";
@@ -520,7 +520,7 @@ namespace Sq1.Gui.Forms {
 			}
 			bool guiHasTime = this.ChartFormManager.Executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
 			if (guiHasTime == false) return;
-			this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
+			this.PrintQuoteTimestamp_onStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
 		}
 
 		void chartControl_OnPumpPaused(object sender, EventArgs e) {
@@ -533,5 +533,33 @@ namespace Sq1.Gui.Forms {
 		void mniEditBars_Click(object sender, EventArgs e) {
 			this.raiseOnBarsEditorClicked();
 		}
+
+
+		#region who architected click events in WindowsForms??
+		void btnQuoteTimingRealtime_Click(object sender, EventArgs e) {
+			this.btnQuoteTimingRealtime.Visible = !this.btnQuoteTimingRealtime.Visible;
+		}
+		void statusStrip_Click(object sender, EventArgs e) {
+			this.btnQuoteTimingRealtime.Visible = !this.btnQuoteTimingRealtime.Visible;
+		}
+		void statusStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
+			return;
+			// only restores visibility of btnQuoteTimingRealtime if cicked on non-btnQuoteTimingRealtime unvisible TSI items
+			if (this.btnQuoteTimingRealtime.Visible) return;
+
+			bool looksLikeIclickedOnStripBar = false;
+			if (sender == this.btnQuoteTimingRealtime) {
+				string msg = "already handled in btnQuoteTimingRealtime_Click(object sender, EventArgs e)";
+				return;
+			}
+			if (sender == this.btnQuoteTimingRealtime) {
+				looksLikeIclickedOnStripBar = true;
+			} else {
+				string msg = "any other CTXes and BTNs are not perceiving click on the toolstrip and NOT restoring btnQuoteTimingRealtime";
+			}
+			if (looksLikeIclickedOnStripBar == false) return;
+			this.btnQuoteTimingRealtime.Visible = true;
+		}
+		#endregion
 	}
 }

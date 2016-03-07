@@ -144,7 +144,7 @@ namespace Sq1.Core.Streaming {
 		void pusherEntryPoint() {
 			string msig = "THREW_PRIOR_TO_INITIALIZATION_pusherEntryPoint()";
 			if (this.bufferPusherThreadId == 0) {
-				base.SetThreadName();
+				//INVOKE_ME_LATER_TO_CONTAIN_CONSUMER_NAMES_AS_WELL base.SetThreadName();
 				this.bufferPusherThreadId = Thread.CurrentThread.ManagedThreadId;
 			} else {
 				string msg = "DID_YOU_REACTIVATE I_WANT_THIS.BUFFERPUSHERTHREADID_TO_GET_SET?";
@@ -159,14 +159,22 @@ namespace Sq1.Core.Streaming {
 					bool livesimThread = this.Channel.ReasonIwasCreated_propagatedFromDistributor.Contains("LIVESIM_STARTED");
 					msig = this.ToString();
 
+					#region OPTIMIZE_ME
 					if (this.UpdateThreadNameAfterMaxConsumersSubscribed) {
+						string msg = "looks like only for Solidifier Thread (adding more symbols will be reflected in ThreadName after appRestart)";
 						base.SetThreadName();
 						this.UpdateThreadNameAfterMaxConsumersSubscribed = false;
 					} else {
-						if (chartDiThread) {
+						if (chartDiThread || livesimThread) {
+							string msg = "excessive calls here, poor SetThreadName() has to check if ThreadName != null";
 							base.SetThreadName();
+						} else if (solidifThread) {
+							string msg = "ThreadName already set with this.UpdateThreadNameAfterMaxConsumersSubscribed";
+						} else {
+							string msg = "do you have an effective filtering criteria";
 						}
 					}
+					#endregion
 
 					//DEBUGGING_100%CPU#1
 					Stopwatch mustBeHeartBeatInterval = new Stopwatch();

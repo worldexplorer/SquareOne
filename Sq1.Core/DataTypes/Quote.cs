@@ -66,7 +66,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	string		Bid_formatted	{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Bid); } }
 		[JsonProperty]	public	string		Size_formatted	{ get { return string.Format("{0:" + this.VolumeFormat + "}", this.Size); } }
 		
-		[JsonIgnore]	public	string		StreamingButtonIdent { get {
+		[JsonIgnore]	public	string		QuoteTiming_localRemoteLeft { get {
 			StringBuilder sb = new StringBuilder();
 			sb.Append(" #");
 			sb.Append(this.IntraBarSerno.ToString("000"));

@@ -419,7 +419,7 @@ namespace Sq1.Core.Streaming {
 			if (this.StreamingAdapter.QuotePumpSeparatePushingThreadEnabled) {
 				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.UpdateThreadNameAfterMaxConsumersSubscribed = true;
 				// SELF_MANAGED_BY_CHANNEL channel.QuoteQueue.PusherUnpause();
-				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.SetThreadName();
+				//DONT_SET_GUI_THREAD_NAME__FLAG_IS_SET_WILL_SET_THREAD_NAME_FROM_WITHIN channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.SetThreadName();
 			}
 		}
 

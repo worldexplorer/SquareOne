@@ -308,6 +308,9 @@ namespace Sq1.Gui {
 			//DataSourceEditorForm.Instance.DataSourceEditorControl.Initialize(e.DataSource);
 			DataSourceEditorForm.Instance.Initialize(e.DataSource.Name, this.mainForm.DockPanel);
 			try {
+				if (DataSourceEditorForm.Instance.IsCoveredOrAutoHidden) {
+					DataSourceEditorForm.Instance.ShowPopupSwitchToGuiThreadRunDelegateInIt();
+				}
 				//DataSourceEditorForm.Instance.ShowAsDocumentTabNotPane(this.mainForm.DockPanel);
 				DataSourceEditorForm.Instance.Show(this.mainForm.DockPanel);		// as DockRight (Designer)
 			} catch (Exception exc) {

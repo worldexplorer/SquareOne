@@ -144,15 +144,22 @@ namespace Sq1.Gui.Forms {
 			}
 			return ret;
 		}
-		public void PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(Quote quote) {
+		public void PrintQuoteTimestamp_onStrategyTriggeringButton_beforeExecution_switchToGuiThread(Quote quote) {
 			if (base.InvokeRequired) {
 				//DEADLOCK#1 - happens when DdeMessagePump thread wants to switch to GUI thread; switching to GUI thread via trampoline Task releases this method from held in GuiMessageQueue
 				//Task deadlockOtherwize = new Task(delegate {
-					base.BeginInvoke((MethodInvoker)delegate { this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(quote); });
+					base.BeginInvoke((MethodInvoker)delegate { this.PrintQuoteTimestamp_onStrategyTriggeringButton_beforeExecution_switchToGuiThread(quote); });
 				//});
 				//deadlockOtherwize.Start();
 				return;
 			}
+			//v1 I_NEED_MY_CONTROLS_VISIBLE_AT_ALL_TIMES button gets too wide and gets hidden when ChartForm is narrow
+			string btnText = this.ChartFormManager.StreamingButtonIdent;
+			//if (quote != null) btnText += quote.StreamingButtonIdent;
+			this.BtnStreamingTriggersScript.Text = btnText;
+
+			//v2 separate label that gets squeezed
+			//if (this.btnQuoteTimingRealtime.Visible == false) return;
 			if (quote == null) {
 				if (this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter == null) {
 					string msg = "I_REFUSE_TO_PRINT_QUOTE_TIMESTAMP this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter==null";
@@ -166,9 +173,8 @@ namespace Sq1.Gui.Forms {
 				}
 				quote = this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuote_getForSymbol(this.ChartFormManager.Executor.Bars.Symbol);
 			}
-			string btnText = this.ChartFormManager.StreamingButtonIdent;
-			if (quote != null) btnText += quote.StreamingButtonIdent;
-			this.BtnStreamingTriggersScript.Text = btnText;
+			if (quote == null) return;
+			this.btnQuoteTimingRealtime.Text = quote.QuoteTiming_localRemoteLeft;
 		}
 		public void PopulateBtnStreamingTriggersScript_afterBarsLoaded() {
 			DataSource ds = this.ChartFormManager.Executor.DataSource_fromBars;
@@ -177,7 +183,7 @@ namespace Sq1.Gui.Forms {
 				this.BtnStreamingTriggersScript.Text = this.ChartFormManager.StreamingButtonIdent;
 				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT Subscribed: edit DataSource > attach StreamingAdapter";
 			} else {
-				this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
+				this.PrintQuoteTimestamp_onStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
 			}
 			// "AfterBarsLoaded" implies Executor.SetBars() has already initialized this.ChartFormManager.Executor.DataSource
 			this.populateCtxMniBars_streamingConnectionState_orange();
@@ -394,9 +400,9 @@ namespace Sq1.Gui.Forms {
 				}
 			}
 			this.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
-			this.PropagateSelectorsDisabledIfStreaming_forCurrentChart();
+			this.PropagateSelectors_disabledIfStreaming_forCurrentChart();
 		}
-		public void PropagateSelectorsDisabledIfStreaming_forCurrentChart() {
+		public void PropagateSelectors_disabledIfStreaming_forCurrentChart() {
 			Strategy strategyClicked = this.ChartFormManager.Strategy;
 			if (strategyClicked == null) return;
 
@@ -417,7 +423,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeDollarsEachTradeConstant	.Enabled = enableForNonStreaming;
 			this.mnitlbPositionSizeSharesConstantEachTrade	.Enabled = enableForNonStreaming;
 
-			this.ctxStrokesPopulateOrSelectCurrent();
+			this.ctxStrokesPopulate_orSelectCurrent();
 		}
 
 		public void Initialize(Strategy strategy = null) {
@@ -441,6 +447,10 @@ namespace Sq1.Gui.Forms {
 		public void AppendReportersMenuItems(ToolStripItem[] toolStripItems) {
 			this.ctxStrategy.Items.Add(this.TssReportersBelowMe);	// if not added then we didn't initialize!
 			this.ctxStrategy.Items.AddRange(toolStripItems);
+		}
+
+		private void lblEmptySpring_catchingClickEvents_Click(object sender, EventArgs e) {
+
 		}
 	}
 }

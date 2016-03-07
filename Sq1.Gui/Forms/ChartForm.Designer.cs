@@ -69,6 +69,7 @@ namespace Sq1.Gui.Forms {
 			this.TsiProgressBarETA = new Sq1.Widgets.ToolStripImproved.ToolStripItemProgressBarETA();
 			this.BtnStreamingTriggersScript = new System.Windows.Forms.ToolStripButton();
 			this.BtnStrategyEmittingOrders = new System.Windows.Forms.ToolStripButton();
+			this.btnQuoteTimingRealtime = new System.Windows.Forms.ToolStripButton();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolTip_fixToShowAbortOnProgressBar = new System.Windows.Forms.ToolTip(this.components);
 			this.ChartControl = new Sq1.Charting.ChartControl();
@@ -95,7 +96,8 @@ namespace Sq1.Gui.Forms {
             this.mnitlbPositionSizeSharesConstantEachTrade,
             this.mnitlbPositionSizeDollarsEachTradeConstant});
 			this.ctxBacktest.Name = "ctxBacktest";
-			this.ctxBacktest.Size = new System.Drawing.Size(429, 270);
+			this.ctxBacktest.OwnerItem = this.DdbBacktest;
+			this.ctxBacktest.Size = new System.Drawing.Size(429, 248);
 			this.ctxBacktest.Opening += new System.ComponentModel.CancelEventHandler(this.ctxBacktest_Opening);
 			// 
 			// mniStrokes
@@ -128,7 +130,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbSpreadGeneratorPct.InputFieldWidth = 50;
 			this.mnitlbSpreadGeneratorPct.Name = "mnitlbSpreadGeneratorPct";
 			this.mnitlbSpreadGeneratorPct.OffsetTop = 0;
-			this.mnitlbSpreadGeneratorPct.Size = new System.Drawing.Size(236, 21);
+			this.mnitlbSpreadGeneratorPct.Size = new System.Drawing.Size(231, 21);
 			this.mnitlbSpreadGeneratorPct.TextLeft = "Set Spread as";
 			this.mnitlbSpreadGeneratorPct.TextLeftOffsetX = 0;
 			this.mnitlbSpreadGeneratorPct.TextLeftWidth = 78;
@@ -216,7 +218,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldWidth = 50;
 			this.mnitlbPositionSizeSharesConstantEachTrade.Name = "mnitlbPositionSizeSharesConstantEachTrade";
 			this.mnitlbPositionSizeSharesConstantEachTrade.OffsetTop = 0;
-			this.mnitlbPositionSizeSharesConstantEachTrade.Size = new System.Drawing.Size(175, 21);
+			this.mnitlbPositionSizeSharesConstantEachTrade.Size = new System.Drawing.Size(140, 21);
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextLeft = "Shares";
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextLeftOffsetX = 0;
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextLeftWidth = 43;
@@ -238,7 +240,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldWidth = 50;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.Name = "mnitlbPositionSizeDollarsEachTradeConstant";
 			this.mnitlbPositionSizeDollarsEachTradeConstant.OffsetTop = 0;
-			this.mnitlbPositionSizeDollarsEachTradeConstant.Size = new System.Drawing.Size(175, 21);
+			this.mnitlbPositionSizeDollarsEachTradeConstant.Size = new System.Drawing.Size(140, 21);
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextLeft = "$$ Each Trade";
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextLeftOffsetX = 0;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextLeftWidth = 82;
@@ -269,7 +271,7 @@ namespace Sq1.Gui.Forms {
             this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim});
 			this.MniShowLivesim.Name = "MniShowLivesim";
 			this.MniShowLivesim.ShortcutKeys = System.Windows.Forms.Keys.F10;
-			this.MniShowLivesim.Size = new System.Drawing.Size(284, 22);
+			this.MniShowLivesim.Size = new System.Drawing.Size(283, 22);
 			this.MniShowLivesim.Text = "Show Live Simulator";
 			this.MniShowLivesim.Click += new System.EventHandler(this.mniShowLivesim_Click);
 			// 
@@ -284,17 +286,17 @@ namespace Sq1.Gui.Forms {
 			// toolStripSeparator3
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(281, 6);
+			this.toolStripSeparator3.Size = new System.Drawing.Size(280, 6);
 			// 
 			// toolStripSeparator9
 			// 
 			this.toolStripSeparator9.Name = "toolStripSeparator9";
-			this.toolStripSeparator9.Size = new System.Drawing.Size(281, 6);
+			this.toolStripSeparator9.Size = new System.Drawing.Size(280, 6);
 			// 
 			// mniStrategyRemove
 			// 
 			this.mniStrategyRemove.Name = "mniStrategyRemove";
-			this.mniStrategyRemove.Size = new System.Drawing.Size(284, 22);
+			this.mniStrategyRemove.Size = new System.Drawing.Size(283, 22);
 			this.mniStrategyRemove.Text = "Remove Strategy From Chart";
 			this.mniStrategyRemove.Click += new System.EventHandler(this.mniStrategyRemove_Click);
 			// 
@@ -303,7 +305,7 @@ namespace Sq1.Gui.Forms {
 			this.mniStrategyName.Enabled = false;
 			this.mniStrategyName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.mniStrategyName.Name = "mniStrategyName";
-			this.mniStrategyName.Size = new System.Drawing.Size(284, 22);
+			this.mniStrategyName.Size = new System.Drawing.Size(283, 22);
 			this.mniStrategyName.Text = "TwoMAsCompiled :: myStrategies.DLL";
 			// 
 			// MniShowSourceCodeEditor
@@ -311,7 +313,7 @@ namespace Sq1.Gui.Forms {
 			this.MniShowSourceCodeEditor.CheckOnClick = true;
 			this.MniShowSourceCodeEditor.Name = "MniShowSourceCodeEditor";
 			this.MniShowSourceCodeEditor.ShortcutKeys = System.Windows.Forms.Keys.F4;
-			this.MniShowSourceCodeEditor.Size = new System.Drawing.Size(284, 22);
+			this.MniShowSourceCodeEditor.Size = new System.Drawing.Size(283, 22);
 			this.MniShowSourceCodeEditor.Text = "Show Source Code Editor";
 			this.MniShowSourceCodeEditor.Click += new System.EventHandler(this.mniShowSourceCodeEditor_Click);
 			// 
@@ -320,7 +322,7 @@ namespace Sq1.Gui.Forms {
 			this.MniShowSequencer.CheckOnClick = true;
 			this.MniShowSequencer.Name = "MniShowSequencer";
 			this.MniShowSequencer.ShortcutKeys = System.Windows.Forms.Keys.F8;
-			this.MniShowSequencer.Size = new System.Drawing.Size(284, 22);
+			this.MniShowSequencer.Size = new System.Drawing.Size(283, 22);
 			this.MniShowSequencer.Text = "Show Sequencer";
 			this.MniShowSequencer.Click += new System.EventHandler(this.mniShowSequencer_Click);
 			// 
@@ -329,7 +331,7 @@ namespace Sq1.Gui.Forms {
 			this.MniShowCorrelator.CheckOnClick = true;
 			this.MniShowCorrelator.Name = "MniShowCorrelator";
 			this.MniShowCorrelator.ShortcutKeys = System.Windows.Forms.Keys.F9;
-			this.MniShowCorrelator.Size = new System.Drawing.Size(284, 22);
+			this.MniShowCorrelator.Size = new System.Drawing.Size(283, 22);
 			this.MniShowCorrelator.Text = "Show Correlator";
 			this.MniShowCorrelator.Click += new System.EventHandler(this.mniShowCorrelator_Click);
 			// 
@@ -349,28 +351,28 @@ namespace Sq1.Gui.Forms {
             this.MniShowSourceCodeEditor});
 			this.ctxStrategy.Name = "ctxPositionSize";
 			this.ctxStrategy.OwnerItem = this.DdbStrategy;
-			this.ctxStrategy.Size = new System.Drawing.Size(285, 214);
+			this.ctxStrategy.Size = new System.Drawing.Size(284, 214);
 			this.ctxStrategy.Opening += new System.ComponentModel.CancelEventHandler(this.ctxStrategy_Opening);
 			// 
 			// mniStrategyContextLoad
 			// 
 			this.mniStrategyContextLoad.Enabled = false;
 			this.mniStrategyContextLoad.Name = "mniStrategyContextLoad";
-			this.mniStrategyContextLoad.Size = new System.Drawing.Size(284, 22);
+			this.mniStrategyContextLoad.Size = new System.Drawing.Size(283, 22);
 			this.mniStrategyContextLoad.Text = "NYI Load Script Context...";
 			// 
 			// MniShowSprintMonitor
 			// 
 			this.MniShowSprintMonitor.Enabled = false;
 			this.MniShowSprintMonitor.Name = "MniShowSprintMonitor";
-			this.MniShowSprintMonitor.Size = new System.Drawing.Size(284, 22);
+			this.MniShowSprintMonitor.Size = new System.Drawing.Size(283, 22);
 			this.MniShowSprintMonitor.Text = "Show Sprint Monitor";
 			// 
 			// MniShowExecution
 			// 
 			this.MniShowExecution.Enabled = false;
 			this.MniShowExecution.Name = "MniShowExecution";
-			this.MniShowExecution.Size = new System.Drawing.Size(284, 22);
+			this.MniShowExecution.Size = new System.Drawing.Size(283, 22);
 			this.MniShowExecution.Text = "Show Order Execution";
 			// 
 			// DdbStrategy
@@ -394,14 +396,17 @@ namespace Sq1.Gui.Forms {
             this.DdbBacktest,
             this.TsiProgressBarETA,
             this.BtnStreamingTriggersScript,
-            this.BtnStrategyEmittingOrders});
+            this.BtnStrategyEmittingOrders,
+            this.btnQuoteTimingRealtime});
 			this.statusStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
 			this.statusStrip.Location = new System.Drawing.Point(0, 318);
 			this.statusStrip.Name = "statusStrip";
-			this.statusStrip.Size = new System.Drawing.Size(840, 22);
+			this.statusStrip.Size = new System.Drawing.Size(833, 22);
 			this.statusStrip.SizingGrip = false;
 			this.statusStrip.TabIndex = 4;
 			this.statusStrip.Text = "statusStrip1";
+			this.statusStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.statusStrip_ItemClicked);
+			this.statusStrip.Click += new System.EventHandler(this.statusStrip_Click);
 			// 
 			// DdbBars
 			// 
@@ -432,7 +437,6 @@ namespace Sq1.Gui.Forms {
             this.mnitlbShowLastBars,
             this.mniShowBarRange});
 			this.ctxBars.Name = "ctxScaleInterval";
-			this.ctxBars.OwnerItem = this.DdbBars;
 			this.ctxBars.Size = new System.Drawing.Size(252, 322);
 			this.ctxBars.Opening += new System.ComponentModel.CancelEventHandler(this.ctxBars_Opening);
 			// 
@@ -698,6 +702,16 @@ namespace Sq1.Gui.Forms {
 				"rs are routed to MarketSimStreaming through BacktestBrokerAdapter";
 			this.BtnStrategyEmittingOrders.Click += new System.EventHandler(this.btnStrategyEmittingOrders_Click);
 			// 
+			// btnQuoteTimingRealtime
+			// 
+			this.btnQuoteTimingRealtime.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.btnQuoteTimingRealtime.Name = "btnQuoteTimingRealtime";
+			this.btnQuoteTimingRealtime.Size = new System.Drawing.Size(170, 20);
+			this.btnQuoteTimingRealtime.Text = "23:01:42.334 10:33:02.222 15:00";
+			this.btnQuoteTimingRealtime.ToolTipText = "ON=>Orders are submitted to BrokerAdapter you chose in your DataSource, OFF=>Orde" +
+				"rs are routed to MarketSimStreaming through BacktestBrokerAdapter";
+			this.btnQuoteTimingRealtime.Click += new System.EventHandler(this.btnQuoteTimingRealtime_Click);
+			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
@@ -719,14 +733,14 @@ namespace Sq1.Gui.Forms {
 			this.ChartControl.Padding = new System.Windows.Forms.Padding(0, 0, 0, 22);
 			this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished = true;
 			this.ChartControl.RangeBarCollapsed = false;
-			this.ChartControl.Size = new System.Drawing.Size(840, 340);
+			this.ChartControl.Size = new System.Drawing.Size(833, 340);
 			this.ChartControl.TabIndex = 0;
 			// 
 			// ChartForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(840, 340);
+			this.ClientSize = new System.Drawing.Size(833, 340);
 			this.Controls.Add(this.statusStrip);
 			this.Controls.Add(this.ChartControl);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -802,5 +816,6 @@ namespace Sq1.Gui.Forms {
 		public System.Windows.Forms.ToolStripMenuItem MniShowExecution;
 		public System.Windows.Forms.ToolStripMenuItem MniShowSprintMonitor;
 		private System.Windows.Forms.ToolStripMenuItem mniEditBars;
+		public System.Windows.Forms.ToolStripButton btnQuoteTimingRealtime;
 	}
 }

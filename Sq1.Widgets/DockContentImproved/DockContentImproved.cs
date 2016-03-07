@@ -210,10 +210,11 @@ namespace Sq1.Widgets {
 		public bool IsFloatingWindow	{ get { return base.Visible && base.DockState == DockState.Float; } }
 		public bool IsInDocumentArea	{ get { return base.Visible && base.DockState == DockState.Document; } }
 		public bool IsDocked			{ get { return base.Visible && DockHelper.IsDockWindowState(base.DockState); } }
-		public bool IsDockedAutoHide	{ get { return base.Visible && DockHelper.IsDockStateAutoHide(base.DockState); } }
+		public bool IsDockedAutoHide	{ get { return DockHelper.IsDockStateAutoHide(base.DockState); } }
 		public bool IsCoveredOrAutoHidden { get {
-				if (base.Visible == false) return false;
-				if (this.IsDockedAutoHide) return base.IsHidden;
+				//if (base.Visible == false) return false;
+				//if (this.IsDockedAutoHide) return base.IsHidden;	// returns false, like it's not hidden; while it IS autoHidden
+				if (this.IsDockedAutoHide) return true;
 				if (this.IsDocked) {
 					string msg = "go find out if I'm covered by other forms docked into the same area"
 						+ " ; meanwhile I'll report I'm not covered so you can click ChartForm>HIDESourceCodeEditor";

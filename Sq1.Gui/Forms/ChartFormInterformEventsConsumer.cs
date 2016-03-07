@@ -196,7 +196,7 @@ namespace Sq1.Gui.Forms {
 			
 			//this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = false;
 			//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
-			this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreaming_forCurrentChart();
+			this.chartFormManager.ChartForm.PropagateSelectors_disabledIfStreaming_forCurrentChart();
 			// CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END
 			this.chartFormManager.ChartForm.AbsorbContextBarsToGui();
 		}
@@ -244,7 +244,7 @@ namespace Sq1.Gui.Forms {
 				this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = true;
 				//this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = false;
 				//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
-				this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreaming_forCurrentChart();
+				this.chartFormManager.ChartForm.PropagateSelectors_disabledIfStreaming_forCurrentChart();
 			}
 			// HACK FOR CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END COPYPASTE
 
@@ -276,7 +276,7 @@ namespace Sq1.Gui.Forms {
 			
 			//this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = true;
 			//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = true;
-			this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreaming_forCurrentChart();
+			this.chartFormManager.ChartForm.PropagateSelectors_disabledIfStreaming_forCurrentChart();
 			this.chartFormManager.ChartForm.AbsorbContextBarsToGui();
 
 			this.chartFormManager.OnBacktestedOrLivesimmed();
