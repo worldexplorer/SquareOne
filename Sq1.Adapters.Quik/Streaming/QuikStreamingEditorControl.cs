@@ -64,7 +64,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 				}
 			}
 	
-			string btnTxtMustBe = this.quikStreamingAdapter.DdeServerStartStopOppositeAction;
+			string btnTxtMustBe = this.quikStreamingAdapter.DdeServerStartStop_oppositeAction;
 			if (this.cbxStartDde.Text == btnTxtMustBe) return;
 				this.cbxStartDde.Text  = btnTxtMustBe;
 		}

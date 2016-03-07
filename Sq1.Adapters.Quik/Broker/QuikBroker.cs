@@ -18,7 +18,7 @@ using Sq1.Adapters.Quik.Broker.Terminal;
 
 namespace Sq1.Adapters.Quik.Broker {
 	public partial class QuikBroker : BrokerAdapter {
-		[JsonIgnore]	public	QuikTerminal	QuikTerminal			{ get; protected set; }
+		[JsonIgnore]	public	QuikDllConnector	QuikDllConnector			{ get; protected set; }
 		[JsonProperty]	public	string			QuikFolder				{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
 		[JsonProperty]	public	string			QuikDllName				{ get; protected set; }
 		[JsonIgnore]	public	string			QuikDllAbsPath			{ get {return Path.Combine(this.QuikFolder, this.QuikDllName);} }
@@ -32,15 +32,24 @@ namespace Sq1.Adapters.Quik.Broker {
 				this.AccountMicex.Initialize(this);
 			}
 		}
+		[JsonProperty]	public	bool			GoRealDontUseOwnLivesim	{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
+
+		[JsonIgnore]	public	bool			IsConnectedToTerminal	{ get { return this.QuikDllConnector != null && this.QuikDllConnector.DllConnected; } }
+		[JsonIgnore]	public	string			DllConnectionStatus_oppositeAction { get {
+			return this.IsConnectedToTerminal ? "Disconnect from DLL (now connected)" : "Connect to DLL (now disconnected)";
+			} }
 
 		public QuikBroker() : base() {		// base() will be invoked anyways by .NET, just wanna make it obvious (reminder)
-			base.Name			= "QuikBroker-DllScanned";
-			base.Icon			= (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
-			this.QuikTerminal	= new QuikTerminal(this);
-			this.QuikDllName	= this.QuikTerminal.DllName;
+			base.Name				= "QuikBroker-DllScanned-NOT_INITIALIZED";
+			base.Icon				= (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
+			this.QuikDllConnector	= new QuikDllConnector(this);
+			this.QuikDllName		= this.QuikDllConnector.DllName;
 
 			this.AccountMicexAutoPopulated = new Account("QUIK_MICEX_ACCTNR_NOT_SET", -1001);
 			base.OrderCallbackDupesChecker = new OrderCallbackDupesCheckerQuik(this);
+
+			this.QuikFolder					= @"C:\Program Files (x86)\QUIK-Junior";
+			this.ReconnectTimeoutMillis		= 3000;
 		}
 		public override void InitializeDataSource_inverse(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
 			base.Name = "QuikBroker";
@@ -56,7 +65,7 @@ namespace Sq1.Adapters.Quik.Broker {
 		}
 		public override BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.BrokerEditorInitializeHelper(dataSourceEditor);
-			base.BrokerEditorInstance = new BrokerQuikEditor(this, dataSourceEditor);
+			base.BrokerEditorInstance = new QuikBrokerEditorControl(this, dataSourceEditor);
 			return base.BrokerEditorInstance;
 		}
 
@@ -100,6 +109,7 @@ namespace Sq1.Adapters.Quik.Broker {
 				Assembler.PopupException(msg + msig, exc);
 			}
 		}
+
 		public void CallbackOrderStateReceivedQuik(OrderState newOrderStateReceived, string GUID, long SernoExchange,
 												string classCode, string secCode, double fillPrice, int fillQnty) {
 			string msig = "fillPrice[" + fillPrice + "] fillQnty[" + fillQnty + "]" 
@@ -154,10 +164,11 @@ namespace Sq1.Adapters.Quik.Broker {
 			//base.CallbackOrderStateReceived(order);
 		}
 
-		//[JsonIgnore]	[JsonIgnore]	[JsonIgnore]	
-		ConnectionState previousConnectionState = ConnectionState.UnknownConnectionState;
-		int identicalConnectionStatesReported = 0;
-		int identicalConnectionStatesReportedLimit = 3;
+
+		[JsonIgnore]	ConnectionState previousConnectionState = ConnectionState.UnknownConnectionState;
+		[JsonIgnore]	int identicalConnectionStatesReported = 0;
+		[JsonIgnore]	int identicalConnectionStatesReportedLimit = 3;
+
 		public void callbackTerminalConnectionStateUpdated(ConnectionState state, string message) {
 			if (this.previousConnectionState == ConnectionState.UnknownConnectionState) {
 				this.previousConnectionState = state;
@@ -244,5 +255,13 @@ namespace Sq1.Adapters.Quik.Broker {
 			}
 			return msg;
 		}
+
+		//internal void ConnectToDll_subscribe() {
+		//    this.QuikTerminal.ConnectDll();
+		//    this.QuikTerminal.Subscribe(.UpstreamConnect();
+		//}
+		//internal void DisconnectFromDll_unsubscribe() {
+		//    throw new NotImplementedException();
+		//}
 	}
 }

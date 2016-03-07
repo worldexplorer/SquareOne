@@ -1,8 +1,8 @@
 {
   "$type": "Sq1.Widgets.Exceptions.ExceptionsControlDataSnapshot, Sq1.Widgets",
-  "SplitDistanceVertical": 585,
+  "SplitDistanceVertical": 40,
   "SplitDistanceHorizontal": 25,
-  "RecentAlwaysSelected": false,
+  "RecentAlwaysSelected": true,
   "TreeRefreshDelayMsec": 500,
   "TreeShowTimestamps": false,
   "ShowHeaders": false,

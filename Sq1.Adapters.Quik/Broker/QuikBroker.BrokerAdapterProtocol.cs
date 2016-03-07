@@ -12,20 +12,24 @@ namespace Sq1.Adapters.Quik.Broker {
 	public partial class QuikBroker : BrokerAdapter {
 
 		public override void Connect() {
-			if (String.IsNullOrEmpty(this.QuikFolder) == false || Directory.Exists(this.QuikFolder) == false) {
-				string msg = "QuikStreamingAdapter.QuikFolder[" + this.QuikFolder + "] doesn't exist; will not try to QuikTerminal.ConnectDll()";
-				//Assembler.PopupException(msg);
-				throw new Exception(msg);
+			string msig = " //QuikTerminal.Connect()";
+			if (string.IsNullOrEmpty(this.QuikFolder)) {
+				string msg = "I_REFUSE_TO_CONNECT_WITH_NULL_FOLDER QuikBroker.QuikFolder[" + this.QuikFolder + "]";
+				throw new Exception(msg + msig);
+			}
+
+			if (Directory.Exists(this.QuikFolder) == false) {
+				string msg = "I_REFUSE_TO_CONNECT__NON_EXISTING_FOLDER QuikBroker.QuikFolder[" + this.QuikFolder + "]";
+				throw new Exception(msg + msig);
 			}
 
 			if (File.Exists(this.QuikDllAbsPath) == false) {
-				string msg = "QuikStreamingAdapter.QuikDllAbsPath[" + this.QuikDllAbsPath + "] doesn't exist; will not try to QuikTerminal.ConnectDll()";
-				//Assembler.PopupException(msg);
-				throw new Exception(msg);
+				string msg = "I_REFUSE_TO_DONNECT__DLL_CAN_NOT_BE_FOUND QuikBroker.QuikDllAbsPath[" + this.QuikDllAbsPath + "]";
+				throw new Exception(msg + msig);
 			}
-			this.QuikTerminal.ConnectDll();
+			this.QuikDllConnector.ConnectDll();
 		}
-		public override void Disconnect() { QuikTerminal.DisconnectDll(); }
+		public override void Disconnect() { this.QuikDllConnector.DisconnectDll(); }
 
 		public override void Submit(Order order) {
 			//Debugger.Break();
@@ -65,7 +69,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			OrderState orderStateFromTerminalMustGetSubmitted = OrderState.Unknown;
 
 			double priceFill = order.PriceRequested;
-			this.QuikTerminal.SendTransactionOrderAsync(opBuySell, typeMarketLimitStop,
+			this.QuikDllConnector.SendTransactionOrderAsync(opBuySell, typeMarketLimitStop,
 				order.Alert.Symbol, order.Alert.SymbolClass,
 				order.PriceRequested, (int)order.QtyRequested, order.GUID,
 				out sernoSessionFromTerminal, out msgSubmittedFromTerminal, out orderStateFromTerminalMustGetSubmitted);
@@ -90,7 +94,7 @@ namespace Sq1.Adapters.Quik.Broker {
 
 			Order killerOrder = victimOrder.KillerOrder;
 
-			QuikTerminal.SendTransactionOrderKillAsync(victimOrder.Alert.Symbol, victimOrder.Alert.SymbolClass,
+			QuikDllConnector.SendTransactionOrderKillAsync(victimOrder.Alert.Symbol, victimOrder.Alert.SymbolClass,
 				killerOrder.GUID.ToString(),
 				victimOrder.GUID.ToString(),
 				victimOrder.SernoExchange, victimWasStopOrder,

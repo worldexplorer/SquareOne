@@ -10,128 +10,140 @@ using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Adapters.Quik.Broker.Terminal {
-	public class QuikTerminal {
-		protected QuikBroker BrokerQuik;
-		protected static int transId;
-		protected int error;
-		protected StringBuilder callbackErrorMsg;
-		int connectionAttempts = 0;
-		bool stopTryingToConnectDll;
-		object tryingToConnectDllLock;
-		Timer connectionTimer;
-		protected bool DllConnected;
-		protected string CurrentStatus = "1/2 DLL not connected, 2/2 No Symbols subscribed";
-		public virtual string DllName { get { return "TRANS2QUIK.DLL"; } }
-		public QuikTerminal() {
-			throw new Exception("QuikTerminal doesn't support default constructor, use QuikTerminal(BrokerQuik)");
+	public class QuikDllConnector {
+					QuikBroker		quikBroker;
+					static int		transId;
+					int				error;
+					StringBuilder	callbackErrorMsg;
+					int				connectionAttempts = 0;
+					bool			stopTryingToConnectDll;
+					object			tryingToConnectDllLock;
+					Timer			connectionTimer;
+		public		bool			DllConnected	{ get; private set; }
+		protected	string			CurrentStatus = "1/2 DLL not connected, 2/2 No Symbols subscribed";
+		public		string			DllName			{ get { return "TRANS2QUIK.DLL"; } }
+
+		QuikDllConnector() {
+			tryingToConnectDllLock	= new Object();
+			callbackErrorMsg		= new StringBuilder(256);
+			connectionTimer			= new Timer(this.tryConnectPeriodical);
+			symbolClassesSubscribed	= new Dictionary<string, int>();
+
 		}
-		public QuikTerminal(QuikBroker BrokerQuik) {
-			tryingToConnectDllLock = new Object();
-			callbackErrorMsg = new StringBuilder(256);
-			this.BrokerQuik = BrokerQuik;
-			this.connectionTimer = new Timer(this.tryConnectPeriodical);
+		public QuikDllConnector(QuikBroker quikBroker_passed) : this() {
+			quikBroker				= quikBroker_passed;
 		}
-		public virtual void ConnectDll() {
+		public void ConnectDll() {
 			this.stopTryingToConnectDll = false;
-			connectionTimer.Change(0, BrokerQuik.ReconnectTimeoutMillis);
+			connectionTimer.Change(0, this.quikBroker.ReconnectTimeoutMillis);
 		}
-		public virtual void DisconnectDll() {
+		public void DisconnectDll() {
 			this.stopTryingToConnectDll = true;
 			connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
-			if (DllConnected) {
-				Trans2Quik.DISCONNECT(out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-				DllConnected = false;
+			if (this.DllConnected == false) {
+				string msg = "I_REFUSE_TO_DISCONNECT ALREADY_DISCONNECTED";
+				Assembler.PopupException(msg);
 			}
+			Trans2Quik.DISCONNECT(out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
+			this.DllConnected = false;
 		}
-		void tryConnectPeriodical(Object state) {
-			lock (tryingToConnectDllLock) {
-				if (connectionAttempts == 0) Thread.Sleep(3000);
-				connectionAttempts++;
-				//if (StatusReporter == null) {
-				//	connectionTimer.Change(0, BrokerQuik.ReconnectTimeoutMillis);
-				//	return;
-				//}
-				if (this.stopTryingToConnectDll) {
-					connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
-					return;
-				}
-				CurrentStatus = "0/2: DLL not connected, No Symbols subscribed";
-				Trans2Quik.Result ret;
-				string msg;
-				try {
-					if (SymbolClassSubscribers == null) {
-						SymbolClassSubscribers = new Dictionary<string, int>();
-					}
-					if (SymbolClassSubscribers.Count > 0) {
-						Assembler.PopupException("Clearing SymbolClassSubscribers.Count=" + SymbolClassSubscribers.Count + "; most likely QUIK got disconnected");
-						SymbolClassSubscribers.Clear();
-					}
-
-					ret = Trans2Quik.SET_CONNECTION_STATUS_CALLBACK(this.callbackConnectionStatus, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-					if (ret != Trans2Quik.Result.SUCCESS) {
-						BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.UnknownConnectionState, this.callbackErrorMsg.ToString());
-						msg = "1/5 FAILED: SET_CONNECTION_STATUS_CALLBACK(): error[" + error + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
-						Assembler.PopupException(msg);
-						//throw new Exception(msg);
-						return;
-					}
-
-					ret = Trans2Quik.SET_TRANSACTIONS_REPLY_CALLBACK(this.CallbackTransactionReply, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-					if (ret != Trans2Quik.Result.SUCCESS) {
-						BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.UnknownConnectionState, this.callbackErrorMsg.ToString());
-						msg = "2/5 FAILED: SET_TRANSACTIONS_REPLY_CALLBACK(): error[" + error + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
-						Assembler.PopupException(msg);
-						//throw new Exception(msg);
-						return;
-					}
-
-					ret = Trans2Quik.CONNECT(BrokerQuik.QuikFolder, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-					if (ret != Trans2Quik.Result.SUCCESS && ret != Trans2Quik.Result.ALREADY_CONNECTED_TO_QUIK) {
-						BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.UnknownConnectionState, this.callbackErrorMsg.ToString());
-						msg = "3/5 FAILED: CONNECT(" + BrokerQuik.QuikFolder + "): error[" + error + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
-						Assembler.PopupException(msg);
-						//throw new Exception(msg);
-						return;
-					}
-
-					this.DllConnected = true;
-					CurrentStatus = "1/2: DLL Connected, No Symbols subscribed";
-					/*
-					ret = Trans2Quik.UNSUBSCRIBE_ORDERS();
-					if (ret != Trans2Quik.Result.SUCCESS) {
-						BrokerQuik.callbackTerminalConnectionStateUpdated(QuikTerminalQuikConnectionState.DllConnected, "can not UNSUBSCRIBE_ORDERS()");
-						msg = "4/5 FAILED: UNSUBSCRIBE_ORDERS() ret[" + ret + "] != SUCCESS";
-						Assembler.PopupException(msg);
-						//throw new Exception(msg);
-						//return;
-					}
-
-					ret = Trans2Quik.UNSUBSCRIBE_TRADES();
-					if (ret != Trans2Quik.Result.SUCCESS) {
-						BrokerQuik.callbackTerminalConnectionStateUpdated(QuikTerminalQuikConnectionState.DllConnected, "can not UNSUBSCRIBE_TRADES()");
-						msg = "5/5 FAILED: UNSUBSCRIBE_TRADES() ret[" + ret + "] != SUCCESS";
-						Assembler.PopupException(msg);
-						//throw new Exception(msg);
-						//return;
-					}
-					*/
-					connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
-					msg = "#" + connectionAttempts + "//timeoutInfinite QuikTerminal(" + this.DllName + ") 2/2 " + ConnectionState.UpstreamDisconnected_downstreamSubscribed;
-					BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.UpstreamDisconnected_downstreamSubscribed, msg);
-					Assembler.PopupException(msg);
-				} catch (Exception e) {
-					BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.ErrorConnectingNoRetriesAnymore, e.Message);
-					Assembler.PopupException("Should we set a limit/timeout on trials?", e);
-					return;
-				}
+		void tryConnectPeriodical(Object state) { lock (tryingToConnectDllLock) {
+			if (connectionAttempts == 0) Thread.Sleep(3000);
+			connectionAttempts++;
+			//if (StatusReporter == null) {
+			//	connectionTimer.Change(0, BrokerQuik.ReconnectTimeoutMillis);
+			//	return;
+			//}
+			if (this.stopTryingToConnectDll) {
+				connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
+				return;
 			}
+			CurrentStatus = "0/2: DLL not connected, No Symbols subscribed";
+			Trans2Quik.Result error;
+			string msg;
+			try {
+				error = this.talkToDll(out msg);
+				connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
+				msg = "#" + connectionAttempts + "//timeoutInfinite QuikTerminal(" + this.DllName + ") 2/2 " + ConnectionState.UpstreamDisconnected_downstreamSubscribed;
+				quikBroker.callbackTerminalConnectionStateUpdated(ConnectionState.UpstreamDisconnected_downstreamSubscribed, msg);
+				Assembler.PopupException(msg);
+			} catch (Exception e) {
+				quikBroker.callbackTerminalConnectionStateUpdated(ConnectionState.ErrorConnectingNoRetriesAnymore, e.Message);
+				Assembler.PopupException("Should we set a limit/timeout on trials?", e);
+				return;
+			}
+		} }
+
+		Trans2Quik.Result talkToDll(out string msg) {
+			msg = "NO_DLL_METHOD_WAS_INVOKED_YET";
+
+			if (symbolClassesSubscribed.Count > 0) {
+				Assembler.PopupException("Clearing SymbolClassSubscribers.Count=" + symbolClassesSubscribed.Count + "; most likely QUIK got disconnected");
+				symbolClassesSubscribed.Clear();
+			}
+
+			Trans2Quik.Result ret = Trans2Quik.Result.FAILED;
+
+			ret = Trans2Quik.SET_CONNECTION_STATUS_CALLBACK(this.callbackConnectionStatus, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
+			if (ret != Trans2Quik.Result.SUCCESS) {
+				quikBroker.callbackTerminalConnectionStateUpdated(ConnectionState.UnknownConnectionState, this.callbackErrorMsg.ToString());
+				msg = "1/5 FAILED: SET_CONNECTION_STATUS_CALLBACK(): error[" + errorAsString(error) + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
+				Assembler.PopupException(msg);
+				//throw new Exception(msg);
+				return ret;
+			}
+
+			ret = Trans2Quik.SET_TRANSACTIONS_REPLY_CALLBACK(this.CallbackTransactionReply, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
+			if (ret != Trans2Quik.Result.SUCCESS) {
+				quikBroker.callbackTerminalConnectionStateUpdated(ConnectionState.UnknownConnectionState, this.callbackErrorMsg.ToString());
+				msg = "2/5 FAILED: SET_TRANSACTIONS_REPLY_CALLBACK(): error[" + errorAsString(error) + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
+				Assembler.PopupException(msg);
+				//throw new Exception(msg);
+				return ret;
+			}
+
+			ret = Trans2Quik.CONNECT(quikBroker.QuikFolder, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
+			if (ret != Trans2Quik.Result.SUCCESS && ret != Trans2Quik.Result.ALREADY_CONNECTED_TO_QUIK) {
+				quikBroker.callbackTerminalConnectionStateUpdated(ConnectionState.UnknownConnectionState, this.callbackErrorMsg.ToString());
+				msg = "3/5 FAILED: CONNECT(" + this.quikBroker.QuikFolder + "): error[" + errorAsString(error) + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
+				Assembler.PopupException(msg);
+				//throw new Exception(msg);
+				return ret;
+			}
+
+			this.DllConnected = true;
+			CurrentStatus = "1/2: DLL Connected, No Symbols subscribed";
+			/*
+			ret = Trans2Quik.UNSUBSCRIBE_ORDERS();
+			if (ret != Trans2Quik.Result.SUCCESS) {
+				BrokerQuik.callbackTerminalConnectionStateUpdated(QuikTerminalQuikConnectionState.DllConnected, "can not UNSUBSCRIBE_ORDERS()");
+				msg = "4/5 FAILED: UNSUBSCRIBE_ORDERS() ret[" + ret + "] != SUCCESS";
+				Assembler.PopupException(msg);
+				//throw new Exception(msg);
+				//return;
+			}
+
+			ret = Trans2Quik.UNSUBSCRIBE_TRADES();
+			if (ret != Trans2Quik.Result.SUCCESS) {
+				BrokerQuik.callbackTerminalConnectionStateUpdated(QuikTerminalQuikConnectionState.DllConnected, "can not UNSUBSCRIBE_TRADES()");
+				msg = "5/5 FAILED: UNSUBSCRIBE_TRADES() ret[" + ret + "] != SUCCESS";
+				Assembler.PopupException(msg);
+				//throw new Exception(msg);
+				//return;
+			}
+			*/
+			return ret;
 		}
 
-		protected Dictionary<string, int> SymbolClassSubscribers = new Dictionary<string, int>();
+		string errorAsString(int error) {
+			return Enum.GetName(typeof(Trans2Quik.Result), error);
+		}
+
+		protected Dictionary<string, int> symbolClassesSubscribed = new Dictionary<string, int>();
 		protected string SymbolClassSubscribersAsString { get {
 				string ret = "";
-				foreach (string symbolColonClass in this.SymbolClassSubscribers.Keys) {
-					int subscribersCount = this.SymbolClassSubscribers[symbolColonClass];
+				foreach (string symbolColonClass in this.symbolClassesSubscribed.Keys) {
+					int subscribersCount = this.symbolClassesSubscribed[symbolColonClass];
 					ret += symbolColonClass + ":" + subscribersCount + ",";
 				}
 				ret.TrimEnd(",".ToCharArray());
@@ -139,21 +151,21 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 			} }
 		public bool IsSubscribed(string SecCode, string ClassCode) {
 			string key = SecCode + ":" + ClassCode;
-			bool subscribed = SymbolClassSubscribers.ContainsKey(key);
+			bool subscribed = symbolClassesSubscribed.ContainsKey(key);
 			return subscribed;
 		}
 		public void Subscribe(string SecCode, string ClassCode) {
 			if (DllConnected == false) {
-				string msg = "can not RegisterQuoteConsumer(" + SecCode + "," + ClassCode + "): DLL[" + DllName + "] must be connected first [" + BrokerQuik.QuikFolder + "]";
+				string msg = "can not RegisterQuoteConsumer(" + SecCode + "," + ClassCode + "): DLL[" + DllName + "] must be connected first [" + this.quikBroker.QuikFolder + "]";
 				Assembler.PopupException(msg);
 				//BrokerQuik.ExceptionDialog.PopupException(new Exception(msg));
 				throw new Exception(msg);
 			}
 
 			string key = SecCode + ":" + ClassCode;
-			if (SymbolClassSubscribers.ContainsKey(key)) {
-				SymbolClassSubscribers[key]++;
-				Assembler.PopupException("Was already subscribed to Quik Execution Callbacks for [" + key + "].Count=" + SymbolClassSubscribers[key]);
+			if (symbolClassesSubscribed.ContainsKey(key)) {
+				symbolClassesSubscribed[key]++;
+				Assembler.PopupException("Was already subscribed to Quik Execution Callbacks for [" + key + "].Count=" + symbolClassesSubscribed[key]);
 				return;
 			}
 
@@ -197,12 +209,12 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 				Assembler.PopupException(msg);
 			}
 
-			SymbolClassSubscribers[key] = 1;
-			if (SymbolClassSubscribers.Count == 0) CurrentStatus = "";
-			CurrentStatus = SymbolClassSubscribers.ToString();
+			symbolClassesSubscribed[key] = 1;
+			if (symbolClassesSubscribed.Count == 0) CurrentStatus = "";
+			CurrentStatus = symbolClassesSubscribed.ToString();
 			Assembler.PopupException("Subscribed to Quik Execution Callbacks for [" + key + "]");
 	
-			BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.SymbolSubscribed,
+			quikBroker.callbackTerminalConnectionStateUpdated(ConnectionState.SymbolSubscribed,
 				"QuikTerminal(" + this.DllName + ") 2/2 " + ConnectionState.SymbolSubscribed +
 					" for SecCode[" + SecCode + "] ClassCode[" + ClassCode + "]");
 		}
@@ -214,7 +226,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 			}
 
 			string key = SecCode + ":" + ClassCode;
-			if (!SymbolClassSubscribers.ContainsKey(key)) {
+			if (!symbolClassesSubscribed.ContainsKey(key)) {
 					string msg = "can not Unsubscribe(" + SecCode + "," + ClassCode + "): was not subscribed before";
 					Assembler.PopupException(msg);
 					throw new Exception(msg);
@@ -232,24 +244,24 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 				throw new Exception(msg);
 			}
 			
-			SymbolClassSubscribers[key]--;
-			CurrentStatus = SymbolClassSubscribers.ToString();
+			symbolClassesSubscribed[key]--;
+			CurrentStatus = symbolClassesSubscribed.ToString();
 		
-			ConnectionState state = (SymbolClassSubscribers[key] > 0)
+			ConnectionState state = (symbolClassesSubscribed[key] > 0)
 				? ConnectionState.SymbolSubscribed : ConnectionState.SymbolUnsubscribed;
-			BrokerQuik.callbackTerminalConnectionStateUpdated(state,
+			quikBroker.callbackTerminalConnectionStateUpdated(state,
 				"QuikTerminal(" + this.DllName + ") " + state + " for SecCode[" + SecCode + "] ClassCode[" + ClassCode + "]");
 		}
 		void callbackConnectionStatus(Trans2Quik.Result evnt, int err, string m) {
 			switch (evnt) {
 				case Trans2Quik.Result.QUIK_DISCONNECTED:
-					connectionTimer.Change(0, BrokerQuik.ReconnectTimeoutMillis);
-					Assembler.PopupException("CallbackConnectionStatus[" + evnt + "]  err[" + err + "] m[" + m + "]: connectionTimer.Change(0, " + BrokerQuik.ReconnectTimeoutMillis + ")");
+					connectionTimer.Change(0, this.quikBroker.ReconnectTimeoutMillis);
+					Assembler.PopupException("CallbackConnectionStatus[" + evnt + "]  err[" + err + "] m[" + m + "]: connectionTimer.Change(0, " + this.quikBroker.ReconnectTimeoutMillis + ")");
 					break;
 				case Trans2Quik.Result.DLL_DISCONNECTED:
 					DllConnected = false;
-					connectionTimer.Change(0, BrokerQuik.ReconnectTimeoutMillis);
-					Assembler.PopupException("CallbackConnectionStatus[" + evnt + "]  err[" + err + "] m[" + m + "]: connectionTimer.Change(0, " + BrokerQuik.ReconnectTimeoutMillis + ")");
+					connectionTimer.Change(0, this.quikBroker.ReconnectTimeoutMillis);
+					Assembler.PopupException("CallbackConnectionStatus[" + evnt + "]  err[" + err + "] m[" + m + "]: connectionTimer.Change(0, " + this.quikBroker.ReconnectTimeoutMillis + ")");
 					break;
 				default:
 					Assembler.PopupException("CallbackConnectionStatus[" + evnt + "]  err[" + err + "] m[" + m + "]: NO_HANDLER");
@@ -311,7 +323,7 @@ nTradeDescriptor Тип: Long. Дескриптор сделки, может и�
 				+ " tradeTradeSysCommission[" + tradeTradeSysCommission + "] tradeTScommission[" + tradeTScommission + "]";
 
 			//Order orderExecuted = this.BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending.FindBySernoExchange((long)SernoExchange);
-			Order orderExecuted = this.BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll.ScanRecentForSernoExchange((long)SernoExchange);
+			Order orderExecuted = this.quikBroker.OrderProcessor.DataSnapshot.OrdersAll.ScanRecentForSernoExchange((long)SernoExchange);
 			if (orderExecuted == null) {
 				msg += " orderExecuted=null";
 			} else {
@@ -335,7 +347,7 @@ nTradeDescriptor Тип: Long. Дескриптор сделки, может и�
 			//	(long)SernoExchange, Price.GetInt(fillPrice), quantity));
 			//	ThreadPool.QueueUserWorkItem(new WaitCallback(order.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
 			//		new object[] { ordersFromAlerts });
-			BrokerQuik.CallbackTradeStateReceivedQuik((long)SernoExchange, tradeDate, 
+			quikBroker.CallbackTradeStateReceivedQuik((long)SernoExchange, tradeDate, 
 				classCode, secCode, price, filled,
 				tradePrice2, tradeTradeSysCommission, tradeTScommission);
 		}
@@ -369,7 +381,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			string msig = " QuikTerminal(" + this.DllName + ").CallbackOrderStatus(" + msgDebug + ")";
 			string msgError = "";
 
-			OrderProcessorDataSnapshot snap = this.BrokerQuik.OrderProcessor.DataSnapshot;
+			OrderProcessorDataSnapshot snap = this.quikBroker.OrderProcessor.DataSnapshot;
 			//v1
 			string logOrEmpty = "";
 			Order order = snap.ScanRecent_forGUID(GUID.ToString(), snap.LanesForCallbackOrderState, out logOrEmpty);
@@ -422,12 +434,12 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 					}
 					break;
 			}
-			this.BrokerQuik.CallbackOrderStateReceivedQuik(newOrderStateReceived, GUID.ToString(),
+			this.quikBroker.CallbackOrderStateReceivedQuik(newOrderStateReceived, GUID.ToString(),
 						(long)SernoExchange, classCode, secCode, priceFilled, qtyFilled);
 			if (newOrderStateReceived == OrderState.FilledPartially || newOrderStateReceived == OrderState.Filled) {
 				//v1 this.BrokerQuik.OrderProcessor.PostProcessOrderState(order, priceFilled, qtyFilled);
 				OrderStateMessage omsg = new OrderStateMessage(order, "BrokerQuik_UpdateOrderStateAndPostProcess:: " + newOrderStateReceived + "::" + this.DllName);
-				this.BrokerQuik.OrderProcessor.UpdateOrderState_postProcess(order, omsg, priceFilled, qtyFilled);
+				this.quikBroker.OrderProcessor.UpdateOrderState_postProcess(order, omsg, priceFilled, qtyFilled);
 			}
 		}
 /* Функция TRANS2QUIK_TRANSACTIONS_REPLY_CALLBACK
@@ -454,7 +466,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 				+ " r[" + r + "]  err[" + err + "] rc[" + rc + "]"
 				+ " Guid[" + GUID + "] SernoExchange[" + SernoExchange + "]"
 				;
-			var orders = BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending;
+			var orders = this.quikBroker.OrderProcessor.DataSnapshot.OrdersPending;
 			Order orderSubmitting = orders.ScanRecentForGUID(GUID.ToString());
 			if (orderSubmitting == null) {
 				msg += " Order not found Guid[" + GUID + "] ; orderSernos=["
@@ -478,7 +490,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 				newState = OrderState.ErrorSubmittingBroker;
 			}
 			OrderStateMessage newOrderState = new OrderStateMessage(orderSubmitting, newState, msg2);
-			BrokerQuik.OrderProcessor.UpdateOrderState_postProcess(orderSubmitting, newOrderState);
+			quikBroker.OrderProcessor.UpdateOrderState_postProcess(orderSubmitting, newOrderState);
 		}
 		public virtual void SendTransactionOrderAsync(char opBuySell, char typeMarketLimitStop,
 				string SecCode, string ClassCode, double price, int quantity,
@@ -512,7 +524,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 
 			orderStateOut = OrderState.PreSubmit;
 			string trans = this.getOrderCommand(opBuySell, typeMarketLimitStop, SecCode, ClassCode, price, quantity, GUID, out SernoSession);
-			this.BrokerQuik.OrderProcessor.UpdateOrderStateByGuid_dontPostProcess(GUID, orderStateOut, trans);
+			this.quikBroker.OrderProcessor.UpdateOrderStateByGuid_dontPostProcess(GUID, orderStateOut, trans);
 
 			Trans2Quik.Result r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out this.error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 			msgSubmittedOut = "r[" + r + "] callbackErrorMsg[" + this.callbackErrorMsg + "] error[" + error + "]";
@@ -532,7 +544,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 				double stopPrice = price;
 				actionTypePriceStop = "ACTION=NEW_STOP_ORDER;PRICE=" + price + ";STOPPRICE=" + stopPrice + ";";
 			}
-			SernoSession = ++QuikTerminal.transId;
+			SernoSession = ++QuikDllConnector.transId;
 			if (String.IsNullOrEmpty(ClassCode)) {
 				int a = 1;
 			}
@@ -549,19 +561,19 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 		}
 		protected virtual string getAccountClientCode(string ClassCode) {
 			string ret = "";
-			if (BrokerQuik == null) {
+			if (quikBroker == null) {
 				Assembler.PopupException("can't set ACCOUNT=XXX and CLIENT_CODE=YYY: BrokerQuik=null");
 			} else {
-				if (BrokerQuik.AccountAutoPropagate == null) {
-					Assembler.PopupException("can't set ACCOUNT=XXX: BrokerQuik[" + BrokerQuik + "].Account=null");
+				if (quikBroker.AccountAutoPropagate == null) {
+					Assembler.PopupException("can't set ACCOUNT=XXX: BrokerQuik[" + this.quikBroker + "].Account=null");
 				} else {
-					string account = BrokerQuik.AccountAutoPropagate.AccountNumber;
-					if (ClassCode != "SPBFUT" && BrokerQuik.AccountMicexAutoPopulated != null) {
-						account = BrokerQuik.AccountMicexAutoPopulated.AccountNumber;
+					string account = this.quikBroker.AccountAutoPropagate.AccountNumber;
+					if (ClassCode != "SPBFUT" && this.quikBroker.AccountMicexAutoPopulated != null) {
+						account = this.quikBroker.AccountMicexAutoPopulated.AccountNumber;
 					}
 					ret += "ACCOUNT=" + account + ";";
 				}
-				ret += "CLIENT_CODE=" + BrokerQuik.QuikClientCode + ";";
+				ret += "CLIENT_CODE=" + this.quikBroker.QuikClientCode + ";";
 			}
 			return ret;
 		}
@@ -597,7 +609,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			}
 
 			string trans = this.getOrderKillCommand(SecCode, ClassCode, victimWasStopOrder, VictimGUID, SernoExchangeVictim, out SernoSession);
-			this.BrokerQuik.OrderProcessor.UpdateOrderStateByGuid_dontPostProcess(KillerGUID, OrderState.KillerSubmitting, trans);
+			this.quikBroker.OrderProcessor.UpdateOrderStateByGuid_dontPostProcess(KillerGUID, OrderState.KillerSubmitting, trans);
 
 			Trans2Quik.Result r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 			msgSubmitted = msig + r + "	" + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
@@ -609,7 +621,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 		}
 		protected string getOrderKillCommand(string SecCode, string ClassCode, bool victimWasStopOrder,
 				string GuidKiller, long SernoExchangeVictim, out int SernoSession) {
-			SernoSession = ++QuikTerminal.transId;
+			SernoSession = ++QuikDllConnector.transId;
 			if (String.IsNullOrEmpty(ClassCode)) {
 				int a = 1;
 			}

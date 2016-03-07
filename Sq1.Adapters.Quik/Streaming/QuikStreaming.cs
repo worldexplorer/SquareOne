@@ -74,7 +74,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 				return ret;
 			} }
 
-		[JsonIgnore]	public	string					DdeServerStartStopOppositeAction { get {
+		[JsonIgnore]	public	string					DdeServerStartStop_oppositeAction { get {
 			return this.DdeServerIsRegistered ? "Stop DDE Server (now started)" : "Start DDE Server (now stopped)";
 			} }
 

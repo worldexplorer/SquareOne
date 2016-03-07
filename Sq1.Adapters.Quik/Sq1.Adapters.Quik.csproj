@@ -149,19 +149,19 @@
       <DependentUpon>QuikStreamingEditorControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Broker\QuikBrokerEditor.cs">
+    <Compile Include="Broker\QuikBrokerEditorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Broker\QuikBroker.cs" />
-    <Compile Include="Broker\QuikBrokerEditor.Designer.cs">
-      <DependentUpon>QuikBrokerEditor.cs</DependentUpon>
+    <Compile Include="Broker\QuikBrokerEditorControl.Designer.cs">
+      <DependentUpon>QuikBrokerEditorControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Broker\QuikBrokerEditor.EventConsumer.cs">
-      <DependentUpon>QuikBrokerEditor.cs</DependentUpon>
+    <Compile Include="Broker\QuikBrokerEditorControl.EventConsumer.cs">
+      <DependentUpon>QuikBrokerEditorControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Broker\QuikOrderCallbackDupesChecker.cs" />
-    <Compile Include="Broker\Terminal\QuikTerminal.cs" />
+    <Compile Include="Broker\Terminal\QuikDllConnector.cs" />
     <Compile Include="Broker\Terminal\Trans2Quik.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -225,8 +225,8 @@
     <EmbeddedResource Include="Streaming\Monitor\QuikStreamingMonitorControl.resx">
       <DependentUpon>QuikStreamingMonitorControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Broker\QuikBrokerEditor.resx">
-      <DependentUpon>QuikBrokerEditor.cs</DependentUpon>
+    <EmbeddedResource Include="Broker\QuikBrokerEditorControl.resx">
+      <DependentUpon>QuikBrokerEditorControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

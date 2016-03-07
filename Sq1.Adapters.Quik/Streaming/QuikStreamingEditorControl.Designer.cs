@@ -126,9 +126,9 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// 
 			// lblMinus4
 			// 
-			this.lblMinus4.Location = new System.Drawing.Point(6, 64);
+			this.lblMinus4.Location = new System.Drawing.Point(0, 64);
 			this.lblMinus4.Name = "lblMinus4";
-			this.lblMinus4.Size = new System.Drawing.Size(96, 13);
+			this.lblMinus4.Size = new System.Drawing.Size(102, 13);
 			this.lblMinus4.TabIndex = 18;
 			this.lblMinus4.Text = "-SYMBOL-";
 			this.lblMinus4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -173,7 +173,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.lblRefreshMs.TabIndex = 23;
 			this.lblRefreshMs.Text = "ms Refresh Rate";
 			// 
-			// QuikStreamingEditor
+			// QuikStreamingEditorControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -194,7 +194,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.Controls.Add(this.lblMinus);
 			this.Controls.Add(this.lblMinus2);
 			this.Controls.Add(this.lblMinus4);
-			this.Name = "QuikStreamingEditor";
+			this.Name = "QuikStreamingEditorControl";
 			this.Size = new System.Drawing.Size(214, 181);
 			this.ResumeLayout(false);
 			this.PerformLayout();

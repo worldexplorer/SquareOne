@@ -8,7 +8,7 @@
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
     "Interval": 1,
     "Scale": 3,
-    "AsString_cached": "1-Minute",
+    "AsString_cached": null,
     "IsIntraday": true,
     "AsTimeSpanInSeconds": 60,
     "AsTimeSpan": "00:01:00",
@@ -40,10 +40,11 @@
       "CashAvailable": -1000.0,
       "AccountValueTimeStamp": "0001-01-01T00:00:00"
     },
-    "QuikFolder": "",
+    "QuikFolder": "C:\\Program Files (x86)\\QUIK-Junior",
     "QuikDllName": "TRANS2QUIK.DLL",
     "QuikClientCode": null,
-    "ReconnectTimeoutMillis": 0,
+    "ReconnectTimeoutMillis": 3000,
+    "GoRealDontUseOwnLivesim": false,
     "UpstreamConnected": false
   },
   "MarketName": "FORTS",
