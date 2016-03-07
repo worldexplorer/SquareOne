@@ -254,7 +254,7 @@ namespace Sq1.Core.Livesim {
 			int pendingCountPre = executor.ExecutionDataSnapshot.AlertsPending.Count;
 			//int pendingFilled = executor.MarketsimBacktest.SimulateFillAllPendingAlerts(
 			int pendingFilled = base.BacktestMarketsim.SimulateFillAllPendingAlerts(
-					quoteAttachedToStreamingToConsumerBars, new Action<Alert, double, double>(this.action_afterAlertFilled_beforeMovedAround));
+					quoteAttachedToStreamingToConsumerBars, new Action<Alert, double, double>(this.action_afterAlertFilled_inducePostProcessing_movedAroundOnReturn));
 			int pendingCountNow = executor.ExecutionDataSnapshot.AlertsPending.Count;
 			if (pendingCountNow != pendingCountPre - pendingFilled) {
 				string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";
@@ -270,7 +270,7 @@ namespace Sq1.Core.Livesim {
 				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
 			}
 		}
-		void action_afterAlertFilled_beforeMovedAround(Alert alertFilled, double priceFilled, double qtyFilled) {
+		void action_afterAlertFilled_inducePostProcessing_movedAroundOnReturn(Alert alertFilled, double priceFilled, double qtyFilled) {
 			try {
 				this.DataSnapshot.AlertsScheduledForDelayedFill.WaitAndLockFor(this, "onAlertFilled(WAIT)");
 				if (this.DataSnapshot.AlertsScheduledForDelayedFill.Contains(alertFilled, this, "onAlertFilled(WAIT)")) {

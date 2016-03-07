@@ -202,7 +202,7 @@ namespace Sq1.Gui.Forms {
 		}
 
 		void eventGenerator_OnStrategyPreExecuteOneQuote_updateBtnStreamingText(object sender, QuoteEventArgs e) {
-			this.ChartForm.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(e.Quote);
+			this.ChartForm.PrintQuoteTimestamp_onStrategyTriggeringButton_beforeExecution_switchToGuiThread(e.Quote);
 
 			if (this.Executor.Strategy != null) return;
 			//if (this.ChartForm.ChartControl.ChartIsSubscribed_toOwnNonNullBars_expensiveForEachQuote_useCtxChartDownstreamSubscribed) return;

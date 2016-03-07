@@ -76,7 +76,7 @@ namespace Sq1.Gui.Forms {
 				Backtester backtester = this.ChartFormManager.Executor.BacktesterOrLivesimulator;
 				BacktestQuotesGenerator clone = BacktestQuotesGenerator.CreateForQuotesPerBarAndInitialize(generatorStrokeAmount, backtester);
 				backtester.SetQuoteGeneratorAndConditionallyRebacktest_invokedInGuiThread(clone);
-				this.ctxStrokesPopulateOrSelectCurrent();
+				this.ctxStrokesPopulate_orSelectCurrent();
 				if (backtester.ImRunningLivesim) {
 					string msg = "EVEN_IF_PREV_GENERATOR_DIDNT_FINISH_GENERATING__NEXT_BAR_WILL_BE_GENERATED_BY_THE_NEW_ONE PAUSING_QUOTE_PUMP_IS_NOT_REQUIRED";
 					Assembler.PopupException(msg, null, false);
@@ -103,10 +103,10 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			this.ctxStrokesPopulateOrSelectCurrent();
+			this.ctxStrokesPopulate_orSelectCurrent();
 		}
 
-		void ctxStrokesPopulateOrSelectCurrent() {
+		void ctxStrokesPopulate_orSelectCurrent() {
 			if (this.ctxStrokesForQuoteGenerator.Items.Count == 0) {
 				this.ctxStrokesForQuoteGenerator.Items.AddRange(this.QuoteGeneratorMenuItems);
 			}

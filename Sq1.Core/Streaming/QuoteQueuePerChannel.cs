@@ -101,6 +101,12 @@ namespace Sq1.Core.Streaming {
 			return false;
 		}
 		public void SetThreadName() {
+			if (Thread.CurrentThread.ManagedThreadId == 1) {
+				string msg = "I_REFUSE_TO_CHANGE_GUI_THREAD_NAME DONT_INVOKE_ME_ON_DATA_SOURCE_INITIALIZATION [" + Thread.CurrentThread.Name + "]";
+				Assembler.PopupException(msg, null, false);
+				return;	
+			}
+
 			if (string.IsNullOrEmpty(Thread.CurrentThread.Name) == false) return;
 			string msig = this.ToString();
 			//if (Thread.CurrentThread.Name == msig) return;

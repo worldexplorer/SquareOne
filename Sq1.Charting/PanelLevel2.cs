@@ -225,10 +225,12 @@ namespace Sq1.Charting {
 				//	bids_sortedCachedForOnePaint = bids_sortedCachedForOnePaint.Clone_noDeeperThan(depthFittingToDisplayedHeight);
 				//}
 				//v2 cut moustaches separately
-				if (howManyAskPriceLevelsWillFit < depthFittingToDisplayedHeight) {
+				//if (howManyAskPriceLevelsWillFit < depthFittingToDisplayedHeight) {
+				if (howManyAskPriceLevelsWillFit < asks_sortedCachedForOnePaint.Count) {
 					asks_sortedCachedForOnePaint = asks_sortedCachedForOnePaint.Clone_noDeeperThan(howManyAskPriceLevelsWillFit);
 				}
-				if (howManyBidPriceLevelsWillFit < depthFittingToDisplayedHeight) {
+				//if (howManyBidPriceLevelsWillFit < depthFittingToDisplayedHeight) {
+				if (howManyBidPriceLevelsWillFit < bids_sortedCachedForOnePaint.Count) {
 					bids_sortedCachedForOnePaint = bids_sortedCachedForOnePaint.Clone_noDeeperThan(howManyBidPriceLevelsWillFit);
 				}
 			}
