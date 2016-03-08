@@ -18,7 +18,7 @@
   "StreamingAdapter": {
     "$type": "Sq1.Core.Livesim.LivesimStreamingDefault, Sq1.Core",
     "Level2RefreshRateMs": 200,
-    "UpstreamConnected": false
+    "UpstreamConnectedOnAppRestart": false
   },
   "BrokerAdapter": {
     "$type": "Sq1.Core.Livesim.LivesimBrokerDefault, Sq1.Core",
@@ -28,6 +28,7 @@
       "CashAvailable": -1000.0,
       "AccountValueTimeStamp": "0001-01-01T00:00:00"
     },
+    "ImLivesimBroker": false,
     "UpstreamConnected": false
   },
   "MarketName": "BACKTEST",
