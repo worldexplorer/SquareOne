@@ -187,5 +187,20 @@ namespace Sq1.Core.Execution {
 			this.IsDisposed = true;
 		}
 		public bool IsDisposed { get; private set; }
+
+		internal AlertList Substract_returnClone(AlertList alertsPending_alreadyScheduledForDelayedFill, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + base.ReasonToExist + "Substract_returnClone()";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				AlertList ret		= new AlertList(base.ReasonToExist + "_MINUS_" + alertsPending_alreadyScheduledForDelayedFill.ReasonToExist, base.Snap);
+				foreach(Alert eachMine in base.InnerList) {
+					if (alertsPending_alreadyScheduledForDelayedFill.Contains(eachMine, owner, lockPurpose)) continue;
+					ret.AddNoDupe(eachMine, owner, lockPurpose);
+				}
+				return ret;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
+		}
 	}
 }

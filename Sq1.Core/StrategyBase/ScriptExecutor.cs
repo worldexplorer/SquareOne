@@ -393,6 +393,12 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.Bars.DataSource.OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull +=
 				new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull);
+
+			//nope, multiple script executors will compete inside brokeradapter; check your price alignment via SymbolInfo
+			//if (this.DataSource_fromBars.BrokerAsLivesim_nullUnsafe != null) {
+			//    string msg = "AVOIDING_NPE_IN_CheckEntryAlertWillBeFilledByQuote WHILE_PAPER_TRADING";
+			//    this.DataSource_fromBars.BrokerAsLivesim_nullUnsafe.InitializeBacktestBroker(this);
+			//}
 		}
 		void barDataSource_OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull(object sender, DataSourceSymbolRenamedEventArgs e) {
 			if (this.Bars == null) {

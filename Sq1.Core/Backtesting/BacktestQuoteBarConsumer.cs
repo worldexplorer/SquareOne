@@ -39,7 +39,7 @@ namespace Sq1.Core.Backtesting {
 				//	string msg = "DUMPED_BEFORE_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
 				//}
 				int pendingCountPre	= this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
-				int pendingFilled	= this.backtester.Executor.DataSource_fromBars.BrokerAsBacktest_nullUnsafe.BacktestMarketsim.SimulateFillAllPendingAlerts(quote, null);
+				int pendingFilled	= this.backtester.Executor.DataSource_fromBars.BrokerAsBacktest_nullUnsafe.BacktestMarketsim.SimulateFill_allPendingAlerts(quote, null);
 				int pendingCountNow	= this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				if (pendingCountNow != pendingCountPre - pendingFilled) {
 					string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";

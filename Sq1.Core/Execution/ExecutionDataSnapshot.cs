@@ -2,6 +2,9 @@
 
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Support;
+using Sq1.Core.DataTypes;
+using Sq1.Core.Backtesting;
+using System.Collections.Generic;
 
 namespace Sq1.Core.Execution {
 	public partial class ExecutionDataSnapshot {
@@ -103,5 +106,23 @@ namespace Sq1.Core.Execution {
 			this.PositionsClosedAfterExec.AddClosed(positionClosing, this, "PositionsMasterOpenNewAdd(WAIT)");
 			this.PositionsOpenNow.Remove(positionClosing, this, "PositionsMasterOpenNewAdd(WAIT)");
 		} }
+		public AlertList AlertsPending_thatQuoteWillFill(Quote quote) {		//QuoteGenerated quote
+			BacktestMarketsim marketsim = this.executor.DataSource_fromBars.BrokerAsBacktest_nullUnsafe.BacktestMarketsim;
+
+			AlertList ret = new AlertList("THERE_WERE_NO_ALERTS_PENDING_TO_FILL_ON_EACH_QUOTE", null);
+			if (this.AlertsPending.Count == 0) return ret;
+
+			ret = new AlertList("ALERTS_PENDING_MINUS_SCHEDULED_FOR_DELAYED_FILL", null);
+			List<Alert> pendingSafe = this.AlertsPending.SafeCopy(this, " //Alerts_thatQuoteWillFill(WAIT)");
+			foreach (Alert eachPending in pendingSafe) {
+				double priceFill = -1;
+				double slippageFill = -1;
+				bool filled = marketsim.Check_alertWillBeFilled_byQuote(eachPending, quote, out priceFill, out slippageFill);
+				if (filled == false) continue;
+
+				ret.AddNoDupe(eachPending, this, "Alerts_thatQuoteWillFill(WAIT)");
+			}
+			return ret;
+		}
 	}
 }

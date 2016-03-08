@@ -108,7 +108,7 @@ namespace Sq1.Core.Streaming {
 			string msig = " //StreamingDataSnapshot.LastQuote_getForSymbol(" + symbol + ")";
 			try {
 				this.level2_lastQuoteUnbound_bySymbol.WaitAndLockFor(this, msig);
-				this.lockReason_getLastQuoteForSymbol = msig;
+				//this.lockReason_getLastQuoteForSymbol = msig;
                 if (this.level2_lastQuoteUnbound_bySymbol.ContainsKey(symbol, this, msig) == false) return null;
 				LevelTwo level2 = this.level2_lastQuoteUnbound_bySymbol.GetAtKey(symbol, this, msig);
 				if (level2 == null) return null;
@@ -118,8 +118,8 @@ namespace Sq1.Core.Streaming {
 				}
 				return weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy;
 			} finally {
-				//this.level2_lastQuoteUnbound_bySymbol.UnLockFor(this, msig);
-				this.level2_lastQuoteUnbound_bySymbol.UnLockFor(this, this.lockReason_getLastQuoteForSymbol);
+				this.level2_lastQuoteUnbound_bySymbol.UnLockFor(this, msig);
+				//this.level2_lastQuoteUnbound_bySymbol.UnLockFor(this, this.lockReason_getLastQuoteForSymbol);
 			}
 		}
 		public LevelTwoHalf LevelTwoAsks_getForSymbol_nullUnsafe(string symbol) {
