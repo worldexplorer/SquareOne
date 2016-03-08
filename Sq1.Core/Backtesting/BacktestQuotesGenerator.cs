@@ -375,34 +375,34 @@ namespace Sq1.Core.Backtesting {
 			//v2
 			double priceScriptAligned = alert.PriceScriptAligned;
 
-			#if DEBUG
-			//v1
-			double priceScriptAligned1 = this.backtester.Executor.AlertPrice_alignToPriceLevel(alert.Bars, alert.PriceScript, true,
-				alert.PositionLongShortFromDirection, alert.MarketLimitStop);
-			//quick check
-			if (priceScriptAligned1 != alert.PriceScript) {
-				if (alert.MarketLimitStop == MarketLimitStop.Market) {
-					string msg = "WHY_YOU_DID_CHANGE_THE_PRICE__PRICE_SCRIPT_MUST_BE_ALREADY_GOOD";
-					Assembler.PopupException(msg);
-				}
-			}
-			//long check, switch marketSim calculations to alert.PriceScriptAligned 
-			//v1 if (priceScriptAligned != alert.PriceScriptAligned) {
-			//v2 
-			bool alignedDifferently_iHateDoublesComparison = Math.Round(priceScriptAligned, 1) != Math.Round(alert.PriceScriptAligned, 1);
-			if (alignedDifferently_iHateDoublesComparison) {
-				string msg = "FIX_Alert.PriceScriptAligned";
-				Assembler.PopupException(msg);
-			} else {
-				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
-				//Assembler.PopupException(msg, null, false);
-			}
+			//#if DEBUG
+			////v1
+			//double priceScriptAligned1 = this.backtester.Executor.AlertPrice_alignToPriceLevel(alert.Bars, alert.PriceScript, true,
+			//	alert.PositionLongShortFromDirection, alert.MarketLimitStop);
+			////quick check
+			//if (priceScriptAligned1 != alert.PriceScript) {
+			//	if (alert.MarketLimitStop == MarketLimitStop.Market) {
+			//		string msg = "WHY_YOU_DID_CHANGE_THE_PRICE__PRICE_SCRIPT_MUST_BE_ALREADY_GOOD";
+			//		Assembler.PopupException(msg);
+			//	}
+			//}
+			////long check, switch marketSim calculations to alert.PriceScriptAligned 
+			////v1 if (priceScriptAligned != alert.PriceScriptAligned) {
+			////v2 
+			//bool alignedDifferently_iHateDoublesComparison = Math.Round(priceScriptAligned, 1) != Math.Round(alert.PriceScriptAligned, 1);
+			//if (alignedDifferently_iHateDoublesComparison) {
+			//	string msg = "FIX_Alert.PriceScriptAligned";
+			//	Assembler.PopupException(msg);
+			//} else {
+			//	string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
+			//	//Assembler.PopupException(msg, null, false);
+			//}
 
-			if (alert.MarketLimitStop.ToString() != alert.MarketLimitStopAsString) {
-				string msg = "IT_WAS_TIDAL_OR_OTHER_EXOTIC_MARKET_ORDER";
-				//Assembler.PopupException(msg);
-			}
-			#endif
+			//if (alert.MarketLimitStop.ToString() != alert.MarketLimitStopAsString) {
+			//	string msg = "IT_WAS_TIDAL_OR_OTHER_EXOTIC_MARKET_ORDER";
+			//	//Assembler.PopupException(msg);
+			//}
+			//#endif
 
 			//v1
 			//Quote quotePrevDowncasted = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot

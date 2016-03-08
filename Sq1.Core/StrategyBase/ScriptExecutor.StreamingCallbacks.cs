@@ -31,7 +31,9 @@ namespace Sq1.Core.StrategyBase {
 			bool invokedNoErrors = false;
 			if (onNewQuoteTrue_onNewBarFalse == true) {
 				invokedNoErrors = this.invokeScript_onNewQuote(quoteForAlertsCreated);
-				this.fillPendings_onEachQuote_skipIfNonLivesimBroker(quoteForAlertsCreated);
+				if (this.ExecutionDataSnapshot.AlertsPending.Count > 0) {
+					this.fillPendings_onEachQuote_skipIfNonLivesimBroker(quoteForAlertsCreated);
+				}
 			} else {
 				invokedNoErrors = this.invokeScript_onNewBar(quoteForAlertsCreated);
 			}
@@ -176,7 +178,13 @@ namespace Sq1.Core.StrategyBase {
 			LivesimBroker defaultOrderFiller = this.DataSource_fromBars.BrokerAdapter as LivesimBroker;
 			if (defaultOrderFiller == null) return;
 
-			AlertList willBeFilled = defaultOrderFiller.DataSnapshot.Alerts_thatQuoteWillFill_forSchedulingDelayedFill(quoteForAlertsCreated);
+			if (defaultOrderFiller.DataSnapshot == null) {
+				string msg = "CHANGED_DATASOURCE_DIDNT_INITIALIZE_FULLY RESTART defaultOrderFiller.DataSnapshot=NULL IM_STORING_SCHEDULED_PENDINGS_THERE";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+
+			AlertList willBeFilled = this.ExecutionDataSnapshot.AlertsPending_thatQuoteWillFill(quoteForAlertsCreated);
 			if (willBeFilled.Count == 0) {
 				string msg1 = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
 				return;

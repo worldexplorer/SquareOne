@@ -267,13 +267,13 @@ namespace Sq1.Core.StrategyBase {
 			return (completionPortThreadsMax / completionPortThreadsAvailable) * 100;
 		}
 
-		[Obsolete("REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014 replaced by Alert.PriceAligned,PriceStopActivationAligned - all served by SymbolInfo.AlignAlertToPriceLevelSimplified")]
-		public double AlertPrice_alignToPriceLevel(Bars bars, double orderPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
-			if (this.Strategy.ScriptContextCurrent.NoDecimalRoundingForLimitStopPrice) return orderPrice;
-			if (bars == null) bars = this.Bars;
-			orderPrice = bars.SymbolInfo.Alert_alignToPriceLevel(orderPrice, buyOrShort, positionLongShort0, marketLimitStop0);
-			return orderPrice;
-		}
+		//[Obsolete("REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014 replaced by Alert.PriceAligned,PriceStopActivationAligned - all served by SymbolInfo.AlignAlertToPriceLevelSimplified")]
+		//public double AlertPrice_alignToPriceLevel(Bars bars, double orderPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
+		//    if (this.Strategy.ScriptContextCurrent.NoDecimalRoundingForLimitStopPrice) return orderPrice;
+		//    if (bars == null) bars = this.Bars;
+		//    orderPrice = bars.SymbolInfo.Alert_alignToPriceLevel(orderPrice, buyOrShort, positionLongShort0, marketLimitStop0);
+		//    return orderPrice;
+		//}
 
 
 	}
