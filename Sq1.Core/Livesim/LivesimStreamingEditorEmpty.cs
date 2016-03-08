@@ -14,7 +14,7 @@ namespace Sq1.Core.Livesim {
 		public override void PushEditedSettingsToStreamingAdapter() {
 			string msg = "INAPPLICABLE_FOR_A_LIVESIMSTREAMING_ENFORCED_TO_BE_MANDATORY_WHEN_NO_OTHER_STREAMING_IS_ASSIGNED_BY_USER_TO_A_DATASOURCE for streamingAdapter=[" + base.StreamingAdapter + "]";
 		}
-		protected override void StreamingAdapter_OnConnectionStateChanged(object sender, EventArgs e) {
+		protected override void StreamingAdapter_OnStreamingConnectionStateChanged(object sender, EventArgs e) {
 			string msg = "COPY_CONTENT_FROM_QUIK_STREAMING_EDITOR UPDATE_YOUR_CONNECT_BUTTON_STATE_BECAUSE_IT_WAS_CHANGED_SOMEWHERE_ELSE";
 		}
 	}

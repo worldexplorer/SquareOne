@@ -171,10 +171,10 @@ namespace Sq1.Core {
 			createdNewFile = this.RepositoryMarketInfos.Initialize(this.AppDataPath, "MarketInfo.json", "", null);
 			this.RepositoryMarketInfos			.Deserialize();
 			
-			this.RepositoryDllJsonStrategies		.Initialize(this.AppDataPath, this.AppStartupPath);
+			this.RepositoryDllJsonStrategies	.Initialize(this.AppDataPath, this.AppStartupPath);
 
 			this.RepositoryDllStreamingAdapters	.InitializeAndScan(this.AppStartupPath);
-			this.RepositoryDllBrokerAdapters		.InitializeAndScan(this.AppStartupPath);
+			this.RepositoryDllBrokerAdapters	.InitializeAndScan(this.AppStartupPath);
 			this.RepositoryDllReporters			.InitializeAndScan(this.AppStartupPath);
 			
 			this.WorkspacesRepository			.Initialize(this.AppDataPath, "Workspaces");

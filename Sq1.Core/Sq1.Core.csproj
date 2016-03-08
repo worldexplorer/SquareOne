@@ -80,8 +80,15 @@
     <Compile Include="Broker\BrokerAdapter.EditorSupport.cs">
       <DependentUpon>BrokerAdapter.cs</DependentUpon>
     </Compile>
+    <Compile Include="Broker\BrokerAdapter.EventGenerator.cs">
+      <DependentUpon>BrokerAdapter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Broker\BrokerAdapter.OverrideMe.cs">
       <DependentUpon>BrokerAdapter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Broker\BrokerEditor.EventConsumer.cs">
+      <DependentUpon>BrokerEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
     <Compile Include="Broker\OrderProcessor.EventGenerator.cs">

@@ -21,7 +21,7 @@ namespace Sq1.Core.Streaming {
 			this.StreamingAdapter = streamingAdapterPassed;
 			this.DataSourceEditor = dataSourceEditor;
 			this.initializeEditorFields();
-			this.StreamingAdapter.OnConnectionStateChanged += new EventHandler<EventArgs>(this.StreamingAdapter_OnConnectionStateChanged);
+			this.StreamingAdapter.OnStreamingConnectionStateChanged += new EventHandler<EventArgs>(this.StreamingAdapter_OnStreamingConnectionStateChanged);
 		}
 
 		// was intended to be abstract but has implementation for Designer to be able to instantiate StreamingEditor
