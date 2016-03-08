@@ -71,10 +71,16 @@ namespace Sq1.Adapters.Quik.Broker {
 			set { this.cbxGoRealWhenLivesim.Checked = value; }
 		}
 
-		//bool		quikFolderExists	{ get { return Directory.Exists(this.quikFolder); } }
-		string		quikDllAbsPath		{ get { return Path.Combine(this.quikFolder, this.quikBrokerAdapter.QuikDllName); } }
-		bool		dllFoundInFolder	{ get { return File.Exists(quikDllAbsPath); } }
+		bool		quikFolderExists		{ get { return Directory.Exists(this.quikFolder); } }
+		//string		trans2QuikDllAbsPath	{ get { return Path.Combine(this.quikFolder, this.quikBrokerAdapter.Trans2QuikDllName); } }
+		string		trans2QuikDllAbsPath	{ get { return Path.Combine(Assembler.InstanceInitialized.AppStartupPath, this.quikBrokerAdapter.Trans2QuikDllName); } }
+		bool		trans2QuikDllFound		{ get { return File.Exists(this.trans2QuikDllAbsPath); } }
 	
+		LinkLabel.Link	trans2QuikDllLink	{ get {
+			LinkLabel.Link ret = new LinkLabel.Link();
+			ret.LinkData = this.quikBrokerAdapter.Trans2QuikDllUrl;
+			return ret;
+		} }
 
 		// Designer will call this
 		public QuikBrokerEditorControl() {
@@ -84,6 +90,7 @@ namespace Sq1.Adapters.Quik.Broker {
 		public QuikBrokerEditorControl(BrokerAdapter brokerQuik, IDataSourceEditor dataSourceEditor) : this() {
 			base.Initialize(brokerQuik, dataSourceEditor);
 			this.propagateBrokerConnected_intoBtnStateText();
+			this.propagateDllFound();
 		}
 		public override void PushBrokerAdapterSettingsToEditor() {
 			this.account				= this.quikBrokerAdapter.AccountAutoPropagate;
@@ -125,6 +132,21 @@ namespace Sq1.Adapters.Quik.Broker {
 			string btnTxtMustBe = this.quikBrokerAdapter.DllConnectionStatus_oppositeAction;
 			if (this.cbxConnectDLL.Text == btnTxtMustBe) return;
 				this.cbxConnectDLL.Text  = btnTxtMustBe;
+		}
+
+		void propagateDllFound() {
+			this.lnkTrans2quik.Text = this.quikBrokerAdapter.Trans2QuikDllName;
+
+			this.lnkTrans2quik.Links.Clear();
+			this.lnkTrans2quik.Links.Add(this.trans2QuikDllLink);
+
+			if (this.trans2QuikDllFound) {
+				this.lblTrans2quikFound.Text = "found in AppStartupPath";
+				this.lblTrans2quikFound.ForeColor = Color.Green;
+			} else {
+				this.lblTrans2quikFound.Text = "not found in AppStartupPath";
+				this.lblTrans2quikFound.ForeColor = Color.Red;
+			}
 		}
 	}
 }

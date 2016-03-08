@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Drawing;
+using System.Windows.Forms;
+using System.Diagnostics;	//Process.Start(target);
 
 using Sq1.Core;
 
 namespace Sq1.Adapters.Quik.Broker {
 	public partial class QuikBrokerEditorControl {
 		void txtQuikFolder_TextChanged(object sender, EventArgs e) {
-			if (this.dllFoundInFolder) {
+			if (this.quikFolderExists) {
 				this.txtQuikFolder.BackColor = Color.White;
-				this.lblQuikPathContainsDllStatus.Text = "found " + this.quikBrokerAdapter.QuikDllName;
-				this.lblQuikPathContainsDllStatus.ForeColor = Color.Green;
+				this.lblQuikPathFound.Text = "folder found";
+				this.lblQuikPathFound.ForeColor = Color.Green;
 			} else {
 				this.txtQuikFolder.BackColor = Color.LightCoral;
-				this.lblQuikPathContainsDllStatus.Text = "not found " + this.quikBrokerAdapter.QuikDllName;
-				this.lblQuikPathContainsDllStatus.ForeColor = Color.Red;
+				this.lblQuikPathFound.Text = "folder does not exist";
+				this.lblQuikPathFound.ForeColor = Color.Red;
 			}
+			this.propagateDllFound();	// each keypress you have a chance to see if I found the DLL; appRestart may be neededt to use it
 		}
 
 		void cbxConnectDLL_CheckedChanged(object sender, EventArgs e) {
@@ -34,6 +37,15 @@ namespace Sq1.Adapters.Quik.Broker {
 				string msg = "(DIS)CONNECT_THREW";
 				Assembler.PopupException(msg, ex);
 			}
+		}
+
+		void lnkTrans2quik_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+			this.lnkTrans2quik.LinkVisited = true;
+			string target = e.Link.LinkData as string;
+			Process.Start(target);
+		}
+		protected override void BrokerAdapter_OnBrokerConnectionStateChanged(object sender, EventArgs e) {
+			this.propagateBrokerConnected_intoBtnStateText();
 		}
 	}
 }

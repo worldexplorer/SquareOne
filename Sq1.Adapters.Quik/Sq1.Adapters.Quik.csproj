@@ -95,6 +95,15 @@
     <Compile Include="Broker\QuikBroker.BrokerAdapterProtocol.cs">
       <DependentUpon>QuikBroker.cs</DependentUpon>
     </Compile>
+    <Compile Include="Broker\Terminal\QuikDllConnector.Connect.cs">
+      <DependentUpon>QuikDllConnector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Broker\Terminal\QuikDllConnector.Receive.cs">
+      <DependentUpon>QuikDllConnector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Broker\Terminal\QuikDllConnector.Send.cs">
+      <DependentUpon>QuikDllConnector.cs</DependentUpon>
+    </Compile>
     <Compile Include="Streaming\Dde\DdeBatchSubscriber.EventConsumer.cs">
       <DependentUpon>DdeBatchSubscriber.cs</DependentUpon>
     </Compile>

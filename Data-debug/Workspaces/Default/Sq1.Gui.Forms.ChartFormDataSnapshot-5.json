@@ -40,14 +40,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 56
+        "PanelHeight": 49
       },
       "PanelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 62,
+        "Distance": 55,
         "SplitterHeight": 6,
-        "PanelHeight": 130
+        "PanelHeight": 173
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -57,14 +57,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 869
+        "PanelHeight": 305
       },
       "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 875,
+        "Distance": 311,
         "SplitterHeight": 6,
-        "PanelHeight": 171
+        "PanelHeight": 76
       }
     },
     "Name": "Default",
@@ -164,7 +164,7 @@
     "LevelTwoAskColorContour": "205, 180, 180",
     "LevelTwoBidColorBackground": "230, 255, 230",
     "LevelTwoBidColorContour": "180, 205, 180",
-    "LevelTwoMinimumPriceLevelThicknessRendered": -1,
+    "LevelTwoMinimumPriceLevelThicknessRendered": 14,
     "LevelTwoLotDrawString": true,
     "LevelTwoLotFont": "Microsoft Sans Serif, 8.25pt",
     "LevelTwoLotColor": "Black",

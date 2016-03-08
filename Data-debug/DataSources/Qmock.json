@@ -8,7 +8,7 @@
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
     "Interval": 1,
     "Scale": 3,
-    "AsString_cached": null,
+    "AsString_cached": "1-Minute",
     "IsIntraday": true,
     "AsTimeSpanInSeconds": 60,
     "AsTimeSpan": "00:01:00",
@@ -22,9 +22,9 @@
     "DdeTopicTrades": "trades",
     "DdeTopicSuffixDom": "dom",
     "DdeMonitorRefreshRateMs": 200,
-    "DdeMonitorPopupOnRestart": true,
+    "DdeMonitorPopupOnRestart": false,
     "Level2RefreshRateMs": 200,
-    "UpstreamConnectedOnAppRestart": false
+    "UpstreamConnectedOnAppRestart": true
   },
   "BrokerAdapter": {
     "$type": "Sq1.Adapters.Quik.Broker.QuikBroker, Sq1.Adapters.Quik",
@@ -41,11 +41,12 @@
       "AccountValueTimeStamp": "0001-01-01T00:00:00"
     },
     "QuikFolder": "C:\\Program Files (x86)\\QUIK-Junior",
-    "QuikDllName": "TRANS2QUIK.DLL",
+    "Trans2QuikDllName": "TRANS2QUIK.dll",
+    "Trans2QuikDllUrl": "http://www.quik.ru",
     "QuikClientCode": null,
     "ReconnectTimeoutMillis": 3000,
     "GoRealDontUseOwnLivesim": false,
-    "UpstreamConnected": false
+    "UpstreamConnectedOnAppRestart": true
   },
   "MarketName": "FORTS",
   "Name": "Qmock",

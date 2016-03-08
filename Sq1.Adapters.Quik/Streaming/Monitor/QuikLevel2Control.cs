@@ -26,7 +26,7 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 			try {
 				this.ddeTableDepth.OnDataStructureParsed_One			+= new EventHandler<XlDdeTableMonitoringEventArg<LevelTwo>>			(this.ddeTableDepth_OnDataStructureParsed_One);
 				this.ddeTableDepth.OnDataStructuresParsed_Table			+= new EventHandler<XlDdeTableMonitoringEventArg<List<LevelTwo>>>	(this.ddeTableDepth_OnDataStructuresParsed_Table_butAlwaysOneElementInList);
-				this.ddeTableDepth.QuikStreaming.OnConnectionStateChanged += new EventHandler<EventArgs>(this.quikStreaming_OnConnectionStateChanged);
+				this.ddeTableDepth.QuikStreaming.OnStreamingConnectionStateChanged += new EventHandler<EventArgs>(this.quikStreaming_OnStreamingConnectionStateChanged);
 				base.PopulateLevel2ToTitle();
 			} catch (Exception ex) {
 				string msg = "IS_DATASOURCE_EDITOR_NULL? this.quikStreaming.DataSourceEditor[" + this.ddeTableDepth.QuikStreaming.DataSourceEditor + "] //QuikLevel2Control.OnControlAdded()";
@@ -35,7 +35,7 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		}
 		public void MyTableDepth_unsubscribe() {
 			try {
-				this.ddeTableDepth.QuikStreaming.OnConnectionStateChanged	-= new EventHandler<EventArgs>(this.quikStreaming_OnConnectionStateChanged);
+				this.ddeTableDepth.QuikStreaming.OnStreamingConnectionStateChanged	-= new EventHandler<EventArgs>(this.quikStreaming_OnStreamingConnectionStateChanged);
 				this.ddeTableDepth.OnDataStructureParsed_One				-= new EventHandler<XlDdeTableMonitoringEventArg<LevelTwo>>			(this.ddeTableDepth_OnDataStructureParsed_One);
 				this.ddeTableDepth.OnDataStructuresParsed_Table				-= new EventHandler<XlDdeTableMonitoringEventArg<List<LevelTwo>>>	(this.ddeTableDepth_OnDataStructuresParsed_Table_butAlwaysOneElementInList);
 			} catch (Exception ex) {

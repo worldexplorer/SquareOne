@@ -62,7 +62,7 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 			string msg = "what are you passing as e, btw?... level2 is updated the whole thing, both half of moustashes at once";
 		}
 
-		void quikStreaming_OnConnectionStateChanged(object sender, EventArgs e) {
+		void quikStreaming_OnStreamingConnectionStateChanged(object sender, EventArgs e) {
 			// doesn't print anything related to state of the streaming; prints "NEVER CONNECTED" or "RECEIVING" (which might get "DISCONNECTED" now)
 			base.PopulateLevel2ToTitle(this.ddeTableDepth.ToString());
 		}

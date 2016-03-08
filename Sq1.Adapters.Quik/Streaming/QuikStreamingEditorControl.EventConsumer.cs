@@ -39,18 +39,23 @@ namespace Sq1.Adapters.Quik.Streaming {
 			}
 		}
 		void cbxStartDde_CheckedChanged(object sender, EventArgs e) {
-			if (this.dontStartStopDdeServer_imSyncingDdeStarted_intoTheBtnText_only) {
-				this.propagateStreamingConnected_intoBtnStateText();
-				return;
-			}
-			if (this.cbxStartDde.Checked) {
-				//v1 this.quikStreamingAdapter.DdeServerRegister();
-				this.quikStreamingAdapter.UpstreamConnect();
-			} else {
-				this.quikStreamingAdapter.DdeServerUnregister();
+			try {
+				if (this.dontStartStopDdeServer_imSyncingDdeStarted_intoTheBtnText_only) {
+					this.propagateStreamingConnected_intoBtnStateText();
+					return;
+				}
+				if (this.cbxStartDde.Checked) {
+					//v1 this.quikStreamingAdapter.DdeServerRegister();
+					this.quikStreamingAdapter.UpstreamConnect();
+				} else {
+					this.quikStreamingAdapter.DdeServerUnregister();
+				}
+			} catch (Exception ex) {
+				string msg = "(DIS)CONNECT_THREW";
+				Assembler.PopupException(msg, ex);
 			}
 		}
-		protected override void StreamingAdapter_OnConnectionStateChanged(object sender, EventArgs e) {
+		protected override void StreamingAdapter_OnStreamingConnectionStateChanged(object sender, EventArgs e) {
 			this.propagateStreamingConnected_intoBtnStateText();
 		}
    }

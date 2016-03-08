@@ -5,26 +5,46 @@ using Sq1.Core;
 using Sq1.Core.Broker;
 using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
+using Sq1.Core.DataFeed;
+using Sq1.Core.Streaming;
 
 using Sq1.Adapters.Quik.Streaming;
+using Sq1.Adapters.Quik.Broker.Livesim;
 
 namespace Sq1.Adapters.Quik.Broker {
 	public partial class QuikBroker : BrokerAdapter {
+		public override void InitializeDataSource_inverse(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
+			base.Name			= "QuikBroker";
+			base.ReasonToExist	= "INSTANCE_FOR[" + dataSource.Name + "]";
+
+			if (base.LivesimBroker_ownImplementation == null) {
+				base.LivesimBroker_ownImplementation	= new QuikBrokerLivesim("OWN_IMPLEMENTATION_USED_FOR_LIVESIM_NOT_DUMMY");
+			} else {
+				string msg = "ALREADY_INITIALIZED_OWN_LIVESIM MUST_NEVER_HAPPEN_BUT_CRITICAL_WHEN_IT_DOES";
+				Assembler.PopupException(msg);
+			}
+
+			if (base.UpstreamConnectedOnAppRestart) {
+				this.Connect();
+			}
+
+			base.InitializeDataSource_inverse(dataSource, streamingAdapter, orderProcessor);
+		}
 
 		public override void Connect() {
-			string msig = " //QuikTerminal.Connect()";
+			string msig = " //QuikBroker.Connect()";
 			if (string.IsNullOrEmpty(this.QuikFolder)) {
 				string msg = "I_REFUSE_TO_CONNECT_WITH_NULL_FOLDER QuikBroker.QuikFolder[" + this.QuikFolder + "]";
 				throw new Exception(msg + msig);
 			}
 
-			if (Directory.Exists(this.QuikFolder) == false) {
+			if (this.QuikFolderExists == false) {
 				string msg = "I_REFUSE_TO_CONNECT__NON_EXISTING_FOLDER QuikBroker.QuikFolder[" + this.QuikFolder + "]";
 				throw new Exception(msg + msig);
 			}
 
-			if (File.Exists(this.QuikDllAbsPath) == false) {
-				string msg = "I_REFUSE_TO_DONNECT__DLL_CAN_NOT_BE_FOUND QuikBroker.QuikDllAbsPath[" + this.QuikDllAbsPath + "]";
+			if (this.Trans2QuikDllFound == false) {
+				string msg = "I_REFUSE_TO_DONNECT__DLL_CAN_NOT_BE_FOUND QuikBroker.trans2QuikDllAbsPath[" + this.Trans2QuikDllAbsPath + "]";
 				throw new Exception(msg + msig);
 			}
 			this.QuikDllConnector.ConnectDll();
@@ -69,7 +89,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			OrderState orderStateFromTerminalMustGetSubmitted = OrderState.Unknown;
 
 			double priceFill = order.PriceRequested;
-			this.QuikDllConnector.SendTransactionOrderAsync(opBuySell, typeMarketLimitStop,
+			this.QuikDllConnector.OrderSubmit_sendTransaction_async(opBuySell, typeMarketLimitStop,
 				order.Alert.Symbol, order.Alert.SymbolClass,
 				order.PriceRequested, (int)order.QtyRequested, order.GUID,
 				out sernoSessionFromTerminal, out msgSubmittedFromTerminal, out orderStateFromTerminalMustGetSubmitted);
@@ -94,7 +114,7 @@ namespace Sq1.Adapters.Quik.Broker {
 
 			Order killerOrder = victimOrder.KillerOrder;
 
-			QuikDllConnector.SendTransactionOrderKillAsync(victimOrder.Alert.Symbol, victimOrder.Alert.SymbolClass,
+			QuikDllConnector.KillOrder_sendTransaction_async(victimOrder.Alert.Symbol, victimOrder.Alert.SymbolClass,
 				killerOrder.GUID.ToString(),
 				victimOrder.GUID.ToString(),
 				victimOrder.SernoExchange, victimWasStopOrder,

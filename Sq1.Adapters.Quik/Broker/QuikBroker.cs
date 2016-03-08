@@ -18,61 +18,64 @@ using Sq1.Adapters.Quik.Broker.Terminal;
 
 namespace Sq1.Adapters.Quik.Broker {
 	public partial class QuikBroker : BrokerAdapter {
-		[JsonIgnore]	public	QuikDllConnector	QuikDllConnector			{ get; protected set; }
-		[JsonProperty]	public	string			QuikFolder				{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
-		[JsonProperty]	public	string			QuikDllName				{ get; protected set; }
-		[JsonIgnore]	public	string			QuikDllAbsPath			{ get {return Path.Combine(this.QuikFolder, this.QuikDllName);} }
-		[JsonProperty]	public	string			QuikClientCode			{ get; protected set; }
-		[JsonProperty]	public	int				ReconnectTimeoutMillis	{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
-		[JsonProperty]			Account			AccountMicex;			//{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
-		[JsonIgnore]	public	Account			AccountMicexAutoPopulated {
+		[JsonIgnore]	public	QuikDllConnector	QuikDllConnector		{ get; protected set; }
+
+		[JsonProperty]	public	string				QuikFolder				{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
+		[JsonProperty]	public	string				Trans2QuikDllName		{ get; protected set; }
+		[JsonProperty]	public	string				Trans2QuikDllUrl		{ get; protected set; }
+
+		[JsonIgnore]	public	bool				QuikFolderExists		{ get { return Directory.Exists(this.QuikFolder); } }
+		[JsonIgnore]	public	string				Trans2QuikDllAbsPath	{ get { return Path.Combine(Assembler.InstanceInitialized.AppStartupPath, this.Trans2QuikDllName); } }
+		[JsonIgnore]	public	bool				Trans2QuikDllFound		{ get { return File.Exists(this.Trans2QuikDllAbsPath); } }
+
+
+		[JsonProperty]	public	string				QuikClientCode			{ get; protected set; }
+		[JsonProperty]	public	int					ReconnectTimeoutMillis	{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
+		[JsonProperty]			Account				AccountMicex;			//{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
+		[JsonIgnore]	public	Account				AccountMicexAutoPopulated {
 			get { return AccountMicex; }
 			internal set {
 				this.AccountMicex = value;
 				this.AccountMicex.Initialize(this);
 			}
 		}
-		[JsonProperty]	public	bool			GoRealDontUseOwnLivesim	{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
+		[JsonProperty]	public	bool				GoRealDontUseOwnLivesim	{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
 
-		[JsonIgnore]	public	bool			IsConnectedToTerminal	{ get { return this.QuikDllConnector != null && this.QuikDllConnector.DllConnected; } }
-		[JsonIgnore]	public	string			DllConnectionStatus_oppositeAction { get {
+		[JsonIgnore]	public	bool				IsConnectedToTerminal	{ get { return this.QuikDllConnector != null && this.QuikDllConnector.DllConnected; } }
+		[JsonIgnore]	public	string				DllConnectionStatus_oppositeAction { get {
 			return this.IsConnectedToTerminal ? "Disconnect from DLL (now connected)" : "Connect to DLL (now disconnected)";
 			} }
 
+		[JsonIgnore]	private	int					identicalConnection_statesReported = 0;
+		[JsonIgnore]	private	int					identicalConnection_statesReported_limit = 3;
+
+
+	
 		public QuikBroker() : base() {		// base() will be invoked anyways by .NET, just wanna make it obvious (reminder)
 			base.Name				= "QuikBroker-DllScanned-NOT_INITIALIZED";
 			base.Icon				= (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
 			this.QuikDllConnector	= new QuikDllConnector(this);
-			this.QuikDllName		= this.QuikDllConnector.DllName;
+			this.Trans2QuikDllName	= this.QuikDllConnector.DllName;
+			this.Trans2QuikDllUrl	= this.QuikDllConnector.DllUrl;
 
 			this.AccountMicexAutoPopulated = new Account("QUIK_MICEX_ACCTNR_NOT_SET", -1001);
 			base.OrderCallbackDupesChecker = new OrderCallbackDupesCheckerQuik(this);
 
 			this.QuikFolder					= @"C:\Program Files (x86)\QUIK-Junior";
 			this.ReconnectTimeoutMillis		= 3000;
+			this.UpstreamConnectionState = ConnectionState.UnknownConnectionState;
 		}
-		public override void InitializeDataSource_inverse(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
-			base.Name = "QuikBroker";
 
-			if (base.LivesimBroker_ownImplementation == null) {
-				base.LivesimBroker_ownImplementation	= new QuikBrokerLivesim("OWN_IMPLEMENTATION_USED_FOR_LIVESIM_NOT_DUMMY");
-			} else {
-				string msg = "ALREADY_INITIALIZED_OWN_DISTRIBUTOR MUST_NEVER_HAPPEN_BUT_CRITICAL_WHEN_IT_DOES";
-				Assembler.PopupException(msg);
-			}
-
-			base.InitializeDataSource_inverse(dataSource, streamingAdapter, orderProcessor);
-		}
 		public override BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.BrokerEditorInitializeHelper(dataSourceEditor);
 			base.BrokerEditorInstance = new QuikBrokerEditorControl(this, dataSourceEditor);
 			return base.BrokerEditorInstance;
 		}
 
-		public void CallbackTradeStateReceivedQuik(long SernoExchange, DateTime tradeDate, 
+		public void TradeState_callbackFromQuikDll(long SernoExchange, DateTime tradeDate, 
 				string classCode, string secCode, double priceFill, int qtyFill,
 				double tradePrice2, double tradeTradeSysCommission, double tradeTScommission) {
-			string msig = Name + "::CallbackTradeStateReceivedQuik(): ";
+			string msig = Name + "::TradeState_callbackFromQuikDll(): ";
 			try {
 				string msg = "";
 				Order order = this.OrderProcessor.DataSnapshot.OrdersPending.ScanRecentForSernoExchange((long)SernoExchange);
@@ -110,13 +113,13 @@ namespace Sq1.Adapters.Quik.Broker {
 			}
 		}
 
-		public void CallbackOrderStateReceivedQuik(OrderState newOrderStateReceived, string GUID, long SernoExchange,
+		public void OrderState_callbackFromQuikDll(OrderState newOrderStateReceived, string GUID, long SernoExchange,
 												string classCode, string secCode, double fillPrice, int fillQnty) {
 			string msig = "fillPrice[" + fillPrice + "] fillQnty[" + fillQnty + "]" 
 				+ " " + secCode + "/" + classCode
 				//+ " newOrderStateReceived=[" + newOrderStateReceived + "]"
 				+ " SernoExchange=[" + SernoExchange + "] GUID=[" + GUID + "]"
-				+ " //" + Name + ":CallbackOrderStateReceivedQuik()";
+				+ " //" + Name + "::OrderState_callbackFromQuikDll()";
 
 			Order order = base.ScanEvidentLanesForGuid_nullUnsafe(GUID);
 			if (order == null) {
@@ -165,27 +168,23 @@ namespace Sq1.Adapters.Quik.Broker {
 		}
 
 
-		[JsonIgnore]	ConnectionState previousConnectionState = ConnectionState.UnknownConnectionState;
-		[JsonIgnore]	int identicalConnectionStatesReported = 0;
-		[JsonIgnore]	int identicalConnectionStatesReportedLimit = 3;
-
-		public void callbackTerminalConnectionStateUpdated(ConnectionState state, string message) {
-			if (this.previousConnectionState == ConnectionState.UnknownConnectionState) {
-				this.previousConnectionState = state;
+		public void ConnectionStateUpdated_callbackFromQuikDll(ConnectionState state, string message) {
+			if (this.UpstreamConnectionState == ConnectionState.UnknownConnectionState) {
+				this.UpstreamConnectionState = state;
 			}
-			if (this.previousConnectionState != state) {
-				this.previousConnectionState = state;
-				identicalConnectionStatesReported = 0;
+			if (this.UpstreamConnectionState != state) {
+				this.UpstreamConnectionState = state;
+				identicalConnection_statesReported = 0;
 			}
-			identicalConnectionStatesReported++;
-			if (identicalConnectionStatesReported > identicalConnectionStatesReportedLimit) {
+			identicalConnection_statesReported++;
+			if (identicalConnection_statesReported > identicalConnection_statesReported_limit) {
 				return;
 			}
-			if (state != ConnectionState.SymbolSubscribed) {
-				string msig = " //" + Name + "::callbackConnectionUpdated(): state=[" + state + "]"
-					+ " mustBe[" + ConnectionState.SymbolSubscribed + "] message=[" + message + "]";
-				Assembler.PopupException(message + msig, null, false);
-			}
+			//if (state != ConnectionState.UpstreamConnected_downstreamSubscribed) {
+			//    string msig = " //" + Name + "::ConnectionStateUpdated_callbackFromQuikDll(): state=[" + state + "]"
+			//        + " mustBe[" + ConnectionState.UpstreamConnected_downstreamSubscribed + "] message=[" + message + "]";
+			//    Assembler.PopupException(message + msig);
+			//}
 			string msg = state + " " + message;
 			Assembler.DisplayConnectionStatus(state, msg);
 		}

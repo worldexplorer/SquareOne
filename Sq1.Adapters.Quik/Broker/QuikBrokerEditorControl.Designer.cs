@@ -38,8 +38,10 @@ namespace Sq1.Adapters.Quik.Broker {
 			this.txtCashAvailableMicex = new System.Windows.Forms.TextBox();
 			this.lblCashAvailableMicex = new System.Windows.Forms.Label();
 			this.cbxGoRealWhenLivesim = new System.Windows.Forms.CheckBox();
-			this.lblQuikPathContainsDllStatus = new System.Windows.Forms.Label();
+			this.lblQuikPathFound = new System.Windows.Forms.Label();
 			this.cbxConnectDLL = new System.Windows.Forms.CheckBox();
+			this.lblTrans2quikFound = new System.Windows.Forms.Label();
+			this.lnkTrans2quik = new System.Windows.Forms.LinkLabel();
 			this.SuspendLayout();
 			// 
 			// lblQuikPath
@@ -80,17 +82,15 @@ namespace Sq1.Adapters.Quik.Broker {
 			// 
 			// txtReconnectTimeoutMillis
 			// 
-			this.txtReconnectTimeoutMillis.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.txtReconnectTimeoutMillis.Location = new System.Drawing.Point(3, 61);
+			this.txtReconnectTimeoutMillis.Location = new System.Drawing.Point(3, 65);
 			this.txtReconnectTimeoutMillis.Name = "txtReconnectTimeoutMillis";
-			this.txtReconnectTimeoutMillis.Size = new System.Drawing.Size(105, 20);
+			this.txtReconnectTimeoutMillis.Size = new System.Drawing.Size(108, 20);
 			this.txtReconnectTimeoutMillis.TabIndex = 19;
 			// 
 			// lblReconnectTimeoutMillis
 			// 
 			this.lblReconnectTimeoutMillis.AutoSize = true;
-			this.lblReconnectTimeoutMillis.Location = new System.Drawing.Point(3, 45);
+			this.lblReconnectTimeoutMillis.Location = new System.Drawing.Point(127, 68);
 			this.lblReconnectTimeoutMillis.Name = "lblReconnectTimeoutMillis";
 			this.lblReconnectTimeoutMillis.Size = new System.Drawing.Size(105, 13);
 			this.lblReconnectTimeoutMillis.TabIndex = 18;
@@ -154,22 +154,22 @@ namespace Sq1.Adapters.Quik.Broker {
 			// cbxGoRealWhenLivesim
 			// 
 			this.cbxGoRealWhenLivesim.AutoSize = true;
-			this.cbxGoRealWhenLivesim.Location = new System.Drawing.Point(6, 117);
+			this.cbxGoRealWhenLivesim.Location = new System.Drawing.Point(6, 119);
 			this.cbxGoRealWhenLivesim.Name = "cbxGoRealWhenLivesim";
 			this.cbxGoRealWhenLivesim.Size = new System.Drawing.Size(207, 17);
 			this.cbxGoRealWhenLivesim.TabIndex = 26;
 			this.cbxGoRealWhenLivesim.Text = "Go Real, route Livesim Orders via DLL";
 			this.cbxGoRealWhenLivesim.UseVisualStyleBackColor = true;
 			// 
-			// lblQuikPathContainsDllStatus
+			// lblQuikPathFound
 			// 
-			this.lblQuikPathContainsDllStatus.AutoSize = true;
-			this.lblQuikPathContainsDllStatus.ForeColor = System.Drawing.Color.Red;
-			this.lblQuikPathContainsDllStatus.Location = new System.Drawing.Point(63, 6);
-			this.lblQuikPathContainsDllStatus.Name = "lblQuikPathContainsDllStatus";
-			this.lblQuikPathContainsDllStatus.Size = new System.Drawing.Size(174, 13);
-			this.lblQuikPathContainsDllStatus.TabIndex = 27;
-			this.lblQuikPathContainsDllStatus.Text = "doesn\'t contain TRANS2QUIK.DLL";
+			this.lblQuikPathFound.AutoSize = true;
+			this.lblQuikPathFound.ForeColor = System.Drawing.Color.Red;
+			this.lblQuikPathFound.Location = new System.Drawing.Point(63, 6);
+			this.lblQuikPathFound.Name = "lblQuikPathFound";
+			this.lblQuikPathFound.Size = new System.Drawing.Size(65, 13);
+			this.lblQuikPathFound.TabIndex = 27;
+			this.lblQuikPathFound.Text = "doesn\'t exist";
 			// 
 			// cbxConnectDLL
 			// 
@@ -178,7 +178,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			this.cbxConnectDLL.Appearance = System.Windows.Forms.Appearance.Button;
 			this.cbxConnectDLL.Checked = true;
 			this.cbxConnectDLL.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbxConnectDLL.Location = new System.Drawing.Point(3, 87);
+			this.cbxConnectDLL.Location = new System.Drawing.Point(3, 89);
 			this.cbxConnectDLL.Name = "cbxConnectDLL";
 			this.cbxConnectDLL.Size = new System.Drawing.Size(247, 24);
 			this.cbxConnectDLL.TabIndex = 28;
@@ -187,13 +187,37 @@ namespace Sq1.Adapters.Quik.Broker {
 			this.cbxConnectDLL.UseVisualStyleBackColor = true;
 			this.cbxConnectDLL.CheckedChanged += new System.EventHandler(this.cbxConnectDLL_CheckedChanged);
 			// 
+			// lblTrans2quikFound
+			// 
+			this.lblTrans2quikFound.AutoSize = true;
+			this.lblTrans2quikFound.ForeColor = System.Drawing.Color.Red;
+			this.lblTrans2quikFound.Location = new System.Drawing.Point(127, 46);
+			this.lblTrans2quikFound.Name = "lblTrans2quikFound";
+			this.lblTrans2quikFound.Size = new System.Drawing.Size(106, 13);
+			this.lblTrans2quikFound.TabIndex = 29;
+			this.lblTrans2quikFound.Text = "Not found /appfolder";
+			// 
+			// lnkTrans2quik
+			// 
+			this.lnkTrans2quik.AutoSize = true;
+			this.lnkTrans2quik.Location = new System.Drawing.Point(22, 46);
+			this.lnkTrans2quik.Name = "lnkTrans2quik";
+			this.lnkTrans2quik.Size = new System.Drawing.Size(89, 13);
+			this.lnkTrans2quik.TabIndex = 30;
+			this.lnkTrans2quik.TabStop = true;
+			this.lnkTrans2quik.Text = "TRANS2QUIK.dll";
+			this.lnkTrans2quik.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.lnkTrans2quik.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkTrans2quik_LinkClicked);
+			// 
 			// QuikBrokerEditorControl
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.AutoScroll = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Controls.Add(this.lnkTrans2quik);
+			this.Controls.Add(this.lblTrans2quikFound);
 			this.Controls.Add(this.cbxConnectDLL);
-			this.Controls.Add(this.lblQuikPathContainsDllStatus);
+			this.Controls.Add(this.lblQuikPathFound);
 			this.Controls.Add(this.cbxGoRealWhenLivesim);
 			this.Controls.Add(this.txtCashAvailableMicex);
 			this.Controls.Add(this.lblCashAvailableMicex);
@@ -222,7 +246,9 @@ namespace Sq1.Adapters.Quik.Broker {
         #endregion
 
 		private CheckBox cbxGoRealWhenLivesim;
-		private Label lblQuikPathContainsDllStatus;
+		private Label lblQuikPathFound;
 		private CheckBox cbxConnectDLL;
+		private Label lblTrans2quikFound;
+		private LinkLabel lnkTrans2quik;
     }
 }
