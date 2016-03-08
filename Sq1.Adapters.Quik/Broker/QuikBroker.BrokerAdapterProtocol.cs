@@ -44,7 +44,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			}
 
 			if (this.Trans2QuikDllFound == false) {
-				string msg = "I_REFUSE_TO_DONNECT__DLL_CAN_NOT_BE_FOUND QuikBroker.trans2QuikDllAbsPath[" + this.Trans2QuikDllAbsPath + "]";
+				string msg = "I_REFUSE_TO_CONNECT__DLL_CAN_NOT_BE_FOUND QuikBroker.trans2QuikDllAbsPath[" + this.Trans2QuikDllAbsPath + "]";
 				throw new Exception(msg + msig);
 			}
 			this.QuikDllConnector.ConnectDll();

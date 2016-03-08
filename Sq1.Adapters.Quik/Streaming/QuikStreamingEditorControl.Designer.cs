@@ -136,6 +136,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// cbxStartDde
 			// 
 			this.cbxStartDde.Appearance = System.Windows.Forms.Appearance.Button;
+			this.cbxStartDde.AutoCheck = false;
 			this.cbxStartDde.Location = new System.Drawing.Point(3, 126);
 			this.cbxStartDde.Name = "cbxStartDde";
 			this.cbxStartDde.Size = new System.Drawing.Size(207, 23);

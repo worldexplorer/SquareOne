@@ -254,13 +254,5 @@ namespace Sq1.Adapters.Quik.Broker {
 			}
 			return msg;
 		}
-
-		//internal void ConnectToDll_subscribe() {
-		//    this.QuikTerminal.ConnectDll();
-		//    this.QuikTerminal.Subscribe(.UpstreamConnect();
-		//}
-		//internal void DisconnectFromDll_unsubscribe() {
-		//    throw new NotImplementedException();
-		//}
 	}
 }

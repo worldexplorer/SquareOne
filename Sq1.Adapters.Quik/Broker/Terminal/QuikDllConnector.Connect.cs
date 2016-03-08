@@ -7,28 +7,28 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Adapters.Quik.Broker.Terminal {
 	public sealed partial class QuikDllConnector {
 					int				connectionAttempts = 0;
-					bool			stopTryingToConnectDll;
+					bool			stopTryingToConnect;
 					Timer			connectionTimer;
 		public		bool			DllConnected	{ get; private set; }
 
 		public void ConnectDll() {
-			this.stopTryingToConnectDll = false;
+			this.stopTryingToConnect = false;
 			this.connectionTimer.Change(0, this.quikBroker.ReconnectTimeoutMillis);
 		}
 		public void DisconnectDll() {
-			this.stopTryingToConnectDll = true;
+			this.stopTryingToConnect = true;
 			this.connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
 			if (this.DllConnected == false) {
 				string msg = "I_REFUSE_TO_DISCONNECT ALREADY_DISCONNECTED";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 			}
 			Trans2Quik.DISCONNECT(out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 			this.DllConnected = false;
 		}
-		void tryConnectPeriodical(Object state) {
+		void tryConnect_rescheduled(Object state) {
 			if (this.connectionAttempts == 0) Thread.Sleep(this.quikBroker.ReconnectTimeoutMillis);
 			this.connectionAttempts++;
-			if (this.stopTryingToConnectDll) {
+			if (this.stopTryingToConnect) {
 				this.connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
 				return;
 			}
@@ -38,11 +38,11 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 			try {
 				error = this.invokeDll_async(out msg);
 				this.connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
-				msg = "#" + connectionAttempts + "//timeoutInfinite QuikDllConnector(" + this.DllName + ") 2/2 " + this.quikBroker.UpstreamConnectionState;
+				msg = "tryConnect_rescheduled#" + connectionAttempts + "//timeoutInfinite QuikDllConnector(" + this.DllName + ") 2/2 " + this.quikBroker.UpstreamConnectionState;
 				Assembler.PopupException(msg, null, false);
-			} catch (Exception e) {
-				this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.ErrorConnectingNoRetriesAnymore, e.Message);
-				Assembler.PopupException("Should we set a limit/timeout on trials?", e);
+			} catch (Exception ex) {
+				this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.ErrorConnectingNoRetriesAnymore, ex.Message);
+				Assembler.PopupException("Should we set a limit/timeout on trials?", ex);
 				return;
 			}
 		}
@@ -55,33 +55,33 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 				this.symbolClassesSubscribed.Clear();
 			}
 
-			Trans2Quik.Result ret = Trans2Quik.Result.FAILED;
+			Trans2Quik.Result status = Trans2Quik.Result.FAILED;
 
-			ret = Trans2Quik.SET_CONNECTION_STATUS_CALLBACK(this.connectionStatus_callback, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-			if (ret != Trans2Quik.Result.SUCCESS) {
+			status = Trans2Quik.SET_CONNECTION_STATUS_CALLBACK(this.connectionStatus_callback, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
+			if (status != Trans2Quik.Result.SUCCESS) {
 				this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.UnknownConnectionState, this.callbackErrorMsg.ToString());
-				msg = "1/5 FAILED: SET_CONNECTION_STATUS_CALLBACK(): error[" + errorAsString(error) + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
+				msg = "1/5 FAILED: SET_CONNECTION_STATUS_CALLBACK(): error[" + error + "][" + callbackErrorMsg + "] status[" + status + "] != SUCCESS";
 				Assembler.PopupException(msg);
 				//throw new Exception(msg);
-				return ret;
+				return status;
 			}
 
-			ret = Trans2Quik.SET_TRANSACTIONS_REPLY_CALLBACK(this.transactionReply_callback, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-			if (ret != Trans2Quik.Result.SUCCESS) {
+			status = Trans2Quik.SET_TRANSACTIONS_REPLY_CALLBACK(this.transactionReply_callback, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
+			if (status != Trans2Quik.Result.SUCCESS) {
 				this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.UnknownConnectionState, this.callbackErrorMsg.ToString());
-				msg = "2/5 FAILED: SET_TRANSACTIONS_REPLY_CALLBACK(): error[" + errorAsString(error) + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
+				msg = "2/5 FAILED: SET_TRANSACTIONS_REPLY_CALLBACK(): error[" + error + "][" + callbackErrorMsg + "] status[" + status + "] != SUCCESS";
 				Assembler.PopupException(msg);
 				//throw new Exception(msg);
-				return ret;
+				return status;
 			}
 
-			ret = Trans2Quik.CONNECT(this.quikBroker.QuikFolder, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-			if (ret != Trans2Quik.Result.SUCCESS && ret != Trans2Quik.Result.ALREADY_CONNECTED_TO_QUIK) {
+			status = Trans2Quik.CONNECT(this.quikBroker.QuikFolder, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
+			if (status != Trans2Quik.Result.SUCCESS && status != Trans2Quik.Result.ALREADY_CONNECTED_TO_QUIK) {
 				this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.UnknownConnectionState, this.callbackErrorMsg.ToString());
-				msg = "3/5 FAILED Quik=>Menu=>Torgovlya=>VneshnieTransakcii=>NachatObrabotku: CONNECT(" + this.quikBroker.QuikFolder + "): error[" + errorAsString(error) + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
+				msg = "3/5 FAILED Quik=>Menu=>Torgovlya=>VneshnieTransakcii=>NachatObrabotku: CONNECT(" + this.quikBroker.QuikFolder + "): error[" + error + "][" + callbackErrorMsg + "] status[" + status + "] != SUCCESS";
 				Assembler.PopupException(msg);
 				//throw new Exception(msg);
-				return ret;
+				return status;
 			}
 
 			/*
@@ -103,7 +103,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 				//return;
 			}
 			*/
-			return ret;
+			return status;
 		}
 
 		void connectionStatus_callback(Trans2Quik.Result status, int err, string m) {
@@ -115,7 +115,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 					this.connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
 					string msg1 = "DLL_CONNECTED WONT_RESCHEDULE connectionTimer";
 					Assembler.PopupException(msg1 + msig, null, false);
-					this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.UpstreamConnected_downstreamSubscribed, msg1);
+					this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.UpstreamConnected_downstreamUnsubscribed, msg1);
 					break;
 
 				case Trans2Quik.Result.QUIK_DISCONNECTED:
@@ -138,5 +138,9 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 					break;
 			}
 		}
+
+		//string errorAsString(int error) {
+		//    return Enum.GetName(typeof(Trans2Quik.Result), error);
+		//}
 	}
 }

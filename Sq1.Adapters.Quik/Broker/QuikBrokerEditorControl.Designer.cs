@@ -176,8 +176,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			this.cbxConnectDLL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbxConnectDLL.Appearance = System.Windows.Forms.Appearance.Button;
-			this.cbxConnectDLL.Checked = true;
-			this.cbxConnectDLL.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbxConnectDLL.AutoCheck = false;
 			this.cbxConnectDLL.Location = new System.Drawing.Point(3, 89);
 			this.cbxConnectDLL.Name = "cbxConnectDLL";
 			this.cbxConnectDLL.Size = new System.Drawing.Size(247, 24);

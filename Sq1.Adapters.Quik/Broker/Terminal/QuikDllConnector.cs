@@ -20,15 +20,11 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 
 		QuikDllConnector() {
 			this.callbackErrorMsg			= new StringBuilder(256);
-			this.connectionTimer			= new Timer(this.tryConnectPeriodical);
+			this.connectionTimer			= new Timer(this.tryConnect_rescheduled);
 			this.symbolClassesSubscribed	= new Dictionary<string, int>();
 		}
 		public QuikDllConnector(QuikBroker quikBroker_passed) : this() {
 			this.quikBroker				= quikBroker_passed;
-		}
-
-		string errorAsString(int error) {
-			return Enum.GetName(typeof(Trans2Quik.Result), error);
 		}
 
 				Dictionary<string, int> symbolClassesSubscribed = new Dictionary<string, int>();
@@ -41,33 +37,33 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 			ret.TrimEnd(",".ToCharArray());
 			return ret;
 		} }
-		public bool IsSubscribed(string Symbol, string ClassCode) {
-			string key = Symbol + ":" + ClassCode;
+		public bool IsSubscribed(string symbol, string classCode) {
+			string key = symbol + ":" + classCode;
 			bool subscribed = symbolClassesSubscribed.ContainsKey(key);
 			return subscribed;
 		}
-		public void Subscribe(string Symbol, string ClassCode) {
-			if (DllConnected == false) {
-				string msg = "can not RegisterQuoteConsumer(" + Symbol + "," + ClassCode + "): DLL[" + DllName + "] must be connected first [" + this.quikBroker.QuikFolder + "]";
+		public void Subscribe(string symbol, string classCode) {
+			if (this.DllConnected == false) {
+				string msg = "can not RegisterQuoteConsumer(" + symbol + "," + classCode + "): DLL[" + DllName + "] must be connected first [" + this.quikBroker.QuikFolder + "]";
 				Assembler.PopupException(msg);
 				//BrokerQuik.ExceptionDialog.PopupException(new Exception(msg));
 				throw new Exception(msg);
 			}
 
-			string key = Symbol + ":" + ClassCode;
+			string key = symbol + ":" + classCode;
 			if (symbolClassesSubscribed.ContainsKey(key)) {
 				this.symbolClassesSubscribed[key]++;
 				Assembler.PopupException("Was already subscribed to Quik Execution Callbacks for [" + key + "].Count=" + symbolClassesSubscribed[key]);
 				return;
 			}
 
-			Trans2Quik.Result ret = Trans2Quik.SUBSCRIBE_ORDERS(ClassCode, Symbol);
+			Trans2Quik.Result ret = Trans2Quik.SUBSCRIBE_ORDERS(classCode, symbol);
 			if (ret != Trans2Quik.Result.SUCCESS) {
-				string msg = "can not SUBSCRIBE_ORDERS(" + ClassCode + "," + Symbol + "): ret[" + ret + "] != SUCCESS";
+				string msg = "can not SUBSCRIBE_ORDERS(" + classCode + "," + symbol + "): ret[" + ret + "] != SUCCESS";
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			} else {
-				string msg = "SUBSCRIBE_ORDERS(" + ClassCode + "," + Symbol + "): SUCCESS";
+				string msg = "SUBSCRIBE_ORDERS(" + classCode + "," + symbol + "): SUCCESS";
 				Assembler.PopupException(msg);
 			}
 
@@ -81,13 +77,13 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 				Assembler.PopupException(msg);
 			}
 
-			ret = Trans2Quik.SUBSCRIBE_TRADES(ClassCode, Symbol);
+			ret = Trans2Quik.SUBSCRIBE_TRADES(classCode, symbol);
 			if (ret != Trans2Quik.Result.SUCCESS) {
-				string msg = "can not SUBSCRIBE_TRADES(" + ClassCode + "," + Symbol + "): ret[" + ret + "] != SUCCESS";
+				string msg = "can not SUBSCRIBE_TRADES(" + classCode + "," + symbol + "): ret[" + ret + "] != SUCCESS";
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			} else {
-				string msg = "SUBSCRIBE_TRADES(" + ClassCode + "," + Symbol + "): SUCCESS";
+				string msg = "SUBSCRIBE_TRADES(" + classCode + "," + symbol + "): SUCCESS";
 				Assembler.PopupException(msg);
 			}
 
@@ -108,30 +104,30 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 	
 			this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.SymbolSubscribed,
 				"QuikDllConnector(" + this.DllName + ") 2/2 " + ConnectionState.SymbolSubscribed +
-					" for SecCode[" + Symbol + "] ClassCode[" + ClassCode + "]");
+					" for SecCode[" + symbol + "] ClassCode[" + classCode + "]");
 		}
-		public void Unsubscribe(string Symbol, string ClassCode) {
+		public void Unsubscribe(string symbol, string classCode) {
 			if (!DllConnected) {
-				string msg = "can not Unsubscribe(" + Symbol + "," + ClassCode + "): DLL must be connected first";
+				string msg = "can not Unsubscribe(" + symbol + "," + classCode + "): DLL must be connected first";
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
 
-			string key = Symbol + ":" + ClassCode;
+			string key = symbol + ":" + classCode;
 			if (!symbolClassesSubscribed.ContainsKey(key)) {
-					string msg = "can not Unsubscribe(" + Symbol + "," + ClassCode + "): was not subscribed before";
+					string msg = "can not Unsubscribe(" + symbol + "," + classCode + "): was not subscribed before";
 					Assembler.PopupException(msg);
 					throw new Exception(msg);
 			}
 			Trans2Quik.Result ret = Trans2Quik.UNSUBSCRIBE_ORDERS();
 			if (ret != Trans2Quik.Result.SUCCESS) {
-				string msg = "can not UNSUBSCRIBE_ORDERS(): ret[" + ret + "] != SUCCESS for SecCode[" + Symbol + "] ClassCode[" + ClassCode + "]";
+				string msg = "can not UNSUBSCRIBE_ORDERS(): ret[" + ret + "] != SUCCESS for SecCode[" + symbol + "] ClassCode[" + classCode + "]";
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
 			ret = Trans2Quik.UNSUBSCRIBE_TRADES();
 			if (ret != Trans2Quik.Result.SUCCESS) {
-				string msg = "can not UNSUBSCRIBE_TRADES(): ret[" + ret + "] != SUCCESS for SecCode[" + Symbol + "] ClassCode[" + ClassCode + "]";
+				string msg = "can not UNSUBSCRIBE_TRADES(): ret[" + ret + "] != SUCCESS for SecCode[" + symbol + "] ClassCode[" + classCode + "]";
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
@@ -142,7 +138,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 			ConnectionState state = (symbolClassesSubscribed[key] > 0)
 				? ConnectionState.SymbolSubscribed : ConnectionState.SymbolUnsubscribed;
 			this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(state,
-				"QuikDllConnector(" + this.DllName + ") " + state + " for SecCode[" + Symbol + "] ClassCode[" + ClassCode + "]");
+				"QuikDllConnector(" + this.DllName + ") " + state + " for SecCode[" + symbol + "] ClassCode[" + classCode + "]");
 		}
 
 	}

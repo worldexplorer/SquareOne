@@ -254,7 +254,9 @@
     <Content Include="Sq1.Adapters.Quik-LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Broker\Terminal\TRANS2QUIK-1.1.0.10.dll.copy" />
+    <Content Include="TRANS2QUIK.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
