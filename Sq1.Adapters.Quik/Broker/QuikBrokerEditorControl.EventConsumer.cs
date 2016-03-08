@@ -8,11 +8,11 @@ namespace Sq1.Adapters.Quik.Broker {
 		void txtQuikFolder_TextChanged(object sender, EventArgs e) {
 			if (this.dllFoundInFolder) {
 				this.txtQuikFolder.BackColor = Color.White;
-				this.lblQuikPathContainsDllStatus.Text = "found";		// + this.quikBrokerAdapter.QuikDllName;
+				this.lblQuikPathContainsDllStatus.Text = "found " + this.quikBrokerAdapter.QuikDllName;
 				this.lblQuikPathContainsDllStatus.ForeColor = Color.Green;
 			} else {
 				this.txtQuikFolder.BackColor = Color.LightCoral;
-				this.lblQuikPathContainsDllStatus.Text = "folder not found";	// + this.quikBrokerAdapter.QuikDllName;
+				this.lblQuikPathContainsDllStatus.Text = "not found " + this.quikBrokerAdapter.QuikDllName;
 				this.lblQuikPathContainsDllStatus.ForeColor = Color.Red;
 			}
 		}
