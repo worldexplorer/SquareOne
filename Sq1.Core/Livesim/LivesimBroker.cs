@@ -42,15 +42,10 @@ namespace Sq1.Core.Livesim {
 			this.threadEntryLockToHaveQuoteSentToThread	= new object();
 			this.LivesimBrokerSpoiler					= new LivesimBrokerSpoiler(this);
 		}
-		// simulator clear path
 		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, OrderProcessor orderProcessor) {
-			this.InitializeDataSource_inverse(livesimDataSource, this.LivesimDataSource.StreamingAsLivesim_nullUnsafe,  orderProcessor);
-		}
-		// adapter assigned to datasource, simulating paper trading
-		public override void InitializeDataSource_inverse(DataSource dataSource_realOrLivesim, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
-			// base.InitializeDataSource_inverse()_WILL_DO_IT base.DataSource		= livesimDataSource;
-			base.InitializeDataSource_inverse(dataSource_realOrLivesim, streamingAdapter,  orderProcessor);
-			this.DataSnapshot	= new LivesimBrokerDataSnapshot(base.DataSource);
+			base.DataSource		= livesimDataSource;
+			this.DataSnapshot	= new LivesimBrokerDataSnapshot(this.LivesimDataSource);
+			base.InitializeDataSource_inverse(livesimDataSource, this.LivesimDataSource.StreamingAsLivesim_nullUnsafe,  orderProcessor);
 		}
 		public override BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			LivesimBrokerEditorEmpty emptyEditor = new LivesimBrokerEditorEmpty();
@@ -136,16 +131,16 @@ namespace Sq1.Core.Livesim {
 
 		//public void ConsumeQuoteUnattached_toFillPending(QuoteGenerated quoteUnattachedVolatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
 		public void ConsumeQuoteUnattached_toFillPending(Quote quoteUnattachedVolatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
+			ScriptExecutor executor = this.LivesimDataSource.Executor;
+			ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
+	
 			//v1
-			//ScriptExecutor executor = this.LivesimDataSource.Executor;
-			//ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
 			//if (snap.AlertsPending.Count == 0) {
 			//    string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //ConsumeQuoteUnattached_toFillPending(" + willBeFilled + ") ";
 			//    //DISABLED_TO_SEE_WHAT_THAT_WILL_BRING
 			//    Assembler.PopupException(msg, null, false);
 			//    return;
 			//}
-
 			//v2
 			if (willBeFilled.Count == 0) return;
 
@@ -169,8 +164,8 @@ namespace Sq1.Core.Livesim {
 
 			AlertList willBeFilled_minusAlreadyScheduled = willBeFilled.Substract_returnClone(this.DataSnapshot.AlertsPending_scheduledForDelayedFill, this, "willBeFilled_minusAlreadyScheduled");
 
-			//AlertList priorDelayedFill = snap.AlertsPending;
-			//if (priorDelayedFill.Count == 0) return;
+			AlertList priorDelayedFill = snap.AlertsPending;
+			if (priorDelayedFill.Count == 0) return;
 
 			ManualResetEvent quotePointerCaptured = new ManualResetEvent(false);
 			Task t = new Task(delegate() {
@@ -187,15 +182,15 @@ namespace Sq1.Core.Livesim {
 				//Application.DoEvents();
 				//MOVED_TO_LivesimBrokerSpoiler Thread.Sleep(delayBeforeFill);
 				this.LivesimBrokerSpoiler.DelayBeforeFill_ThreadSleep();
-				//AlertList afterDelay = snap.AlertsPending;
-				//if (afterDelay.Count == 0) return;
-				//if (priorDelayedFill.Count != afterDelay.Count) {
-				//    string msg = "COUNT_MIGHT_HAVE_DECREASED_FOR_MULTIPLE_OPEN_POSITIONS/STRATEGY_IN_ANOTHER_FILLING_THREAD WHO_FILLED_WHILE_I_WAS_SLEEPING???";
-				//    //Assembler.PopupException(msg);
-				//    return;
-				//}
+				AlertList afterDelay = snap.AlertsPending;
+				if (afterDelay.Count == 0) return;
+				if (priorDelayedFill.Count != afterDelay.Count) {
+				    string msg = "COUNT_MIGHT_HAVE_DECREASED_FOR_MULTIPLE_OPEN_POSITIONS/STRATEGY_IN_ANOTHER_FILLING_THREAD WHO_FILLED_WHILE_I_WAS_SLEEPING???";
+				    //Assembler.PopupException(msg);
+				    return;
+				}
 				this.consumeQuoteUnattached_toFillPendingAsync(quoteUnattachedLocalScoped, willBeFilled_minusAlreadyScheduled);
-				//executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
+				executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
 			});
 			t.ContinueWith(delegate {
 				string msg = "TASK_THREW_LivesimBroker.consumeQuoteUnattached_toFillPendingAsync()";
@@ -214,6 +209,7 @@ namespace Sq1.Core.Livesim {
 				Assembler.PopupException(msg);
 			}
 
+			//List<Alert> safe = willBeFilled.SafeCopy(this, "//ConsumeQuoteUnattached_toFillPending()");
 			List<Alert> safe = willBeFilled_minusAlreadyScheduled.SafeCopy(this, "//ConsumeQuoteUnattached_toFillPending()");
 			this.DataSnapshot.AlertsPending_scheduledForDelayedFill.AddRange(safe, this, "ConsumeQuoteUnattached_toFillPending(WAIT)");
 		} }

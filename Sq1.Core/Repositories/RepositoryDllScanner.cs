@@ -37,8 +37,8 @@ namespace Sq1.Core.Repositories {
 		public string							AbsPath		{ get { return this.RootPath + Subfolder; } }
 		public List<string>						skipDlls = new List<string>() {
 				"CsvHelper35.dll", "DigitalRune.Windows.TextEditor.dll", "NDde.dll", "Newtonsoft.Json.dll",		//"log4net.dll", 
-				"ObjectListView.dll", "WeifenLuo.WinFormsUI.Docking.dll", "Sq1.Charting.dll", "Sq1.Gui.dll", "Sq1.Widgets.dll",
-				"TRANS2QUIK.dll"
+				"ObjectListView.dll", "WeifenLuo.WinFormsUI.Docking.dll", "Sq1.Charting.dll", "Sq1.Gui.dll", "Sq1.Widgets.dll"
+				, "TRANS2QUIK.dll"
 				// I_WANT_LIVESIM_STREAMING_BROKER_BE_AUTOASSIGNED_AND_VISIBLE_IN_DATASOURCE_EDITOR, "Sq1.Core.dll"
 				};
 		private bool							includeGrandChildren;

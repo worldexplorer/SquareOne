@@ -52,14 +52,14 @@ namespace Sq1.Core.Livesim {
 				string msg1 = "BROKER_SUBSTITUTED_FOR_LIVESIM_DATASOURCE";
 				Assembler.PopupException(msg1 + msig, null, false);
 			} else {
-				if (this.BrokerAsLivesim_nullUnsafe == null) {
+				if (base.BrokerAsLivesim_nullUnsafe == null) {
 					if (this.Executor.DataSource_fromBars.BrokerAdapter is LivesimBrokerDefault) {
 						if (base.BrokerAdapter != this.Executor.DataSource_fromBars.BrokerAdapter) {
 							base.BrokerAdapter  = this.Executor.DataSource_fromBars.BrokerAdapter;
 						}
 					}
 				}
-				if (this.BrokerAsLivesim_nullUnsafe == null) {
+				if (base.BrokerAsLivesim_nullUnsafe == null) {
 					string msg2 = "I_REFUSE_TO_RUN_LIVESIM_WITHOUT_LIVESIMBROKER"
 						+ " LivesimDataSource.ctor() should have created its own basic LivesimBroker<=BacktestBroker, now NULL";
 					Assembler.PopupException(msg2);

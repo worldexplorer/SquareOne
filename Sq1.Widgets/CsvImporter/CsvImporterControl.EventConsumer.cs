@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using System.Diagnostics;		// Process.Start(target);
 
 using BrightIdeasSoftware;
 
@@ -194,7 +195,7 @@ namespace Sq1.Widgets.CsvImporter {
 			//this.lnkDownload.Links[this.lnkDownload.Links.IndexOf(e.Link)].Visited = true;
 			this.lnkDownload.LinkVisited = true;
 			string target = e.Link.LinkData as string;
-			System.Diagnostics.Process.Start(target);
+			Process.Start(target);
 		}
 		void rangeBar_OnValueMaxChanged(object sender, RangeArgs<DateTime> e) {
 			BarDataRange userDragged_bBarDataRange = new BarDataRange(e.ValueMin, e.ValueMax);

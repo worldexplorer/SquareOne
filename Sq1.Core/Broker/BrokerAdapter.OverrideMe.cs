@@ -3,9 +3,22 @@ using System;
 using Newtonsoft.Json;
 
 using Sq1.Core.Execution;
+using Sq1.Core.DataFeed;
+using Sq1.Core.Streaming;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Broker {
 	public partial class BrokerAdapter {
+
+		public virtual void InitializeDataSource_inverse(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
+			this.DataSource			= dataSource;
+			this.StreamingAdapter	= streamingAdapter;
+			this.OrderProcessor		= orderProcessor;
+			this.AccountAutoPropagate.Initialize(this);
+			//NULL_UNTIL_QUIK_PROVIDES_OWN_DDE_REDIRECTOR this.LivesimBroker_ownImplementation		= new LivesimBrokerDefault(true);
+			//this.LivesimBroker.Initialize(dataSource);
+			this.UpstreamConnectionState = ConnectionState.UnknownConnectionState;
+		}
 
 		public virtual void Connect() {
 			throw new Exception("please override BrokerAdapter::Connect() for BrokerAdapter.Name=[" + Name + "]");

@@ -43,8 +43,8 @@ namespace Sq1.Core.Broker {
 //				return ret;
 //			} }
 
-		[JsonIgnore]	public OrderCallbackDupesChecker OrderCallbackDupesChecker { get; protected set; }
-		[JsonIgnore]	public bool SignalToTerminateAllOrderTryFillLoopsInAllMocks = false;
+		[JsonIgnore]	public OrderCallbackDupesChecker	OrderCallbackDupesChecker { get; protected set; }
+		//[JsonIgnore]	public bool SignalToTerminateAllOrderTryFillLoopsInAllMocks = false;
 
 		[JsonIgnore]				ConnectionState			upstreamConnectionState;
 		[JsonIgnore]	public		ConnectionState			UpstreamConnectionState	{
@@ -60,42 +60,56 @@ namespace Sq1.Core.Broker {
 					Assembler.PopupException("WHAT_DID_YOU_INITIALIZE? IT_WAS_ALREADY_INITIALIZED_AND_UPSTREAM_CONNECTED", null, false);
 				}
 				this.upstreamConnectionState = value;
-				//copypaste from StreamingAdapter this.RaiseOnConnectionStateChanged();
+				this.RaiseOnBrokerConnectionStateChanged();	// consumed by QuikStreamingMonitorForm,QuikStreamingEditor
+
+				try {
+					if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
+					if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+					if (this.UpstreamConnectedOnAppRestart == this.UpstreamConnected) return;
+					this.UpstreamConnectedOnAppRestart = this.UpstreamConnected;		// you can override this.UpstreamConnectedOnAppRestart and keep it FALSE to avoid DS serialization
+					if (this.DataSource == null) {
+						string msg = "SHOULD_NEVER_HAPPEN DataSource=null for streaming[" + this + "]";
+						Assembler.PopupException(msg);
+						return;
+					}
+					Assembler.InstanceInitialized.RepositoryJsonDataSources.SerializeSingle(this.DataSource);
+				} catch (Exception ex) {
+					string msg = "SOMETHING_WENT_WRONG_WHILE_SAVING_DATASOURCE_AFTER_YOU_CHANGED UpstreamConnected for streaming[" + this + "]";
+					Assembler.PopupException(msg);
+				}
 			}
 		}
-		[JsonProperty]	public		bool					UpstreamConnected					{ get {
+		[JsonProperty]	public	virtual	bool				UpstreamConnectedOnAppRestart		{ get; protected set; }
+		[JsonIgnore]	public		bool					UpstreamConnected					{ get {
 			bool ret = false;
-#region copypaste from StreamingAdapter
-			//switch (this.UpstreamConnectionState) {
-			//	case ConnectionState.UnknownConnectionState:											ret = false;	break;
-			//	case ConnectionState.JustInitialized_solidifiersUnsubscribed:			ret = false;	break;
-			//	case ConnectionState.JustInitialized_solidifiersSubscribed:				ret = false;	break;
-			//	case ConnectionState.DisconnectedJustConstructed:						ret = false;	break;
+			switch (this.UpstreamConnectionState) {
+				case ConnectionState.UnknownConnectionState:							ret = false;	break;
+				case ConnectionState.JustInitialized_solidifiersUnsubscribed:			ret = false;	break;
+				case ConnectionState.JustInitialized_solidifiersSubscribed:				ret = false;	break;
+				case ConnectionState.DisconnectedJustConstructed:						ret = false;	break;
 
-			//	// used in QuikStreamingAdapter
-			//	case ConnectionState.UpstreamConnected_downstreamUnsubscribed:			ret = true;		break;
-			//	case ConnectionState.UpstreamConnected_downstreamSubscribed:			ret = true;		break;
-			//	case ConnectionState.UpstreamConnected_downstreamSubscribedAll:			ret = true;		break;
-			//	case ConnectionState.UpstreamConnected_downstreamUnsubscribedAll:		ret = true;		break;
-			//	case ConnectionState.UpstreamDisconnected_downstreamSubscribed:			ret = false;	break;
-			//	case ConnectionState.UpstreamDisconnected_downstreamUnsubscribed:		ret = false;	break;
+				// used in QuikStreamingAdapter
+				case ConnectionState.UpstreamConnected_downstreamUnsubscribed:			ret = true;		break;
+				case ConnectionState.UpstreamConnected_downstreamSubscribed:			ret = true;		break;
+				case ConnectionState.UpstreamConnected_downstreamSubscribedAll:			ret = true;		break;
+				case ConnectionState.UpstreamConnected_downstreamUnsubscribedAll:		ret = true;		break;
+				case ConnectionState.UpstreamDisconnected_downstreamSubscribed:			ret = false;	break;
+				case ConnectionState.UpstreamDisconnected_downstreamUnsubscribed:		ret = false;	break;
 
-			//	// used in QuikBrokerAdapter
-			//	case ConnectionState.SymbolSubscribed:					ret = true;		break;
-			//	case ConnectionState.SymbolUnsubscribed:				ret = true;		break;
-			//	case ConnectionState.ErrorConnectingNoRetriesAnymore:	ret = false;	break;
+				// used in QuikBrokerAdapter
+				case ConnectionState.SymbolSubscribed:					ret = true;		break;
+				case ConnectionState.SymbolUnsubscribed:				ret = true;		break;
+				case ConnectionState.ErrorConnectingNoRetriesAnymore:	ret = false;	break;
 
-			//	// used in QuikLivesimStreaming
+				// used in QuikLivesimStreaming
+				case ConnectionState.ConnectFailed:						ret = false;	break;
+				case ConnectionState.DisconnectFailed:					ret = false;	break;		// can still be connected but by saying NotConnected I prevent other attempt to subscribe symbols; use "Connect" button to resolve
 
-			//	case ConnectionState.ConnectFailed:						ret = false;	break;
-			//	case ConnectionState.DisconnectFailed:					ret = false;	break;		// can still be connected but by saying NotConnected I prevent other attempt to subscribe symbols; use "Connect" button to resolve
-
-			//	default:
-			//		Assembler.PopupException("ADD_HANDLER_FOR_NEW_ENUM_VALUE this.ConnectionState[" + this.UpstreamConnectionState + "]");
-			//		ret = false;
-			//		break;
-			//}
-#endregion
+				default:
+					Assembler.PopupException("ADD_HANDLER_FOR_NEW_ENUM_VALUE this.ConnectionState[" + this.UpstreamConnectionState + "]");
+					ret = false;
+					break;
+			}
 			return ret;
 		} }
 		[JsonIgnore]	public LivesimBroker			LivesimBroker_ownImplementation			{ get; protected set; }
@@ -112,16 +126,6 @@ namespace Sq1.Core.Broker {
 		public BrokerAdapter(string reasonToExist) : this() {
 			ReasonToExist					= reasonToExist;
 		}
-		public virtual void InitializeDataSource_inverse(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
-			this.DataSource			= dataSource;
-			this.StreamingAdapter	= streamingAdapter;
-			this.OrderProcessor		= orderProcessor;
-			this.AccountAutoPropagate.Initialize(this);
-			//NULL_UNTIL_QUIK_PROVIDES_OWN_DDE_REDIRECTOR this.LivesimBroker_ownImplementation		= new LivesimBrokerDefault(true);
-			//this.LivesimBroker.Initialize(dataSource);
-			this.UpstreamConnectionState = ConnectionState.UnknownConnectionState;
-		}
-
 		protected void checkOrderThrowInvalid(Order orderToCheck) {
 			if (orderToCheck.Alert == null) {
 				throw new Exception("order[" + orderToCheck + "].Alert == Null");

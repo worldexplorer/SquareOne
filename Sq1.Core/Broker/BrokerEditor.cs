@@ -6,7 +6,7 @@ using Sq1.Core.DataFeed;
 namespace Sq1.Core.Broker {
 	// this class should be abstract; it's not abstract because VS2012 opens MockBrokerEditor and complains
 	// "I need to instantiate base class but base class is abstract"
-	public class BrokerEditor : UserControl {
+	public partial class BrokerEditor : UserControl {
 		protected BrokerAdapter BrokerAdapter;
 		protected IDataSourceEditor DataSourceEditor;
 		protected bool IgnoreEditorFieldChangesWhileInitializingEditor;
@@ -17,6 +17,7 @@ namespace Sq1.Core.Broker {
 			this.BrokerAdapter = brokerAdapterPassed;
 			this.DataSourceEditor = dataSourceEditor;
 			this.initializeEditorFields();
+			this.BrokerAdapter.OnBrokerConnectionStateChanged += new EventHandler<EventArgs>(this.BrokerAdapter_OnBrokerConnectionStateChanged);
 		}
 		// was intended to be abstract but has implementation for Designer to be able to instantiate BrokerEditor
 		public virtual void PushBrokerAdapterSettingsToEditor() {

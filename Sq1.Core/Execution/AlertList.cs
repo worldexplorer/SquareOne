@@ -192,6 +192,7 @@ namespace Sq1.Core.Execution {
 			lockPurpose += " //" + base.ReasonToExist + "Substract_returnClone()";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				alertsPending_alreadyScheduledForDelayedFill.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				AlertList ret		= new AlertList(base.ReasonToExist + "_MINUS_" + alertsPending_alreadyScheduledForDelayedFill.ReasonToExist, base.Snap);
 				foreach(Alert eachMine in base.InnerList) {
 					if (alertsPending_alreadyScheduledForDelayedFill.Contains(eachMine, owner, lockPurpose)) continue;
@@ -199,6 +200,7 @@ namespace Sq1.Core.Execution {
 				}
 				return ret;
 			} finally {
+				alertsPending_alreadyScheduledForDelayedFill.UnLockFor(owner, lockPurpose);
 				base.UnLockFor(owner, lockPurpose);
 			}
 		}

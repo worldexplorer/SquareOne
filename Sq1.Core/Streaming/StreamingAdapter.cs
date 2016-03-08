@@ -44,7 +44,7 @@ namespace Sq1.Core.Streaming {
 					Assembler.PopupException("WHAT_DID_YOU_INITIALIZE? IT_WAS_ALREADY_INITIALIZED_AND_UPSTREAM_CONNECTED", null, false);
 				}
 				this.upstreamConnectionState = value;
-				this.RaiseOnConnectionStateChanged();	// consumed by QuikStreamingMonitorForm,QuikStreamingEditor
+				this.RaiseOnStreamingConnectionStateChanged();	// consumed by QuikStreamingMonitorForm,QuikStreamingEditor
 
 				try {
 					if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
@@ -81,12 +81,11 @@ namespace Sq1.Core.Streaming {
 				case ConnectionState.UpstreamDisconnected_downstreamUnsubscribed:		ret = false;	break;
 
 				// used in QuikBrokerAdapter
-				case ConnectionState.SymbolSubscribed:					ret = true;		break;
-				case ConnectionState.SymbolUnsubscribed:				ret = true;		break;
-				case ConnectionState.ErrorConnectingNoRetriesAnymore:	ret = false;	break;
+				//case ConnectionState.SymbolSubscribed:					ret = true;		break;
+				//case ConnectionState.SymbolUnsubscribed:				ret = true;		break;
+				//case ConnectionState.ErrorConnectingNoRetriesAnymore:	ret = false;	break;
 
 				// used in QuikLivesimStreaming
-
 				case ConnectionState.ConnectFailed:						ret = false;	break;
 				case ConnectionState.DisconnectFailed:					ret = false;	break;		// can still be connected but by saying NotConnected I prevent other attempt to subscribe symbols; use "Connect" button to resolve
 

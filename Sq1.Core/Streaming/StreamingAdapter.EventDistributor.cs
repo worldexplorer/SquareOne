@@ -3,15 +3,15 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Streaming {
 	public partial class StreamingAdapter {
-		public event EventHandler<EventArgs>		OnConnectionStateChanged;
+		public event EventHandler<EventArgs>		OnStreamingConnectionStateChanged;
 		public event EventHandler<QuoteEventArgs>	OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange;
 		
-		public void RaiseOnConnectionStateChanged() {
-			if (this.OnConnectionStateChanged == null) return;
+		public void RaiseOnStreamingConnectionStateChanged() {
+			if (this.OnStreamingConnectionStateChanged == null) return;
 			try {
-				this.OnConnectionStateChanged(this, null);
+				this.OnStreamingConnectionStateChanged(this, null);
 			} catch (Exception e) {
-				string msg = "EVENT_CONSUMER_THROWN //StreamingAdapter.RaiseOnConnectionStateChanged()";
+				string msg = "EVENT_CONSUMER_THROWN //StreamingAdapter.RaiseOnStreamingConnectionStateChanged()";
 				Assembler.PopupException(msg, e);
 			}
 		}
