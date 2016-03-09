@@ -5,20 +5,20 @@ using System.Threading;
 
 using Sq1.Core;
 
-namespace Sq1.Widgets {
-	public class TimerSimplifiedTask {
+namespace Sq1.Core.Support {
+	public class TimeredBlockTask {
 		string				reasonToExist;
 		Control				guiInvoker;
-		TimerSimplified		timerUnblink;
+		TimeredBlock		timerUnblink;
 		Task				taskWaitingForTimerExpire;
 		Action				actionOnTimerExpired;
 
-		public TimerSimplifiedTask(string reasonToExist_passed, Control guiInvoker_passed, Action invokedInGuiThread_afterTimerExpired_passed) {
+		public TimeredBlockTask(string reasonToExist_passed, Control guiInvoker_passed, Action invokedInGuiThread_afterTimerExpired_passed) {
 			this.reasonToExist = reasonToExist_passed;
 			this.guiInvoker = guiInvoker_passed;
 			this.actionOnTimerExpired = invokedInGuiThread_afterTimerExpired_passed;
 
-			this.timerUnblink = new TimerSimplified(guiInvoker);
+			this.timerUnblink = new TimeredBlock(guiInvoker);
 
 			this.taskWaitingForTimerExpire = new Task(delegate {
 				string msig = " //TaskWaitingForTimerExpire_toRevertToWhite()";

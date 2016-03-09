@@ -80,8 +80,8 @@
       <DependentUpon>ChartControl.cs</DependentUpon>
     </Compile>
     <Compile Include="ChartControl.CachedForEachPaint.cs">
-      <SubType>UserControl</SubType>
       <DependentUpon>ChartControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ChartControl.EventConsumer.cs">
       <DependentUpon>ChartControl.cs</DependentUpon>
@@ -131,8 +131,8 @@
       <DependentUpon>TestChartForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MultiSplit\MultiSplitContainerGeneric.EventGenerator.cs">
-      <SubType>UserControl</SubType>
       <DependentUpon>MultiSplitContainerGeneric.cs</DependentUpon>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="MultiSplit\MultiSplitContainerGeneric.Persistence.cs">
       <DependentUpon>MultiSplitContainerGeneric.cs</DependentUpon>

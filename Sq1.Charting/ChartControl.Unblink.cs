@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sq1.Core;
+using Sq1.Core.Support;
 using Sq1.Widgets;
 
 namespace Sq1.Charting {
@@ -16,11 +17,11 @@ namespace Sq1.Charting {
 		static	Color	colorBackgroundRed_barsSubscribed_scriptNotTriggering		= Color.FromArgb(255, 230, 230);
 		static	Color	colorBackgroundGreen_barsSubscribed_scriptIsTriggering		= Color.FromArgb(230, 255, 230);
 
-		TimerSimplified timerUnblink;
+		TimeredBlock timerUnblink;
 		Task			TaskWaitingForTimerExpire_toRevertToWhite;
 		
 		public void OnStrategyExecutedOneQuote_unblinkDataSourceTree(Action refreshDataSourceTree_invokedInGuiThread_afterTimerExpired) {
-			if (this.timerUnblink == null) this.timerUnblink = new TimerSimplified(this, 200);	// not started by default
+			if (this.timerUnblink == null) this.timerUnblink = new TimeredBlock(this, 200);	// not started by default
 			if (this.TaskWaitingForTimerExpire_toRevertToWhite == null) {
 				this.TaskWaitingForTimerExpire_toRevertToWhite = new Task(delegate {
 					string msig = " //TaskWaitingForTimerExpire_toRevertToWhite()";

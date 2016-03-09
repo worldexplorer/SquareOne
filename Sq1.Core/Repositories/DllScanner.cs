@@ -6,13 +6,13 @@ using System.Reflection;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.Repositories {
-	public partial class RepositoryDllScanner<T> {
-		public string OfWhat { get { return typeof(T).Name; } }
+	abstract partial class DllScanner<T> {
+		public		string OfWhat { get { return typeof(T).Name; } }
 		
-		public List<Type>						TypesFound;
-		public Dictionary<string, T>			CloneableInstanceByClassName;
-		public Dictionary<Assembly, List<T>>	CloneableInstancesByAssemblies;
-		public string							AssembliesWithCloneableTypesFoundAsString { get {
+		public		List<Type>						TypesFound;
+		public		Dictionary<string, T>			CloneableInstanceByClassName;
+		public		Dictionary<Assembly, List<T>>	CloneableInstancesByAssemblies;
+		public		string							AssembliesWithCloneableTypesFoundAsString { get {
 				string ret = "";
 				foreach (Assembly asm in this.CloneableInstancesByAssemblies.Keys) {
 					ret += "{" + Path.GetFileName(asm.Location) + "}, ";
@@ -21,8 +21,8 @@ namespace Sq1.Core.Repositories {
 				return "[" + ret + "]";
 			} }
 
-		public List<string>						NonEmptyDllsScanned;
-		public string							NonEmptyDllsScannedAsString { get {
+		public		List<string>					NonEmptyDllsScanned;
+		public		string							NonEmptyDllsScannedAsString { get {
 				string ret = "";
 				foreach (string dllPath in this.NonEmptyDllsScanned) {
 					ret += "{" + Path.GetFileName(dllPath) + "}, ";
@@ -30,20 +30,15 @@ namespace Sq1.Core.Repositories {
 				ret = ret.TrimEnd(", ".ToCharArray());
 				return "[" + ret + "]";
 			} }
-		public List<Exception>					ExceptionsWhileScanning;
-		public string							RootPath	{ get; private set; }
-		public string							Subfolder	{ get; private set; }
-		public string							PathMask	{ get; private set; }
-		public string							AbsPath		{ get { return this.RootPath + Subfolder; } }
-		public List<string>						skipDlls = new List<string>() {
-				"CsvHelper35.dll", "DigitalRune.Windows.TextEditor.dll", "NDde.dll", "Newtonsoft.Json.dll",		//"log4net.dll", 
-				"ObjectListView.dll", "WeifenLuo.WinFormsUI.Docking.dll", "Sq1.Charting.dll", "Sq1.Gui.dll", "Sq1.Widgets.dll"
-				, "TRANS2QUIK.dll"
-				// I_WANT_LIVESIM_STREAMING_BROKER_BE_AUTOASSIGNED_AND_VISIBLE_IN_DATASOURCE_EDITOR, "Sq1.Core.dll"
-				};
-		private bool							includeGrandChildren;
+		public		List<Exception>					ExceptionsWhileScanning;
+		public		string							RootPath	{ get; private set; }
+		public		string							Subfolder	{ get; private set; }
+		public		string							PathMask	{ get; private set; }
+		public		string							AbsPath		{ get { return this.RootPath + Subfolder; } }
 
-		public RepositoryDllScanner() {
+		protected	bool							DenyDuplicateShortNames;
+
+		DllScanner() {
 			this.TypesFound = new List<Type>();
 			this.CloneableInstanceByClassName = new Dictionary<string, T>();
 			this.CloneableInstancesByAssemblies = new Dictionary<Assembly, List<T>>();
@@ -52,34 +47,60 @@ namespace Sq1.Core.Repositories {
 			this.Subfolder = "";
 			this.PathMask = "*.dll";
 		}
-		public void InitializeAndScan(string rootPath, bool denyDuplicateShortNamesAndPreInstantiateToClone = true) {
+		public DllScanner(string rootPath, bool denyDuplicateShortNames = true) : this() {
 			this.RootPath = rootPath;
+			this.DenyDuplicateShortNames = denyDuplicateShortNames;
 			//if (this.RootPath.EndsWith(Path.DirectorySeparatorChar) == false) this.RootPath += Path.DirectorySeparatorChar;
-			this.ScanDlls(denyDuplicateShortNamesAndPreInstantiateToClone);
+			//LET_CHILDREN_SCAN_THEMSELVES_KOZ_THEY_WILL_HAVE_ADJUSTMENTS_ABSORBED this.ScanDlls();
 		}
-		public FileInfo[] DllsFoundMinusSkip(DirectoryInfo rootFolder, FileInfo[] dllsAllFoundInRootFolder) {
+		public abstract int ScanDlls();
+
+		protected FileInfo[] DllsFoundInFolder_minusNotNeeded(List<string> dllsToSkip) {
 			List<FileInfo> ret = new List<FileInfo>();
+
+			DirectoryInfo rootFolder = new DirectoryInfo(this.AbsPath);
+			FileInfo[] dllsAllFoundInRootFolder = rootFolder.GetFiles(this.PathMask);
 			foreach (FileInfo fileInfo in dllsAllFoundInRootFolder) {
-				if (skipDlls.Contains(fileInfo.Name)) {
+				if (dllsToSkip != null && dllsToSkip.Contains(fileInfo.Name)) {
 					#if DEBUG
-					this.invoke_ChildrenDebug_onDllMarkedAsSkipDll(fileInfo.Name);
+					this.Invoke_ChildrenDebug_onDllMarkedAsSkipDll(fileInfo.Name);
 					#endif
 					continue;
 				}
 				#if DEBUG
 				string dllAbsPath = Path.Combine(rootFolder.FullName, fileInfo.Name);
-				this.invoke_ChildrenDebug_onDllDoesntExistInFolder(dllAbsPath);
+				this.Invoke_ChildrenDebug_onDllDoesntExistInFolder(dllAbsPath);
 				#endif
 				ret.Add(fileInfo);
 			}
 			return ret.ToArray();
 		}
-		public Dictionary<string, T> ScanDlls(bool denyDuplicateShortNames = true) {
-			Dictionary<string, T> ret = new Dictionary<string, T>();
-			if (Directory.Exists(this.AbsPath) == false) return ret;
+		protected FileInfo[] DllsExplicitlyNeeded_minusNonExistingInFolder(List<string> dllsExplicit) {
+			List<FileInfo> ret = new List<FileInfo>();
+			if (dllsExplicit == null)		return ret.ToArray();
+			if (dllsExplicit.Count == 0)	return ret.ToArray();
+
 			DirectoryInfo rootFolder = new DirectoryInfo(this.AbsPath);
 			FileInfo[] dllsAllFoundInRootFolder = rootFolder.GetFiles(this.PathMask);
-			FileInfo[] dllsFiltered = this.DllsFoundMinusSkip(rootFolder, dllsAllFoundInRootFolder);
+			foreach (FileInfo fileInfo in dllsAllFoundInRootFolder) {
+				if (dllsExplicit.Contains(fileInfo.Name) == false) {
+				    #if DEBUG
+				    this.Invoke_ChildrenDebug_onExtraDllFoundButNotExplicitlyNeeded(fileInfo.Name);
+				    #endif
+				    continue;
+				}
+				#if DEBUG
+				string dllAbsPath = Path.Combine(rootFolder.FullName, fileInfo.Name);
+				this.Invoke_ChildrenDebug_onDllDoesntExistInFolder(dllAbsPath);
+				#endif
+				ret.Add(fileInfo);
+			}
+			return ret.ToArray();
+		}
+
+		protected int ScanListPrepared(FileInfo[] dllsFiltered) {
+			int instancesFound = 0;
+			DirectoryInfo rootFolder = new DirectoryInfo(this.AbsPath);
 			foreach (FileInfo fileInfo in dllsFiltered) {
 				//ALREADY_dllsFiltered if (skipDlls.Contains(fileInfo.Name)) continue;
 				Type[] typesFoundInDll;
@@ -91,7 +112,7 @@ namespace Sq1.Core.Repositories {
 					if (assembly == null) continue;
 					typesFoundInDll = assembly.GetTypes();
 #if DEBUG
-					this.invoke_ChildrenDebug_onTypesFoundInDll(dllAbsPath, typesFoundInDll);
+					this.Invoke_ChildrenDebug_onTypesFoundInDll(dllAbsPath, typesFoundInDll);
 #endif
 					if (typesFoundInDll == null) continue;
 				} catch (ReflectionTypeLoadException ex) {
@@ -112,38 +133,38 @@ namespace Sq1.Core.Repositories {
 				this.NonEmptyDllsScanned.Add(dllAbsPath);
 				foreach (Type typeFound in typesFoundInDll) {
 					msig = " Activator.CreateInstance(" + typeFound + ") << RepositoryDllScanner<" + typeof(T) + ">.ScanDlls("
-						+ denyDuplicateShortNames + ", [" + dllAbsPath + "])";
-						
+						+ this.DenyDuplicateShortNames + ", [" + dllAbsPath + "])";
+
 					string typeFoundName = typeFound.FullName;
 					string typeMustBeParent = typeof(T).FullName;
 
 					if (typeFound.Name == "QuikLivesimStreaming"
 							&& typeMustBeParent == "Sq1.Core.Streaming.StreamingAdapter"
-							//&& typeMustBeParent.Contains("StreamingAdapter")
+						//&& typeMustBeParent.Contains("StreamingAdapter")
 						) {
 						string breakpoint = "here";
 					}
 					bool isAssignable = typeof(T).IsAssignableFrom(typeFound);
 					if (isAssignable == false) {
-						string msg = "typeFoundName[" + typeFoundName+ "].IsNotValidTORepresent[" + typeMustBeParent + "]";
+						string msg = "typeFoundName[" + typeFoundName + "].IsNotValidTORepresent[" + typeMustBeParent + "]";
 						continue;
 					}
 
 					bool imInstantiatingTheParent_itMustBeAbstract = typeFoundName == typeMustBeParent;
 					if (imInstantiatingTheParent_itMustBeAbstract) continue;
-		
-					if (denyDuplicateShortNames == true) {
+
+					if (this.DenyDuplicateShortNames == true) {
 						bool wannaAvoidCloneableInsancesToThrow = this.checkShortNameAlreadyFound(typeFound.Name);
 						if (wannaAvoidCloneableInsancesToThrow) continue;
 					}
 					this.TypesFound.Add(typeFound);
 #if DEBUG
-					this.invoke_ChildrenDebug_TypeAdded(dllAbsPath, typeFound);
+					this.Invoke_ChildrenDebug_TypeAdded(dllAbsPath, typeFound);
 #endif
 
-					//if (denyDuplicateShortNames == false) continue;
+					//if (this.denyDuplicateShortNames == false) continue;
 					if (SkipInstantiationAtAttribute.AtStartup(typeFound) == true) continue;
-					
+
 					// 1/3
 					object instance;
 					try {
@@ -154,7 +175,7 @@ namespace Sq1.Core.Repositories {
 						Assembler.PopupException(msg + msig, ex);
 						continue;
 					}
-					
+
 					// 2/3
 					T classCastedInstance;
 					try {
@@ -166,13 +187,14 @@ namespace Sq1.Core.Repositories {
 						Assembler.PopupException(msg + msig, ex);
 						continue;
 					}
-					
+
 					// 3/3
 					try {
 						//this.CloneableInstanceByClassName.Add(classCastedInstance.Name, classCastedInstance);
 						this.CloneableInstanceByClassName.Add(typeFound.Name, classCastedInstance);
+						instancesFound++;
 #if DEBUG
-						this.invoke_ChildrenDebug_CloneableInstanceByClassNameAdded(dllAbsPath, typeFound.Name, classCastedInstance);
+						this.Invoke_ChildrenDebug_CloneableInstanceByClassNameAdded(dllAbsPath, typeFound.Name, classCastedInstance);
 #endif
 
 						if (this.CloneableInstancesByAssemblies.ContainsKey(assembly) == false) {
@@ -181,7 +203,7 @@ namespace Sq1.Core.Repositories {
 						List<T> cloneableInstancesForAssembly = this.CloneableInstancesByAssemblies[assembly];
 						cloneableInstancesForAssembly.Add(classCastedInstance);
 #if DEBUG
-						this.invoke_ChildrenDebug_CloneableInstanceForAssemblyAdded(dllAbsPath, classCastedInstance);
+						this.Invoke_ChildrenDebug_CloneableInstanceForAssemblyAdded(dllAbsPath, classCastedInstance);
 #endif
 					} catch (Exception ex) {
 						string msg = "DUPLICATE_FOUND_IN_ANOTHER_DLL";
@@ -190,7 +212,7 @@ namespace Sq1.Core.Repositories {
 					}
 				}
 			}
-			return ret;
+			return instancesFound;
 		}
 
 		bool checkShortNameAlreadyFound(string typeNameShort) {
