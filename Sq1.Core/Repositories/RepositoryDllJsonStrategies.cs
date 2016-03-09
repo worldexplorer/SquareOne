@@ -57,8 +57,12 @@ namespace Sq1.Core.Repositories {
 		public string								AbsPath							{ get { return Path.Combine(this.RootPath, Subfolder); } }
 		public List<Exception>						ExceptionsWhileInstantiating	{ get {
 				List<Exception> ret = new List<Exception>();
-				ret.AddRange(this.ScriptRepositoryFoundInFolderDataStrategies.ExceptionsWhileScanning);
-				ret.AddRange(this.ScriptRepositoryFoundInFolderAppStartup.ExceptionsWhileScanning);
+				if (this.ScriptRepositoryFoundInFolderDataStrategies != null) {
+					ret.AddRange(this.ScriptRepositoryFoundInFolderDataStrategies.ExceptionsWhileScanning);
+				}
+				if (this.ScriptRepositoryFoundInFolderAppStartup != null) {
+					ret.AddRange(this.ScriptRepositoryFoundInFolderAppStartup.ExceptionsWhileScanning);
+				}
 				return ret;
 			} }
 
@@ -71,8 +75,8 @@ namespace Sq1.Core.Repositories {
 			this.PathMask = "*.dll";
 			this.StrategiesInFolders = new Dictionary<string, List<Strategy>>();
 			this.ScriptsInDlls = new Dictionary<string, List<Script>>();
-			this.ScriptRepositoryFoundInFolderDataStrategies = new RepositoryDllScripts();
-			this.ScriptRepositoryFoundInFolderAppStartup = new RepositoryDllScripts();
+			//this.ScriptRepositoryFoundInFolderDataStrategies = new RepositoryDllScripts();
+			//this.ScriptRepositoryFoundInFolderAppStartup = new RepositoryDllScripts();
 		}
 		public void RootPathCheckThrow(string rootPath) {
 			if (string.IsNullOrEmpty(rootPath)) {
@@ -148,8 +152,8 @@ namespace Sq1.Core.Repositories {
 			return ret;
 		}
 		protected Dictionary<Assembly, List<Script>> StrategiesScanDllsInitDeserialized(string dataOrStartupPath) {
-			RepositoryDllScripts repo = new RepositoryDllScripts();
-			repo.InitializeAndScan(dataOrStartupPath);
+			RepositoryDllScripts repo = new RepositoryDllScripts(dataOrStartupPath);
+			repo.ScanDlls();
 			Dictionary<Assembly, List<Script>> ret = repo.CloneableInstancesByAssemblies;
 			foreach (Assembly assembly in ret.Keys) {
 				List<Script> cloneableInstancesForAssembly = ret[assembly];

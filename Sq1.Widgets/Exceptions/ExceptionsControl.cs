@@ -20,7 +20,7 @@ namespace Sq1.Widgets.Exceptions {
 				Stopwatch			howLongTreeRebuilds;
 				DateTime			exceptionLastDate_notFlushedYet;
 
-				TimerSimplifiedTask	timedTask_flushingToGui;
+				TimeredBlockTask	timedTask_flushingToGui;
 
 				Exception			exceptionSingleSelectedInTree_nullUnsafe		{ get { return this.olvTreeExceptions.SelectedObject as Exception; } }
 				DockContentImproved parentAsDockContentImproved_nullUnsafe			{ get { return base.Parent as DockContentImproved; } }
@@ -32,7 +32,7 @@ namespace Sq1.Widgets.Exceptions {
 			exceptionLastDate_notFlushedYet	= DateTime.MinValue;
 			howLongTreeRebuilds			= new Stopwatch();
 
-			timedTask_flushingToGui = new TimerSimplifiedTask("FLUSH_EXCEPTIONS_CONTROL__AFTER_HAVING_BUFFERED_FOR_LONG_ENOUGH", this, new Action(delegate {this.flushExceptionsToOLV_switchToGuiThread(); }));
+			timedTask_flushingToGui = new TimeredBlockTask("FLUSH_EXCEPTIONS_CONTROL__AFTER_HAVING_BUFFERED_FOR_LONG_ENOUGH", this, new Action(delegate {this.flushExceptionsToOLV_switchToGuiThread(); }));
 			timedTask_flushingToGui.Delay = 200;
 
 			this.InitializeComponent();

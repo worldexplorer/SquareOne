@@ -128,26 +128,27 @@ namespace Sq1.Core {
 		//	} }
 		
 		public Assembler() {
+			//AssemblerDataSnapshot					= new AssemblerDataSnapshot();
+			AssemblerDataSnapshotSerializer			= new Serializer<AssemblerDataSnapshot>();
+			bool createdNewFile = this.AssemblerDataSnapshotSerializer.Initialize(this.AppDataPath, "AssemblerDataSnapshot.json", "", null);
+			if (createdNewFile) {
+				this.AssemblerDataSnapshotSerializer.Serialize();
+			} else {
+				this.AssemblerDataSnapshot = this.AssemblerDataSnapshotSerializer.Deserialize();
+			}
+
 			RepositorySymbolInfos					= new RepositorySerializerSymbolInfos();
 			RepositoryMarketInfos					= new RepositorySerializerMarketInfos();
 			RepositoryDllJsonStrategies				= new RepositoryDllJsonStrategies();
 			RepositoryJsonDataSources				= new RepositoryJsonDataSources();
 
-			RepositoryDllStreamingAdapters			= new RepositoryDllStreamingAdapters();
-			RepositoryDllBrokerAdapters				= new RepositoryDllBrokerAdapters();
-			RepositoryDllReporters					= new RepositoryDllReporters();
-			
 			WorkspacesRepository					= new RepositoryFoldersNoJson();
 
 			OrderProcessor							= new OrderProcessor();
 			AlertsForChart							= new DictionaryManyToOne<ChartShadow, Alert>();
-			
-			AssemblerDataSnapshot					= new AssemblerDataSnapshot();
-			AssemblerDataSnapshotSerializer			= new Serializer<AssemblerDataSnapshot>();
 
 			//RepositorySerializerChartSettingsTemplates = new RepositorySerializerChartSettingsTemplates();
 			RepositoryJsonChartSettingsTemplates	= new RepositoryJsonChartSettingsTemplates();
-
 		}
 		public Assembler Initialize(IStatusReporter mainForm, bool usedOnlyToPopupExceptions_NPEunsafe = false) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {
@@ -161,7 +162,14 @@ namespace Sq1.Core {
 			}
 			this.StatusReporter = mainForm;
 			if (usedOnlyToPopupExceptions_NPEunsafe) return Assembler.InstanceInitialized;
-			
+
+			#region moved from Ctor() because those use Assembler.InstanceInitialized.AssemblerDataSnapshot.ReferencedNetAssmblies*
+			RepositoryDllStreamingAdapters			= new RepositoryDllStreamingAdapters(this.AppStartupPath);
+			RepositoryDllBrokerAdapters				= new RepositoryDllBrokerAdapters	(this.AppStartupPath);
+			RepositoryDllReporters					= new RepositoryDllReporters		(this.AppStartupPath);
+			#endregion
+
+
 			bool createdNewFile = this.RepositorySymbolInfos.Initialize(this.AppDataPath, "SymbolInfo.json", "", null);
 
 			//v1  this.RepositorySymbolInfo		.DeserializeAndSort();
@@ -173,10 +181,6 @@ namespace Sq1.Core {
 			
 			this.RepositoryDllJsonStrategies	.Initialize(this.AppDataPath, this.AppStartupPath);
 
-			this.RepositoryDllStreamingAdapters	.InitializeAndScan(this.AppStartupPath);
-			this.RepositoryDllBrokerAdapters	.InitializeAndScan(this.AppStartupPath);
-			this.RepositoryDllReporters			.InitializeAndScan(this.AppStartupPath);
-			
 			this.WorkspacesRepository			.Initialize(this.AppDataPath, "Workspaces");
 			this.WorkspacesRepository			.RescanFolders();
 
@@ -188,9 +192,6 @@ namespace Sq1.Core {
 			this.RepositoryJsonDataSources		.Initialize(this.AppDataPath, "DataSources", this.RepositoryMarketInfos, this.OrderProcessor);
 			this.RepositoryJsonDataSources		.DeserializeJsonsInFolder();
 			//SNAP_IS_NOT_SERIALIZED_ANYMORE this.RepositoryJsonDataSource		.ReattachDataSnaphotsToOwnersStreamingAdapters();
-			
-			createdNewFile = this.AssemblerDataSnapshotSerializer.Initialize(this.AppDataPath, "AssemblerDataSnapshot.json", "", null);
-			this.AssemblerDataSnapshot = this.AssemblerDataSnapshotSerializer.Deserialize();
 
 			//createdNewFile = this.RepositorySerializerChartSettingsTemplates.Initialize(this.AppDataPath, "MarketInfo.json", "", null);
 			//this.RepositoryMarketInfo.Deserialize();
@@ -231,7 +232,10 @@ namespace Sq1.Core {
 		}
 		
 		public static void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
-			if (Assembler.IsInitialized == false) return;
+			if (Assembler.IsInitialized == false) {
+				throw new Exception(msg, ex);
+				//return;
+			}
 			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
 			
 			//v1-SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD 
@@ -306,5 +310,17 @@ namespace Sq1.Core {
 			Process.Start("notepad.exe ", this.ExceptionsDuringApplicationShutdownSerializer.JsonAbsFile);
 		}
 		#endregion
+
+		public List<FileInfo> ReferencedNetAssemblies_forCompilingScripts { get {
+			List<FileInfo> ret = new List<FileInfo>();
+			DirectoryInfo directoryInfo = new DirectoryInfo(Assembler.InstanceInitialized.AppStartupPath);		//Application.ExecutablePath
+			FileInfo[] dllsAllFoundInFolder = directoryInfo.GetFiles("*.dll");
+			List<string> referencedNetAssemblyNames = this.AssemblerDataSnapshot.ReferencedNetAssemblyNames_forCompilingScripts_Sq1;
+			foreach (FileInfo eachDllFound in dllsAllFoundInFolder) {
+				if (referencedNetAssemblyNames.Contains(eachDllFound.Name) == false) continue;
+				ret.Add(eachDllFound);
+			}
+			return ret;
+		} }
 	}
 }

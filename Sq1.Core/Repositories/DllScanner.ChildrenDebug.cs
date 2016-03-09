@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Sq1.Core.Repositories {
-	public partial class RepositoryDllScanner<T> {
+	public partial class DllScanner<T> {
 		protected string ChildrenDebug_DllExpected;
 
 		bool childrenDebug_DllNameMatches(string dllAbsPath) {
@@ -12,27 +12,31 @@ namespace Sq1.Core.Repositories {
 
 
 
-		void invoke_ChildrenDebug_onDllMarkedAsSkipDll(string dllMarkedAsSkipDll) {
+		protected void Invoke_ChildrenDebug_onDllMarkedAsSkipDll(string dllMarkedAsSkipDll) {
 			if (this.childrenDebug_DllNameMatches(dllMarkedAsSkipDll) == false) return;
 			this.ChildrenDebug_onDllMarkedAsSkipDll(dllMarkedAsSkipDll);
 		}
-		void invoke_ChildrenDebug_onDllDoesntExistInFolder(string dllAbsPath) {
+		protected void Invoke_ChildrenDebug_onExtraDllFoundButNotExplicitlyNeeded(string dllFoundButNotExplicitlyNeeded) {
+			if (this.childrenDebug_DllNameMatches(dllFoundButNotExplicitlyNeeded) == false) return;
+			this.ChildrenDebug_onFoundButNotExplicitlyNeeded(dllFoundButNotExplicitlyNeeded);
+		}
+		protected void Invoke_ChildrenDebug_onDllDoesntExistInFolder(string dllAbsPath) {
 			if (this.childrenDebug_DllNameMatches(dllAbsPath) == false) return;
 			this.ChildrenDebug_onDllDoesntExistInFolder();
 		}		
-		void invoke_ChildrenDebug_onTypesFoundInDll(string dllAbsPath, Type[] typesFoundInDll) {
+		protected void Invoke_ChildrenDebug_onTypesFoundInDll(string dllAbsPath, Type[] typesFoundInDll) {
 			if (this.childrenDebug_DllNameMatches(dllAbsPath) == false) return;
 			this.ChildrenDebug_onTypesFoundInDll(dllAbsPath, typesFoundInDll);
 		}
-		void invoke_ChildrenDebug_TypeAdded(string dllAbsPath, Type typeFound) {
+		protected void Invoke_ChildrenDebug_TypeAdded(string dllAbsPath, Type typeFound) {
 			if (this.childrenDebug_DllNameMatches(dllAbsPath) == false) return;
-			this.invoke_ChildrenDebug_TypeAdded(dllAbsPath, typeFound);
+			this.Invoke_ChildrenDebug_TypeAdded(dllAbsPath, typeFound);
 		}
-		void invoke_ChildrenDebug_CloneableInstanceForAssemblyAdded(string dllAbsPath, T classCastedInstance) {
+		protected void Invoke_ChildrenDebug_CloneableInstanceForAssemblyAdded(string dllAbsPath, T classCastedInstance) {
 			if (this.childrenDebug_DllNameMatches(dllAbsPath) == false) return;
 			this.ChildrenDebug_CloneableInstanceForAssemblyAdded(classCastedInstance);
 		}
-		void invoke_ChildrenDebug_CloneableInstanceByClassNameAdded(string dllAbsPath, string className, T classCastedInstance) {
+		protected void Invoke_ChildrenDebug_CloneableInstanceByClassNameAdded(string dllAbsPath, string className, T classCastedInstance) {
 			if (this.childrenDebug_DllNameMatches(dllAbsPath) == false) return;
 			this.ChildrenDebug_CloneableInstanceByClassNameAdded(className, classCastedInstance);
 		}
@@ -43,6 +47,9 @@ namespace Sq1.Core.Repositories {
 			string msg = "breakpoint_here";
 		}
 		protected virtual void ChildrenDebug_onDllMarkedAsSkipDll(string dllMarkedAsSkipDll) {
+			string msg = "breakpoint_here";
+		}
+		protected virtual void ChildrenDebug_onFoundButNotExplicitlyNeeded(string dllMarkedAsSkipDll) {
 			string msg = "breakpoint_here";
 		}
 		protected virtual void ChildrenDebug_onTypesFoundInDll(string dllAbsPath, Type[] typesFoundInDll) {

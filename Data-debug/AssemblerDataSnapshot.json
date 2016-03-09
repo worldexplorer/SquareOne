@@ -1,5 +1,40 @@
 {
   "$type": "Sq1.Core.AssemblerDataSnapshot, Sq1.Core",
   "WorkspaceCurrentlyLoaded": "Default",
-  "SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch": 10
+  "SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch": 10,
+  "ReferencedNetAssemblyNames_forCompilingScripts_System": [
+    "System.dll",
+    "System.Windows.Forms.dll",
+    "System.Drawing.dll"
+  ],
+  "ReferencedNetAssemblyNames_forCompilingScripts_Sq1": [
+    "CsvHelper35.dll",
+    "DigitalRune.Windows.TextEditor.dll",
+    "Newtonsoft.Json.dll",
+    "ObjectListView.dll",
+    "WeifenLuo.WinFormsUI.Docking.dll",
+    "Sq1.Charting.dll",
+    "Sq1.Core.dll",
+    "Sq1.Indicators.dll",
+    "Sq1.Reporters.dll",
+    "Sq1.Charting.dll",
+    "Sq1.Gui.exe",
+    "Sq1.Widgets.dll",
+    "Sq1.Adapters.Quik.dll",
+    "NDde.dll"
+  ],
+  "ReferencedNetAssemblyNames_StreamingBrokerAdapters": [
+    "Sq1.Core.dll",
+    "Sq1.Adapters.Quik.dll"
+  ],
+  "ReferencedNetAssemblyNames_Reporters": [
+    "Sq1.Reporters.dll"
+  ],
+  "ReferencedNetAssemblyNames_Indicators": [
+    "Sq1.Core.dll",
+    "Sq1.Indicators.dll"
+  ],
+  "ReferencedNetAssemblyNames_Scripts": [
+    "Sq1.Strategies.*.dll"
+  ]
 }

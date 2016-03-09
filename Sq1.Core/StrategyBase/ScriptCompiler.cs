@@ -87,7 +87,7 @@ namespace Sq1.Core.StrategyBase {
 			//compilerParameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
 			//compilerParameters.ReferencedAssemblies.Add("System.Drawing.dll");
 			//v2
-			foreach (string reference in Assembler.InstanceInitialized.AssemblerDataSnapshot.ReferencedAssemblies) {
+			foreach (string reference in Assembler.InstanceInitialized.AssemblerDataSnapshot.ReferencedNetAssemblyNames_forCompilingScripts_System) {
 				compilerParameters.ReferencedAssemblies.Add(reference);
 			}
 			this.addApplicationAssemblies(compilerParameters);
@@ -133,8 +133,11 @@ namespace Sq1.Core.StrategyBase {
 			List<string> dllsFound = new List<string>();
 			List<Assembly> assembliesFound = new List<Assembly>();
 			DirectoryInfo directoryInfo = new DirectoryInfo(Assembler.InstanceInitialized.AppStartupPath);		//Application.ExecutablePath
-			FileInfo[] dllsAllFoundInFolder = directoryInfo.GetFiles("*.dll");
-			foreach (FileInfo fileInfo in dllsAllFoundInFolder) {
+			//v1
+			//FileInfo[] dllsAllFoundInFolder = directoryInfo.GetFiles("*.dll");
+			//foreach (FileInfo fileInfo in dllsAllFoundInFolder) {
+			//v2
+			foreach (FileInfo fileInfo in Assembler.InstanceInitialized.ReferencedNetAssemblies_forCompilingScripts) {
 				string dllAbsPath = Path.Combine(directoryInfo.FullName, fileInfo.Name);
 				Assembly assembly;
 				try {
@@ -143,7 +146,7 @@ namespace Sq1.Core.StrategyBase {
 					assembliesFound.Add(assembly);
 					dllsFound.Add(fileInfo.Name);
 				} catch (Exception ex) {
-					string msg = "ASSEMBLY_NOT_FOUND_IN_APP_FOLDER Assembly.LoadFile(" + dllAbsPath + ")";
+					string msg = "MUST_BE_.NET_ASSEMBLY OR_ACCESS_DENIED Assembly.LoadFile(" + dllAbsPath + ")";
 					Assembler.PopupException(msg, ex);
 					throw ex;
 				}

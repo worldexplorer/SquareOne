@@ -3,15 +3,17 @@
 using Sq1.Core.Streaming;
 
 namespace Sq1.Core.Repositories {
-	public class RepositoryDllStreamingAdapters : RepositoryDllScanner<StreamingAdapter> {
-		public RepositoryDllStreamingAdapters() : base() {
+	public class RepositoryDllStreamingAdapters : DllScannerExplicit<StreamingAdapter> {
+		public RepositoryDllStreamingAdapters(string rootPath) :
+				base(rootPath,
+					Assembler.InstanceUninitialized.AssemblerDataSnapshot.ReferencedNetAssemblyNames_StreamingBrokerAdapters) {
 			base.ChildrenDebug_DllExpected = "Sql.Core.dll";
 		}
 
-		protected virtual void ChildrenDebug_onDllDoesntExistInFolder() {
+		protected override void ChildrenDebug_onDllDoesntExistInFolder() {
 			string msg = "breakpoint_here";
 		}
-		protected virtual void ChildrenDebug_onDllMarkedAsSkipDll(string dllMarkedAsSkipDll) {
+		protected override void ChildrenDebug_onDllMarkedAsSkipDll(string dllMarkedAsSkipDll) {
 			string msg = "breakpoint_here";
 		}
 		protected override void ChildrenDebug_onTypesFoundInDll(string dllAbsPath, Type[] typesFoundInDll) {

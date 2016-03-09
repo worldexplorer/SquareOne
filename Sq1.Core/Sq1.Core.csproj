@@ -152,9 +152,12 @@
     <Compile Include="Livesim\Livesimulator.EventGenerator.cs">
       <DependentUpon>Livesimulator.cs</DependentUpon>
     </Compile>
-    <Compile Include="Repositories\RepositoryDllScanner.ChildrenDebug.cs">
-      <DependentUpon>RepositoryDllScanner.cs</DependentUpon>
+    <Compile Include="Repositories\DllScanner.ChildrenDebug.cs">
+      <DependentUpon>DllScanner.cs</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\DllScanner.cs" />
+    <Compile Include="Repositories\DllScannerAllInFolder.cs" />
+    <Compile Include="Repositories\DllScannerExplicit.cs" />
     <Compile Include="Sequencing\SequencerSnapshot.cs" />
     <Compile Include="Correlation\KPIsAveraged.cs" />
     <Compile Include="Correlation\OneParameterAllValuesAveraged.cs" />
@@ -288,7 +291,6 @@
     <Compile Include="Repositories\RepositoryDllBrokerAdapters.cs" />
     <Compile Include="Repositories\RepositoryDllJsonStrategies.cs" />
     <Compile Include="Repositories\RepositoryDllReporters.cs" />
-    <Compile Include="Repositories\RepositoryDllScanner.cs" />
     <Compile Include="Repositories\RepositoryDllStreamingAdapters.cs" />
     <Compile Include="Repositories\RepositoryFoldersNoJson.cs" />
     <Compile Include="Repositories\RepositoryJsonDataSources.cs" />
@@ -441,6 +443,8 @@
     <Compile Include="Streaming\StreamingAdapter.cs" />
     <Compile Include="StrategyBase\StrategyEventArgs.cs" />
     <Compile Include="Support\SymbolParser.cs" />
+    <Compile Include="Support\TimeredBlock.cs" />
+    <Compile Include="Support\TimeredBlockTask.cs" />
     <Compile Include="Support\UserControlInner.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -4,8 +4,8 @@ using System.Windows.Forms;
 
 using Sq1.Core;
 
-namespace Sq1.Widgets {
-	public class TimerSimplified : IDisposable {
+namespace Sq1.Core.Support {
+	public class TimeredBlock : IDisposable {
 		System.Windows.Forms.Timer	timer;
 				ManualResetEvent	expiredMre;
 				int					forever;
@@ -57,7 +57,7 @@ namespace Sq1.Widgets {
 			return;
 		}
 
-		public TimerSimplified(Control guiInvokerPassed, int delayInitial = 200) {
+		public TimeredBlock(Control guiInvokerPassed, int delayInitial = 200) {
 			expiredMre		= new ManualResetEvent(false);	// true allows to check for .Expired and Schedule() upstack
 			SelfReschedule	= false;		// not running by default; start it by SelfReschedule=true (you'll never catch Expired externally) or ScheduleOnce() (you'll catch Expired externally and reschedule again)
 			forever			= -1;
