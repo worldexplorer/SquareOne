@@ -49,7 +49,7 @@ namespace Sq1.Core.Broker {
 			if (order == null) {
 				msg = "DONT_PASS_ORDER_NULL_TO_SUGGEST_LANE";
 				//this.neighborLanesWhenOrdersAll.OrderProcessor.PopupException(new Exception(msg));
-				Assembler.PopupException(msg, null, true);
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 			Stopwatch fullScanTook = new Stopwatch();
@@ -63,21 +63,24 @@ namespace Sq1.Core.Broker {
 				} else {
 					msg += "NOT_FOUND_WHERE_EXPECTED_TRYING_FULL_SEARCH";
 					OrderLaneByState lanesFullScan = neighborLanesWhenOrdersAll.ScanLanesForOrderGuid_nullUnsafe(order);
-					if (lanesFullScan.StatesAllowed == OrderStatesCollections.Unknown) {
-						msg += "; only OrdersAll contains this order, pass iDontNeedSuggestionsHere=true";
-						return;
+					if (lanesFullScan == null) {
+						msg = "NULL_SUGGESTION_FOR[" + order.State + "] instead of OrdersAll: " + msg;
+					} else {
+						if (lanesFullScan.StatesAllowed == OrderStatesCollections.Unknown) {
+							msg += "; only OrdersAll contains this order, pass iDontNeedSuggestionsHere=true";
+						} else {
+							laneFound = lanesFullScan;
+							msg = "USE [" + laneFound.ToString() + "] instead of OrdersAll: " + msg;
+						}
 					}
-					laneFound = lanesFullScan;
 				}
-
-				msg = "USE [" + laneFound.ToString() + "] instead of OrdersAll: " + msg;
 			} else {
 				msg = "NO_SUGGESTION_FOR[" + order.State + "] instead of OrdersAll: " + msg;
 			}
 			fullScanTook.Stop();
 			msg += " order[" + order + "]";
 			msg = "(" + fullScanTook.ElapsedMilliseconds + "ms) " + msg;
-			Assembler.PopupException(msg, null, true);
+			Assembler.PopupException(msg, null, false);
 		}
 		protected virtual bool checkThrowAdd	(Order order) { return true; }
 		protected virtual bool checkThrowRemove	(Order order) { return true; }
@@ -148,7 +151,7 @@ namespace Sq1.Core.Broker {
 			if (iDontNeedSuggestionsHere == false) this.suggestLanePopupException(found);
 			return found;
 		}
-		public Order ScanRecentForGUID(string orderGUID, bool iDontNeedSuggestionsHere = false) { lock (this.OrdersLock) {
+		public Order ScanRecent_forGuid(string orderGUID, bool iDontNeedSuggestionsHere = false) { lock (this.OrdersLock) {
 			Order found = null;
 			foreach (Order order in this.InnerOrderList) {
 				if (order.GUID != orderGUID) continue;

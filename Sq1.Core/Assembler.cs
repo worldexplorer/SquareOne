@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
+using System.Threading;
 
 using Sq1.Core.Broker;
 using Sq1.Core.Charting;
@@ -322,5 +323,16 @@ namespace Sq1.Core {
 			}
 			return ret;
 		} }
+
+		public static void SetThreadName(string threadName, string msg_exception = null, bool popup = false) {
+		    try {
+		        if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) {
+		            Thread.CurrentThread.Name = threadName;
+		        }
+		    } catch (Exception ex) {
+				if (string.IsNullOrEmpty(msg_exception)) msg_exception = "FAILED_TO_SET_THREAD_NAME OR_NPE";
+		        Assembler.PopupException(msg_exception + threadName, ex, popup);
+		    }
+		}
 	}
 }

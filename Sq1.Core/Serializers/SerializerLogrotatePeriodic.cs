@@ -4,7 +4,6 @@ using System.Threading;
 
 using Sq1.Core.Serializers;
 using System.Collections.Generic;
-using Sq1.Core.Execution;
 
 namespace Sq1.Core.Serializers {
 	public class SerializerLogrotatePeriodic<T> : SerializerLogrotate<T> {

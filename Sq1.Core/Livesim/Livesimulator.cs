@@ -4,13 +4,10 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-using Newtonsoft.Json;
-
 using Sq1.Core.Charting;
 using Sq1.Core.Backtesting;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
-using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Livesim {
@@ -80,14 +77,8 @@ namespace Sq1.Core.Livesim {
 				}
 				#endregion
 
-				try {
-					if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) {
-						Thread.CurrentThread.Name = "LIVESIMMING " + base.Executor.Strategy.WindowTitle + " " + base.BarsSimulating.InstanceScaleCount;
-					}
-				} catch (Exception ex) {
-					string msg = "LIVESIM_FAILED_TO_SET_THREAD_NAME OR_NPE";
-					Assembler.PopupException(msg, ex);
-				}
+				string threadName = "LIVESIMMING " + base.Executor.Strategy.WindowTitle + " " + base.BarsSimulating.InstanceScaleCount;
+				Assembler.SetThreadName(threadName, "LIVESIM_FAILED_TO_SET_THREAD_NAME OR_NPE");
 
 				#region MOVED_BACK_DOWNSTACK NEVER_COMMENT_OUT__I_SPENT_TWO_DAYS_TO_DEBUG_IT
 				//string reasonToPauseSymbol = "SYMBOL_PAUSED_LIVESIMMING-" + this.Executor.ToString();

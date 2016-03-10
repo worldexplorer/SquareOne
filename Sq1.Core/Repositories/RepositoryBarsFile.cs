@@ -385,7 +385,9 @@ namespace Sq1.Core.Repositories {
 								+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] == dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
 								+ " fileStreamPositionAfterSeekToLastBar[" + fileStreamPositionAfterSeekToLastBar + "] fileStreamLength[" + fileStreamLength + "]"
 								;
+							#if DEBUG_VERBOSE
 							Assembler.PopupException(msg, null, false);
+							#endif
 						} catch (Exception ex) {
 							string msg = "3/4_FILESTREAM_SEEK_ONE_BAR_FROM_END_THROWN barSize[" + barSize + "]";
 							Assembler.PopupException(msg + msig, ex);
@@ -398,7 +400,9 @@ namespace Sq1.Core.Repositories {
 								+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] > dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
 								+ " fileStreamPositionAfterSeekToEnd[" + fileStreamPositionAfterSeekToEnd + "] fileStreamLength[" + fileStreamLength + "]"
 								;
+							#if DEBUG_VERBOSE
 							Assembler.PopupException(msg, null, false);
+							#endif
 						} catch (Exception ex) {
 							string msg = "3/4_FILESTREAM_SEEK_END_THROWN";
 							Assembler.PopupException(msg + msig, ex);

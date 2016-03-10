@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Threading;
 
 using Sq1.Core;
 
@@ -22,12 +21,9 @@ namespace Sq1.Core.Support {
 
 			this.taskWaitingForTimerExpire = new Task(delegate {
 				string msig = " //TaskWaitingForTimerExpire_toRevertToWhite()";
-				try {
-					Thread.CurrentThread.Name = this.reasonToExist;
-				} catch (Exception ex) {
-					string msg = "SETTING_THREAD_NAME_THREW looks like base.Executor=null";
-					Assembler.PopupException(msg + msig, ex);
-				}
+
+				Assembler.SetThreadName(this.reasonToExist, "SETTING_THREAD_NAME_THREW looks like base.Executor=null");
+
 				try {
 					while (this.timerUnblink.IsDisposed == false) {
 						this.timerUnblink.WaitForever_forTimerExpired();

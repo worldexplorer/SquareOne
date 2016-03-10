@@ -11,6 +11,7 @@ namespace Sq1.Core.Execution {
 		PreSubmit				= 200,
 		Submitting				= 210,
 		//SubmittingAsync		= 220,		// Rejected and other *PostProcessors should consider SubmittingAsync equivalent to Submitting
+		OrderStatus				= 215,
 		SubmittingSequenced		= 230,
 		Submitted				= 240,
 		WaitingBrokerFill		= 250,

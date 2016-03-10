@@ -121,12 +121,8 @@ namespace Sq1.Core.Streaming {
 				//Assembler.PopupException(msg + msig, null, false);
 			}
 
-			try {
-				Thread.CurrentThread.Name = msig;
-			} catch (Exception ex) {
-				string msg = "SUBSCRIBERS_ADDED_BUT_Thread.CurrentThread.Name_WAS_ALREADY_SET__REMOVE_THE_FIRST_INVOCATION";
-				Assembler.PopupException(msg, ex, false);
-			}
+			Assembler.SetThreadName(msig, "SUBSCRIBERS_ADDED_BUT_Thread.CurrentThread.Name_WAS_ALREADY_SET__REMOVE_THE_FIRST_INVOCATION", false);
+
 			return;
 		}
 		public override string ToString() { return THREAD_PREFIX + this.Channel.ConsumerNames; }
