@@ -166,11 +166,7 @@ namespace Sq1.Core.Broker {
 					return;
 				}
 				Order firstOrder = ordersFromAlerts[0];
-				try {
-					if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) Thread.CurrentThread.Name = firstOrder.ToString();
-				} catch (Exception e) {
-					Assembler.PopupException("can not set Thread.CurrentThread.Name=[" + firstOrder + "]", e);
-				}
+				Assembler.SetThreadName(firstOrder.ToString(), "can not set Thread.CurrentThread.Name=[" + firstOrder + "]");
 				this.SubmitOrders(ordersFromAlerts);
 			} catch (Exception e) {
 				string msg = "SubmitOrdersThreadEntry default Exception Handler";
@@ -421,7 +417,7 @@ namespace Sq1.Core.Broker {
 			}
 			foreach (OrderLane orderLane in orderLanes) {
 				orderLanesSearchedAsString += orderLane.GetType().Name.Substring(5) + separator;	// removing "Orders" from "OrdersSubmitting"
-				orderFound = orderLane.ScanRecentForGUID(GUID);
+				orderFound = orderLane.ScanRecent_forGuid(GUID);
 				if (orderFound != null) break;
 			}
 			orderLanesSearchedAsString = orderLanesSearchedAsString.TrimEnd(separator);
@@ -444,6 +440,18 @@ namespace Sq1.Core.Broker {
 //				Assembler.PopupException(msg + msig);
 //				orderFound.Alert.DataSource = this.DataSource;
 //			}
+			if (orderFound.Alert.Bars == null) {
+				string msg = "UNREPAIRABLE__ORDER_FOUND_HAS_Bars_NULL orderFound[" + orderFound.ToString()
+					+ "] this[" + this.ToString() + "]";
+				//orderFound.Alert.Bars = orderFound.;
+				return orderFound;
+			}
+			if (orderFound.Alert.DataSource == null) {
+				string msg = "UNREPAIRABLE__ORDER_FOUND_HAS_DataSource_NULL orderFound[" + orderFound.ToString()
+					+ "] this[" + this.ToString() + "]";
+				//orderFound.Alert.DataSource = this.DataSource;
+				return orderFound;
+			}
 			if (orderFound.Alert.DataSource.BrokerAdapter == null) {
 				string msg = "ORDER_FOUND_HAS_BROKER_NULL__ASSIGNING_MYSELF orderFound[" + orderFound.ToString()
 					+ "] this[" + this.ToString() + "]";

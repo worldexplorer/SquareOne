@@ -107,12 +107,12 @@ namespace Sq1.Core.Broker {
 			return replacementOrder;
 		}
 		public Order findReplacementOrderForRejectedOrder(Order orderRejected) {
-			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(orderRejected.GUID);
+			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(orderRejected.GUID);
 			if (rejected == null) {
 				throw new Exception("Rejected[" + orderRejected + "] wasn't found!!!");
 			}
 			if (string.IsNullOrEmpty(rejected.ReplacedByGUID)) return null;
-			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(rejected.ReplacedByGUID);
+			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(rejected.ReplacedByGUID);
 			return replacement;
 		}
 		public void SubmitReplacementOrderInsteadOfRejected(Order replacementOrder) {

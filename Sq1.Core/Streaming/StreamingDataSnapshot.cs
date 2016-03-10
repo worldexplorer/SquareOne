@@ -150,7 +150,7 @@ namespace Sq1.Core.Streaming {
 			if (lastQuote == null) return 0;
 			if (lastQuote.TradedAt == BidOrAsk.UNKNOWN) {
 				string msg = "NEVER_HAPPENED_SO_FAR LAST_QUOTE_MUST_BE_BID_OR_ASK lastQuote.TradeOccuredAt[" + lastQuote.TradedAt + "]=BidOrAsk.UNKNOWN";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				return 0;
 			}
 			return lastQuote.TradedPrice;
@@ -195,7 +195,7 @@ namespace Sq1.Core.Streaming {
 			if (priceLastQuote == 0) {
 				string msg = "QuickCheck ZERO priceLastQuote=" + priceLastQuote + " for Symbol=[" + symbol + "]"
 					+ " from streamingAdapter[" + this.streamingAdapter.Name + "].StreamingDataSnapshot";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				//throw new Exception(msg);
 			}
 			double currentBid = this.BestBid_getForMarketOrder(symbol);

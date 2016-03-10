@@ -167,7 +167,7 @@ namespace Sq1.Core.Broker {
 			logOrEmpty = "";
 
 			foreach (OrderLane lane in lanes) {
-				ret = lane.ScanRecentForGUID(GUID.ToString());
+				ret = lane.ScanRecent_forGuid(GUID.ToString());
 				if (ret != null) break;
 				logOrEmpty += lane.ToStringCount() + " sessionSernos(" + lane.SessionSernosAsString + "),";
 			}

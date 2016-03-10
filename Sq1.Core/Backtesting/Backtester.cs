@@ -8,7 +8,6 @@ using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.Livesim;
-using Sq1.Core.Support;
 
 namespace Sq1.Core.Backtesting {
 	public class Backtester : IDisposable {
@@ -255,14 +254,8 @@ namespace Sq1.Core.Backtesting {
 				}
 				#endregion
 
-				try {
-					if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) {
-						Thread.CurrentThread.Name = "BACKTESTING " + this.Executor.Strategy.WindowTitle + " " + this.BarsSimulating.InstanceScaleCount;
-					}
-				} catch (Exception ex) {
-					string msg = "LIVESIM_FAILED_TO_SET_THREAD_NAME OR_NPE";
-					Assembler.PopupException(msg, ex);
-				}
+				string threadName = "BACKTESTING " + this.Executor.Strategy.WindowTitle + " " + this.BarsSimulating.InstanceScaleCount;
+				Assembler.SetThreadName(threadName, "LIVESIM_FAILED_TO_SET_THREAD_NAME OR_NPE");
 
 				this.BacktestDataSource.InitializeBacktest(this.Executor.ToString() , this.BarsSimulating, spreadModeler);
 				this.BarsSimulating.DataSource = this.BacktestDataSource;

@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.Support;
-using Sq1.Widgets;
 
 namespace Sq1.Charting {
 	public partial class ChartControl  {
@@ -25,12 +22,8 @@ namespace Sq1.Charting {
 			if (this.TaskWaitingForTimerExpire_toRevertToWhite == null) {
 				this.TaskWaitingForTimerExpire_toRevertToWhite = new Task(delegate {
 					string msig = " //TaskWaitingForTimerExpire_toRevertToWhite()";
-					try {
-						Thread.CurrentThread.Name = "UNBLINK_FOR_CHART " + base.ToString();
-					} catch (Exception ex) {
-						string msg = "SETTING_THREAD_NAME_THREW looks like base.Executor=null";
-						Assembler.PopupException(msg + msig, ex);
-					}
+					string threadName = "UNBLINK_FOR_CHART " + base.ToString();
+					Assembler.SetThreadName(threadName, "SETTING_THREAD_NAME_THREW looks like base.Executor=null");
 					try {
 						while(this.timerUnblink.IsDisposed == false) {
 							this.timerUnblink.WaitForever_forTimerExpired();

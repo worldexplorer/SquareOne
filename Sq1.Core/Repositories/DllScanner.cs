@@ -222,7 +222,7 @@ namespace Sq1.Core.Repositories {
 			string msg = "typeNameShort[" + typeNameShort + "] has duplicates "
 				+ " containing in dllNames[" + dllNames + "]";
 			//this.ExceptionsWhileScanning.Add(new Exception(msg));
-			Assembler.PopupException(msg);
+			Assembler.PopupException(msg, null, false);
 			return true;
 		}
 		protected string dllNamesForTypes(List<Type> types) {

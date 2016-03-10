@@ -7,13 +7,11 @@ using Newtonsoft.Json;
 
 using Sq1.Core.Accounting;
 using Sq1.Core.Broker;
-using Sq1.Core.Support;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Backtesting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
-using Sq1.Core.Streaming;
 
 namespace Sq1.Core.Livesim {
 	// I_WANT_LIVESIM_STREAMING_BROKER_BE_AUTOASSIGNED_AND_VISIBLE_IN_DATASOURCE_EDITOR [SkipInstantiationAt(Startup = true)]
@@ -111,11 +109,8 @@ namespace Sq1.Core.Livesim {
 			}
 
 			Task t = new Task(delegate() {
-				try {
-					Thread.CurrentThread.Name = "DELAYED_PENDING_KILL " + orderPendingToKill.ToString();
-				} catch (Exception ex) {
-					Assembler.PopupException("CANT_SET_THREAD_NAME //LivesimBroker", ex, false);
-				}
+				string threadName = "DELAYED_PENDING_KILL " + orderPendingToKill.ToString();
+				Assembler.SetThreadName(threadName, "CANT_SET_THREAD_NAME //LivesimBroker");
 
 				Thread.Sleep(delay);
 				var omsg = new OrderStateMessage(orderPendingToKill, OrderState.KilledPending, "DELAY_PENDING_KILL[" + delay + "]ms");
@@ -169,11 +164,9 @@ namespace Sq1.Core.Livesim {
 
 			ManualResetEvent quotePointerCaptured = new ManualResetEvent(false);
 			Task t = new Task(delegate() {
-				try {
-					Thread.CurrentThread.Name = "DELAYED_FILL " + quoteUnattachedVolatilePointer;
-				} catch (Exception ex) {
-					Assembler.PopupException("CANT_SET_THREAD_NAME //LivesimBroker", ex, false);
-				}
+				string threadName = "DELAYED_FILL " + quoteUnattachedVolatilePointer;
+				Assembler.SetThreadName(threadName, "CANT_SET_THREAD_NAME //LivesimBroker");
+
 				//QuoteGenerated quoteUnattachedLocalScoped = quoteUnattachedVolatilePointer;
 				Quote quoteUnattachedLocalScoped = quoteUnattachedVolatilePointer;
 				quotePointerCaptured.Set();

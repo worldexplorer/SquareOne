@@ -226,11 +226,11 @@ namespace Sq1.Core.Broker {
 			return emergencyReplacement;
 		}
 		Order findEmergencyReplacementForRejectedOrder(Order orderRejected) {
-			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(orderRejected.GUID);
+			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(orderRejected.GUID);
 			if (rejected == null) {
 				throw new Exception("Rejected[" + orderRejected + "] wasn't found!!!");
 			}
-			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(rejected.EmergencyReplacedByGUID);
+			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(rejected.EmergencyReplacedByGUID);
 			return replacement;
 		}
 		void throwLogIfNotRejectedClosingOrder(Order order) {

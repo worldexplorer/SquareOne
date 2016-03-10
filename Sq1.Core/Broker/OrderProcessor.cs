@@ -365,9 +365,9 @@ namespace Sq1.Core.Broker {
 			killerOrder.Alert.DataSource.BrokerAdapter.Kill_usingKiller(killerOrder);
 		}
 		public Order UpdateOrderStateByGuid_dontPostProcess(string orderGUID, OrderState orderState, string message) {
-			Order orderFound = this.DataSnapshot.OrdersSubmitting.ScanRecentForGUID(orderGUID);
+			Order orderFound = this.DataSnapshot.OrdersSubmitting.ScanRecent_forGuid(orderGUID);
 			if (orderFound == null) {
-				 orderFound = this.DataSnapshot.OrdersAll.ScanRecentForGUID(orderGUID, true);
+				 orderFound = this.DataSnapshot.OrdersAll.ScanRecent_forGuid(orderGUID, true);
 			}
 			if (orderFound == null) {
 				string msg = "order[" + orderGUID + "] wasn't found; OrderProcessorDataSnapshot.OrderCount=[" + this.DataSnapshot.OrderCount + "]";
@@ -483,7 +483,7 @@ namespace Sq1.Core.Broker {
 			if (order.State == newStateOmsg.State) {
 				string msg = "Replace with AppendOrderMessage()! UpdateOrderState_dontPostProcess(): got the same OrderState[" + order.State + "]?";
 				//ROUGH_BRO throw new Exception(msg);
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				this.appendOrderMessage_propagate(order, newStateOmsg);
 				return;
 			}
@@ -740,9 +740,12 @@ namespace Sq1.Core.Broker {
 				case OrderState.JustConstructed:
 					break;
 
+				case OrderState.TradeStatus:
+					break;
+
 				default:
 					string msg4 = "NO_HANDLER_FOR_ORDER.STATE";
-					Assembler.PopupException(msg4 + msig);
+					Assembler.PopupException(msg4 + msig, null, false);
 					break;
 			}
 		}
