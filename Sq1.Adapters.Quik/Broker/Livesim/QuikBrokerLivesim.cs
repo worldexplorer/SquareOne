@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Drawing;
 
-using Sq1.Core;
 using Sq1.Core.Broker;
 using Sq1.Core.Support;
-using Sq1.Core.Execution;
-using Sq1.Core.StrategyBase;
-using Sq1.Core.Backtesting;
-using Sq1.Core.DataTypes;
 using Sq1.Core.Livesim;
 using Sq1.Core.DataFeed;
 

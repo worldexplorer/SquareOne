@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Drawing;
-using System.Threading.Tasks;
-using System.Threading;
 
-using NDde.Client;
 using Newtonsoft.Json;
 
 using Sq1.Core;
@@ -13,9 +9,6 @@ using Sq1.Core.Livesim;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Streaming;
 using Sq1.Core.Backtesting;
-using Sq1.Core.Execution;
-
-using Sq1.Adapters.Quik;
 
 namespace Sq1.Adapters.Quik.Streaming.Livesim {
 	[SkipInstantiationAt(Startup = true)]		// overriding LivesimStreaming's TRUE to have QuikStreamingLivesim appear in DataSourceEditor
@@ -130,15 +123,8 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
-			try {
-				if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) {
-					string name = "LIVESIM_QUOTE_GENERATING_FOR " + this.StreamingOriginal.DataDistributor_replacedForLivesim.ReasonIwasCreated;
-					Thread.CurrentThread.Name = name;
-				}
-			} catch (Exception ex) {
-				string msg = "SETTING_LIVESIM_THREAD_NAME_FROM_STREAMING_IS_TOO_LATE__AND_DONT_DO_IT_TWICE";
-				Assembler.PopupException(msg);
-			}
+			string threadName = "LIVESIM_QUOTE_GENERATING_FOR " + this.StreamingOriginal.DataDistributor_replacedForLivesim.ReasonIwasCreated;
+			Assembler.SetThreadName(threadName, "SETTING_LIVESIM_THREAD_NAME_FROM_STREAMING_IS_TOO_LATE__AND_DONT_DO_IT_TWICE");
 
 			//second Livesim gets NPE - fixed but the caveat is when you clicked on "stopping" disabled button, new livesim restarts with lots of NPE...)
 			if (base.Livesimulator.RequestingBacktestAbortMre.WaitOne(0) == true) {

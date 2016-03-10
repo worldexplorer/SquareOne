@@ -64,8 +64,8 @@ namespace Sq1.Adapters.Quik.Broker {
 			// 
 			// txtQuikFolder
 			// 
-			this.txtQuikFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtQuikFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtQuikFolder.Location = new System.Drawing.Point(3, 22);
 			this.txtQuikFolder.Name = "txtQuikFolder";
 			this.txtQuikFolder.Size = new System.Drawing.Size(247, 20);
@@ -74,7 +74,6 @@ namespace Sq1.Adapters.Quik.Broker {
 			// 
 			// txtQuikAccount
 			// 
-			this.txtQuikAccount.Enabled = false;
 			this.txtQuikAccount.Location = new System.Drawing.Point(3, 178);
 			this.txtQuikAccount.Name = "txtQuikAccount";
 			this.txtQuikAccount.Size = new System.Drawing.Size(108, 20);
@@ -115,9 +114,8 @@ namespace Sq1.Adapters.Quik.Broker {
 			// 
 			// txtQuikAccountMicex
 			// 
-			this.txtQuikAccountMicex.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.txtQuikAccountMicex.Enabled = false;
+			this.txtQuikAccountMicex.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtQuikAccountMicex.Location = new System.Drawing.Point(130, 178);
 			this.txtQuikAccountMicex.Name = "txtQuikAccountMicex";
 			this.txtQuikAccountMicex.Size = new System.Drawing.Size(120, 20);
@@ -134,8 +132,8 @@ namespace Sq1.Adapters.Quik.Broker {
 			// 
 			// txtCashAvailableMicex
 			// 
-			this.txtCashAvailableMicex.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtCashAvailableMicex.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtCashAvailableMicex.Enabled = false;
 			this.txtCashAvailableMicex.Location = new System.Drawing.Point(130, 217);
 			this.txtCashAvailableMicex.Name = "txtCashAvailableMicex";
@@ -173,10 +171,9 @@ namespace Sq1.Adapters.Quik.Broker {
 			// 
 			// cbxConnectDLL
 			// 
-			this.cbxConnectDLL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.cbxConnectDLL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.cbxConnectDLL.Appearance = System.Windows.Forms.Appearance.Button;
-			this.cbxConnectDLL.AutoCheck = false;
 			this.cbxConnectDLL.Location = new System.Drawing.Point(3, 89);
 			this.cbxConnectDLL.Name = "cbxConnectDLL";
 			this.cbxConnectDLL.Size = new System.Drawing.Size(247, 24);

@@ -95,13 +95,13 @@
     <Compile Include="Broker\QuikBroker.BrokerAdapterProtocol.cs">
       <DependentUpon>QuikBroker.cs</DependentUpon>
     </Compile>
-    <Compile Include="Broker\Terminal\QuikDllConnector.Connect.cs">
+    <Compile Include="Broker\Terminal\QuikDllConnector.ConnectAsync.cs">
       <DependentUpon>QuikDllConnector.cs</DependentUpon>
     </Compile>
-    <Compile Include="Broker\Terminal\QuikDllConnector.Receive.cs">
+    <Compile Include="Broker\Terminal\QuikDllConnector.ReceiveAsync.cs">
       <DependentUpon>QuikDllConnector.cs</DependentUpon>
     </Compile>
-    <Compile Include="Broker\Terminal\QuikDllConnector.Send.cs">
+    <Compile Include="Broker\Terminal\QuikDllConnector.SendAsync.cs">
       <DependentUpon>QuikDllConnector.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\Dde\DdeBatchSubscriber.EventConsumer.cs">

@@ -32,7 +32,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 				this.connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
 				return;
 			}
-			this.CurrentStatus = "0/2: DLL not connected, No Symbols subscribed";
+			this.CurrentStatus = "0/3: DLL not connected, Quik Not Connected, No Symbols subscribed";
 			Trans2Quik.Result error;
 			string msg;
 			try {
@@ -51,8 +51,9 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 			msg = "NO_DLL_METHOD_WAS_INVOKED_YET";
 
 			if (symbolClassesSubscribed.Count > 0) {
-				Assembler.PopupException("Clearing SymbolClassSubscribers.Count=" + symbolClassesSubscribed.Count + "; most likely QUIK got disconnected");
 				this.symbolClassesSubscribed.Clear();
+				string msg1 = "CLEARED SymbolClassSubscribers.Count=" + symbolClassesSubscribed.Count + "; most likely QUIK got disconnected";
+				Assembler.PopupException(msg1, null, false);
 			}
 
 			Trans2Quik.Result status = Trans2Quik.Result.FAILED;
@@ -107,28 +108,38 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 		}
 
 		void connectionStatus_callback(Trans2Quik.Result status, int err, string m) {
-			string msig = " //connectionStatus_callback[" + status + "] err[" + err + "] m[" + m + "]";
+			string msig = " //QuikDllConnector(" + this.DllName + ")::connectionStatus_callback([" + status + "] m[" + m + "] err[" + err + "])";
 			switch (status) {
 				case Trans2Quik.Result.DLL_CONNECTED:
 					this.DllConnected = true;
-					this.CurrentStatus = "1/2: DLL Connected, No Symbols subscribed";
+					this.CurrentStatus = "1/3: DLL Connected, Quik NOT connected, No Symbols subscribed";
 					this.connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
-					string msg1 = "DLL_CONNECTED WONT_RESCHEDULE connectionTimer";
+					string msg1 = status + " WONT_RESCHEDULE_RECONNECT";
 					Assembler.PopupException(msg1 + msig, null, false);
 					this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.UpstreamConnected_downstreamUnsubscribed, msg1);
 					break;
 
-				case Trans2Quik.Result.QUIK_DISCONNECTED:
+				case Trans2Quik.Result.QUIK_CONNECTED:
+					this.CurrentStatus = "2/3: DLL Connected, Quik Connected, No Symbols subscribed";
 					this.connectionTimer.Change(0, this.quikBroker.ReconnectTimeoutMillis);
-					string msg2 = "QUIK_DISCONNECTED connectionTimer.Change(0, " + this.quikBroker.ReconnectTimeoutMillis + ")";
+					string msg4 = status + " RECONNECT_RESCHEDULED [" + this.quikBroker.ReconnectTimeoutMillis + "]ms";
+					Assembler.PopupException(msg4 + msig, null, false);
+					this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.UpstreamConnected_downstreamUnsubscribed, msg4);
+					break;
+
+				case Trans2Quik.Result.QUIK_DISCONNECTED:
+					this.CurrentStatus = "2/3: DLL Connected, Quik Disconnected, No Symbols subscribed";
+					this.connectionTimer.Change(0, this.quikBroker.ReconnectTimeoutMillis);
+					string msg2 = status + " RECONNECT_RESCHEDULED [" + this.quikBroker.ReconnectTimeoutMillis + "]ms";
 					Assembler.PopupException(msg2 + msig, null, false);
 					this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.UpstreamDisconnected_downstreamUnsubscribed, msg2);
 					break;
 
 				case Trans2Quik.Result.DLL_DISCONNECTED:
+					this.CurrentStatus = "1/3: DLL Disonnected, Quik Disconnected, No Symbols subscribed";
 					this.DllConnected = false;
 					this.connectionTimer.Change(0, this.quikBroker.ReconnectTimeoutMillis);
-					string msg3 = "DLL_DISCONNECTED connectionTimer.Change(0, " + this.quikBroker.ReconnectTimeoutMillis + ")";
+					string msg3 = status + " RECONNECT_RESCHEDULED [" + this.quikBroker.ReconnectTimeoutMillis + "]ms";
 					Assembler.PopupException(msg3 + msig, null, false);
 					this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.UpstreamDisconnected_downstreamUnsubscribed, msg3);
 					break;

@@ -143,15 +143,6 @@ namespace Sq1.Adapters.Quik.Broker {
 				}
 			}
 			
-			if (this.Name == "Mock BrokerAdapter" 
-					&& order.Alert.MarketLimitStop == MarketLimitStop.Market 
-					&& order.Alert.MarketOrderAs == MarketOrderAs.MarketZeroSentToBroker
-					&& (fillPrice != -999.99 && fillPrice != 0)) {
-				Assembler.PopupException("REMIND_ME_WHAT_THIS_EXPERIMENT_WAS_ALL_ABOUT?");
-				fillPrice = order.Alert.PriceScript
-					+ ((order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) ? 100 : -100);
-			}
-
 			OrderStateMessage omsg = new OrderStateMessage(order, newOrderStateReceived, msig);
 
 			// if you want to bring the check up earlier than UpdateOrderStateAndPostProcess will do it or change the message added to order

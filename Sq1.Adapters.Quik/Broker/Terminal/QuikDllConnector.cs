@@ -64,7 +64,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 				throw new Exception(msg);
 			} else {
 				string msg = "SUBSCRIBE_ORDERS(" + classCode + "," + symbol + "): SUCCESS";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 			}
 
 			ret = Trans2Quik.START_ORDERS(orderStatus_callback);
@@ -74,7 +74,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 				throw new Exception(msg);
 			} else {
 				string msg = "START_ORDERS(): SUCCESS";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 			}
 
 			ret = Trans2Quik.SUBSCRIBE_TRADES(classCode, symbol);
@@ -84,7 +84,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 				throw new Exception(msg);
 			} else {
 				string msg = "SUBSCRIBE_TRADES(" + classCode + "," + symbol + "): SUCCESS";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 			}
 
 			ret = Trans2Quik.START_TRADES(tradeStatus_callback);
@@ -94,13 +94,13 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 				throw new Exception(msg);
 			} else {
 				string msg = "START_TRADES(): SUCCESS";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 			}
 
 			this.symbolClassesSubscribed[key] = 1;
 			if (symbolClassesSubscribed.Count == 0) CurrentStatus = "";
 			this.CurrentStatus = symbolClassesSubscribed.ToString();
-			Assembler.PopupException("Subscribed to Quik Execution Callbacks for [" + key + "]");
+			Assembler.PopupException("Subscribed to Quik Execution Callbacks for [" + key + "]", null, false);
 	
 			this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.SymbolSubscribed,
 				"QuikDllConnector(" + this.DllName + ") 2/2 " + ConnectionState.SymbolSubscribed +

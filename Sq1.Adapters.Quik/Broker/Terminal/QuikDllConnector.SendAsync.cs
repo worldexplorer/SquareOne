@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 
 using Sq1.Core;
 using Sq1.Core.Execution;
@@ -11,11 +10,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 				string GUID, out int sernoSessionOut, out string msgSubmittedOut, out OrderState orderStateOut) {
 
 			string msig = "QuikDllConnector(" + this.DllName + ").OrderSubmit_sendTransaction_async(" + opBuySell + typeMarketLimitStop + quantity + "@" + price + ")";
-			try {
-				if (Thread.CurrentThread.Name != msig) Thread.CurrentThread.Name = msig;
-			} catch (Exception e) {
-				//Assembler.PopupException("can not set Thread.CurrentThread.Name=[" + msig + "]", e);
-			}
+			Assembler.SetThreadName(msig);
 
 			/*if (!connected) {
 				sernoSessionOut = 0;
@@ -98,11 +93,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 			string msig = "QuikDllConnector(" + this.DllName + ").KillOrder_sendTransaction_async("
 				+ "killerGUID[" + killerGUID + "], victimGUID[" + victimGUID + "], sernoExchangeVictim[" + sernoExchangeVictim + "], victimWasStopOrder[" + victimWasStopOrder + "]"
 				+ "): ";
-			try {
-				if (Thread.CurrentThread.Name != msig) Thread.CurrentThread.Name = msig;
-			} catch (Exception e) {
-				Assembler.PopupException("can not set Thread.CurrentThread.Name=[" + msig + "]", e);
-			}
+			Assembler.SetThreadName(msig);
 
 			/*if (!connected) {
 				sernoSessionOut = 0;
