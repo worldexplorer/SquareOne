@@ -59,7 +59,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			this.Trans2QuikDllUrl	= this.QuikDllConnector.DllUrl;
 
 			this.AccountMicexAutoPopulated = new Account("QUIK_MICEX_ACCTNR_NOT_SET", -1001);
-			base.OrderCallbackDupesChecker = new OrderCallbackDupesCheckerQuik(this);
+			//base.OrderCallbackDupesChecker = new OrderCallbackDupesCheckerQuik(this);
 
 			this.QuikFolder					= @"C:\Program Files (x86)\QUIK-Junior";
 			this.ReconnectTimeoutMillis		= 3000;
@@ -72,41 +72,64 @@ namespace Sq1.Adapters.Quik.Broker {
 			return base.BrokerEditorInstance;
 		}
 
-		public void TradeState_callbackFromQuikDll(long SernoExchange, DateTime tradeDate, 
+		public void TradeState_callbackFromQuikDll(long sernoExchange, DateTime tradeDate, 
 				string classCode, string secCode, double priceFill, int qtyFill,
 				double tradePrice2, double tradeTradeSysCommission, double tradeTScommission) {
-			string msig = Name + "::TradeState_callbackFromQuikDll(): ";
+			string msig = " //" + Name + "::TradeState_callbackFromQuikDll()";
 			try {
-				string msg = "";
-				Order order = this.OrderProcessor.DataSnapshot.OrdersPending.ScanRecentForSernoExchange((long)SernoExchange);
+				OrderLane pendings = this.OrderProcessor.DataSnapshot.OrdersPending;	// when TradeState(), both Market and Limit orders are Pending
+				string		suggestion		= "PASS_suggestLane=TRUE";
+				OrderLane	suggestedLane	= null;
+				Order order = pendings.ScanRecent_forSernoExchange((long)sernoExchange, out suggestedLane, out suggestion);
 				if (order == null) {
-					msg += " Order with SernoExchange[" + SernoExchange + "] was not found"
-						//+ "; " + base.OrderProcessor.DataSnapshot.DataSnapshot.Serializer.SessionSernosAsString
-						;
-					throw new Exception(msig + msg);
+					string msg_findOrder = "FAILED_TO_FIND_ORDER_IN_OrdersPending sernoExchange[" + sernoExchange + "]"
+						+ " suggestedLane[" + suggestedLane + "] suggestion[" + suggestion + "]";
+					throw new Exception(msg_findOrder + msig);
 				}
 
-				msg += " tradeDate=[" + tradeDate + "] quantity[" + qtyFill + "] @price [" + priceFill + "]"
-					+ " tradePrice2=[" + tradePrice2 + "]"
-					+ " tradeTradeSysCommission=[" + tradeTradeSysCommission + "] tradeTScommission=[" + tradeTScommission + "]"
-					+ " " + secCode + "/" + classCode;
+				string filled = qtyFill == 0 ? "NOT_FILLED" : "FILLED";
+				if (qtyFill > 0 && qtyFill != order.QtyRequested) {
+					filled = "PARTIAL_FILL_OF[" + order.QtyRequested + "]";
+				}
+				filled += order.Alert.MarketLimitStopAsString;
+				string msg = filled + " [" + qtyFill + "]@[" + priceFill + "]"
+					+ " " + secCode + "/" + classCode
+					+ " tradeDate[" + tradeDate + "]"
+					+ " tradePrice2[" + tradePrice2 + "]"
+					+ " tradeTradeSysCommission[" + tradeTradeSysCommission + "] tradeTScommission[" + tradeTScommission + "]";
 
-				//OrderStateMessage sameStateOmsg = new OrderStateMessage(order, order.State, msg);
-				//this.OrderManager.UpdateTradeStateAndPostProcess(order, sameStateOmsg, priceFill, qtyFill);
-				OrderStateMessage sameStateOmsg = new OrderStateMessage(order, OrderState.TradeStatus, msg);
+				// QUIK tells commission in TradeState callback; in OrderState callback there is no way;
+				// for Market* tradeTScommission>0
+				// for Limit*  tradeTScommission=0
+				double commissionSum = tradeTradeSysCommission + tradeTScommission;
+				if (order.CommissionFill != commissionSum && commissionSum > 0) {
+					//order.CommissionFill  = commissionSum;
+				}
+
+				if (order.Alert.Bars.SymbolInfo.MarketOrders_priceFill_bringBackFromOutrageous) {
+				    // for Market* orders (Futures), Quik declares Fill in TradeState(); Fill for Limit* (Futures) orders I should expect in OrderState()
+				    // but the price is outrageous (beoynd the bar High/Low) and looks like PriceMin/PriceMax (CONFIRM?)
+				    bool outOfBarPriceFilled = order.Alert.MarketOrderAs == MarketOrderAs.MarketUnchanged_DANGEROUS
+				                            || order.Alert.MarketOrderAs == MarketOrderAs.MarketZeroSentToBroker
+				                            || order.Alert.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
+				    if (outOfBarPriceFilled && order.Alert.SymbolClass == "SPBFUT") {
+				        if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) {
+				            priceFill = order.PriceRequested + commissionSum;
+				        } else {
+				            priceFill = order.PriceRequested - commissionSum;
+				        }
+				    }
+				}
+
+			    // Quik declares Fill in TradeState() only for Market* orders (Futures), Fill for Limit* (Futures) orders I should expect in OrderState()
+				bool fillHappened = priceFill > 0 && qtyFill > 0;
+				if (fillHappened) {
+					order.DateServerLastFillUpdate = tradeDate;
+				}
+
+				OrderState statusChanged_onlyIfFilled = fillHappened ? OrderState.Filled : order.State;
+				OrderStateMessage sameStateOmsg = new OrderStateMessage(order, statusChanged_onlyIfFilled, msg);
 				this.OrderProcessor.UpdateOrderState_postProcess(order, sameStateOmsg, priceFill, qtyFill);
-				order.DateServerLastFillUpdate = tradeDate;
-
-				// workaround: calc "implied" slippage from executed price, instead of assumed for LimitCrossMarket
-				if (//order.Alert.MarketLimitStop == MarketLimitStop.Market && 
-						order.Alert.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker
-						&& order.SlippageFill == 0) {
-					if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) {
-						order.SlippageFill = order.PriceFill - order.CurrentBid;
-					} else {
-						order.SlippageFill = order.PriceFill - order.CurrentAsk;
-					}
-				}
 			} catch (Exception exc) {
 				string msg = "THROWN_SOMEWHERE_SORRY_IN_CallbackTradeStateReceivedQuik";
 				Assembler.PopupException(msg + msig, exc);
@@ -115,47 +138,58 @@ namespace Sq1.Adapters.Quik.Broker {
 
 		public void OrderState_callbackFromQuikDll(OrderState newOrderStateReceived, string GUID, long SernoExchange,
 												string classCode, string secCode, double fillPrice, int fillQnty) {
-			string msig = "fillPrice[" + fillPrice + "] fillQnty[" + fillQnty + "]" 
-				+ " " + secCode + "/" + classCode
-				//+ " newOrderStateReceived=[" + newOrderStateReceived + "]"
-				+ " SernoExchange=[" + SernoExchange + "] GUID=[" + GUID + "]"
-				+ " //" + Name + "::OrderState_callbackFromQuikDll()";
+			string msig = " //" + Name + "::OrderState_callbackFromQuikDll()";
 
-			Order order = base.ScanEvidentLanesForGuid_nullUnsafe(GUID);
+			Order order = base.ScanEvidentLanes_forGuid_nullUnsafe(GUID);
 			if (order == null) {
 				// already reported "PENDING_ORDER_NOT_FOUND__RETURNING_ORDER_NULL" in base.FindOrderLaneOptimizedNullUnsafe() 
 				return;
 			}
 
-			if (order.SernoExchange == 0) {
-				order.SernoExchange  = SernoExchange;	// link GUID to SernoExchange - the main role of QUIK broker adapter :)
+			string filled = fillQnty == 0 ? "NOT_FILLED" : "FILLED";
+			if (fillQnty > 0) {
+				if (fillQnty != order.QtyRequested) {
+					filled = "PARTIAL_FILL_OF[" + order.QtyRequested + "]";
+					if (newOrderStateReceived != OrderState.FilledPartially) {
+						filled = "WRONG_STATE[" + newOrderStateReceived + "] " + filled;
+					}
+				} else {
+					if (newOrderStateReceived != OrderState.Filled) {
+						filled = "WRONG_STATE[" + newOrderStateReceived + "] " + filled;
+					}
+				}
 			}
+			filled += order.Alert.MarketLimitStopAsString;
+
+			string msg = filled + " [" + fillQnty + "]@[" + fillPrice + "]"
+				+ " " + secCode + "/" + classCode
+				+ " [" + newOrderStateReceived + "]"
+				+ " sernoExchange[" + SernoExchange + "] GUID=[" + GUID + "]";
+
+			if (order.SernoExchange == 0) {
+				order.SernoExchange  = SernoExchange;	// linking GUID to SernoExchange otherwize we'll never find it again
+			}
+
 			if (newOrderStateReceived == OrderState.KillerDone || newOrderStateReceived == OrderState.Rejected) {
 				if (fillPrice != 0) {
-					string msg = "QUIK_HINTS_ON_SOMETHING fillPrice[" + fillPrice + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
-					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msg);
+					string msg1 = "QUIK_HINTS_ON_SOMETHING fillPrice[" + fillPrice + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
+					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msg1);
 					fillPrice = 0;
 				}
 				if (fillQnty != 0) {
-					string msg = "QUIK_HINTS_ON_SOMETHING fillQnty[" + fillPrice + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
-					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msg);
+					string msg1 = "QUIK_HINTS_ON_SOMETHING fillQnty[" + fillPrice + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
+					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msg1);
 					fillQnty = 0;
 				}
 			}
-			
-			OrderStateMessage omsg = new OrderStateMessage(order, newOrderStateReceived, msig);
 
-			// if you want to bring the check up earlier than UpdateOrderStateAndPostProcess will do it or change the message added to order
-			//string whyIthinkQuikIsSpammingMe = this.OrderCallbackDupesChecker.OrderCallbackIsDupeReson(
-			//	orderExecuted, omsg, fillPrice, fillQnty);
-			//if (string.IsNullOrEmpty(whyIthinkQuikIsSpammingMe) == false) {
-			//	this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(orderExecuted,
-			//		"ORDER_CALLBACK_DUPE__SKIPPED_PROCESSING: " + whyIthinkQuikIsSpammingMe);
-			//	return;
-			//}
-
-			base.OrderProcessor.UpdateOrderState_dontPostProcess(order, omsg);
-			//base.CallbackOrderStateReceived(order);
+			if (newOrderStateReceived == OrderState.FilledPartially || newOrderStateReceived == OrderState.Filled) {
+				OrderStateMessage omsg1 = new OrderStateMessage(order, newOrderStateReceived, "LIMIT_ORDER_FILLED " + msg);
+				this.OrderProcessor.UpdateOrderState_postProcess(order, omsg1, fillPrice, fillQnty);
+			} else {
+				OrderStateMessage omsg = new OrderStateMessage(order, newOrderStateReceived, msg);
+				base.OrderProcessor.UpdateOrderState_dontPostProcess(order, omsg);
+			}
 		}
 
 

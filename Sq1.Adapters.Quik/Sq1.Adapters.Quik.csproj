@@ -169,7 +169,6 @@
       <DependentUpon>QuikBrokerEditorControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Broker\QuikOrderCallbackDupesChecker.cs" />
     <Compile Include="Broker\Terminal\QuikDllConnector.cs" />
     <Compile Include="Broker\Terminal\Trans2Quik.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -35,9 +35,9 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 			string trans = this.getOrderCommand(opBuySell, typeMarketLimitStop, secCode, classCode, price, quantity, GUID, out sernoSessionOut);
 			this.quikBroker.OrderProcessor.UpdateOrderStateByGuid_dontPostProcess(GUID, orderStateOut, trans);
 
-			Trans2Quik.Result r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out this.error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-			msgSubmittedOut = "r[" + r + "] callbackErrorMsg[" + this.callbackErrorMsg + "] error[" + error + "]";
-			if (r == Trans2Quik.Result.SUCCESS) {
+			Trans2Quik.Result transSubmitted = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out this.error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
+			msgSubmittedOut = "transSubmitted[" + transSubmitted + "] callbackErrorMsg[" + this.callbackErrorMsg + "] error[" + error + "]";
+			if (transSubmitted == Trans2Quik.Result.SUCCESS) {
 				orderStateOut = OrderState.Submitted;
 			} else {
 				orderStateOut = OrderState.ErrorSubmittingBroker;

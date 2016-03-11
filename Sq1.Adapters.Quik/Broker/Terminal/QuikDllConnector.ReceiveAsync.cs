@@ -46,39 +46,32 @@ nTradeDescriptor Тип: Long. Дескриптор сделки, может и�
 				msg_dupeIgnored += " nMode[" + nMode + "]!=0 " + nMode_asString + " ";
 			}
 
-			string msg_tradeComission = "";
+			string msg_tradeCommission = "";
 			double tradePrice2				= double.NaN;
 			double tradeTradeSysCommission	= double.NaN;
 			double tradeTScommission		= double.NaN;
 			DateTime tradeDate				= DateTime.MinValue;
 			try {
-				//if (tradeDescriptor == -111111) {
-					tradePrice2 = Trans2Quik.TRADE_PRICE2(tradeDescriptor);
-					tradeTradeSysCommission = Trans2Quik.TRADE_TRADING_SYSTEM_COMMISSION(tradeDescriptor);
-					tradeTScommission = Trans2Quik.TRADE_TS_COMMISSION(tradeDescriptor);
-				//	tradeDate = DateTime.Now;
-				//} else {
-				//	tradePrice2 = 0;
-				//	tradeTradeSysCommission = 0;
-				//	tradeTScommission = 0;
-					int date = Trans2Quik.TRADE_DATE(tradeDescriptor);
-					int time = Trans2Quik.TRADE_TIME(tradeDescriptor);
-					int year, month, day;
-					int hour, min, sec;
-					year = date / 10000;
-					month = (day = date - year * 10000) / 100;
-					day -= month * 100;
-					hour = time / 10000;
-					min = (sec = time - hour * 10000) / 100;
-					sec -= min * 100;
-					tradeDate = new DateTime(year, month, day, hour, min, sec);
-				//}
+				tradePrice2 = Trans2Quik.TRADE_PRICE2(tradeDescriptor);
+				tradeTradeSysCommission = Trans2Quik.TRADE_TRADING_SYSTEM_COMMISSION(tradeDescriptor);
+				tradeTScommission = Trans2Quik.TRADE_TS_COMMISSION(tradeDescriptor);
+				int date = Trans2Quik.TRADE_DATE(tradeDescriptor);
+				int time = Trans2Quik.TRADE_TIME(tradeDescriptor);
+				int year, month, day;
+				int hour, min, sec;
+				year = date / 10000;
+				month = (day = date - year * 10000) / 100;
+				day -= month * 100;
+				hour = time / 10000;
+				min = (sec = time - hour * 10000) / 100;
+				sec -= min * 100;
+				tradeDate = new DateTime(year, month, day, hour, min, sec);
 
-				msg_tradeComission = "tradeTradeSysCommission[" + tradeTradeSysCommission + "] tradeTScommission[" + tradeTScommission + "]"
+				msg_tradeCommission = "tradeTradeSysCommission[" + tradeTradeSysCommission + "] tradeTScommission[" + tradeTScommission + "]"
 					+ "tradePrice2[" + tradePrice2 + "] tradeDate[" + tradeDate + "]";
 		    } catch (Exception ex) {
-				msg_tradeComission = " CANT_EXTRACT_COMISSION__TRY_MOVE_TO_orderStatus_callback() ex[" + ex.Message + "]";
-		        //Assembler.PopupException(msg_tradeComission + msig, ex);
+				msg_tradeCommission = " CANT_EXTRACT_Commission__TRY_MOVE_TO_orderStatus_callback() ex[" + ex.Message + "]";
+		        //Assembler.PopupException(msg_tradeCommission + msig, ex);
 		    }
 
 
@@ -87,19 +80,22 @@ nTradeDescriptor Тип: Long. Дескриптор сделки, может и�
 			Order orderExecuted = null;
 			OrderProcessorDataSnapshot snap = this.quikBroker.OrderProcessor.DataSnapshot;
 			OrderLane laneToSearch = nMode == 0 ? snap.OrdersPending : snap.OrdersAll;	// you may want to wrap this method in lock(){} <= despite all Lanes are sync'ed, two async callbacks may not find the order while moving
+			OrderLane	suggestedLane = null;
+			string		suggestion = "PASS_suggestLane=TRUE";
 			try {
-				orderExecuted = laneToSearch.ScanRecentForSernoExchange((long)sernoExchange);
-		    } catch (Exception ex) {
-				msg_findingOrder = " sernoExchange_NOT_FOUND_IN_PENDINGS ex[" + ex.Message + "]";
+				orderExecuted = laneToSearch.ScanRecent_forSernoExchange((long)sernoExchange, out suggestedLane, out suggestion);
+			} catch (Exception ex) {
+				msg_findingOrder = " sernoExchange_NOT_FOUND_IN_PENDINGS ex[" + ex.Message + "]"
+						+ " suggestedLane[" + suggestedLane + "] suggestion[" + suggestion + "]";
 		        //Assembler.PopupException(msg_findingOrder + msig, ex);
 		    }
 
 			if (orderExecuted == null) {
-				Assembler.PopupException(msg_dupeIgnored + msg_findingOrder + msg_tradeComission + msig, null, false);
+				Assembler.PopupException(msg_dupeIgnored + msg_findingOrder + msg_tradeCommission + msig, null, false);
 				return;
 			}
 
-			OrderStateMessage osm = new OrderStateMessage(orderExecuted, OrderState.TradeStatus, msg_dupeIgnored + msg_tradeComission + msig);
+			OrderStateMessage osm = new OrderStateMessage(orderExecuted, OrderState._TradeStatus, msg_dupeIgnored + msg_tradeCommission + msig);
 			orderExecuted.AppendMessageSynchronized(osm);
 
 			if (nMode != 0) return;
@@ -172,13 +168,17 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 				};
 				order = snap.ScanRecent_forGUID(transId.ToString(), hopefullyCemeteryHealthy, out logOrEmpty);
 			}
-			if (order == null) {
-				msg_findingOrder += "NOT_FOUND_IN_LANES__LOOKING_IN_ALL ";
-				order = snap.OrdersAll.ScanRecent_forGuid(transId.ToString(), true);
-			}
+
+			OrderLane	suggestedLane = null;
+			string		suggestion = "PASS_suggestLane=TRUE";
 
 			if (order == null) {
-				msg_findingOrder += "NOT_FOUND_BY_GUID[" + transId + "] [" + logOrEmpty + "]";
+				msg_findingOrder += "NOT_FOUND_IN_LANES__LOOKING_IN_ALL ";
+				order = snap.OrdersAll.ScanRecent_forGuid(transId.ToString(), out suggestedLane, out suggestion);
+			}
+			if (order == null) {
+				msg_findingOrder += "NOT_FOUND_BY_GUID[" + transId + "] [" + logOrEmpty + "]"
+						+ " suggestedLane[" + suggestedLane + "] suggestion[" + suggestion + "]";
 			} else {
 				msg_findingOrder += "FOUND_BY_GUID[" + transId + "] [" + logOrEmpty + "] order[" + order + "]";
 			}
@@ -189,7 +189,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 				return;
 			}
 
-			OrderStateMessage osm = new OrderStateMessage(order, OrderState.OrderStatus, msg_dupeIgnored + msg_findingOrder + msig);
+			OrderStateMessage osm = new OrderStateMessage(order, OrderState._OrderStatus, msg_dupeIgnored + msg_findingOrder + msig);
 			order.AppendMessageSynchronized(osm);
 
 			if (nMode != 0) return;
@@ -224,13 +224,6 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 
 			this.quikBroker.OrderState_callbackFromQuikDll(newOrderStateReceived, transId.ToString(),
 						(long)sernoExchange, classCode, secCode, priceFilled, qtyFilled);
-
-			// FIXME: mess here
-			if (newOrderStateReceived == OrderState.FilledPartially || newOrderStateReceived == OrderState.Filled) {
-				//v1 this.BrokerQuik.OrderProcessor.PostProcessOrderState(order, priceFilled, qtyFilled);
-				OrderStateMessage omsg = new OrderStateMessage(order, "BrokerQuik_UpdateOrderState_postProcess:: " + newOrderStateReceived + "::" + this.DllName);
-				this.quikBroker.OrderProcessor.UpdateOrderState_postProcess(order, omsg, priceFilled, qtyFilled);
-			}
 		}
 
 /* Функция TRANS2QUIK_TRANSACTIONS_REPLY_CALLBACK
@@ -274,10 +267,13 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			string msg_findingOrder = "";
 
 			OrderLaneByState orders = this.quikBroker.OrderProcessor.DataSnapshot.OrdersPending;
-			Order orderSubmitting = orders.ScanRecent_forGuid(trans_id.ToString());
 
+			OrderLane	suggestedLane = null;
+			string		suggestion = "PASS_suggestLane=TRUE";
+			Order orderSubmitting = orders.ScanRecent_forGuid(trans_id.ToString(), out suggestedLane, out suggestion);
 			if (orderSubmitting == null) {
-				msg_findingOrder = "NOT_FOUND Guid[" + trans_id + "] ; orderSernos=[" + orders.SessionSernosAsString + "] Count=[" + orders.Count + "]";
+				msg_findingOrder = "NOT_FOUND Guid[" + trans_id + "] ; orderSernos=[" + orders.SessionSernosAsString + "] Count=[" + orders.Count + "]"
+						+ " suggestedLane[" + suggestedLane + "] suggestion[" + suggestion + "]";
 				Assembler.PopupException(msg_transactionState + msg_findingOrder + msig, null, false);
 				return;
 			}
@@ -289,6 +285,9 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 				msg = "ASSIGNED_SernoExchange[" + sernoExchange_asLong + "] was[" + orderSubmitting.SernoExchange + "]";
 				orderSubmitting.SernoExchange  = sernoExchange_asLong;
 			}
+
+			OrderStateMessage osm = new OrderStateMessage(orderSubmitting, OrderState._TransactionStatus, msg_transactionState + msg_findingOrder + msig);
+			orderSubmitting.AppendMessageSynchronized(osm);
 
 			OrderStateMessage newOrderState = new OrderStateMessage(orderSubmitting, newState, msg_transactionState + msg);
 			this.quikBroker.OrderProcessor.UpdateOrderState_postProcess(orderSubmitting, newOrderState);

@@ -94,7 +94,7 @@ namespace Sq1.Adapters.Quik.Broker {
 				order.PriceRequested, (int)order.QtyRequested, order.GUID,
 				out sernoSessionFromTerminal, out msgSubmittedFromTerminal, out orderStateFromTerminalMustGetSubmitted);
 
-			msg = msgSubmittedFromTerminal + "order.SernoSession[" + order.SernoSession + "]=>[" + sernoSessionFromTerminal + "] ";
+			msg = msgSubmittedFromTerminal + " order.SernoSession[" + order.SernoSession + "]=>[" + sernoSessionFromTerminal + "] ";
 			order.SernoSession = sernoSessionFromTerminal;
 
 			OrderStateMessage newState = new OrderStateMessage(order, orderStateFromTerminalMustGetSubmitted, msg + msig);
