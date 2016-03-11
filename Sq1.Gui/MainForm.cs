@@ -403,7 +403,7 @@ namespace Sq1.Gui {
 			}
 			try {
 				if (ExecutionForm.Instance.IsShown) {
-					ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized();
+					ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshot_initializeSplitters_ifDockContentDeserialized();
 				}
 				if (ExceptionsForm.Instance.IsShown) {
 					ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized_invokeMeFromGuiThreadOnly();

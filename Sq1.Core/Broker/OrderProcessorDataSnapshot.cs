@@ -109,7 +109,7 @@ namespace Sq1.Core.Broker {
 		}
 		public void OrdersRemoveNonPendingForAccounts(List<string> accountNumbers) {
 			foreach (string accountNumber in accountNumbers) {
-				List<Order> ordersForAccount = this.OrdersAll.ScanRecentFindAllForAccount(accountNumber); 
+				List<Order> ordersForAccount = this.OrdersAll.ScanRecent_findAllForAccount(accountNumber); 
 				this.OrdersRemove(ordersForAccount, false);
 			}
 			this.SerializerLogrotateOrders.HasChangesToSave = true;
@@ -166,8 +166,11 @@ namespace Sq1.Core.Broker {
 			Order ret = null;
 			logOrEmpty = "";
 
+			OrderLane	suggestedLane = null;
+			string		suggestion = "PASS_suggestLane=TRUE";
+
 			foreach (OrderLane lane in lanes) {
-				ret = lane.ScanRecent_forGuid(GUID.ToString());
+				ret = lane.ScanRecent_forGuid(GUID.ToString(), out suggestedLane, out suggestion, false);
 				if (ret != null) break;
 				logOrEmpty += lane.ToStringCount() + " sessionSernos(" + lane.SessionSernosAsString + "),";
 			}

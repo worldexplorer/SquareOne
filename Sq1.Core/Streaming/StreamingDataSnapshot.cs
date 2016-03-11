@@ -190,7 +190,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public virtual double BidOrAsk_getAligned_forTidalOrCrossMarket_fromStreamingSnap(string symbol, Direction direction
 				, out OrderSpreadSide oss, bool forceCrossMarket) {
-			string msig = " //GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(" + symbol + ", " + direction + ")";
+			string msig = " //BidOrAsk_getAligned_forTidalOrCrossMarket_fromStreamingSnap(" + symbol + ", " + direction + ")";
 			double priceLastQuote = this.LastQuote_getPriceForMarketOrder(symbol);
 			if (priceLastQuote == 0) {
 				string msg = "QuickCheck ZERO priceLastQuote=" + priceLastQuote + " for Symbol=[" + symbol + "]"
@@ -253,6 +253,10 @@ namespace Sq1.Core.Streaming {
 							oss = OrderSpreadSide.MarketPrice;
 							price = currentAsk;		// looks like default, must be crossmarket to fill it right now
 							break;
+						case MarketOrderAs.MarketUnchanged_DANGEROUS:
+							oss = OrderSpreadSide.Unknown;
+							//DONT_CHANGE_USELESS price = ???;
+							break;
 						default:
 							string msg2 = "no handler for spreadSide[" + spreadSide + "] direction[" + direction + "]";
 							throw new Exception(msg2 + msig);
@@ -276,6 +280,10 @@ namespace Sq1.Core.Streaming {
 						case MarketOrderAs.MarketZeroSentToBroker:
 							oss = OrderSpreadSide.MarketPrice;
 							price = currentBid;		// looks like default, must be crossmarket to fill it right now
+							break;
+						case MarketOrderAs.MarketUnchanged_DANGEROUS:
+							oss = OrderSpreadSide.Unknown;
+							//DONT_CHANGE_USELESS price = ???;
 							break;
 						default:
 							string msg2 = "no handler for spreadSide[" + spreadSide + "] direction[" + direction + "]";

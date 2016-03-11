@@ -168,7 +168,7 @@ namespace Sq1.Gui {
 			try {
 				if (this.mniExecution.Checked == false) {
 					ExecutionForm.Instance.Show(this.DockPanel);
-					ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized();
+					ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshot_initializeSplitters_ifDockContentDeserialized();
 				} else {
 					ExecutionForm.Instance.Hide();
 				}

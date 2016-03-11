@@ -113,6 +113,9 @@ namespace Sq1.Core.DataTypes {
 		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue(100)]
 		[JsonProperty]	public	int				ReplaceTidalMillis			{ get; set; }
 
+		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue(false)]
+		[JsonProperty]	public	bool			MarketOrders_priceFill_bringBackFromOutrageous			{ get; set; }
+
 
 		[Category("6. Other"), Description(""), DefaultValue(true)]
 		[JsonProperty]	public	bool			SimBugOutOfBarStopsFill		{ get; set; }

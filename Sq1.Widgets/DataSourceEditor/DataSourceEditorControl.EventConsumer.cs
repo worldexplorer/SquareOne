@@ -26,10 +26,13 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 			this.dataSourceIamEditing.StreamingAdapter = (StreamingAdapter)lvi.Tag;
 			this.dataSourceIamEditing.StreamingAdapter.EditorInstance.PopulateStreamingAdapterSettingsToEditor();
-			this.dataSourceIamEditing.StreamingAdapter.EditorInstance.Dock = DockStyle.Fill;
 			this.pnlStreamingEditor.Controls.Clear();
 			this.pnlStreamingEditor.Controls.Add(this.dataSourceIamEditing.StreamingAdapter.EditorInstance);
 			this.grpStreaming.Text = this.dataSourceIamEditing.StreamingAdapter.NameWithVersion + " Settings";
+
+			this.dataSourceIamEditing.StreamingAdapter.EditorInstance.PerformLayout();
+			this.dataSourceIamEditing.StreamingAdapter.EditorInstance.Dock = DockStyle.Fill;
+			this.pnlStreamingEditor.PerformLayout();
 		}
 		void lvBrokerAdapters_SelectedIndexChanged(object sender, EventArgs e) {
 			if (this.lvBrokerAdapters.SelectedItems.Count == 0) {
@@ -44,10 +47,13 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 			this.dataSourceIamEditing.BrokerAdapter = (BrokerAdapter)lvi.Tag;
 			this.dataSourceIamEditing.BrokerAdapter.EditorInstance.PushBrokerAdapterSettingsToEditor();
-			this.dataSourceIamEditing.BrokerAdapter.EditorInstance.Dock = DockStyle.Fill;
 			this.pnlBrokerEditor.Controls.Clear();
 			this.pnlBrokerEditor.Controls.Add(this.dataSourceIamEditing.BrokerAdapter.EditorInstance);
 			this.grpBroker.Text = this.dataSourceIamEditing.BrokerAdapter.NameWithVersion + " Settings";
+
+			this.dataSourceIamEditing.BrokerAdapter.EditorInstance.Dock = DockStyle.Fill;
+			this.dataSourceIamEditing.BrokerAdapter.EditorInstance.PerformLayout();
+			this.pnlBrokerEditor.PerformLayout();
 		}
 		void btnSave_Click(object sender, EventArgs e) {
 			try {

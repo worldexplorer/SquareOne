@@ -79,7 +79,7 @@ namespace Sq1.Core.Livesim {
 			string msig = " //LivesimBroker.OrderPendingKillWithoutKillerSubmit()";
 			
 			string orderGUID = orderPendingToKill.GUID;
-			Order orderPendingFound = base.ScanEvidentLanesForGuid_nullUnsafe(orderGUID);
+			Order orderPendingFound = base.ScanEvidentLanes_forGuid_nullUnsafe(orderGUID);
 			if (orderPendingFound != orderPendingToKill) {
 				string msg = "PARANOID_SCAN_FAILED orderPendingFound[" + orderPendingFound + "] != orderPendingToKill[" + orderPendingToKill + "]";
 				Assembler.PopupException(msg);

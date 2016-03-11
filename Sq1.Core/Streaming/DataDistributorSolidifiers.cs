@@ -35,7 +35,7 @@ namespace Sq1.Core.Streaming {
 
 			ret = base.ConsumerBarSubscribe(symbol, scaleInterval, solidifier, quotePumpSeparatePushingThreadEnabled);
 			string msg2 = "SOLIDIFIER_SUBSCRIBED_BARS[" + ret + "]";
-			Assembler.PopupException(msg2 + msig, null, false);
+			//Assembler.PopupException(msg2 + msig, null, false);
 
 			return ret;
 		}
@@ -75,7 +75,7 @@ namespace Sq1.Core.Streaming {
 
 			ret = base.ConsumerQuoteSubscribe(symbol, scaleInterval, solidifier, quotePumpSeparatePushingThreadEnabled);
 			string msg2 = "SOLIDIFIER_SUBSCRIBED_QUOTES[" + ret + "]";
-			Assembler.PopupException(msg2 + msig, null, false);
+			//Assembler.PopupException(msg2 + msig, null, false);
 
 			return ret;
 		}

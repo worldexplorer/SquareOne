@@ -365,9 +365,11 @@ namespace Sq1.Core.Broker {
 			killerOrder.Alert.DataSource.BrokerAdapter.Kill_usingKiller(killerOrder);
 		}
 		public Order UpdateOrderStateByGuid_dontPostProcess(string orderGUID, OrderState orderState, string message) {
-			Order orderFound = this.DataSnapshot.OrdersSubmitting.ScanRecent_forGuid(orderGUID);
+			OrderLane	suggestedLane = null;
+			string		suggestion = "PASS_suggestLane=TRUE";
+			Order orderFound = this.DataSnapshot.OrdersSubmitting.ScanRecent_forGuid(orderGUID, out suggestedLane, out suggestion, false);
 			if (orderFound == null) {
-				 orderFound = this.DataSnapshot.OrdersAll.ScanRecent_forGuid(orderGUID, true);
+				 orderFound = this.DataSnapshot.OrdersAll.ScanRecent_forGuid(orderGUID, out suggestedLane, out suggestion, true);
 			}
 			if (orderFound == null) {
 				string msg = "order[" + orderGUID + "] wasn't found; OrderProcessorDataSnapshot.OrderCount=[" + this.DataSnapshot.OrderCount + "]";
@@ -494,10 +496,15 @@ namespace Sq1.Core.Broker {
 			//	bool signalled = order.MreActiveCanCome.WaitOne(-1);
 			//}
 
-			OrderState orderStatePriorToUpdate = order.State;
-			order.State = newStateOmsg.State;
-			order.StateUpdateLastTimeLocal = newStateOmsg.DateTime;
-			this.DataSnapshot.SwitchLanes_forOrder_postStatusUpdate(order, orderStatePriorToUpdate);
+			string state_asString = Enum.GetName(typeof(OrderState), newStateOmsg.State);
+			bool underscoredState = state_asString.StartsWith("_");
+
+			if (underscoredState == false) {
+				OrderState orderStatePriorToUpdate = order.State;
+				order.State = newStateOmsg.State;
+				order.StateUpdateLastTimeLocal = newStateOmsg.DateTime;
+				this.DataSnapshot.SwitchLanes_forOrder_postStatusUpdate(order, orderStatePriorToUpdate);
+			}
 
 			if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) return;
 			this.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>(){order});
@@ -521,11 +528,6 @@ namespace Sq1.Core.Broker {
 					this.postProcess_victimOrder(order, newStateOmsg);
 					return;
 				}
-				if (order.hasBrokerAdapter("UpdateOrderStateAndPostProcess():") == false) {
-					string msg = "most likely QuikTerminal.CallbackOrderStatus got something wrong...";
-					Assembler.PopupException(msg);
-					return;
-				}
 
 				if (newStateOmsg.State == OrderState.Rejected && order.State == OrderState.EmergencyCloseLimitReached) {
 					string prePostErrorMsg = "BrokerAdapter CALLBACK DUPE: Status[" + newStateOmsg.State + "] delivered for EmergencyCloseLimitReached "
@@ -543,20 +545,20 @@ namespace Sq1.Core.Broker {
 					return;
 				}
 
-				OrderCallbackDupesChecker dupesChecker = order.Alert.DataSource.BrokerAdapter.OrderCallbackDupesChecker;
-				if (dupesChecker != null) {
-					string whyIthinkBrokerIsSpammingMe = dupesChecker.OrderCallbackIsDupeReson(order, newStateOmsg, priceFill, qtyFill);
-					if (string.IsNullOrEmpty(whyIthinkBrokerIsSpammingMe) == false) {
-						string msgChecker = "SKIPPING_POSTPROCESS_DUPE[" + whyIthinkBrokerIsSpammingMe + "]; for [" + order + "]";
-						this.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msgChecker);
-						return;
-					}
-				}
+				// returns a non-null string in any case - dupe or not
+				//OrderCallbackDupesChecker dupesChecker = order.Alert.DataSource.BrokerAdapter.OrderCallbackDupesChecker;
+				//if (dupesChecker != null) {
+				//    string whyIthinkBrokerIsSpammingMe = dupesChecker.OrderCallbackIsDupeReson(order, newStateOmsg, priceFill, qtyFill);
+				//    if (string.IsNullOrEmpty(whyIthinkBrokerIsSpammingMe) == false) {
+				//        string msgChecker = "SKIPPING_POSTPROCESS_DUPE[" + whyIthinkBrokerIsSpammingMe + "]; for [" + order + "]";
+				//        this.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msgChecker);
+				//        //return;
+				//    }
+				//}
 
 				if (priceFill != 0) {
-					if (order.PriceFill == 0 || order.PriceFill == -999.99) {
-						order.PriceFill = priceFill;
-						order.QtyFill = qtyFill;
+					if (order.PriceFill == 0) {
+						order.FillWith(priceFill, qtyFill);
 					} else {
 						bool marketWasSubstituted = order.Alert.MarketLimitStop == MarketLimitStop.Limit
 								&& order.Alert.Bars.SymbolInfo.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
@@ -639,7 +641,20 @@ namespace Sq1.Core.Broker {
 			switch (order.State) {
 				case OrderState.Filled:
 				case OrderState.FilledPartially:
-					order.FilledWith(priceFill, qtyFill);
+					double slippageByFact = 0;
+					// you should save it to SlippageEffective! calc "implied" slippage from executed price, instead of assumed for LimitCrossMarket
+					if (order.SlippageFill == 0
+						// && order.Alert.MarketLimitStop == MarketLimitStop.Market
+						// && order.Alert.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker
+							) {
+						if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) {
+							slippageByFact = order.PriceFill - order.CurrentBid;
+						} else {
+							slippageByFact = order.PriceFill - order.CurrentAsk;
+						}
+					}
+
+					order.FillWith(priceFill, qtyFill, slippageByFact);
 					this.postProcessAccounting(order, qtyFill);
 
 					if (order.IsEmergencyClose) {
@@ -698,10 +713,10 @@ namespace Sq1.Core.Broker {
 					//NEVER order.PricePaid = 0;
 
 					if (order.IsEmergencyClose) {
-						this.OPPemergency.CreateEmergencyReplacementAndResubmitFor(order);
+						this.OPPemergency.CreateEmergencyReplacement_resubmitFor(order);
 					} else {
 						if (order.Alert.IsExitAlert) {
-							this.OPPemergency.AddLockAndCreateEmergencyReplacementAndResubmitFor(order);
+							this.OPPemergency.AddLockAndCreate_emergencyReplacement_resubmitFor(order);
 						} else {
 							this.OPPrejected.HandleReplaceRejected(order);
 						}
@@ -740,7 +755,7 @@ namespace Sq1.Core.Broker {
 				case OrderState.JustConstructed:
 					break;
 
-				case OrderState.TradeStatus:
+				case OrderState._TradeStatus:
 					break;
 
 				default:

@@ -9,12 +9,12 @@ namespace Sq1.Core.Broker {
 	// Popup when you Find something logically located in another lane;		//suggestLanePopupException()
 	public class OrderLane {	// TODO : OrderListWD
 		readonly	OrderProcessorDataSnapshot neighborLanesWhenOrdersAll;
-		readonly	string		ident;
+		readonly	string			ident;
 
-		protected	object	OrdersLock;
-		protected	List<Order>	InnerOrderList			{ get; private set; }
-		public		List<Order>	SafeCopy				{ get { lock (this.OrdersLock) { return new List<Order>(this.InnerOrderList); } } }
-		public		string		SessionSernosAsString	{ get { lock (this.OrdersLock) {
+		protected	object			OrdersLock;
+		protected	List<Order>		InnerOrderList			{ get; private set; }
+		public		List<Order>		SafeCopy				{ get { lock (this.OrdersLock) { return new List<Order>(this.InnerOrderList); } } }
+		public		string			SessionSernosAsString	{ get { lock (this.OrdersLock) {
 					//const string sessionSernos = "";
 					//return this.Aggregate(sessionSernos, (current, order) => current + (" " + order.SernoSession));
 					string ret = "";
@@ -43,44 +43,48 @@ namespace Sq1.Core.Broker {
 			this.OrdersGuids = new List<string>();
 		}
 
-		void suggestLanePopupException(Order order) {
-			if (this.neighborLanesWhenOrdersAll == null) return;
-			string msg = "";
+		OrderLaneByState suggestLane_popupException(Order order, out string suggestion, bool popupKoz_imNotSavingSuggestion_inOrderMessages = true) {
+			suggestion = "";
+			OrderLaneByState laneFound = null;
+			if (this.neighborLanesWhenOrdersAll == null) {
+				suggestion = "DONT_ASK_MY_SUGGESTION__IM_NOT_OrdersAll";
+				return laneFound;
+			}
 			if (order == null) {
-				msg = "DONT_PASS_ORDER_NULL_TO_SUGGEST_LANE";
+				suggestion = "DONT_PASS_ORDER_NULL_TO_SUGGEST_LANE";
 				//this.neighborLanesWhenOrdersAll.OrderProcessor.PopupException(new Exception(msg));
-				Assembler.PopupException(msg, null, false);
-				return;
+				if (popupKoz_imNotSavingSuggestion_inOrderMessages) Assembler.PopupException(suggestion, null, false);
+				return laneFound;
 			}
 			Stopwatch fullScanTook = new Stopwatch();
 			fullScanTook.Start();
-			OrderLaneByState laneFound;
 			OrderLaneByState laneExpected = this.neighborLanesWhenOrdersAll.SuggestLaneByOrderState_nullUnsafe(order.State);
 			if (laneExpected != null) {
 				if (laneExpected.Contains(order)) {
-					msg += "FOUND_IN_EXPECTED_LANE";
+					suggestion += "FOUND_IN_EXPECTED_LANE";
 					laneFound = laneExpected;
 				} else {
-					msg += "NOT_FOUND_WHERE_EXPECTED_TRYING_FULL_SEARCH";
+					suggestion += "NOT_FOUND_WHERE_EXPECTED_TRYING_FULL_SEARCH";
 					OrderLaneByState lanesFullScan = neighborLanesWhenOrdersAll.ScanLanesForOrderGuid_nullUnsafe(order);
 					if (lanesFullScan == null) {
-						msg = "NULL_SUGGESTION_FOR[" + order.State + "] instead of OrdersAll: " + msg;
+						suggestion = "NULL_SUGGESTION_FOR[" + order.State + "] instead of OrdersAll: " + suggestion;
 					} else {
 						if (lanesFullScan.StatesAllowed == OrderStatesCollections.Unknown) {
-							msg += "; only OrdersAll contains this order, pass iDontNeedSuggestionsHere=true";
+							suggestion += "; only OrdersAll contains this order, pass suggestLane=false";
 						} else {
 							laneFound = lanesFullScan;
-							msg = "USE [" + laneFound.ToString() + "] instead of OrdersAll: " + msg;
+							suggestion = "USE [" + laneFound.ToString() + "] instead of OrdersAll: " + suggestion;
 						}
 					}
 				}
 			} else {
-				msg = "NO_SUGGESTION_FOR[" + order.State + "] instead of OrdersAll: " + msg;
+				suggestion = "NO_SUGGESTION_FOR[" + order.State + "] instead of OrdersAll: " + suggestion;
 			}
 			fullScanTook.Stop();
-			msg += " order[" + order + "]";
-			msg = "(" + fullScanTook.ElapsedMilliseconds + "ms) " + msg;
-			Assembler.PopupException(msg, null, false);
+			suggestion += " order[" + order + "]";
+			suggestion = "(" + fullScanTook.ElapsedMilliseconds + "ms) " + suggestion;
+			if (popupKoz_imNotSavingSuggestion_inOrderMessages) Assembler.PopupException(suggestion, null, false);
+			return laneFound;
 		}
 		protected virtual bool checkThrowAdd	(Order order) { return true; }
 		protected virtual bool checkThrowRemove	(Order order) { return true; }
@@ -120,11 +124,11 @@ namespace Sq1.Core.Broker {
 			this.OrdersGuids.Remove(order.GUID);
 			return this.InnerOrderList.Remove(order);
 		} }
-		public int RemoveAll(List<Order> ordersToRemove, bool popupIfDoesntContain = true) { lock (this.OrdersLock) {
+		public int RemoveAll(List<Order> ordersToRemove, bool popupIf_doesntContain = true) { lock (this.OrdersLock) {
 			int removed = 0;
 			foreach (Order orderRemoving in ordersToRemove) {
 				if (this.InnerOrderList.Contains(orderRemoving) == false) {
-					if (popupIfDoesntContain && orderRemoving.Alert.MyBrokerIsLivesim == false) {
+					if (popupIf_doesntContain && orderRemoving.Alert.MyBrokerIsLivesim == false) {
 						string msg = "LANE_DOESNT_CONTAIN_ORDER_YOU_WILLING_TO_REMOVE " + this.ToStringCount() + " orderRemoving" + orderRemoving;
 						Assembler.PopupException(msg, null, false);
 					}
@@ -137,9 +141,9 @@ namespace Sq1.Core.Broker {
 			return removed;
 		} }
 		public int RemoveForAccount(string acctNum) { lock (this.OrdersLock) {
-			return this.RemoveAll(this.ScanRecentFindAllForAccount(acctNum));
+			return this.RemoveAll(this.ScanRecent_findAllForAccount(acctNum));
 		} }
-		public Order ScanRecentForSernoExchange(long SernoExchange, bool iDontNeedSuggestionsHere = false) {
+		public Order ScanRecent_forSernoExchange(long SernoExchange, out OrderLane suggestedLane, out string suggestion, bool suggestLane = true) {
 			Order found = null;
 			lock (this.OrdersLock) {
 				foreach (Order order in this.InnerOrderList) {
@@ -148,24 +152,30 @@ namespace Sq1.Core.Broker {
 					break;
 				}
 			}
-			if (iDontNeedSuggestionsHere == false) this.suggestLanePopupException(found);
+			suggestedLane = null;
+			suggestion = "PASS_suggestLane=TRUE";
+			if (suggestLane) suggestedLane = this.suggestLane_popupException(found, out suggestion);
 			return found;
 		}
-		public Order ScanRecent_forGuid(string orderGUID, bool iDontNeedSuggestionsHere = false) { lock (this.OrdersLock) {
+		public Order ScanRecent_forGuid(string orderGUID, out OrderLane suggestedLane, out string suggestion, bool suggestLane = true) { lock (this.OrdersLock) {
 			Order found = null;
 			foreach (Order order in this.InnerOrderList) {
 				if (order.GUID != orderGUID) continue;
 				found = order;
 				break;
 			}
+			suggestedLane = null;
+			suggestion = "PASS_suggestLane=TRUE";
 			if (found == null) return found;
-			if (iDontNeedSuggestionsHere == false) this.suggestLanePopupException(found);
+			if (suggestLane) suggestedLane = this.suggestLane_popupException(found, out suggestion);
 			return found;
 		} }
 
-		public Order FindMatchingForAlert(Alert alert, bool iDontNeedSuggestionsHere = false) { lock (this.OrdersLock) {
+		public Order FindOrder_matchingForAlert(Alert alert, out OrderLane suggestedLane, out string suggestion, bool suggestLane = true) { lock (this.OrdersLock) {
 			Order found = null;
-			if (iDontNeedSuggestionsHere == false) this.suggestLanePopupException(alert.OrderFollowed);
+			suggestedLane = null;
+			suggestion = "PASS_suggestLane=TRUE";
+			if (suggestLane) suggestedLane = this.suggestLane_popupException(found, out suggestion);
 			// replace with a property if (alert.IsSameBarExit) return null;
 			foreach (Order order in this.InnerOrderList) {
 				if (order.Alert == null) {
@@ -183,12 +193,13 @@ namespace Sq1.Core.Broker {
 					found = order; break;
 				}
 			}
-			if (iDontNeedSuggestionsHere == false) this.suggestLanePopupException(found);
 			return found;
 		} }
-		public Order ScanRecentForSimilarNotSamePendingOrder(Order order, bool iDontNeedSuggestionsHere = false) { lock (this.OrdersLock) {
+		public Order ScanRecent_forSimilarPendingOrder_notSame(Order order, out OrderLane suggestedLane, out string suggestion, bool suggestLane = true) { lock (this.OrdersLock) {
 			Order found = null;
-			if (iDontNeedSuggestionsHere == false) this.suggestLanePopupException(order);
+			suggestedLane = null;
+			suggestion = "PASS_suggestLane=TRUE";
+			if (suggestLane) suggestedLane = this.suggestLane_popupException(found, out suggestion);
 			//if (OrdersPendingBrokerCallbackStore == false) return null;
 			foreach (Order orderSimilar in this.InnerOrderList) {
 				if (orderSimilar.Alert == null) continue;	// orders deserialized might have no alerts attached
@@ -197,10 +208,9 @@ namespace Sq1.Core.Broker {
 				found = orderSimilar;
 				break;
 			}
-			if (iDontNeedSuggestionsHere == false) this.suggestLanePopupException(found);
 			return found;
 		} }
-		public List<Order> ScanRecentFindAllForAccount(string acctNum, bool ignoreExpectingCallbackFromBroker = false, bool iDontNeedSuggestionsHere = false) {
+		public List<Order> ScanRecent_findAllForAccount(string acctNum, bool ignoreExpectingCallbackFromBroker = false, bool suggestLane = true) {
 			List<Order> ordersForAccount = new List<Order>();
 			if (string.IsNullOrEmpty(acctNum)) {
 				string msg = "GetOrdersForAccount([" + acctNum + "]) - returning empty list";

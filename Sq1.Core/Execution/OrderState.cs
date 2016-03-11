@@ -11,16 +11,17 @@ namespace Sq1.Core.Execution {
 		PreSubmit				= 200,
 		Submitting				= 210,
 		//SubmittingAsync		= 220,		// Rejected and other *PostProcessors should consider SubmittingAsync equivalent to Submitting
-		OrderStatus				= 215,
+		_TransactionStatus		= 215,
 		SubmittingSequenced		= 230,
 		Submitted				= 240,
 		WaitingBrokerFill		= 250,
+		_OrderStatus			= 255,
 
 		Rejected				= 300,
 		RejectedLimitReached	= 330,
 		Filled					= 400,
 		FilledPartially			= 410,
-		TradeStatus				= 450,
+		_TradeStatus			= 415,
 
 		//KillSubmittingAsync	= 610,	// everything is Async! like for SubmittingAsync
 		KillPendingPreSubmit	= 500,
