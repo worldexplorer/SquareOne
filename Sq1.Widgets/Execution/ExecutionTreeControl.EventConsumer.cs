@@ -99,7 +99,7 @@ namespace Sq1.Widgets.Execution {
 				foreach (Order selectedOrder in this.OrdersSelected) {
 					Order reason4lock = Assembler.InstanceInitialized.OrderProcessor.OPPemergency.GetReasonForLock(selectedOrder);
 					if (reason4lock != null) {
-						Assembler.InstanceInitialized.OrderProcessor.OPPemergency.RemoveEmergencyLockUserInterrupted(reason4lock);
+						Assembler.InstanceInitialized.OrderProcessor.OPPemergency.RemoveEmergencyLock_userInterrupted(reason4lock);
 						this.mniStopEmergencyClose.Enabled = false;
 						//ListViewItem lvi = findListviewItemForOrder(reason4lock);
 						//lvi.Selected = true;

@@ -18,7 +18,7 @@ namespace Sq1.Gui.Singletons {
 			this.orderProcessor = orderProcessor;
 			
 			//this.executionTree.Initialize(this.orderProcessor.DataSnapshot.OrdersAll.SafeCopy);
-			this.ExecutionTreeControl.InitializeWithShadowTreeRebuilt(this.orderProcessor.DataSnapshot.OrdersAutoTree);
+			this.ExecutionTreeControl.InitializeWith_shadowTreeRebuilt(this.orderProcessor.DataSnapshot.OrdersAutoTree);
 			this.ExecutionTreeControl.PopulateAccountsMenuFromBrokerAdapter(Assembler.InstanceInitialized.RepositoryJsonDataSources.CtxAccountsAllCheckedFromUnderlyingBrokerAdapters);			
 		}
 		

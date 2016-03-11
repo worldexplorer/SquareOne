@@ -342,7 +342,7 @@ namespace Sq1.Core.Broker {
 					//if (order.Alert.Bars.SymbolInfo.OverrideMarketPriceToZero == true) {
 					//} else {
 					//	if (order.PriceRequested == 0) {
-					//		base.StreamingAdapter.StreamingDataSnapshot.getAlignedBidOrAskTidalOrCrossMarketFromStreaming(
+					//		base.StreamingAdapter.StreamingDataSnapshot.BidOrAsk_getAligned_forTidalOrCrossMarket_fromStreamingSnap(
 					//			order.Alert.Symbol, order.Alert.Direction, out order.PriceRequested, out order.SpreadSide, ???);
 					//		order.PriceRequested += order.Slippage;
 					//		order.PriceRequested = order.Alert.Bars.alignOrderPriceToPriceLevel(order.PriceRequested, order.Alert.Direction, order.Alert.MarketLimitStop);
@@ -406,7 +406,7 @@ namespace Sq1.Core.Broker {
 			order.AppendMessage(msg + msig);
 		}
 
-		public Order ScanEvidentLanesForGuid_nullUnsafe(string GUID, List<OrderLane> orderLanes = null, char separator = ';') {
+		public Order ScanEvidentLanes_forGuid_nullUnsafe(string GUID, List<OrderLane> orderLanes = null, char separator = ';') {
 			string msig = " //" + this.Name;
 			string orderLanesSearchedAsString = "";
 			Order orderFound = null;
@@ -417,7 +417,9 @@ namespace Sq1.Core.Broker {
 			}
 			foreach (OrderLane orderLane in orderLanes) {
 				orderLanesSearchedAsString += orderLane.GetType().Name.Substring(5) + separator;	// removing "Orders" from "OrdersSubmitting"
-				orderFound = orderLane.ScanRecent_forGuid(GUID);
+				OrderLane	suggestedLane = null;
+				string		suggestion = "PASS_suggestLane=TRUE";
+				orderFound = orderLane.ScanRecent_forGuid(GUID, out suggestedLane, out suggestion, false);
 				if (orderFound != null) break;
 			}
 			orderLanesSearchedAsString = orderLanesSearchedAsString.TrimEnd(separator);
@@ -443,18 +445,21 @@ namespace Sq1.Core.Broker {
 			if (orderFound.Alert.Bars == null) {
 				string msg = "UNREPAIRABLE__ORDER_FOUND_HAS_Bars_NULL orderFound[" + orderFound.ToString()
 					+ "] this[" + this.ToString() + "]";
+				Assembler.PopupException(msg + msig, null, false);
 				//orderFound.Alert.Bars = orderFound.;
 				return orderFound;
 			}
 			if (orderFound.Alert.DataSource == null) {
 				string msg = "UNREPAIRABLE__ORDER_FOUND_HAS_DataSource_NULL orderFound[" + orderFound.ToString()
 					+ "] this[" + this.ToString() + "]";
+				Assembler.PopupException(msg + msig, null, false);
 				//orderFound.Alert.DataSource = this.DataSource;
 				return orderFound;
 			}
 			if (orderFound.Alert.DataSource.BrokerAdapter == null) {
 				string msg = "ORDER_FOUND_HAS_BROKER_NULL__ASSIGNING_MYSELF orderFound[" + orderFound.ToString()
 					+ "] this[" + this.ToString() + "]";
+				Assembler.PopupException(msg + msig, null, false);
 				orderFound.Alert.DataSource.BrokerAdapter = this;
 			}
 			return orderFound;

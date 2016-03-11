@@ -20,7 +20,9 @@ namespace Sq1.Core.Execution {
 				OrderState.LeaveTheSame,
 				OrderState.Submitted,
 				OrderState.WaitingBrokerFill,
-				OrderState.TradeStatus,
+				OrderState._TradeStatus,		// an order must never be actually analyzed for this status koz it never has it assigned
+				OrderState._OrderStatus,		// an order must never be actually analyzed for this status koz it never has it assigned
+				OrderState._TransactionStatus,	// an order must never be actually analyzed for this status koz it never has it assigned
 				OrderState.KillerBulletFlying,
 				OrderState.KillPendingSubmitted,
 				OrderState.IRefuseOpenTillEmergencyCloses,

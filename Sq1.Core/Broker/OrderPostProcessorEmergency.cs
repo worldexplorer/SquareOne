@@ -31,7 +31,7 @@ namespace Sq1.Core.Broker {
 			}
 			return ret;
 		}
-		public void RemoveEmergencyLockUserInterrupted(Order reason4lock) {
+		public void RemoveEmergencyLock_userInterrupted(Order reason4lock) {
 			if (this.GetReasonForLock(reason4lock) == null) {
 				throw new Exception("CRAZY#54 I was called when the reason4lock still existed?... reason4lock=" + reason4lock);
 			}
@@ -61,12 +61,12 @@ namespace Sq1.Core.Broker {
 			OrderStateMessage omsgPost = new OrderStateMessage(filledEmergencyOrder, stateCompletedOrInterrupted, msgPost);
 			this.orderProcessor.UpdateOrderState_postProcess(filledEmergencyOrder, omsgPost);
 		}
-		public void AddLockAndCreateEmergencyReplacementAndResubmitFor(Order rejectedExitOrder) {
+		public void AddLockAndCreate_emergencyReplacement_resubmitFor(Order rejectedExitOrder) {
 			int emergencyCloseAttemptsMax = rejectedExitOrder.Alert.Bars.SymbolInfo.EmergencyCloseAttemptsMax;
 			if (emergencyCloseAttemptsMax <= 0) return;
 
 			try {
-				throwLogIfNotRejectedClosingOrder(rejectedExitOrder);
+				throwLog_ifNotRejected_closingOrder(rejectedExitOrder);
 			} catch (Exception) {
 				return;
 			}
@@ -84,32 +84,32 @@ namespace Sq1.Core.Broker {
 			lock (this.emergencyLocks) {
 				this.emergencyLocks.Add(emergencyLock);
 			}
-			CreateEmergencyReplacementAndResubmitFor(rejectedExitOrder);
+			CreateEmergencyReplacement_resubmitFor(rejectedExitOrder);
 		}
-		public void CreateEmergencyReplacementAndResubmitFor(Order rejectedExitOrderOrEmergencyCloseOrder) {
+		public void CreateEmergencyReplacement_resubmitFor(Order rejectedExitOrderOrEmergencyCloseOrder) {
 			try {
-				throwLogIfNotRejectedClosingOrder(rejectedExitOrderOrEmergencyCloseOrder);
+				throwLog_ifNotRejected_closingOrder(rejectedExitOrderOrEmergencyCloseOrder);
 				throwLogAndAppendMessageIfNoEmergencyLockFor(rejectedExitOrderOrEmergencyCloseOrder);
 				throwLogAndAppendMessageIfNextAttemptReachesLimit(rejectedExitOrderOrEmergencyCloseOrder);
 				throwLogIfEmergencyCloseInterrupted(rejectedExitOrderOrEmergencyCloseOrder);
 			} catch (Exception) {
 				return;
 			}
-			ThreadPool.QueueUserWorkItem(new WaitCallback(this.closeEmergencyThreadWrapper), new object[] { rejectedExitOrderOrEmergencyCloseOrder });
+			ThreadPool.QueueUserWorkItem(new WaitCallback(this.closeEmergency_threadWrapper), new object[] { rejectedExitOrderOrEmergencyCloseOrder });
 			//CloseEmergencyThreadEntry(rejectedExitOrder);
 		}
-		void closeEmergencyThreadWrapper(Object order_array) {
+		void closeEmergency_threadWrapper(Object order_array) {
 			object[] array = order_array as object[];
 			Order rejectedExitOrder = (Order)array[0];
 			try {
-				this.closeEmergencyThreadEntry(rejectedExitOrder);
+				this.closeEmergency_threadEntry(rejectedExitOrder);
 			} catch (Exception e) {
 				Assembler.PopupException("CloseEmergencyThreadWrapper(): " + e.ToString(), e);
 			}
 		}
-		void closeEmergencyThreadEntry(Order rejectedExitOrder) {
+		void closeEmergency_threadEntry(Order rejectedExitOrder) {
 			try {
-				throwLogIfNotRejectedClosingOrder(rejectedExitOrder);
+				throwLog_ifNotRejected_closingOrder(rejectedExitOrder);
 				throwLogAndAppendMessageIfNoEmergencyLockFor(rejectedExitOrder);
 				throwLogAndAppendMessageIfNextAttemptReachesLimit(rejectedExitOrder);
 			} catch (Exception) {
@@ -139,7 +139,7 @@ namespace Sq1.Core.Broker {
 			this.submitReplacementOrderFor(rejectedExitOrder);
 		}
 		void submitReplacementOrderFor(Order rejectedOrderToReplace) {
-			Order replacement = this.createEmergencyCloseOrderInsteadOfRejected(rejectedOrderToReplace);
+			Order replacement = this.createEmergencyCloseOrder_insteadOfRejected(rejectedOrderToReplace);
 			if (replacement == null) {
 				string msgNoReplacement = "got NULL from CreateEmergencyCloseOrderInsteadOfRejected() for (" + rejectedOrderToReplace + "); ";
 				Assembler.PopupException(msgNoReplacement);
@@ -190,12 +190,12 @@ namespace Sq1.Core.Broker {
 				this.orderProcessor.UpdateOrderState_postProcess(replacement, omsg2);
 			}
 		}
-		Order createEmergencyCloseOrderInsteadOfRejected(Order rejectedOrderToReplace) {
+		Order createEmergencyCloseOrder_insteadOfRejected(Order rejectedOrderToReplace) {
 			if (rejectedOrderToReplace == null) {
 				Assembler.PopupException("rejectedOrderToReplace=null why did you call me?");
 				return null;
 			}
-			Order emergencyReplacement = this.findEmergencyReplacementForRejectedOrder(rejectedOrderToReplace);
+			Order emergencyReplacement = this.findEmergencyReplacement_forRejectedOrder(rejectedOrderToReplace);
 			if (emergencyReplacement != null) {
 				string msg = "Rejected[" + rejectedOrderToReplace + "] already has a"
 					+ " emergencyReplacement[" + emergencyReplacement + "] with State[" + emergencyReplacement.State + "];"
@@ -225,15 +225,17 @@ namespace Sq1.Core.Broker {
 	
 			return emergencyReplacement;
 		}
-		Order findEmergencyReplacementForRejectedOrder(Order orderRejected) {
-			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(orderRejected.GUID);
+		Order findEmergencyReplacement_forRejectedOrder(Order orderRejected) {
+			OrderLane	suggestedLane = null;
+			string		suggestion = "PASS_suggestLane=TRUE";
+			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(orderRejected.GUID, out suggestedLane, out suggestion, true);
 			if (rejected == null) {
-				throw new Exception("Rejected[" + orderRejected + "] wasn't found!!!");
+				throw new Exception("OrderRejected[" + orderRejected + "] wasn't found!!! suggestion[" + suggestion + "]");
 			}
-			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(rejected.EmergencyReplacedByGUID);
+			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(rejected.EmergencyReplacedByGUID, out suggestedLane, out suggestion, true);
 			return replacement;
 		}
-		void throwLogIfNotRejectedClosingOrder(Order order) {
+		void throwLog_ifNotRejected_closingOrder(Order order) {
 			if (order.Alert.IsEntryAlert == true) {
 				string msg = "Direction=[" + order.Alert.Direction + "] is not a Sell/Cover; order[" + order + "]";
 				Assembler.PopupException(msg);

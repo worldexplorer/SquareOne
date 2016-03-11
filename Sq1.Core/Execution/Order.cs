@@ -436,7 +436,7 @@ namespace Sq1.Core.Execution {
 			}
 			return ret;
 		}
-		public void FilledWith(double priceFill, double qtyFill, double slippageFill = 0, double commissionFill = 0) {
+		public void FillWith(double priceFill, double qtyFill, double slippageFill = 0, double commissionFill = 0) {
 			this.PriceFill = priceFill;
 			this.QtyFill = qtyFill;
 			if (this.SlippageFill == 0 && slippageFill != 0) {

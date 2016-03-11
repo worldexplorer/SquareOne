@@ -40,7 +40,7 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException(msg);
 				return;
 			}
-			Order replacement = this.CreateReplacementOrderInsteadOfRejected(rejectedOrderToReplace);
+			Order replacement = this.CreateReplacementOrder_insteadOfRejected(rejectedOrderToReplace);
 			if (replacement == null) {
 				string msg = "ReplaceRejectedOrder(" + rejectedOrderToReplace + ") got NULL from CreateReplacementOrder()"
 					+ "; broker reported twice about rejection, ignored this second callback";
@@ -77,14 +77,14 @@ namespace Sq1.Core.Broker {
 				priceScript, replacement.Alert.Direction, replacement.SlippageIndex, false, false);
 			replacement.SlippageFill = slippage;
 			replacement.PriceRequested = priceScript + slippage;
-			this.SubmitReplacementOrderInsteadOfRejected(replacement);
+			this.SubmitReplacementOrder_insteadOfRejected(replacement);
 		}
-		public Order CreateReplacementOrderInsteadOfRejected(Order rejectedOrderToReplace) {
+		public Order CreateReplacementOrder_insteadOfRejected(Order rejectedOrderToReplace) {
 			if (rejectedOrderToReplace == null) {
 				Assembler.PopupException("order2replace=null why did you call me?");
 				return null;
 			}
-			Order replacement = this.findReplacementOrderForRejectedOrder(rejectedOrderToReplace);
+			Order replacement = this.findReplacementOrder_forRejectedOrder(rejectedOrderToReplace);
 			if (replacement != null) {
 				string msg = "Rejected[" + rejectedOrderToReplace + "] already has a replacement[" + replacement + "] with State[" + replacement.State + "]; ignored rejection duplicates from broker";
 				this.orderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(rejectedOrderToReplace, msg);
@@ -106,16 +106,19 @@ namespace Sq1.Core.Broker {
 			//this.orderProcessor.RaiseOrderReplacementOrKillerCreatedForVictim(this, rejectedOrderToReplace);
 			return replacementOrder;
 		}
-		public Order findReplacementOrderForRejectedOrder(Order orderRejected) {
-			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(orderRejected.GUID);
+		public Order findReplacementOrder_forRejectedOrder(Order orderRejected) {
+			OrderLane	suggestedLane = null;
+			string		suggestion = "PASS_suggestLane=TRUE";
+			
+			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(orderRejected.GUID, out suggestedLane, out suggestion, true);
 			if (rejected == null) {
-				throw new Exception("Rejected[" + orderRejected + "] wasn't found!!!");
+				throw new Exception("OrderRejected[" + orderRejected + "] wasn't found!!! suggestion[" + suggestion + "]");
 			}
 			if (string.IsNullOrEmpty(rejected.ReplacedByGUID)) return null;
-			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(rejected.ReplacedByGUID);
+			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(rejected.ReplacedByGUID, out suggestedLane, out suggestion, true);
 			return replacement;
 		}
-		public void SubmitReplacementOrderInsteadOfRejected(Order replacementOrder) {
+		public void SubmitReplacementOrder_insteadOfRejected(Order replacementOrder) {
 			if (replacementOrder == null) {
 				Assembler.PopupException("replacementOrder == null why did you call me?");
 				return;

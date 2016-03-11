@@ -99,7 +99,7 @@ namespace Sq1.Widgets.Execution {
 				});
 		}
 		//former public void Initialize(), replaced by InitializeWithShadowTreeRebuilt();
-		public void PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized() {
+		public void PopulateDataSnapshot_initializeSplitters_ifDockContentDeserialized() {
 			//IM_INVOKED_AFTER_WORKSPACE_LOAD
 			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			
@@ -169,7 +169,7 @@ namespace Sq1.Widgets.Execution {
 			this.DataSnapshot.FirstRowShouldStaySelected = true;
 			this.RebuildAllTreeFocusOnTopmost();
 		}
-		public void InitializeWithShadowTreeRebuilt(OrdersAutoTree ordersTree) {
+		public void InitializeWith_shadowTreeRebuilt(OrdersAutoTree ordersTree) {
 			this.ordersTree = ordersTree;
 			// NOPE_DOCK_CONTENT_HASNT_BEEN_DESERIALiZED_YET_I_DONT_KNOW_IF_IM_SHOWN_OR_NOT this.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
 
