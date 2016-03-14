@@ -40,7 +40,7 @@ namespace Sq1.Strategies.Demo {
 						if (wasntFilledDuringPastNbars >= 30) {
 							//if (alert.PositionAffected.Prototype != null) {}
 							//base.Executor.CallbackAlertKilledInvokeScript(alert);
-							base.AlertKillPending(alert);
+							base.AlertPending_kill(alert);
 						}
 					}
 				}

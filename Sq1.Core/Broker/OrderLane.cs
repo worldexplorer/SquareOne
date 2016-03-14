@@ -12,35 +12,35 @@ namespace Sq1.Core.Broker {
 		readonly	string			ident;
 
 		protected	object			OrdersLock;
-		protected	List<Order>		InnerOrderList			{ get; private set; }
-		public		List<Order>		SafeCopy				{ get { lock (this.OrdersLock) { return new List<Order>(this.InnerOrderList); } } }
+		protected	List<Order>		InnerOrderList_recentFirst			{ get; private set; }
+		public		List<Order>		SafeCopy				{ get { lock (this.OrdersLock) { return new List<Order>(this.InnerOrderList_recentFirst); } } }
 		public		string			SessionSernosAsString	{ get { lock (this.OrdersLock) {
 					//const string sessionSernos = "";
 					//return this.Aggregate(sessionSernos, (current, order) => current + (" " + order.SernoSession));
 					string ret = "";
-					foreach (Order order in this.InnerOrderList) ret += order.SernoSession + " "; 
+					foreach (Order order in this.InnerOrderList_recentFirst) ret += order.SernoSession + " "; 
 					ret.TrimEnd(" ,".ToCharArray());
 					return ret;
 				} } }
-		public		List<string>	OrdersGuids				{ get; protected set; }
+		public		List<string>	OrdersGuids_recentFirst				{ get; protected set; }
 		public Order First_nullUnsafe { get { lock (this.OrdersLock) {
 			Order ret = null;
-			if (this.Count > 0) ret = this.InnerOrderList[0];
+			if (this.Count > 0) ret = this.InnerOrderList_recentFirst[0];
 			return ret;
 		} } }
 
 		public OrderLane(string ident, List<Order> ordersInit, OrderProcessorDataSnapshot neighborLanes = null) : this(ident, neighborLanes) {
-			this.InnerOrderList.InsertRange(0, ordersInit);
+			this.InnerOrderList_recentFirst.InsertRange(0, ordersInit);
 		}
 		public OrderLane(string ident, OrderProcessorDataSnapshot neighborLanes = null) : this() {
 			this.ident = ident;
 			this.neighborLanesWhenOrdersAll = neighborLanes;
 		}
 		protected OrderLane() : base() {
-			this.InnerOrderList = new List<Order>();
+			this.InnerOrderList_recentFirst = new List<Order>();
 			this.OrdersLock = new Object();
-			this.InnerOrderList.Capacity = 2000;
-			this.OrdersGuids = new List<string>();
+			this.InnerOrderList_recentFirst.Capacity = 2000;
+			this.OrdersGuids_recentFirst = new List<string>();
 		}
 
 		OrderLaneByState suggestLane_popupException(Order order, out string suggestion, bool popupKoz_imNotSavingSuggestion_inOrderMessages = true) {
@@ -60,7 +60,7 @@ namespace Sq1.Core.Broker {
 			fullScanTook.Start();
 			OrderLaneByState laneExpected = this.neighborLanesWhenOrdersAll.SuggestLaneByOrderState_nullUnsafe(order.State);
 			if (laneExpected != null) {
-				if (laneExpected.Contains(order)) {
+				if (laneExpected.ContainsGuid(order)) {
 					suggestion += "FOUND_IN_EXPECTED_LANE";
 					laneFound = laneExpected;
 				} else {
@@ -89,53 +89,53 @@ namespace Sq1.Core.Broker {
 		protected virtual bool checkThrowAdd	(Order order) { return true; }
 		protected virtual bool checkThrowRemove	(Order order) { return true; }
 
-		public void Insert(Order order) { lock (this.OrdersLock) {
+		public void InsertUnique(Order order) { lock (this.OrdersLock) {
 			if (this.checkThrowAdd(order) == false) return;
-			if (this.Contains(order) == true) {
+			if (this.ContainsGuid(order) == true) {
 				string msg = "Already in " + this.ToString() + ": " + order;
 				throw new Exception(msg);
 				//break;
 			}
 			order.AddedToOrdersListCounter++;
-			this.InnerOrderList.Insert(0, order);
-			this.OrdersGuids.Insert(0, order.GUID);
+			this.InnerOrderList_recentFirst.Insert(0, order);
+			this.OrdersGuids_recentFirst.Insert(0, order.GUID);
 		} }
 		public int Count { get { lock (this.OrdersLock) {
-			return this.InnerOrderList.Count;
+			return this.InnerOrderList_recentFirst.Count;
 		} } } 
-		public bool Contains(Order order) { lock (this.OrdersLock) {
+		public bool ContainsGuid(Order order) { lock (this.OrdersLock) {
 			//return base.Contains(order);
-			return this.OrdersGuids.Contains(order.GUID);
+			return this.OrdersGuids_recentFirst.Contains(order.GUID);
 		} }
 		public void Clear() { lock (this.OrdersLock) {
 			// TODO: foreach (var order in base) order.AddedToOrdersListCounter--
-			this.InnerOrderList.Clear();
-			this.OrdersGuids.Clear();
+			this.InnerOrderList_recentFirst.Clear();
+			this.OrdersGuids_recentFirst.Clear();
 		} }
 		public  bool Remove(Order order) { lock (this.OrdersLock) {
 			if (this.checkThrowRemove(order) == false) return false;
-			if (this.Contains(order) == false) {
+			if (this.ContainsGuid(order) == false) {
 				string msg2 = "REMOVING_ORDER_NOT_FOUND in " + this.ToString()
 					+ ": (already removed or never stored before? broker callback Dupe?) " + order;
 				throw new Exception(msg2);
 				//break;
 			}
 			order.AddedToOrdersListCounter--;
-			this.OrdersGuids.Remove(order.GUID);
-			return this.InnerOrderList.Remove(order);
+			this.OrdersGuids_recentFirst.Remove(order.GUID);
+			return this.InnerOrderList_recentFirst.Remove(order);
 		} }
 		public int RemoveAll(List<Order> ordersToRemove, bool popupIf_doesntContain = true) { lock (this.OrdersLock) {
 			int removed = 0;
 			foreach (Order orderRemoving in ordersToRemove) {
-				if (this.InnerOrderList.Contains(orderRemoving) == false) {
+				if (this.InnerOrderList_recentFirst.Contains(orderRemoving) == false) {
 					if (popupIf_doesntContain && orderRemoving.Alert.MyBrokerIsLivesim == false) {
 						string msg = "LANE_DOESNT_CONTAIN_ORDER_YOU_WILLING_TO_REMOVE " + this.ToStringCount() + " orderRemoving" + orderRemoving;
 						Assembler.PopupException(msg, null, false);
 					}
 					continue;
 				}
-				this.InnerOrderList.Remove(orderRemoving);
-				this.OrdersGuids.Remove(orderRemoving.GUID);
+				this.InnerOrderList_recentFirst.Remove(orderRemoving);
+				this.OrdersGuids_recentFirst.Remove(orderRemoving.GUID);
 				removed++;
 			}
 			return removed;
@@ -146,7 +146,7 @@ namespace Sq1.Core.Broker {
 		public Order ScanRecent_forSernoExchange(long SernoExchange, out OrderLane suggestedLane, out string suggestion, bool suggestLane = true) {
 			Order found = null;
 			lock (this.OrdersLock) {
-				foreach (Order order in this.InnerOrderList) {
+				foreach (Order order in this.InnerOrderList_recentFirst) {
 					if (order.SernoExchange != SernoExchange) continue;
 					found = order;
 					break;
@@ -159,7 +159,7 @@ namespace Sq1.Core.Broker {
 		}
 		public Order ScanRecent_forGuid(string orderGUID, out OrderLane suggestedLane, out string suggestion, bool suggestLane = true) { lock (this.OrdersLock) {
 			Order found = null;
-			foreach (Order order in this.InnerOrderList) {
+			foreach (Order order in this.InnerOrderList_recentFirst) {
 				if (order.GUID != orderGUID) continue;
 				found = order;
 				break;
@@ -177,7 +177,7 @@ namespace Sq1.Core.Broker {
 			suggestion = "PASS_suggestLane=TRUE";
 			if (suggestLane) suggestedLane = this.suggestLane_popupException(found, out suggestion);
 			// replace with a property if (alert.IsSameBarExit) return null;
-			foreach (Order order in this.InnerOrderList) {
+			foreach (Order order in this.InnerOrderList_recentFirst) {
 				if (order.Alert == null) {
 					string msg = "do deserialized Orders only have no reference to its parent Alerts?";
 					continue;
@@ -201,7 +201,7 @@ namespace Sq1.Core.Broker {
 			suggestion = "PASS_suggestLane=TRUE";
 			if (suggestLane) suggestedLane = this.suggestLane_popupException(found, out suggestion);
 			//if (OrdersPendingBrokerCallbackStore == false) return null;
-			foreach (Order orderSimilar in this.InnerOrderList) {
+			foreach (Order orderSimilar in this.InnerOrderList_recentFirst) {
 				if (orderSimilar.Alert == null) continue;	// orders deserialized might have no alerts attached
 				if (order == orderSimilar) continue;
 				if (order.Alert.IsIdenticalForOrdersPending(orderSimilar.Alert) == false) continue;
@@ -218,9 +218,9 @@ namespace Sq1.Core.Broker {
 				return ordersForAccount;
 			}
 			lock (this.OrdersLock) {
-				foreach (Order current in this.InnerOrderList) {
+				foreach (Order current in this.InnerOrderList_recentFirst) {
 					if (ignoreExpectingCallbackFromBroker) {
-						if (current.InStateExpectingCallbackFromBroker == true) continue;
+						if (current.InState_expectingBrokerCallback == true) continue;
 					}
 					if (current.Alert == null) continue;
 					//if (order.Alert.AccountNumber != acctNum && acctNum != "") {
@@ -234,6 +234,6 @@ namespace Sq1.Core.Broker {
 		}
 
 		public override string	ToString()			{ return this.ident; }
-		public			string	ToStringCount()		{ return this.ToString() + ".Count=[" + this.InnerOrderList.Count + "]"; }
+		public			string	ToStringCount()		{ return this.ToString() + ".Count=[" + this.InnerOrderList_recentFirst.Count + "]"; }
 	}
 }

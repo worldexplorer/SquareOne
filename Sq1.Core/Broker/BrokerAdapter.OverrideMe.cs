@@ -51,12 +51,12 @@ namespace Sq1.Core.Broker {
 		public virtual void StopLossMove_overrideable(PositionPrototype proto, double newActivationOffset, double newStopLoss_negativeOffset) {
 			// broker adapters might put some additional order processing,
 			// but they must call OrderProcessor.MoveStopLoss() or imitate similar mechanism
-			this.OrderProcessor.StopLossMove(proto, newActivationOffset, newStopLoss_negativeOffset);
+			this.OrderProcessor.StopLoss_move(proto, newActivationOffset, newStopLoss_negativeOffset);
 		}
 		public virtual void TakeProfitMove_overrideable(PositionPrototype proto, double newTakeProfit_positiveOffset) {
 			// broker adapters might put some additional order processing,
 			// but they must call OrderProcessor.MoveStopLoss() or imitate similar mechanism
-			this.OrderProcessor.TakeProfitMove(proto, newTakeProfit_positiveOffset);
+			this.OrderProcessor.TakeProfit_move(proto, newTakeProfit_positiveOffset);
 		}
 
 		public virtual bool AlertCounterparty_annihilate(Alert alert) {

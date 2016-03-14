@@ -238,12 +238,12 @@ namespace Sq1.Core.Streaming {
 				case Direction.Cover:
 					switch (spreadSide) {
 						case MarketOrderAs.LimitTidal:
-							oss = OrderSpreadSide.AskTidal;
-							price = currentAsk;
+							oss = OrderSpreadSide.BidTidal;
+							price = currentBid;
 							break;
 						case MarketOrderAs.LimitCrossMarket:
-							oss = OrderSpreadSide.BidCrossed;
-							price = currentBid;		// Unknown (Order default) becomes CrossMarket
+							oss = OrderSpreadSide.AskCrossed;
+							price = currentAsk;		// Unknown (Order default) becomes CrossMarket
 							break;
 						case MarketOrderAs.MarketMinMaxSentToBroker:
 							oss = OrderSpreadSide.MaxPrice;
@@ -266,12 +266,12 @@ namespace Sq1.Core.Streaming {
 				case Direction.Sell:
 					switch (spreadSide) {
 						case MarketOrderAs.LimitTidal:
-							oss = OrderSpreadSide.BidTidal;
-							price = currentBid;
+							oss = OrderSpreadSide.AskTidal;
+							price = currentAsk;
 							break;
 						case MarketOrderAs.LimitCrossMarket:
-							oss = OrderSpreadSide.AskCrossed;
-							price = currentAsk;		// Unknown (Order default) becomes CrossMarket
+							oss = OrderSpreadSide.BidCrossed;
+							price = currentBid;		// Unknown (Order default) becomes CrossMarket
 							break;
 						case MarketOrderAs.MarketMinMaxSentToBroker:
 							oss = OrderSpreadSide.MinPrice;
@@ -300,18 +300,7 @@ namespace Sq1.Core.Streaming {
 				Debugger.Break();
 			}
 			symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(symbol);
-			//v2
-			price = symbolInfo.Alert_alignToPriceLevel_simplified(price, direction, MarketLimitStop.Market);
-
-			//v1
-			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_DECEMBER_15TH_2014
-			double price1 = symbolInfo.Order_alignToPriceLevel(price, direction, MarketLimitStop.Market);
-			if (price1 != price) {
-				string msg3 = "FIX_DEFINITELY_DIFFERENT_POSTPONE_TILL_ORDER_EXECUTOR_BACK_FOR_QUIK_BROKER";
-				Assembler.PopupException(msg3 + msig, null);
-			}
-			#endif
-			
+			price = symbolInfo.Alert_alignToPriceLevel(price, direction, MarketLimitStop.Market);
 			return price;
 		}
 		public override string ToString() {

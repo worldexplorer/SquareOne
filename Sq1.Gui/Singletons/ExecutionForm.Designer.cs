@@ -8,10 +8,10 @@ namespace Sq1.Gui.Singletons {
 
 		protected override void Dispose(bool disposing) {
 			if (this.orderProcessor != null) {
-				this.orderProcessor.OnOrderAddedExecutionFormNotification -= this.orderProcessor_OrderAdded;
-				this.orderProcessor.OnOrderRemovedExecutionFormNotification -= this.orderProcessor_OrderRemoved;
-				this.orderProcessor.OnOrderStateChangedExecutionFormNotification -= this.orderProcessor_OrderStateChanged;
-				this.orderProcessor.OnOrderMessageAddedExecutionFormNotification -= this.orderProcessor_OrderMessageAdded;
+				this.orderProcessor.OnAsyncOrderAdded_executionControlShouldRebuildOLV -= this.orderProcessor_OrderAdded;
+				this.orderProcessor.OnAsyncOrderRemoved_executionControlShouldRebuildOLV -= this.orderProcessor_OrderRemoved;
+				this.orderProcessor.OnOrderStateOrPropertiesChanged_executionControlShouldPopulate -= this.orderProcessor_OrderStateChanged;
+				this.orderProcessor.OnOrderMessageAdded_executionControlShouldPopulate -= this.orderProcessor_OrderMessageAdded;
 //				this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderAddedExecutionFormNotification -= this.orderProcessor_OrderAdded;
 //				this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderRemovedExecutionFormNotification -= this.orderProcessor_OrderRemoved;
 //				this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderStateChangedExecutionFormNotification -= this.orderProcessor_OrderStateChanged;

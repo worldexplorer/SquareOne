@@ -36,7 +36,7 @@ namespace Sq1.Core.Livesim {
 			} else {
 				Assembler.PopupException("ADD_TARGET_FOR_CLICK_PROPAGATION_FOR_whatIchecked[" + whatIchecked.Name + "]");
 			}
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			this.livesimBrokerSettings.SaveStrategy();
 		}
 

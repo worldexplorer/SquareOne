@@ -39,7 +39,7 @@ namespace Sq1.Gui.ReportersSupport {
 			// ALREADY_THERE deserializeIndex = 0;
 			reportersRepo = Assembler.InstanceInitialized.RepositoryDllReporters;
 			ReporterShortNamesUserInvoked = new Dictionary<string, Reporter>();
-			MenuItemsProvider = new MenuItemsProvider(this, this.reportersRepo.TypesFound);
+			MenuItemsProvider = new MenuItemsProvider(this, this.reportersRepo.TypesFound_inScannedDLLs);
 		}
 		public ReportersFormsManager(ChartFormManager chartFormManager) : this() {
 			this.ChartFormsManager = chartFormManager;
@@ -223,7 +223,7 @@ namespace Sq1.Gui.ReportersSupport {
 
 		public ReporterFormWrapper ReporterActivateShowRegisterMniTick(string typeNameShortOrFullAutodetect, bool show=true) {
 			string typeNameShort = this.reportersRepo.ShrinkTypeName(typeNameShortOrFullAutodetect);
-			Reporter reporterActivated = this.reportersRepo.ActivateFromTypeName(typeNameShortOrFullAutodetect);
+			Reporter reporterActivated = this.reportersRepo.Activate_fromTypeName(typeNameShortOrFullAutodetect);
 			object reportersSnapshot = this.findOrCreateReportersSnapshot_nullUnsafe(reporterActivated);
 			reporterActivated.Initialize(this.ChartFormsManager.ChartForm.ChartControl as ChartShadow, reportersSnapshot, this.ChartFormsManager.Executor.PerformanceAfterBacktest);
 
@@ -236,7 +236,7 @@ namespace Sq1.Gui.ReportersSupport {
 			this.MenuItemsProvider.FindMniByShortNameAndTick(typeNameShort);
 			
 			// avoiding unnesessary Reporters' calculation when there was no backtest invoked yet; I don't mind absolutely blank Performance Report without headers
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return ret;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return ret;
 			if (this.ChartFormsManager.Executor.PerformanceAfterBacktest == null) {
 				string msg = "SO_WHEN_IT_HAPPENS_IF_EVER?..";
 				Assembler.PopupException(msg);

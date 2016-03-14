@@ -21,31 +21,31 @@ namespace Sq1.Widgets.Execution {
 //			} else {
 //				this.DataSnapshot.ColumnsShown[oLVColumn.Text] = oLVColumn.IsVisible;
 //			}
-			byte[] olvStateBinary = this.OrdersTreeOLV.SaveState();
+			byte[] olvStateBinary = this.OlvOrdersTree.SaveState();
 			this.DataSnapshot.OrdersTreeOlvStateBase64 = ObjectListViewStateSerializer.Base64Encode(olvStateBinary);
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			this.DataSnapshotSerializer.Serialize();
 		}
 
-		void orderTreeListViewCustomize() {
+		void OlvOrderTree_customize() {
 			//v2
 			// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
 			List<OLVColumn> allColumns = new List<OLVColumn>();
-			foreach (ColumnHeader columnHeader in this.OrdersTreeOLV.Columns) {
+			foreach (ColumnHeader columnHeader in this.OlvOrdersTree.Columns) {
 				OLVColumn oLVColumn = columnHeader as OLVColumn; 
 				oLVColumn.VisibilityChanged += oLVColumn_VisibilityChanged;
 				if (oLVColumn == null) continue;
 				//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
-				if (this.OrdersTreeOLV.AllColumns.Contains(oLVColumn)) continue;
+				if (this.OlvOrdersTree.AllColumns.Contains(oLVColumn)) continue;
 				allColumns.Add(oLVColumn);
 			}
 			if (allColumns.Count > 0) {
 				//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
-				this.OrdersTreeOLV.AllColumns.AddRange(allColumns);
+				this.OlvOrdersTree.AllColumns.AddRange(allColumns);
 			}
 
 			//	http://stackoverflow.com/questions/9802724/how-to-create-a-multicolumn-treeview-like-this-in-c-sharp-winforms-app/9802753#9802753
-			this.OrdersTreeOLV.CanExpandGetter = delegate(object o) {
+			this.OlvOrdersTree.CanExpandGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) {
 					Assembler.PopupException("treeListView.CanExpandGetter: order=null");
@@ -53,7 +53,7 @@ namespace Sq1.Widgets.Execution {
 				}
 				return order.DerivedOrders.Count > 0;
 			};
-			this.OrdersTreeOLV.ChildrenGetter = delegate(object o) {
+			this.OlvOrdersTree.ChildrenGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) {
 					Assembler.PopupException("treeListView.ChildrenGetter: order=null");
@@ -193,10 +193,15 @@ namespace Sq1.Widgets.Execution {
 				if (order == null) return "olvcReplacedByGUID.AspectGetter: order=null";
 				return order.ReplacedByGUID;
 			};
-			this.olvcBrokerName.AspectGetter = delegate(object o) {
+			this.olvcBrokerAdapterName.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "olvcBrokerName.AspectGetter: order=null";
-				return order.BrokerName;
+				if (order == null) return "olvcBrokerAdapterName.AspectGetter: order=null";
+				return order.BrokerAdapterName;
+			};
+			this.olvcDataSourceName.AspectGetter = delegate(object o) {
+				var order = o as Order;
+				if (order == null) return "olvcDataSourceName.AspectGetter: order=null";
+				return order.Alert.DataSourceName;
 			};
 			this.olvcStrategyName.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -238,7 +243,7 @@ namespace Sq1.Widgets.Execution {
 			}
 			return ret;
 		}
-		void messagesListViewCustomize() {
+		void messagesListView_customize() {
 			// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
 			List<OLVColumn> allColumns = new List<OLVColumn>();
 			foreach (ColumnHeader columnHeader in this.olvMessages.Columns) {
@@ -272,9 +277,9 @@ namespace Sq1.Widgets.Execution {
 		void tree_FormatRow(object sender, BrightIdeasSoftware.FormatRowEventArgs e) {
 			Order order = e.Model as Order;
 			if (order == null) return;
-			if (order.InStateExpectingCallbackFromBroker) {
+			if (order.InState_expectingBrokerCallback) {
 				//v1 e.Item.Font = new Font(e.Item.Font, FontStyle.Bold);
-				e.Item.Font = this.fontCache.Bolden();
+				e.Item.Font = this.fontCache.Bold;
 			}
 
 			//v1 if (Assembler.InstanceInitialized.AlertsForChart.IsItemRegisteredForAnyContainer(order.Alert)) return;
@@ -282,6 +287,22 @@ namespace Sq1.Widgets.Execution {
 			if (order.Alert.Bars == null) e.Item.ForeColor = Color.DimGray;
 			// replaced with new column if (order.Alert.MyBrokerIsLivesim) e.Item.BackColor = Color.Gainsboro;
 		}
+
+
+		//http://objectlistview.sourceforge.net/cs/recipes.html#how-can-i-change-the-colours-of-a-row-or-just-a-cell
+		//readonly Color BACKGROUND_GREEN = Color.FromArgb(230, 255, 230);
+		//readonly Color BACKGROUND_RED = Color.FromArgb(255, 230, 230);
+		//void ordersTree_FormatRow(object sender, FormatRowEventArgs e) {
+		//    var order = e.Model as Order;
+		//    if (order == null) {
+		//        Assembler.PopupException("ordersTree_FormatRow(): (e.Model as Order =null");
+		//        return;
+		//    }
+		//    e.Item.BackColor = (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long)
+		//        ? BACKGROUND_GREEN : BACKGROUND_RED;
+		//}
+
+	
 		// WRONG WAY TO MOVE COLUMNS AROUND: AFTER I did RestoreState(), Column(3) is not State and I add State twice => exception
 //		public void MoveStateColumnToLeftmost() {
 //			//moving State as we drag-n-dropped it; tree will grow in second column

@@ -17,7 +17,7 @@ namespace Sq1.Core.Broker {
 				throw new Exception("CTOR_FAILED: orderStatesAllowed.OrderStates.Count=0: you must supply non-empty OrderStatesCollections allows for this OrderList");
 			}
 			this.StatesAllowed = orderStatesAllowed;
-			base.InnerOrderList.Capacity = 2000;
+			base.InnerOrderList_recentFirst.Capacity = 2000;
 		}
 
 		protected override bool checkThrowAdd(Order order) {
@@ -35,7 +35,7 @@ namespace Sq1.Core.Broker {
 			return this.StatesAllowed.Contains(orderState);
 		}
 		public bool StateIsAcceptableAndDoesntContain(Order order) {
-			return this.StateIsAcceptable(order.State) && (base.Contains(order) == false);
+			return this.StateIsAcceptable(order.State) && (base.ContainsGuid(order) == false);
 		}
 		public override string ToString() {
 			return this.StatesAllowed.ToString();

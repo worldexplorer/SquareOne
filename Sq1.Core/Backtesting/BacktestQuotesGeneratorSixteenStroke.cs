@@ -6,7 +6,7 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Backtesting {
 	public class BacktestQuotesGeneratorSixteenStroke : BacktestQuotesGenerator {
 		public BacktestQuotesGeneratorSixteenStroke() : base(BacktestStrokesPerBar.SixteenStroke) { }
-		protected override void AssignPriceAndBidOrAskDependingOnQuotesPerBarForStroke(
+		protected override void Assign_priceAndBidOrAsk_dependingOnQuotesPerBar_forStroke(
 				Bar barSimulated, int stroke_0to15, out double price, out BidOrAsk bidOrAsk) {
 
 			List<double> legPatternExcludingBoundaries = new List<double>()

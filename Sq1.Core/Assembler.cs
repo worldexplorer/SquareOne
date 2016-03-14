@@ -50,7 +50,7 @@ namespace Sq1.Core {
 		}
 
 		public	bool									MainFormClosingIgnoreReLayoutDockedForms = false;
-		public	bool									MainFormDockFormsFullyDeserializedLayoutComplete = false;
+		public	bool									MainForm_dockFormsFullyDeserialized_layoutComplete = false;
 
 				static Assembler						instance = null;
 		public	static Assembler						InstanceInitialized { get {

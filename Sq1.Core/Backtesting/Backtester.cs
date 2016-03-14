@@ -91,7 +91,7 @@ namespace Sq1.Core.Backtesting {
 				throw new Exception(msg);
 				return;
 			}
-			this.QuotesGenerator = BacktestQuotesGeneratorFourStroke.CreateForQuotesPerBarAndInitialize(
+			this.QuotesGenerator = BacktestQuotesGeneratorFourStroke.CreateForQuotesPerBar_initialize(
 				this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar, this);
 		}
 		public string SimulationRun() {
@@ -270,7 +270,7 @@ namespace Sq1.Core.Backtesting {
 				distr.ConsumerBarSubscribe  (this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer, false);
 				distr.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
 				
-				this.Executor.BacktestContextInitialize(this.BarsSimulating);
+				this.Executor.BacktestContext_initialize(this.BarsSimulating);
 
 				#region PARANOID
 				if (this.BarsOriginal == null) {
@@ -337,7 +337,7 @@ namespace Sq1.Core.Backtesting {
 				string stats = "Backtest took [" + sec + "]sec at " + strokesPerBar;
 				this.Executor.LastBacktestStatus = stats + this.Executor.LastBacktestStatus;
 
-				this.Executor.BacktestContextRestore();
+				this.Executor.BacktestContext_restore();
 				this.BarsOriginal = null;	// I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL WILL_AFFECT_ChartForm.TsiProgressBarETA
 				if (this.Executor.ChartShadow == null) {
 					string msg3 = "IAM_IN_SEQUENCER_HAVING_NO_CHART_ASSOCIATED";
@@ -371,7 +371,7 @@ namespace Sq1.Core.Backtesting {
 				return;
 			}
 
-			List<QuoteGenerated> quotesGenerated = this.QuotesGenerator.GenerateQuotesFromBarAvoidClearing(bar2simulate);
+			List<QuoteGenerated> quotesGenerated = this.QuotesGenerator.Generate_quotesFromBar_avoidClearing(bar2simulate);
 			if (quotesGenerated == null) return;
 
 			for (int i = 0; i < quotesGenerated.Count; i++) {
@@ -410,7 +410,7 @@ namespace Sq1.Core.Backtesting {
 				#endif
 
 				int pendingsToFillInitially = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
-				List<QuoteGenerated> quotesInjected = this.QuotesGenerator.InjectQuotesToFillPendingAlertsAndPush(quote, bar2simulate);
+				List<QuoteGenerated> quotesInjected = this.QuotesGenerator.InjectQuotes_toFillPendingAlerts_push(quote, bar2simulate);
 				
 				#if DEBUG //TEST_EMBEDDED
 				if (quotesInjected.Count == 0) {

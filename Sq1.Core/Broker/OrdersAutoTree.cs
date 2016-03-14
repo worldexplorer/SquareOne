@@ -9,17 +9,17 @@ namespace Sq1.Core.Broker {
 		
 		public OrdersAutoTree() : base() {
 		}
-		public void InitializeScanDeserializedMoveDerivedsInsideBuildTreeShadow(OrderLane ordersAllDeserialized) {
+		public void InitializeScanDeserialized_moveDerivedsInside_buildTreeShadow(OrderLane ordersAllDeserialized) {
 			base.Clear();
 			this.ordersAll = ordersAllDeserialized;
-			this.scanDeserializedMoveDerivedsInsideBuildTreeShadow(this.ordersAll);
+			this.scanDeserialized_moveDerivedsInside_buildTreeShadow(this.ordersAll);
 		}
-		public void InsertToRoot(Order orderAdded) {
+		public void InsertUnique_toRoot(Order orderAdded) {
 			Order orderParent = orderAdded.DerivedFrom;
 			if (orderParent != null) return;
-			base.Insert(orderAdded);
+			base.InsertUnique(orderAdded);
 		}
-		void scanDeserializedMoveDerivedsInsideBuildTreeShadow(OrderLane ordersFlat) {
+		void scanDeserialized_moveDerivedsInside_buildTreeShadow(OrderLane ordersFlat) {
 			string msig = " OrdersAutoTree::scanDeserializedMoveDerivedsInsideBuildTreeShadow(): ";
 			int derivedsFound = 0;
 
@@ -44,7 +44,7 @@ namespace Sq1.Core.Broker {
 					if (orderFound == null) {
 						string msg = ident + " but I couldn't find it"
 							+ " among ordersAllDeserialized; you won't see derived[" + guidToFind + "] in ExecutionForm";
-						Assembler.PopupException(msg + msig);
+						Assembler.PopupException(msg + msig, null, false);
 						continue;
 					}
 					
@@ -65,17 +65,17 @@ namespace Sq1.Core.Broker {
 			
 			foreach (Order order in ordersFlat.SafeCopy) {
 				if (foundSoRemoveFromRoot.Contains(order)) continue;
-				base.Insert(order);
+				base.InsertUnique(order);
 			}
 
 			string stats = "DERIVEDS_MOVED[" + derivedsFound + "] = ordersFlat.Count[" + ordersFlat.Count + "] - base.Count[" + base.Count + "]";
 			//Assembler.PopupException(stats + msig);
 		}
 
-		public void RemoveFromRootLevelKeepOrderPointers(List<Order> ordersToRemove, bool popupIfDoesntContain = true) {
+		public void Remove_fromRootLevel_keepOrderPointers(List<Order> ordersToRemove, bool popupIfDoesntContain = true) {
 			foreach (Order orderRemoving in ordersToRemove) {
 				if (orderRemoving.DerivedFrom != null) continue;
-				if (base.Contains(orderRemoving) == false) {
+				if (base.ContainsGuid(orderRemoving) == false) {
 					if (orderRemoving.Alert.MyBrokerIsLivesim) {
 						string msg = "DID_I_CLEAR_LIVESIM_ORDERS_EARLIER??WHEN?";
 						continue;

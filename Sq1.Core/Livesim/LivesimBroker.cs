@@ -55,7 +55,7 @@ namespace Sq1.Core.Livesim {
 		public override void Submit(Order order) {
 			this.OrdersSubmittedForOneLivesimBacktest.Add(order);
 			string msg = "IS_ASYNC_CALLBACK_NEEDED? THREAD_ID " + Thread.CurrentThread.ManagedThreadId;
-			base.OrderProcessor.UpdateOrderStateByGuid_dontPostProcess(order.GUID, OrderState.Submitted, msg);
+			base.OrderProcessor.Order_appendPropagateMessage_updateStateByGuid_dontPostProcess(order.GUID, OrderState.Submitted, msg);
 		}
 
 //		public override void OrderKillSubmitUsingKillerOrder(Order killerOrder) {
@@ -86,10 +86,10 @@ namespace Sq1.Core.Livesim {
 			}
 
 			var omsg2 = new OrderStateMessage(orderPendingToKill, OrderState.KillPendingSubmitting, "Step#2");
-			base.OrderProcessor.UpdateOrderState_dontPostProcess(orderPendingToKill, omsg2);
+			base.OrderProcessor.Order_updateState_mustBeTheSame_dontPostProcess(omsg2);
 
 			var omsg3 = new OrderStateMessage(orderPendingToKill, OrderState.KillPendingSubmitted, "Step#3");
-			base.OrderProcessor.UpdateOrderState_dontPostProcess(orderPendingToKill, omsg3);
+			base.OrderProcessor.Order_updateState_mustBeTheSame_dontPostProcess(omsg3);
 
 			int delay = 0;
 			if (this.LivesimBrokerSettings.KillPendingDelayEnabled) {
@@ -102,9 +102,9 @@ namespace Sq1.Core.Livesim {
 				}
 			}
 			if (delay == 0) {
-				var omsg = new OrderStateMessage(orderPendingToKill, OrderState.KilledPending, "DELAY_PENDING_KILL_ZERO");
-				base.OrderProcessor.UpdateOrderState_dontPostProcess(orderPendingToKill, omsg);
-				base.OrderProcessor.KillPendingWithoutKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(orderPendingToKill, msig);
+				var omsg = new OrderStateMessage(orderPendingToKill, OrderState.KillTransSubmittedOK, "DELAY_PENDING_KILL_ZERO");
+				base.OrderProcessor.Order_updateState_mustBeTheSame_dontPostProcess(omsg);
+				base.OrderProcessor.KillPending_withoutKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(orderPendingToKill, msig);
 				return;
 			}
 
@@ -113,9 +113,9 @@ namespace Sq1.Core.Livesim {
 				Assembler.SetThreadName(threadName, "CANT_SET_THREAD_NAME //LivesimBroker");
 
 				Thread.Sleep(delay);
-				var omsg = new OrderStateMessage(orderPendingToKill, OrderState.KilledPending, "DELAY_PENDING_KILL[" + delay + "]ms");
-				base.OrderProcessor.UpdateOrderState_dontPostProcess(orderPendingToKill, omsg);
-				base.OrderProcessor.KillPendingWithoutKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(orderPendingToKill, msig);
+				var omsg = new OrderStateMessage(orderPendingToKill, OrderState.KillTransSubmittedOK, "DELAY_PENDING_KILL[" + delay + "]ms");
+				base.OrderProcessor.Order_updateState_mustBeTheSame_dontPostProcess(omsg);
+				base.OrderProcessor.KillPending_withoutKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(orderPendingToKill, msig);
 			});
 			t.ContinueWith(delegate {
 				string msg = "TASK_THREW";
@@ -289,7 +289,7 @@ namespace Sq1.Core.Livesim {
 			}
 			OrderStateMessage osm = new OrderStateMessage(order, OrderState.Filled, "LIVESIM_FILLED_THROUGH_MARKETSIM_BACKTEST");
 			OrderProcessor orderProcessor = Assembler.InstanceInitialized.OrderProcessor;
-			orderProcessor.UpdateOrderState_postProcess(order, osm, priceFilled, qtyFilled);
+			orderProcessor.Order_updateState_mustBeDifferent_postProcess(osm, priceFilled, qtyFilled);
 			if (alertFilled.PriceFilledThroughPosition != priceFilled) {
 				string msg = "WHO_FILLS_POSITION_PRICE_FILLED_THEN?";
 			}

@@ -27,7 +27,7 @@ namespace Sq1.Core.Execution {
 		KillPendingPreSubmit	= 500,
 		KillPendingSubmitting	= 510,
 		KillPendingSubmitted	= 520,
-		KilledPending			= 530,		// a Limit order that wasn't Filled yet - doesn't need a KillerOrder to be KilledPending
+		KillTransSubmittedOK	= 530,		// a Limit order that wasn't Filled yet - doesn't need a KillerOrder to be KilledPending
 
 		KillerPreSubmit			= 610,		// Market order that is Filled - needs a KillerOrder to be Killed (most likely another Market with inverted Size)
 		KillerSubmitting		= 620,

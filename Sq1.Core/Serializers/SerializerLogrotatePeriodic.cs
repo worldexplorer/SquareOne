@@ -9,18 +9,17 @@ namespace Sq1.Core.Serializers {
 	public class SerializerLogrotatePeriodic<T> : SerializerLogrotate<T> {
 		public string OfWhat { get { return typeof(T).Name; } }
 
-		public List<T> Orders { get { return base.EntityDeserialized; } }
-
-		Timer timer;
-		int periodMillis;
+				Timer		timer;
+		public	int			PeriodMillis;
+		public	List<T>		Orders { get { return base.EntityDeserialized; } }
 
 		public SerializerLogrotatePeriodic(int periodMillis = 10 * 1000) : base() {
-			this.periodMillis = periodMillis;
+			this.PeriodMillis = periodMillis;
 		}
 
 		public void StartSerializerThread() {
 			this.timer = new Timer(new TimerCallback(serializerThreadEntry),
-				null, this.periodMillis, Timeout.Infinite);
+				null, this.PeriodMillis, Timeout.Infinite);
 		}
 		void serializerThreadEntry(object stateWePassNullHere) {
 			if (string.IsNullOrEmpty(Thread.CurrentThread.Name) &&
@@ -40,7 +39,7 @@ namespace Sq1.Core.Serializers {
 				//this.DataSnapshot.OrderProcessor.exceptionsForm.DisplayStatus(
 				//	"serialized Orders and HistoricalTrades in [" + watch.ElapsedMilliseconds
 				//	+ "]milliseconds at [" + DateTime.Now.ToString("HH:mm:ss.fff") + "]");
-				this.timer.Change(this.periodMillis, Timeout.Infinite);
+				this.timer.Change(this.PeriodMillis, Timeout.Infinite);		// this.PeriodMillis will be different each time (publicly accessible field)
 			}
 		}
 	}

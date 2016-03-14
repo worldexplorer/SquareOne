@@ -5,7 +5,7 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Backtesting {
 	public class BacktestQuotesGeneratorFourStroke : BacktestQuotesGenerator {
 		public BacktestQuotesGeneratorFourStroke() : base(BacktestStrokesPerBar.FourStrokeOHLC) { }
-		protected override void AssignPriceAndBidOrAskDependingOnQuotesPerBarForStroke(
+		protected override void Assign_priceAndBidOrAsk_dependingOnQuotesPerBar_forStroke(
 				Bar barSimulated, int stroke, out double price, out BidOrAsk bidOrAsk) {
 			switch (stroke) {
 				case 0:

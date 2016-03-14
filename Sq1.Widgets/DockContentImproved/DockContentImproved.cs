@@ -308,7 +308,7 @@ namespace Sq1.Widgets {
 				base.OnResize(e);
 				return;
 			}
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
 				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
 				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
 				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )

@@ -7,6 +7,11 @@ namespace Sq1.Core.Support {
 		public	Font							FontForeground { get; private set;}
 				Dictionary<FontStyle, Font>		fontsByStyle_dontDisposeReusableGDI;
 
+		public	Font Bold { get {
+			return this.GetCachedFontWithStyle(FontStyle.Bold);
+		} }
+
+
 		FontCache() {
 			this.fontsByStyle_dontDisposeReusableGDI = new Dictionary<FontStyle, Font>();
 		}
@@ -22,9 +27,6 @@ namespace Sq1.Core.Support {
 			}
 			Font ret = this.fontsByStyle_dontDisposeReusableGDI[labelFontStyle];
 			return ret;
-		}
-		public Font Bolden() {
-			return this.GetCachedFontWithStyle(FontStyle.Bold);
 		}
 
 	}

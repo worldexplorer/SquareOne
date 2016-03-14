@@ -482,7 +482,7 @@ namespace Sq1.Widgets.Correlation {
 			}
 		}
 		void olvSaveBinaryState_SerializeSnapshot() {
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			if (this.dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised) return;
 			try {
 				byte[] olvStateBinary = this.olv.SaveState();

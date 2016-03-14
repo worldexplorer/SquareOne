@@ -26,7 +26,7 @@ namespace Sq1.Core.Repositories {
 				ret.TrimEnd(' ');
 				return ret;
 			} }
-		public ToolStripMenuItem[] CtxAccountsAllCheckedFromUnderlyingBrokerAdapters { get {
+		public ToolStripMenuItem[] CtxAccounts_allChecked_fromUnderlyingBrokerAdapters { get {
 				List<Account> accts = this.AccountsFromUnderlyingBrokerAdapters;
 				var ret = new List<ToolStripMenuItem>();
 				foreach (Account acct in accts) {

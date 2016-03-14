@@ -70,8 +70,8 @@ namespace Sq1.Gui {
 				Assembler assemblerInstanceInitialized = Assembler.InstanceInitialized;
 				DataSourceEditorControl dataSourceEditorControlInstance = DataSourceEditorForm.Instance.DataSourceEditorControl;
 				dataSourceEditorControlInstance.InitializeContext(
-					assemblerInstanceInitialized.RepositoryDllStreamingAdapters	.CloneableInstanceByClassName,
-					assemblerInstanceInitialized.RepositoryDllBrokerAdapters	.CloneableInstanceByClassName,
+					assemblerInstanceInitialized.RepositoryDllStreamingAdapters	.TypesByClassName,
+					assemblerInstanceInitialized.RepositoryDllBrokerAdapters	.TypesByClassName,
 					assemblerInstanceInitialized.RepositoryJsonDataSources,
 					assemblerInstanceInitialized.RepositoryMarketInfos,
 					assemblerInstanceInitialized.OrderProcessor);
@@ -98,7 +98,7 @@ namespace Sq1.Gui {
 				dockContentWillBeReCreated = false;
 			}
 
-			Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = false;
+			Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete = false;
 			try {
 				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
 				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
@@ -342,7 +342,7 @@ namespace Sq1.Gui {
 				// for wider than in Designer ChartControl sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
 				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
 				this.ResumeLayout(true);	// removes rounding error in propagateColumns/Rows
-				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
+				Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete = true;
 				this.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace = false;
 			}
 

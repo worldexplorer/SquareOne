@@ -125,7 +125,7 @@ namespace Sq1.Core.Livesim {
 
 				livesimStreaming.UpstreamConnect_LivesimStarting();
 
-				base.Executor.BacktestContextInitialize(base.BarsSimulating);
+				base.Executor.BacktestContext_initialize(base.BarsSimulating);
 
 				#region looks like {new LivesimulatorDataSource().SeparatePushingThreadEnabled=true} actually SOLVES__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM; still waiting for the chart to set Bars, otherwize white overstriked ChartControl for a second
 				int waitForGuiToSetBars_maxMillis = 5000;
@@ -214,7 +214,7 @@ namespace Sq1.Core.Livesim {
 				this.Executor.LastBacktestStatus = stats + this.Executor.LastBacktestStatus;
 
 				// down there, OnAllBarsBacktested will be raised and ChartFormManager will push performance to reporters.
-				base.Executor.BacktestContextRestore();
+				base.Executor.BacktestContext_restore();
 
 				StreamingAdapter originalAdapterFromDataSource = this.Executor.DataSource_fromBars.StreamingAdapter;
 				if (originalAdapterFromDataSource == null) {
@@ -245,7 +245,7 @@ namespace Sq1.Core.Livesim {
 
 				//if (this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.settings.DelayBetweenSerialQuotesEnabled) {
 				if (base.Executor.Strategy.LivesimStreamingSettings.DelayBetweenSerialQuotesEnabled == false) {
-					base.Executor.OrderProcessor.RaiseDelaylessLivesimEndedShouldRebuildOLV(this);
+					base.Executor.OrderProcessor.RaiseDelaylessLivesimEnded_shouldRebuildOLV(this);
 				}
 			} catch (Exception e) {
 				#if DEBUG

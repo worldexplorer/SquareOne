@@ -74,7 +74,7 @@ namespace Sq1.Gui.Forms {
 
 				BacktestStrokesPerBar generatorStrokeAmount = (BacktestStrokesPerBar)Enum.Parse(typeof(BacktestStrokesPerBar), clickedGenerator);
 				Backtester backtester = this.ChartFormManager.Executor.BacktesterOrLivesimulator;
-				BacktestQuotesGenerator clone = BacktestQuotesGenerator.CreateForQuotesPerBarAndInitialize(generatorStrokeAmount, backtester);
+				BacktestQuotesGenerator clone = BacktestQuotesGenerator.CreateForQuotesPerBar_initialize(generatorStrokeAmount, backtester);
 				backtester.SetQuoteGeneratorAndConditionallyRebacktest_invokedInGuiThread(clone);
 				this.ctxStrokesPopulate_orSelectCurrent();
 				if (backtester.ImRunningLivesim) {

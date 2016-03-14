@@ -12,20 +12,20 @@ namespace Sq1.Core.StrategyBase {
 			this.executor = executor;
 		}
 
-		public Alert EntryAlertCreate(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
+		public Alert EntryAlert_create(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
 			Direction direction, MarketLimitStop entryMarketLimitStop) {
 
-			this.checkThrowEntryBarIsValid(entryBar);
+			this.checkThrow_entryBar_isValid(entryBar);
 
 			double priceScriptOrStreaming = stopOrLimitPrice;
 			OrderSpreadSide orderSpreadSide = OrderSpreadSide.Unknown;
 			if (entryMarketLimitStop == MarketLimitStop.Market) {
-				priceScriptOrStreaming = this.getStreamingPriceForMarketOrder(entryMarketLimitStop, direction, out orderSpreadSide);
+				priceScriptOrStreaming = this.getStreamingPrice_forMarketOrder(entryMarketLimitStop, direction, out orderSpreadSide);
 			}
 
 			// ALREADY_ALIGNED_AFTER GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming
 			//v2
-			double entryPriceScript = entryBar.ParentBars.SymbolInfo.Alert_alignToPriceLevel_simplified(priceScriptOrStreaming, direction, entryMarketLimitStop);
+			double entryPriceScript = entryBar.ParentBars.SymbolInfo.Alert_alignToPriceLevel(priceScriptOrStreaming, direction, entryMarketLimitStop);
 
 			//#if DEBUG
 			////v1
@@ -59,20 +59,20 @@ namespace Sq1.Core.StrategyBase {
 
 			return alert;
 		}
-		public Alert ExitAlertCreate(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
+		public Alert ExitAlert_create(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
 			Direction direction, MarketLimitStop exitMarketLimitStop) {
 
-			this.checkThrowEntryBarIsValid(exitBar);
-			this.checkThrowPositionToCloseIsValid(position);
+			this.checkThrow_entryBar_isValid(exitBar);
+			this.checkThrow_positionToClose_isValid(position);
 
 			double priceScriptOrStreaming = stopOrLimitPrice;
 			OrderSpreadSide orderSpreadSide = OrderSpreadSide.Unknown;
 			if (exitMarketLimitStop == MarketLimitStop.Market) {
-				priceScriptOrStreaming = this.getStreamingPriceForMarketOrder(exitMarketLimitStop, direction, out orderSpreadSide);
+				priceScriptOrStreaming = this.getStreamingPrice_forMarketOrder(exitMarketLimitStop, direction, out orderSpreadSide);
 			}
 
 			//v2
-			double exitPriceScript = exitBar.ParentBars.SymbolInfo.Alert_alignToPriceLevel_simplified(priceScriptOrStreaming, direction, exitMarketLimitStop);
+			double exitPriceScript = exitBar.ParentBars.SymbolInfo.Alert_alignToPriceLevel(priceScriptOrStreaming, direction, exitMarketLimitStop);
 
 			//#if DEBUG
 			////v1
@@ -100,7 +100,7 @@ namespace Sq1.Core.StrategyBase {
 			return alert;
 		}
 
-		private void checkThrowPositionToCloseIsValid(Position position) {
+		void checkThrow_positionToClose_isValid(Position position) {
 			if (position == null) {
 				string msg = "position=null, can't close it!";
 				throw new Exception(msg);
@@ -110,22 +110,22 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 		}
-		void checkThrowEntryBarIsValid(Bar entryBar) {
-//			if (entryBar < this.executor.Bars.Count) {
-//				string msg = "use MarketSim for Backtest! MarketRealTime is for entryBars >= this.executor.Bars.Count";
-//				throw new Exception(msg);
-//				//this.executor.ThrowPopup(new Exception(msg));
-//
-//			}
-//
-//			if (entryBar > this.executor.Bars.Count) {
-//				string msg = "entryBar[" + entryBar + "] > Bars.Count[" + this.executor.Bars.Count + "]"
-//					+ " for [" + this.executor.Bars + "]"
-//					+ " Bars.StreamingBarSafeClone=[" + this.executor.Bars.StreamingBarCloneReadonly + "]"
-//					+ "; can't open any other position but on StreamingBar; positions postponed for tomorrow NYI";
-//				throw new Exception(msg);
-//				//this.executor.ThrowPopup(new Exception(msg));
-//			}
+		void checkThrow_entryBar_isValid(Bar entryBar) {
+			//if (entryBar < this.executor.Bars.Count) {
+			//	string msg = "use MarketSim for Backtest! MarketRealTime is for entryBars >= this.executor.Bars.Count";
+			//	throw new Exception(msg);
+			//	//this.executor.ThrowPopup(new Exception(msg));
+
+			//}
+
+			//if (entryBar > this.executor.Bars.Count) {
+			//	string msg = "entryBar[" + entryBar + "] > Bars.Count[" + this.executor.Bars.Count + "]"
+			//		+ " for [" + this.executor.Bars + "]"
+			//		+ " Bars.StreamingBarSafeClone=[" + this.executor.Bars.StreamingBarCloneReadonly + "]"
+			//		+ "; can't open any other position but on StreamingBar; positions postponed for tomorrow NYI";
+			//	throw new Exception(msg);
+			//	//this.executor.ThrowPopup(new Exception(msg));
+			//}
 			if (entryBar == null) {
 				string msg = "entryBar == null";
 				throw new Exception(msg);
@@ -139,7 +139,7 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 		}
-		double getStreamingPriceForMarketOrder(MarketLimitStop entryMarketLimitStop,
+		double getStreamingPrice_forMarketOrder(MarketLimitStop entryMarketLimitStop,
 				Direction direction, out OrderSpreadSide priceSpreadSide) {
 			double priceForMarketAlert = -1;
 			priceSpreadSide = OrderSpreadSide.Unknown;
@@ -149,14 +149,6 @@ namespace Sq1.Core.StrategyBase {
 						.BidOrAsk_getAligned_forTidalOrCrossMarket_fromStreamingSnap(
 							this.executor.Bars.Symbol, direction, out priceSpreadSide, false);
 					break;
-				//MUST_DIE
-				//case MarketLimitStop.AtClose:
-				//	string msg = "[" + direction + "]At[" + entryMarketLimitStop + "]"
-				//		+ " when LastBar[" + (this.executor.Bars.Count - 1) + "]; No way I can bring you a future price,"
-				//		+ " even by executing your order right now"
-				//		+ "; can't do inequivalent repacement to LastBar.Close";
-				//	throw new Exception(msg);
-				//	//break;
 				case MarketLimitStop.Stop:
 				case MarketLimitStop.Limit:
 				case MarketLimitStop.StopLimit:
@@ -169,9 +161,9 @@ namespace Sq1.Core.StrategyBase {
 			return priceForMarketAlert;
 		}
 
-		internal bool AnnihilateCounterpartyAlert(Alert alert) {
+		internal bool AlertCounterparty_annihilate(Alert alert) {
 			if (alert.OrderFollowed == null) {
-				string msg = "can't AnnihilateCounterparty: OrderFollowed=null for alert=[" + alert + "]";
+				string msg = "can't AlertCounterparty_annihilate: OrderFollowed=null for alert=[" + alert + "]";
 				throw new Exception(msg);
 				//this.executor.ThrowPopup(new Exception(msg));
 			}
@@ -194,7 +186,7 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "position ClosedByStopLoss@" + alert.PriceScript + ", annihilating TakeProfit";
 				newOrderState = new OrderStateMessage(alert.OrderFollowed, OrderState.TPAnnihilated, msg);
 			}
-			executor.OrderProcessor.UpdateOrderState_dontPostProcess(alert.OrderFollowed, newOrderState);
+			executor.OrderProcessor.Order_updateState_mustBeTheSame_dontPostProcess(newOrderState);
 			executor.OrderProcessor.PendingOrder_killWithoutKiller(alert.OrderFollowed);
 
 			//string msg2 = "MARKET_LIVE_ASSUMES_A_CALLBACK_REMOVES_FROM_DATASNAPSHOT_AFTER_BROKER_SAYS_YES_HE_KILLED_PENDING";
@@ -203,8 +195,8 @@ namespace Sq1.Core.StrategyBase {
 			//bool removed = this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "AnnihilateCounterpartyAlert(WAIT)");
 			return true;
 		}
-		public bool AlertKillPending(Alert alert) {
-			string msg = "AlertKillPending";
+		public bool AlertPending_kill(Alert alert) {
+			string msg = "AlertPending_kill";
 			//OrderStateMessage newOrderState = new OrderStateMessage(alert.OrderFollowed, OrderState.KillerSubmitting, msg);
 			executor.OrderProcessor.PendingOrder_killWithoutKiller(alert.OrderFollowed);
 			return false;

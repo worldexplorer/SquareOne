@@ -172,7 +172,7 @@ namespace Sq1.Core.Support {
 						msg = "YOUR_UNLOCK_REASON_MUST_BE_THE_SAME_AS_LOCKED_REASON this.lockPurposeFirstInTheStack["
 							+ this.lockedPurposeFirstInTheStack + "] != releasingAfter[" + releasingAfter + "]";
 						//NO_IF_I_DONT_USE_TWO_SEPARATE_LOCKS_ILL_ALWAYS_BE_IN_DEADLOCK throw new Exception(msg + msig);
-                        Assembler.PopupException(msg + msig, null, false);
+                        //Assembler.PopupException(msg + msig, null, false);
 					}
 				}
 

@@ -46,7 +46,7 @@ namespace Sq1.Core.Execution {
 				OrderState.RejectedLimitReached,
 				OrderState.Filled,
 				OrderState.KillerDone,
-				OrderState.KilledPending,
+				OrderState.KillTransSubmittedOK,
 				OrderState.SLAnnihilated,
 				OrderState.TPAnnihilated,
 				OrderState.RejectedLimitReached,

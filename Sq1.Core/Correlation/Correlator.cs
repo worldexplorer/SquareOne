@@ -125,7 +125,7 @@ namespace Sq1.Core.Correlation {
 			foreach (OneParameterAllValuesAveraged eachParameter in this.ParametersByName.Values) {
 				eachParameter.KPIsGlobalNoMoreParameters_CalculateGlobalsAndCloneToLocals_step3of3();
 			}
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
 				// restoring Workspace
 				// notify Sequencer of the backtests chosen to force it apply SequencerDataSnapshot.ShowOnlyCorrelatorChosenBacktests .StatsAndHistoryCollapsed via BacktestsReplaceWithCorrelated()
 				// no serialization needed koz the user didn't change anything

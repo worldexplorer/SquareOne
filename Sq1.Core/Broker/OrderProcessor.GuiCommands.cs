@@ -14,7 +14,7 @@ namespace Sq1.Core.Broker {
 				ordersEatable.Add(order);
 				string msg = "Submitting Eatable Order From Gui";
 				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.Submitting, msg);
-				this.UpdateOrderState_postProcess(order, newOrderState);
+				this.Order_updateState_mustBeDifferent_postProcess(newOrderState);
 			}
 			if (ordersEatable.Count > 0) {
 				BrokerAdapter broker = extractSameBrokerAdapter_throwIfDifferent(ordersEatable, "SubmitEatableOrders(): ");
@@ -25,7 +25,7 @@ namespace Sq1.Core.Broker {
 		public void KillAll() {
 			//List<Order> allOrdersClone = new List<Order>();
 			//this.KillSelectedOrders(allOrdersClone);
-			Assembler.PopupException("DOESNT_MAKE_SENSE_NOT_IMPLEMETED KillAll()");
+			Assembler.PopupException("NYI:KillAll()", null, false);
 		}
 		public void CancelStrategyOrders(string account, Strategy strategy, string symbol, BarScaleInterval dataScale) {
 			try {

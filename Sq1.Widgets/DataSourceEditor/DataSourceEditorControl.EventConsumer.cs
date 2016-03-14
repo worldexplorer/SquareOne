@@ -10,7 +10,7 @@ using Sq1.Core.DataFeed;
 namespace Sq1.Widgets.DataSourceEditor {
 	public partial class DataSourceEditorControl {
 		void lvStreamingAdapters_SelectedIndexChanged(object sender, EventArgs e) {
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
 				//WANTED_TO_POPUP_MONITOR_BUT_QUIK_STREAMING_EDITOR_DOESNT_SHOW_UP_ON_DESERIALIZATION return;
 			}
 

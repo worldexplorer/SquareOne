@@ -102,7 +102,7 @@ namespace Sq1.Charting.MultiSplit {
 			}
 			if (Assembler.IsInitialized == false) return;	// otherwize I couldn't drop ChartControl from Toolbox to TestChartControl form / designer
 
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
 				string msg = "ONCE_PER_PANEL_LET_IT_DISTRIBUTE_COMMENTED WHAT_IF_YOU_FIND_ALL_AND_LINK_PANEL_BELOWs_HERE?...";
 				msg += " AssignPanelBelowAbove_setMinimalSize_fromPanelsList() and DistributePanelsAndSplitters() are invoked in ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized";
 				// Assembler.PopupException(msg);

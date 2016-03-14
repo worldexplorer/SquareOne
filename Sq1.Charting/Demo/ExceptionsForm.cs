@@ -5,6 +5,7 @@ using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.Support;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Charting.Demo {
 	public partial class ExceptionsForm : Form, IStatusReporter {
@@ -72,7 +73,7 @@ namespace Sq1.Charting.Demo {
 			this.PopupException(message);
 		}
 		
-		void IStatusReporter.DisplayConnectionStatus(Sq1.Core.DataTypes.ConnectionState status, string message) {
+		void IStatusReporter.DisplayConnectionStatus(ConnectionState status, string message) {
 			this.PopupException(status + " :: " + message);
 		}
 	}
