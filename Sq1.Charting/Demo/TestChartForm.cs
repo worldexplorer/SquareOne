@@ -13,7 +13,7 @@ namespace Sq1.Charting.Demo {
 			Assembler.InstanceUninitialized.Initialize(exceptionsForm, true);
 
 			// I'm not loading workspace one-by-one; the size of parent form is set and innter TestChartControl sizes are firmly set => safe to say LaoyutComplete=true
-			Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
+			Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete = true;
 
 			InitializeComponent();
 

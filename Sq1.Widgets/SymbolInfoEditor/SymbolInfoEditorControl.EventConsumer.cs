@@ -20,7 +20,7 @@ namespace Sq1.Widgets.SymbolEditor {
 		}
 		void toolStripItemComboBox1_SelectedIndexChanged(object sender, EventArgs e) {
 			// IM_EXECUTED_TWICE___FIRST_SELECTING_NEW_SECOND__DESELECTING_OLD__WINFORM_FULL_OF_PARADOXES_FRIENDS_OF_GENIUS_APPARENTLY
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			if (this.ignoreEvent_SelectedIndexChanged_resetInHandler) {
 				this.ignoreEvent_SelectedIndexChanged_resetInHandler = false;
 				return;

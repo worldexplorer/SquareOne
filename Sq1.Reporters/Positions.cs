@@ -276,7 +276,7 @@ namespace Sq1.Reporters {
 		void olvBinaryStateSaveRaiseStrategySerialize() {
 			byte[] olvStateBinary = this.olvPositions.SaveState();
 			this.snap.PositionsOlvStateBase64 = ObjectListViewStateSerializer.Base64Encode(olvStateBinary);
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			base.RaiseContextScriptChangedContainerShouldSerialize();
 		}
 	}

@@ -19,14 +19,15 @@ namespace Sq1.Gui.Singletons {
 			
 			//this.executionTree.Initialize(this.orderProcessor.DataSnapshot.OrdersAll.SafeCopy);
 			this.ExecutionTreeControl.InitializeWith_shadowTreeRebuilt(this.orderProcessor.DataSnapshot.OrdersAutoTree);
-			this.ExecutionTreeControl.PopulateAccountsMenuFromBrokerAdapter(Assembler.InstanceInitialized.RepositoryJsonDataSources.CtxAccountsAllCheckedFromUnderlyingBrokerAdapters);			
+			this.ExecutionTreeControl.PopulateMenuAccounts_fromBrokerAdapter(
+				Assembler.InstanceInitialized.RepositoryJsonDataSources.CtxAccounts_allChecked_fromUnderlyingBrokerAdapters);			
 		}
 		
 		[Obsolete("if the form is hidden mark it needs to be repopulated OnActivate() and do full TreeRebuild there")]
 		bool IsHiddenHandlingRepopulate { get {
 			if (this.isHiddenPrevState != base.IsHidden) {
 				//if (base.IsHidden == false) this.executionTree.RebuildTree();
-				if (base.IsHidden == false) this.ExecutionTreeControl.RebuildAllTreeFocusOnTopmost();
+				if (base.IsHidden == false) this.ExecutionTreeControl.RebuildAllTree_focusOnTopmost();
 				this.isHiddenPrevState = base.IsHidden;
 			}
 			return base.IsHidden;
@@ -38,7 +39,7 @@ namespace Sq1.Gui.Singletons {
 				return;
 			}
 			string ret = "";
-			int itemsCnt			= this.ExecutionTreeControl.OrdersTreeOLV.Items.Count;
+			int itemsCnt			= this.ExecutionTreeControl.OlvOrdersTree.Items.Count;
 			int allCnt				= this.orderProcessor.DataSnapshot.OrdersAll.Count;
 			int submittingCnt		= this.orderProcessor.DataSnapshot.OrdersSubmitting.Count;
 			int pendingCnt			= this.orderProcessor.DataSnapshot.OrdersPending.Count;

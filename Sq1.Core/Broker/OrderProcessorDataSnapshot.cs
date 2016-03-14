@@ -53,8 +53,8 @@ namespace Sq1.Core.Broker {
 				//this.OrdersTree.InitializeScanDeserializedMoveDerivedsInsideBuildTreeShadow(this.SerializerLogRotate.OrdersBuffered.ItemsMain);
 				List<Order> ordersInit = this.SerializerLogrotateOrders.Orders;
 				foreach (Order current in ordersInit) {
-					if (current.InStateExpectingCallbackFromBroker) {
-						current.State = OrderState.SubmittedNoFeedback;
+					if (current.InState_expectingBrokerCallback) {
+						current.SetState_localTimeNow(OrderState.SubmittedNoFeedback);
 					}
 				}
 				// yeps we spawn the lists with the same content;
@@ -63,7 +63,7 @@ namespace Sq1.Core.Broker {
 				// OrdersTree will also stay as full as OrdersAll, but serves as DataSource for ExecutionTree in VirtualMode
 				// adding/removing to OrdersAll should add/remove to OrdersBuffered and OrdersTree (slow but true)
 				this.OrdersAll = new OrderLane("OrdersAll", ordersInit, this);
-				this.OrdersAutoTree.InitializeScanDeserializedMoveDerivedsInsideBuildTreeShadow(this.OrdersAll);
+				this.OrdersAutoTree.InitializeScanDeserialized_moveDerivedsInside_buildTreeShadow(this.OrdersAll);
 			} catch (Exception ex) {
 				string msg = "THROWN_OrderProcessorDataSnapshot.Initialize()";
 				Assembler.PopupException(msg, ex, false);
@@ -77,23 +77,23 @@ namespace Sq1.Core.Broker {
 			//#D_HANGS Assembler.PopupException(msg);
 			//MOVED_TO_RaiseAsyncOrderAddedExecutionFormShouldRebuildOLV() handler Assembler.PopupExecutionForm();
 
-			this.OrdersAll.Insert(orderToAdd);
+			this.OrdersAll.InsertUnique(orderToAdd);
 			if (orderToAdd.Alert.Strategy.Script.Executor.BacktesterOrLivesimulator.ImRunningLivesim == false) {
 				string msg1 = "DONT_SPAM_ORDER_LOG_WITH_LIVESIMULATOR_ORDERS";
 				this.SerializerLogrotateOrders.Insert(0, orderToAdd);
 			}
 
 			this.OrderCount++;
-			if (orderToAdd.InStateExpectingCallbackFromBroker) this.OrdersExpectingBrokerUpdateCount++;
+			if (orderToAdd.InState_expectingBrokerCallback) this.OrdersExpectingBrokerUpdateCount++;
 			
-			this.OrdersAutoTree.InsertToRoot(orderToAdd);
+			this.OrdersAutoTree.InsertUnique_toRoot(orderToAdd);
 
 			if (orderToAdd.Alert.GuiHasTimeRebuildReportersAndExecution == false) return;
-			this.orderProcessor.RaiseAsyncOrderAddedExecutionFormShouldRebuildOLV(this, new List<Order>(){orderToAdd});
+			this.orderProcessor.RaiseAsyncOrderAdded_executionControlShouldRebuildOLV(this, new List<Order>(){orderToAdd});
 		}
 		public void OrdersRemove(List<Order> ordersToRemove, bool serializeSinceThisIsNotBatchRemove = true) {
 			this.OrdersAll				.RemoveAll(ordersToRemove);
-			this.OrdersAutoTree			.RemoveFromRootLevelKeepOrderPointers(ordersToRemove);
+			this.OrdersAutoTree			.Remove_fromRootLevel_keepOrderPointers(ordersToRemove);
 
 			this.OrdersSubmitting		.RemoveAll(ordersToRemove, true);
 			this.OrdersPending			.RemoveAll(ordersToRemove, true);
@@ -101,16 +101,17 @@ namespace Sq1.Core.Broker {
 			this.OrdersCemeteryHealthy	.RemoveAll(ordersToRemove, true);
 			this.OrdersCemeterySick		.RemoveAll(ordersToRemove, true);
 
-			this.orderProcessor.RaiseAsyncOrderRemovedExecutionFormExecutionFormShouldRebuildOLV(this, ordersToRemove);
+			this.orderProcessor.RaiseAsyncOrderRemoved_executionControlShouldRebuildOLV(this, ordersToRemove);
 			this.SerializerLogrotateOrders.Remove(ordersToRemove);
-			if (serializeSinceThisIsNotBatchRemove == false) {
-				this.SerializerLogrotateOrders.HasChangesToSave = true;
+			this.SerializerLogrotateOrders.HasChangesToSave = true;
+			if (serializeSinceThisIsNotBatchRemove) {
+				this.SerializerLogrotateOrders.Serialize();
 			}
 		}
-		public void OrdersRemoveNonPendingForAccounts(List<string> accountNumbers) {
+		public void OrdersRemove_nonPending_forAccounts(List<string> accountNumbers) {
 			foreach (string accountNumber in accountNumbers) {
 				List<Order> ordersForAccount = this.OrdersAll.ScanRecent_findAllForAccount(accountNumber); 
-				this.OrdersRemove(ordersForAccount, false);
+				this.OrdersRemove(ordersForAccount);
 			}
 			this.SerializerLogrotateOrders.HasChangesToSave = true;
 		}
@@ -124,16 +125,16 @@ namespace Sq1.Core.Broker {
 			return null;
 		}
 		public OrderLaneByState ScanLanesForOrderGuid_nullUnsafe(Order order) {
-			if (this.OrdersSubmitting		.Contains(order))	return this.OrdersSubmitting;
-			if (this.OrdersPending			.Contains(order))	return this.OrdersPending;
-			if (this.OrdersPendingFailed	.Contains(order))	return this.OrdersPendingFailed;
-			if (this.OrdersCemeteryHealthy	.Contains(order))	return this.OrdersCemeteryHealthy;
-			if (this.OrdersCemeterySick		.Contains(order))	return this.OrdersCemeterySick;
+			if (this.OrdersSubmitting		.ContainsGuid(order))	return this.OrdersSubmitting;
+			if (this.OrdersPending			.ContainsGuid(order))	return this.OrdersPending;
+			if (this.OrdersPendingFailed	.ContainsGuid(order))	return this.OrdersPendingFailed;
+			if (this.OrdersCemeteryHealthy	.ContainsGuid(order))	return this.OrdersCemeteryHealthy;
+			if (this.OrdersCemeterySick		.ContainsGuid(order))	return this.OrdersCemeterySick;
 			return null;
 		}
 
 		public void SwitchLanes_forOrder_postStatusUpdate(Order orderNowAfterUpdate, OrderState orderStatePriorToUpdate) { lock (this.orderSwitchingLanesLock) {
-			string msig = " //OrderProcessorDataSnapshot::SwitchLanesForOrderPostStatusUpdate()";
+			string msig = " //OrderProcessorDataSnapshot.SwitchLanes_forOrder_postStatusUpdate()";
 			OrderLaneByState orderLaneBeforeStateUpdate = this.SuggestLaneByOrderState_nullUnsafe(orderStatePriorToUpdate);
 			OrderLaneByState  orderLaneAfterStateUpdate = this.SuggestLaneByOrderState_nullUnsafe(orderNowAfterUpdate.State);
 			if (orderLaneBeforeStateUpdate == orderLaneAfterStateUpdate) return;
@@ -146,7 +147,7 @@ namespace Sq1.Core.Broker {
 			}
 			if (orderLaneAfterStateUpdate != null) {
 				try {
-					orderLaneAfterStateUpdate.Insert(orderNowAfterUpdate);
+					orderLaneAfterStateUpdate.InsertUnique(orderNowAfterUpdate);
 				} catch (Exception ex) {
 					Assembler.PopupException("FAILED_TO_INSERT orderNowAfterUpdate=[" + orderNowAfterUpdate + "]" + msig, ex, false);
 				}

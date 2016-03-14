@@ -18,12 +18,12 @@ namespace Sq1.Widgets.Execution {
 				Dictionary<ToolStripMenuItem, List<OLVColumn>>	columnsByFilter;
 				OrdersAutoTree									ordersTree;
 		public	Order											OrderSelected			{ get {
-				if (this.OrdersTreeOLV.SelectedObjects.Count != 1) return null;
-				return this.OrdersTreeOLV.SelectedObjects[0] as Order;
+				if (this.OlvOrdersTree.SelectedObjects.Count != 1) return null;
+				return this.OlvOrdersTree.SelectedObjects[0] as Order;
 			} }
 		public	List<Order>										OrdersSelected			{ get {
 				List<Order> ret = new List<Order>();
-				foreach (object obj in this.OrdersTreeOLV.SelectedObjects) ret.Add(obj as Order);
+				foreach (object obj in this.OlvOrdersTree.SelectedObjects) ret.Add(obj as Order);
 				return ret;
 			} }
 		public	List<string>									SelectedAccountNumbers	{ get {
@@ -37,10 +37,10 @@ namespace Sq1.Widgets.Execution {
 
 		public ExecutionTreeControl() {
 			this.InitializeComponent();
-			this.buildMniShortcutsAfterInitializeComponent();
+			this.buildMniShortcuts_afterInitializeComponent();
 			
-			this.orderTreeListViewCustomize();
-			this.messagesListViewCustomize();
+			this.OlvOrderTree_customize();
+			this.messagesListView_customize();
 
 			// THROWS this.olvMessages.AllColumns.AddRange(new List<OLVColumn>() {
 			//	this.colheMessageDateTime,
@@ -48,13 +48,13 @@ namespace Sq1.Widgets.Execution {
 			//	this.colheMessageText});
 			// DOESNT_BUILD this.olvMessages.RebuildColumns();	// hoping to eliminate RebuildColumns() in populateMessagesFor()
 			
-			WindowsFormsUtils.SetDoubleBuffered(this.OrdersTreeOLV);
+			WindowsFormsUtils.SetDoubleBuffered(this.OlvOrdersTree);
 			WindowsFormsUtils.SetDoubleBuffered(this.olvMessages);
 			WindowsFormsUtils.SetDoubleBuffered(this);
 
 			this.fontCache = new FontCache(this.Font);
 		}
-		void buildMniShortcutsAfterInitializeComponent() {
+		void buildMniShortcuts_afterInitializeComponent() {
 			columnsByFilter = new Dictionary<ToolStripMenuItem, List<OLVColumn>>();
 			columnsByFilter.Add(this.mniShowWhenWhat, new List<OLVColumn>() {
 				this.olvcBarNum,
@@ -86,7 +86,8 @@ namespace Sq1.Widgets.Execution {
 				this.olvcKilledByGUID
 				});
 			columnsByFilter.Add(this.mniShowOrigin, new List<OLVColumn>() {
-				this.olvcBrokerName,
+				this.olvcBrokerAdapterName,
+				this.olvcDataSourceName,
 				this.olvcStrategyName,
 				this.olvcSignalName,
 				this.olvcScale
@@ -162,12 +163,12 @@ namespace Sq1.Widgets.Execution {
 				this.ResumeLayout(true);
 			}
 			
-			this.mniToggleBrokerTime.Checked = this.DataSnapshot.ToggleBrokerTime;
-			this.mniToggleCompletedOrders.Checked = this.DataSnapshot.ToggleCompletedOrders;
-			this.mniToggleSyncWithChart.Checked = this.DataSnapshot.ToggleSingleClickSyncWithChart;
+			this.mniToggleBrokerTime		.Checked = this.DataSnapshot.ToggleBrokerTime;
+			this.mniToggleCompletedOrders	.Checked = this.DataSnapshot.ToggleCompletedOrders;
+			this.mniToggleSyncWithChart		.Checked = this.DataSnapshot.ToggleSingleClickSyncWithChart;
 			
 			this.DataSnapshot.FirstRowShouldStaySelected = true;
-			this.RebuildAllTreeFocusOnTopmost();
+			this.RebuildAllTree_focusOnTopmost();
 		}
 		public void InitializeWith_shadowTreeRebuilt(OrdersAutoTree ordersTree) {
 			this.ordersTree = ordersTree;
@@ -203,82 +204,87 @@ namespace Sq1.Widgets.Execution {
 				// http://stackoverflow.com/questions/11743160/how-do-i-encode-and-decode-a-base64-string
 				if (this.DataSnapshot.OrdersTreeOlvStateBase64.Length > 0) {
 					byte[] olvStateBinary = ObjectListViewStateSerializer.Base64Decode(this.DataSnapshot.OrdersTreeOlvStateBase64);
-					this.OrdersTreeOLV.RestoreState(olvStateBinary);
+					this.OlvOrdersTree.RestoreState(olvStateBinary);
 				}
+
+				this.mniltbSerializationInterval.InputFieldValue = this.DataSnapshot.SerializationInterval.ToString();
+				Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders.PeriodMillis = this.DataSnapshot.SerializationInterval;
 			}
 		}
-		public void PopulateAccountsMenuFromBrokerAdapter(ToolStripMenuItem[] ctxAccountsAllCheckedFromUnderlyingBrokerAdapters) {
+		public void PopulateMenuAccounts_fromBrokerAdapter(ToolStripMenuItem[] ctxAccountsAllCheckedFromUnderlyingBrokerAdapters) {
 			this.ctxAccounts.SuspendLayout();
 			this.ctxAccounts.Items.Clear();
 			this.ctxAccounts.Items.AddRange(ctxAccountsAllCheckedFromUnderlyingBrokerAdapters);
 			this.ctxAccounts.ResumeLayout();
 		}	
-		public void OrderStateUpdateOLV(List<Order> orders) {
+		public void OlvOrdersTree_updateState_forOrders(List<Order> orders) {
 			if (orders.Count == 0) return;
 			foreach (Order order in orders) {
-				this.OrdersTreeOLV.RefreshObject(order);
+				this.OlvOrdersTree.RefreshObject(order);
 			}
 			// without Invalidate/Refresh, I'll see status change only after mouseover the row with updated Status... :(
-			this.OrdersTreeOLV.Invalidate();
+			this.OlvOrdersTree.Invalidate();
 			//this.OrdersTree.Refresh();
 			Order firstOrNull =  (orders.Count > 0) ? orders[0] : null;
-			this.SelectOrderAndOrPopulateMessages(firstOrNull);
+			this.SelectOrder_populateMessages(firstOrNull);
 			//this.lvOrders_SelectedIndexChanged(this.lvOrders, EventArgs.Empty);
 		}
-		public void SelectOrderAndOrPopulateMessages(Order orderNullMeansClearMessages) {
+		public void SelectOrder_populateMessages(Order order_nullMeansClearMessages) {
 			bool firstRowShouldStaySelected = (this.DataSnapshot != null) ? this.DataSnapshot.FirstRowShouldStaySelected : true;
 			if (firstRowShouldStaySelected) {
 				//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectObject(orderTopmost, true);
 				//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectedIndex = 0;
 				// as far as I remember, this doesn't work: this.OrdersTreeOLV.SelectedItem = orderNullMeansClear;
-				int indexToSelect = this.OrdersTreeOLV.IndexOf(orderNullMeansClearMessages);
+				int indexToSelect = this.OlvOrdersTree.IndexOf(order_nullMeansClearMessages);
 				if (indexToSelect == -1) {
 					this.populateMessagesFor(null);
 					return;
 				}
-				this.OrdersTreeOLV.EnsureVisible(indexToSelect);
-				this.OrdersTreeOLV.Expand(orderNullMeansClearMessages);
-				this.OrdersTreeOLV.SelectedIndex = indexToSelect;
-				this.OrdersTreeOLV.RefreshSelectedObjects();
+				this.OlvOrdersTree.EnsureVisible(indexToSelect);
+				this.OlvOrdersTree.Expand(order_nullMeansClearMessages);
+				this.OlvOrdersTree.SelectedIndex = indexToSelect;
+				this.OlvOrdersTree.RefreshSelectedObjects();
 				// SelectedIndex=X above will invoke ordersTree_SelectedIndexChanged() => populateMessagesFor(theSameOrderWeJustSelected) 
 			}
-			this.populateMessagesFor(orderNullMeansClearMessages);
+			this.populateMessagesFor(order_nullMeansClearMessages);
 		}
-		void populateMessagesFor(Order orderNullMeansClearMessages) {
-			string msig = " PopulateMessagesFromSelectedOrder(" + orderNullMeansClearMessages + ")";
-			if (orderNullMeansClearMessages == null) {
+		void populateMessagesFor(Order order_nullMeansClearMessages) {
+			string msig = " populateMessagesFor(" + order_nullMeansClearMessages + ")";
+			if (order_nullMeansClearMessages == null) {
 				this.olvMessages.Clear();
 				this.olvMessages.RebuildColumns();	// after appRestart, olv header is missing
 				return;
 			}
 
 			if (this.splitContainerMessagePane.Panel2Collapsed == true) return;
-			ConcurrentQueue<OrderStateMessage> messagesSafeCopy = orderNullMeansClearMessages.MessagesSafeCopy;
-			if (messagesSafeCopy == null) {
-				string msg = "MUST_BE_AT_LEAST_EMPTY_LIST order.MessagesSafeCopy=null";
-				//throw new Exception(msg);
-				Assembler.PopupException(msg + msig);
-				return;
-			}
-			if (messagesSafeCopy.Count == 0) {
-				string msg = "NO_MESSAGES_TO_POPULATE order.MessagesSafeCopy.Count==0";
-				//throw new Exception(msg);
-				Assembler.PopupException(msg + msig);
-				return;
-			}
 
-			bool wasEmpty = this.olvMessages.GetItemCount() == 0;
+			ConcurrentStack<OrderStateMessage> orderMessages = order_nullMeansClearMessages.MessagesSafeCopy;
+			if (orderMessages == null) {
+			    string msg = "MUST_BE_AT_LEAST_EMPTY_LIST order.MessagesSafeCopy=null";
+			    //throw new Exception(msg);
+			    Assembler.PopupException(msg + msig);
+			    return;
+			}
+			if (orderMessages.Count == 0) {
+			    string msg = "NO_MESSAGES_TO_POPULATE order.MessagesSafeCopy.Count==0";
+			    //throw new Exception(msg);
+			    Assembler.PopupException(msg + msig);
+			    return;
+			}
 			// TODO: neutralize Sort() downstack 
-			this.olvMessages.SetObjects(messagesSafeCopy, true);
+			this.olvMessages.SetObjects(orderMessages, true);
+
 			// SetObjects() doesn't require Invalidate(), unlike RefreshObject()  
 			//this.lvMessages.Invalidate();
 			this.olvMessages.Refresh();
-			if (wasEmpty && messagesSafeCopy.Count > 0) {
+
+			bool wasEmpty = this.olvMessages.GetItemCount() == 0;
+			if (wasEmpty && orderMessages.Count > 0) {
 				this.olvMessages.RebuildColumns();	// TIRED_OF_FORGETTING_THAT_SET_OBJECTS_DOESNT_REFRESH_ITSELF
 			}
 			//	order.Messages.Sort((x, y) => y.DateTime.CompareTo(x.DateTime));
 		}
-		public void OrderInsertToListView(Order order) {
+		public void OlvOrdersTree_insertOrder(Order order) {
 			//if (this.OrdersTreeOLV.Items.Count == 0) {
 			//	this.RebuildAllTreeFocusOnTopmost();
 			//	return;
@@ -313,7 +319,8 @@ namespace Sq1.Widgets.Execution {
 			//v2
 			try {
 				//this.OrdersTreeOLV.SetObjects(this.ordersTree.SafeCopy);
-				this.OrdersTreeOLV.Refresh();
+				string msg = "DID_YOU_INSERT????";
+				this.OlvOrdersTree.Refresh();
 				//this.selectLastOrderPopulateMessagesSafe();
 			} catch (Exception ex) {
 				string msg = " //ExecutionTreeControl.OrderInsertToListView()";
@@ -326,7 +333,7 @@ namespace Sq1.Widgets.Execution {
 					string msg = "WILL_JUST_OrdersTreeOLV.RebuildAll(true)_IN_OrderRemoveFromListView()";
 				} else {
 					//AREADY_REMOVED_EH??? this.ordersTree.RemoveAll(orders);
-					this.OrdersTreeOLV.RemoveObjects(orders);
+					this.OlvOrdersTree.RemoveObjects(orders);
 				}
 				//v1 this.RebuildAllTreeFocusOnTopmost();
 				//v2 this.populateLastOrderMessages();
@@ -335,29 +342,29 @@ namespace Sq1.Widgets.Execution {
 				Assembler.PopupException(msg, ex, false);
 			}
 		}
-		public void RebuildAllTreeFocusOnTopmost() {
+		public void RebuildAllTree_focusOnTopmost() {
 			try {
-				this.OrdersTreeOLV.SetObjects(this.ordersTree.SafeCopy);
+				this.OlvOrdersTree.SetObjects(this.ordersTree.SafeCopy);
 				//this.OrdersTreeOLV.RebuildAll();	//, true we will refocus
-				this.OrdersTreeOLV.Refresh();
+				this.OlvOrdersTree.Refresh();
 				//this.OrdersTreeOLV.RebuildColumns();
 				//foreach (var order in this.ordersShadowTree) this.OrdersTree.ToggleExpansion(order);
-				this.OrdersTreeOLV.ExpandAll();
-				this.selectLastOrderPopulateMessagesSafe();
+				this.OlvOrdersTree.ExpandAll();
+				this.selectLastOrder_populateMessagesSafe();
 			} catch (Exception ex) {
 				string msg = " //ExecutionTreeControl.RebuildAllTreeFocusOnTopmost()";
 				Assembler.PopupException(msg, ex, false);
 			}
 		}
-		void selectLastOrderPopulateMessagesSafe() {
+		void selectLastOrder_populateMessagesSafe() {
 			//NOPE I WANT TO CLEAR MESSAGES AFTER I WIPED OUT ALL THE ORDERS if (this.ordersTree.InnerOrderList.Count == 0) return;
 			if (this.ordersTree.Count == 0) {
 				//DONT_MIX_RESPONSIBILITIES this.OrdersTreeOLV.Clear();
-				this.SelectOrderAndOrPopulateMessages(null);
+				this.SelectOrder_populateMessages(null);
 				return;
 			}
 			var orderTopmost = this.ordersTree.First_nullUnsafe;
-			this.SelectOrderAndOrPopulateMessages(orderTopmost);
+			this.SelectOrder_populateMessages(orderTopmost);
 		}
 //		public void RebuildOneRootNodeChildAdded(Order orderParentToRepaint) {
 //			this.OrdersTreeOLV.RefreshObject(orderParentToRepaint);
@@ -366,7 +373,7 @@ namespace Sq1.Widgets.Execution {
 //			//this.OrdersTree.Invalidate();
 //			this.OrdersTreeOLV.Expand(orderParentToRepaint);
 //		}
-		public void SplitterDistanceResetToSaved() {
+		public void SplitterDistance_resetToSaved() {
 			this.splitContainerMessagePane.SplitterDistance = 
 				this.splitContainerMessagePane.Orientation == Orientation.Horizontal
 				? this.DataSnapshot.MessagePaneSplitDistanceHorizontal

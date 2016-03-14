@@ -10,6 +10,9 @@ namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
 
 		public void CallbackCreatedOrder_wontBePlacedPastDue_invokeScript_nonReenterably(Alert alert, int barNotSubmittedRelno) {
+			//SLOW string msig = " CallbackCreatedOrder_wontBePlacedPastDue_invokeScript_nonReenterably(" + alertKilled + ")";
+			string msig = " //CallbackCreatedOrder_wontBePlacedPastDue_invokeScript_nonReenterably(WAIT)";
+
 			//this.ExecutionDataSnapshot.AlertsPending.Remove(alert);
 			try {
 				if (alert.IsEntryAlert) {
@@ -23,10 +26,10 @@ namespace Sq1.Core.StrategyBase {
 				if (this.Strategy.Script == null) return;
 				try {
 					this.ExecutionDataSnapshot.IsScriptRunningOnAlertNotSubmittedNonBlockingRead = true;
-					this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnAlertNotSubmittedCallback(WAIT)");
+					this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig);
 					this.Strategy.Script.OnAlertNotSubmitted_callback(alert, barNotSubmittedRelno);
 				} finally {
-					this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnAlertNotSubmittedCallback(WAIT)");
+					this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msig);
 					this.ExecutionDataSnapshot.IsScriptRunningOnAlertNotSubmittedNonBlockingRead = false;
 				}
 			} catch (Exception e) {
@@ -36,16 +39,19 @@ namespace Sq1.Core.StrategyBase {
 				this.PopupException(msg, e);
 			}
 		}
-		public void CallbackAlertKilled_invokeScript_nonReenterably(Alert alert) {
-			if (this.Strategy.Script != alert.Strategy.Script) {
+		public void CallbackAlertKilled_invokeScript_nonReenterably(Alert alertKilled) {
+			//SLOW string msig = " CallbackAlertKilled_invokeScript_nonReenterably(" + alertKilled + ")";
+			string msig = " //CallbackAlertKilled_invokeScript_nonReenterably(WAIT)";
+
+			if (this.Strategy.Script != alertKilled.Strategy.Script) {
 				Assembler.PopupException("NONSENSE this.Strategy.Script != alert.Strategy.Script");
 			}
 			try {
 				//v1 NO!!! DIRECT_KILLED_TO_EXECUTOR_UPSTACK alert.Strategy.Script.OnAlertKilledCallback(alert);
-				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)");
-				if (this.ExecutionDataSnapshot.AlertsPending.Contains(alert, this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)")) {
-					bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)");
-					if (removed) alert.IsKilled = true;
+				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig);
+				if (this.ExecutionDataSnapshot.AlertsPending.Contains(alertKilled, this, msig)) {
+					bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertKilled, this, msig);
+					if (removed) alertKilled.IsKilled = true;
 				} else {
 					string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsPending DELETED_EARLIER_OR_NEVER_BEEN_ADDED;"
 						+ " PositionCloseImmediately() kills all PositionPrototype-based PendingAlerts"
@@ -55,31 +61,33 @@ namespace Sq1.Core.StrategyBase {
 				}
 
 				this.ExecutionDataSnapshot.IsScriptRunningOnAlertKilledNonBlockingRead = true;
-				this.Strategy.Script.OnAlertKilled_callback(alert);
+				this.Strategy.Script.OnAlertKilled_callback(alertKilled);
 			} finally {
 				this.ExecutionDataSnapshot.IsScriptRunningOnAlertKilledNonBlockingRead = false;
-				this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)");
+				this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msig);
 			}
 		}
 
-		public void CallbackAlertFilled_moveAround_invokeScriptNonReenterably(Alert alertFilled, Quote quoteFilledThisAlertNullForLive,
+		public void CallbackAlertFilled_moveAround_invokeScriptNonReenterably(Alert alertFilled, Quote quoteFilledThisAlert_nullForLive,
 																			double priceFill, double qtyFill, double slippageFill, double commissionFill) {
-			//SLOW string msig = " CallbackAlertFilledMoveAroundInvokeScript(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
+			//SLOW string msig = " //CallbackAlertFilledMoveAroundInvokeScript(" + alertFilled + ", " + quoteFilledThisAlert_nullForLive + ")";
+			string msig = " //CallbackAlertFilled_moveAround_invokeScriptNonReenterably(WAIT)";
 
 			//avoiding two alertsFilled and messing script-overrides; despite all script invocations downstack are sequential, guaranteed for 1 alertFilled
 			try {
-				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
-				this.callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(alertFilled, quoteFilledThisAlertNullForLive,
+				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig);
+				this.callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(alertFilled, quoteFilledThisAlert_nullForLive,
 																					 priceFill, qtyFill, slippageFill, commissionFill);
 			} finally {
-				this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
+				this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msig);
 			}
 			// filled alerts should be immediately be reflected with an arrow on PricePanel
 			this.ChartShadow.InvalidateAllPanels();
 		}
 		void callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(Alert alertFilled, Quote quoteFilledThisAlertNullForLive,
 																			 double priceFill, double qtyFill, double slippageFill, double commissionFill) {
-			string msig = " callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
+			//SLOW string msig = " callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
+			string msig = " //callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
 
 			if (priceFill == -1) {
 				string msg = "won't set priceFill=-1 for alert [" + alertFilled + "]";
@@ -163,7 +171,7 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "REMOVE_FILLED_FROM_PENDING? DONT_USE_Bar.ContainsPrice()?";
 				Assembler.PopupException(msg + msig, ex);
 			}
-			bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertFilled, this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
+			bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertFilled, this, msig);
 			if (removed == false) {
 				#if DEBUG
 				Debugger.Break();
@@ -179,11 +187,11 @@ namespace Sq1.Core.StrategyBase {
 			if (alertFilled.IsEntryAlert) {
 				this.ExecutionDataSnapshot.PositionsMasterOpenNewAdd(alertFilled.PositionAffected);
 				positionOpenedAfterAlertFilled = alertFilled.PositionAffected;
-				positionsOpenedAfterAlertFilled.AddOpened_step1of2(positionOpenedAfterAlertFilled, this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
+				positionsOpenedAfterAlertFilled.AddOpened_step1of2(positionOpenedAfterAlertFilled, this, msig);
 			} else {
 				this.ExecutionDataSnapshot.MovePositionOpenToClosed(alertFilled.PositionAffected);
 				positionClosedAfterAlertFilled = alertFilled.PositionAffected;
-				positionsClosedAfterAlertFilled.AddClosed(positionClosedAfterAlertFilled, this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
+				positionsClosedAfterAlertFilled.AddClosed(positionClosedAfterAlertFilled, this, msig);
 			}
 
 			bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
@@ -206,7 +214,7 @@ namespace Sq1.Core.StrategyBase {
 					alertFilled.PositionAffected.ExitAlertAttach(alertFilled);
 				}
 				// 1. alert.PositionAffected.Prototype.StopLossAlertForAnnihilation and TP will get assigned
-				alertsNewAfterAlertFilled.AddRange(this.PositionPrototypeActivator.AlertFilledCreateSlTpOrAnnihilateCounterparty(alertFilled), this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
+				alertsNewAfterAlertFilled.AddRange(this.PositionPrototypeActivator.AlertFilledCreateSlTpOrAnnihilateCounterparty(alertFilled), this, msig);
 				// quick check: there must be {SL+TP} OR Annihilator
 				//this.Backtester.IsBacktestingNow == false &&
 				if (alertFilled.IsEntryAlert) {
@@ -237,7 +245,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 
 				if (alertsNewAfterAlertFilled.Count > 0) {
-					List<Alert> alertsNewAfterExecSafeCopy = alertsNewAfterAlertFilled.SafeCopy(this, "//callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
+					List<Alert> alertsNewAfterExecSafeCopy = alertsNewAfterAlertFilled.SafeCopy(this, msig);
 
 					#region copypaste BEGIN, helping GuiHasTimeRebuildReportersAndExecution to find prototyped alerts
 					if (this.ChartShadow != null) {
@@ -265,7 +273,7 @@ namespace Sq1.Core.StrategyBase {
 							quoteHackForLive = alertFilled.QuoteLastWhenThisAlertFilled;	// unconditionally filled 130 lines above
 						}
 						this.enrichAlerts_withQuoteCreated(alertsNewAfterExecSafeCopy, quoteHackForLive);
-						this.OrderProcessor.CreateOrders_submitToBrokerAdapter_inNewThreads(alertsNewAfterExecSafeCopy, setStatusSubmitting, true);
+						this.OrderProcessor.CreateOrders_submitToBrokerAdapter_eachInNewThread(alertsNewAfterExecSafeCopy, setStatusSubmitting, true);
 	
 						// 3. Script using proto might move SL and TP which require ORDERS to be moved, not NULLs
 						int twoMinutes = 120000;
@@ -350,10 +358,10 @@ namespace Sq1.Core.StrategyBase {
 				try {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnAlertFilledNonBlockingRead = true;
-						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnAlertFilledCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnAlertFilled_callback(WAIT)");
 						this.Strategy.Script.OnAlertFilled_callback(alertFilled);
 					} finally {
-						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnAlertFilledCallback(WAIT)");
+						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnAlertFilled_callback(WAIT)");
 						this.ExecutionDataSnapshot.IsScriptRunningOnAlertFilledNonBlockingRead = false;
 					}
 				} catch (Exception e) {
@@ -366,19 +374,19 @@ namespace Sq1.Core.StrategyBase {
 						if (alertFilled.PositionAffected.Prototype != null) {
 							try {
 								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead = true;
-								this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
+								this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpened_prototypeSlTpPlaced_callback(WAIT)");
 								this.Strategy.Script.OnPositionOpened_prototypeSlTpPlaced_callback(alertFilled.PositionAffected);
 							} finally {
-								this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
+								this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionOpened_prototypeSlTpPlaced_callback(WAIT)");
 								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead = false;
 							}
 						} else {
 							try {
 								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedNonBlockingRead = true;
-								this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpenedCallback(WAIT)");
+								this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpened_callback(WAIT)");
 								this.Strategy.Script.OnPositionOpened_callback(alertFilled.PositionAffected);
 							} finally {
-								this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionOpenedPrototypeSlTpPlacedCallback(WAIT)");
+								this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionOpened_callback(WAIT)");
 								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedNonBlockingRead = false;
 							}
 						}
@@ -391,10 +399,10 @@ namespace Sq1.Core.StrategyBase {
 					try {
 						try {
 							this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosedNonBlockingRead = true;
-							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionClosedCallback(WAIT)");
+							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionClosed_callback(WAIT)");
 							this.Strategy.Script.OnPositionClosed_callback(alertFilled.PositionAffected);
 						} finally {
-							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionClosedCallback(WAIT)");
+							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionClosed_callback(WAIT)");
 							this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosedNonBlockingRead = false;
 						}
 					} catch (Exception e) {
@@ -442,17 +450,17 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "can't close PositionAffected and remove Position from PositionsOpenNow"
 					+ ": alert.PositionAffected=null for alert [" + alert + "]";
 				//throw new Exception(msig + msg);
-				this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
+				this.OrderProcessor.AppendOrderMessage_propagateToGui(alert.OrderFollowed, msig + msg);
 				return false;
 			}
 			if (alert.IsExitAlert) {
 				string msg = "Sorry I don't serve alerts.IsExitAlert=true, only .IsEntryAlert's: alert [" + alert + "]";
 				//throw new Exception(msig + msg);
-				this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
+				this.OrderProcessor.AppendOrderMessage_propagateToGui(alert.OrderFollowed, msig + msg);
 				return false;
 			}
 			if (checkPositionOpenNow == true) {
-				bool shouldRemove = this.ExecutionDataSnapshot.PositionsOpenNow.Contains(alert.PositionAffected, this, "checkPositionCanBeClosed(WAIT)");
+				bool shouldRemove = this.ExecutionDataSnapshot.PositionsOpenNow.Contains(alert.PositionAffected, this, "check_positionCanBeClosed(WAIT)");
 
 				if (alert.FilledBarIndex > -1) {
 					if (shouldRemove) {
@@ -460,7 +468,7 @@ namespace Sq1.Core.StrategyBase {
 					}
 					string msg = "CHECK_POSITION_OPEN_NOW Sorry I serve only BarRelnoFilled==-1"
 						+ " otherwize alert.FillPositionAffectedEntryOrExitRespectively() with throw: alert [" + alert + "]";
-					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
+					this.OrderProcessor.AppendOrderMessage_propagateToGui(alert.OrderFollowed, msig + msg);
 					return false;
 				}
 				if (alert.PositionAffected.ExitFilledBarIndex > -1) {
@@ -469,7 +477,7 @@ namespace Sq1.Core.StrategyBase {
 					}
 					string msg = "CHECK_POSITION_OPEN_NOW Sorry I serve only alert.PositionAffected.ExitBar==-1"
 						+ " otherwize PositionAffected.FillExitAlert() will throw: alert [" + alert + "]";
-					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
+					this.OrderProcessor.AppendOrderMessage_propagateToGui(alert.OrderFollowed, msig + msg);
 					return false;
 				}
 			} else {
@@ -477,11 +485,11 @@ namespace Sq1.Core.StrategyBase {
 				if (alert.PositionAffected.EntryFilledBarIndex != -1) {
 					string msg = "DUPE: can't do my job: alert.PositionAffected.EntryBar!=-1 for alert [" + alert + "]";
 					//throw new Exception(msig + msg);
-					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
+					this.OrderProcessor.AppendOrderMessage_propagateToGui(alert.OrderFollowed, msig + msg);
 					//return;
 				} else {
 					string msg = "Forcibly closing at EntryBar=[" + barFill + "]";
-					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(alert.OrderFollowed, msig + msg);
+					this.OrderProcessor.AppendOrderMessage_propagateToGui(alert.OrderFollowed, msig + msg);
 				}
 
 			}

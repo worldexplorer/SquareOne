@@ -3,10 +3,11 @@ using System.Diagnostics;
 using System.ComponentModel;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.DataTypes {
-	public class SymbolInfo {
+	public partial class SymbolInfo {
 		[JsonIgnore]	const double PriceStepFromDde_NOT_RECEIVED = -1;
 
 
@@ -99,10 +100,10 @@ namespace Sq1.Core.DataTypes {
 			} }
 
 		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue("10,20,30,40")]
-		[JsonProperty]	public	string			SlippagesBuy				{ get; set; }
+		[JsonProperty]	public	string			SlippagesCrossMarketCsv				{ get; set; }
 
 		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue("10,20,30,40")]
-		[JsonProperty]	public	string			SlippagesSell				{ get; set; }
+		[JsonProperty]	public	string			SlippagesTidalCsv				{ get; set; }
 
 		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue(true)]
 		[JsonProperty]	public	bool			UseFirstSlippageForBacktest	{ get; set; }
@@ -156,8 +157,8 @@ namespace Sq1.Core.DataTypes {
 			this.MarketOrderAs					= MarketOrderAs.Unknown;
 			this.ReplaceTidalWithCrossMarket	= false;
 			this.ReplaceTidalMillis				= 0;
-			this.SlippagesBuy					= "";
-			this.SlippagesSell					= "";
+			this.SlippagesCrossMarketCsv		= "";
+			this.SlippagesTidalCsv				= "";
 			this.ReSubmitRejected				= false;
 			this.ReSubmittedUsesNextSlippage	= false;
 			this.UseFirstSlippageForBacktest	= true;
@@ -169,104 +170,78 @@ namespace Sq1.Core.DataTypes {
 			this.Level2BidShowHoles				= true;
 			this.Level2PriceLevels				= 10;
 		}
-		public int getSlippageIndexMax(Direction direction) {
+
+		public string getSlippagesCsv(MarketOrderAs crossOrTidal) {
+			string ret = null;
+			switch (crossOrTidal) {
+				case MarketOrderAs.LimitCrossMarket:	ret = this.SlippagesCrossMarketCsv;	break;
+				case MarketOrderAs.LimitTidal:			ret = this.SlippagesTidalCsv;			break;
+
+				case MarketOrderAs.MarketUnchanged_DANGEROUS:
+				case MarketOrderAs.MarketZeroSentToBroker:
+				case MarketOrderAs.MarketMinMaxSentToBroker:
+					string msg = "SLIPAGE_NOT_APPLICABLE_FOR[" + crossOrTidal + "] returning slippage=0";
+					Assembler.PopupException(msg);
+					break;
+
+				default:
+					string msg1 = "ADD_HANDLER_FOR_YOUR_NEW_MarketOrderAs[" + crossOrTidal + "]";
+					Assembler.PopupException(msg1);
+					break;
+			}
+			return ret;
+		}
+		public int GetSlippage_maxIndex_forLimitOrdersOnly(Alert alert) {
+			return this.getSlippage_maxIndex_forLimitOrdersOnly(alert.Direction, alert.MarketOrderAs);
+		}
+		int getSlippage_maxIndex_forLimitOrdersOnly(Direction direction, MarketOrderAs crossOrTidal) {
 			int ret = -1;
-			string slippagesCommaSeparated = (direction == Direction.Buy || direction == Direction.Cover)
-				? this.SlippagesBuy : this.SlippagesSell;
-			if (string.IsNullOrEmpty(slippagesCommaSeparated)) {
+			string slippagesCsv = this.getSlippagesCsv(crossOrTidal);
+			if (string.IsNullOrEmpty(slippagesCsv)) {
 				return ret;
 			}
-			string[] slippages = slippagesCommaSeparated.Split(',');
+			string[] slippages = slippagesCsv.Split(',');
 			if (slippages != null) ret = slippages.Length - 1;
 			return ret;
 		}
-		public double getSlippage(double priceAligned, Direction direction, int slippageIndex, bool isStreaming, bool isLimitOrder) {
-			if (isStreaming == false && this.UseFirstSlippageForBacktest == false) {
-				return 0;
-			}
-			string slippagesCommaSeparated = (direction == Direction.Buy || direction == Direction.Cover)
-				? this.SlippagesBuy : this.SlippagesSell;
-			if (string.IsNullOrEmpty(slippagesCommaSeparated)) return 0;
-			string[] slippages = slippagesCommaSeparated.Split(',');
+		public double GetSlippage_signAware_forLimitOrdersOnly(Alert alert, int slippageIndex=0, bool isStreaming=true) {
+			return this.GetSlippage_signAware_forLimitOrdersOnly(alert.PriceScriptAligned, alert.Direction, alert.MarketOrderAs, slippageIndex, isStreaming);
+		}
+
+		public double GetSlippage_signAware_forLimitOrdersOnly(double priceAligned, Direction direction, MarketOrderAs crossOrTidal, int slippageIndex=0, bool isStreaming=true) {
+			double ret = 0;
+			
+			if (isStreaming == false && this.UseFirstSlippageForBacktest == false) return ret;		// HACKY
+
+			string slippagesCsv = this.getSlippagesCsv(crossOrTidal);
+
+			if (string.IsNullOrEmpty(slippagesCsv)) return ret;
+
+			string[] slippages = slippagesCsv.Split(',');
 			if (slippages.Length == 0)
 				throw new Exception("check getSlippagesAvailable(" + direction + ") != 0) before calling me");
 
 			if (slippageIndex < 0) slippageIndex = 0;
 			if (slippageIndex >= slippages.Length) slippageIndex = slippages.Length - 1;
-			double slippageValue = 0;
+
+			string slippage_asString = slippages[slippageIndex];
 			try {
-				slippageValue = Convert.ToDouble(slippages[slippageIndex]);
-			} catch (Exception e) {
-				string msg = "slippages[" + slippageIndex + "]=[" + slippages[slippageIndex] + "] should be Double"
-					+ " slippagesCommaSeparated[" + slippagesCommaSeparated + "]";
+				ret = Convert.ToDouble(slippage_asString);
+			} catch (Exception ex) {
+				string msg = "slippages[" + slippageIndex + "]=[" + slippage_asString + "] should be Double"
+					+ " slippagesCsv[" + slippagesCsv + "]";
 				//throw new Exception(msg, e);
+				Assembler.PopupException(msg, ex, false);
 			}
-			//if (direction == Direction.Short || direction == Direction.Sell) slippageValue = -slippageValue;
-			return slippageValue;
+
+			if (direction == Direction.Short || direction == Direction.Sell) ret = -ret;
+			return ret;
 		}
 		public SymbolInfo Clone() {
 			return (SymbolInfo)this.MemberwiseClone();
 		}
 
-		[Obsolete("REMOVE_ONCE_NEW_ALIGNMENT_MATURES_DECEMBER_15TH_2014 used only in tidal calculations")]
-		public double Order_alignToPriceLevel(double orderPrice, Direction direction, MarketLimitStop marketLimitStop) {
-			bool entryNotExit = true;
-			PositionLongShort positionLongShortV1 = PositionLongShort.Long;
-			switch (direction) {
-				case Direction.Buy:
-					entryNotExit = true;
-					positionLongShortV1 = PositionLongShort.Long;
-					break;
-				case Direction.Sell:
-					entryNotExit = false;
-					positionLongShortV1 = PositionLongShort.Long;
-					break;
-				case Direction.Short:
-					entryNotExit = true;
-					positionLongShortV1 = PositionLongShort.Short;
-					break;
-				case Direction.Cover:
-					entryNotExit = false;
-					positionLongShortV1 = PositionLongShort.Short;
-					break;
-				default:
-					throw new Exception("add new handler for new Direction[" + direction + "] besides {Buy,Sell,Cover,Short}");
-			}
-			PositionLongShort positionLongShort = MarketConverter.LongShortFromDirection(direction);
-			if (positionLongShortV1 != positionLongShort) {
-				string msg = "DEFINITELY_DIFFERENT_POSTPONE_TILL_ORDER_EXECUTOR_BACK_FOR_QUIK_BROKER";
-				//Debugger.Break();
-			}
-			return this.Alert_alignToPriceLevel(orderPrice, entryNotExit, positionLongShortV1, marketLimitStop);
-		}
-		public double Alert_alignToPriceLevel(double alertPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
-			PriceLevelRoundingMode roundingMode;
-			switch (marketLimitStop0) {
-				case MarketLimitStop.Limit:
-					if (positionLongShort0 == PositionLongShort.Long) {
-						roundingMode = (buyOrShort ? PriceLevelRoundingMode.RoundDown : PriceLevelRoundingMode.RoundUp);
-					} else {
-						roundingMode = (buyOrShort ? PriceLevelRoundingMode.RoundUp : PriceLevelRoundingMode.RoundDown);
-					}
-					break;
-				case MarketLimitStop.Stop:
-				case MarketLimitStop.StopLimit:
-					if (positionLongShort0 == PositionLongShort.Long) {
-						roundingMode = (buyOrShort ? PriceLevelRoundingMode.RoundUp : PriceLevelRoundingMode.RoundDown);
-					} else {
-						roundingMode = (buyOrShort ? PriceLevelRoundingMode.RoundDown : PriceLevelRoundingMode.RoundUp);
-					}
-					break;
-				case MarketLimitStop.Market:
-					roundingMode = PriceLevelRoundingMode.RoundToClosest;
-					break;
-				default:
-					roundingMode = PriceLevelRoundingMode.DontRoundPrintLowerUpper;
-					break;
-			}
-			return this.AlignToPriceLevel(alertPrice, roundingMode);
-		}
-		public double Alert_alignToPriceLevel_simplified(double alertPrice, Direction direction, MarketLimitStop marketLimitStop) {
+		public double Alert_alignToPriceLevel(double alertPrice, Direction direction, MarketLimitStop marketLimitStop) {
 			PriceLevelRoundingMode roundingMode = PriceLevelRoundingMode.DontRoundPrintLowerUpper;
 			switch (marketLimitStop) {
 				case MarketLimitStop.Limit:
@@ -416,17 +391,5 @@ namespace Sq1.Core.DataTypes {
 		//public override bool Equals(object obj) {
 		//	return this.Symbol == (((SymbolInfo))obj));
 		//}
-
-
-		public event EventHandler<EventArgs> PriceDecimalsChanged;
-		void raisePriceDecimalsChanged() {
-			if (this.PriceDecimalsChanged == null) return;
-			try {
-				this.PriceDecimalsChanged(this, null);
-			} catch (Exception ex) {
-				string msg = "ONE_OF_PriceDecimalsChanged_SUBSCRIBERS_THREW_DEPRIVING_OTHERS SymbolInfo[" + this.Symbol + "].PriceDecimals=>[" + this.PriceDecimals + "]";
-				Assembler.PopupException(msg, ex);
-			}
-		}
 	}
 }

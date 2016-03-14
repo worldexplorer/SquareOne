@@ -22,10 +22,10 @@ namespace Sq1.Core.Repositories {
 		protected override void ChildrenDebug_TypeAdded(Type typeFound) {
 			string msg = "breakpoint_here";
 		}
-		protected override void ChildrenDebug_CloneableInstanceForAssemblyAdded(StreamingAdapter classCastedInstance) {
+		protected override void ChildrenDebug_InstantiableInstanceForAssemblyAdded(StreamingAdapter classCastedInstance) {
 			string msg = "breakpoint_here";
 		}
-		protected override void ChildrenDebug_CloneableInstanceByClassNameAdded(string className, StreamingAdapter classCastedInstance) {
+		protected override void ChildrenDebug_InstantiableInstanceByClassNameAdded(string className, StreamingAdapter classCastedInstance) {
 			string msg = "breakpoint_here";
 		}
 

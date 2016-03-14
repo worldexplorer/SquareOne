@@ -21,7 +21,7 @@ namespace Sq1.Core.StrategyBase {
 			Alert alert = null;
 			// real-time streaming should create its own Position after an Order gets filled
 			if (this.IsStreamingTriggeringScript) {
-				alert = this.AlertFactory.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
+				alert = this.AlertFactory.EntryAlert_create(entryBar, stopOrLimitPrice, entrySignalName,
 														 direction, entryMarketLimitStop);
 			} else {
 				//string msg = "YOU_DONT_EMIT_ORDERS_THEN_CONTINUE_BACKTEST_BASED_ON_LIVE_QUOTES";
@@ -100,7 +100,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (this.IsStreamingTriggeringScript) {
-				alert = this.AlertFactory.ExitAlertCreate(exitBar, position, stopOrLimitPrice, signalName,
+				alert = this.AlertFactory.ExitAlert_create(exitBar, position, stopOrLimitPrice, signalName,
 														direction, exitMarketLimitStop);
 			} else {
 				//string msg = "YOU_DONT_EMIT_ORDERS_THEN_CONTINUE_BACKTEST_BASED_ON_LIVE_QUOTES";

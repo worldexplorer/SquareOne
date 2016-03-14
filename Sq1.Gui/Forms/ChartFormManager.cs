@@ -252,7 +252,7 @@ namespace Sq1.Gui.Forms {
 			}
 			if (this.DataSnapshot.ChartSerno != charSernoDeserialized) {
 				this.DataSnapshot.ChartSerno  = charSernoDeserialized;
-				if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == true) {
+				if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == true) {
 					string msg = "NEVER_INVOKED_SINCE_CHART_FORM_MANAGER_GOT_SERNO_FROM_XML_WHICH_MUST_BE_EQUAL_TO_SNAP";
 					Assembler.PopupException(msg);
 					this.DataSnapshotSerializer.Serialize();
@@ -348,7 +348,7 @@ namespace Sq1.Gui.Forms {
 			this.DataSnapshot.StrategyGuidJsonCheck = strategy.Guid.ToString();
 			this.DataSnapshot.StrategyNameJsonCheck = strategy.Name;
 			this.DataSnapshot.StrategyAbsPathJsonCheck = strategy.StoredInJsonAbspath;
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == true) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == true) {
 				this.DataSnapshotSerializer.Serialize();
 			}
 			
@@ -409,7 +409,7 @@ namespace Sq1.Gui.Forms {
 		public void PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(
 					string msig, bool loadNewBars = true, bool skipBacktest = false, bool saveStrategyOrCtx = true) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
-			this.Executor.BacktesterAbortIfRunning_restoreContext();
+			this.Executor.Backtester_abortIfRunning_restoreContext();
 
 			ContextChart context = this.ContextCurrentChartOrStrategy;
 			if (context == null) {
@@ -722,7 +722,7 @@ namespace Sq1.Gui.Forms {
 				this.BacktesterRunSimulation(true);
 			}
 
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete) {
 				string msg = "WILL_NEVER_HAPPEN?";
 				Assembler.PopupException(msg);
 				this.SequencerFormShow(false);
@@ -737,7 +737,7 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		public void ReportersDumpCurrentForSerialization() {
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
 				#if DEBUG
 				//Debugger.Break();
 				#endif
@@ -970,7 +970,7 @@ namespace Sq1.Gui.Forms {
 			} else {
 				this.Strategy.ScriptAndIndicatorParametersReflected_absorbMergeFromCurrentContext_saveStrategy();
 			}
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			this.PopulateSliders();
 		}
 		public void PopulateSliders() {
@@ -1075,7 +1075,7 @@ namespace Sq1.Gui.Forms {
 			this.ReportersFormsManager.LivesimEndedOrStoppedOrPaused_RestoreHiddenReporters();
 			ExecutionForm exec = ExecutionForm.Instance;
 			if (exec.IsCoveredOrAutoHidden == true) exec.ToggleAutoHide();
-			exec.ExecutionTreeControl.RebuildAllTreeFocusOnTopmost();
+			exec.ExecutionTreeControl.RebuildAllTree_focusOnTopmost();
 		}
 		public void Dispose_workspaceReloading() {
 			string msig = " //ChartFormsManager.Dispose_workspaceReloading()";

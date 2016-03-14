@@ -389,11 +389,11 @@ namespace Sq1.Core.DataTypes {
 			return marketIsOpen;
 		}
 		public bool IsMarketSuspendedForClearingDuringBar(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
-			MarketClearingTimespan suspendedNow = this.GetSingleClearingTimespanIfMarketSuspendedDuringBar(dateTimeServerBarOpen, dateTimeServerBarClose);
+			MarketClearingTimespan suspendedNow = this.GetSingleClearingTimespan_ifMarketSuspended_duringBar(dateTimeServerBarOpen, dateTimeServerBarClose);
 			return (suspendedNow != null) ? true : false;
 		}
 		[Obsolete("ERRONEOUS_FOR_MULTIPLE_SHORT_CLEARINGS_DURING_LONG_BARS (when bar[4:00..4:30] and ClearingTimespans{[4:05..4:10],[4:15..4:20]}) combining multiple MarketTimeSpan to one is wrong solution, use two pinpointing methods from this class")]
-		public MarketClearingTimespan GetSingleClearingTimespanIfMarketSuspendedDuringBar(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
+		public MarketClearingTimespan GetSingleClearingTimespan_ifMarketSuspended_duringBar(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
 			MarketClearingTimespan ret = null;
 			if (this.ClearingTimespans == null) return ret;
 			foreach (MarketClearingTimespan clearingTimespan in this.ClearingTimespans) {

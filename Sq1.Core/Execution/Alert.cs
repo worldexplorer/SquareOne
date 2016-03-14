@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
@@ -34,7 +35,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	string				Symbol							{ get; protected set; }
 		[JsonProperty]	public	string				SymbolClass						{ get; protected set; }
 		[JsonProperty]	public	string				AccountNumber					{ get; protected set; }
-		[JsonProperty]	public	string				dataSourceName					{ get; protected set; }		// containsBidAsk BrokerAdapter for further {new Order(Alert)} execution
+		[JsonProperty]	public	string				DataSourceName					{ get; protected set; }		// containsBidAsk BrokerAdapter for further {new Order(Alert)} execution
 		[JsonIgnore]	public	DataSource			DataSource						{ get {
 				if (this.Bars == null) {
 					throw new Exception("alert.Bars=null for alert[" + this + "]");
@@ -42,7 +43,7 @@ namespace Sq1.Core.Execution {
 				if (this.Bars.DataSource == null) {
 					throw new Exception("alert.Bars.DataSource=null for alert[" + this + "]");
 				}
-				dataSourceName = this.Bars.DataSource.Name;
+				DataSourceName = this.Bars.DataSource.Name;
 				return this.Bars.DataSource;
 			} }
 		[JsonProperty]	public	double				PriceScript						{ get; protected set; }				//doesn't contain Slippage
@@ -395,7 +396,7 @@ namespace Sq1.Core.Execution {
 				string msg = "ATTACH_SYMBOL_INFO_TO_BARS__TO_CALCULATE_PRICE_SCRIPT_ALIGNED";
 				Assembler.PopupException(msg);
 			} else {
-				this.PriceScriptAligned = this.Bars.SymbolInfo.Alert_alignToPriceLevel_simplified(this.PriceScript, this.Direction, this.MarketLimitStop);
+				this.PriceScriptAligned = this.Bars.SymbolInfo.Alert_alignToPriceLevel(this.PriceScript, this.Direction, this.MarketLimitStop);
 			}
 
 			if (this.PriceScriptAligned < 0) {

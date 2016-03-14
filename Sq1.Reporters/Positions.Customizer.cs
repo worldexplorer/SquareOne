@@ -42,7 +42,7 @@ namespace Sq1.Reporters {
 			this.olvcEntryPrice			.AspectToStringFormat = "{0:" + base.FormatPrice + "}";
 			this.olvcExitPrice			.AspectToStringFormat = "{0:" + base.FormatPrice + "}";
 			this.olvcProfitPct			.AspectToStringFormat = "{0:" + base.FormatPrice + "} %";
-			this.olvcQuantity			.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
+			//this.olvcQuantity			.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
 			this.olvcProfitPerBar		.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
 			this.olvcMae				.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
 			this.olvcMfe				.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
@@ -186,7 +186,7 @@ namespace Sq1.Reporters {
 				//return position.NetProfit.ToString("{0:" + base.FormatPrice + "}") + " $";
 				return position.NetProfit;
 			};
-			this.olvcQuantity.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
+			this.olvcProfitDollar.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
 
 			this.olvcBarsHeld.AspectGetter = delegate(object o) {
 				var position = o as Position;

@@ -23,7 +23,7 @@ namespace Sq1.Core.Broker {
 						"sequence initialized: [" + sequenced.State + "]=>[" + OrderState.SubmittingSequenced + "]"
 						+ " for [" + ordersOpen.Count + "] fellow ordersOpen"
 						+ " by [" + ordersClose.Count + "]ordersClose");
-					this.orderProcessor.UpdateOrderState_postProcess(sequenced, omsg);
+					this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg);
 				}
 			}
 		}
@@ -59,7 +59,7 @@ namespace Sq1.Core.Broker {
 					// delete the list of locks from global dictionary
 					List<Order> ordersOpen = this.sequencerLockCloseOpen[lockingCloseFound];
 					this.sequencerLockCloseOpen.Remove(lockingCloseFound);
-					this.orderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(orderClosed,
+					this.orderProcessor.AppendOrderMessage_propagateToGui(orderClosed,
 						"last CloseOpenSequence order filled, unlocking submission of [" 
 						+ ordersOpen.Count + "]ordersOpen");
 					if (ordersOpen.Count == 0) continue;
@@ -70,7 +70,7 @@ namespace Sq1.Core.Broker {
 							"sequence cleared: [" + submitting.State + "]=>[" + OrderState.Submitting + "]"
 							+ " for [" + ordersOpen.Count + "] fellow ordersOpen"
 							+ " by orderClose=[" + orderClosed + "]");
-						this.orderProcessor.UpdateOrderState_postProcess(submitting, omsg);
+						this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg);
 					}
 
 					Alert alertFirst = ordersOpen[0].Alert;

@@ -148,7 +148,7 @@ namespace Sq1.Charting {
 				base.OnPaintBackgroundDoubleBuffered(e);	// will e.Graphics.Clear(base.BackColor);
 				return;
 			}
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			if (this.ChartControl != null && this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
 				if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
 				return;

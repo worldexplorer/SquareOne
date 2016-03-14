@@ -22,7 +22,7 @@ namespace Sq1.Charting.MultiSplit {
 
 			if (base.DesignMode) return;
 			if (Assembler.IsInitialized == false) return;	// otherwize I couldn't drop ChartControl from Toolbox to TestChartControl form / designer
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			//if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished) return;
 			if (this.ignoreResizeImSettingWidthOrHeight) return;
 			if (this.panels.Count == 0) return;
@@ -92,7 +92,7 @@ namespace Sq1.Charting.MultiSplit {
 #endif
 			if (base.DesignMode) return;
 			if (Assembler.IsInitialized == false) return;	// otherwize I couldn't drop ChartControl from Toolbox to TestChartControl form / designer
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			//if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished) return;
 			if (this.ignoreResizeImSettingWidthOrHeight) return;
 			if (this.panels.Count == 0) return;

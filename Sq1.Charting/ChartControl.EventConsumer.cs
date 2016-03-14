@@ -11,7 +11,7 @@ namespace Sq1.Charting {
 		protected override void OnResize(EventArgs e) {
 			if (base.DesignMode) return;
 			if (Assembler.IsInitialized == false) return;
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			if (this.ScrollLargeChange <= 0) {
 				//Debugger.Break();	// HAPPENS_WHEN_WINDOW_IS_MINIMIZED OR BEFORE_FIRST_PAINT_SETS_GutterRightWidth_cached... how to disable any OnPaint when app isn't visible?... 
 				return;

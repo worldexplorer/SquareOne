@@ -25,7 +25,7 @@ namespace Sq1.Gui.Singletons {
 			
 			//v1 when in virtual mode, use model :(
 			foreach (Order o in e.Orders) {
-				this.ExecutionTreeControl.OrderInsertToListView(o);
+				this.ExecutionTreeControl.OlvOrdersTree_insertOrder(o);
 			}
 			//v2 ADDED_anyHasTime_FILTER__SAFE_ENOUGH_TO_SKIP_SOME_SINCE_ENDOFBACKTEST_WILL_RUIBUILD_FULLY  TOO_SLOW
 			//bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = false;
@@ -37,7 +37,7 @@ namespace Sq1.Gui.Singletons {
 			//}
 			//if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
 
-			this.ExecutionTreeControl.RebuildAllTreeFocusOnTopmost();
+			this.ExecutionTreeControl.RebuildAllTree_focusOnTopmost();
 		}
 		void orderProcessor_OrderMessageAdded(object sender, OrderStateMessageEventArgs e) {
 			if (base.IsDisposed) return;
@@ -56,7 +56,7 @@ namespace Sq1.Gui.Singletons {
 			//bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = (alert.IsBacktestingLivesimNow_FalseIfNoBacktester == true && alert.GuiHasTimeRebuildReportersAndExecution == false);
 			//if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
 
-			this.ExecutionTreeControl.SelectOrderAndOrPopulateMessages(e.OrderStateMessage.Order);
+			this.ExecutionTreeControl.SelectOrder_populateMessages(e.OrderStateMessage.Order);
 		}
 		void orderProcessor_OrderStateChanged(object sender, OrdersListEventArgs e) {
 			if (base.IsDisposed) return;
@@ -77,7 +77,7 @@ namespace Sq1.Gui.Singletons {
 			//}
 			//if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
 
-			this.ExecutionTreeControl.OrderStateUpdateOLV(e.Orders);
+			this.ExecutionTreeControl.OlvOrdersTree_updateState_forOrders(e.Orders);
 		}
 		void orderProcessor_OrderRemoved(object sender, OrdersListEventArgs e) {
 			if (this.InvokeRequired) {
@@ -93,7 +93,7 @@ namespace Sq1.Gui.Singletons {
 				base.BeginInvoke((MethodInvoker)delegate { orderProcessor_OnDelaylessLivesimEndedShouldRebuildOLV(sender, e); });
 				return;
 			}
-			this.ExecutionTreeControl.RebuildAllTreeFocusOnTopmost();
+			this.ExecutionTreeControl.RebuildAllTree_focusOnTopmost();
 			this.PopulateWindowText();
 		}
 		void executionTree_OnOrderDoubleClickedChartFormNotification(object sender, OrderEventArgs e) {
@@ -107,11 +107,11 @@ namespace Sq1.Gui.Singletons {
 			}
 		}
 		void executionForm_Load(object sender, EventArgs e) {
-			this.orderProcessor.OnOrderAddedExecutionFormNotification			+= this.orderProcessor_OrderAdded;
-			this.orderProcessor.OnOrderRemovedExecutionFormNotification			+= this.orderProcessor_OrderRemoved;
-			this.orderProcessor.OnOrderStateChangedExecutionFormNotification	+= this.orderProcessor_OrderStateChanged;
-			this.orderProcessor.OnOrderMessageAddedExecutionFormNotification	+= this.orderProcessor_OrderMessageAdded;
-			this.orderProcessor.OnDelaylessLivesimEndedShouldRebuildOLV			+= this.orderProcessor_OnDelaylessLivesimEndedShouldRebuildOLV;
+			this.orderProcessor.OnAsyncOrderAdded_executionControlShouldRebuildOLV			+= this.orderProcessor_OrderAdded;
+			this.orderProcessor.OnAsyncOrderRemoved_executionControlShouldRebuildOLV			+= this.orderProcessor_OrderRemoved;
+			this.orderProcessor.OnOrderStateOrPropertiesChanged_executionControlShouldPopulate	+= this.orderProcessor_OrderStateChanged;
+			this.orderProcessor.OnOrderMessageAdded_executionControlShouldPopulate	+= this.orderProcessor_OrderMessageAdded;
+			this.orderProcessor.OnDelaylessLivesimEnded_shouldRebuildOLV			+= this.orderProcessor_OnDelaylessLivesimEndedShouldRebuildOLV;
 
 			//this.ExecutionTreeControl.OnOrderStatsChangedRecalculateWindowTitleExecutionFormNotification += delegate { this.PopulateWindowText(); };
 			this.ExecutionTreeControl.OnOrderDoubleClickedChartFormNotification += this.executionTree_OnOrderDoubleClickedChartFormNotification;
@@ -124,10 +124,10 @@ namespace Sq1.Gui.Singletons {
 			//ExecutionForm.Instance = null;
 		}
 		void executionForm_Closing(object sender, FormClosingEventArgs e) {
-			this.orderProcessor.OnOrderAddedExecutionFormNotification -= this.orderProcessor_OrderAdded;
-			this.orderProcessor.OnOrderRemovedExecutionFormNotification -= this.orderProcessor_OrderRemoved;
-			this.orderProcessor.OnOrderStateChangedExecutionFormNotification -= this.orderProcessor_OrderStateChanged;
-			this.orderProcessor.OnOrderMessageAddedExecutionFormNotification -= this.orderProcessor_OrderMessageAdded;
+			this.orderProcessor.OnAsyncOrderAdded_executionControlShouldRebuildOLV -= this.orderProcessor_OrderAdded;
+			this.orderProcessor.OnAsyncOrderRemoved_executionControlShouldRebuildOLV -= this.orderProcessor_OrderRemoved;
+			this.orderProcessor.OnOrderStateOrPropertiesChanged_executionControlShouldPopulate -= this.orderProcessor_OrderStateChanged;
+			this.orderProcessor.OnOrderMessageAdded_executionControlShouldPopulate -= this.orderProcessor_OrderMessageAdded;
 			string msg = "ExecutionForm_Closed(): unsubscribed from orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderAddedExecutionFormNotification";
 			Assembler.PopupException(msg);
 		}

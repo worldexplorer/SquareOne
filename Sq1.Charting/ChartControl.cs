@@ -185,7 +185,7 @@ namespace Sq1.Charting {
 
 			if (invalidateAllPanels == false) return;
 			if (Assembler.IsInitialized == false) return;	// ChartForm: avoiding Designer's complains about Assembler.Initialized==false
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			this.InvalidateAllPanels();
 		}
 		public void SyncHorizontalScrollToBarsCount() {
@@ -210,7 +210,7 @@ namespace Sq1.Charting {
 				return;
 			}
 			//LIVESIM_PAUSED_SHOULD_H_SCROLL__THIS_WAS_AN_OBSTACLE_NON_REPAINTING if (base.IsBacktestingNow) return;
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
 			foreach (PanelBase panel in this.panelsForInvalidateAll_dontForgetIndicators) {
 				panel.Invalidate();
@@ -514,7 +514,7 @@ namespace Sq1.Charting {
 		
 		public void PropagateSplitterManorderDistanceIfFullyDeserialized() {
 			//v1 WHATT?? BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
 				string msg = "YOU_INVOKED_ME_WITH_ZERO_EFFECT__SET_FullyDeserializedLayoutComplete=true_FIRST //PropagateSplitterManorderDistanceIfFullyDeserialized()";
 				#if DEBUG_HEAVY
 				Assembler.PopupException(msg, null, false);

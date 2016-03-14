@@ -20,8 +20,8 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public double		QtyFill;						// SET_IN_ORDER_PROCESSOR   { get; protected set; }
 
 		[JsonProperty]	public string		GUID						{ get; protected set; }
-		[JsonProperty]	public OrderState	State;						// SET_IN_ORDER_PROCESSOR   { get; protected set; }
-		[JsonProperty]	public DateTime		StateUpdateLastTimeLocal;	// SET_IN_ORDER_PROCESSOR   { get; protected set; }
+		[JsonProperty]	public OrderState	State						{ get; protected set; }
+		[JsonProperty]	public DateTime		StateUpdateLastTimeLocal	{ get; protected set; }
 		[JsonProperty]	public int			SernoSession;				// SET_IN_BROKER_QUIK	{ get; protected set; }
 		[JsonProperty]	public long			SernoExchange;				// SET_IN_BROKER_QUIK	{ get; protected set; }
 
@@ -71,8 +71,11 @@ namespace Sq1.Core.Execution {
 		//	1) ConcurrentQueue's Interlocked.CompareExchange<>() is slower than lock(privateLock),
 		//	2) you'll need sorting by date/state BEFORE ExecutionTree (ExecutionTree simulates sorted lists by ),
 		//	3) you'll prove that removing lock() won't cause "CollectionModifiedException"
-		[JsonIgnore]			ConcurrentQueue<OrderStateMessage> messages;
-		[JsonIgnore]	public	ConcurrentQueue<OrderStateMessage> MessagesSafeCopy { get { return new ConcurrentQueue<OrderStateMessage>(this.messages); } }
+		[JsonIgnore]			ConcurrentStack<OrderStateMessage> messages;
+		[JsonIgnore]	public	ConcurrentStack<OrderStateMessage> MessagesSafeCopy { get { return
+			new ConcurrentStack<OrderStateMessage>(this.messages)
+			//SECOND_CLICK_MAKES_THEM_EMPTY??? this.messages
+			; } }
 		
 		//[JsonIgnore]
 		// List because Json.Net doesn't serialize ConcurrentQueue as []; I wanted deserialization compability
@@ -94,7 +97,7 @@ namespace Sq1.Core.Execution {
 					throw new Exception(msg);
 					//return;
 				}
-				this.messages = new ConcurrentQueue<OrderStateMessage>(value);
+				this.messages = new ConcurrentStack<OrderStateMessage>(value);
 			}
 		}
 
@@ -108,13 +111,13 @@ namespace Sq1.Core.Execution {
 
 		
 		#region TODO OrderStateCollections: REFACTOR states to be better named/handled in OrderStateCollections.cs
-		[JsonProperty]	public bool				InStateCanBeReplacedLimitStop { get {
+		[JsonProperty]	public bool				InState_limitOrStopCanBeReplaced { get {
 				return this.State == OrderState.WaitingBrokerFill
 					|| this.State == OrderState.Submitted
 					|| this.State == OrderState.FilledPartially
 					;
 			} }
-		[JsonProperty]	public bool				InStateExpectingCallbackFromBroker { get {
+		[JsonProperty]	public bool				InState_expectingBrokerCallback { get {
 				return this.State == OrderState.WaitingBrokerFill
 					|| this.State == OrderState.Submitting
 					|| this.State == OrderState.Submitted
@@ -136,7 +139,7 @@ namespace Sq1.Core.Execution {
 				}
 				return false;
 			} }
-		[JsonProperty]	public bool				InStateEmergency { get {
+		[JsonProperty]	public bool				InState_emergency { get {
 				if (this.State == OrderState.EmergencyCloseSheduledForRejected
 						|| this.State == OrderState.EmergencyCloseSheduledForRejectedLimitReached
 						|| this.State == OrderState.EmergencyCloseSheduledForErrorSubmittingBroker) {
@@ -144,29 +147,33 @@ namespace Sq1.Core.Execution {
 				}
 				return false;
 			} }
-		[JsonProperty]	public OrderState		InStateErrorComplementaryEmergencyState { get {
+		[JsonProperty]	public OrderState		InState_errorOrRejected_convertToComplementaryEmergencyState { get {
 				OrderState newState = OrderState.Error;
 				if (this.State == OrderState.Rejected)				newState = OrderState.EmergencyCloseSheduledForRejected;
 				if (this.State == OrderState.RejectedLimitReached)	newState = OrderState.EmergencyCloseSheduledForRejectedLimitReached;
 				if (this.State == OrderState.ErrorSubmittingBroker)	newState = OrderState.EmergencyCloseSheduledForErrorSubmittingBroker;
 				return newState;
 			} }
-		[JsonProperty]	public bool				InStateChangeableToEmergency { get { return (InStateErrorComplementaryEmergencyState != OrderState.Error); } }
+		[JsonProperty]	public bool				InState_changeableToEmergency { get { return (InState_errorOrRejected_convertToComplementaryEmergencyState != OrderState.Error); } }
 		#endregion
 
 
 
 		[JsonProperty]	public int				AddedToOrdersListCounter;	// SET_IN_ORDER_LIST { get; protected set; }
-		[JsonProperty]	public string			LastMessage { get {
-				int count = this.messages.Count; 
-				if (count == 0) return "";
-				OrderStateMessage lastOmsg;
-				bool success = this.messages.TryPeek(out lastOmsg);
-				if (!success) {
-					throw new Exception("messages.TryPeek() failed while messages.Count[" + count + "/" + messages.Count + "]");
-				}
-				return lastOmsg.Message; 
-			} }
+		//v1
+		//[JsonProperty]	public string			LastMessage { get {
+		//        int count = this.messages.Count; 
+		//        if (count == 0) return "";
+		//        OrderStateMessage lastOmsg;
+		//        bool success = this.messages.TryPop(out lastOmsg);
+		//        if (!success) {
+		//            throw new Exception("messages.TryPop() failed while messages.Count[" + count + "/" + messages.Count + "]");
+		//        }
+		//        return lastOmsg.Message; 
+		//    } }
+		//v2
+		[JsonProperty]	public string			LastMessage;
+
 		[JsonIgnore]	public bool				hasSlippagesDefined { get {
 				string msg1 = "[JsonIgnore]	to let orders restored after app restart fly over it; they don't have alert.Bars restored yet";
 				if (this.Alert == null) {
@@ -181,7 +188,7 @@ namespace Sq1.Core.Execution {
 					string msg = "PROBLEMATIC_Order.Alert.Bars.SymbolInfo=NULL_hasSlippagesDefined";
 					Assembler.PopupException(msg);
 				}
-				int slippageIndexMax = this.Alert.Bars.SymbolInfo.getSlippageIndexMax(this.Alert.Direction);
+				int slippageIndexMax = this.Alert.Bars.SymbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(this.Alert);
 				return (slippageIndexMax == -1) ? false : true;
 			} }
 		[JsonIgnore]	public bool				noMoreSlippagesAvailable { get {
@@ -199,7 +206,7 @@ namespace Sq1.Core.Execution {
 					Assembler.PopupException(msg);
 				}
 				string msg2 = "slippagesNotDefinedOr?";
-				int slippageIndexMax = this.Alert.Bars.SymbolInfo.getSlippageIndexMax(this.Alert.Direction);
+				int slippageIndexMax = this.Alert.Bars.SymbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(this.Alert);
 				if (slippageIndexMax == -1) return false;
 				return (this.SlippageIndex > slippageIndexMax) ? true : false;
 			} }
@@ -218,11 +225,11 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	static int absno = 0;
 		[JsonProperty]	public double CommissionFill				{ get; protected set; }
 		//[JsonIgnore]	public ManualResetEvent MreActiveCanCome	{ get; protected set; }		// JSON restore of a ManualResetEvent makes GC thread throw SEHException (thanx for a great free library anyway)
-		[JsonProperty]	public	string			BrokerName			{ get { return this.Alert.BrokerName; } }
+		[JsonProperty]	public	string			BrokerAdapterName			{ get { return this.Alert.BrokerName; } }
 
  		public Order() {	// called by Json.Deserialize(); what if I'll make it protected?
 			GUID = newGUID();
-			messages = new ConcurrentQueue<OrderStateMessage>();
+			messages = new ConcurrentStack<OrderStateMessage>();
 			PriceRequested = 0;
 			PriceFill = 0;
 			QtyRequested = 0;
@@ -274,7 +281,12 @@ namespace Sq1.Core.Execution {
 			this.QtyRequested			= alert.Qty;
 			this.EmittedByScript		= emittedByScript;
 			//due to serverTime lagging, replacements orders are born before the original order... this.TimeCreatedServer = alert.TimeCreatedLocal;
-			this.CreatedBrokerTime		= alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
+			if (alert.Bars == null) {
+				string msg1 = "NYI:KILLING_ORDERS_AFTER_APPRESTART ORDER_DESERIALIZED_IS_NOT_ATTACHED_TO_BAR";
+				Assembler.PopupException(msg1, null, false);
+			} else {
+				this.CreatedBrokerTime		= alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
+			}
 			//Order.PositionFollowed will be created when order.State becomes OrderState.Filled this.PositionFollowed		= new Position()
 			this.SpreadSide				= alert.OrderSpreadSide;
 
@@ -393,8 +405,9 @@ namespace Sq1.Core.Execution {
 			this.AppendMessageSynchronized(new OrderStateMessage(this, msg));
 		}
 		public void AppendMessageSynchronized(OrderStateMessage omsg) {
-			//this.messages.Push(omsg);
-			this.messages.Enqueue(omsg);
+			this.LastMessage = omsg.Message;	// KISS; mousemove over OlvOrdersTree won't bother calculating
+			this.messages.Push(omsg);
+			//this.messages.Enqueue(omsg);
 		}
 		public override string ToString() {
 			string ret = "";
@@ -454,7 +467,7 @@ namespace Sq1.Core.Execution {
 			//}
 			//this.Alert.FillPositionAffectedEntryOrExitRespectively(barStreaming, -1, priceFill, qtyFill, slippageFill, commissionFill);
 		}
-		public bool FindStateInOrderMessages(OrderState orderState, int occurenciesLooking = 1) {
+		public bool FindState_inOrderMessages(OrderState orderState, int occurenciesLooking = 1) {
 			lock (this.messages) {
 				int occurenciesFound = 0;
 				foreach (OrderStateMessage osm in this.messages) {
@@ -464,9 +477,22 @@ namespace Sq1.Core.Execution {
 				return (occurenciesFound >= occurenciesLooking);
 			}
 		}
-		public void AbsorbCurrentBidAskFromStreamingSnapshot(StreamingDataSnapshot snap) {
+		public void AbsorbCurrentBidAsk_fromStreamingSnapshot(StreamingDataSnapshot snap) {
 			this.CurrentBid = snap.BestBid_getForMarketOrder(this.Alert.Symbol);
 			this.CurrentAsk = snap.BestAsk_getForMarketOrder(this.Alert.Symbol);
+		}
+
+		internal void SetState_localTime_fromMessage(OrderStateMessage newStateWithReason) {
+			this.setState_localTime(newStateWithReason.State, newStateWithReason.DateTime);
+		}
+
+		internal void SetState_localTimeNow(OrderState newOrderState) {
+			this.setState_localTime(newOrderState, DateTime.Now);
+		}
+
+		void setState_localTime(OrderState newOrderState, DateTime localTime_updated) {
+			this.State						= newOrderState;
+			this.StateUpdateLastTimeLocal	= localTime_updated;
 		}
 	}
 }

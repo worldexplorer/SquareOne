@@ -154,7 +154,7 @@ namespace Sq1.Core.Repositories {
 		protected Dictionary<Assembly, List<Script>> StrategiesScanDllsInitDeserialized(string dataOrStartupPath) {
 			RepositoryDllScripts repo = new RepositoryDllScripts(dataOrStartupPath);
 			repo.ScanDlls();
-			Dictionary<Assembly, List<Script>> ret = repo.CloneableInstancesByAssemblies;
+			Dictionary<Assembly, List<Script>> ret = repo.TypesByAssemblies;
 			foreach (Assembly assembly in ret.Keys) {
 				List<Script> cloneableInstancesForAssembly = ret[assembly];
 				// WONT_BE_EMPTY if (cloneableInstancesForAssembly.Count == 0) continue;

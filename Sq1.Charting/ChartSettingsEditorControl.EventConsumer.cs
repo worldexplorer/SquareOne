@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace Sq1.Charting {
 	public partial class ChartSettingsEditorControl {
 		void cbxSettings_SelectedIndexChanged(object sender, EventArgs e) {
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			if (this.rebuildingDropdown) return;
 
 			if (sender as ComboBox != this.cbxSettings.ComboBox) {

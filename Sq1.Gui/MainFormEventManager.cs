@@ -171,7 +171,7 @@ namespace Sq1.Gui {
 				string msg = "onAppClose getting invoked for each [mosaically] visible document, right? nope just once per Close()";
 				return;
 			}
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
 				string msg = "dont save ChartSernoLastKnownHadFocus";
 				return;
 			}

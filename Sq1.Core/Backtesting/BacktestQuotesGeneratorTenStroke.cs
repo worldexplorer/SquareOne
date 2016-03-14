@@ -6,7 +6,7 @@ namespace Sq1.Core.Backtesting {
 	public class BacktestQuotesGeneratorTenStroke : BacktestQuotesGenerator {
 		public BacktestQuotesGeneratorTenStroke() : base( BacktestStrokesPerBar.TenStroke) { }
 
-		protected override void AssignPriceAndBidOrAskDependingOnQuotesPerBarForStroke(
+		protected override void Assign_priceAndBidOrAsk_dependingOnQuotesPerBar_forStroke(
 				Bar barSimulated, int stroke_0to9, out double price, out BidOrAsk bidOrAsk) {
 			switch (stroke_0to9) {
 				case 0:

@@ -15,6 +15,7 @@ namespace Sq1.Widgets.Execution {
 		
 		[JsonProperty]	public int	MessagePaneSplitDistanceHorizontal		= 0;
 		[JsonProperty]	public int	MessagePaneSplitDistanceVertical		= 0;
+		[JsonProperty]	public int	SerializationInterval					= 3000;
 		
 		//v1 prior to using this.OrdersTreeOLV.SaveState();
 		//NOPE_I_HATE_ADDING_IF_MISSED

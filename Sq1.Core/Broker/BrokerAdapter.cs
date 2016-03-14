@@ -51,12 +51,12 @@ namespace Sq1.Core.Broker {
 			get { return this.upstreamConnectionState; }
 			protected set {
 				if (this.upstreamConnectionState == value) return;	//don't invoke StateChanged if it didn't change
-				if (this.upstreamConnectionState == ConnectionState.UpstreamConnected_downstreamSubscribedAll
-								&& value == ConnectionState.JustInitialized_solidifiersUnsubscribed) {
+				if (this.upstreamConnectionState == ConnectionState.Streaming_UpstreamConnected_downstreamSubscribedAll
+								&& value == ConnectionState.Streaming_JustInitialized_solidifiersUnsubscribed) {
 					Assembler.PopupException("YOU_ARE_RESETTING_ORIGINAL_DATASOURCE_WITH_LIVESIM_DATASOURCE", null, false);
 				}
-				if (this.upstreamConnectionState == ConnectionState.UpstreamConnected_downstreamUnsubscribed
-								&& value == ConnectionState.JustInitialized_solidifiersSubscribed) {
+				if (this.upstreamConnectionState == ConnectionState.Streaming_UpstreamConnected_downstreamUnsubscribed
+								&& value == ConnectionState.Streaming_JustInitialized_solidifiersSubscribed) {
 					Assembler.PopupException("WHAT_DID_YOU_INITIALIZE? IT_WAS_ALREADY_INITIALIZED_AND_UPSTREAM_CONNECTED", null, false);
 				}
 				this.upstreamConnectionState = value;
@@ -64,7 +64,7 @@ namespace Sq1.Core.Broker {
 
 				try {
 					if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
-					if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+					if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 					if (this.UpstreamConnectedOnAppRestart == this.UpstreamConnected) return;
 					this.UpstreamConnectedOnAppRestart = this.UpstreamConnected;		// you can override this.UpstreamConnectedOnAppRestart and keep it FALSE to avoid DS serialization
 					if (this.DataSource == null) {
@@ -81,36 +81,35 @@ namespace Sq1.Core.Broker {
 		}
 		[JsonProperty]	public	virtual	bool				UpstreamConnectedOnAppRestart		{ get; protected set; }
 		[JsonIgnore]	public		bool					UpstreamConnected					{ get {
-			bool ret = false;
-			switch (this.UpstreamConnectionState) {
-				case ConnectionState.UnknownConnectionState:							ret = false;	break;
-				case ConnectionState.JustInitialized_solidifiersUnsubscribed:			ret = false;	break;
-				case ConnectionState.JustInitialized_solidifiersSubscribed:				ret = false;	break;
-				case ConnectionState.DisconnectedJustConstructed:						ret = false;	break;
+		    bool ret = false;
+		    switch (this.UpstreamConnectionState) {
+		        case ConnectionState.UnknownConnectionState:						ret = false;	break;
 
-				// used in QuikStreamingAdapter
-				case ConnectionState.UpstreamConnected_downstreamUnsubscribed:			ret = true;		break;
-				case ConnectionState.UpstreamConnected_downstreamSubscribed:			ret = true;		break;
-				case ConnectionState.UpstreamConnected_downstreamSubscribedAll:			ret = true;		break;
-				case ConnectionState.UpstreamConnected_downstreamUnsubscribedAll:		ret = true;		break;
-				case ConnectionState.UpstreamDisconnected_downstreamSubscribed:			ret = false;	break;
-				case ConnectionState.UpstreamDisconnected_downstreamUnsubscribed:		ret = false;	break;
+		        case ConnectionState.Broker_DllConnected:							ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
+		        case ConnectionState.Broker_DllDisonnected:							ret = false;	break;
+		        case ConnectionState.Broker_TerminalConnected:						ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
+		        case ConnectionState.Broker_TerminalDisonnected:					ret = false;	break;
 
-				// used in QuikBrokerAdapter
-				case ConnectionState.SymbolSubscribed:					ret = true;		break;
-				case ConnectionState.SymbolUnsubscribed:				ret = true;		break;
-				case ConnectionState.ErrorConnectingNoRetriesAnymore:	ret = false;	break;
+		        // used in QuikBrokerAdapter
+		        case ConnectionState.Broker_Connected_SymbolsSubscribedAll:			ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
+		        case ConnectionState.Broker_Connected_SymbolSubscribed:				ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
+		        case ConnectionState.Broker_Connected_SymbolsUnsubscribedAll:		ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
+		        case ConnectionState.Broker_Connected_SymbolUnsubscribed:			ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
+		        case ConnectionState.Broker_Disconnected_SymbolsSubscribedAll:		ret = false;	break;
+		        case ConnectionState.Broker_Disconnected_SymbolsUnsubscribedAll:	ret = false;	break;
 
-				// used in QuikLivesimStreaming
-				case ConnectionState.ConnectFailed:						ret = false;	break;
-				case ConnectionState.DisconnectFailed:					ret = false;	break;		// can still be connected but by saying NotConnected I prevent other attempt to subscribe symbols; use "Connect" button to resolve
+		        case ConnectionState.BrokerErrorConnectingNoRetriesAnymore:			ret = false;	break;
 
-				default:
-					Assembler.PopupException("ADD_HANDLER_FOR_NEW_ENUM_VALUE this.ConnectionState[" + this.UpstreamConnectionState + "]");
-					ret = false;
-					break;
-			}
-			return ret;
+		        // used in QuikBrokerAdapter
+		        case ConnectionState.FailedToConnect:						ret = false;	break;
+		        case ConnectionState.FailedToDisconnect:					ret = false;	break;		// can still be connected but by saying NotConnected I prevent other attempt to subscribe symbols; use "Connect" button to resolve
+
+		        default:
+		            Assembler.PopupException("ADD_HANDLER_FOR_NEW_ENUM_VALUE this.ConnectionState[" + this.UpstreamConnectionState + "]");
+		            ret = false;
+		            break;
+		    }
+		    return ret;
 		} }
 		[JsonIgnore]	public LivesimBroker			LivesimBroker_ownImplementation			{ get; protected set; }
 
@@ -199,7 +198,7 @@ namespace Sq1.Core.Broker {
 			foreach (Order order in ordersToExecute) {
 				string msg = "Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
 					+ " SernoSession[" + order.SernoSession + "]";
-				this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msig + msg);
+				this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msig + msg);
 
 				//Order orderSimilar = this.OrderProcessor.DataSnapshot.OrdersPending.FindSimilarNotSamePendingOrder(order);
 				//// Orders.All.ContainForSure: Order orderSimilar = this.OrderProcessor.DataSnapshot.OrdersAll.FindSimilarNotSamePendingOrder(order);
@@ -214,11 +213,11 @@ namespace Sq1.Core.Broker {
 					this.OrderPreSubmitEnrichCheckThrow(order);
 				} catch (Exception ex) {
 					Assembler.PopupException(msg, ex, false);
-					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msig + ex.Message + " //" + msg);
+					this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msig + ex.Message + " //" + msg);
 					if (order.State == OrderState.IRefuseOpenTillEmergencyCloses) {
 						msg = "looks good, OrderPreSubmitChecker() caught the EmergencyLock exists";
 						Assembler.PopupException(msg + msig, ex, false);
-						this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msig + msg);
+						this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msig + msg);
 					}
 					continue;
 				}
@@ -244,7 +243,7 @@ namespace Sq1.Core.Broker {
 			if (this.StreamingAdapter == null) {
 				msg = " StreamingAdapter=null, can't get last/fellow/crossMarket price // " + msg;
 				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-				this.OrderProcessor.UpdateOrderState_postProcess(order, newOrderState);
+				this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
 				throw new Exception(msg);
 			}
 			try {
@@ -253,11 +252,11 @@ namespace Sq1.Core.Broker {
 				msg = ex.Message + " //" + msg;
 				//orderProcessor.updateOrderStatusError(order, OrderState.ErrorOrderInconsistent, msg);
 				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-				this.OrderProcessor.UpdateOrderState_postProcess(order, newOrderState);
+				this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
 				throw new Exception(msg, ex);
 			}
 
-			order.AbsorbCurrentBidAskFromStreamingSnapshot(this.StreamingAdapter.StreamingDataSnapshot);
+			order.AbsorbCurrentBidAsk_fromStreamingSnapshot(this.StreamingAdapter.StreamingDataSnapshot);
 
 			this.OrderEnrich_preSubmit_brokerSpecificInjection(order);
 
@@ -273,88 +272,110 @@ namespace Sq1.Core.Broker {
 					OrderState IRefuseUntilemrgComplete = OrderState.IRefuseOpenTillEmergencyCloses;
 					msg = "Reason4lock: " + reason4lock.ToString();
 					OrderStateMessage omsg = new OrderStateMessage(order, IRefuseUntilemrgComplete, msg);
-					this.OrderProcessor.UpdateOrderState_postProcess(order, omsg);
+					this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg);
 					throw new Exception(msg);
 				}
 			}
 		}
-		public virtual void ModifyOrderTypeAccordingToMarketOrderAs(Order order) {
-			string msig = " //" + Name + "::ModifyOrderTypeAccordingToMarketOrderAs():"
+		public virtual void Modify_orderType_priceRequesting_accordingToMarketOrderAs(Order order) {
+			string msig = " //" + Name + "::Modify_orderType_priceRequesting_accordingToMarketOrderAs():"
 				+ " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
 				+ " SernoSession[" + order.SernoSession + "]";
 			string msg = "";
 
-			order.AbsorbCurrentBidAskFromStreamingSnapshot(this.StreamingAdapter.StreamingDataSnapshot);
+			order.AbsorbCurrentBidAsk_fromStreamingSnapshot(this.StreamingAdapter.StreamingDataSnapshot);
 
+			Alert alert = order.Alert;
 			double priceBestBidAsk = this.StreamingAdapter.StreamingDataSnapshot.BidOrAsk_forDirection(
-				order.Alert.Symbol, order.Alert.PositionLongShortFromDirection);
+				order.Alert.Symbol, alert.PositionLongShortFromDirection);
 				
-			switch (order.Alert.MarketLimitStop) {
+			SymbolInfo symbolInfo = alert.Bars.SymbolInfo;
+			switch (alert.MarketLimitStop) {
 				case MarketLimitStop.Market:
 					//if (order.PriceRequested != 0) {
 					//	string msg1 = Name + "::OrderSubmit(): order[" + order + "] is MARKET, dropping Price[" + order.PriceRequested + "] replacing with current Bid/Ask ";
-					//	order.addMessage(new OrderStateMessage(order, order.State, msg1));
+					//	order.addMessage(new OrderStateMessage(order, msg1));
 					//	Assembler.PopupException(msg1);
 					//	order.PriceRequested = 0;
 					//}
-					if (order.Alert.Bars == null) {
+					if (alert.Bars == null) {
 						msg = "order.Bars=null; can't align order and get Slippage; returning with error // " + msg;
 						Assembler.PopupException(msg);
 						//order.AppendMessageAndChangeState(new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg));
-						this.OrderProcessor.UpdateOrderState_postProcess(order, new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg));
+						this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg));
 						throw new Exception(msg);
 					}
 
-					switch (order.Alert.MarketOrderAs) {
+					switch (alert.MarketOrderAs) {
 						case MarketOrderAs.MarketZeroSentToBroker:
 							order.PriceRequested = 0;
-							msg = "SYMBOL_INFO_CONVERSION_MarketZeroSentToBroker SymbolInfo[" + order.Alert.Symbol + "/" + order.Alert.SymbolClass + "].OverrideMarketPriceToZero==true"
+							msg = "SYMBOL_INFO_CONVERSION_MarketZeroSentToBroker SymbolInfo[" + alert.Symbol + "/" + alert.SymbolClass + "].OverrideMarketPriceToZero==true"
 								+ "; setting Price=0 (Slippage=" + order.SlippageFill + ")";
 							break;
+
 						case MarketOrderAs.MarketMinMaxSentToBroker:
-							MarketLimitStop beforeBrokerSpecific = order.Alert.MarketLimitStop;
+							MarketLimitStop beforeBrokerSpecific = alert.MarketLimitStop;
 							string brokerSpecificDetails = this.ModifyOrderType_accordingToMarketOrder_asBrokerSpecificInjection(order);
 							if (brokerSpecificDetails != "") {
-								msg = "BROKER_SPECIFIC_CONVERSION_MarketMinMaxSentToBroker: [" + beforeBrokerSpecific + "]=>[" + order.Alert.MarketLimitStop + "](" + order.Alert.MarketOrderAs
+								msg = "BROKER_SPECIFIC_CONVERSION_MarketMinMaxSentToBroker: [" + beforeBrokerSpecific + "]=>[" + alert.MarketLimitStop + "](" + alert.MarketOrderAs
 									+ ") brokerSpecificDetails[" + brokerSpecificDetails + "]";
 							} else {
-								order.Alert.MarketLimitStop = MarketLimitStop.Limit;
-								order.Alert.MarketLimitStopAsString += " => " + order.Alert.MarketLimitStop + " (" + order.Alert.MarketOrderAs + ")";
-								msg = "SYMBOL_INFO_CONVERSION_MarketMinMaxSentToBroker: [" + beforeBrokerSpecific + "]=>[" + order.Alert.MarketLimitStop + "](" + order.Alert.MarketOrderAs + ")";
+								alert.MarketLimitStop = MarketLimitStop.Limit;
+								alert.MarketLimitStopAsString += " => " + alert.MarketLimitStop + " (" + alert.MarketOrderAs + ")";
+								msg = "SYMBOL_INFO_CONVERSION_MarketMinMaxSentToBroker: [" + beforeBrokerSpecific + "]=>[" + alert.MarketLimitStop + "](" + alert.MarketOrderAs + ")";
 							}
 							break;
+
 						case MarketOrderAs.LimitCrossMarket:
-							order.Alert.MarketLimitStop = MarketLimitStop.Limit;
-							order.Alert.MarketLimitStopAsString += " => " + order.Alert.MarketLimitStop + " (" + order.Alert.MarketOrderAs + ")";
-							msg = "PreSubmit_LimitCrossMarket: doing nothing for Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]";
+							alert.MarketLimitStop = MarketLimitStop.Limit;
+							alert.MarketLimitStopAsString += " => " + alert.MarketLimitStop + " (" + alert.MarketOrderAs + ")";
+							msg = "";
+							if (symbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(alert) > 0) {
+								double slippage = symbolInfo.GetSlippage_signAware_forLimitOrdersOnly(alert, 0);
+								order.PriceRequested += slippage;
+								msg += "ADDED_FIRST_SLIPPAGE[" + slippage + "]";
+							} else {
+								msg += "DOING_NOTHING__AS_SymbolInfo[" + symbolInfo.Symbol + "].SlippagesCrossMarketCsv_ARE_NOT_DEFINED";
+							}
+							msg += " PreSubmit_LimitCrossMarket: Alert.MarketOrderAs=[" + alert.MarketOrderAs + "] ";
 							break;
+
 						case MarketOrderAs.LimitTidal:
-							order.Alert.MarketLimitStop = MarketLimitStop.Limit;
-							order.Alert.MarketLimitStopAsString += " => " + order.Alert.MarketLimitStop + " (" + order.Alert.MarketOrderAs + ")";
-							msg = "PreSubmit_LimitTidal: doing nothing for Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]";
+							alert.MarketLimitStop = MarketLimitStop.Limit;
+							alert.MarketLimitStopAsString += " => " + alert.MarketLimitStop + " (" + alert.MarketOrderAs + ")";
+							msg = "";
+							if (symbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(alert) > 0) {
+								double slippage = symbolInfo.GetSlippage_signAware_forLimitOrdersOnly(alert, 0);
+								order.PriceRequested += slippage;
+								msg += "ADDED_FIRST_SLIPPAGE[" + slippage + "]";
+							} else {
+								msg += "DOING_NOTHING__AS_SymbolInfo[" + symbolInfo.Symbol + "].SlippagesTidalCsv_ARE_NOT_DEFINED";
+							}
+							msg += " PreSubmit_LimitTidal: Alert.MarketOrderAs=[" + alert.MarketOrderAs + "] ";
 							break;
+
 						default:
-							msg = "no handler for Market Order with Alert.MarketOrderAs[" + order.Alert.MarketOrderAs + "]";
+							msg = "no handler for Market Order with Alert.MarketOrderAs[" + alert.MarketOrderAs + "]";
 							OrderStateMessage newOrderState2 = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-							this.OrderProcessor.UpdateOrderState_postProcess(order, newOrderState2);
+							this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState2);
 							throw new Exception(msg);
 					}
-					//if (order.Alert.Bars.SymbolInfo.OverrideMarketPriceToZero == true) {
+					//if (alert.Bars.SymbolInfo.OverrideMarketPriceToZero == true) {
 					//} else {
 					//	if (order.PriceRequested == 0) {
 					//		base.StreamingAdapter.StreamingDataSnapshot.BidOrAsk_getAligned_forTidalOrCrossMarket_fromStreamingSnap(
-					//			order.Alert.Symbol, order.Alert.Direction, out order.PriceRequested, out order.SpreadSide, ???);
+					//			alert.Symbol, alert.Direction, out order.PriceRequested, out order.SpreadSide, ???);
 					//		order.PriceRequested += order.Slippage;
-					//		order.PriceRequested = order.Alert.Bars.alignOrderPriceToPriceLevel(order.PriceRequested, order.Alert.Direction, order.Alert.MarketLimitStop);
+					//		order.PriceRequested = alert.Bars.alignOrderPriceToPriceLevel(order.PriceRequested, alert.Direction, alert.MarketLimitStop);
 					//	}
 					//}
-					//order.addMessage(new OrderStateMessage(order, order.State, msg));
+					//order.addMessage(new OrderStateMessage(order, msg));
 					//Assembler.PopupException(msg);
 					break;
 
 				case MarketLimitStop.Limit:
 					order.SpreadSide = OrderSpreadSide.ERROR;
-					switch (order.Alert.Direction) {
+					switch (alert.Direction) {
 						case Direction.Buy:
 						case Direction.Cover:
 							if (priceBestBidAsk <= order.PriceRequested) order.SpreadSide = OrderSpreadSide.BidTidal;
@@ -364,11 +385,11 @@ namespace Sq1.Core.Broker {
 							if (priceBestBidAsk >= order.PriceRequested) order.SpreadSide = OrderSpreadSide.AskTidal;
 							break;
 						default:
-							msg += " No Direction[" + order.Alert.Direction + "] handler for order[" + order.ToString() + "]"
+							msg += " No Direction[" + alert.Direction + "] handler for order[" + order.ToString() + "]"
 								+ "; must be one of those: Buy/Cover/Sell/Short";
 							//orderProcessor.updateOrderStatusError(order, OrderState.Error, msg);
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.Error, msg);
-							this.OrderProcessor.UpdateOrderState_postProcess(order, newOrderState);
+							this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
 							throw new Exception(msg);
 					}
 					break;
@@ -376,7 +397,7 @@ namespace Sq1.Core.Broker {
 				case MarketLimitStop.Stop:
 				case MarketLimitStop.StopLimit:
 					order.SpreadSide = OrderSpreadSide.ERROR;
-					switch (order.Alert.Direction) {
+					switch (alert.Direction) {
 						case Direction.Buy:
 						case Direction.Cover:
 							if (priceBestBidAsk >= order.PriceRequested) order.SpreadSide = OrderSpreadSide.AskTidal;
@@ -386,21 +407,21 @@ namespace Sq1.Core.Broker {
 							if (priceBestBidAsk <= order.PriceRequested) order.SpreadSide = OrderSpreadSide.BidTidal;
 							break;
 						default:
-							msg += " No Direction[" + order.Alert.Direction + "] handler for order[" + order.ToString() + "]"
+							msg += " No Direction[" + alert.Direction + "] handler for order[" + order.ToString() + "]"
 								+ "; must be one of those: Buy/Cover/Sell/Short";
 							//orderProcessor.updateOrderStatusError(order, OrderState.Error, msg);
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.Error, msg);
-							this.OrderProcessor.UpdateOrderState_postProcess(order, newOrderState);
+							this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
 							throw new Exception(msg);
 					}
 					break;
 
 				default:
-					msg += " No MarketLimitStop[" + order.Alert.MarketLimitStop + "] handler for order[" + order.ToString() + "]"
+					msg += " No MarketLimitStop[" + alert.MarketLimitStop + "] handler for order[" + order.ToString() + "]"
 						+ "; must be one of those: Market/Limit/Stop";
 					//orderProcessor.updateOrderStatusError(order, OrderState.Error, msg);
 					OrderStateMessage omsg = new OrderStateMessage(order, OrderState.Error, msg);
-					this.OrderProcessor.UpdateOrderState_postProcess(order, omsg);
+					this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg);
 					throw new Exception(msg);
 			}
 			order.AppendMessage(msg + msig);

@@ -28,7 +28,10 @@ namespace Sq1.Core.Streaming {
 
 			ret = base.ConsumerBarSubscribe(symbol, scaleInterval, chartConsumer, quotePumpSeparatePushingThreadEnabled);
 			string msg2 = "SUBSCRIBED_CHART_BARS[" + ret + "]";
-			//Assembler.PopupException(msg2 + msig, null, false);
+
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete) {
+				Assembler.PopupException(msg2 + msig, null, false);
+			}
 
 			return ret;
 		}
@@ -37,7 +40,10 @@ namespace Sq1.Core.Streaming {
 			string msig = " //ConsumerBarUnsubscribe(" + symbol + ":" + scaleInterval + " [" + chartConsumer + "])";
 			bool ret = base.ConsumerBarUnsubscribe(symbol, scaleInterval, chartConsumer);
 			string msg2 = "UNSUBSCRIBED_CHART_BARS[" + ret + "]";
-			//Assembler.PopupException(msg2 + msig, null, false);
+
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete) {
+				Assembler.PopupException(msg2 + msig, null, false);
+			}
 			return ret;
 		}
 		public override bool ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval, 
@@ -55,7 +61,10 @@ namespace Sq1.Core.Streaming {
 
 			ret = base.ConsumerQuoteSubscribe(symbol, scaleInterval, chartConsumer, quotePumpSeparatePushingThreadEnabled);
 			string msg2 = "SUBSCRIBED_CHART_QUOTES upstreamUnsubscribed[" + ret + "]";
-			Assembler.PopupException(msg2 + msig, null, false);
+
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete) {
+				Assembler.PopupException(msg2 + msig, null, false);
+			}
 
 			base.StreamingAdapter.StreamingDataSnapshot.Initialize_levelTwo_forSymbol(symbol);
 			return ret;
@@ -65,7 +74,10 @@ namespace Sq1.Core.Streaming {
 						string msig = " //ConsumerQuoteUnsubscribe(" + symbol + ":" + scaleInterval + " [" + chartConsumer + "])";
 			bool ret = base.ConsumerQuoteUnsubscribe(symbol, scaleInterval, chartConsumer);
 			string msg2 = "UNSUBSCRIBED_CHART_QUOTES upstreamUnsubscribed[" + ret + "]";
-			Assembler.PopupException(msg2 + msig, null, false);
+
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete) {
+				Assembler.PopupException(msg2 + msig, null, false);
+			}
 
 			base.StreamingAdapter.StreamingDataSnapshot.Initialize_levelTwo_forSymbol(symbol);
 

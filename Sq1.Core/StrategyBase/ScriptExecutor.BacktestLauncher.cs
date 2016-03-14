@@ -18,7 +18,7 @@ namespace Sq1.Core.StrategyBase {
 		DataSource	preDataSource;
 		//LEAVE_IT_AS_USER_SELECTED	bool		preBacktestIsStreaming;
 
-		internal void BacktestContextInitialize(Bars barsEmptyButWillGrow) {
+		internal void BacktestContext_initialize(Bars barsEmptyButWillGrow) {
 			string msig = " //BacktestContextInitialize(" + barsEmptyButWillGrow + ")";
 
 			DataSource dataSourceFromBars = this.DataSource_fromBars;
@@ -70,7 +70,7 @@ namespace Sq1.Core.StrategyBase {
 
 			this.EventGenerator.RaiseOnBacktesterSimulationContextInitialized_step2of4();
 		}
-		internal void BacktestContextRestore() {
+		internal void BacktestContext_restore() {
 			this.Bars = this.preBacktestBars;
 			string msig = " //BacktestContextRestore(" + this.Bars + ")";
 			foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
@@ -106,7 +106,7 @@ namespace Sq1.Core.StrategyBase {
 
 			this.EventGenerator.RaiseOnBacktesterContextRestoredAfterExecutingAllBars_step4of4(null);
 		}
-		public void BacktesterAbortIfRunning_restoreContext() {
+		public void Backtester_abortIfRunning_restoreContext() {
 			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) return;
 			// TODO INTRODUCE_NEW_MANUAL_RESET_SO_THAT_NEW_BACKTEST_WAITS_UNTIL_TERMINATION_OF_THIS_METHOD_TO_AVOID_BROKEN_DISTRIBUTION_CHANNELS
 			this.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted("USER_CHANGED_SELECTORS_IN_GUI_NEW_BACKTEST_IS_ALMOST_TASK.SCHEDULED");
@@ -215,7 +215,7 @@ namespace Sq1.Core.StrategyBase {
 			//inNewThread = false;
 			if (inNewThread) {
 				int ThreadPoolAvailablePercentageLimit = 20;
-				int threadPoolAvailablePercentage = this.getThreadPoolAvailablePercentage();
+				int threadPoolAvailablePercentage = this.getThreadPoolAvailable_percentage();
 				if (threadPoolAvailablePercentage < ThreadPoolAvailablePercentageLimit) {
 					string msg = "NOT_SCHEDULING_RUN_SIMULATION QueueUserWorkItem(backtesterRunSimulationThreadEntryPoint)"
 						+ " because threadPoolAvailablePercentage[" + threadPoolAvailablePercentage
@@ -259,22 +259,12 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 		}
-		int getThreadPoolAvailablePercentage() {
+		int getThreadPoolAvailable_percentage() {
 			int workerThreadsAvailable, completionPortThreadsAvailable = 0;
 			ThreadPool.GetAvailableThreads(out workerThreadsAvailable, out completionPortThreadsAvailable);
 			int workerThreadsMax, completionPortThreadsMax = 0;
 			ThreadPool.GetMaxThreads(out workerThreadsMax, out completionPortThreadsMax);
 			return (completionPortThreadsMax / completionPortThreadsAvailable) * 100;
 		}
-
-		//[Obsolete("REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014 replaced by Alert.PriceAligned,PriceStopActivationAligned - all served by SymbolInfo.AlignAlertToPriceLevelSimplified")]
-		//public double AlertPrice_alignToPriceLevel(Bars bars, double orderPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
-		//    if (this.Strategy.ScriptContextCurrent.NoDecimalRoundingForLimitStopPrice) return orderPrice;
-		//    if (bars == null) bars = this.Bars;
-		//    orderPrice = bars.SymbolInfo.Alert_alignToPriceLevel(orderPrice, buyOrShort, positionLongShort0, marketLimitStop0);
-		//    return orderPrice;
-		//}
-
-
 	}
 }

@@ -6,11 +6,11 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.Broker {
 	public partial class OrderProcessor {
-		public event EventHandler<OrdersListEventArgs>				OnOrderAddedExecutionFormNotification;
-		public event EventHandler<OrdersListEventArgs>				OnOrderRemovedExecutionFormNotification;
-		public event EventHandler<OrdersListEventArgs>				OnOrderStateChangedExecutionFormNotification;
-		public event EventHandler<OrderStateMessageEventArgs>		OnOrderMessageAddedExecutionFormNotification;
-		public event EventHandler<EventArgs>						OnDelaylessLivesimEndedShouldRebuildOLV;
+		public event EventHandler<OrdersListEventArgs>				OnAsyncOrderAdded_executionControlShouldRebuildOLV;
+		public event EventHandler<OrdersListEventArgs>				OnAsyncOrderRemoved_executionControlShouldRebuildOLV;
+		public event EventHandler<OrdersListEventArgs>				OnOrderStateOrPropertiesChanged_executionControlShouldPopulate;
+		public event EventHandler<OrderStateMessageEventArgs>		OnOrderMessageAdded_executionControlShouldPopulate;
+		public event EventHandler<EventArgs>						OnDelaylessLivesimEnded_shouldRebuildOLV;
 
 		//bool someAlertsDontHaveTimeToRebuildGui(List<Order> ordersAdded) {
 		//	bool shouldRebuild = false;
@@ -28,8 +28,8 @@ namespace Sq1.Core.Broker {
 		//	if (liveSimOrdersCount == 0) return true;
 		//	return shouldRebuild;
 		//}
-		public void RaiseAsyncOrderAddedExecutionFormShouldRebuildOLV(object sender, List<Order> ordersAdded) {
-			if (this.OnOrderAddedExecutionFormNotification == null) return;
+		public void RaiseAsyncOrderAdded_executionControlShouldRebuildOLV(object sender, List<Order> ordersAdded) {
+			if (this.OnAsyncOrderAdded_executionControlShouldRebuildOLV == null) return;
 
 			//bool shouldRebuild = someAlertsDontHaveTimeToRebuildGui(ordersAdded);
 			//if (shouldRebuild == false) {
@@ -40,7 +40,7 @@ namespace Sq1.Core.Broker {
 
 			#region EXPERIMENTAL
 			Task t = new Task(delegate {
-				this.OnOrderAddedExecutionFormNotification(sender, new OrdersListEventArgs(ordersAdded));
+				this.OnAsyncOrderAdded_executionControlShouldRebuildOLV(sender, new OrdersListEventArgs(ordersAdded));
 			});
 			t.ContinueWith(delegate {
 				string msg = "TASK_THREW_OrderEventDistributor.RaiseAsyncOrderAddedExecutionFormShouldRebuildTree()";
@@ -49,8 +49,8 @@ namespace Sq1.Core.Broker {
 			t.Start();		// WHO_DOES t.Dispose() ?
 			#endregion
 		}
-		public void RaiseAsyncOrderRemovedExecutionFormExecutionFormShouldRebuildOLV(object sender, List<Order> ordersToRemove) {
-			if (this.OnOrderRemovedExecutionFormNotification == null) return;
+		public void RaiseAsyncOrderRemoved_executionControlShouldRebuildOLV(object sender, List<Order> ordersToRemove) {
+			if (this.OnAsyncOrderRemoved_executionControlShouldRebuildOLV == null) return;
 			#region EXPERIMENTAL
 			List<Order> ordersStaleScreenedFromClearForNewThread = new List<Order>(ordersToRemove);
 			Task t = new Task(delegate {
@@ -58,7 +58,7 @@ namespace Sq1.Core.Broker {
 				// NO ordersToRemove = ordersStaleScreenedFromClearForNewThread;
 				//	string msg = "WILL_JUST_OrdersTreeOLV.RebuildAll(true)_IN_OrderRemoveFromListView() ordersToRemove already clear()ed before this task has started";
 				//}
-				this.OnOrderRemovedExecutionFormNotification(sender, new OrdersListEventArgs(ordersStaleScreenedFromClearForNewThread));
+				this.OnAsyncOrderRemoved_executionControlShouldRebuildOLV(sender, new OrdersListEventArgs(ordersStaleScreenedFromClearForNewThread));
 			});
 			t.ContinueWith(delegate {
 				string msg = "TASK_THREW_OrderEventDistributor.RaiseAsyncOrderAddedExecutionFormShouldRebuildTree()";
@@ -67,17 +67,17 @@ namespace Sq1.Core.Broker {
 			t.Start();		// WHO_DOES t.Dispose() ?
 			#endregion
 		}
-		public void RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(object sender, List<Order> ordersUpdated) {
-			if (this.OnOrderStateChangedExecutionFormNotification == null) return;
-			this.OnOrderStateChangedExecutionFormNotification(sender, new OrdersListEventArgs(ordersUpdated));
+		public void RaiseOrderStateOrPropertiesChanged_executionControlShouldPopulate(object sender, List<Order> ordersUpdated) {
+			if (this.OnOrderStateOrPropertiesChanged_executionControlShouldPopulate == null) return;
+			this.OnOrderStateOrPropertiesChanged_executionControlShouldPopulate(sender, new OrdersListEventArgs(ordersUpdated));
 		}
-		public void RaiseOrderMessageAddedExecutionFormNotification(object sender, OrderStateMessage orderStateMessage) {
-			if (this.OnOrderMessageAddedExecutionFormNotification == null) return;
-			this.OnOrderMessageAddedExecutionFormNotification(sender, new OrderStateMessageEventArgs(orderStateMessage));
+		public void RaiseOrderMessageAdded_executionControlShouldPopulate(object sender, OrderStateMessage orderStateMessage) {
+			if (this.OnOrderMessageAdded_executionControlShouldPopulate == null) return;
+			this.OnOrderMessageAdded_executionControlShouldPopulate(sender, new OrderStateMessageEventArgs(orderStateMessage));
 		}
-		public void RaiseDelaylessLivesimEndedShouldRebuildOLV(object sender) {
-			if (this.OnDelaylessLivesimEndedShouldRebuildOLV == null) return;
-			this.OnDelaylessLivesimEndedShouldRebuildOLV(sender, null);
+		public void RaiseDelaylessLivesimEnded_shouldRebuildOLV(object sender) {
+			if (this.OnDelaylessLivesimEnded_shouldRebuildOLV == null) return;
+			this.OnDelaylessLivesimEnded_shouldRebuildOLV(sender, null);
 		}
 	}
 }

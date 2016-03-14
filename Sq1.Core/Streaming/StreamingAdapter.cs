@@ -35,12 +35,12 @@ namespace Sq1.Core.Streaming {
 			get { return this.upstreamConnectionState; }
 			protected set {
 				if (this.upstreamConnectionState == value) return;	//don't invoke StateChanged if it didn't change
-				if (this.upstreamConnectionState == ConnectionState.UpstreamConnected_downstreamSubscribedAll
-								&& value == ConnectionState.JustInitialized_solidifiersUnsubscribed) {
+				if (this.upstreamConnectionState == ConnectionState.Streaming_UpstreamConnected_downstreamSubscribedAll
+								&& value == ConnectionState.Streaming_JustInitialized_solidifiersUnsubscribed) {
 					Assembler.PopupException("YOU_ARE_RESETTING_ORIGINAL_STREAMING_STATE__FROM_OWN_LIVESIM_STREAMING", null, false);
 				}
-				if (this.upstreamConnectionState == ConnectionState.UpstreamConnected_downstreamUnsubscribed
-								&& value == ConnectionState.JustInitialized_solidifiersSubscribed) {
+				if (this.upstreamConnectionState == ConnectionState.Streaming_UpstreamConnected_downstreamUnsubscribed
+								&& value == ConnectionState.Streaming_JustInitialized_solidifiersSubscribed) {
 					Assembler.PopupException("WHAT_DID_YOU_INITIALIZE? IT_WAS_ALREADY_INITIALIZED_AND_UPSTREAM_CONNECTED", null, false);
 				}
 				this.upstreamConnectionState = value;
@@ -48,7 +48,7 @@ namespace Sq1.Core.Streaming {
 
 				try {
 					if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
-					if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+					if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 					if (this.UpstreamConnectedOnAppRestart == this.UpstreamConnected) return;
 					this.UpstreamConnectedOnAppRestart = this.UpstreamConnected;		// you can override this.UpstreamConnectedOnAppRestart and keep it FALSE to avoid DS serialization
 					if (this.DataSource == null) {
@@ -68,17 +68,17 @@ namespace Sq1.Core.Streaming {
 			bool ret = false;
 			switch (this.UpstreamConnectionState) {
 				case ConnectionState.UnknownConnectionState:							ret = false;	break;
-				case ConnectionState.JustInitialized_solidifiersUnsubscribed:			ret = false;	break;
-				case ConnectionState.JustInitialized_solidifiersSubscribed:				ret = false;	break;
-				case ConnectionState.DisconnectedJustConstructed:						ret = false;	break;
+				case ConnectionState.Streaming_JustInitialized_solidifiersUnsubscribed:			ret = false;	break;
+				case ConnectionState.Streaming_JustInitialized_solidifiersSubscribed:				ret = false;	break;
+				case ConnectionState.Streaming_DisconnectedJustConstructed:						ret = false;	break;
 
 				// used in QuikStreamingAdapter
-				case ConnectionState.UpstreamConnected_downstreamUnsubscribed:			ret = true;		break;
-				case ConnectionState.UpstreamConnected_downstreamSubscribed:			ret = true;		break;
-				case ConnectionState.UpstreamConnected_downstreamSubscribedAll:			ret = true;		break;
-				case ConnectionState.UpstreamConnected_downstreamUnsubscribedAll:		ret = true;		break;
-				case ConnectionState.UpstreamDisconnected_downstreamSubscribed:			ret = false;	break;
-				case ConnectionState.UpstreamDisconnected_downstreamUnsubscribed:		ret = false;	break;
+				case ConnectionState.Streaming_UpstreamConnected_downstreamUnsubscribed:			ret = true;		break;
+				case ConnectionState.Streaming_UpstreamConnected_downstreamSubscribed:			ret = true;		break;
+				case ConnectionState.Streaming_UpstreamConnected_downstreamSubscribedAll:			ret = true;		break;
+				case ConnectionState.Streaming_UpstreamConnected_downstreamUnsubscribedAll:		ret = true;		break;
+				case ConnectionState.Streaming_UpstreamDisconnected_downstreamSubscribed:			ret = false;	break;
+				case ConnectionState.Streaming_UpstreamDisconnected_downstreamUnsubscribed:		ret = false;	break;
 
 				// used in QuikBrokerAdapter
 				//case ConnectionState.SymbolSubscribed:					ret = true;		break;
@@ -86,8 +86,8 @@ namespace Sq1.Core.Streaming {
 				//case ConnectionState.ErrorConnectingNoRetriesAnymore:	ret = false;	break;
 
 				// used in QuikLivesimStreaming
-				case ConnectionState.ConnectFailed:						ret = false;	break;
-				case ConnectionState.DisconnectFailed:					ret = false;	break;		// can still be connected but by saying NotConnected I prevent other attempt to subscribe symbols; use "Connect" button to resolve
+				case ConnectionState.FailedToConnect:						ret = false;	break;
+				case ConnectionState.FailedToDisconnect:					ret = false;	break;		// can still be connected but by saying NotConnected I prevent other attempt to subscribe symbols; use "Connect" button to resolve
 
 				default:
 					Assembler.PopupException("ADD_HANDLER_FOR_NEW_ENUM_VALUE this.ConnectionState[" + this.UpstreamConnectionState + "]");
@@ -131,18 +131,18 @@ namespace Sq1.Core.Streaming {
 		public virtual void InitializeFromDataSource(DataSource dataSource) {
 			this.DataSource = dataSource;
 			this.StreamingDataSnapshot.Initialize_levelTwo_forAllSymbolsInDataSource(this.DataSource.Symbols);
-			this.UpstreamConnectionState = ConnectionState.JustInitialized_solidifiersUnsubscribed;
+			this.UpstreamConnectionState = ConnectionState.Streaming_JustInitialized_solidifiersUnsubscribed;
 		}
 		protected virtual void SolidifierAllSymbolsSubscribe_onAppRestart() {
 			string msg = "SUBSCRIBING_SOLIDIFIER_APPRESTART " + this.DataSource.Name;
-			Assembler.PopupException(msg, null, false);
+			//Assembler.PopupException(msg, null, false);
 
 			this.CreateDataDistributors_onlyWhenNecessary(this.ReasonToExist);
 			this.StreamingSolidifier.Initialize(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
 				this.solidifierSubscribeOneSymbol(symbol);
 			}
-			this.UpstreamConnectionState = ConnectionState.JustInitialized_solidifiersSubscribed;
+			this.UpstreamConnectionState = ConnectionState.Streaming_JustInitialized_solidifiersSubscribed;
 		}
 
 		//public void SolidifierSubscribeOneSymbol_iFinishedLivesimming(string symbol = null) {

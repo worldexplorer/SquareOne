@@ -12,7 +12,7 @@ namespace Sq1.Core.Repositories {
 
 
 		public void SerializeSingle(SequencedBacktests backtests) {
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			if (backtests.ProfitFactorAverage == 0) {
 				backtests.CalculateProfitFactorAverage();
 			}

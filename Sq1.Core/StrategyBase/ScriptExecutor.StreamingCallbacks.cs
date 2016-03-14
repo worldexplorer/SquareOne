@@ -123,7 +123,7 @@ namespace Sq1.Core.StrategyBase {
 							//Assembler.PopupException(msg3, null, false);
 						}
 					}
-					ordersEmitted = this.OrderProcessor.CreateOrders_submitToBrokerAdapter_inNewThreads(alertsNewAfterExec_safeCopy
+					ordersEmitted = this.OrderProcessor.CreateOrders_submitToBrokerAdapter_eachInNewThread(alertsNewAfterExec_safeCopy
 						, true // setStatusSubmitting
 						, true);
 					//MOVED_TO_ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()

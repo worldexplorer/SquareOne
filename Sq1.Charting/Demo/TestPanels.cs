@@ -15,7 +15,7 @@ namespace Sq1.Charting.Demo {
 			ExceptionsForm exceptionsForm = new ExceptionsForm();
 			exceptionsForm.Show();
 			Assembler.InstanceUninitialized.Initialize(exceptionsForm, true);
-			Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
+			Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete = true;
 			//exceptionsForm.ExceptionControl.FlushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 
 

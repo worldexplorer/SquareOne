@@ -32,13 +32,13 @@ namespace Sq1.Core.Repositories {
 			if (this.childrenDebug_DllNameMatches(dllAbsPath) == false) return;
 			this.Invoke_ChildrenDebug_TypeAdded(dllAbsPath, typeFound);
 		}
-		protected void Invoke_ChildrenDebug_CloneableInstanceForAssemblyAdded(string dllAbsPath, T classCastedInstance) {
+		protected void Invoke_ChildrenDebug_InstantiableInstanceForAssemblyAdded(string dllAbsPath, T classCastedInstance) {
 			if (this.childrenDebug_DllNameMatches(dllAbsPath) == false) return;
-			this.ChildrenDebug_CloneableInstanceForAssemblyAdded(classCastedInstance);
+			this.ChildrenDebug_InstantiableInstanceForAssemblyAdded(classCastedInstance);
 		}
-		protected void Invoke_ChildrenDebug_CloneableInstanceByClassNameAdded(string dllAbsPath, string className, T classCastedInstance) {
+		protected void Invoke_ChildrenDebug_InstantiableInstanceByClassNameAdded(string dllAbsPath, string className, T classCastedInstance) {
 			if (this.childrenDebug_DllNameMatches(dllAbsPath) == false) return;
-			this.ChildrenDebug_CloneableInstanceByClassNameAdded(className, classCastedInstance);
+			this.ChildrenDebug_InstantiableInstanceByClassNameAdded(className, classCastedInstance);
 		}
 
 
@@ -58,10 +58,10 @@ namespace Sq1.Core.Repositories {
 		protected virtual void ChildrenDebug_TypeAdded(Type typeFound) {
 			string msg = "breakpoint_here";
 		}
-		protected virtual void ChildrenDebug_CloneableInstanceForAssemblyAdded(T classCastedInstance) {
+		protected virtual void ChildrenDebug_InstantiableInstanceForAssemblyAdded(T classCastedInstance) {
 			string msg = "breakpoint_here";
 		}
-		protected virtual void ChildrenDebug_CloneableInstanceByClassNameAdded(string className, T classCastedInstance) {
+		protected virtual void ChildrenDebug_InstantiableInstanceByClassNameAdded(string className, T classCastedInstance) {
 			string msg = "breakpoint_here";
 		}
 		

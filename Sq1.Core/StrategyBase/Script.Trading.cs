@@ -67,31 +67,9 @@ namespace Sq1.Core.StrategyBase {
 				return this.CoverAtStop(bar, position, price, signalName);
 			}
 		}
-		
-		#region *AtClose: NYI
-//		public Position BuyAtClose(Bar bar, string signalName = "BOUGHT_AT_CLOSE") {
-//			return this.Executor.BuyOrShortAlertCreateRegister(bar, 0, signalName, Direction.Buy, MarketLimitStop.AtClose);
-//		}
-//		public Alert CoverAtClose(Bar bar, Position position, string signalName = "COVERED_AT_CLOSE") {
-//			return this.Executor.SellOrCoverAlertCreateRegister(bar, position, 0, signalName, Direction.Cover, MarketLimitStop.AtClose);
-//		}
-//		public Alert SellAtClose(Bar bar, Position position, string signalName = "SOLD_AT_CLOSE") {
-//			return this.Executor.SellOrCoverAlertCreateRegister(bar, position, 0, signalName, Direction.Sell, MarketLimitStop.AtClose);
-//		}
-//		public Position ShortAtClose(Bar bar, string signalName = "SHORTED_AT_CLOSE") {
-//			return this.Executor.BuyOrShortAlertCreateRegister(bar, 0, signalName, Direction.Short, MarketLimitStop.AtClose);
-//		}
-//		public Alert ExitAtClose(Bar bar, Position position, string signalName = "EXITED_AT_CLOSE") {
-//			if (position.PositionLongShort == PositionLongShort.Long) {
-//				return this.SellAtClose(bar, position, signalName);
-//			} else {
-//				return this.CoverAtClose(bar, position, signalName);
-//			}
-//		}
-		#endregion
 
 		#region Kill pending alert
-		public void AlertKillPending(Alert alert) {
+		public void AlertPending_kill(Alert alert) {
 			this.Executor.AlertPending_kill(alert);
 		}
 
@@ -116,22 +94,22 @@ namespace Sq1.Core.StrategyBase {
 			}
 			if (string.IsNullOrEmpty(signalName)) signalName = "PositionCloseImmediately()";
 			if (position.Prototype != null) {
-				alertsSubmittedToKill = this.PositionPrototypeKillWhateverIsPending(position.Prototype, signalName);
+				alertsSubmittedToKill = this.PositionPrototype_killWhateverIsPending(position.Prototype, signalName);
 				return alertsSubmittedToKill;
 			}
-			this.AlertKillPending(position.ExitAlert);
+			this.AlertPending_kill(position.ExitAlert);
 			alertsSubmittedToKill.Add(position.ExitAlert);
 			return alertsSubmittedToKill;
 		}
 		
-		public List<Alert> PositionPrototypeKillWhateverIsPending(PositionPrototype proto, string signalName) {
+		public List<Alert> PositionPrototype_killWhateverIsPending(PositionPrototype proto, string signalName) {
 			List<Alert> alertsSubmittedToKill = new List<Alert>();
 			if (proto.StopLossAlert_forMoveAndAnnihilation != null) {
-				this.AlertKillPending(proto.StopLossAlert_forMoveAndAnnihilation);
+				this.AlertPending_kill(proto.StopLossAlert_forMoveAndAnnihilation);
 				alertsSubmittedToKill.Add(proto.StopLossAlert_forMoveAndAnnihilation);
 			}
 			if (proto.TakeProfitAlert_forMoveAndAnnihilation != null) {
-				this.AlertKillPending(proto.TakeProfitAlert_forMoveAndAnnihilation);
+				this.AlertPending_kill(proto.TakeProfitAlert_forMoveAndAnnihilation);
 				alertsSubmittedToKill.Add(proto.TakeProfitAlert_forMoveAndAnnihilation);
 			}
 			return alertsSubmittedToKill;

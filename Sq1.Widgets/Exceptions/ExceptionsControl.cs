@@ -78,7 +78,7 @@ namespace Sq1.Widgets.Exceptions {
 		}
 		public void PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized_invokeMeFromGuiThreadOnly() {
 			string msig = " //PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized()";
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
 				string msg = "CHOOSE_ANOTHER_INVOCATION_SPOT__AFTER_MAIN_FORM_FULLY_DESERIALIZED";
 				Assembler.PopupException(msg);
 				return;
@@ -208,7 +208,7 @@ namespace Sq1.Widgets.Exceptions {
 			if (base.DesignMode) return;
 			if (Assembler.IsInitialized == false) return; //I_HATE_LIVESIM_FORM_THROWING_EXCEPTIONS_IN_DESIGN_MODE
 			// WINDOWS.FORMS.VISIBLE=FALSE_IS_SET_BY_DOCK_CONTENT_LUO ANALYZE_DockContentImproved.IsShown_INSTEAD if (this.Visible == false) return;
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 
 			if (this.InvokeRequired) {
 				this.BeginInvoke((MethodInvoker)delegate() { this.flushExceptionsToOLV_switchToGuiThread(); });

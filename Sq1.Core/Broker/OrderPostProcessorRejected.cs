@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 
 using Sq1.Core.Execution;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Broker {
 	public class OrderPostProcessorRejected {
@@ -29,14 +30,14 @@ namespace Sq1.Core.Broker {
 		public void ReplaceRejectedOrder(Order rejectedOrderToReplace) {
 			if (rejectedOrderToReplace.State != OrderState.Rejected) {
 				string msg = "will not ReplaceRejectedOrder(" + rejectedOrderToReplace + ") which is not Rejected; continuing";
-				this.orderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendOrderMessage_propagateToGui(rejectedOrderToReplace, msg);
 				Assembler.PopupException(msg);
 				return;
 			}
 			if (rejectedOrderToReplace.Alert.Bars.SymbolInfo.ReSubmitRejected == false) {
 				string msg = "SymbolInfo[" + rejectedOrderToReplace.Alert.Symbol + "/" + rejectedOrderToReplace.Alert.SymbolClass + "].ReSubmitRejected==false"
 					+ " will not ReplaceRejectedOrder(" + rejectedOrderToReplace + "); continuing";
-				this.orderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendOrderMessage_propagateToGui(rejectedOrderToReplace, msg);
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -66,15 +67,15 @@ namespace Sq1.Core.Broker {
 			}
 			string msg_replacement = "This is a replacement for order["
 				+ replacement.ReplacementForGUID + "]; SlippageIndex[" + replacement.SlippageIndex + "]";
-			this.orderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(replacement, msg_replacement);
+			this.orderProcessor.AppendOrderMessage_propagateToGui(replacement, msg_replacement);
 
 			if (replacement.noMoreSlippagesAvailable) {
 				AddMessageNoMoreSlippagesAvailable(replacement);
 				//return;
 			}
 
-			double slippage = replacement.Alert.Bars.SymbolInfo.getSlippage(
-				priceScript, replacement.Alert.Direction, replacement.SlippageIndex, false, false);
+			double slippage = replacement.Alert.Bars.SymbolInfo.GetSlippage_signAware_forLimitOrdersOnly(
+				priceScript, replacement.Alert.Direction, replacement.Alert.MarketOrderAs, replacement.SlippageIndex);
 			replacement.SlippageFill = slippage;
 			replacement.PriceRequested = priceScript + slippage;
 			this.SubmitReplacementOrder_insteadOfRejected(replacement);
@@ -87,7 +88,7 @@ namespace Sq1.Core.Broker {
 			Order replacement = this.findReplacementOrder_forRejectedOrder(rejectedOrderToReplace);
 			if (replacement != null) {
 				string msg = "Rejected[" + rejectedOrderToReplace + "] already has a replacement[" + replacement + "] with State[" + replacement.State + "]; ignored rejection duplicates from broker";
-				this.orderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendOrderMessage_propagateToGui(rejectedOrderToReplace, msg);
 				return null;
 			}
 			//DateTime todayDate = DateTime.Now.Date;
@@ -102,7 +103,7 @@ namespace Sq1.Core.Broker {
 			}
 			Order replacementOrder = rejectedOrderToReplace.DeriveReplacementOrder();
 			this.orderProcessor.DataSnapshot.OrderInsert_notifyGuiAsync(replacementOrder);
-			this.orderProcessor.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>(){rejectedOrderToReplace});
+			this.orderProcessor.RaiseOrderStateOrPropertiesChanged_executionControlShouldPopulate(this, new List<Order>(){rejectedOrderToReplace});
 			//this.orderProcessor.RaiseOrderReplacementOrKillerCreatedForVictim(this, rejectedOrderToReplace);
 			return replacementOrder;
 		}
@@ -130,7 +131,7 @@ namespace Sq1.Core.Broker {
 			string msg = "Scheduling SubmitOrdersThreadEntry [" + replacementOrder.ToString() + "] slippageIndex["
 				+ replacementOrder.SlippageIndex + "] through [" + replacementOrder.Alert.DataSource.BrokerAdapter + "]";
 			OrderStateMessage newOrderState = new OrderStateMessage(replacementOrder, OrderState.PreSubmit, msg);
-			this.orderProcessor.UpdateOrderState_postProcess(replacementOrder, newOrderState);
+			this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
 
 			//this.BrokerAdapter.SubmitOrdersThreadEntry(ordersFromAlerts);
 			//ThreadPool.QueueUserWorkItem(new WaitCallback(replacementOrder.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
@@ -142,14 +143,15 @@ namespace Sq1.Core.Broker {
 			//this.orderProcessor.UpdateActiveOrdersCountEvent();
 		}
 		public void AddMessageNoMoreSlippagesAvailable(Order order) {
-			int slippageIndexMax = order.Alert.Bars.SymbolInfo.getSlippageIndexMax(order.Alert.Direction);
+			SymbolInfo symbolInfo = order.Alert.Bars.SymbolInfo;
+			int slippageIndexMax = symbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(order.Alert);
 			string msg2 = "Reached max slippages available for [" + order.Alert.Bars.Symbol + "]"
 				+ " order.SlippageIndex[" + order.SlippageIndex + "] > slippageIndexMax[" + slippageIndexMax + "]"
 				+ "; Order will have slippageIndexMax[" + slippageIndexMax + "]"; 
 			Assembler.PopupException(msg2);
 			//orderProcessor.updateOrderStatusError(orderExecuted, OrderState.RejectedLimitReached, msg2);
 			OrderStateMessage newOrderStateRejected = new OrderStateMessage(order, OrderState.RejectedLimitReached, msg2);
-			this.orderProcessor.UpdateOrderState_postProcess(order, newOrderStateRejected);
+			this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderStateRejected);
 		}
 	}
 }
