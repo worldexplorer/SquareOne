@@ -41,9 +41,9 @@ namespace Sq1.Adapters.Quik.Broker {
 		}
 		[JsonProperty]	public	bool				GoRealDontUseOwnLivesim	{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
 
-		[JsonIgnore]	public	bool				IsConnectedToTerminal	{ get { return this.QuikDllConnector != null && this.QuikDllConnector.DllConnected; } }
+		[JsonIgnore]	public	bool				CanSendToTerminal	{ get { return this.QuikDllConnector != null && this.QuikDllConnector.CanSend; } }
 		[JsonIgnore]	public	string				DllConnectionStatus_oppositeAction { get {
-			return this.IsConnectedToTerminal ? "Disconnect from DLL (now connected)" : "Connect to DLL (now disconnected)";
+			return this.CanSendToTerminal ? "Disconnect from QUIK (now connected)" : "Connect to QUIK via DLL (now disconnected)";
 			} }
 
 		[JsonIgnore]	private	int					identicalConnection_statesReported = 0;
@@ -91,7 +91,7 @@ namespace Sq1.Adapters.Quik.Broker {
 				if (qtyFill > 0 && qtyFill != order.QtyRequested) {
 					filled = "PARTIAL_FILL_OF[" + order.QtyRequested + "]";
 				}
-				filled += order.Alert.MarketLimitStopAsString;
+				filled += " " + order.Alert.MarketLimitStopAsString;
 				string msg = filled + " [" + qtyFill + "]@[" + priceFill + "]"
 					+ " " + secCode + "/" + classCode
 					+ " tradeDate[" + tradeDate + "]"
@@ -129,7 +129,7 @@ namespace Sq1.Adapters.Quik.Broker {
 
 				OrderState statusChanged_onlyIfFilled = fillHappened ? OrderState.Filled : order.State;
 				OrderStateMessage sameStateOmsg = new OrderStateMessage(order, statusChanged_onlyIfFilled, msg);
-				this.OrderProcessor.UpdateOrderState_postProcess(order, sameStateOmsg, priceFill, qtyFill);
+				this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(sameStateOmsg, priceFill, qtyFill);
 			} catch (Exception exc) {
 				string msg = "THROWN_SOMEWHERE_SORRY_IN_CallbackTradeStateReceivedQuik";
 				Assembler.PopupException(msg + msig, exc);
@@ -137,7 +137,7 @@ namespace Sq1.Adapters.Quik.Broker {
 		}
 
 		public void OrderState_callbackFromQuikDll(OrderState newOrderStateReceived, string GUID, long SernoExchange,
-												string classCode, string secCode, double fillPrice, int fillQnty) {
+												string classCode, string secCode, double priceFill, int qtyFill) {
 			string msig = " //" + Name + "::OrderState_callbackFromQuikDll()";
 
 			Order order = base.ScanEvidentLanes_forGuid_nullUnsafe(GUID);
@@ -146,9 +146,9 @@ namespace Sq1.Adapters.Quik.Broker {
 				return;
 			}
 
-			string filled = fillQnty == 0 ? "NOT_FILLED" : "FILLED";
-			if (fillQnty > 0) {
-				if (fillQnty != order.QtyRequested) {
+			string filled = qtyFill == 0 ? "NOT_FILLED" : "FILLED";
+			if (qtyFill > 0) {
+				if (qtyFill != order.QtyRequested) {
 					filled = "PARTIAL_FILL_OF[" + order.QtyRequested + "]";
 					if (newOrderStateReceived != OrderState.FilledPartially) {
 						filled = "WRONG_STATE[" + newOrderStateReceived + "] " + filled;
@@ -159,9 +159,9 @@ namespace Sq1.Adapters.Quik.Broker {
 					}
 				}
 			}
-			filled += order.Alert.MarketLimitStopAsString;
+			filled += " " + order.Alert.MarketLimitStopAsString;
 
-			string msg = filled + " [" + fillQnty + "]@[" + fillPrice + "]"
+			string msg = filled + " [" + qtyFill + "]@[" + priceFill + "]"
 				+ " " + secCode + "/" + classCode
 				+ " [" + newOrderStateReceived + "]"
 				+ " sernoExchange[" + SernoExchange + "] GUID=[" + GUID + "]";
@@ -171,47 +171,31 @@ namespace Sq1.Adapters.Quik.Broker {
 			}
 
 			if (newOrderStateReceived == OrderState.KillerDone || newOrderStateReceived == OrderState.Rejected) {
-				if (fillPrice != 0) {
-					string msg1 = "QUIK_HINTS_ON_SOMETHING fillPrice[" + fillPrice + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
-					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msg1);
-					fillPrice = 0;
+				if (priceFill != 0) {
+					string msg1 = "QUIK_HINTS_ON_SOMETHING fillPrice[" + priceFill + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
+					this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msg1);
+					priceFill = 0;
 				}
-				if (fillQnty != 0) {
-					string msg1 = "QUIK_HINTS_ON_SOMETHING fillQnty[" + fillPrice + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
-					this.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(order, msg1);
-					fillQnty = 0;
+				if (qtyFill != 0) {
+					string msg1 = "QUIK_HINTS_ON_SOMETHING fillQnty[" + priceFill + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
+					this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msg1);
+					qtyFill = 0;
 				}
 			}
 
 			if (newOrderStateReceived == OrderState.FilledPartially || newOrderStateReceived == OrderState.Filled) {
 				OrderStateMessage omsg1 = new OrderStateMessage(order, newOrderStateReceived, "LIMIT_ORDER_FILLED " + msg);
-				this.OrderProcessor.UpdateOrderState_postProcess(order, omsg1, fillPrice, fillQnty);
+				this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg1, priceFill, qtyFill);
 			} else {
 				OrderStateMessage omsg = new OrderStateMessage(order, newOrderStateReceived, msg);
-				base.OrderProcessor.UpdateOrderState_dontPostProcess(order, omsg);
+				base.OrderProcessor.Order_updateState_mustBeTheSame_dontPostProcess(omsg);
 			}
 		}
 
 
 		public void ConnectionStateUpdated_callbackFromQuikDll(ConnectionState state, string message) {
-			if (this.UpstreamConnectionState == ConnectionState.UnknownConnectionState) {
-				this.UpstreamConnectionState = state;
-			}
-			if (this.UpstreamConnectionState != state) {
-				this.UpstreamConnectionState = state;
-				identicalConnection_statesReported = 0;
-			}
-			identicalConnection_statesReported++;
-			if (identicalConnection_statesReported > identicalConnection_statesReported_limit) {
-				return;
-			}
-			//if (state != ConnectionState.UpstreamConnected_downstreamSubscribed) {
-			//    string msig = " //" + Name + "::ConnectionStateUpdated_callbackFromQuikDll(): state=[" + state + "]"
-			//        + " mustBe[" + ConnectionState.UpstreamConnected_downstreamSubscribed + "] message=[" + message + "]";
-			//    Assembler.PopupException(message + msig);
-			//}
-			string msg = state + " " + message;
-			Assembler.DisplayConnectionStatus(state, msg);
+			this.UpstreamConnectionState = state;
+			Assembler.DisplayConnectionStatus(state, message);
 		}
 		public override string ModifyOrderType_accordingToMarketOrder_asBrokerSpecificInjection(Order order) {
 			string msg = "";
@@ -219,7 +203,7 @@ namespace Sq1.Adapters.Quik.Broker {
 				msg = "ORDER_MARKED_INCONSISTENT__order.Alert.QuoteCreatedThisAlert=null SymbolInfo["
 					 + order.Alert.Symbol + "/" + order.Alert.SymbolClass + "]";
 				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-				base.OrderProcessor.UpdateOrderState_postProcess(order, newOrderState);
+				base.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
 				throw new Exception(msg);
 			}
 			QuoteQuik quikQuote = order.Alert.QuoteCreatedThisAlert as QuoteQuik;
@@ -237,7 +221,7 @@ namespace Sq1.Adapters.Quik.Broker {
 								+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
 								+ " (Slippage=" + order.SlippageFill + ")";
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-							this.OrderProcessor.UpdateOrderState_postProcess(order, newOrderState);
+							this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
 							#if DEBUG
 							Debugger.Break();
 							#endif
@@ -256,7 +240,7 @@ namespace Sq1.Adapters.Quik.Broker {
 								+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
 								+ " (Slippage=" + order.SlippageFill + ")";
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-							this.OrderProcessor.UpdateOrderState_postProcess(order, newOrderState);
+							this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
 							#if DEBUG
 							Debugger.Break();
 							#endif

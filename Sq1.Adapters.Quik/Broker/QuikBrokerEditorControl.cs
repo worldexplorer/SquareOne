@@ -129,6 +129,14 @@ namespace Sq1.Adapters.Quik.Broker {
 				}
 			}
 	
+			this.lblConnectionStatus.Text = this.quikBrokerAdapter.UpstreamConnectionState.ToString();
+			if (this.quikBrokerAdapter.UpstreamConnected == false) {
+				this.lblConnectionStatus.Text += "; see ExceptionsForm";
+				this.lblConnectionStatus.ForeColor = Color.Red;
+			} else {
+				this.lblConnectionStatus.ForeColor = Color.Green;
+			}
+
 			string btnTxtMustBe = this.quikBrokerAdapter.DllConnectionStatus_oppositeAction;
 			if (this.cbxConnectDLL.Text == btnTxtMustBe) return;
 				this.cbxConnectDLL.Text  = btnTxtMustBe;

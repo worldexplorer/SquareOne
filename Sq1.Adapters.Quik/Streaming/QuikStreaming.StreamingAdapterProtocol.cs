@@ -58,7 +58,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			string symbolsSubscribed = this.upstreamSubscribeAllDataSourceSymbols();
 			this.DdeServerRegister();	// ConnectionState.UpstreamConnected_downstreamUnsubscribed;		// will result in StreamingConnected=true
 			this.DdeBatchSubscriber.AllDdeMessagesReceivedCounter_reset();
-			this.UpstreamConnectionState = ConnectionState.UpstreamConnected_downstreamSubscribedAll;
+			this.UpstreamConnectionState = ConnectionState.Streaming_UpstreamConnected_downstreamSubscribedAll;
 			Assembler.DisplayConnectionStatus(base.UpstreamConnectionState, this.Name + " started DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
 		} }
 		public override void UpstreamDisconnect() { lock (base.SymbolsSubscribedLock) {
@@ -67,7 +67,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 				Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]", null, false);
 			}
 			string symbolsUnsubscribed = this.upstreamUnsubscribeAllDataSourceSymbols();
-			this.UpstreamConnectionState = ConnectionState.UpstreamConnected_downstreamUnsubscribedAll;
+			this.UpstreamConnectionState = ConnectionState.Streaming_UpstreamConnected_downstreamUnsubscribedAll;
 			Assembler.DisplayConnectionStatus(base.UpstreamConnectionState, this.Name + " symbolsUnsubscribedAll[" + symbolsUnsubscribed + "]");
 			this.DdeServerUnregister();
 			// MOVED_TO_CTOR_TO_AVOID_NPE_IN_MONITOR this.DdeBatchSubscriber.Tables_CommonForAllSymbols_Add();
@@ -88,8 +88,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// NO_SERVER_ISNOT_STARTED_HERE_YET NB adding another DdeConversation into the registered DDE server - is NDDE capable of registering receiving topics on-the-fly?
 			this.DdeBatchSubscriber.TableIndividual_DepthOfMarket_ForSymbolAdd(symbol);
 			this.UpstreamConnectionState = this.UpstreamConnected
-				?	ConnectionState.UpstreamConnected_downstreamSubscribed
-				: ConnectionState.UpstreamDisconnected_downstreamSubscribed;
+				?	ConnectionState.Streaming_UpstreamConnected_downstreamSubscribed
+				: ConnectionState.Streaming_UpstreamDisconnected_downstreamSubscribed;
 		} }
 		public override void UpstreamUnSubscribe(string symbol) { lock (base.SymbolsSubscribedLock) {
 			if (string.IsNullOrEmpty(symbol)) {
@@ -103,8 +103,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 			}
 			this.DdeBatchSubscriber.TableIndividual_DepthOfMarket_ForSymbolRemove(symbol);
 			this.UpstreamConnectionState = this.UpstreamConnected
-				?	ConnectionState.UpstreamConnected_downstreamUnsubscribed
-				: ConnectionState.UpstreamDisconnected_downstreamUnsubscribed;
+				?	ConnectionState.Streaming_UpstreamConnected_downstreamUnsubscribed
+				: ConnectionState.Streaming_UpstreamDisconnected_downstreamUnsubscribed;
 		} }
 		public override bool UpstreamIsSubscribed(string symbol) { lock (base.SymbolsSubscribedLock) {
 			if (String.IsNullOrEmpty(symbol)) {

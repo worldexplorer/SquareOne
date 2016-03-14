@@ -88,7 +88,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.DdeMonitorRefreshRateMs	= 200;
 			this.DdeMonitorPopupOnRestart	= false;
 			base.StreamingDataSnapshot		= new QuikStreamingDataSnapshot(this);
-			this.UpstreamConnectionState	= ConnectionState.DisconnectedJustConstructed;
+			this.UpstreamConnectionState	= ConnectionState.Streaming_DisconnectedJustConstructed;
 		}
 
 		public void DdeServerRegister() {
@@ -107,11 +107,11 @@ namespace Sq1.Adapters.Quik.Streaming {
 
 			try {
 				this.DdeServer.Register();
-				base.UpstreamConnectionState = ConnectionState.UpstreamConnected_downstreamUnsubscribed;		// will result in StreamingConnected=true
+				base.UpstreamConnectionState = ConnectionState.Streaming_UpstreamConnected_downstreamUnsubscribed;		// will result in StreamingConnected=true
 				string msg = "DDE_SERVER_STARTED " + this.ToString();
 				Assembler.PopupException(msg, null, false);
 			} catch (Exception ex) {
-				this.UpstreamConnectionState = ConnectionState.ConnectFailed;
+				this.UpstreamConnectionState = ConnectionState.FailedToConnect;
 				Assembler.PopupException("DDE_SERVER_REGISTRATION_FAILED " + this.ToString(), ex);
 				return;
 			}
@@ -129,9 +129,9 @@ namespace Sq1.Adapters.Quik.Streaming {
 				this.DdeServer.Unregister();
 				//NO_I_WILL_RESTART_IT this.DdeServer.Dispose();
 				//NO_I_WILL_RESTART_IT this.ddeServer = null;
-				base.UpstreamConnectionState = ConnectionState.UpstreamDisconnected_downstreamUnsubscribed;
+				base.UpstreamConnectionState = ConnectionState.Streaming_UpstreamDisconnected_downstreamUnsubscribed;
 			} catch (Exception ex) {
-				this.UpstreamConnectionState = ConnectionState.DisconnectFailed;
+				this.UpstreamConnectionState = ConnectionState.FailedToDisconnect;
 				Assembler.PopupException("DDE_SERVER_STOPPING_ERROR " + this.ToString(), ex);
 				return;
 			}

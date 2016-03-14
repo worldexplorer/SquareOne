@@ -60,6 +60,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// 
 			// txtDdeTopicQuotes
 			// 
+			this.txtDdeTopicQuotes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtDdeTopicQuotes.Location = new System.Drawing.Point(102, 22);
 			this.txtDdeTopicQuotes.Name = "txtDdeTopicQuotes";
 			this.txtDdeTopicQuotes.Size = new System.Drawing.Size(108, 20);
@@ -85,6 +87,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// 
 			// txtDdeTopicTrades
 			// 
+			this.txtDdeTopicTrades.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtDdeTopicTrades.Location = new System.Drawing.Point(102, 100);
 			this.txtDdeTopicTrades.Name = "txtDdeTopicTrades";
 			this.txtDdeTopicTrades.Size = new System.Drawing.Size(108, 20);
@@ -92,6 +96,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// 
 			// lblTopicTrades
 			// 
+			this.lblTopicTrades.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.lblTopicTrades.AutoSize = true;
 			this.lblTopicTrades.Location = new System.Drawing.Point(99, 84);
 			this.lblTopicTrades.Name = "lblTopicTrades";
@@ -110,6 +116,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// 
 			// txtDdeTopicPrefixDom
 			// 
+			this.txtDdeTopicPrefixDom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtDdeTopicPrefixDom.Location = new System.Drawing.Point(102, 61);
 			this.txtDdeTopicPrefixDom.Name = "txtDdeTopicPrefixDom";
 			this.txtDdeTopicPrefixDom.Size = new System.Drawing.Size(108, 20);
@@ -135,12 +143,12 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// 
 			// cbxStartDde
 			// 
-			this.cbxStartDde.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.cbxStartDde.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbxStartDde.Appearance = System.Windows.Forms.Appearance.Button;
 			this.cbxStartDde.Location = new System.Drawing.Point(3, 126);
 			this.cbxStartDde.Name = "cbxStartDde";
-			this.cbxStartDde.Size = new System.Drawing.Size(207, 23);
+			this.cbxStartDde.Size = new System.Drawing.Size(208, 23);
 			this.cbxStartDde.TabIndex = 20;
 			this.cbxStartDde.Text = "Start DDE Server (now stopped)";
 			this.cbxStartDde.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -160,7 +168,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// 
 			// txtDdeMonitorRefreshRate
 			// 
-			this.txtDdeMonitorRefreshRate.Location = new System.Drawing.Point(86, 155);
+			this.txtDdeMonitorRefreshRate.Location = new System.Drawing.Point(75, 155);
 			this.txtDdeMonitorRefreshRate.Name = "txtDdeMonitorRefreshRate";
 			this.txtDdeMonitorRefreshRate.Size = new System.Drawing.Size(33, 20);
 			this.txtDdeMonitorRefreshRate.TabIndex = 22;
@@ -169,7 +177,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			// lblRefreshMs
 			// 
 			this.lblRefreshMs.AutoSize = true;
-			this.lblRefreshMs.Location = new System.Drawing.Point(119, 158);
+			this.lblRefreshMs.Location = new System.Drawing.Point(108, 158);
 			this.lblRefreshMs.Name = "lblRefreshMs";
 			this.lblRefreshMs.Size = new System.Drawing.Size(86, 13);
 			this.lblRefreshMs.TabIndex = 23;
@@ -180,6 +188,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoScroll = true;
+			this.AutoSize = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.Controls.Add(this.lblRefreshMs);
 			this.Controls.Add(this.txtDdeMonitorRefreshRate);
@@ -197,7 +206,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.Controls.Add(this.lblMinus2);
 			this.Controls.Add(this.lblMinus4);
 			this.Name = "QuikStreamingEditorControl";
-			this.Size = new System.Drawing.Size(214, 181);
+			this.Size = new System.Drawing.Size(215, 178);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

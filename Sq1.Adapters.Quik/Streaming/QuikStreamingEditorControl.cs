@@ -28,7 +28,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.txtDdeTopicPrefixDom.Text		= this.quikStreamingAdapter.DdeTopicSuffixDom;
 			this.txtDdeMonitorRefreshRate.Text	= this.quikStreamingAdapter.DdeMonitorRefreshRateMs.ToString();
 
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete) return;
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete) return;
 			if (this.quikStreamingAdapter.DdeMonitorPopupOnRestart == false) return;
 			// CONTINUE_WITH_MONTIOR_APPRESTART induces {if (existingFormThatIWillCover.DockPanel == null) return;} lnkDdeMonitor_LinkClicked(this, null);
 		}

@@ -24,20 +24,10 @@ nIsSell Тип: Long. Направление сделки: «0» еcли «По�
 nTradeDescriptor Тип: Long. Дескриптор сделки, может использоваться для следующих специальных функций в функции обратного вызова:
 */
 		void tradeStatus_callback(int nMode, double trade_id, double sernoExchange, string classCode, string secCode,
-									double price, int filled, double msum, int isSell, int tradeDescriptor) {
+									double filledPriceForMarket_zeroForLimit, int filledQtyForMarket_zeroForLimit, double msum, int isSell, int tradeDescriptor) {
 			string comment = Marshal.PtrToStringAnsi(Trans2Quik.TRADE_BROKERREF(tradeDescriptor));
 			string nMode_asString = "NEW";
 			if (nMode != 0) nMode_asString = nMode == 1 ? "INIT_LIST_USE_ME" : "LAST_ORDER_UPDATE";
-
-			//string msgParams = "classCode[" + classCode + "] secCode[" + secCode + "] price[" + price + "] filled[" + filled + "] comment[" + comment + "]"
-			//    + " sernoExchange[" + sernoExchange + "] nMode[" + nMode + "] trade_id[" + trade_id + "]"
-			//    + " msum[" + msum + "] isSell[" + isSell + "] tradeDescriptor[" + tradeDescriptor + "]";
-			string msgParams = nMode_asString + " " + "[" + secCode + "][" + classCode + "] qnty[" + filled + "]@[" + price + "] comment[" + comment + "]"
-				+ " tradeDescriptor[" + tradeDescriptor + "] sernoExchange[" + sernoExchange + "] trade_id[" + trade_id + "]"
-				+ " cost[" + msum + "] isSell[" + isSell + "]";
-			string msig = " //QuikDllConnector(" + this.DllName + ")::tradeStatus_callback(" + msgParams + ")";
-
-			Assembler.SetThreadName(msig);
 
 			string msg_dupeIgnored = "";
 			if (nMode != 0) {
@@ -45,6 +35,14 @@ nTradeDescriptor Тип: Long. Дескриптор сделки, может и�
 				if (nMode != 2) msg_dupeIgnored = "IM_USEFUL_NYI";
 				msg_dupeIgnored += " nMode[" + nMode + "]!=0 " + nMode_asString + " ";
 			}
+
+			string msigHead = msg_dupeIgnored + nMode_asString + " " + "[" + secCode + "][" + classCode + "]"
+				+ " qnty[" + filledQtyForMarket_zeroForLimit + "]@[" + filledPriceForMarket_zeroForLimit + "] comment[" + comment + "]"
+				+ " sernoExchange[" + sernoExchange + "] trade_id[" + trade_id + "]";
+			string msigTail = " tradeDescriptor[" + tradeDescriptor + "]  cost[" + msum + "] isSell[" + isSell + "]";
+
+			string msig = msigHead + " //QuikDllConnector(" + this.DllName + ")::tradeStatus_callback(" + msigTail + ")";
+			Assembler.SetThreadName(msig);
 
 			string msg_tradeCommission = "";
 			double tradePrice2				= double.NaN;
@@ -91,17 +89,17 @@ nTradeDescriptor Тип: Long. Дескриптор сделки, может и�
 		    }
 
 			if (orderExecuted == null) {
-				Assembler.PopupException(msg_dupeIgnored + msg_findingOrder + msg_tradeCommission + msig, null, false);
+				Assembler.PopupException(msigHead + msg_findingOrder + msg_tradeCommission, null, false);
 				return;
 			}
 
-			OrderStateMessage osm = new OrderStateMessage(orderExecuted, OrderState._TradeStatus, msg_dupeIgnored + msg_tradeCommission + msig);
+			OrderStateMessage osm = new OrderStateMessage(orderExecuted, OrderState._TradeStatus, msigHead + msg_tradeCommission);
 			orderExecuted.AppendMessageSynchronized(osm);
 
 			if (nMode != 0) return;
 
 			this.quikBroker.TradeState_callbackFromQuikDll((long)sernoExchange, tradeDate, 
-				classCode, secCode, price, filled,
+				classCode, secCode, filledPriceForMarket_zeroForLimit, filledQtyForMarket_zeroForLimit,
 				tradePrice2, tradeTradeSysCommission, tradeTScommission);
 		}
 
@@ -123,7 +121,7 @@ nStatus Тип: Long. Состояние исполнения заявки: Зн
 nOrderDescriptor Тип: Long. Дескриптор заявки, может использоваться для следующих специальных функций в теле функции обратного вызова:
 */
 		void orderStatus_callback(int nMode, int transId, double sernoExchange,
-									string classCode, string secCode, double priceFilled, int leftUnfilled,
+									string classCode, string secCode, double priceFilled_forLimit, int qtyLeftUnfilled_forLimit,
 									double cost, int isSell, int status, int orderDescriptor) {
 
 			//int filled = Trans2Quik.ORDER_QTY(orderDescriptor);	// filled[" + filled + "]
@@ -138,19 +136,20 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			string status_asString = "FILLED";
 			if (status <= 2) status_asString = status == 0 ? "PENDING" : "KILLED";
 
-			string msgParams = nMode_asString + " " + status_asString + " [" + secCode + "][" + classCode + "] leftUnfilled[" + leftUnfilled + "]@[" + priceFilled + "]"
-				+ " transId[" + transId + "] sernoExchange[" + sernoExchange + "]"
-				+ " cost[" + cost + "] isSell[" + isSell + "]";
-			string msig = " //QuikDllConnector(" + this.DllName + ")::orderStatus_callback(" + msgParams + ")";
-
-			Assembler.SetThreadName(msig);
-
 			string msg_dupeIgnored = "";
 			if (nMode != 0) {
 				msg_dupeIgnored = "DUPE_IGNORED ";
 				if (nMode != 2) msg_dupeIgnored = "IM_USEFUL_NYI";
 				msg_dupeIgnored += " nMode[" + nMode + "]!=0 " + nMode_asString + " ";
 			}
+
+			string msigHead = msg_dupeIgnored + nMode_asString + " " + status_asString + " [" + secCode + "][" + classCode + "]"
+				+ " leftUnfilled[" + qtyLeftUnfilled_forLimit + "]@[" + priceFilled_forLimit + "]"
+				+ " sernoExchange[" + sernoExchange + "] transId[" + transId + "]";
+			string msigTail = " cost[" + cost + "] isSell[" + isSell + "]";
+
+			string msig = msigHead + " //QuikDllConnector(" + this.DllName + ")::orderStatus_callback(" + msigTail + ")";
+			Assembler.SetThreadName(msig);
 
 
 			string msg_findingOrder = "";
@@ -185,17 +184,17 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 
 
 			if (order == null) {
-				Assembler.PopupException(msg_dupeIgnored + msg_findingOrder + msig, null, false);
+				Assembler.PopupException(msigHead + msg_dupeIgnored + msg_findingOrder, null, false);
 				return;
 			}
 
-			OrderStateMessage osm = new OrderStateMessage(order, OrderState._OrderStatus, msg_dupeIgnored + msg_findingOrder + msig);
+			OrderStateMessage osm = new OrderStateMessage(order, OrderState._OrderStatus, msigHead + msg_dupeIgnored + msg_findingOrder);
 			order.AppendMessageSynchronized(osm);
 
 			if (nMode != 0) return;
 
 			OrderState newOrderStateReceived = OrderState.Unknown;
-			int qtyFilled = (int) (order.QtyRequested - (double)leftUnfilled);
+			int qtyFilled = (int) (order.QtyRequested - (double)qtyLeftUnfilled_forLimit);
 			switch (status) {
 				case 1:		//PENDING	Значение «1» соответствует состоянию «Активна»
 					newOrderStateReceived = OrderState.WaitingBrokerFill;
@@ -204,17 +203,17 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 
 				case 2:		//KILLED	«2» - «Снята»
 					//if (orderExecuted.State == OrderState.KillPending) {
-					if (order.FindStateInOrderMessages(OrderState.KilledPending)) {
+					if (order.FindState_inOrderMessages(OrderState.KillTransSubmittedOK)) {
 						newOrderStateReceived = OrderState.KillerDone;
 					} else {
 						// state of a victim must be Killed - before you said Rejected; TradeStatus
 						newOrderStateReceived = OrderState.Rejected;
 					}
-					priceFilled = 0;
+					priceFilled_forLimit = 0;
 					break;
 
 				default:	//FILLED	иначе «Исполнена»
-					if (leftUnfilled > 0) {
+					if (qtyLeftUnfilled_forLimit > 0) {
 						newOrderStateReceived = OrderState.FilledPartially;
 					} else {
 						newOrderStateReceived = OrderState.Filled;
@@ -223,7 +222,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			}
 
 			this.quikBroker.OrderState_callbackFromQuikDll(newOrderStateReceived, transId.ToString(),
-						(long)sernoExchange, classCode, secCode, priceFilled, qtyFilled);
+						(long)sernoExchange, classCode, secCode, priceFilled_forLimit, qtyFilled);
 		}
 
 /* Функция TRANS2QUIK_TRANSACTIONS_REPLY_CALLBACK
@@ -245,23 +244,21 @@ dOrderNum Тип: Double. Номер заявки, присвоенный тор
 lpstrTransactionReplyMessage Тип: указатель на переменную типа Строка. Сообщение от торговой системы или сервера QUIK 
 */
 		void transactionReply_callback(Trans2Quik.Result transResult, int err, int replyCode, int trans_id, double sernoExchange, string msgQuik) {
-			string msgParams = transResult + " msgQuik[" + msgQuik + "]"
-				+ " transId[" + trans_id + "] sernoExchange[" + sernoExchange + "]"
-				+ " err[" + err + "] replyCode?[" + replyCode + "]";
-			string msig = " //QuikDllConnector(" + this.DllName + ")::transactionReply_callback(" + msgParams + ")";
-
-			Assembler.SetThreadName(msig);
-
 			string msg_transactionState = "";
-
 			OrderState newState = OrderState.Unknown;
 			if (transResult == Trans2Quik.Result.SUCCESS && replyCode == 3) {
-				msg_transactionState = "TRANSACTION_SENT_OK";	//: [" + msgQuik + "]";
+				msg_transactionState = "TRANSACTION_SENT_OK ";	//: [" + msgQuik + "]";
 				newState = OrderState.Submitted;
 			} else {
-				msg_transactionState = "TRANSACTION_FAILED";	 //: [" + msgQuik + "] r[" + r + "]  err[" + err + "] rc[" + rc + "]";
+				msg_transactionState = "TRANSACTION_FAILED ";	 //: [" + msgQuik + "] r[" + r + "]  err[" + err + "] rc[" + rc + "]";
 				newState = OrderState.ErrorSubmittingBroker;
 			}
+
+			string msigHead = msg_transactionState + transResult + " msgQuik[" + msgQuik + "] sernoExchange[" + sernoExchange + "]";
+			string msigTail = " transId[" + trans_id + "] err[" + err + "] replyCode?[" + replyCode + "]";
+			string msig = " //QuikDllConnector(" + this.DllName + ")::transactionReply_callback(" + msigTail + ")";
+
+			Assembler.SetThreadName(msig);
 
 
 			string msg_findingOrder = "";
@@ -274,7 +271,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			if (orderSubmitting == null) {
 				msg_findingOrder = "NOT_FOUND Guid[" + trans_id + "] ; orderSernos=[" + orders.SessionSernosAsString + "] Count=[" + orders.Count + "]"
 						+ " suggestedLane[" + suggestedLane + "] suggestion[" + suggestion + "]";
-				Assembler.PopupException(msg_transactionState + msg_findingOrder + msig, null, false);
+				Assembler.PopupException(msigHead + msg_findingOrder, null, false);
 				return;
 			}
 
@@ -282,15 +279,15 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 
 			long sernoExchange_asLong = (long)sernoExchange;
 			if (orderSubmitting.SernoExchange != sernoExchange_asLong) {
-				msg = "ASSIGNED_SernoExchange[" + sernoExchange_asLong + "] was[" + orderSubmitting.SernoExchange + "]";
+				msg = " ASSIGNED_SernoExchange[" + sernoExchange_asLong + "] was[" + orderSubmitting.SernoExchange + "]";
 				orderSubmitting.SernoExchange  = sernoExchange_asLong;
 			}
 
-			OrderStateMessage osm = new OrderStateMessage(orderSubmitting, OrderState._TransactionStatus, msg_transactionState + msg_findingOrder + msig);
+			OrderStateMessage osm = new OrderStateMessage(orderSubmitting, OrderState._TransactionStatus, msigHead + msg_findingOrder);
 			orderSubmitting.AppendMessageSynchronized(osm);
 
-			OrderStateMessage newOrderState = new OrderStateMessage(orderSubmitting, newState, msg_transactionState + msg);
-			this.quikBroker.OrderProcessor.UpdateOrderState_postProcess(orderSubmitting, newOrderState);
+			OrderStateMessage newOrderState = new OrderStateMessage(orderSubmitting, newState, msigHead);
+			this.quikBroker.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
 		}
 	}
 }

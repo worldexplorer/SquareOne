@@ -42,6 +42,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			this.cbxConnectDLL = new System.Windows.Forms.CheckBox();
 			this.lblTrans2quikFound = new System.Windows.Forms.Label();
 			this.lnkTrans2quik = new System.Windows.Forms.LinkLabel();
+			this.lblConnectionStatus = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// lblQuikPath
@@ -56,7 +57,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			// lblQuikAccount
 			// 
 			this.lblQuikAccount.AutoSize = true;
-			this.lblQuikAccount.Location = new System.Drawing.Point(3, 162);
+			this.lblQuikAccount.Location = new System.Drawing.Point(3, 140);
 			this.lblQuikAccount.Name = "lblQuikAccount";
 			this.lblQuikAccount.Size = new System.Drawing.Size(92, 13);
 			this.lblQuikAccount.TabIndex = 1;
@@ -64,8 +65,8 @@ namespace Sq1.Adapters.Quik.Broker {
 			// 
 			// txtQuikFolder
 			// 
-			this.txtQuikFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtQuikFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtQuikFolder.Location = new System.Drawing.Point(3, 22);
 			this.txtQuikFolder.Name = "txtQuikFolder";
 			this.txtQuikFolder.Size = new System.Drawing.Size(247, 20);
@@ -74,7 +75,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			// 
 			// txtQuikAccount
 			// 
-			this.txtQuikAccount.Location = new System.Drawing.Point(3, 178);
+			this.txtQuikAccount.Location = new System.Drawing.Point(3, 156);
 			this.txtQuikAccount.Name = "txtQuikAccount";
 			this.txtQuikAccount.Size = new System.Drawing.Size(108, 20);
 			this.txtQuikAccount.TabIndex = 7;
@@ -83,13 +84,14 @@ namespace Sq1.Adapters.Quik.Broker {
 			// 
 			this.txtReconnectTimeoutMillis.Location = new System.Drawing.Point(3, 65);
 			this.txtReconnectTimeoutMillis.Name = "txtReconnectTimeoutMillis";
-			this.txtReconnectTimeoutMillis.Size = new System.Drawing.Size(108, 20);
+			this.txtReconnectTimeoutMillis.Size = new System.Drawing.Size(54, 20);
 			this.txtReconnectTimeoutMillis.TabIndex = 19;
 			// 
 			// lblReconnectTimeoutMillis
 			// 
 			this.lblReconnectTimeoutMillis.AutoSize = true;
-			this.lblReconnectTimeoutMillis.Location = new System.Drawing.Point(127, 68);
+			this.lblReconnectTimeoutMillis.Enabled = false;
+			this.lblReconnectTimeoutMillis.Location = new System.Drawing.Point(63, 68);
 			this.lblReconnectTimeoutMillis.Name = "lblReconnectTimeoutMillis";
 			this.lblReconnectTimeoutMillis.Size = new System.Drawing.Size(105, 13);
 			this.lblReconnectTimeoutMillis.TabIndex = 18;
@@ -98,7 +100,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			// txtCashAvailable
 			// 
 			this.txtCashAvailable.Enabled = false;
-			this.txtCashAvailable.Location = new System.Drawing.Point(3, 217);
+			this.txtCashAvailable.Location = new System.Drawing.Point(3, 195);
 			this.txtCashAvailable.Name = "txtCashAvailable";
 			this.txtCashAvailable.Size = new System.Drawing.Size(108, 20);
 			this.txtCashAvailable.TabIndex = 21;
@@ -106,7 +108,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			// lblCashAvailable
 			// 
 			this.lblCashAvailable.AutoSize = true;
-			this.lblCashAvailable.Location = new System.Drawing.Point(3, 201);
+			this.lblCashAvailable.Location = new System.Drawing.Point(3, 179);
 			this.lblCashAvailable.Name = "lblCashAvailable";
 			this.lblCashAvailable.Size = new System.Drawing.Size(116, 13);
 			this.lblCashAvailable.TabIndex = 20;
@@ -114,9 +116,9 @@ namespace Sq1.Adapters.Quik.Broker {
 			// 
 			// txtQuikAccountMicex
 			// 
-			this.txtQuikAccountMicex.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtQuikAccountMicex.Location = new System.Drawing.Point(130, 178);
+			this.txtQuikAccountMicex.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtQuikAccountMicex.Location = new System.Drawing.Point(130, 156);
 			this.txtQuikAccountMicex.Name = "txtQuikAccountMicex";
 			this.txtQuikAccountMicex.Size = new System.Drawing.Size(120, 20);
 			this.txtQuikAccountMicex.TabIndex = 23;
@@ -124,7 +126,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			// lblQuikAccountMicex
 			// 
 			this.lblQuikAccountMicex.AutoSize = true;
-			this.lblQuikAccountMicex.Location = new System.Drawing.Point(131, 162);
+			this.lblQuikAccountMicex.Location = new System.Drawing.Point(131, 140);
 			this.lblQuikAccountMicex.Name = "lblQuikAccountMicex";
 			this.lblQuikAccountMicex.Size = new System.Drawing.Size(102, 13);
 			this.lblQuikAccountMicex.TabIndex = 22;
@@ -132,10 +134,10 @@ namespace Sq1.Adapters.Quik.Broker {
 			// 
 			// txtCashAvailableMicex
 			// 
-			this.txtCashAvailableMicex.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtCashAvailableMicex.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtCashAvailableMicex.Enabled = false;
-			this.txtCashAvailableMicex.Location = new System.Drawing.Point(130, 217);
+			this.txtCashAvailableMicex.Location = new System.Drawing.Point(130, 195);
 			this.txtCashAvailableMicex.Name = "txtCashAvailableMicex";
 			this.txtCashAvailableMicex.Size = new System.Drawing.Size(120, 20);
 			this.txtCashAvailableMicex.TabIndex = 25;
@@ -143,7 +145,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			// lblCashAvailableMicex
 			// 
 			this.lblCashAvailableMicex.AutoSize = true;
-			this.lblCashAvailableMicex.Location = new System.Drawing.Point(131, 201);
+			this.lblCashAvailableMicex.Location = new System.Drawing.Point(131, 179);
 			this.lblCashAvailableMicex.Name = "lblCashAvailableMicex";
 			this.lblCashAvailableMicex.Size = new System.Drawing.Size(113, 13);
 			this.lblCashAvailableMicex.TabIndex = 24;
@@ -152,11 +154,12 @@ namespace Sq1.Adapters.Quik.Broker {
 			// cbxGoRealWhenLivesim
 			// 
 			this.cbxGoRealWhenLivesim.AutoSize = true;
-			this.cbxGoRealWhenLivesim.Location = new System.Drawing.Point(6, 119);
+			this.cbxGoRealWhenLivesim.Enabled = false;
+			this.cbxGoRealWhenLivesim.Location = new System.Drawing.Point(6, 223);
 			this.cbxGoRealWhenLivesim.Name = "cbxGoRealWhenLivesim";
-			this.cbxGoRealWhenLivesim.Size = new System.Drawing.Size(207, 17);
+			this.cbxGoRealWhenLivesim.Size = new System.Drawing.Size(186, 17);
 			this.cbxGoRealWhenLivesim.TabIndex = 26;
-			this.cbxGoRealWhenLivesim.Text = "Go Real, route Livesim Orders via DLL";
+			this.cbxGoRealWhenLivesim.Text = "LivesimTest route Orders into DLL";
 			this.cbxGoRealWhenLivesim.UseVisualStyleBackColor = true;
 			// 
 			// lblQuikPathFound
@@ -171,9 +174,10 @@ namespace Sq1.Adapters.Quik.Broker {
 			// 
 			// cbxConnectDLL
 			// 
-			this.cbxConnectDLL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.cbxConnectDLL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbxConnectDLL.Appearance = System.Windows.Forms.Appearance.Button;
+			this.cbxConnectDLL.AutoCheck = false;
 			this.cbxConnectDLL.Location = new System.Drawing.Point(3, 89);
 			this.cbxConnectDLL.Name = "cbxConnectDLL";
 			this.cbxConnectDLL.Size = new System.Drawing.Size(247, 24);
@@ -182,6 +186,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			this.cbxConnectDLL.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.cbxConnectDLL.UseVisualStyleBackColor = true;
 			this.cbxConnectDLL.CheckedChanged += new System.EventHandler(this.cbxConnectDLL_CheckedChanged);
+			this.cbxConnectDLL.Click += new System.EventHandler(this.cbxConnectDLL_Click);
 			// 
 			// lblTrans2quikFound
 			// 
@@ -205,11 +210,23 @@ namespace Sq1.Adapters.Quik.Broker {
 			this.lnkTrans2quik.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.lnkTrans2quik.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkTrans2quik_LinkClicked);
 			// 
+			// lblConnectionStatus
+			// 
+			this.lblConnectionStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.lblConnectionStatus.Location = new System.Drawing.Point(3, 116);
+			this.lblConnectionStatus.Name = "lblConnectionStatus";
+			this.lblConnectionStatus.Size = new System.Drawing.Size(247, 13);
+			this.lblConnectionStatus.TabIndex = 31;
+			this.lblConnectionStatus.Text = "ConnectionStatus";
+			// 
 			// QuikBrokerEditorControl
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.AutoScroll = true;
+			this.AutoSize = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Controls.Add(this.lblConnectionStatus);
 			this.Controls.Add(this.lnkTrans2quik);
 			this.Controls.Add(this.lblTrans2quikFound);
 			this.Controls.Add(this.cbxConnectDLL);
@@ -228,7 +245,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			this.Controls.Add(this.lblQuikAccount);
 			this.Controls.Add(this.lblQuikPath);
 			this.Name = "QuikBrokerEditorControl";
-			this.Size = new System.Drawing.Size(253, 247);
+			this.Size = new System.Drawing.Size(253, 243);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -246,5 +263,6 @@ namespace Sq1.Adapters.Quik.Broker {
 		private CheckBox cbxConnectDLL;
 		private Label lblTrans2quikFound;
 		private LinkLabel lnkTrans2quik;
+		private Label lblConnectionStatus;
     }
 }

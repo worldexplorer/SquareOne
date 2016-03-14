@@ -74,7 +74,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			//v1 this.QuikStreamingOriginal.InitializeDataSource_inverse(base.Livesimulator.DataSourceAsLivesim_nullUnsafe, false);
 			//v2 this.QuikStreamingOriginal.InitializeFromDataSource(base.Livesimulator.DataSourceAsLivesim_nullUnsafe);
 			//v3 this.InitializeFromDataSource(base.Livesimulator.DataSourceAsLivesim_nullUnsafe);
-			this.UpstreamConnectionState = ConnectionState.JustInitialized_solidifiersUnsubscribed;
+			this.UpstreamConnectionState = ConnectionState.Streaming_JustInitialized_solidifiersUnsubscribed;
 			
 			//NO,GOOD_FOR_BOTH GOOD_FOR_LivesimStreamingDefault_BUT_BAD_FOR_QuikStreamingLivesim
 			this.StreamingDataSnapshot = this.QuikStreamingOriginal.StreamingDataSnapshot;

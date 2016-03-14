@@ -20,7 +20,22 @@ namespace Sq1.Adapters.Quik.Broker {
 			this.propagateDllFound();	// each keypress you have a chance to see if I found the DLL; appRestart may be neededt to use it
 		}
 
+		void cbxConnectDLL_Click(object sender, EventArgs e) {
+			try {
+			    if (this.cbxConnectDLL.Checked) {
+			        this.quikBrokerAdapter.Disconnect();
+			    } else {
+			        this.quikBrokerAdapter.Connect();
+			    }
+				this.propagateBrokerConnected_intoBtnStateText();
+			} catch (Exception ex) {
+			    string msg = "(DIS)CONNECT_THREW";
+			    Assembler.PopupException(msg, ex);
+			}
+		}
+
 		void cbxConnectDLL_CheckedChanged(object sender, EventArgs e) {
+			return;		// 
 			try {
 				if (this.dontStartStopDllConnection_imSyncingDdeStarted_intoTheBtnText_only) {
 					this.propagateBrokerConnected_intoBtnStateText();

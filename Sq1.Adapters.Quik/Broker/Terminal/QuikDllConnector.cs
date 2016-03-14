@@ -10,25 +10,15 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Adapters.Quik.Broker.Terminal {
 	public sealed partial class QuikDllConnector {
-					QuikBroker		quikBroker;
-					static int		transId;
-					int				error;
-					StringBuilder	callbackErrorMsg;
-		protected	string			CurrentStatus = "1/2 DLL not connected, 2/2 No Symbols subscribed";
-		public		string			DllName			{ get { return "TRANS2QUIK.dll"; } }
-		public		string			DllUrl			{ get { return "http://www.quik.ru"; } }
+					QuikBroker				quikBroker;
+					static int				transId;
+					int						anyCallback_error;
+					StringBuilder			anyCallback_msg;
+		public		string					DllName			{ get { return "TRANS2QUIK.dll"; } }
+		public		string					DllUrl			{ get { return "http://www.quik.ru"; } }
 
-		QuikDllConnector() {
-			this.callbackErrorMsg			= new StringBuilder(256);
-			this.connectionTimer			= new Timer(this.tryConnect_rescheduled);
-			this.symbolClassesSubscribed	= new Dictionary<string, int>();
-		}
-		public QuikDllConnector(QuikBroker quikBroker_passed) : this() {
-			this.quikBroker				= quikBroker_passed;
-		}
-
-				Dictionary<string, int> symbolClassesSubscribed = new Dictionary<string, int>();
-		public	string SymbolClassSubscribed_AsString { get {
+					Dictionary<string, int>	symbolClassesSubscribed = new Dictionary<string, int>();
+		public		string					SymbolClassSubscribed_AsString { get {
 			string ret = "";
 			foreach (string symbolColonClass in this.symbolClassesSubscribed.Keys) {
 				int subscribersCount = this.symbolClassesSubscribed[symbolColonClass];
@@ -37,108 +27,123 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 			ret.TrimEnd(",".ToCharArray());
 			return ret;
 		} }
+
+
+		QuikDllConnector() {
+			this.anyCallback_msg			= new StringBuilder(256);
+			//this.connectionTimer			= new Timer(this.tryConnect_timeredEntryPoint);
+			this.symbolClassesSubscribed	= new Dictionary<string, int>();
+		}
+		public QuikDllConnector(QuikBroker quikBroker_passed) : this() {
+			this.quikBroker				= quikBroker_passed;
+		}
+
 		public bool IsSubscribed(string symbol, string classCode) {
 			string key = symbol + ":" + classCode;
-			bool subscribed = symbolClassesSubscribed.ContainsKey(key);
+			bool subscribed = this.symbolClassesSubscribed.ContainsKey(key);
 			return subscribed;
 		}
 		public void Subscribe(string symbol, string classCode) {
+			string msigHead = " (" + symbol + ":" + classCode + ")";
+			string msigTail = " //QuikDllConnector(" + this.DllName + ").Subscribe()";
+
 			if (this.DllConnected == false) {
-				string msg = "can not RegisterQuoteConsumer(" + symbol + "," + classCode + "): DLL[" + DllName + "] must be connected first [" + this.quikBroker.QuikFolder + "]";
+				string msg = "I_REFUSE_TO_SUBSCRIBE__DLL_MUST_BE_CONNECTED_FIRST " + msigHead + " [" + this.quikBroker.Trans2QuikDllAbsPath + "]";
 				Assembler.PopupException(msg);
 				//BrokerQuik.ExceptionDialog.PopupException(new Exception(msg));
 				throw new Exception(msg);
 			}
 
 			string key = symbol + ":" + classCode;
-			if (symbolClassesSubscribed.ContainsKey(key)) {
+			if (this.symbolClassesSubscribed.ContainsKey(key)) {
 				this.symbolClassesSubscribed[key]++;
-				Assembler.PopupException("Was already subscribed to Quik Execution Callbacks for [" + key + "].Count=" + symbolClassesSubscribed[key]);
+				string msg = "WAS_ALREADY_SUBSCRIBED_BEFORE now" + msigHead + ".Count=" + this.symbolClassesSubscribed[key];
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 
-			Trans2Quik.Result ret = Trans2Quik.SUBSCRIBE_ORDERS(classCode, symbol);
-			if (ret != Trans2Quik.Result.SUCCESS) {
-				string msg = "can not SUBSCRIBE_ORDERS(" + classCode + "," + symbol + "): ret[" + ret + "] != SUCCESS";
+			Trans2Quik.Result status_subscribeOrders = Trans2Quik.SUBSCRIBE_ORDERS(classCode, symbol);
+			if (status_subscribeOrders != Trans2Quik.Result.SUCCESS) {
+				string msg = "FAILED_TO_SUBSCRIBE_ORDERS [" + status_subscribeOrders + "]" + msigHead;
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			} else {
-				string msg = "SUBSCRIBE_ORDERS(" + classCode + "," + symbol + "): SUCCESS";
-				Assembler.PopupException(msg, null, false);
+				string msg = "SUBSCRIBED_ORDERS";
+				Assembler.PopupException(msg + msigHead, null, false);
 			}
 
-			ret = Trans2Quik.START_ORDERS(orderStatus_callback);
-			if (ret != Trans2Quik.Result.SUCCESS) {
-				string msg = "can not START_ORDERS(): ret" + ret + "] != SUCCESS";
+			Trans2Quik.Result status_startOrders = Trans2Quik.START_ORDERS(orderStatus_callback);
+			if (status_startOrders != Trans2Quik.Result.SUCCESS) {
+				string msg = "FAILED_TO_START_ORDERS [" + status_startOrders + "]" + msigHead;;
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			} else {
-				string msg = "START_ORDERS(): SUCCESS";
-				Assembler.PopupException(msg, null, false);
+				string msg = "STARTED_ORDERS";
+				Assembler.PopupException(msg + msigHead, null, false);
 			}
 
-			ret = Trans2Quik.SUBSCRIBE_TRADES(classCode, symbol);
-			if (ret != Trans2Quik.Result.SUCCESS) {
-				string msg = "can not SUBSCRIBE_TRADES(" + classCode + "," + symbol + "): ret[" + ret + "] != SUCCESS";
+			Trans2Quik.Result status_subscribeTrades = Trans2Quik.SUBSCRIBE_TRADES(classCode, symbol);
+			if (status_subscribeTrades != Trans2Quik.Result.SUCCESS) {
+				string msg = "FAILED_TO_SUBSCRIBE_TRADES [" + status_subscribeTrades + "]" + msigHead;;
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			} else {
-				string msg = "SUBSCRIBE_TRADES(" + classCode + "," + symbol + "): SUCCESS";
-				Assembler.PopupException(msg, null, false);
+				string msg = "SUBSCRIBED_TRADES";
+				Assembler.PopupException(msg + msigHead, null, false);
 			}
 
-			ret = Trans2Quik.START_TRADES(tradeStatus_callback);
-			if (ret != Trans2Quik.Result.SUCCESS) {
-				string msg = "can not START_TRADES(): ret[" + ret + "] != SUCCESS";
+			Trans2Quik.Result status_startTrades = Trans2Quik.START_TRADES(tradeStatus_callback);
+			if (status_startTrades != Trans2Quik.Result.SUCCESS) {
+				string msg = "FAILED_TO_START_TRADES [" + status_startTrades + "]" + msigHead;;
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			} else {
-				string msg = "START_TRADES(): SUCCESS";
-				Assembler.PopupException(msg, null, false);
+				string msg = "STARTED_TRADES";
+				Assembler.PopupException(msg + msigHead, null, false);
 			}
 
 			this.symbolClassesSubscribed[key] = 1;
-			if (symbolClassesSubscribed.Count == 0) CurrentStatus = "";
-			this.CurrentStatus = symbolClassesSubscribed.ToString();
 			Assembler.PopupException("Subscribed to Quik Execution Callbacks for [" + key + "]", null, false);
 	
-			this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.SymbolSubscribed,
-				"QuikDllConnector(" + this.DllName + ") 2/2 " + ConnectionState.SymbolSubscribed +
-					" for SecCode[" + symbol + "] ClassCode[" + classCode + "]");
+			ConnectionState state = ConnectionState.Broker_Connected_SymbolSubscribed;
+			this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(state, "SUBSCRIBED_OK " + msigHead);
 		}
 		public void Unsubscribe(string symbol, string classCode) {
-			if (!DllConnected) {
-				string msg = "can not Unsubscribe(" + symbol + "," + classCode + "): DLL must be connected first";
+			string msigHead = " (" + symbol + ":" + classCode + ")";
+			string msigTail = " //QuikDllConnector(" + this.DllName + ").Unsubscribe()";
+
+			if (this.DllConnected == false) {
+				string msg = "I_REFUSE_TO_UNSUBSCRIBE__DLL_MUST_BE_CONNECTED_FIRST" + msigHead + " [" + this.quikBroker.Trans2QuikDllAbsPath + "]";
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
 
 			string key = symbol + ":" + classCode;
-			if (!symbolClassesSubscribed.ContainsKey(key)) {
-					string msg = "can not Unsubscribe(" + symbol + "," + classCode + "): was not subscribed before";
+			if (this.symbolClassesSubscribed.ContainsKey(key) == false) {
+					string msg = "I_REFUSE_TO_UNSUBSCRIBE__WAS_NOT_SUBSCRIBED_BEFORE" + msigHead;
 					Assembler.PopupException(msg);
 					throw new Exception(msg);
 			}
-			Trans2Quik.Result ret = Trans2Quik.UNSUBSCRIBE_ORDERS();
-			if (ret != Trans2Quik.Result.SUCCESS) {
-				string msg = "can not UNSUBSCRIBE_ORDERS(): ret[" + ret + "] != SUCCESS for SecCode[" + symbol + "] ClassCode[" + classCode + "]";
+
+			Trans2Quik.Result status_unsubscribeOrders = Trans2Quik.UNSUBSCRIBE_ORDERS();
+			if (status_unsubscribeOrders != Trans2Quik.Result.SUCCESS) {
+				string msg = "FAILED_TO_UNSUBSCRIBE_ORDERS [" + status_unsubscribeOrders + "] " + msigHead;
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
-			ret = Trans2Quik.UNSUBSCRIBE_TRADES();
-			if (ret != Trans2Quik.Result.SUCCESS) {
-				string msg = "can not UNSUBSCRIBE_TRADES(): ret[" + ret + "] != SUCCESS for SecCode[" + symbol + "] ClassCode[" + classCode + "]";
+			Trans2Quik.Result status_unsubscribeTrades = Trans2Quik.UNSUBSCRIBE_TRADES();
+			if (status_unsubscribeTrades != Trans2Quik.Result.SUCCESS) {
+				string msg = "FAILED_TO_UNSUBSCRIBE_TRADES [" + status_unsubscribeTrades + "] " + msigHead;
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
 			
 			this.symbolClassesSubscribed[key]--;
-			this.CurrentStatus = symbolClassesSubscribed.ToString();
 		
-			ConnectionState state = (symbolClassesSubscribed[key] > 0)
-				? ConnectionState.SymbolSubscribed : ConnectionState.SymbolUnsubscribed;
-			this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(state,
-				"QuikDllConnector(" + this.DllName + ") " + state + " for SecCode[" + symbol + "] ClassCode[" + classCode + "]");
+			ConnectionState state = this.symbolClassesSubscribed[key] > 0
+				? ConnectionState.Broker_Connected_SymbolUnsubscribed
+				: ConnectionState.Broker_Connected_SymbolsUnsubscribedAll;
+			this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(state, "UNSUBSCRIBED_OK " + msigHead);
 		}
 
 	}

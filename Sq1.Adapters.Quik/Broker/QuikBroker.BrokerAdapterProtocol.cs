@@ -78,8 +78,7 @@ namespace Sq1.Adapters.Quik.Broker {
 				default:
 					msg = " No MarketLimitStop[" + order.Alert.MarketLimitStop + "] handler for order[" + order.ToString() + "]"
 						+ "; must be one of those: Market/Limit/Stop";
-					this.OrderProcessor.UpdateOrderState_postProcess(order,
-						new OrderStateMessage(order, OrderState.Error, msig + msg));
+					this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(new OrderStateMessage(order, OrderState.Error, msig + msg));
 					throw new Exception(msig + msg);
 			}
 
@@ -98,15 +97,18 @@ namespace Sq1.Adapters.Quik.Broker {
 			order.SernoSession = sernoSessionFromTerminal;
 
 			OrderStateMessage newState = new OrderStateMessage(order, orderStateFromTerminalMustGetSubmitted, msg + msig);
-			base.OrderProcessor.UpdateOrderState_postProcess(order, newState);
+			base.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newState);
 		}
 		public override void Kill(Order victimOrder) {
-			string msig = Name + "::OrderKillSubmit():"
+			this.KillPending_withoutKiller(victimOrder);
+		}
+		public override void KillPending_withoutKiller(Order victimOrder) {
+			string msig = Name + "::Kill():"
 				+ "State[" + victimOrder.State + "]"
 				+ " [" + victimOrder.Alert.Symbol + "/" + victimOrder.Alert.SymbolClass + "]"
 				+ " VictimToBeKilled.SernoExchange[" + victimOrder.SernoExchange + "] ";
 
-			bool victimWasStopOrder = victimOrder.Alert.MarketLimitStop == MarketLimitStop.Stop;
+			bool victimOrder_wasStopOrder = victimOrder.Alert.MarketLimitStop == MarketLimitStop.Stop;
 			
 			string msgSubmittedFromTerminal = "";
 			int sernoSessionFromTerminal = -999;
@@ -117,7 +119,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			QuikDllConnector.KillOrder_sendTransaction_async(victimOrder.Alert.Symbol, victimOrder.Alert.SymbolClass,
 				killerOrder.GUID.ToString(),
 				victimOrder.GUID.ToString(),
-				victimOrder.SernoExchange, victimWasStopOrder,
+				victimOrder.SernoExchange, victimOrder_wasStopOrder,
 				out msgSubmittedFromTerminal, out sernoSessionFromTerminal, out killerStateFromTerminal);
 
 			killerOrder.SernoSession = sernoSessionFromTerminal;
@@ -125,14 +127,17 @@ namespace Sq1.Adapters.Quik.Broker {
 			string msg = "killerStateFromTerminal[" + killerStateFromTerminal + "]"
 				+ " msgSubmittedFromTerminal[" + msgSubmittedFromTerminal + "]"
 				+ " sernoSessionFromTerminal[" + sernoSessionFromTerminal + "]";
-			base.OrderProcessor.AppendOrderMessage_propagateToGui_checkThrowOrderNull(killerOrder, msig + msg);
+			base.OrderProcessor.AppendOrderMessage_propagateToGui(killerOrder, msig + msg);
 
 			// don't set State.KillPending to Killer!!! Killer has KillSubmitting->BulletFlying->KillerDone
 			//base.OrderManager.UpdateOrderStateAndPostProcess(killerOrder,
-			//	new OrderStateMessage(killerOrder, killerStateFromTerminal, msgSubmittedFromTerminal));
+			//	new OrderStateMessage(killerOrder, killerStateFromTerminal, msgSubmittedFromTerminal));			this.Kill(victimOrder);
+		}
+		public override void Kill_usingKiller(Order killerOrder) {
+			throw new Exception("NYI_QuikBroker::Kill_usingKiller()");
 		}
 		public override void CancelReplace(Order order, Order newOrder) {
-			throw new Exception("TODO: don't forget to implement before going live!");
+			throw new Exception("NYI_QuikBroker::CancelReplace()");
 		}
 		public override void OrderEnrich_preSubmit_brokerSpecificInjection(Order order) {
 			string msig = " //BrokerQuik.OrderPreSubmitEnrichBrokerSpecificInjection(" + order.ToString() + ")";
