@@ -14,7 +14,7 @@ namespace Sq1.Gui.Singletons {
 			}
 			//WDYM? this.ShowPopupSwitchToGuiThreadRunDelegateInIt();
 			//if (e.Order.State == OrderState.AutoSubmitNotEnabled) return;
-			if (this.IsHiddenHandlingRepopulate) return;
+			if (base.IsCoveredOrAutoHidden) return;
 			//if (this.executionTree.SelectedAccountNumbers.Contains(e.Order.Alert.AccountNumber) == false) return;
 			//if (this.ExecutionTreeControl.DataSnapshot.ToggleSingleClickSyncWithChart) {
 			//	this.executionTree_OnOrderDoubleClickedChartFormNotification(sender, e);
@@ -46,7 +46,7 @@ namespace Sq1.Gui.Singletons {
 				base.BeginInvoke((MethodInvoker)delegate { this.orderProcessor_OrderMessageAdded(sender, e); });
 				return;
 			}
-			if (this.IsHiddenHandlingRepopulate) return;
+			if (base.IsCoveredOrAutoHidden) return;
 			//this.executionTree.OrderInsertMessage(e.OrderStateMessage);
 			//this.executionTree.PopulateMessagesFromSelectedOrder(e.OrderStateMessage.Order);
 
@@ -64,7 +64,7 @@ namespace Sq1.Gui.Singletons {
 				base.BeginInvoke((MethodInvoker)delegate { this.orderProcessor_OrderStateChanged(sender, e); });
 				return;
 			}
-			if (this.IsHiddenHandlingRepopulate) return;	// could've been checked before switching to gui thread?...
+			if (base.IsCoveredOrAutoHidden) return;	// could've been checked before switching to gui thread?...
 
 			this.PopulateWindowText();
 
@@ -84,8 +84,8 @@ namespace Sq1.Gui.Singletons {
 				base.BeginInvoke((MethodInvoker)delegate { orderProcessor_OrderRemoved(sender, e); });
 				return;
 			}
-			if (this.IsHiddenHandlingRepopulate) return;
-			this.ExecutionTreeControl.OrderAlreadyRemovedFromBothLists_JustRebuildListView(e.Orders);
+			if (base.IsCoveredOrAutoHidden) return;
+			this.ExecutionTreeControl.OrderRemoved_alreadyFromBothLists_rebuildOrdersTree_cleanMessagesView(e.Orders);
 			this.PopulateWindowText();
 		}
 		void orderProcessor_OnDelaylessLivesimEndedShouldRebuildOLV(object sender, EventArgs e) {
@@ -96,7 +96,7 @@ namespace Sq1.Gui.Singletons {
 			this.ExecutionTreeControl.RebuildAllTree_focusOnTopmost();
 			this.PopulateWindowText();
 		}
-		void executionTree_OnOrderDoubleClickedChartFormNotification(object sender, OrderEventArgs e) {
+		void executionTree_OnOrderSingleClicked_ChartControlShouldPopupPosition(object sender, OrderEventArgs e) {
 			try {
 				ChartShadow chartFound = Assembler.InstanceInitialized.AlertsForChart.FindContainerFor_throws(e.Order.Alert);
 				chartFound.SelectPosition(e.Order.Alert.PositionAffected);
@@ -114,7 +114,7 @@ namespace Sq1.Gui.Singletons {
 			this.orderProcessor.OnDelaylessLivesimEnded_shouldRebuildOLV			+= this.orderProcessor_OnDelaylessLivesimEndedShouldRebuildOLV;
 
 			//this.ExecutionTreeControl.OnOrderStatsChangedRecalculateWindowTitleExecutionFormNotification += delegate { this.PopulateWindowText(); };
-			this.ExecutionTreeControl.OnOrderDoubleClickedChartFormNotification += this.executionTree_OnOrderDoubleClickedChartFormNotification;
+			this.ExecutionTreeControl.OnOrderSingleClicked_ChartControlShouldPopupPosition += this.executionTree_OnOrderSingleClicked_ChartControlShouldPopupPosition;
 
 			isHiddenPrevState = base.IsHidden;
 			//BETTER_IN_MainForm.WorkspaceLoad(): this.ExecutionTreeControl.MoveStateColumnToLeftmost();

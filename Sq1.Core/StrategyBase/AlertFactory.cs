@@ -46,7 +46,7 @@ namespace Sq1.Core.StrategyBase {
 				direction, entryMarketLimitStop, orderSpreadSide,
 				//this.executor.Script,
 				this.executor.Strategy);
-			alert.AbsorbFromExecutorAfterCreatedByMarketReal(executor);
+			alert.AbsorbFromExecutor_afterCreated_byMarketReal(executor);
 
 			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
 			if (entryPriceScript != alert.PriceScriptAligned) {
@@ -91,7 +91,7 @@ namespace Sq1.Core.StrategyBase {
 				direction, exitMarketLimitStop, orderSpreadSide,
 				//this.executor.Script,
 				this.executor.Strategy);
-			alert.AbsorbFromExecutorAfterCreatedByMarketReal(executor);
+			alert.AbsorbFromExecutor_afterCreated_byMarketReal(executor);
 			alert.PositionAffected = position;
 			// moved to CallbackAlertFilled - we can exit by TP or SL - and position has no clue which Alert was filled!!!
 			//position.ExitCopyFromAlert(alert);
@@ -161,46 +161,47 @@ namespace Sq1.Core.StrategyBase {
 			return priceForMarketAlert;
 		}
 
-		internal bool AlertCounterparty_annihilate(Alert alert) {
-			if (alert.OrderFollowed == null) {
-				string msg = "can't AlertCounterparty_annihilate: OrderFollowed=null for alert=[" + alert + "]";
-				throw new Exception(msg);
-				//this.executor.ThrowPopup(new Exception(msg));
-			}
-			if (alert.PositionAffected == null) {
-				string msg = "can't AnnihilateCounterparty: PositionAffected=null for alert=[" + alert + "]";
-				throw new Exception(msg);
-				//this.executor.ThrowPopup(new Exception(msg));
-			}
-			if (alert.IsEntryAlert) {
-				string msg = "can't AnnihilateCounterparty: alert.isEntryAlert for alert=[" + alert + "]";
-				throw new Exception(msg);
-				//this.executor.ThrowPopup(new Exception(msg));
-			}
+		//internal bool AlertCounterparty_annihilate(Alert alert) {
+		//    if (alert.OrderFollowed == null) {
+		//        string msg = "can't AlertCounterparty_annihilate: OrderFollowed=null for alert=[" + alert + "]";
+		//        throw new Exception(msg);
+		//        //this.executor.ThrowPopup(new Exception(msg));
+		//    }
+		//    if (alert.PositionAffected == null) {
+		//        string msg = "can't AnnihilateCounterparty: PositionAffected=null for alert=[" + alert + "]";
+		//        throw new Exception(msg);
+		//        //this.executor.ThrowPopup(new Exception(msg));
+		//    }
+		//    if (alert.IsEntryAlert) {
+		//        string msg = "can't AnnihilateCounterparty: alert.isEntryAlert for alert=[" + alert + "]";
+		//        throw new Exception(msg);
+		//        //this.executor.ThrowPopup(new Exception(msg));
+		//    }
 
-			OrderStateMessage newOrderState = null;
-			if (alert.PositionAffected.ClosedByTakeProfitLogically) {	//copy from dispatcher (caller of a caller)
-				string msg = "position ClosedByTakeProfit@" + alert.PriceScript + ", annihilating StopLoss";
-				newOrderState = new OrderStateMessage(alert.OrderFollowed, OrderState.SLAnnihilated, msg);
-			} else {
-				string msg = "position ClosedByStopLoss@" + alert.PriceScript + ", annihilating TakeProfit";
-				newOrderState = new OrderStateMessage(alert.OrderFollowed, OrderState.TPAnnihilated, msg);
-			}
-			executor.OrderProcessor.Order_updateState_mustBeTheSame_dontPostProcess(newOrderState);
-			executor.OrderProcessor.PendingOrder_killWithoutKiller(alert.OrderFollowed);
+		//    OrderStateMessage newOrderState = null;
+		//    if (alert.PositionAffected.ClosedByTakeProfitLogically) {	//copy from dispatcher (caller of a caller)
+		//        string msg = "position ClosedByTakeProfit@" + alert.PriceScript + ", annihilating StopLoss";
+		//        newOrderState = new OrderStateMessage(alert.OrderFollowed, OrderState.SLAnnihilated, msg);
+		//    } else {
+		//        string msg = "position ClosedByStopLoss@" + alert.PriceScript + ", annihilating TakeProfit";
+		//        newOrderState = new OrderStateMessage(alert.OrderFollowed, OrderState.TPAnnihilated, msg);
+		//    }
+		//    executor.OrderProcessor.Order_updateState_mustBeTheSame_dontPostProcess(newOrderState);
+		//    executor.OrderProcessor.PendingOrder_killWithoutKiller(alert.OrderFollowed);
 
-			//string msg2 = "MARKET_LIVE_ASSUMES_A_CALLBACK_REMOVES_FROM_DATASNAPSHOT_AFTER_BROKER_SAYS_YES_HE_KILLED_PENDING";
-			//Assembler.PopupException(msg2);
-			//this.executor.RemovePendingExitAlert(alert, "MarketRealtime:AnnihilateCounterparty(): ");
-			//bool removed = this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "AnnihilateCounterpartyAlert(WAIT)");
-			return true;
-		}
-		public bool AlertPending_kill(Alert alert) {
-			string msg = "AlertPending_kill";
-			//OrderStateMessage newOrderState = new OrderStateMessage(alert.OrderFollowed, OrderState.KillerSubmitting, msg);
-			executor.OrderProcessor.PendingOrder_killWithoutKiller(alert.OrderFollowed);
-			return false;
-		}
+		//    //string msg2 = "MARKET_LIVE_ASSUMES_A_CALLBACK_REMOVES_FROM_DATASNAPSHOT_AFTER_BROKER_SAYS_YES_HE_KILLED_PENDING";
+		//    //Assembler.PopupException(msg2);
+		//    //this.executor.RemovePendingExitAlert(alert, "MarketRealtime:AnnihilateCounterparty(): ");
+		//    //bool removed = this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "AnnihilateCounterpartyAlert(WAIT)");
+		//    return true;
+		//}
+
+		//public bool AlertPending_kill(Alert alert) {
+		//    string msg = "AlertPending_kill";
+		//    //OrderStateMessage newOrderState = new OrderStateMessage(alert.OrderFollowed, OrderState.KillerSubmitting, msg);
+		//    executor.OrderProcessor.PendingOrder_killWithoutKiller(alert.OrderFollowed);
+		//    return false;
+		//}
 		
 		//public bool AlertTryFillUsingBacktest(Alert alert, out bool abortTryFill, out string abortTryFillReason) {
 		//	abortTryFill = false;

@@ -214,7 +214,7 @@ namespace Sq1.Core.StrategyBase {
 					alertFilled.PositionAffected.ExitAlertAttach(alertFilled);
 				}
 				// 1. alert.PositionAffected.Prototype.StopLossAlertForAnnihilation and TP will get assigned
-				alertsNewAfterAlertFilled.AddRange(this.PositionPrototypeActivator.AlertFilledCreateSlTpOrAnnihilateCounterparty(alertFilled), this, msig);
+				alertsNewAfterAlertFilled.AddRange(this.PositionPrototypeActivator.AlertFilled_createSlTp_orAnnihilateCounterparty(alertFilled), this, msig);
 				// quick check: there must be {SL+TP} OR Annihilator
 				//this.Backtester.IsBacktestingNow == false &&
 				if (alertFilled.IsEntryAlert) {
@@ -273,7 +273,7 @@ namespace Sq1.Core.StrategyBase {
 							quoteHackForLive = alertFilled.QuoteLastWhenThisAlertFilled;	// unconditionally filled 130 lines above
 						}
 						this.enrichAlerts_withQuoteCreated(alertsNewAfterExecSafeCopy, quoteHackForLive);
-						this.OrderProcessor.CreateOrders_submitToBrokerAdapter_eachInNewThread(alertsNewAfterExecSafeCopy, setStatusSubmitting, true);
+						this.OrderProcessor.Emit_createOrders_forScriptGeneratedAlerts_eachInNewThread(alertsNewAfterExecSafeCopy, setStatusSubmitting, true);
 	
 						// 3. Script using proto might move SL and TP which require ORDERS to be moved, not NULLs
 						int twoMinutes = 120000;

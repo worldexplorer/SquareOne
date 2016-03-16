@@ -128,32 +128,6 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msig + " for Bars=[" + this.Bars + "]" + invoker);
 			}
 		}
-		public bool AlertCounterparty_annihilate_dispatched(Alert alert) {
-			if (alert == null) {
-				string msg = "don't invoke KillAlert with alert=null; check for TP=0 or SL=0 prior to invocation";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
-			}
-			bool killed = false;
-			if (this.IsStreamingTriggeringScript == false) {
-				//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
-				string msg = "NYI_FOR IsStreamingTriggeringScript=false //AnnihilateCounterpartyAlertDispatched()";
-				Assembler.PopupException(msg);
-				return killed;
-			}
-			//v1 ScriptExecutor trying be too smart
-			//if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == true) {
-			//	killed = this.MarketsimBacktest.AnnihilateCounterpartyAlert(alert);
-			//	//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
-			//} else {
-			//	killed = this.AlertGenerator.AnnihilateCounterpartyAlert(alert);
-			//}
-			//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
-			killed = this.DataSource_fromBars.BrokerAdapter.AlertCounterparty_annihilate(alert);
-			return killed;
-		}
 		public void AlertPending_kill(Alert alert) {
 			//v1 ScriptExecutor trying be too smart
 			////if (this.Backtester.IsBacktestingNow) {

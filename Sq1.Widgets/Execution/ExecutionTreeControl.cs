@@ -327,7 +327,7 @@ namespace Sq1.Widgets.Execution {
 				Assembler.PopupException(msg, ex, false);
 			}
 		}
-		public void OrderAlreadyRemovedFromBothLists_JustRebuildListView(List<Order> orders) {
+		public void OrderRemoved_alreadyFromBothLists_rebuildOrdersTree_cleanMessagesView(List<Order> orders) {
 			try {
 				if (orders.Count == 0) {
 					string msg = "WILL_JUST_OrdersTreeOLV.RebuildAll(true)_IN_OrderRemoveFromListView()";
@@ -336,7 +336,7 @@ namespace Sq1.Widgets.Execution {
 					this.OlvOrdersTree.RemoveObjects(orders);
 				}
 				//v1 this.RebuildAllTreeFocusOnTopmost();
-				//v2 this.populateLastOrderMessages();
+				this.SelectOrder_populateMessages(null);
 			} catch (Exception ex) {
 				string msg = " //ExecutionTreeControl.OrderRemoveFromListView()";
 				Assembler.PopupException(msg, ex, false);
@@ -350,7 +350,7 @@ namespace Sq1.Widgets.Execution {
 				//this.OrdersTreeOLV.RebuildColumns();
 				//foreach (var order in this.ordersShadowTree) this.OrdersTree.ToggleExpansion(order);
 				this.OlvOrdersTree.ExpandAll();
-				this.selectLastOrder_populateMessagesSafe();
+				this.SelectOrder_populateMessages(null);
 			} catch (Exception ex) {
 				string msg = " //ExecutionTreeControl.RebuildAllTreeFocusOnTopmost()";
 				Assembler.PopupException(msg, ex, false);

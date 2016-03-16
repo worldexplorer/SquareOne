@@ -86,9 +86,10 @@ namespace Sq1.Core.Broker {
 		        case ConnectionState.UnknownConnectionState:						ret = false;	break;
 
 		        case ConnectionState.Broker_DllConnected:							ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
-		        case ConnectionState.Broker_DllDisonnected:							ret = false;	break;
+		        case ConnectionState.Broker_DllConnecting:							ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
+		        case ConnectionState.Broker_DllDisconnected:							ret = false;	break;
 		        case ConnectionState.Broker_TerminalConnected:						ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
-		        case ConnectionState.Broker_TerminalDisonnected:					ret = false;	break;
+		        case ConnectionState.Broker_TerminalDisconnected:					ret = true;		break;	// set by callback after first order?... I want the button in Editor pressed, linked to DllConnected only
 
 		        // used in QuikBrokerAdapter
 		        case ConnectionState.Broker_Connected_SymbolsSubscribedAll:			ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
@@ -125,7 +126,7 @@ namespace Sq1.Core.Broker {
 		public BrokerAdapter(string reasonToExist) : this() {
 			ReasonToExist					= reasonToExist;
 		}
-		protected void checkOrderThrowInvalid(Order orderToCheck) {
+		protected void checkOrder_throwIfInvalid(Order orderToCheck) {
 			if (orderToCheck.Alert == null) {
 				throw new Exception("order[" + orderToCheck + "].Alert == Null");
 			}
@@ -146,7 +147,7 @@ namespace Sq1.Core.Broker {
 				throw new Exception("order[" + orderToCheck + "].Price[" + orderToCheck.PriceRequested + "] should be != 0 for Stop or Limit");
 			}
 		}
-		public void SubmitOrders_threadEntry_delayed(List<Order> ordersFromAlerts, int millis) {
+		public void Orders_submitOpeners_afterClosedUnlocked_threadEntry_delayed(List<Order> ordersFromAlerts, int millis) {
 			if (ordersFromAlerts.Count == 0) {
 				Assembler.PopupException("SubmitOrdersThreadEntry should get at least one order to place! List<Order>; got ordersFromAlerts.Count=0; returning");
 				return;
@@ -156,9 +157,9 @@ namespace Sq1.Core.Broker {
 			Assembler.PopupException(msg);
 			ordersFromAlerts[0].AppendMessage(msg);
 			Thread.Sleep(millis);
-			this.SubmitOrders_threadEntry(ordersFromAlerts);
+			this.SubmitOrders_backtest_liveFromProcessor_OPPunlockedSequence_threadEntry(ordersFromAlerts);
 		}
-		public virtual void SubmitOrders_threadEntry(List<Order> ordersFromAlerts) {
+		public virtual void SubmitOrders_backtest_liveFromProcessor_OPPunlockedSequence_threadEntry(List<Order> ordersFromAlerts) {
 			try {
 				if (ordersFromAlerts.Count == 0) {
 					Assembler.PopupException("SubmitOrdersThreadEntry should get at least one order to place! List<Order>; got ordersFromAlerts.Count=0; returning");
@@ -210,7 +211,7 @@ namespace Sq1.Core.Broker {
 				//	continue;
 				//}
 				try {
-					this.OrderPreSubmitEnrichCheckThrow(order);
+					this.Order_checkThrow_enrichPreSubmit(order);
 				} catch (Exception ex) {
 					Assembler.PopupException(msg, ex, false);
 					this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msig + ex.Message + " //" + msg);
@@ -222,7 +223,7 @@ namespace Sq1.Core.Broker {
 					continue;
 				}
 				//this.OrderProcessor.DataSnapshot.MoveAlongStateLists(order);
-				this.Submit(order);
+				this.Order_submit(order);
 			}
 		} }
 
@@ -232,52 +233,52 @@ namespace Sq1.Core.Broker {
 					string msg = "Backtesting orders should not be routed to MockBrokerAdapters, but simulated using MarketSim; victimOrder=[" + victimOrder + "]";
 					throw new Exception(msg);
 				}
-				this.Kill(victimOrder);
+				this.Order_kill_dispatcher(victimOrder);
 			}
 		}
 
-		public virtual void OrderPreSubmitEnrichCheckThrow(Order order) {
-			string msg = Name + "::OrderPreSubmitChecker():"
+		public virtual void Order_checkThrow_enrichPreSubmit(Order order) {
+			string msg = Name + "::Order_checkThrow_preSubmitEnrich():"
 				+ " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
 				+ " SernoSession[" + order.SernoSession + "]";
 			if (this.StreamingAdapter == null) {
 				msg = " StreamingAdapter=null, can't get last/fellow/crossMarket price // " + msg;
 				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-				this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
+				this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState);
 				throw new Exception(msg);
 			}
 			try {
-				this.checkOrderThrowInvalid(order);
+				this.checkOrder_throwIfInvalid(order);
 			} catch (Exception ex) {
 				msg = ex.Message + " //" + msg;
 				//orderProcessor.updateOrderStatusError(order, OrderState.ErrorOrderInconsistent, msg);
 				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-				this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
+				this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState);
 				throw new Exception(msg, ex);
 			}
 
 			order.AbsorbCurrentBidAsk_fromStreamingSnapshot(this.StreamingAdapter.StreamingDataSnapshot);
+			this.Order_enrichAlert_brokerSpecificInjection(order);
 
-			this.OrderEnrich_preSubmit_brokerSpecificInjection(order);
+			if (order.Alert.Strategy.Script == null) return;
 
-			// moved to orderProcessor::CreatePropagateOrderFromAlert()
-			// this.ModifyOrderTypeAccordingToMarketOrderAs(order);
+			string msg1 = "YEAH_THATS_CRAZY__BELOW";
+			//Assembler.PopupException(msg, null, false);
 
-			if (order.Alert.Strategy.Script != null) {
-				Order reason4lock = this.OrderProcessor.OPPemergency.GetReasonForLock(order);
-				bool isEmergencyClosingNow = (reason4lock != null);
-				//bool positionWasFilled = this.orderProcessor.positionWasFilled(order);
-				if (order.Alert.IsEntryAlert && isEmergencyClosingNow) {	// && positionWasFilled
-					//OrderState IRefuseUntilemrgComplete = this.orderProcessor.OPPemergency.getRefusalForEmergencyState(reason4lock);
-					OrderState IRefuseUntilemrgComplete = OrderState.IRefuseOpenTillEmergencyCloses;
-					msg = "Reason4lock: " + reason4lock.ToString();
-					OrderStateMessage omsg = new OrderStateMessage(order, IRefuseUntilemrgComplete, msg);
-					this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg);
-					throw new Exception(msg);
-				}
-			}
+			Order reason4lock = this.OrderProcessor.OPPemergency.GetReasonForLock(order);
+			bool isEmergencyClosingNow = (reason4lock != null);
+			//bool positionWasFilled = this.orderProcessor.positionWasFilled(order);
+			bool emergencyShouldKickIn = order.Alert.IsEntryAlert && isEmergencyClosingNow;	// && positionWasFilled
+			if (emergencyShouldKickIn == false) return;
+
+			//OrderState IRefuseUntilemrgComplete = this.orderProcessor.OPPemergency.getRefusalForEmergencyState(reason4lock);
+			OrderState IRefuseUntilEmrgComplete = OrderState.IRefuseOpenTillEmergencyCloses;
+			msg = "Reason4lock: " + reason4lock.ToString();
+			OrderStateMessage omsg = new OrderStateMessage(order, IRefuseUntilEmrgComplete, msg);
+			this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
+			throw new Exception(msg);
 		}
-		public virtual void Modify_orderType_priceRequesting_accordingToMarketOrderAs(Order order) {
+		public virtual void Order_modifyOrderType_priceRequesting_accordingToMarketOrderAs(Order order) {
 			string msig = " //" + Name + "::Modify_orderType_priceRequesting_accordingToMarketOrderAs():"
 				+ " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
 				+ " SernoSession[" + order.SernoSession + "]";
@@ -302,7 +303,7 @@ namespace Sq1.Core.Broker {
 						msg = "order.Bars=null; can't align order and get Slippage; returning with error // " + msg;
 						Assembler.PopupException(msg);
 						//order.AppendMessageAndChangeState(new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg));
-						this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg));
+						this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg));
 						throw new Exception(msg);
 					}
 
@@ -315,7 +316,7 @@ namespace Sq1.Core.Broker {
 
 						case MarketOrderAs.MarketMinMaxSentToBroker:
 							MarketLimitStop beforeBrokerSpecific = alert.MarketLimitStop;
-							string brokerSpecificDetails = this.ModifyOrderType_accordingToMarketOrder_asBrokerSpecificInjection(order);
+							string brokerSpecificDetails = this.Order_modifyType_accordingToMarketOrder_asBrokerSpecificInjection(order);
 							if (brokerSpecificDetails != "") {
 								msg = "BROKER_SPECIFIC_CONVERSION_MarketMinMaxSentToBroker: [" + beforeBrokerSpecific + "]=>[" + alert.MarketLimitStop + "](" + alert.MarketOrderAs
 									+ ") brokerSpecificDetails[" + brokerSpecificDetails + "]";
@@ -357,7 +358,7 @@ namespace Sq1.Core.Broker {
 						default:
 							msg = "no handler for Market Order with Alert.MarketOrderAs[" + alert.MarketOrderAs + "]";
 							OrderStateMessage newOrderState2 = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-							this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState2);
+							this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState2);
 							throw new Exception(msg);
 					}
 					//if (alert.Bars.SymbolInfo.OverrideMarketPriceToZero == true) {
@@ -389,7 +390,7 @@ namespace Sq1.Core.Broker {
 								+ "; must be one of those: Buy/Cover/Sell/Short";
 							//orderProcessor.updateOrderStatusError(order, OrderState.Error, msg);
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.Error, msg);
-							this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
+							this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState);
 							throw new Exception(msg);
 					}
 					break;
@@ -411,7 +412,7 @@ namespace Sq1.Core.Broker {
 								+ "; must be one of those: Buy/Cover/Sell/Short";
 							//orderProcessor.updateOrderStatusError(order, OrderState.Error, msg);
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.Error, msg);
-							this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
+							this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState);
 							throw new Exception(msg);
 					}
 					break;
@@ -421,7 +422,7 @@ namespace Sq1.Core.Broker {
 						+ "; must be one of those: Market/Limit/Stop";
 					//orderProcessor.updateOrderStatusError(order, OrderState.Error, msg);
 					OrderStateMessage omsg = new OrderStateMessage(order, OrderState.Error, msg);
-					this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg);
+					this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 					throw new Exception(msg);
 			}
 			order.AppendMessage(msg + msig);

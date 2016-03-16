@@ -110,6 +110,11 @@ namespace Sq1.Widgets.RangeBar {
 						try {
 							float percentageX = this.RangeBarWithGraph.XonGraphicsToPercentage(i);
 							float percentageY = this.PercentageYOnGraphForRangePercentage(percentageX);
+							if (double.IsNaN(percentageY)) {
+								string msg = "STREAMING_BAR_NULL?...";
+								Assembler.PopupException(msg + msig, null, false);
+								continue;
+							}
 							if (percentageY == -1) {
 								object value = this.RangeBarWithGraph.ValueFromPercentage(percentageX);
 								string msg = "empty value at [" + value + "]";

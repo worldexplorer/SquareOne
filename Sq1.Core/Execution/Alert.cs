@@ -519,7 +519,7 @@ namespace Sq1.Core.Execution {
 				;
 			return basic && streamingBarMayBeDifferent;
 		}
-		public	virtual void AbsorbFromExecutorAfterCreatedByMarketReal(ScriptExecutor executor) {
+		public	virtual void AbsorbFromExecutor_afterCreated_byMarketReal(ScriptExecutor executor) {
 		}
 		public	void FillPositionAffected_entryOrExit_respectively(Bar barFill, int barFillRelno,
 				double priceFill, double qtyFill, double slippageFill, double commissionFill) {

@@ -8,8 +8,8 @@ namespace Sq1.Core.Execution {
 				OrderState.PreSubmit,
 				OrderState.Submitting,
 				OrderState.SubmittingSequenced,
-				OrderState.KillPendingPreSubmit,
-				OrderState.KillPendingSubmitting,
+				OrderState.VictimsBulletPreSubmit,
+				OrderState.VictimsBulletConfirmed,
 				OrderState.KillerPreSubmit,
 				OrderState.KillerSubmitting,
 				OrderState.SubmittingSequenced
@@ -24,7 +24,7 @@ namespace Sq1.Core.Execution {
 				OrderState._OrderStatus,		// an order must never be actually analyzed for this status koz it never has it assigned
 				OrderState._TransactionStatus,	// an order must never be actually analyzed for this status koz it never has it assigned
 				OrderState.KillerBulletFlying,
-				OrderState.KillPendingSubmitted,
+				OrderState.VictimsBulletSubmitted,
 				OrderState.IRefuseOpenTillEmergencyCloses,
 			}, "NoInterventionRequired");
 
@@ -35,7 +35,7 @@ namespace Sq1.Core.Execution {
 				OrderState.ErrorMarketPriceZero,
 				OrderState.ErrorSlippageCalc,
 				OrderState.ErrorCancelReplace,
-				OrderState.ErrorSubmittingBroker,
+				OrderState.ErrorSubmitting_BrokerTerminalDisconnected,
 			}, "InterventionRequired");
 
 		public static OrderStatesCollections CemeteryHealthy =
@@ -46,7 +46,7 @@ namespace Sq1.Core.Execution {
 				OrderState.RejectedLimitReached,
 				OrderState.Filled,
 				OrderState.KillerDone,
-				OrderState.KillTransSubmittedOK,
+				OrderState.KillerTransSubmittedOK,
 				OrderState.SLAnnihilated,
 				OrderState.TPAnnihilated,
 				OrderState.RejectedLimitReached,
@@ -63,7 +63,7 @@ namespace Sq1.Core.Execution {
 			new OrderStatesCollections(new List<OrderState>() {
 				OrderState.Error,
 				OrderState.ErrorOrderInconsistent,
-				OrderState.ErrorSubmitOrder,
+				OrderState.ErrorSubmittingOrder,
 				OrderState.ErrorSubmittingNotEatable,
 				OrderState.SubmittedNoFeedback,
 				OrderState.IRefuseToCloseNonStreamingPosition,

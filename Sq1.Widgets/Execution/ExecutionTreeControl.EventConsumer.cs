@@ -4,14 +4,16 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
+
 using Sq1.Core;
 using Sq1.Core.Execution;
-using Sq1.Widgets.LabeledTextBox;
 using Sq1.Core.Serializers;
+
+using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
-		void ordersTree_SelectedIndexChanged(object sender, EventArgs e) {
+		void olvOrdersTree_SelectedIndexChanged(object sender, EventArgs e) {
 			try {
 				this.DataSnapshot.FirstRowShouldStaySelected = (this.OlvOrdersTree.SelectedIndex == 0) ? true : false;
 				int selectedIndex = this.OlvOrdersTree.SelectedIndex;
@@ -32,7 +34,7 @@ namespace Sq1.Widgets.Execution {
 				
 				if (this.DataSnapshot.ToggleSingleClickSyncWithChart) {
 					//v1 this.raiseOnOrderDoubleClickedChartFormNotification(this, this.OrdersTree.SelectedObject as Order);
-					this.ordersTree_DoubleClick(this, null);
+					this.olvOrdersTree_DoubleClick(this, null);
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException("ordersTree_SelectedIndexChanged()", ex);
@@ -68,8 +70,8 @@ namespace Sq1.Widgets.Execution {
 			} catch (Exception ex) {
 				Assembler.PopupException(" //ctxColumnsGrouped_ItemClicked", ex);
 			} finally {
-				this.ctxColumnsGrouped.Show();
 				//this.ctxOrder.Show();
+				this.ctxColumnsGrouped.Show();
 			}
 		}
 		void mniToggleBrokerTime_Click(object sender, EventArgs e) {
@@ -81,7 +83,7 @@ namespace Sq1.Widgets.Execution {
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleBrokerTime_Click", ex);
 			} finally {
-				this.ctxOrder.Show();
+				//this.ctxOrder.Show();
 				this.ctxToggles.Show();
 			}
 		}
@@ -92,7 +94,7 @@ namespace Sq1.Widgets.Execution {
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleSyncWithChart_Click", ex);
 			} finally {
-				this.ctxOrder.Show();
+				//this.ctxOrder.Show();
 				this.ctxToggles.Show();
 			}
 		}
@@ -104,7 +106,7 @@ namespace Sq1.Widgets.Execution {
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleMessagesPane_Click", ex);
 			} finally {
-				this.ctxOrder.Show();
+				//this.ctxOrder.Show();
 				this.ctxToggles.Show();
 			}
 		}
@@ -124,7 +126,7 @@ namespace Sq1.Widgets.Execution {
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleCompletedOrders_Click", ex);
 			} finally {
-				this.ctxOrder.Show();
+				//this.ctxOrder.Show();
 				this.ctxToggles.Show();
 			}
 		}
@@ -134,7 +136,7 @@ namespace Sq1.Widgets.Execution {
 			} catch (Exception ex) {
 				Assembler.PopupException(" //ctxAccounts_ItemClicked", ex);
 			} finally {
-				this.ctxOrder.Show();
+				//this.ctxOrder.Show();
 				this.ctxAccounts.Show();
 			}
 		}
@@ -169,14 +171,15 @@ namespace Sq1.Widgets.Execution {
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniOrdersRemoveSelected_Click", ex);
 			} finally {
-				this.ctxOrder.Show();
+				//this.ctxOrder.Show();
 			}
 		}
-		void ordersTree_KeyDown(object sender, KeyEventArgs e) {
-			if (e.KeyCode == Keys.Delete) {
-				//this.btnRemoveSelected.PerformClick();
-				this.mniOrdersRemoveCompleted_Click(this, null);
-			}
+		void olvOrdersTree_KeyDown(object sender, KeyEventArgs e) {
+			// .Del is already assigned to mniRemoveSelectedPending in .Designer.cs
+			//if (e.KeyCode == Keys.Delete) {
+			//    //this.btnRemoveSelected.PerformClick();
+			//    this.mniOrdersRemoveCompleted_Click(this, null);
+			//}
 		}
 		void mniOrdersRemoveCompleted_Click(object sender, EventArgs e) {
 			try {
@@ -202,9 +205,7 @@ namespace Sq1.Widgets.Execution {
 					string msg = "SELECTED_OBJECT_MUST_BE_AN_ORDER got[" + this.OlvOrdersTree.SelectedObject + "]";
 					Assembler.PopupException(msg + msig, null, false);
 				}
-
-				Order replacementOrder = order.DeriveReplacementOrder();
-				Assembler.PopupException("NEXT_STEP_IS_TO_KILL_SELECTED_AND_SUBMIT_REPLACEMENT [" + replacementOrder + "]", null, false);
+				Assembler.InstanceInitialized.OrderProcessor.GuiClick_orderReplace(order);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			} finally {
@@ -215,9 +216,7 @@ namespace Sq1.Widgets.Execution {
 			string msig = " //mniOrderKill_Click";
 			try {
 				if (this.OrdersSelected.Count == 0) return;
-				foreach (Order pendingOrder in this.OrdersSelected) {
-					Assembler.InstanceInitialized.OrderProcessor.PendingOrder_killWithoutKiller(pendingOrder);
-				}
+				Assembler.InstanceInitialized.OrderProcessor.GuiClick_killPendingSelected(this.OrdersSelected);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			} finally {
@@ -227,7 +226,7 @@ namespace Sq1.Widgets.Execution {
 		void mniKillPendingAll_Click(object sender, EventArgs e) {
 			string msig = " //mniOrdersCancel_Click";
 			try {
-				Assembler.InstanceInitialized.OrderProcessor.CancelAllPending();
+				Assembler.InstanceInitialized.OrderProcessor.GuiClick_killPendingAll();
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			} finally {
@@ -237,7 +236,7 @@ namespace Sq1.Widgets.Execution {
 		void mniKillPendingAll_stopEmitting_Click(object sender, EventArgs e) {
 			string msig = " //mniKillAllStopAutoSubmit_Click";
 			try {
-				Assembler.InstanceInitialized.OrderProcessor.KillAll();
+				Assembler.InstanceInitialized.OrderProcessor.GuiClick_killAll();
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			} finally {
@@ -245,21 +244,26 @@ namespace Sq1.Widgets.Execution {
 			}
 		}
 
-		void ordersTree_DoubleClick(object sender, EventArgs e) {
+
+		void olvOrdersTree_Click(object sender, EventArgs e) {
+
+		}
+		void olvOrdersTree_DoubleClick(object sender, EventArgs e) {
 			//if (this.mniOrderEdit.Enabled) this.mniOrderEdit_Click(sender, e);
 			if (this.OlvOrdersTree.SelectedItem == null) {
 				string msg = "OrdersTree.SelectedItem == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.OlvOrdersTree.SelectedItem.ForeColor == Color.DimGray) {
-				string msg = "tree_FormatRow() sets Item.ForeColor=Color.DimGray when AlertsForChart.IsItemRegisteredForAnyContainer(order.Alert)==false"
-					+ " (all JSON-deserialized orders have no chart to get popped-up)";
-				//Debugger.Break();
-				return;
-			}
+			//if (this.OlvOrdersTree.SelectedItem.ForeColor == Color.DimGray) {
+			//    string msg = "I_REFUSE_TO_KILL_AN_ORDER_AFTER_APPRESTART"
+			//        + " tree_FormatRow() sets Item.ForeColor=Color.DimGray when AlertsForChart.IsItemRegisteredForAnyContainer(order.Alert)==false"
+			//        + " (all JSON-deserialized orders have no chart to get popped-up)";
+			//    Assembler.PopupException(msg, null, false);
+			//    return;
+			//}
 			//otherwize if you'll see REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR - dont forget to use Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.ExitAlert);
-			this.raiseOnOrderDoubleClickedChartFormNotification(this, this.OlvOrdersTree.SelectedObject as Order);
+			this.raiseOnOrderDoubleClicked_OrderProcessorShouldKillOrder(this, this.OlvOrdersTree.SelectedObject as Order);
 		}
 
 

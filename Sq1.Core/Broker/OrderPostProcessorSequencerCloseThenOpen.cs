@@ -23,7 +23,7 @@ namespace Sq1.Core.Broker {
 						"sequence initialized: [" + sequenced.State + "]=>[" + OrderState.SubmittingSequenced + "]"
 						+ " for [" + ordersOpen.Count + "] fellow ordersOpen"
 						+ " by [" + ordersClose.Count + "]ordersClose");
-					this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg);
+					this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 				}
 			}
 		}
@@ -70,7 +70,7 @@ namespace Sq1.Core.Broker {
 							"sequence cleared: [" + submitting.State + "]=>[" + OrderState.Submitting + "]"
 							+ " for [" + ordersOpen.Count + "] fellow ordersOpen"
 							+ " by orderClose=[" + orderClosed + "]");
-						this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg);
+						this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 					}
 
 					Alert alertFirst = ordersOpen[0].Alert;
@@ -80,7 +80,7 @@ namespace Sq1.Core.Broker {
 
 					int millis = alertFirst.Bars.SymbolInfo.SequencedOpeningAfterClosedDelayMillis;
 					Task taskEmittingOrders = new Task(delegate {
-						broker.SubmitOrders_threadEntry_delayed(ordersOpen, millis);
+						broker.Orders_submitOpeners_afterClosedUnlocked_threadEntry_delayed(ordersOpen, millis);
 					});
 					taskEmittingOrders.Start();
 				}

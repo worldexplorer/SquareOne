@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.Broker;
-
+using Sq1.Core.Execution;
 
 namespace Sq1.Gui.Singletons {
 	public partial class ExecutionForm : DockContentSingleton<ExecutionForm> {
@@ -20,19 +20,12 @@ namespace Sq1.Gui.Singletons {
 			//this.executionTree.Initialize(this.orderProcessor.DataSnapshot.OrdersAll.SafeCopy);
 			this.ExecutionTreeControl.InitializeWith_shadowTreeRebuilt(this.orderProcessor.DataSnapshot.OrdersAutoTree);
 			this.ExecutionTreeControl.PopulateMenuAccounts_fromBrokerAdapter(
-				Assembler.InstanceInitialized.RepositoryJsonDataSources.CtxAccounts_allChecked_fromUnderlyingBrokerAdapters);			
+				Assembler.InstanceInitialized.RepositoryJsonDataSources.CtxAccounts_allChecked_fromUnderlyingBrokerAdapters);
+
+			this.ExecutionTreeControl.OnOrderDoubleClicked_OrderProcessorShouldKillOrder -= new EventHandler<OrderEventArgs>(this.orderProcessor.ExecutionTreeControl_OnOrderDoubleClicked_OrderProcessorShouldKillOrder);
+			this.ExecutionTreeControl.OnOrderDoubleClicked_OrderProcessorShouldKillOrder += new EventHandler<OrderEventArgs>(this.orderProcessor.ExecutionTreeControl_OnOrderDoubleClicked_OrderProcessorShouldKillOrder);
 		}
 		
-		[Obsolete("if the form is hidden mark it needs to be repopulated OnActivate() and do full TreeRebuild there")]
-		bool IsHiddenHandlingRepopulate { get {
-			if (this.isHiddenPrevState != base.IsHidden) {
-				//if (base.IsHidden == false) this.executionTree.RebuildTree();
-				if (base.IsHidden == false) this.ExecutionTreeControl.RebuildAllTree_focusOnTopmost();
-				this.isHiddenPrevState = base.IsHidden;
-			}
-			return base.IsHidden;
-		} }
-
 		public void PopulateWindowText() {
 			if (base.InvokeRequired) {
 				base.BeginInvoke(new MethodInvoker(this.PopulateWindowText));
