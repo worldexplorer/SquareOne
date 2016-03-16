@@ -115,11 +115,9 @@ namespace Sq1.Adapters.Quik.Broker {
 				base.BeginInvoke(new MethodInvoker(this.propagateBrokerConnected_intoBtnStateText));
 				return;
 			}
-			//if (this.cbxConnectDLL.Checked == this.quikBrokerAdapter.DdeServerStarted) return;
 			if (this.cbxConnectDLL.Checked != this.quikBrokerAdapter.UpstreamConnected) {
 				try {
 					this.dontStartStopDllConnection_imSyncingDdeStarted_intoTheBtnText_only = true;
-					//this.cbxConnectDLL.Checked  = this.quikBrokerAdapter.DdeServerStarted;
 					this.cbxConnectDLL.Checked = this.quikBrokerAdapter.UpstreamConnected;
 				} catch (Exception ex) {
 					string msg = "HOPEFULLY_NEVER_HAPPENS__YOU_CAUGHT_IT_EARLIER //QuikBrokerEditor(" + quikBrokerAdapter + ")";

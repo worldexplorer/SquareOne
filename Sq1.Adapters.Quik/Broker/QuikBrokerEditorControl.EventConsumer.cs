@@ -23,10 +23,12 @@ namespace Sq1.Adapters.Quik.Broker {
 		void cbxConnectDLL_Click(object sender, EventArgs e) {
 			try {
 			    if (this.cbxConnectDLL.Checked) {
-			        this.quikBrokerAdapter.Disconnect();
+			        this.quikBrokerAdapter.Broker_disconnect();
 			    } else {
-			        this.quikBrokerAdapter.Connect();
+			        this.quikBrokerAdapter.Broker_connect();
 			    }
+				//this.quikBrokerAdapter.UpstreamConnectedOnAppRestart = this.quikBrokerAdapter.UpstreamConnected;
+
 				this.propagateBrokerConnected_intoBtnStateText();
 			} catch (Exception ex) {
 			    string msg = "(DIS)CONNECT_THREW";
@@ -36,22 +38,22 @@ namespace Sq1.Adapters.Quik.Broker {
 
 		void cbxConnectDLL_CheckedChanged(object sender, EventArgs e) {
 			return;		// 
-			try {
-				if (this.dontStartStopDllConnection_imSyncingDdeStarted_intoTheBtnText_only) {
-					this.propagateBrokerConnected_intoBtnStateText();
-					return;
-				}
-				if (this.cbxConnectDLL.Checked) {
-					//this.quikBrokerAdapter.ConnectToDll_subscribe();
-					this.quikBrokerAdapter.Connect();
-				} else {
-					//this.quikBrokerAdapter.DisconnectFromDll_unsubscribe();
-					this.quikBrokerAdapter.Disconnect();
-				}
-			} catch (Exception ex) {
-				string msg = "(DIS)CONNECT_THREW";
-				Assembler.PopupException(msg, ex);
-			}
+			//try {
+			//    if (this.dontStartStopDllConnection_imSyncingDdeStarted_intoTheBtnText_only) {
+			//        this.propagateBrokerConnected_intoBtnStateText();
+			//        return;
+			//    }
+			//    if (this.cbxConnectDLL.Checked) {
+			//        //this.quikBrokerAdapter.ConnectToDll_subscribe();
+			//        this.quikBrokerAdapter.Broker_connect();
+			//    } else {
+			//        //this.quikBrokerAdapter.DisconnectFromDll_unsubscribe();
+			//        this.quikBrokerAdapter.Broker_disconnect();
+			//    }
+			//} catch (Exception ex) {
+			//    string msg = "(DIS)CONNECT_THREW";
+			//    Assembler.PopupException(msg, ex);
+			//}
 		}
 
 		void lnkTrans2quik_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {

@@ -140,8 +140,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 		}
 
 		void syncSymbolClass_toSymbolInfo(QuoteQuik quoteQuik) {
-			if (string.IsNullOrEmpty(quoteQuik.Symbol		) == false) return;
-			if (string.IsNullOrEmpty(quoteQuik.SymbolClass	) == false) return;
+			if (string.IsNullOrEmpty(quoteQuik.Symbol		)) return;
+			if (string.IsNullOrEmpty(quoteQuik.SymbolClass	)) return;
 			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfo_nullUnsafe(quoteQuik.Symbol);
 			if (symbolInfo == null) return;
 			if (symbolInfo.SymbolClass == quoteQuik.SymbolClass) return;

@@ -72,10 +72,10 @@ namespace Sq1.Adapters.Quik.Broker {
 			return base.BrokerEditorInstance;
 		}
 
-		public void TradeState_callbackFromQuikDll(long sernoExchange, DateTime tradeDate, 
-				string classCode, string secCode, double priceFill, int qtyFill,
+		public void CallbackFromQuikDll_TradeState(long sernoExchange, DateTime tradeDate, 
+				string classCode, string secCode, double priceFilled_forMarket_zeroForLimit, int qtyFilled_forMarket_zeroForLimit,
 				double tradePrice2, double tradeTradeSysCommission, double tradeTScommission) {
-			string msig = " //" + Name + "::TradeState_callbackFromQuikDll()";
+			string msig = " //" + Name + "::CallbackFromQuikDll_TradeState()";
 			try {
 				OrderLane pendings = this.OrderProcessor.DataSnapshot.OrdersPending;	// when TradeState(), both Market and Limit orders are Pending
 				string		suggestion		= "PASS_suggestLane=TRUE";
@@ -87,12 +87,12 @@ namespace Sq1.Adapters.Quik.Broker {
 					throw new Exception(msg_findOrder + msig);
 				}
 
-				string filled = qtyFill == 0 ? "NOT_FILLED" : "FILLED";
-				if (qtyFill > 0 && qtyFill != order.QtyRequested) {
+				string filled = qtyFilled_forMarket_zeroForLimit == 0 ? "NOT_FILLED" : "FILLED";
+				if (qtyFilled_forMarket_zeroForLimit > 0 && qtyFilled_forMarket_zeroForLimit != order.QtyRequested) {
 					filled = "PARTIAL_FILL_OF[" + order.QtyRequested + "]";
 				}
 				filled += " " + order.Alert.MarketLimitStopAsString;
-				string msg = filled + " [" + qtyFill + "]@[" + priceFill + "]"
+				string msg = filled + " [" + qtyFilled_forMarket_zeroForLimit + "]@[" + priceFilled_forMarket_zeroForLimit + "]"
 					+ " " + secCode + "/" + classCode
 					+ " tradeDate[" + tradeDate + "]"
 					+ " tradePrice2[" + tradePrice2 + "]"
@@ -114,31 +114,31 @@ namespace Sq1.Adapters.Quik.Broker {
 				                            || order.Alert.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
 				    if (outOfBarPriceFilled && order.Alert.SymbolClass == "SPBFUT") {
 				        if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) {
-				            priceFill = order.PriceRequested + commissionSum;
+				            priceFilled_forMarket_zeroForLimit = order.PriceRequested + commissionSum;
 				        } else {
-				            priceFill = order.PriceRequested - commissionSum;
+				            priceFilled_forMarket_zeroForLimit = order.PriceRequested - commissionSum;
 				        }
 				    }
 				}
 
 			    // Quik declares Fill in TradeState() only for Market* orders (Futures), Fill for Limit* (Futures) orders I should expect in OrderState()
-				bool fillHappened = priceFill > 0 && qtyFill > 0;
+				bool fillHappened = priceFilled_forMarket_zeroForLimit > 0 && qtyFilled_forMarket_zeroForLimit > 0;
 				if (fillHappened) {
 					order.DateServerLastFillUpdate = tradeDate;
 				}
 
 				OrderState statusChanged_onlyIfFilled = fillHappened ? OrderState.Filled : order.State;
 				OrderStateMessage sameStateOmsg = new OrderStateMessage(order, statusChanged_onlyIfFilled, msg);
-				this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(sameStateOmsg, priceFill, qtyFill);
+				this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(sameStateOmsg, priceFilled_forMarket_zeroForLimit, qtyFilled_forMarket_zeroForLimit);
 			} catch (Exception exc) {
 				string msg = "THROWN_SOMEWHERE_SORRY_IN_CallbackTradeStateReceivedQuik";
 				Assembler.PopupException(msg + msig, exc);
 			}
 		}
 
-		public void OrderState_callbackFromQuikDll(OrderState newOrderStateReceived, string GUID, long SernoExchange,
-												string classCode, string secCode, double priceFill, int qtyFill) {
-			string msig = " //" + Name + "::OrderState_callbackFromQuikDll()";
+		public void CallbackFromQuikDll_OrderState(OrderState newOrderStateReceived, string GUID, long SernoExchange,
+						string classCode, string secCode, double priceFilled_forLimit_zeroForMarket, int qtyFilled_forLimit_zeroForMarket) {
+			string msig = " //" + Name + "::CallbackFromQuikDll_OrderState()";
 
 			Order order = base.ScanEvidentLanes_forGuid_nullUnsafe(GUID);
 			if (order == null) {
@@ -146,9 +146,9 @@ namespace Sq1.Adapters.Quik.Broker {
 				return;
 			}
 
-			string filled = qtyFill == 0 ? "NOT_FILLED" : "FILLED";
-			if (qtyFill > 0) {
-				if (qtyFill != order.QtyRequested) {
+			string filled = qtyFilled_forLimit_zeroForMarket == 0 ? "NOT_FILLED" : "FILLED";
+			if (qtyFilled_forLimit_zeroForMarket > 0) {
+				if (qtyFilled_forLimit_zeroForMarket != order.QtyRequested) {
 					filled = "PARTIAL_FILL_OF[" + order.QtyRequested + "]";
 					if (newOrderStateReceived != OrderState.FilledPartially) {
 						filled = "WRONG_STATE[" + newOrderStateReceived + "] " + filled;
@@ -161,7 +161,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			}
 			filled += " " + order.Alert.MarketLimitStopAsString;
 
-			string msg = filled + " [" + qtyFill + "]@[" + priceFill + "]"
+			string msg = filled + " [" + qtyFilled_forLimit_zeroForMarket + "]@[" + priceFilled_forLimit_zeroForMarket + "]"
 				+ " " + secCode + "/" + classCode
 				+ " [" + newOrderStateReceived + "]"
 				+ " sernoExchange[" + SernoExchange + "] GUID=[" + GUID + "]";
@@ -170,41 +170,56 @@ namespace Sq1.Adapters.Quik.Broker {
 				order.SernoExchange  = SernoExchange;	// linking GUID to SernoExchange otherwize we'll never find it again
 			}
 
-			if (newOrderStateReceived == OrderState.KillerDone || newOrderStateReceived == OrderState.Rejected) {
-				if (priceFill != 0) {
-					string msg1 = "QUIK_HINTS_ON_SOMETHING fillPrice[" + priceFill + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
+			if (newOrderStateReceived == OrderState.Rejected) {
+				if (priceFilled_forLimit_zeroForMarket != 0) {
+					string msg1 = "QUIK_HINTS_ON_SOMETHING fillPrice[" + priceFilled_forLimit_zeroForMarket + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
 					this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msg1);
-					priceFill = 0;
+					priceFilled_forLimit_zeroForMarket = 0;
 				}
-				if (qtyFill != 0) {
-					string msg1 = "QUIK_HINTS_ON_SOMETHING fillQnty[" + priceFill + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
+				if (qtyFilled_forLimit_zeroForMarket != 0) {
+					string msg1 = "QUIK_HINTS_ON_SOMETHING fillQnty[" + priceFilled_forLimit_zeroForMarket + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
 					this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msg1);
-					qtyFill = 0;
+					qtyFilled_forLimit_zeroForMarket = 0;
 				}
 			}
 
-			if (newOrderStateReceived == OrderState.FilledPartially || newOrderStateReceived == OrderState.Filled) {
-				OrderStateMessage omsg1 = new OrderStateMessage(order, newOrderStateReceived, "LIMIT_ORDER_FILLED " + msg);
-				this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg1, priceFill, qtyFill);
-			} else {
-				OrderStateMessage omsg = new OrderStateMessage(order, newOrderStateReceived, msg);
-				base.OrderProcessor.Order_updateState_mustBeTheSame_dontPostProcess(omsg);
+			if (order.State == newOrderStateReceived) {
+				//OrderStateMessage omsg1 = new OrderStateMessage(order, msg);
+				//base.OrderProcessor.Order_updateState_mustBeTheSame_dontPostProcess(omsg);
+				base.OrderProcessor.AppendOrderMessage_propagateToGui(order, msg);
+				return;
 			}
+	
+			if (newOrderStateReceived == OrderState.FilledPartially || newOrderStateReceived == OrderState.Filled) {
+				msg = "LIMIT_ORDER_FILLED " + msg;
+			}
+			OrderStateMessage omsg = new OrderStateMessage(order, newOrderStateReceived, msg);
+			this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg, priceFilled_forLimit_zeroForMarket, qtyFilled_forLimit_zeroForMarket);
+
+			if (order.IsVictim == false) return;
+			Order killer = order.KillerOrder;
+			string msg_killer = "HIT_MY_VICTIM__DROPPED_THE_GUN_AND_RUN_AWAY";
+			//v1 ALREADY_POST_PROCESSED_BY_VICTIM
+			//OrderStateMessage omsg_killer = new OrderStateMessage(killer, OrderState.KillerDone, msg_killer);
+			//killer.AppendMessageSynchronized(omsg_killer);
+			//v2
+			killer.AppendMessage(msg_killer);
 		}
 
 
-		public void ConnectionStateUpdated_callbackFromQuikDll(ConnectionState state, string message) {
+		public void CallbackFromQuikDll_ConnectionStateUpdated(ConnectionState state, string message) {
 			this.UpstreamConnectionState = state;
 			Assembler.DisplayConnectionStatus(state, message);
 		}
-		public override string ModifyOrderType_accordingToMarketOrder_asBrokerSpecificInjection(Order order) {
+		public override string Order_modifyType_accordingToMarketOrder_asBrokerSpecificInjection(Order order) {
 			string msg = "";
 			if (order.Alert.QuoteCreatedThisAlert == null) {
 				msg = "ORDER_MARKED_INCONSISTENT__order.Alert.QuoteCreatedThisAlert=null SymbolInfo["
 					 + order.Alert.Symbol + "/" + order.Alert.SymbolClass + "]";
 				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-				base.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
-				throw new Exception(msg);
+				base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState);
+				//throw new Exception(msg);
+				return msg;
 			}
 			QuoteQuik quikQuote = order.Alert.QuoteCreatedThisAlert as QuoteQuik;
 			if (quikQuote == null) {
@@ -221,7 +236,7 @@ namespace Sq1.Adapters.Quik.Broker {
 								+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
 								+ " (Slippage=" + order.SlippageFill + ")";
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-							this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
+							this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState);
 							#if DEBUG
 							Debugger.Break();
 							#endif
@@ -240,7 +255,7 @@ namespace Sq1.Adapters.Quik.Broker {
 								+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
 								+ " (Slippage=" + order.SlippageFill + ")";
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-							this.OrderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
+							this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState);
 							#if DEBUG
 							Debugger.Break();
 							#endif
