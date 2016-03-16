@@ -306,6 +306,7 @@ namespace Sq1.Core.Backtesting {
 			} finally {
 				this.BarsSimulatedSoFar = 0;
 				this.BacktestWasAbortedByUserInGui = false;
+				if (this.BacktestAbortedMre.WaitOne(0) == true) Thread.Sleep(10);	// let the Wait() in GUI thread to feel SIGNALLED, before I reset again to NON_SIGNALLED
 				this.BacktestAbortedMre.Reset();
 				this.RequestingBacktestAbortMre.Reset();
 				this.BacktestIsRunningMre.Set();

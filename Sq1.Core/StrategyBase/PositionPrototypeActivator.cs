@@ -190,7 +190,7 @@ namespace Sq1.Core.StrategyBase {
 					#endif
 					throw new Exception(msg);
 				}
-				killed = executor.AlertCounterparty_annihilate_dispatched(position.Prototype.StopLossAlert_forMoveAndAnnihilation);
+				killed = this.AlertCounterparty_annihilate_dispatched(position.Prototype.StopLossAlert_forMoveAndAnnihilation);
 				if (executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
 					string msg = "killed[" + killed + "] counterParty [" + position.Prototype.StopLossAlert_forMoveAndAnnihilation + "]";
 					this.appendMessageToTakeProfitOrder(position, msg);
@@ -212,7 +212,7 @@ namespace Sq1.Core.StrategyBase {
 					#endif
 					throw new Exception(msg);
 				}
-				killed = executor.AlertCounterparty_annihilate_dispatched(position.Prototype.TakeProfitAlert_forMoveAndAnnihilation);
+				killed = this.AlertCounterparty_annihilate_dispatched(position.Prototype.TakeProfitAlert_forMoveAndAnnihilation);
 				if (executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
 					string msg = "killed[" + killed + "] counterParty [" + position.Prototype.TakeProfitAlert_forMoveAndAnnihilation + "]";
 					this.appendMessageToStopLossOrder(position, msg);
@@ -226,6 +226,32 @@ namespace Sq1.Core.StrategyBase {
 					throw new Exception(msg);
 				}
 			}
+			return killed;
+		}
+		public bool AlertCounterparty_annihilate_dispatched(Alert alert) {
+			if (alert == null) {
+				string msg = "don't invoke KillAlert with alert=null; check for TP=0 or SL=0 prior to invocation";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
+			}
+			bool killed = false;
+			if (this.executor.IsStreamingTriggeringScript == false) {
+				//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
+				string msg = "NYI_FOR IsStreamingTriggeringScript=false //AnnihilateCounterpartyAlertDispatched()";
+				Assembler.PopupException(msg);
+				return killed;
+			}
+			//v1 ScriptExecutor trying be too smart
+			//if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == true) {
+			//	killed = this.MarketsimBacktest.AnnihilateCounterpartyAlert(alert);
+			//	//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
+			//} else {
+			//	killed = this.AlertGenerator.AnnihilateCounterpartyAlert(alert);
+			//}
+			//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
+			killed = this.executor.DataSource_fromBars.BrokerAdapter.AlertCounterparty_annihilate(alert);
 			return killed;
 		}
 		void appendMessageToStopLossOrder(Position position, string msgOrder) {
@@ -262,7 +288,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			position.Prototype.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed.AppendMessage(msgOrder);
 		}
-		public List<Alert> AlertFilledCreateSlTpOrAnnihilateCounterparty(Alert alert) {
+		public List<Alert> AlertFilled_createSlTp_orAnnihilateCounterparty(Alert alert) {
 			List<Alert> ret = new List<Alert>();
 			if (alert.PositionAffected == null) return ret;
 			if (alert.PositionAffected.Prototype == null) return ret;
@@ -304,7 +330,7 @@ namespace Sq1.Core.StrategyBase {
 					//	this.executor.DataSource_fromBars.BrokerAdapter.MoveStopLossOverrideable(proto, newActivationOffset, newStopLossNegativeOffset);
 					//}
 					//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
-					this.executor.DataSource_fromBars.BrokerAdapter.StopLossMove_overrideable(proto, newActivationOffset, newStopLoss_negativeOffset);
+					this.executor.DataSource_fromBars.BrokerAdapter.OrderMoveExisting_stopLoss_overrideable(proto, newActivationOffset, newStopLoss_negativeOffset);
 					break;
 					#endregion
 				case MarketLimitStop.Stop:
@@ -317,7 +343,7 @@ namespace Sq1.Core.StrategyBase {
 					//	executor.DataSource_fromBars.BrokerAdapter.MoveStopLossOverrideable(proto, 0, newStopLossNegativeOffset);
 					//}
 					//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
-					this.executor.DataSource_fromBars.BrokerAdapter.StopLossMove_overrideable(proto, 0, newStopLoss_negativeOffset);
+					this.executor.DataSource_fromBars.BrokerAdapter.OrderMoveExisting_stopLoss_overrideable(proto, 0, newStopLoss_negativeOffset);
 					break;
 				default:
 					string msg = "UNSUPPORTED_STOP_LOSS_CANT_MOVE [" + proto.StopLossAlert_forMoveAndAnnihilation.MarketLimitStop
@@ -352,7 +378,7 @@ namespace Sq1.Core.StrategyBase {
 			//	this.executor.DataSource_fromBars.BrokerAdapter.MoveTakeProfitOverrideable(proto, newTakeProfitPositiveOffset);
 			//}
 			//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
-			this.executor.DataSource_fromBars.BrokerAdapter.TakeProfitMove_overrideable(proto, newTakeProfit_positiveOffset);
+			this.executor.DataSource_fromBars.BrokerAdapter.OrderMoveExisting_takeProfit_overrideable(proto, newTakeProfit_positiveOffset);
 		}
 		void checkThrow_placingProto_makesSense(PositionPrototype proto) {
 			string msg = this.reasonWhy_placingProto_doesntMakeSense(proto);

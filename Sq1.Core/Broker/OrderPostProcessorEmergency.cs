@@ -59,7 +59,7 @@ namespace Sq1.Core.Broker {
 				this.emergencyLocks.Remove(emergencyLock);
 			}
 			OrderStateMessage omsgPost = new OrderStateMessage(filledEmergencyOrder, stateCompletedOrInterrupted, msgPost);
-			this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(omsgPost);
+			this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsgPost);
 		}
 		public void AddLockAndCreate_emergencyReplacement_resubmitFor(Order rejectedExitOrder) {
 			int emergencyCloseAttemptsMax = rejectedExitOrder.Alert.Bars.SymbolInfo.EmergencyCloseAttemptsMax;
@@ -123,7 +123,7 @@ namespace Sq1.Core.Broker {
 			if (millis > 0) {
 				string msg = "Emergency sleeping millis[" + millis + "] before " + changeState;
 				OrderStateMessage omsg = new OrderStateMessage(rejectedExitOrder, newState, msg);
-				this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg);
+				this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 				Thread.Sleep(millis);
 			}
 
@@ -134,7 +134,7 @@ namespace Sq1.Core.Broker {
 			} else {
 				// didnt announce "sleeping xxx before"
 				OrderStateMessage omsg2 = new OrderStateMessage(rejectedExitOrder, newState, msg2);
-				this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg2);
+				this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg2);
 			}
 			this.submitReplacementOrderFor(rejectedExitOrder);
 		}
@@ -177,7 +177,7 @@ namespace Sq1.Core.Broker {
 				string msg = "Scheduling SubmitOrdersThreadEntry [" + replacement.ToString() + "] slippageIndex["
 					+ replacement.SlippageIndex + "] through [" + replacement.Alert.DataSource.BrokerAdapter + "]";
 				OrderStateMessage omsg = new OrderStateMessage(replacement, OrderState.PreSubmit, msg);
-				this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg);
+				this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 
 				//ThreadPool.QueueUserWorkItem(new WaitCallback(replacement.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
 				//	new object[] { new List<Order>() { replacement } });
@@ -187,7 +187,7 @@ namespace Sq1.Core.Broker {
 			} catch (Exception e) {
 				Assembler.PopupException("Replacement wasn't submitted [" + replacement + "]", e);
 				OrderStateMessage omsg2 = new OrderStateMessage(replacement, OrderState.Error, e.Message);
-				this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg2);
+				this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg2);
 			}
 		}
 		Order createEmergencyCloseOrder_insteadOfRejected(Order rejectedOrderToReplace) {
@@ -265,7 +265,7 @@ namespace Sq1.Core.Broker {
 				+ "]>= EmergencyCloseAttemptsMax[" + emergencyCloseAttemptsMax + "]"
 				+ " emergencyReplacement[" + rejectedExitOrder + "]";
 			OrderStateMessage omsg = new OrderStateMessage(rejectedExitOrder, OrderState.EmergencyCloseLimitReached, msg);
-			this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg);
+			this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 			throw new Exception(msg);
 		}
 		void throwLog_ifEmergencyCloseInterrupted(Order replacementOrder) {
@@ -276,7 +276,7 @@ namespace Sq1.Core.Broker {
 			string msg = "InterruptedEmergencyLockReasons.Contains reason4lock[" + reason4lock + "] for replacementOrder[" + replacementOrder + "]";
 			Assembler.PopupException(msg);
 			OrderStateMessage newOrderStateRejected = new OrderStateMessage(replacementOrder, OrderState.EmergencyCloseUserInterrupted, msg);
-			this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderStateRejected);
+			this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderStateRejected);
 			throw new Exception(msg);
 		}
 		void addMessage_noMoreSlippagesAvailable(Order order) {
@@ -287,7 +287,7 @@ namespace Sq1.Core.Broker {
 			Assembler.PopupException(msg2);
 			//orderProcessor.updateOrderStatusError(orderExecuted, OrderState.RejectedLimitReached, msg2);
 			OrderStateMessage newOrderStateRejected = new OrderStateMessage(order, OrderState.RejectedLimitReached, msg2);
-			this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderStateRejected);
+			this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderStateRejected);
 		}
 	}
 }

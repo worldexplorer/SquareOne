@@ -327,6 +327,10 @@ namespace Sq1.Widgets.RangeBar {
 		//}
 
 		public int RoundInt(double d) {
+			if (double.IsNaN(d)) {
+				string msg = "PREVENTING_ArithmeticOperationInvalid";
+				Assembler.PopupException(msg);
+			}
 			return (int)Math.Round(d);
 		}
 		protected override void Dispose(bool disposing) {

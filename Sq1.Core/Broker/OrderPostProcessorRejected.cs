@@ -131,7 +131,7 @@ namespace Sq1.Core.Broker {
 			string msg = "Scheduling SubmitOrdersThreadEntry [" + replacementOrder.ToString() + "] slippageIndex["
 				+ replacementOrder.SlippageIndex + "] through [" + replacementOrder.Alert.DataSource.BrokerAdapter + "]";
 			OrderStateMessage newOrderState = new OrderStateMessage(replacementOrder, OrderState.PreSubmit, msg);
-			this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderState);
+			this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState);
 
 			//this.BrokerAdapter.SubmitOrdersThreadEntry(ordersFromAlerts);
 			//ThreadPool.QueueUserWorkItem(new WaitCallback(replacementOrder.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
@@ -151,7 +151,7 @@ namespace Sq1.Core.Broker {
 			Assembler.PopupException(msg2);
 			//orderProcessor.updateOrderStatusError(orderExecuted, OrderState.RejectedLimitReached, msg2);
 			OrderStateMessage newOrderStateRejected = new OrderStateMessage(order, OrderState.RejectedLimitReached, msg2);
-			this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(newOrderStateRejected);
+			this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderStateRejected);
 		}
 	}
 }

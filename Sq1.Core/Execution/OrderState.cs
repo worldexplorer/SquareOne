@@ -18,34 +18,43 @@ namespace Sq1.Core.Execution {
 		_OrderStatus			= 255,
 
 		Rejected				= 300,
+		LimitExpired			= 310,
 		RejectedLimitReached	= 330,
+
+
 		Filled					= 400,
 		FilledPartially			= 410,
 		_TradeStatus			= 415,
 
-		//KillSubmittingAsync	= 610,	// everything is Async! like for SubmittingAsync
-		KillPendingPreSubmit	= 500,
-		KillPendingSubmitting	= 510,
-		KillPendingSubmitted	= 520,
-		KillTransSubmittedOK	= 530,		// a Limit order that wasn't Filled yet - doesn't need a KillerOrder to be KilledPending
 
-		KillerPreSubmit			= 610,		// Market order that is Filled - needs a KillerOrder to be Killed (most likely another Market with inverted Size)
-		KillerSubmitting		= 620,
-		KillerBulletFlying		= 630,		// KillerBulletFlying = KillerSubmitted + KillerActive
-		KillerDone				= 640,		// simulated in BrokerQuik: victim is cancelled, no broker callback on a "virtual" KillerOrder
+		KillerPreSubmit			= 510,		// KillerPreSubmit			<=> VictimsBulletPreSubmit		Market order that is Filled - needs a KillerOrder to be Killed (most likely another Market with inverted Size)
+		KillerSubmitting		= 520,		// KillerSubmitting			<=> VictimsBulletConfirmed		
+		KillerTransSubmittedOK	= 530,		// KillerTransSubmittedOK	<=> VictimsBulletSubmitted		???Limit order that wasn't Filled yet - doesn't need a KillerOrder to be KilledPending
+		KillerBulletFlying		= 540,		// KillerBulletFlying		<=> VictimsBulletFlying
+		KillerDone				= 550,		// KillerDone				<=> VictimKilled				simulated in BrokerQuik: victim is cancelled, no broker callback on a "virtual" KillerOrder
 
-		SLAnnihilated			= 680,
-		TPAnnihilated			= 681,
+		SLAnnihilated			= 580,
+		TPAnnihilated			= 581,
+
+		VictimsBulletPreSubmit	= 610,		// KillerPreSubmit			<=> VictimsBulletPreSubmit
+		VictimsBulletConfirmed	= 620,		// KillerSubmitting			<=> VictimsBulletConfirmed		
+		VictimsBulletSubmitted	= 630,		// KillerTransSubmittedOK	<=> VictimsBulletSubmitted
+		VictimsBulletFlying		= 640,		// KillerBulletFlying		<=> VictimsBulletFlying
+		VictimKilled			= 650,		// KillerDone				<=> VictimKilled
+
 
 		Error						= 700,
 		ErrorOrderInconsistent		= 701,
-		ErrorSubmitOrder			= 702,
+		ErrorSubmittingOrder		= 702,
 		ErrorSubmittingNotEatable	= 703,
-		ErrorMarketPriceZero		= 704,
-		ErrorSlippageCalc			= 705,
-		ErrorCancelReplace			= 706,
-		ErrorSubmittingBroker		= 707,
+		ErrorSubmitting_KillerOrder	= 704,
+		ErrorMarketPriceZero		= 705,
+		ErrorSlippageCalc			= 706,
+		ErrorCancelReplace			= 707,
 		SubmittedNoFeedback			= 708,
+
+		ErrorSubmitting_BrokerTerminalDisconnected	= 720,
+		ErrorSubmitting_BrokerDllDisconnected		= 721,
 
 		IRefuseToCloseNonStreamingPosition	= 800,
 		IRefuseToCloseUnfilledEntry			= 801,

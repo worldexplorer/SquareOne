@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+
+using Newtonsoft.Json;
 
 using Sq1.Core.Accounting;
 using Sq1.Core.Broker;
@@ -25,12 +27,25 @@ namespace Sq1.Core.Backtesting {
 			this.BacktestMarketsim.Initialize();
 		}
 
-		public override void StopLossMove_overrideable(PositionPrototype proto, double newActivationOffset, double newStopLossNegativeOffset) {
+		public override void OrderMoveExisting_stopLoss_overrideable(PositionPrototype proto, double newActivationOffset, double newStopLossNegativeOffset) {
 			this.BacktestMarketsim.StopLoss_simulateMoved(proto.StopLossAlert_forMoveAndAnnihilation);
 		}
-		public override void TakeProfitMove_overrideable(PositionPrototype proto, double newTakeProfit_positiveOffset) {
+		public override void OrderMoveExisting_takeProfit_overrideable(PositionPrototype proto, double newTakeProfit_positiveOffset) {
 			this.BacktestMarketsim.TakeProfit_simulateMoved(proto.TakeProfitAlert_forMoveAndAnnihilation);
 		}
+
+
+		public override void Order_kill_dispatcher(Order victimOrder) {
+		    throw new Exception("please override BrokerAdapter::Order_kill() for BrokerAdapter.Name=[" + Name + "]");
+		}
+		//public override void Order_killPending_withoutKiller(Order victimOrder) {
+		//    throw new Exception("please override BrokerAdapter::Order_killPending_withoutKiller() for BrokerAdapter.Name=[" + Name + "]");
+		//}
+		public override void Order_killPending_usingKiller(Order killerOrder) {
+		    throw new Exception("please override BrokerAdapter::Order_killPending_usingKiller() for BrokerAdapter.Name=[" + Name + "]");
+		}
+
+
 		public override bool AlertCounterparty_annihilate(Alert alert) {
 			return this.BacktestMarketsim.AlertCounterparty_annihilate(alert);
 		}

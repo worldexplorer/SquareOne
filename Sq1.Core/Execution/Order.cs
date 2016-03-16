@@ -35,6 +35,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public string		EmergencyReplacedByGUID;		// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
 
 		[JsonProperty]	public bool			IsKiller					{ get; protected set; }
+		[JsonProperty]	public bool			IsVictim					{ get; protected set; }
 		[JsonProperty]	public string		VictimGUID					{ get; protected set; }
 		[JsonIgnore]	public Order		VictimToBeKilled			{ get; protected set; }
 		[JsonProperty]	public string		KillerGUID					{ get; protected set; }
@@ -125,8 +126,8 @@ namespace Sq1.Core.Execution {
 					|| this.State == OrderState.KillerSubmitting
 					|| this.State == OrderState.KillerBulletFlying
 				//	|| this.State == OrderState.KillPendingPreSubmit
-					|| this.State == OrderState.KillPendingSubmitting
-					|| this.State == OrderState.KillPendingSubmitted
+					|| this.State == OrderState.VictimsBulletConfirmed
+					|| this.State == OrderState.VictimsBulletSubmitted
 					;
 			} }
 		[JsonProperty]	public bool				InStateChangeableToSubmitted { get {
@@ -151,7 +152,7 @@ namespace Sq1.Core.Execution {
 				OrderState newState = OrderState.Error;
 				if (this.State == OrderState.Rejected)				newState = OrderState.EmergencyCloseSheduledForRejected;
 				if (this.State == OrderState.RejectedLimitReached)	newState = OrderState.EmergencyCloseSheduledForRejectedLimitReached;
-				if (this.State == OrderState.ErrorSubmittingBroker)	newState = OrderState.EmergencyCloseSheduledForErrorSubmittingBroker;
+				if (this.State == OrderState.ErrorSubmitting_BrokerTerminalDisconnected)	newState = OrderState.EmergencyCloseSheduledForErrorSubmittingBroker;
 				return newState;
 			} }
 		[JsonProperty]	public bool				InState_changeableToEmergency { get { return (InState_errorOrRejected_convertToComplementaryEmergencyState != OrderState.Error); } }
@@ -329,12 +330,14 @@ namespace Sq1.Core.Execution {
 			killer.QtyRequested = 0;
 			killer.QtyFill = 0;
 
-			this.KillerOrder = killer;
-			this.KillerGUID = killer.GUID;
 			killer.VictimToBeKilled = this;
 			killer.VictimGUID = this.GUID;
-			killer.Alert.SignalName = "Killer4: " + this.Alert.SignalName;
+			killer.Alert.SignalName = "IAM_KILLER_FOR " + this.Alert.SignalName;
 			killer.IsKiller = true;
+
+			this.KillerOrder = killer;
+			this.KillerGUID = killer.GUID;
+			this.IsVictim = true;
 			
 			this.DerivedOrdersAdd(killer);
 			

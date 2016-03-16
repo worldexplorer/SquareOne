@@ -187,6 +187,7 @@ namespace Sq1.Core.Livesim {
 			} finally {
 				base.BarsSimulatedSoFar = 0;
 				base.BacktestWasAbortedByUserInGui = false;
+				if (base.BacktestAbortedMre.WaitOne(0) == true) Thread.Sleep(10);	// let the Wait() in GUI thread to feel SIGNALLED, before I reset again to NON_SIGNALLED
 				base.BacktestAbortedMre.Reset();
 				base.RequestingBacktestAbortMre.Reset();
 				base.BacktestIsRunningMre.Set();

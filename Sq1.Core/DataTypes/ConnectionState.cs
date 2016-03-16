@@ -23,9 +23,10 @@ namespace Sq1.Core.DataTypes {
 		
 		// used in QuikBroker
 		Broker_TerminalConnected		= 50,
-		Broker_TerminalDisonnected		= 51,
-		Broker_DllConnected				= 52,
-		Broker_DllDisonnected			= 53,
+		Broker_TerminalDisconnected		= 51,
+		Broker_DllConnected				= 55,
+		Broker_DllConnecting			= 56,
+		Broker_DllDisconnected			= 57,
 
 		Broker_Connected_SymbolSubscribed				= 60,
 		Broker_Connected_SymbolUnsubscribed				= 61,

@@ -91,6 +91,12 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
+    <Compile Include="Broker\OrderProcessor.Collector.cs">
+      <DependentUpon>OrderProcessor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Broker\OrderProcessor.Emitter.cs">
+      <DependentUpon>OrderProcessor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Broker\OrderProcessor.EventGenerator.cs">
       <DependentUpon>OrderProcessor.cs</DependentUpon>
     </Compile>

@@ -23,10 +23,10 @@ namespace Sq1.Core.Broker {
 					"sequence initialized: [" + sequenced.State + "]=>[" + OrderState.SubmittingSequenced + "]"
 					+ " for [" + ordersOpen.Count + "] fellow ordersOpen"
 					+ " by [" + ordersClose.Count + "]ordersClose");
-				this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg);
+				this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 			}
 		}
-		public void OrderFilledUnlockSequenceSubmitOpening(Order order) {
+		public void OrderFilled_unlockSequence_submitOpening(Order order) {
 			List<List<Order>> ordersCloseFoundInKeys = new List<List<Order>>();
 			lock (this.ordersCloseOpen) {
 				foreach (List<Order> ordersClose in this.ordersCloseOpen.Keys) {
@@ -46,7 +46,7 @@ namespace Sq1.Core.Broker {
 								"sequence cleared: [" + submitting.State + "]=>[" + OrderState.Submitting + "]"
 								+ " for [" + ordersOpen.Count + "] fellow ordersOpen"
 								+ " by orderClose=[" + order + "]");
-							this.orderProcessor.Order_updateState_mustBeDifferent_postProcess(omsg);
+							this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 						}
 						BrokerAdapter broker = ordersOpen[0].Alert.DataSource.BrokerAdapter;
 						//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersOpen });
