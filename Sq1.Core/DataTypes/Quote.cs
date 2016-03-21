@@ -23,8 +23,8 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	long		AbsnoPerSymbol;
 
 		[JsonIgnore]	public	Bar			ParentBarStreaming	{ get; protected set; }
-		[JsonIgnore]	public	bool		HasParentBar		{ get { return this.ParentBarStreaming != null; } }
-		[JsonProperty]	public	string		ParentBarIdent		{ get { return (this.HasParentBar) ? this.ParentBarStreaming.ParentBarsIdent : "NO_PARENT_BAR"; } }
+		[JsonIgnore]	public	bool		HasParentBarStreaming		{ get { return this.ParentBarStreaming != null; } }
+		[JsonProperty]	public	string		ParentBarIdent		{ get { return (this.HasParentBarStreaming) ? this.ParentBarStreaming.ParentBarsIdent : "NO_PARENT_BAR"; } }
 
 		[Obsolete("NOT_REALLY_USED")]
 		[JsonIgnore]	public	BidOrAsk	ItriggeredFillAtBidOrAsk;
@@ -62,11 +62,11 @@ namespace Sq1.Core.DataTypes {
 		} }
 		#endregion
 
-		[JsonProperty]	public	string		Ask_formatted	{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Ask); } }
-		[JsonProperty]	public	string		Bid_formatted	{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Bid); } }
-		[JsonProperty]	public	string		Size_formatted	{ get { return string.Format("{0:" + this.VolumeFormat + "}", this.Size); } }
+		[JsonIgnore]	public	string		Ask_formatted	{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Ask); } }
+		[JsonIgnore]	public	string		Bid_formatted	{ get { return string.Format("{0:" + this.PriceFormat + "}", this.Bid); } }
+		[JsonIgnore]	public	string		Size_formatted	{ get { return string.Format("{0:" + this.VolumeFormat + "}", this.Size); } }
 		
-		[JsonIgnore]	public	string		QuoteTiming_localRemoteLeft { get {
+		[JsonProperty]	public	string		QuoteTiming_localRemoteLeft { get {
 			StringBuilder sb = new StringBuilder();
 			sb.Append(" #");
 			sb.Append(this.IntraBarSerno.ToString("000"));
@@ -77,7 +77,7 @@ namespace Sq1.Core.DataTypes {
 				sb.Append(" :: ");
 				sb.Append(this.LocalTimeCreated.ToString("HH:mm:ss.fff"));
 			}
-			if (this.HasParentBar) {
+			if (this.HasParentBarStreaming) {
 				TimeSpan timeLeft = (this.ParentBarStreaming.DateTimeNextBarOpenUnconditional > this.ServerTime)
 					? this.ParentBarStreaming.DateTimeNextBarOpenUnconditional.Subtract(this.ServerTime)
 					: this.ServerTime.Subtract(this.ParentBarStreaming.DateTimeNextBarOpenUnconditional);
@@ -123,11 +123,11 @@ namespace Sq1.Core.DataTypes {
 		}
 
 		#region SORRY_FOR_THE_MESS__I_NEED_TO_DERIVE_IDENTICAL_ONLY_FOR_GENERATED__IF_YOU_NEED_IT_IN_BASE_QUOTE_MOVE_IT_THERE
-		public Quote Clone() {
+		public Quote Clone_asCoreQuote() {
 			string prefix = "MEMBERWISE_CLONE_OF_";
 			if (this.Source.Contains(prefix)) {
-				string msg = "WHERE_DO_YOU_NEED_CLONED_CLONE?";
-				Assembler.PopupException(msg);
+				string msg = "QuoteCreatedThisAlert_deserializable <= WHERE_DO_YOU_NEED_CLONED_CLONE?";
+				//Assembler.PopupException(msg);
 				return this;
 			}
 			Quote clone = (Quote)this.MemberwiseClone();

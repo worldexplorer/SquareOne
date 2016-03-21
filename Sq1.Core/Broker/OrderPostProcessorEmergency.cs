@@ -49,7 +49,7 @@ namespace Sq1.Core.Broker {
 			if (this.emergencyLocks.Contains(emergencyLock) == false) {
 				string msg = "no EmergencyLock to remove: multiple QUIK callbacks? if u can find [" + msgPost
 					+ "] earlier in thisOrder.Messages then it's ok";
-				this.orderProcessor.AppendOrderMessage_propagateToGui(filledEmergencyOrder, msg);
+				this.orderProcessor.AppendMessage_propagateToGui(filledEmergencyOrder, msg);
 				Assembler.PopupException(msg);
 				//throw new Exception(msg);
 				return;
@@ -77,7 +77,7 @@ namespace Sq1.Core.Broker {
 			bool isEmergencyClosingNow = (reason4lock != null);
 			if (isEmergencyClosingNow) {
 				msg = "ALREADY LOCKED (Rejected dupe?): " + msg;
-				this.orderProcessor.AppendOrderMessage_propagateToGui(rejectedExitOrder, msg);
+				this.orderProcessor.AppendMessage_propagateToGui(rejectedExitOrder, msg);
 				return;
 			}
 
@@ -130,7 +130,7 @@ namespace Sq1.Core.Broker {
 			string msg2 = changeState + " after having slept millis[" + millis + "]";
 			if (rejectedExitOrder.State == newState) {
 				// announced "sleeping xxx before"
-				this.orderProcessor.AppendOrderMessage_propagateToGui(rejectedExitOrder, msg2);
+				this.orderProcessor.AppendMessage_propagateToGui(rejectedExitOrder, msg2);
 			} else {
 				// didnt announce "sleeping xxx before"
 				OrderStateMessage omsg2 = new OrderStateMessage(rejectedExitOrder, newState, msg2);
@@ -143,7 +143,7 @@ namespace Sq1.Core.Broker {
 			if (replacement == null) {
 				string msgNoReplacement = "got NULL from CreateEmergencyCloseOrderInsteadOfRejected() for (" + rejectedOrderToReplace + "); ";
 				Assembler.PopupException(msgNoReplacement);
-				this.orderProcessor.AppendOrderMessage_propagateToGui(rejectedOrderToReplace, msgNoReplacement);
+				this.orderProcessor.AppendMessage_propagateToGui(rejectedOrderToReplace, msgNoReplacement);
 				return;
 			}
 
@@ -163,7 +163,7 @@ namespace Sq1.Core.Broker {
 				string serno = "#[" + replacement.EmergencyCloseAttemptSerno + "]/[" + emergencyCloseAttemptsMax + "]";
 				string msg_replacement = "This is an EMERGENCY replacement " + serno + " for order["
 					+ replacement.EmergencyReplacementForGUID + "]; SlippageIndex[" + replacement.SlippageIndex + "]";
-				this.orderProcessor.AppendOrderMessage_propagateToGui(replacement, msg_replacement);
+				this.orderProcessor.AppendMessage_propagateToGui(replacement, msg_replacement);
 
 				if (replacement.hasSlippagesDefined && replacement.noMoreSlippagesAvailable) {
 					addMessage_noMoreSlippagesAvailable(replacement);
@@ -200,7 +200,7 @@ namespace Sq1.Core.Broker {
 				string msg = "Rejected[" + rejectedOrderToReplace + "] already has a"
 					+ " emergencyReplacement[" + emergencyReplacement + "] with State[" + emergencyReplacement.State + "];"
 					+ " ignoring rejection duplicates";
-				this.orderProcessor.AppendOrderMessage_propagateToGui(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendMessage_propagateToGui(rejectedOrderToReplace, msg);
 				return null;
 			}
 			if (rejectedOrderToReplace.hasBrokerAdapter("CreateEmergencyCloseOrderInsteadOfRejected(): ") == false) {
@@ -251,7 +251,7 @@ namespace Sq1.Core.Broker {
 			OrderPostProcessorEmergencyLock emergencyLock = new OrderPostProcessorEmergencyLock(order);
 			if (this.emergencyLocks.Contains(emergencyLock) == false) {
 				string msg = "who removed EmergencyLock before EmergencyCloseComplete?! " + emergencyLock.ToString();
-				this.orderProcessor.AppendOrderMessage_propagateToGui(order, msg);
+				this.orderProcessor.AppendMessage_propagateToGui(order, msg);
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}

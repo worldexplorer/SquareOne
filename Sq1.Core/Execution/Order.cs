@@ -66,7 +66,8 @@ namespace Sq1.Core.Execution {
 				return ret;
 			} }
 		[JsonProperty]	public Alert		Alert						{ get; private set; }
-	
+		[JsonIgnore]	public	bool		OnlyDeserializedHasNoBars	{ get { return this.Alert.Bars == null; } }
+
 		// why Concurrent: OrderProcessor adds while GUI reads (a copy); why Stack: ExecutionTree displays Messages RecentOnTop;
 		// TODO: revert to List (with lock(privateLock) { messages.Add/Remove/Count}) when:
 		//	1) ConcurrentQueue's Interlocked.CompareExchange<>() is slower than lock(privateLock),
@@ -267,7 +268,7 @@ namespace Sq1.Core.Execution {
 			}
 			if (alert.OrderFollowed != null && forceOverwriteAlertOrderFollowedToNewlyCreatedOrder == false) {
 				string msg = "YOU_DONT_NEED_TWO_ORDERS_PER_ALERT alert.OrderFollowed!=null; alert[" + alert + "] alert.OrderFollowed[" + alert.OrderFollowed + "]";
-				alert.OrderFollowed.AppendMessage(msg);
+				alert.OrderFollowed.appendMessage(msg);
 				throw new Exception(msg);
 			}
 			
@@ -404,14 +405,17 @@ namespace Sq1.Core.Execution {
 			return ret;
 		}
 		
-		public void AppendMessage(string msg) {
-			this.AppendMessageSynchronized(new OrderStateMessage(this, msg));
+		//internal for Sq1.Core.dll to use ONLY; BrokerAdapters should use OrderProcessor.AppendMessage_propagateToGui(osm_deserialized);
+		internal void appendMessage(string msg) {
+			this.appendOrderMessage(new OrderStateMessage(this, msg));
 		}
-		public void AppendMessageSynchronized(OrderStateMessage omsg) {
+		//internal for Sq1.Core.dll to use ONLY; BrokerAdapters should use OrderProcessor.AppendOrderMessage_propagateToGui(osm_deserialized);
+		internal void appendOrderMessage(OrderStateMessage omsg) {
 			this.LastMessage = omsg.Message;	// KISS; mousemove over OlvOrdersTree won't bother calculating
 			this.messages.Push(omsg);
 			//this.messages.Enqueue(omsg);
 		}
+
 		public override string ToString() {
 			string ret = "";
 			ret += this.GUID + " ";
@@ -447,7 +451,7 @@ namespace Sq1.Core.Execution {
 				errormsg += "order.Alert.DataSource[" + this.Alert.DataSource + "].BrokerAdapter property must be set ";
 			}
 			if (errormsg != "") {
-				this.AppendMessage(callerMethod + errormsg);
+				this.appendMessage(callerMethod + errormsg);
 				ret = false;
 			}
 			return ret;

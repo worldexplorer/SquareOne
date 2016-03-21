@@ -59,7 +59,7 @@ namespace Sq1.Core.Broker {
 					// delete the list of locks from global dictionary
 					List<Order> ordersOpen = this.sequencerLockCloseOpen[lockingCloseFound];
 					this.sequencerLockCloseOpen.Remove(lockingCloseFound);
-					this.orderProcessor.AppendOrderMessage_propagateToGui(orderClosed,
+					this.orderProcessor.AppendMessage_propagateToGui(orderClosed,
 						"last CloseOpenSequence order filled, unlocking submission of [" 
 						+ ordersOpen.Count + "]ordersOpen");
 					if (ordersOpen.Count == 0) continue;

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
@@ -49,7 +50,7 @@ namespace Sq1.Core.Broker {
 		//    throw new Exception("please override BrokerAdapter::Order_killPending_usingKiller() for BrokerAdapter.Name=[" + Name + "]");
 		//}
 		//v2
-		public abstract void Order_kill_dispatcher(Order killerOrder_withRefToVictim);
+		//public abstract void Order_kill_dispatcher(Order killerOrder_withRefToVictim);
 		//public abstract void Order_killPending_withoutKiller(Order killerOrder_withRefToVictim);
 		public abstract void Order_killPending_usingKiller(Order killerOrder_withRefToVictim);
 
@@ -66,14 +67,58 @@ namespace Sq1.Core.Broker {
 			this.OrderProcessor.Emit_takeProfitMove_byKillingAndSubmittingNew(proto, newTakeProfit_positiveOffset);
 		}
 
-		public virtual bool AlertCounterparty_annihilate(Alert alert) {
-			throw new Exception("please override BrokerAdapter::AlertCounterparty_annihilate() for BrokerAdapter.Name=[" + Name + "]");
-			//alert.AbsorbFromExecutorAfterCreatedByMarketReal
-			//this.OrderProcessor.Aler
+		public virtual bool AlertCounterparty_annihilate(Alert alertCounterparty_toAnnihilate) {
+			string msig = " //" + this.Name + ".AlertCounterparty_annihilate(" + alertCounterparty_toAnnihilate + ") LIVE+SIM";
+
+			Order orderCounterparty_toAnnihilate = alertCounterparty_toAnnihilate.OrderFollowed;
+			if (orderCounterparty_toAnnihilate == null) {
+				string msg = "ALERT_MUST_HAVE_ORDER_FOLLOWED";
+				Assembler.PopupException(msg);
+				return false;
+			}
+
+			if (alertCounterparty_toAnnihilate.PositionAffected == null) {
+				string msg = "ALERT_MUST_HAVE_POSITION_TO_REACH_PROTOTYPE";
+				Assembler.PopupException(msg);
+				return false;
+			}
+
+			PositionPrototype proto = alertCounterparty_toAnnihilate.PositionAffected.Prototype;
+			if (proto == null) {
+				string msg = "POSITION_MUST_HAVE_A_PROTOTYPE";
+				Assembler.PopupException(msg);
+				return false;
+			}
+
+			if (proto.TakeProfitAlert_forMoveAndAnnihilation == null) {
+				string msg = "PROTOTYPE_MUST_HAVE_TAKE_PROFIT_NOT_NULL";
+				Assembler.PopupException(msg);
+				return false;
+			}
+
+			if (proto.StopLossAlert_forMoveAndAnnihilation == null) {
+				string msg = "PROTOTYPE_MUST_HAVE_STOP_LOSS_NOT_NULL";
+				Assembler.PopupException(msg);
+				return false;
+			}
+
+			OrderState newState = OrderState.IRefuseToAnnihilateNonPrototyped;
+			if (alertCounterparty_toAnnihilate.ImTakeProfit_prototyped) newState =  OrderState.TPAnnihilating;
+			if (alertCounterparty_toAnnihilate.ImStopLoss_prototyped)	newState =  OrderState.SLAnnihilating;
+
+			Order whatWasFilled = alertCounterparty_toAnnihilate.PositionAffected.ExitAlert.OrderFollowed;
+			string whatWasTheTrigger = "TRIGGER_FOR_ANNIHILATION whatWasFilled[" + whatWasFilled + "]";
+			OrderStateMessage omsg_counterParty_annihilating = new OrderStateMessage(orderCounterparty_toAnnihilate, newState, whatWasTheTrigger);
+			this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg_counterParty_annihilating);
+
+			bool emitted = this.OrderProcessor.Emit_killOrderPending_usingKiller(orderCounterparty_toAnnihilate, msig);
+			return emitted;
 		}
 
-		public virtual void AlertPending_kill(Alert alert) {
-			throw new Exception("please override BrokerAdapter::AlertPending_kill() for BrokerAdapter.Name=[" + Name + "]");
+		public virtual int AlertPendings_kill(List<Alert> alerts2kill_afterScript_onQuote_onBar) {
+			int emitted = this.OrderProcessor.Emit_alertsPending_kill(alerts2kill_afterScript_onQuote_onBar);
+			return emitted;
 		}
+
 	}
 }

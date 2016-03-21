@@ -1,8 +1,9 @@
 namespace Sq1.Core.Execution {
 	public enum OrderState {
-		JustConstructed			= 0,
-		Unknown					= 1,
-		LeaveTheSame			= 2,
+		Unknown					= 0,
+		JustConstructed			= 1,
+		JustDeserialized		= 2,
+		LeaveTheSame			= 3,
 
 		AlertCreatedOnPreviousBarNotAutoSubmitted = 100,
 		EmitOrdersNotClicked	= 110,
@@ -33,8 +34,10 @@ namespace Sq1.Core.Execution {
 		KillerBulletFlying		= 540,		// KillerBulletFlying		<=> VictimsBulletFlying
 		KillerDone				= 550,		// KillerDone				<=> VictimKilled				simulated in BrokerQuik: victim is cancelled, no broker callback on a "virtual" KillerOrder
 
-		SLAnnihilated			= 580,
-		TPAnnihilated			= 581,
+		SLAnnihilating			= 580,
+		SLAnnihilated			= 581,
+		TPAnnihilating			= 585,
+		TPAnnihilated			= 586,
 
 		VictimsBulletPreSubmit	= 610,		// KillerPreSubmit			<=> VictimsBulletPreSubmit
 		VictimsBulletConfirmed	= 620,		// KillerSubmitting			<=> VictimsBulletConfirmed		
@@ -59,6 +62,7 @@ namespace Sq1.Core.Execution {
 		IRefuseToCloseNonStreamingPosition	= 800,
 		IRefuseToCloseUnfilledEntry			= 801,
 		IRefuseOpenTillEmergencyCloses		= 802,
+		IRefuseToAnnihilateNonPrototyped	= 803,
 
 		EmergencyCloseSheduledForNoReason				= 900,
 		EmergencyCloseSheduledForRejected				= 901,

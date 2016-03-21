@@ -309,7 +309,7 @@ namespace Sq1.Core.Streaming {
 						+ " upcoming quote.LocalTimeCreatedMillis[" + quote.LocalTimeCreated.ToString("HH:mm:ss.fff")
 						+ "] <= lastQuoteReceived.Symbol." + quote.Symbol + "["
 						+ lastQuote.LocalTimeCreated.ToString("HH:mm:ss.fff") + "]: DDE lagged somewhere?...";
-					//Assembler.PopupException(msg + msig, null, false);
+					Assembler.PopupException(msg + msig, null, false);
 				}
 
 				absnoPerSymbolNext = lastQuote.AbsnoPerSymbol + 1;

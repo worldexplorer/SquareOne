@@ -113,7 +113,7 @@ namespace Sq1.Core.Support {
 				}
 				this.stopwatchLock.Stop();
 				if (hadToWaitWasLockedAtFirst) {
-					string msg = "AQUIRED_AFTER[" + this.stopwatchLock.ElapsedMilliseconds + "]ms ";
+					string msg = "ACQUIRED_AFTER[" + this.stopwatchLock.ElapsedMilliseconds + "]ms ";
 					Assembler.PopupException(msig + msg + this.Ident, null, false);
 				}
 

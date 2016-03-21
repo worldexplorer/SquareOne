@@ -125,14 +125,14 @@ namespace Sq1.Core.Execution {
 				else return !exitAboveEntry;
 			} }
 		// prototype-related methods
-		public bool IsExitFilledWithPrototypedAlert { get {
-				this.checkThrowPrototypeNotNullAndIsExitFilled();
+		public bool IsExitFilled_byAlert_prototyped { get {
+				this.checkThrow_prototypeNotNull_exitFilled();
 				bool oneSideFilled =
 					this.ExitAlert == this.Prototype.StopLossAlert_forMoveAndAnnihilation ||
 					this.ExitAlert == this.Prototype.TakeProfitAlert_forMoveAndAnnihilation;
 				return oneSideFilled;
 			} }
-		protected void checkThrowPrototypeNotNullAndIsExitFilled() {
+		protected void checkThrow_prototypeNotNull_exitFilled() {
 			if (this.Prototype == null) {
 				#if DEBUG
 				Debugger.Break();
@@ -146,19 +146,19 @@ namespace Sq1.Core.Execution {
 				throw new Exception("position isn't closed yet, ExitFilled=false");
 			}
 		}
-		public bool IsExitFilledByPrototypedStopLoss { get {
-				this.checkThrowPrototypeNotNullAndIsExitFilled();
+		public bool IsExitFilled_byStopLoss_prototyped { get {
+				this.checkThrow_prototypeNotNull_exitFilled();
 				if (this.ExitAlert == this.Prototype.StopLossAlert_forMoveAndAnnihilation) return true;
 				return false;
 			} }
-		public bool IsExitFilledByPrototypedTakeProfit { get {
-				this.checkThrowPrototypeNotNullAndIsExitFilled();
+		public bool IsExitFilled_byTakeProfit_prototyped { get {
+				this.checkThrow_prototypeNotNull_exitFilled();
 				if (this.ExitAlert == this.Prototype.TakeProfitAlert_forMoveAndAnnihilation) return true;
 				return false;
 			} }
 		public Alert PrototypedExitCounterpartyAlert { get {
-				if (this.IsExitFilledByPrototypedTakeProfit) return this.Prototype.StopLossAlert_forMoveAndAnnihilation;
-				if (this.IsExitFilledByPrototypedStopLoss) return this.Prototype.TakeProfitAlert_forMoveAndAnnihilation;
+				if (this.IsExitFilled_byTakeProfit_prototyped) return this.Prototype.StopLossAlert_forMoveAndAnnihilation;
+				if (this.IsExitFilled_byStopLoss_prototyped) return this.Prototype.TakeProfitAlert_forMoveAndAnnihilation;
 				string msg = "Prototyped position closed by some prototype-unrelated alert[" + this.ExitAlert + "]";
 				#if DEBUG
 				Debugger.Break();

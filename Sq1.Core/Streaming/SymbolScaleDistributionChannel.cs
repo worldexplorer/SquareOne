@@ -82,7 +82,7 @@ namespace Sq1.Core.Streaming {
 					+ " quote2bClonedForEachConsumer[" + quote2bClonedForEachConsumer + "]"
 					+ " this[" + this + "]"
 					;
-				//Assembler.PopupException(msg, null, false);
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 

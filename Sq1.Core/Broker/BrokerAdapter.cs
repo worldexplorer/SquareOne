@@ -46,8 +46,8 @@ namespace Sq1.Core.Broker {
 		[JsonIgnore]	public OrderCallbackDupesChecker	OrderCallbackDupesChecker { get; protected set; }
 		//[JsonIgnore]	public bool SignalToTerminateAllOrderTryFillLoopsInAllMocks = false;
 
-		[JsonIgnore]				ConnectionState			upstreamConnectionState;
-		[JsonIgnore]	public		ConnectionState			UpstreamConnectionState	{
+		[JsonIgnore]				ConnectionState		upstreamConnectionState;
+		[JsonIgnore]	public		ConnectionState		UpstreamConnectionState	{
 			get { return this.upstreamConnectionState; }
 			protected set {
 				if (this.upstreamConnectionState == value) return;	//don't invoke StateChanged if it didn't change
@@ -79,8 +79,8 @@ namespace Sq1.Core.Broker {
 				}
 			}
 		}
-		[JsonProperty]	public	virtual	bool				UpstreamConnectedOnAppRestart		{ get; protected set; }
-		[JsonIgnore]	public		bool					UpstreamConnected					{ get {
+		[JsonProperty]	public	virtual	bool			UpstreamConnectedOnAppRestart		{ get; protected set; }
+		[JsonIgnore]	public		bool				UpstreamConnected					{ get {
 		    bool ret = false;
 		    switch (this.UpstreamConnectionState) {
 		        case ConnectionState.UnknownConnectionState:						ret = false;	break;
@@ -116,9 +116,9 @@ namespace Sq1.Core.Broker {
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public BrokerAdapter() {
-			ReasonToExist					= "DUMMY_FOR_LIST_OF_BROKER_PROVIDERS_IN_DATASOURCE_EDITOR";
-			//Accounts = new List<Account>();
+			this.ReasonToExist				= "DUMMY_FOR_LIST_OF_BROKER_PROVIDERS_IN_DATASOURCE_EDITOR";
 			this.lockSubmitOrders			= new object();
+			//Accounts = new List<Account>();
 			this.AccountAutoPropagate		= new Account("ACCTNR_NOT_SET", -1000);
 			this.OrderCallbackDupesChecker	= new OrderCallbackDupesCheckerTransparent(this);
 		}
@@ -126,7 +126,7 @@ namespace Sq1.Core.Broker {
 		public BrokerAdapter(string reasonToExist) : this() {
 			ReasonToExist					= reasonToExist;
 		}
-		protected void checkOrder_throwIfInvalid(Order orderToCheck) {
+		void checkOrder_throwIfInvalid(Order orderToCheck) {
 			if (orderToCheck.Alert == null) {
 				throw new Exception("order[" + orderToCheck + "].Alert == Null");
 			}
@@ -155,7 +155,7 @@ namespace Sq1.Core.Broker {
 			string msg = "SubmitOrdersThreadEntryDelayed: sleeping [" + millis +
 				"]millis before SubmitOrdersThreadEntry [" + ordersFromAlerts.Count + "]ordersFromAlerts";
 			Assembler.PopupException(msg);
-			ordersFromAlerts[0].AppendMessage(msg);
+			ordersFromAlerts[0].appendMessage(msg);
 			Thread.Sleep(millis);
 			this.SubmitOrders_backtest_liveFromProcessor_OPPunlockedSequence_threadEntry(ordersFromAlerts);
 		}
@@ -174,55 +174,48 @@ namespace Sq1.Core.Broker {
 			}
 		}
 		public virtual void SubmitOrders(IList<Order> orders) { lock (this.lockSubmitOrders) {
-			string msig = this.Name + "::SubmitOrders(): ";
+			string msig = " //" + this.Name + "::SubmitOrders()";
 			List<Order> ordersToExecute = new List<Order>();
 			foreach (Order order in orders) {
 				if (order.Alert.IsBacktestingNoLivesimNow_FalseIfNoBacktester == true || this.HasBacktestInName) {
 					string msg = "Backtesting orders should not be routed to AnyBrokerAdapters, but simulated using MarketSim; order=[" + order + "]";
-					throw new Exception(msg);
+					throw new Exception(msg + msig);
 				}
 				if (String.IsNullOrEmpty(order.Alert.AccountNumber)) {
 					string msg = "IsNullOrEmpty(order.Alert.AccountNumber): order=[" + order + "]";
-					throw new Exception(msg);
+					throw new Exception(msg + msig);
 				}
 				if (order.Alert.AccountNumber.StartsWith("Paper")) {
 					string msg = "NO_PAPER_ORDERS_ALLOWED: order=[" + order + "]";
-					throw new Exception(msg);
+					throw new Exception(msg + msig);
 				}
 				if (ordersToExecute.Contains(order)) {
-					string msg = "ORDER_DUPLICATE_IN_NEW: order=[" + order + "]";
-					Assembler.PopupException(msg, null, false);
+					string msg = "REMOVED_DUPLICATED_ORDER_IN_WHAT_YOU_PASSED_TO_SubmitOrders(): order=[" + order + "]";
+					Assembler.PopupException(msg + msig, null, false);
 					continue;
 				}
 				ordersToExecute.Add(order);
 			}
 			foreach (Order order in ordersToExecute) {
-				string msg = "Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
-					+ " SernoSession[" + order.SernoSession + "]";
-				this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msig + msg);
+				//string msg_order = " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "] SernoSession[" + order.SernoSession + "]";
+				//this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msg_order + msig);
 
-				//Order orderSimilar = this.OrderProcessor.DataSnapshot.OrdersPending.FindSimilarNotSamePendingOrder(order);
-				//// Orders.All.ContainForSure: Order orderSimilar = this.OrderProcessor.DataSnapshot.OrdersAll.FindSimilarNotSamePendingOrder(order);
-				//if (orderSimilar != null) {
-				//	msg = "ORDER_DUPLICATE_IN_SUBMITTED: dropping order [" + order + "] (not submitted) since similar is not executed yet [" + orderSimilar + "] " + msg;
-				//	this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
-				//	this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(orderSimilar, msig + msg);
-				//	this.OrderProcessor.PopupException(new Exception(msig + msg));
-				//	continue;
-				//}
 				try {
 					this.Order_checkThrow_enrichPreSubmit(order);
 				} catch (Exception ex) {
-					Assembler.PopupException(msg, ex, false);
-					this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msig + ex.Message + " //" + msg);
+					string msg_order = " " + order.ToString();
+					string msg = "CAUGHT[" + ex.Message + "] " + msg_order + msig;
+					Assembler.PopupException(msg_order, ex, false);
+					this.OrderProcessor.AppendMessage_propagateToGui(order, msg_order);
+
 					if (order.State == OrderState.IRefuseOpenTillEmergencyCloses) {
 						msg = "looks good, OrderPreSubmitChecker() caught the EmergencyLock exists";
-						Assembler.PopupException(msg + msig, ex, false);
-						this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msig + msg);
+						Assembler.PopupException(msg + msg_order + msig, ex, false);
+						this.OrderProcessor.AppendMessage_propagateToGui(order, msg + msg_order + msig);
 					}
 					continue;
 				}
-				//this.OrderProcessor.DataSnapshot.MoveAlongStateLists(order);
+				//this.OrderProcessor.DataSnapshot.SwitchLanes_forOrder_postStatusUpdate(order);
 				this.Order_submit(order);
 			}
 		} }
@@ -233,36 +226,67 @@ namespace Sq1.Core.Broker {
 					string msg = "Backtesting orders should not be routed to MockBrokerAdapters, but simulated using MarketSim; victimOrder=[" + victimOrder + "]";
 					throw new Exception(msg);
 				}
-				this.Order_kill_dispatcher(victimOrder);
+				//this.Order_kill_dispatcher(victimOrder);
+				this.Order_killPending_usingKiller(victimOrder);
 			}
 		}
 
 		public virtual void Order_checkThrow_enrichPreSubmit(Order order) {
-			string msg = Name + "::Order_checkThrow_preSubmitEnrich():"
+			string msig = " //" + Name + "::Order_checkThrow_preSubmitEnrich():"
 				+ " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
 				+ " SernoSession[" + order.SernoSession + "]";
+
 			if (this.StreamingAdapter == null) {
-				msg = " StreamingAdapter=null, can't get last/fellow/crossMarket price // " + msg;
-				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
+				string msg = "StreamingAdapter=null, can't get last/fellow/crossMarket price";
+				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg + msig);
 				this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState);
-				throw new Exception(msg);
+				throw new Exception(msg + msig);
 			}
+
 			try {
 				this.checkOrder_throwIfInvalid(order);
 			} catch (Exception ex) {
-				msg = ex.Message + " //" + msg;
-				//orderProcessor.updateOrderStatusError(order, OrderState.ErrorOrderInconsistent, msg);
-				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
+				string msg = ex.Message + " //" + msig;
+				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg + msig);
 				this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState);
-				throw new Exception(msg, ex);
+				throw new Exception("Order_checkThrow_enrichPreSubmit(" + order + ")" + msig, ex);
 			}
+
+
+			if (order.Alert.Bars.SymbolInfo.CheckForSimilarAlreadyPending) {
+				string msg_order = " " + order.ToString();
+
+				OrderLane lane_withSimilarOrder;
+				string suggestion_SimilarOrder;
+				Order orderSimilar = this.OrderProcessor.DataSnapshot.OrdersPending.
+					ScanRecent_forSimilarPendingOrder_notSame(order, out lane_withSimilarOrder, out suggestion_SimilarOrder);
+
+				if (orderSimilar == null) {
+					string msg1 = "SIMILAR_NOT_FOUND_IN_PENDINGS [" + suggestion_SimilarOrder + "]";
+					//Assembler.PopupException(msg1 + msg_order + msig, null, false);
+
+					if (lane_withSimilarOrder == null) lane_withSimilarOrder = this.OrderProcessor.DataSnapshot.OrdersAll;
+
+					orderSimilar = lane_withSimilarOrder.ScanRecent_forSimilarPendingOrder_notSame(order, out lane_withSimilarOrder, out suggestion_SimilarOrder);
+				}
+
+				if (orderSimilar != null) {
+					string msg = "ORDER_DUPLICATE_IN_SUBMITTED: your strategy didnt check if it has already emitted a similar order [" + order + "]"
+						+ " I should drop this order since similar is not executed yet [" + orderSimilar + "]";
+					this.OrderProcessor.AppendMessage_propagateToGui(order			, msg + msg_order + msig);
+					this.OrderProcessor.AppendMessage_propagateToGui(orderSimilar	, msg + msg_order + msig);
+					Assembler.PopupException(msg + msig);
+					//continue;
+				}
+			}
+
 
 			order.AbsorbCurrentBidAsk_fromStreamingSnapshot(this.StreamingAdapter.StreamingDataSnapshot);
 			this.Order_enrichAlert_brokerSpecificInjection(order);
 
 			if (order.Alert.Strategy.Script == null) return;
 
-			string msg1 = "YEAH_THATS_CRAZY__BELOW";
+			string msg3 = "YEAH_THATS_CRAZY__BELOW";
 			//Assembler.PopupException(msg, null, false);
 
 			Order reason4lock = this.OrderProcessor.OPPemergency.GetReasonForLock(order);
@@ -273,10 +297,10 @@ namespace Sq1.Core.Broker {
 
 			//OrderState IRefuseUntilemrgComplete = this.orderProcessor.OPPemergency.getRefusalForEmergencyState(reason4lock);
 			OrderState IRefuseUntilEmrgComplete = OrderState.IRefuseOpenTillEmergencyCloses;
-			msg = "Reason4lock: " + reason4lock.ToString();
-			OrderStateMessage omsg = new OrderStateMessage(order, IRefuseUntilEmrgComplete, msg);
+			string msg2 = "Reason4lock: " + reason4lock.ToString();
+			OrderStateMessage omsg = new OrderStateMessage(order, IRefuseUntilEmrgComplete, msg2);
 			this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
-			throw new Exception(msg);
+			throw new Exception(msg2 + msig);
 		}
 		public virtual void Order_modifyOrderType_priceRequesting_accordingToMarketOrderAs(Order order) {
 			string msig = " //" + Name + "::Modify_orderType_priceRequesting_accordingToMarketOrderAs():"
@@ -425,7 +449,7 @@ namespace Sq1.Core.Broker {
 					this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 					throw new Exception(msg);
 			}
-			order.AppendMessage(msg + msig);
+			order.appendMessage(msg + msig);
 		}
 
 		public Order ScanEvidentLanes_forGuid_nullUnsafe(string GUID, List<OrderLane> orderLanes = null, char separator = ';') {

@@ -126,9 +126,14 @@ namespace Sq1.Core.Execution {
 		}
 		[JsonProperty]	public	BarScaleInterval	BarsScaleInterval				{ get; protected set; }
 		[JsonProperty]	public	OrderSpreadSide		OrderSpreadSide;
-		[JsonProperty]	public	Quote				QuoteCreatedThisAlert;
-		[JsonProperty]	public	Quote				QuoteFilledThisAlertDuringBacktestNotLive;
-		[JsonProperty]	public	Quote				QuoteLastWhenThisAlertFilled;
+
+		[JsonProperty]	public	Quote				QuoteCreatedThisAlert_deserializable;
+		[JsonProperty]	public	Quote				QuoteLastWhenThisAlertFilled_deserializable;
+
+		[JsonIgnore]	public	Quote				QuoteCreatedThisAlert;
+		[JsonIgnore]	public	Quote				QuoteFilledThisAlertDuringBacktestNotLive;
+		[JsonIgnore]	public	Quote				QuoteLastWhenThisAlertFilled;
+
 		[JsonIgnore]	public	Position			PositionAffected;
 		[JsonIgnore]	public	DateTime			PositionEntryDateTimeBarAligned				{ get {
 				if (this.PositionAffected != null) return this.PositionAffected.EntryDateBarTimeOpen;
@@ -291,6 +296,40 @@ namespace Sq1.Core.Execution {
 		} }
 		[JsonIgnore]	public	bool				IsDisposed;
 
+		
+		[JsonProperty]	public	bool		ImTakeProfit_prototyped { get {
+			string msig = " //ImTakeProfit_prototyped.Get() " + this;
+
+			bool ret = false;
+			bool nullOnTheWay = this.check_positionPrototype_notNull(msig) == false;
+			if (nullOnTheWay) return ret;
+
+			if (this.PositionAffected.Prototype.TakeProfitAlert_forMoveAndAnnihilation == null) {
+				string msg = "SHOULD_I_COMPLAIN?";
+				Assembler.PopupException(msg + msig);
+				return ret;
+			}
+			ret = this.PositionAffected.Prototype.TakeProfitAlert_forMoveAndAnnihilation == this;
+			return ret;
+		} }
+
+		[JsonProperty]	public	bool		ImStopLoss_prototyped { get {
+			string msig = " //ImStopLoss_prototyped.Get() " + this;
+
+			bool ret = false;
+			bool nullOnTheWay = this.check_positionPrototype_notNull(msig) == false;
+			if (nullOnTheWay) return ret;
+
+			if (this.PositionAffected.Prototype.StopLossAlert_forMoveAndAnnihilation == null) {
+				string msg = "SHOULD_I_COMPLAIN?";
+				Assembler.PopupException(msg + msig);
+				return ret;
+			}
+			ret = this.PositionAffected.Prototype.StopLossAlert_forMoveAndAnnihilation == this;
+			return ret;
+		} }
+
+
 		public void Dispose() {
 			if (this.IsDisposed || this.MreOrderFollowedIsAssignedNow == null) {
 				string msg = "ALERT_WAS_ALREADY_DISPOSED__ACCESSING_NULL_WAIT_HANDLE_WILL_THROW_NPE " + this.ToString();
@@ -449,9 +488,16 @@ namespace Sq1.Core.Execution {
 				msg.Append(this.QtyFilledThroughPosition);
 			}
 			if (this.PositionAffected != null) {
-				msg.Append("; PositionAffected=[#");
+				msg.Append("; Position[#");
 				//msg.Append(this.PositionAffected.ToString());
 				msg.Append(this.PositionAffected.SernoAbs);
+				msg.Append("]");
+			}
+			if (this.OrderFollowed != null) {
+				msg.Append("; Order[");
+				msg.Append(this.OrderFollowed.SernoExchange);
+				msg.Append("/");
+				msg.Append(this.OrderFollowed.State);
 				msg.Append("]");
 			}
 			return msg.ToString();
@@ -554,6 +600,22 @@ namespace Sq1.Core.Execution {
 			} else {
 				this.PositionAffected.FillExitWith(barFill, priceFill, qtyFill, slippageFill, commissionFill);
 			}
+		}
+
+		bool check_positionPrototype_notNull(string msig_invoker) {
+			if (this.PositionAffected == null) {
+				string msg = "ALERT_MUST_HAVE_POSITION_AFFECTED";
+				Assembler.PopupException(msg + msig_invoker);
+				//throw new Exception(msg + msig_invoker);
+				return false;
+			}
+			if (this.PositionAffected.Prototype == null) {
+				string msg = "ALERT_MUST_HAVE_PROTOTYPE";
+				Assembler.PopupException(msg + msig_invoker);
+				//throw new Exception(msg + msig_invoker);
+				return false;
+			}
+			return true;
 		}
 	}
 }

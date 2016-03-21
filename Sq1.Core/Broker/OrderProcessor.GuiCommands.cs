@@ -12,7 +12,7 @@ namespace Sq1.Core.Broker {
 			foreach (Order order in orders) {
 				if (this.isOrderEatable(order) == false) {
 					string msg1 = "I_REFUSE_TO_SUBMIT_NON_EDIBLE_ORDER [" + order + "]";
-					order.AppendMessage(msg1);
+					order.appendMessage(msg1);
 					Assembler.PopupException(msg1, null, false);
 					continue;
 				}
@@ -51,7 +51,7 @@ namespace Sq1.Core.Broker {
 			BrokerAdapter broker = this.extractSameBrokerAdapter_throwIfDifferent(ordersPendingToKill, msig);
 			foreach (Order pendingOrder in ordersPendingToKill) {
 				//this.Emit_killOrderPending_withoutKiller(pendingOrder, msig);
-				this.Emit_killOrderPending_usingKiller(pendingOrder, msig);
+				bool emitted = this.Emit_killOrderPending_usingKiller(pendingOrder, msig);
 			}
 		}
 		public void GuiClick_killPendingSelected(List<Order> ordersSelected) {
@@ -59,7 +59,7 @@ namespace Sq1.Core.Broker {
 			if (ordersSelected.Count == 0) return;
 			foreach (Order pendingOrder in ordersSelected) {
 				//this.Emit_killOrderPending_withoutKiller(pendingOrder, msig);
-				this.Emit_killOrderPending_usingKiller(pendingOrder, msig);
+				bool emitted = this.Emit_killOrderPending_usingKiller(pendingOrder, msig);
 			}
 		}
 		public void GuiClick_orderReplace(Order pendingOrder) {
@@ -98,11 +98,11 @@ namespace Sq1.Core.Broker {
 					string msg = "I_REFUSE_TO_KILL_AN_ORDER_AFTER_APPRESTART"
 						+ " tree_FormatRow() sets Item.ForeColor=Color.DimGray when "
 						+ " (all JSON-deserialized orders have no chart to get popped-up)";
-					orderToBeKilled.AppendMessage(msg);
+					orderToBeKilled.appendMessage(msg);
 					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}
-				this.Emit_killOrderPending_usingKiller(orderToBeKilled, "USER_DOUBLE_CLICKED_ON_ORDER_FROM_EXECUTION_FORM");
+				bool emitted = this.Emit_killOrderPending_usingKiller(orderToBeKilled, "USER_DOUBLE_CLICKED_ON_ORDER_FROM_EXECUTION_FORM");
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			}

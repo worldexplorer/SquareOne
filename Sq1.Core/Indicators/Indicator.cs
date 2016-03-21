@@ -47,7 +47,7 @@ namespace Sq1.Core.Indicators {
 				if (this.closesProxyEffective_cached.BarsBeingProxied != this.BarsEffective) {
 					string msg = "INDICATOR_SWITCHED_BARS_ClosesProxyEffective (Bars were replaced to Backtesting growing copy and create new Proxy)"
 						+ this.closesProxyEffective_cached.ToString() + " => " + this.BarsEffective.ToString();
-					//Assembler.PopupException(msg, null, false);
+					Assembler.PopupException(msg, null, false);
 					this.closesProxyEffective_cached = new DataSeriesProxyBars(this.BarsEffective, this.DataSeriesProxyFor);
 				}
 				return this.closesProxyEffective_cached;
@@ -193,7 +193,7 @@ namespace Sq1.Core.Indicators {
 		public void Initialize(HostPanelForIndicator panelNamedFolding) {
 			if (this.HostPanelForIndicator == panelNamedFolding) {
 				string msg = "INDICATOR_ALREADY_INITIALIZE_WITH_SAME_HOST_PANEL [" + this + "] this.HostPanelForIndicator[" + this.HostPanelForIndicator + "]";
-				//Assembler.PopupException(msg, null, false);
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 			this.HostPanelForIndicator = panelNamedFolding;

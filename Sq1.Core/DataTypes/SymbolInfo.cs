@@ -30,6 +30,7 @@ namespace Sq1.Core.DataTypes {
 		//[JsonProperty]	public	double			LeverageForFutures			{ get; set; }
 
 
+
 		[Browsable(false)]
 		[JsonProperty]	public	int				priceDecimals;
 
@@ -38,7 +39,6 @@ namespace Sq1.Core.DataTypes {
 			get { return this.priceDecimals; }
 			set { this.priceDecimals = value; this.raisePriceDecimalsChanged(); }
 		}
-
 
 		//BEFORE Pow/Log was invented: for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
 		[Category("2. Price and Volume Units"), Description("TODO")]
@@ -54,8 +54,6 @@ namespace Sq1.Core.DataTypes {
 		[Category("2. Price and Volume Units"), Description("Chart and Execution will display PriceDecimals+1 to visually assure Streaming and Broker adapters haven't got prices out of your expectations")]
 		[JsonIgnore]	public	string			PriceFormat					{ get { return "N" + (this.PriceDecimals); } }
 
-
-
 		[Category("2. Price and Volume Units"), Description("digits after decimal dot for min lot Volume; valid for partial Forex lots (-5 for 0.00001) and Bitcoins (-6 for 0.0000001); for stocks/options/futures I'd set 0 here"), DefaultValue(0)]
 		[JsonProperty]	public	int				VolumeDecimals				{ get; set; }
 
@@ -68,29 +66,7 @@ namespace Sq1.Core.DataTypes {
 
 
 
-		[Category("3. OrderProcessor"), Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis"), DefaultValue(true)]
-		[JsonProperty]	public	bool			SameBarPolarCloseThenOpen	{ get; set; }
-
-		[Category("3. OrderProcessor"), Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis"), DefaultValue(100)]
-		[JsonProperty]	public	int				SequencedOpeningAfterClosedDelayMillis		{ get; set; }
-
-
-
-		[Category("4. Post-OrderProcessor"), Description("EmergencyClose is PostProcessor's thread that kicks in when triggers when Position's Close was Rejected (Ctrl+Shift+F: InStateErrorComplementaryEmergencyState)"), DefaultValue(5)]
-		[JsonProperty]	public	int				EmergencyCloseAttemptsMax	{ get; set; }
-
-		[Category("4. Post-OrderProcessor"), Description("EmergencyClose will sleep EmergencyCloseInterAttemptDelayMillis in its thread and repeat Closing of a Rejected ExitOrder, until ExitOrder.Clone will be returned by the BrokerAdapter as Filled, EmergencyCloseAttemptsMax times max"), DefaultValue(100)]
-		[JsonProperty]	public	int				EmergencyCloseInterAttemptDelayMillis	{ get; set; }
-
-		[Category("4. Post-OrderProcessor"), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry"), DefaultValue(true)]
-		[JsonProperty]	public	bool			ReSubmitRejected			{ get; set; }
-
-		[Category("4. Post-OrderProcessor"), Description("OrderPostProcessorRejected and OrderPostProcessorEmergency will increase the distance (=> decrease the profit) by using next available from SlippagesBuy/SlippagesSell"), DefaultValue(true)]
-		[JsonProperty]	public	bool			ReSubmittedUsesNextSlippage	{ get; set; }
-
-
-
-		[Category("5. Pre-OrderProcessor"), Description("prior to Emitting, auto-convert Market orders by setting a Broker-acceptable Price: [MarketZeroSentToBroker] will set Alert[Market].Price=0 and send it;[MarketMinMaxSentToBroker] sets Alert.Price to Streaming's two special values received per instrument (see QUIK to Excel import); [LimitCrossMarket] puts counterparty's current observed price from the other side of the spread; [LimitTidal] is good for frequent fluctuations, saves you spread but has less chance to get fill; auto-conversion is useful for: 1) Forex doesn't support market orders (MT4/MT5?); 2) Market Buy for RTS-Index must mention MaxPrice instead of 0/omitted"), DefaultValue(MarketOrderAs.MarketZeroSentToBroker)]
+		[Category("3. Pre-OrderProcessor"), Description("prior to Emitting, auto-convert Market orders by setting a Broker-acceptable Price: [MarketZeroSentToBroker] will set Alert[Market].Price=0 and send it;[MarketMinMaxSentToBroker] sets Alert.Price to Streaming's two special values received per instrument (see QUIK to Excel import); [LimitCrossMarket] puts counterparty's current observed price from the other side of the spread; [LimitTidal] is good for frequent fluctuations, saves you spread but has less chance to get fill; auto-conversion is useful for: 1) Forex doesn't support market orders (MT4/MT5?); 2) Market Buy for RTS-Index must mention MaxPrice instead of 0/omitted"), DefaultValue(MarketOrderAs.MarketZeroSentToBroker)]
 		[JsonProperty]	public	MarketOrderAs	MarketOrderAs				{ get; set; }
 
 		[Browsable(false)]
@@ -99,23 +75,49 @@ namespace Sq1.Core.DataTypes {
 					|| this.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
 			} }
 
-		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue("10,20,30,40")]
+		[Category("3. Pre-OrderProcessor"), Description(""), DefaultValue("10,20,30,40")]
 		[JsonProperty]	public	string			SlippagesCrossMarketCsv				{ get; set; }
 
-		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue("10,20,30,40")]
+		[Category("3. Pre-OrderProcessor"), Description(""), DefaultValue("10,20,30,40")]
 		[JsonProperty]	public	string			SlippagesTidalCsv				{ get; set; }
 
-		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue(true)]
+		[Category("3. Pre-OrderProcessor"), Description(""), DefaultValue(true)]
 		[JsonProperty]	public	bool			UseFirstSlippageForBacktest	{ get; set; }
 
-		[Category("5. Pre-OrderProcessor"), Description("For StopSell + "), DefaultValue(true)]
+		[Category("3. Pre-OrderProcessor"), Description("For StopSell + "), DefaultValue(true)]
 		[JsonProperty]	public	bool			ReplaceTidalWithCrossMarket	{ get; set; }
 
-		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue(100)]
+		[Category("3. Pre-OrderProcessor"), Description(""), DefaultValue(100)]
 		[JsonProperty]	public	int				ReplaceTidalMillis			{ get; set; }
 
-		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue(false)]
+		[Category("3. Pre-OrderProcessor"), Description(""), DefaultValue(false)]
 		[JsonProperty]	public	bool			MarketOrders_priceFill_bringBackFromOutrageous			{ get; set; }
+
+
+
+		[Category("4. OrderProcessor"), Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis"), DefaultValue(true)]
+		[JsonProperty]	public	bool			SameBarPolarCloseThenOpen	{ get; set; }
+
+		[Category("4. OrderProcessor"), Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis"), DefaultValue(100)]
+		[JsonProperty]	public	int				SequencedOpeningAfterClosedDelayMillis		{ get; set; }
+
+		[Category("4. OrderProcessor"), Description("For each Broker.OrderSubmit(), check if a similar [TBD] order is already in the Pendings; useful when you are debugging your strategy that shoots the same order multiple times by mistake"), DefaultValue(false)]
+		[JsonProperty]	public	bool			CheckForSimilarAlreadyPending { get; set; }
+
+
+
+		[Category("5. Post-OrderProcessor"), Description("EmergencyClose is PostProcessor's thread that kicks in when triggers when Position's Close was Rejected (Ctrl+Shift+F: InStateErrorComplementaryEmergencyState)"), DefaultValue(5)]
+		[JsonProperty]	public	int				EmergencyCloseAttemptsMax	{ get; set; }
+
+		[Category("5. Post-OrderProcessor"), Description("EmergencyClose will sleep EmergencyCloseInterAttemptDelayMillis in its thread and repeat Closing of a Rejected ExitOrder, until ExitOrder.Clone will be returned by the BrokerAdapter as Filled, EmergencyCloseAttemptsMax times max"), DefaultValue(100)]
+		[JsonProperty]	public	int				EmergencyCloseInterAttemptDelayMillis	{ get; set; }
+
+		[Category("5. Post-OrderProcessor"), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry"), DefaultValue(true)]
+		[JsonProperty]	public	bool			ReSubmitRejected			{ get; set; }
+
+		[Category("5. Post-OrderProcessor"), Description("OrderPostProcessorRejected and OrderPostProcessorEmergency will increase the distance (=> decrease the profit) by using next available from SlippagesBuy/SlippagesSell"), DefaultValue(true)]
+		[JsonProperty]	public	bool			ReSubmittedUsesNextSlippage	{ get; set; }
+
 
 
 		[Category("6. Other"), Description(""), DefaultValue(true)]
@@ -123,6 +125,7 @@ namespace Sq1.Core.DataTypes {
 
 		[Category("6. Other"), Description(""), DefaultValue(true)]
 		[JsonProperty]	public	bool			SimBugOutOfBarLimitsFill	{ get; set; }
+
 
 
 		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]

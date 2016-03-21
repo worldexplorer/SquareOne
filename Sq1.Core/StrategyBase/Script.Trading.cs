@@ -74,13 +74,14 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		[Obsolete("looks unreliable until refactored; must kill previous alertExit AFTER killing market completes => userland callback or more intelligent management in CORE level")]
-		public List<Alert> PositionCloseImmediately(Position position, string signalName) {
+		public List<Alert> PositionClose_immediately(Position position, string signalName) {
+			List<Alert> killedOnce = this.Position_exitAlert_kill(position, signalName);
 			this.ExitAtMarket(this.Bars.BarStreaming_nullUnsafe, position, signalName);
 			// BETTER WOULD BE KILL PREVIOUS PENDING ALERT FROM A CALBACK AFTER MARKET EXIT ORDER GETS FILLED, IT'S UNRELIABLE EXIT IF WE KILL IT HERE
 			// LOOK AT EMERGENCY CLASSES, SOLUTION MIGHT BE THERE ALREADY
-			return this.PositionKillExitAlert(position, signalName);
+			return killedOnce;
 		}
-		public List<Alert> PositionKillExitAlert(Position position, string signalName) {
+		public List<Alert> Position_exitAlert_kill(Position position, string signalName) {
 			List<Alert> alertsSubmittedToKill = new List<Alert>();
 			if (position.IsEntryFilled == false) {
 				string msg = "I_REFUSE_TO_KILL_UNFILLED_ENTRY_ALERT position[" + position + "]";
