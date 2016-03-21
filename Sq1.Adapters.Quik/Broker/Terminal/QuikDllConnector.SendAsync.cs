@@ -156,59 +156,59 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 
 
 		//public void KillAll_sendTransaction_async(string SecCode, string ClassCode, string GUID, out string msgSubmitted) {
-		//    if (this.CanSend == false) {
-		//        msgSubmitted = "DLL_OR_TERMINAL_DISCONNECTED " + this.Ident + "KillAll_sendTransaction_async()";
-		//        return;
-		//    }
+		//	if (this.CanSend == false) {
+		//		msgSubmitted = "DLL_OR_TERMINAL_DISCONNECTED " + this.Ident + "KillAll_sendTransaction_async()";
+		//		return;
+		//	}
 
-		//    string ret = "";
-		//    String trans = "";
-		//    Trans2Quik.Result r;
+		//	string ret = "";
+		//	String trans = "";
+		//	Trans2Quik.Result r;
 
-		//    //transId++;
-		//    //trans = ""
-		//    //	+ "TRANS_ID=" + Order.newGUID() + ";"	//MddHHmmssfff
-		//    //	+ "ACCOUNT=" + BrokerQuik.SettingsManager.Get(
-		//    //		"QuikStreamingAdapter.QuikAccount", "SPBFUTxxxxx") + ";"
-		//    //	//+ "CLIENT_CODE=" + BrokerQuik.SettingsManager.Get(
-		//    //	//	"QuikStreamingAdapter.QuikClientCode", "") + ";"
-		//    //	+ "SECCODE=" + SecCode + ";"
-		//    //	+ "CLASSCODE=" + ClassCode + ";"
-		//    //	+ "ACTION=KILL_ALL_FUTURES_ORDERS;";
-		//    ////quikTransactionsAttemptedLog.Put("KillAll(1/3) KILL_ALL_FUTURES_ORDERS=" + trans);
-		//    //throw new Exception("NYI");
-		//    //r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-		//    //ret += this.Ident + " " + r + "	" + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
+		//	//transId++;
+		//	//trans = ""
+		//	//	+ "TRANS_ID=" + Order.newGUID() + ";"	//MddHHmmssfff
+		//	//	+ "ACCOUNT=" + BrokerQuik.SettingsManager.Get(
+		//	//		"QuikStreamingAdapter.QuikAccount", "SPBFUTxxxxx") + ";"
+		//	//	//+ "CLIENT_CODE=" + BrokerQuik.SettingsManager.Get(
+		//	//	//	"QuikStreamingAdapter.QuikClientCode", "") + ";"
+		//	//	+ "SECCODE=" + SecCode + ";"
+		//	//	+ "CLASSCODE=" + ClassCode + ";"
+		//	//	+ "ACTION=KILL_ALL_FUTURES_ORDERS;";
+		//	////quikTransactionsAttemptedLog.Put("KillAll(1/3) KILL_ALL_FUTURES_ORDERS=" + trans);
+		//	//throw new Exception("NYI");
+		//	//r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
+		//	//ret += this.Ident + " " + r + "	" + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
 
-		//    //transId++;
-		//    //trans = ""
-		//    //	+ "TRANS_ID=" + Order.newGUID() + ";"
-		//    //	+ "ACCOUNT=" + BrokerQuik.SettingsManager.Get(
-		//    //		"QuikStreamingAdapter.QuikAccount", "SPBFUTxxxxx") + ";"
-		//    //	//+ "CLIENT_CODE=" + BrokerQuik.SettingsManager.Get(
-		//    //	//	"QuikStreamingAdapter.QuikClientCode", "") + ";"
-		//    //	+ "SECCODE=" + SecCode + ";"
-		//    //	+ "CLASSCODE=" + ClassCode + ";"
-		//    //	+ "ACTION=KILL_ALL_STOP_ORDERS;";
-		//    ////quikTransactionsAttemptedLog.Put("KillAll(2/3) KILL_ALL_STOP_ORDERS=" + trans);
-		//    //r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-		//    //ret += this.Ident + " " + r + "	" + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
+		//	//transId++;
+		//	//trans = ""
+		//	//	+ "TRANS_ID=" + Order.newGUID() + ";"
+		//	//	+ "ACCOUNT=" + BrokerQuik.SettingsManager.Get(
+		//	//		"QuikStreamingAdapter.QuikAccount", "SPBFUTxxxxx") + ";"
+		//	//	//+ "CLIENT_CODE=" + BrokerQuik.SettingsManager.Get(
+		//	//	//	"QuikStreamingAdapter.QuikClientCode", "") + ";"
+		//	//	+ "SECCODE=" + SecCode + ";"
+		//	//	+ "CLASSCODE=" + ClassCode + ";"
+		//	//	+ "ACTION=KILL_ALL_STOP_ORDERS;";
+		//	////quikTransactionsAttemptedLog.Put("KillAll(2/3) KILL_ALL_STOP_ORDERS=" + trans);
+		//	//r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
+		//	//ret += this.Ident + " " + r + "	" + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
 
-		//    //transId++;
-		//    //trans = ""
-		//    //	+ "TRANS_ID=" + Order.newGUID() + ";"
-		//    //	+ "ACCOUNT=" + BrokerQuik.SettingsManager.Get(
-		//    //		"QuikStreamingAdapter.QuikAccount", "SPBFUTxxxxx") + ";"
-		//    //	//+ "CLIENT_CODE=" + BrokerQuik.SettingsManager.Get(
-		//    //	//	"QuikStreamingAdapter.QuikClientCode", "") + ";"
-		//    //	+ "SECCODE=" + SecCode + ";"
-		//    //	+ "CLASSCODE=" + ClassCode + ";"
-		//    //	+ "ACTION=KILL_ALL_ORDERS;";
-		//    ////quikTransactionsAttemptedLog.Put("KillAll(3/3) KILL_ALL_ORDERS=" + trans);
-		//    //r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-		//    //ret += this.Ident + " " + r + "	" + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
+		//	//transId++;
+		//	//trans = ""
+		//	//	+ "TRANS_ID=" + Order.newGUID() + ";"
+		//	//	+ "ACCOUNT=" + BrokerQuik.SettingsManager.Get(
+		//	//		"QuikStreamingAdapter.QuikAccount", "SPBFUTxxxxx") + ";"
+		//	//	//+ "CLIENT_CODE=" + BrokerQuik.SettingsManager.Get(
+		//	//	//	"QuikStreamingAdapter.QuikClientCode", "") + ";"
+		//	//	+ "SECCODE=" + SecCode + ";"
+		//	//	+ "CLASSCODE=" + ClassCode + ";"
+		//	//	+ "ACTION=KILL_ALL_ORDERS;";
+		//	////quikTransactionsAttemptedLog.Put("KillAll(3/3) KILL_ALL_ORDERS=" + trans);
+		//	//r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
+		//	//ret += this.Ident + " " + r + "	" + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
 
-		//    msgSubmitted = (ret != "") ? ret : null;
+		//	msgSubmitted = (ret != "") ? ret : null;
 		//}
 	}
 }

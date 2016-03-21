@@ -173,12 +173,12 @@ namespace Sq1.Adapters.Quik.Broker {
 			if (newOrderStateReceived == OrderState.Rejected) {
 				if (priceFilled_forLimit_zeroForMarket != 0) {
 					string msg1 = "QUIK_HINTS_ON_SOMETHING fillPrice[" + priceFilled_forLimit_zeroForMarket + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
-					this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msg1);
+					this.OrderProcessor.AppendMessage_propagateToGui(order, msg1);
 					priceFilled_forLimit_zeroForMarket = 0;
 				}
 				if (qtyFilled_forLimit_zeroForMarket != 0) {
 					string msg1 = "QUIK_HINTS_ON_SOMETHING fillQnty[" + priceFilled_forLimit_zeroForMarket + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
-					this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msg1);
+					this.OrderProcessor.AppendMessage_propagateToGui(order, msg1);
 					qtyFilled_forLimit_zeroForMarket = 0;
 				}
 			}
@@ -186,7 +186,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			if (order.State == newOrderStateReceived) {
 				//OrderStateMessage omsg1 = new OrderStateMessage(order, msg);
 				//base.OrderProcessor.Order_updateState_mustBeTheSame_dontPostProcess(omsg);
-				base.OrderProcessor.AppendOrderMessage_propagateToGui(order, msg);
+				base.OrderProcessor.AppendMessage_propagateToGui(order, msg);
 				return;
 			}
 	
@@ -203,7 +203,8 @@ namespace Sq1.Adapters.Quik.Broker {
 			//OrderStateMessage omsg_killer = new OrderStateMessage(killer, OrderState.KillerDone, msg_killer);
 			//killer.AppendMessageSynchronized(omsg_killer);
 			//v2
-			killer.AppendMessage(msg_killer);
+			//killer.AppendMessage(msg_killer);
+			this.OrderProcessor.AppendMessage_propagateToGui(killer, msg_killer);
 		}
 
 

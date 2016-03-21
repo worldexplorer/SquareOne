@@ -69,10 +69,10 @@ nTradeDescriptor Тип: Long. Дескриптор сделки, может и�
 
 				msg_tradeCommission = "tradeTradeSysCommission[" + tradeTradeSysCommission + "] tradeTScommission[" + tradeTScommission + "]"
 					+ "tradePrice2[" + tradePrice2 + "] tradeDate[" + tradeDate + "]";
-		    } catch (Exception ex) {
+			} catch (Exception ex) {
 				msg_tradeCommission = " CANT_EXTRACT_Commission__TRY_MOVE_TO_orderStatus_callback() ex[" + ex.Message + "]";
-		        //Assembler.PopupException(msg_tradeCommission + msig, ex);
-		    }
+				//Assembler.PopupException(msg_tradeCommission + msig, ex);
+			}
 
 
 			string msg_findingOrder = "";
@@ -87,8 +87,8 @@ nTradeDescriptor Тип: Long. Дескриптор сделки, может и�
 			} catch (Exception ex) {
 				msg_findingOrder = " sernoExchange_NOT_FOUND_IN_PENDINGS ex[" + ex.Message + "]"
 						+ " suggestedLane[" + suggestedLane + "] suggestion[" + suggestion + "]";
-		        //Assembler.PopupException(msg_findingOrder + msig, ex);
-		    }
+				//Assembler.PopupException(msg_findingOrder + msig, ex);
+			}
 
 			if (orderExecuted == null) {
 				Assembler.PopupException(msigHead + msg_findingOrder + msg_tradeCommission, null, false);
@@ -96,7 +96,18 @@ nTradeDescriptor Тип: Long. Дескриптор сделки, может и�
 			}
 
 			OrderStateMessage osm = new OrderStateMessage(orderExecuted, OrderState._TradeStatus, msigHead + msg_tradeCommission);
-			orderExecuted.AppendMessageSynchronized(osm);
+			//orderExecuted.AppendMessageSynchronized(osm);
+			this.quikBroker.OrderProcessor.AppendOrderMessage_propagateToGui(osm);
+
+			if (orderExecuted.OnlyDeserializedHasNoBars) {
+				string msg_deserialized = "IGNORING_TRADE_STATUS_FOR_DESERIALIZED"
+					+ " DO_YOU_WANT_TO_RESTORE_BARS_IN_THE_DESERIALIZED_ORDER_AND_CONTINUE_WITH_BROKER_POST_PROCESSING?";
+				OrderStateMessage osm_deserialized = new OrderStateMessage(orderExecuted, OrderState._TradeStatus, msg_deserialized + msigHead);
+				//orderExecuted.AppendMessageSynchronized(osm_deserialized);
+				this.quikBroker.OrderProcessor.AppendOrderMessage_propagateToGui(osm_deserialized);
+				Assembler.PopupException(msg_deserialized + msigHead + msg_tradeCommission, null, false);
+				return;
+			}
 
 			if (nMode != 0) return;
 
@@ -128,9 +139,9 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 
 			//int filled = Trans2Quik.ORDER_QTY(orderDescriptor);	// filled[" + filled + "]
 			//string msgParams = "price[" + priceFilled + "] status[" + status + "]"
-			//    + " nMode[" + nMode + "] Guid[" + GUID + "] sernoExchange[" + sernoExchange + "]"
-			//    + " classCode[" + classCode + "] secCode[" + secCode + "]"
-			//    + " leftUnfilled[" + balance + "] msum[" + msum + "] isSell[" + isSell + "]";
+			//	+ " nMode[" + nMode + "] Guid[" + GUID + "] sernoExchange[" + sernoExchange + "]"
+			//	+ " classCode[" + classCode + "] secCode[" + secCode + "]"
+			//	+ " leftUnfilled[" + balance + "] msum[" + msum + "] isSell[" + isSell + "]";
 
 			string nMode_asString = "";		//"NEW";
 			if (nMode != 0) nMode_asString = nMode == 1 ? "INIT_LIST_USE_ME " : "LAST_ORDER_UPDATE ";
@@ -191,7 +202,19 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			}
 
 			OrderStateMessage osm = new OrderStateMessage(order, OrderState._OrderStatus, msigHead + msg_dupeIgnored + msg_findingOrder);
-			order.AppendMessageSynchronized(osm);
+			//order.AppendMessageSynchronized(osm);
+			this.quikBroker.OrderProcessor.AppendOrderMessage_propagateToGui(osm);
+
+			if (order.OnlyDeserializedHasNoBars) {
+				string msg_deserialized = "IGNORING_ORDER_STATUS_FOR_DESERIALIZED"
+					+ " DO_YOU_WANT_TO_RESTORE_BARS_IN_THE_DESERIALIZED_ORDER_AND_CONTINUE_WITH_BROKER_POST_PROCESSING?";
+				OrderStateMessage osm_deserialized = new OrderStateMessage(order, OrderState._OrderStatus, msg_deserialized + msigHead);
+				//order.AppendMessageSynchronized(osm_deserialized);
+				this.quikBroker.OrderProcessor.AppendOrderMessage_propagateToGui(osm_deserialized);
+				Assembler.PopupException(msg_deserialized + msigHead + msg_dupeIgnored + msg_findingOrder, null, false);
+				return;
+			}
+
 
 			if (nMode != 0) return;
 
@@ -287,11 +310,24 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			}
 
 			OrderStateMessage osm = new OrderStateMessage(orderSubmitting, OrderState._TransactionStatus, msigHead + msg_findingOrder);
-			orderSubmitting.AppendMessageSynchronized(osm);
+			//orderSubmitting.AppendMessageSynchronized(osm);
+			this.quikBroker.OrderProcessor.AppendOrderMessage_propagateToGui(osm);
+
+
+			if (orderSubmitting.OnlyDeserializedHasNoBars) {
+				string msg_deserialized = "IGNORING_TRANSACTION_REPLY_FOR_DESERIALIZED"
+					+ " DO_YOU_WANT_TO_RESTORE_BARS_IN_THE_DESERIALIZED_ORDER_AND_CONTINUE_WITH_BROKER_POST_PROCESSING?";
+				OrderStateMessage osm_deserialized = new OrderStateMessage(orderSubmitting, OrderState._TransactionStatus, msg_deserialized + msigHead);
+				//orderSubmitting.AppendMessageSynchronized(osm_deserialized);
+				this.quikBroker.OrderProcessor.AppendOrderMessage_propagateToGui(osm_deserialized);
+				Assembler.PopupException(msg_deserialized + msigHead + msg_findingOrder, null, false);
+				return;
+			}
 
 			if (orderSubmitting.State == OrderState.WaitingBrokerFill && orderSubmitting.IsVictim) {
 				string msg_dontPostProcess = "SUBMITTED_TRANSACTION_FOR_ME__BUT_LOGGING_TO_MY_KILLER" + msigHead + msg_findingOrder;
-				orderSubmitting.AppendMessage(msg_dontPostProcess);
+				//orderSubmitting.AppendMessage(msg_dontPostProcess);
+				this.quikBroker.OrderProcessor.AppendMessage_propagateToGui(orderSubmitting, msg_dontPostProcess);
 
 				Order killer = orderSubmitting.KillerOrder;
 				OrderStateMessage newOrderState = new OrderStateMessage(killer, newState, msigHead + msg_findingOrder);
@@ -310,10 +346,10 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			//if (orderSubmitting.IsKiller == false) return;
 			//Order orderKiller = orderSubmitting;
 			//if (orderKiller.VictimToBeKilled == null) {
-			//    string msg1 = "";
-			//    var omsg1 = new OrderStateMessage(orderKiller, OrderState.KillerPreSubmit, "KILLING_HOPE[" + orderKiller + "]");
-			//    orderKiller.AppendMessage(msg1);
-			//    //Assembler.PopupException(msg);
+			//	string msg1 = "";
+			//	var omsg1 = new OrderStateMessage(orderKiller, OrderState.KillerPreSubmit, "KILLING_HOPE[" + orderKiller + "]");
+			//	orderKiller.AppendMessage(msg1);
+			//	//Assembler.PopupException(msg);
 			//}
 			//var omsg = new OrderStateMessage(orderKiller, OrderState.KillerSubmitting, "KILLING_HOPE[" + orderKiller + "]");
 			//this.quikBroker.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);

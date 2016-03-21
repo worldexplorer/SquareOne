@@ -99,9 +99,9 @@ namespace Sq1.Adapters.Quik.Broker {
 			OrderStateMessage newState = new OrderStateMessage(order, orderState_fromTerminal_mustBeSubmitted, msg + msig);
 			base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newState);
 		}
-		public override void Order_kill_dispatcher(Order killerOrder_withRefToVictim) {
-		    this.Order_killPending_usingKiller(killerOrder_withRefToVictim);
-		}
+		//public override void Order_kill_dispatcher(Order killerOrder_withRefToVictim) {
+		//    this.Order_killPending_usingKiller(killerOrder_withRefToVictim);
+		//}
 		//public override void Order_killPending_withoutKiller(Order victimOrder) {
 		//    string msig = Name + "::Order_killPending_withoutKiller():"
 		//        + "State[" + victimOrder.State + "]"
@@ -174,9 +174,11 @@ namespace Sq1.Adapters.Quik.Broker {
 				Quote lastMayNotBeTheCreatorHereHavingNoParentBars = this.StreamingAdapter.StreamingDataSnapshot
 					.LastQuote_getForSymbol(order.Alert.Symbol);
 				order.Alert.QuoteCreatedThisAlert = lastMayNotBeTheCreatorHereHavingNoParentBars;
+				order.Alert.QuoteCreatedThisAlert_deserializable = order.Alert.QuoteCreatedThisAlert as Quote;
 				string msg2 = "AVOIDING_ORDER_MARKED_INCONSISTENT: " + order.Alert.QuoteCreatedThisAlert;
 				//Assembler.PopupException(msg2, null, false);
-				order.AppendMessage(msg2);
+				//order.AppendMessage(msg2);
+				this.OrderProcessor.AppendMessage_propagateToGui(order, msg2);
 			}
 			
 			if (order.Alert.PriceDeposited != -1) {

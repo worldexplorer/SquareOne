@@ -11,8 +11,8 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 					Timer			connectionTimer;
 					bool			ignoreTimerInvocation;
 					bool			rescheduleToConnect { set {
-					    if (value == true) {
-					        this.ignoreTimerInvocation = false;
+						if (value == true) {
+							this.ignoreTimerInvocation = false;
 							if (this.connectionAttempts == 0) {
 								// we start it in ConnectDll() - invoke now, infinite amount of times, with 5 sec delay
 								this.connectionTimer.Change(0, Timeout.Infinite);	//this.quikBroker.ReconnectTimeoutMillis);
@@ -20,10 +20,10 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 								// we reschedule it in tryConnect_timeredEntryPoint() - wait 5 sec and re-invoke once
 								this.connectionTimer.Change(this.quikBroker.ReconnectTimeoutMillis, Timeout.Infinite);
 							}
-					    } else {
-					        this.ignoreTimerInvocation = true;
-					        this.connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
-					    }
+						} else {
+							this.ignoreTimerInvocation = true;
+							this.connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
+						}
 					} }
 
 		public		bool			DllConnected	{ get; private set; }
@@ -152,21 +152,21 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 						Assembler.PopupException(msg2 + msig, null, false);
 						this.quikBroker.CallbackFromQuikDll_ConnectionStateUpdated(ConnectionState.Broker_TerminalDisconnected, msg2);
 
-						Trans2Quik.Result status_unsubscribeOrders = Trans2Quik.UNSUBSCRIBE_ORDERS();
-						if (status_unsubscribeOrders != Trans2Quik.Result.SUCCESS) {
-							//this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.TermialDisonnected, "can not UNSUBSCRIBE_ORDERS()");
-							msg2 = "FAILED_TO_UNSUBSCRIBE_ORDERS() [" + status_unsubscribeOrders + "]";
-							Assembler.PopupException(msg2 + msig, null, false);
-							//return;
-						}
-
-						Trans2Quik.Result status_unsubscribeTrades = Trans2Quik.UNSUBSCRIBE_TRADES();
-						if (status_unsubscribeTrades != Trans2Quik.Result.SUCCESS) {
-							//this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(QuikTerminalQuikConnectionState.DllConnected, "can not UNSUBSCRIBE_TRADES()");
-							msg2 = "FAILED_TO_UNSUBSCRIBE_TRADES() ret[" + status_unsubscribeTrades + "]";
-							Assembler.PopupException(msg2 + msig, null, false);
-							//return;
-						}
+						// QUIK_NOT_CONNECTED anyway
+						//Trans2Quik.Result status_unsubscribeOrders = Trans2Quik.UNSUBSCRIBE_ORDERS();
+						//if (status_unsubscribeOrders != Trans2Quik.Result.SUCCESS) {
+						//	//this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(ConnectionState.TermialDisonnected, "can not UNSUBSCRIBE_ORDERS()");
+						//	msg2 = "FAILED_TO_UNSUBSCRIBE_ORDERS() [" + status_unsubscribeOrders + "]";
+						//	Assembler.PopupException(msg2 + msig, null, false);
+						//	//return;
+						//}
+						//Trans2Quik.Result status_unsubscribeTrades = Trans2Quik.UNSUBSCRIBE_TRADES();
+						//if (status_unsubscribeTrades != Trans2Quik.Result.SUCCESS) {
+						//	//this.quikBroker.ConnectionStateUpdated_callbackFromQuikDll(QuikTerminalQuikConnectionState.DllConnected, "can not UNSUBSCRIBE_TRADES()");
+						//	msg2 = "FAILED_TO_UNSUBSCRIBE_TRADES() ret[" + status_unsubscribeTrades + "]";
+						//	Assembler.PopupException(msg2 + msig, null, false);
+						//	//return;
+						//}
 
 						break;
 
@@ -189,7 +189,7 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 		}
 
 		//string errorAsString(int error) {
-		//    return Enum.GetName(typeof(Trans2Quik.Result), error);
+		//	return Enum.GetName(typeof(Trans2Quik.Result), error);
 		//}
 	}
 }
