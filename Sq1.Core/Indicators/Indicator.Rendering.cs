@@ -17,7 +17,7 @@ namespace Sq1.Core.Indicators {
 
 			if (bar.IsBarStaticLast && this.Executor.IsStreamingTriggeringScript == false) {
 				string msg = "DONT_WANT_TO_HACK_WILL_DRAW_LAST_STATIC_BARS_INDICATOR_VALUE_AFTER_YOU_TURN_ON_STREAMING_SO_I_WILL_HAVE_NEW_QUOTE_PROVING_THE_LAST_BAR_IS_FORMED";
-				//Assembler.PopupException(msg);
+				Assembler.PopupException(msg);
 				return indicatorLegDrawn;
 			}
 			if (this.OwnValuesCalculated.ContainsDate(bar.DateTimeOpen) == false) {

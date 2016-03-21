@@ -7,7 +7,7 @@ using Sq1.Core.Broker;
 using Sq1.Core.Support;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.Livesim;
+using System.Collections.Generic;
 
 namespace Sq1.Core.Backtesting {
 	[SkipInstantiationAt(Startup = true)]
@@ -22,9 +22,9 @@ namespace Sq1.Core.Backtesting {
 			base.AccountAutoPropagate.Initialize(this);
 		}
 
-		internal void InitializeBacktestBroker(ScriptExecutor scriptExecutor) {
+		internal void InitializeMarketsim(ScriptExecutor scriptExecutor) {
 			this.ScriptExecutor = scriptExecutor;
-			this.BacktestMarketsim.Initialize();
+			this.BacktestMarketsim.Initialize(this.ScriptExecutor);
 		}
 
 		public override void OrderMoveExisting_stopLoss_overrideable(PositionPrototype proto, double newActivationOffset, double newStopLossNegativeOffset) {
@@ -35,9 +35,9 @@ namespace Sq1.Core.Backtesting {
 		}
 
 
-		public override void Order_kill_dispatcher(Order victimOrder) {
-		    throw new Exception("please override BrokerAdapter::Order_kill() for BrokerAdapter.Name=[" + Name + "]");
-		}
+		//public override void Order_kill_dispatcher(Order victimOrder) {
+		//    throw new Exception("please override BrokerAdapter::Order_kill() for BrokerAdapter.Name=[" + Name + "]");
+		//}
 		//public override void Order_killPending_withoutKiller(Order victimOrder) {
 		//    throw new Exception("please override BrokerAdapter::Order_killPending_withoutKiller() for BrokerAdapter.Name=[" + Name + "]");
 		//}
@@ -46,22 +46,16 @@ namespace Sq1.Core.Backtesting {
 		}
 
 
-		public override bool AlertCounterparty_annihilate(Alert alert) {
-			return this.BacktestMarketsim.AlertCounterparty_annihilate(alert);
+		public override bool AlertCounterparty_annihilate(Alert alertCounterparty_toAnnihilate) {
+			return this.BacktestMarketsim.AlertCounterparty_annihilate(alertCounterparty_toAnnihilate);
 		}
-		public override void AlertPending_kill(Alert alert) {
-			this.BacktestMarketsim.AlertPending_simulateKill(alert);
+		public override int AlertPendings_kill(List<Alert> alerts2kill_afterScript_onQuote_onBar) {
+			int emitted = alerts2kill_afterScript_onQuote_onBar.Count;
+			foreach (Alert alert2kill in alerts2kill_afterScript_onQuote_onBar) {
+				this.BacktestMarketsim.AlertPending_simulateKill(alert2kill);
+			}
+			return emitted;
 		}
 
-		public bool ImLivesimBroker { get {
-			bool ret = this is LivesimBroker;
-			if (this.ScriptExecutor != null) {	// while creating a new DataSource, we take Dummy who doesn't have anything
-				if (ret != this.ScriptExecutor.BacktesterOrLivesimulator.ImLivesimulator) {
-					string msg = "FOR_LIVESIM__MUST_BE_DERIVED_FROM_LivesimBroker [" + this + "]";	// PARANOID_BUT_JUSTFIFIED
-					Assembler.PopupException(msg);
-				}
-			}
-			return ret;
-		} }
 	}
 }

@@ -9,7 +9,6 @@ namespace Sq1.Core.Execution {
 				OrderState.Submitting,
 				OrderState.SubmittingSequenced,
 				OrderState.VictimsBulletPreSubmit,
-				OrderState.VictimsBulletConfirmed,
 				OrderState.KillerPreSubmit,
 				OrderState.KillerSubmitting,
 				OrderState.SubmittingSequenced
@@ -24,7 +23,14 @@ namespace Sq1.Core.Execution {
 				OrderState._OrderStatus,		// an order must never be actually analyzed for this status koz it never has it assigned
 				OrderState._TransactionStatus,	// an order must never be actually analyzed for this status koz it never has it assigned
 				OrderState.KillerBulletFlying,
+				OrderState.KillerTransSubmittedOK,
 				OrderState.VictimsBulletSubmitted,
+				OrderState.VictimsBulletFlying,
+				OrderState.VictimsBulletConfirmed,
+				OrderState.SLAnnihilating,
+				OrderState.SLAnnihilated,
+				OrderState.TPAnnihilating,
+				OrderState.TPAnnihilated,
 				OrderState.IRefuseOpenTillEmergencyCloses,
 			}, "NoInterventionRequired");
 
@@ -75,6 +81,14 @@ namespace Sq1.Core.Execution {
 				OrderState.Unknown
 			}, "None");
 
+		public static OrderStatesCollections CanBeKilled =
+			new OrderStatesCollections(new List<OrderState>() {
+				OrderState.WaitingBrokerFill,
+				OrderState.SLAnnihilating,
+				OrderState.TPAnnihilating,
+			}, "CanBeKilled");
+	
+		
 		public string CollectionName { get; private set; }
 
 		public OrderStatesCollections() {

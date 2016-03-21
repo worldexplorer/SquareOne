@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-//using System.Threading;
 using System.Threading.Tasks;
 
 using Sq1.Core.Accounting;
 using Sq1.Core.Execution;
-using Sq1.Core.StrategyBase;
 using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Broker {
@@ -72,7 +70,7 @@ namespace Sq1.Core.Broker {
 				}
 			}
 			if (errormsg != "") {
-				order.AppendMessage(errormsg);
+				order.appendMessage(errormsg);
 				exitOrderHasNoErrors = false;
 			}
 			return exitOrderHasNoErrors;
@@ -84,7 +82,7 @@ namespace Sq1.Core.Broker {
 			} catch (Exception e) {
 				string msg = "hoping that MarketOrderAs.MarketMinMax influenced order.Alert.MarketLimitStop["
 					+ newborn.Alert.MarketLimitStop + "]=MarketLimitStop.Limit for further match; PREV=" + newborn.LastMessage;
-				this.AppendOrderMessage_propagateToGui(newborn, msg);
+				this.AppendMessage_propagateToGui(newborn, msg);
 			}
 			if (alert.IsExitAlert) {
 				if (this.isExitOrderConsistent_logInconsistency(newborn) == false) {
@@ -166,7 +164,7 @@ namespace Sq1.Core.Broker {
 			return true;
 		}
 
-		void appendOrderMessage_propagateToGui(OrderStateMessage omsg) {
+		public void AppendOrderMessage_propagateToGui(OrderStateMessage omsg) {
 			//log.Debug(omsg.Message);
 			if (string.IsNullOrEmpty(omsg.Message)) {
 				string msg = "I_REFUSE_TO_APPEND_AND_DISPLAY_EMPTY_MESSAGE omsg[" + omsg.ToString() + "]";
@@ -174,16 +172,16 @@ namespace Sq1.Core.Broker {
 				return;
 			}
 			Order order = omsg.Order;
-			order.AppendMessageSynchronized(omsg);
+			order.appendOrderMessage(omsg);
 			if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) return;
 			this.RaiseOrderMessageAdded_executionControlShouldPopulate(this, omsg);
 		}
-		public void AppendOrderMessage_propagateToGui(Order order, string msg) {
+		public void AppendMessage_propagateToGui(Order order, string msg) {
 			if (order == null) {
 				throw new Exception("order=NULL! you don't want to get NullPointerException and debug it");
 			}
 			OrderStateMessage omsg = new OrderStateMessage(order, msg);
-			this.appendOrderMessage_propagateToGui(omsg);
+			this.AppendOrderMessage_propagateToGui(omsg);
 		}
 
 		void postProcess_victimOrder(OrderStateMessage newStateOmsg) {
@@ -204,15 +202,15 @@ namespace Sq1.Core.Broker {
 					break;
 
 				case OrderState.VictimKilled:
-					if (victimOrder.FindState_inOrderMessages(OrderState.SLAnnihilated)) {
+					if (victimOrder.FindState_inOrderMessages(OrderState.SLAnnihilating)) {
 						this.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(
 							new OrderStateMessage(victimOrder, OrderState.SLAnnihilated,
-								"Setting State to the reason why it was killed"));
+								"PROTOTYPE_FILLED__COUNTERPARTY_ANNIHILATION_SUCCEEDED"));
 					}
-					if (victimOrder.FindState_inOrderMessages(OrderState.TPAnnihilated)) {
+					if (victimOrder.FindState_inOrderMessages(OrderState.TPAnnihilating)) {
 						this.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(
 							new OrderStateMessage(victimOrder, OrderState.TPAnnihilated,
-								"Setting State to the reason why it was killed"));
+								"PROTOTYPE_FILLED__COUNTERPARTY_ANNIHILATION_SUCCEEDED"));
 					}
 
 					Order killerOrder = victimOrder.KillerOrder;
@@ -258,53 +256,6 @@ namespace Sq1.Core.Broker {
 			}
 		}
 
-		void postProcessAccounting(Order order) {
-			if (order.Alert.Direction == Direction.Unknown) {
-				string msg = "Direction.Unknown can't be here; Unknown is default for Deserialization errors!";
-				Assembler.PopupException(msg);
-			}
-			//moved to Order.FillPositionAffected() to make MarketSim to fill without orderProcessor
-			//if (order.Alert.PositionAffected != null) { 	// alert.PositionAffected = null when order created by chart-click-mni
-			//	if (order.Alert.isEntryAlert) {
-			//		order.Alert.PositionAffected.EntryFilledWith(order.PriceFill, order.SlippageFill, 0);
-			//	} else {
-			//		order.Alert.PositionAffected.ExitFilledWith(order.PriceFill, order.SlippageFill, 0);
-			//	}
-			//} else {
-			//	log.Fatal("NO POSITION AFFECTED; order[" + order + "] alert[" + order.Alert + "]");
-			//}
-			// FIXME: UNCOMMENT AND FIX DataSource == null here...
-			/*
-			Account account = this.DataSnapshot.FindAccountByNumber(order.Alert.AccountNumber);
-			if (account == null) {
-				string msg = "Account not found for order[" + order.ToString() + "]";
-				log.Fatal(msg);
-				//throw new Exception(msg);
-			} else {
-				AccountPosition positionAlready = this.DataSnapshot.DataSnapshot.FindAccountPositionForOrder(order);
-				if (positionAlready != null) {
-					double _SharesFilledDiff = qtyFill - order.QtyFill;
-					if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Short) _SharesFilledDiff = -_SharesFilledDiff;
-					log.Warn("Adding Shares[" + _SharesFilledDiff + "] to existing Position[" + positionAlready + "]");
-					positionAlready.QtyFill += _SharesFilledDiff;
-					// FIXME: UNCOMMENT AND FIX DataSource == null here...
-					order.Alert.DataSource.BrokerAdapter.AccountPositionModified(account);
-					if (this.AccountPositionChanged != null) {
-						this.AccountPositionChanged(this, new AccountPositionEventArgs(positionAlready));
-					}
-				} else {
-					AccountPosition positionNew = new AccountPosition(order);
-					log.Info("Adding new Position[" + positionNew + "]");
-					positionNew.Account = account;
-					account.Positions.Add(positionNew);
-					// FIXME: UNCOMMENT AND FIX DataSource == null here...
-					order.Alert.DataSource.BrokerAdapter.AccountPositionAdded(account);
-					if (this.AccountPositionAdded != null) {
-						this.AccountPositionAdded(this, new AccountPositionEventArgs(positionNew));
-					}
-				}
-			}*/
-		}
 		void postProcess_invokeScript_scheduleReplacement(Order order, double priceFill, double qtyFill) {
 			string msig = " " + order.State + " " + order.LastMessage + " //postProcess_invokeScript_scheduleReplacement()";
 			//if (order.Alert.isExitAlert || order.IsEmergencyClose) {
@@ -380,7 +331,7 @@ namespace Sq1.Core.Broker {
 								+ " ReplacedByGUID[" + order.ReplacedByGUID + "]"
 								//+ "; skipping PostProcess for [" + order + "]"
 								;
-							this.AppendOrderMessage_propagateToGui(order, msg);
+							this.AppendMessage_propagateToGui(order, msg);
 							this.RaiseOrderStateOrPropertiesChanged_executionControlShouldPopulate(this, new List<Order>(){order});
 							return;
 						}

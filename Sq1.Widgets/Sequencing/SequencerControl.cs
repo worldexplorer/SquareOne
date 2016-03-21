@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
+
 using Sq1.Core;
 using Sq1.Core.Sequencing;
 using Sq1.Core.Repositories;
@@ -484,7 +485,7 @@ namespace Sq1.Widgets.Sequencing {
 
 		public override string ToString() {
 			string ret = "UNINITIALIZED";
-			if (this.sequencer != null) ret = this.sequencer.Executor.Strategy.WindowTitle;
+			if (this.sequencer != null && this.sequencer.Executor.Strategy != null) ret = this.sequencer.Executor.Strategy.WindowTitle;
 			return "Sequencer :: " + ret;
 		}
 	}

@@ -85,8 +85,8 @@ namespace Sq1.Core.Livesim {
 				//this.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim.AllQuotePumps_Pause(reasonToPauseSymbol);
 				int pumpsPaused = this.Executor.DataSource_fromBars.LivesimStreamingDefault_PumpPause_freezeOtherConsumers_forSameSymbolScale(this.Executor);
 				if (pumpsPaused == 0) {
-					string msg = "DONT_YOU_HAVE_CHARTS_OPEN_FOR_STRATEGY_LIVESIMMING?";
-					Assembler.PopupException(msg);
+					string msg = "BARS_UNSUBSCRIBED OR_DONT_YOU_HAVE_CHARTS_OPEN_FOR_STRATEGY_LIVESIMMING?";
+					Assembler.PopupException(msg, null, false);
 				}
 				#endregion
 
@@ -146,7 +146,7 @@ namespace Sq1.Core.Livesim {
 				this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesim_nullUnsafe.InitializeLivesim(this.DataSourceAsLivesim_nullUnsafe, base.Executor.OrderProcessor);
 
 				// MOVED_FROM_Livesimulator.Start_invokedFromGuiThread()
-				this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesim_nullUnsafe.InitializeBacktestBroker(base.Executor);
+				this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesim_nullUnsafe.InitializeMarketsim(base.Executor);
 
 
 				#region PARANOID
@@ -239,8 +239,8 @@ namespace Sq1.Core.Livesim {
 				//this.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim.AllQuotePumps_Unpause(reasonToUnPauseSymbol);
 				int pumpsUnpaused = this.Executor.DataSource_fromBars.LivesimStreamingDefault_PumpResume_unfreezeOtherConsumers_forSameSymbolScale(this.Executor);
 				if (pumpsUnpaused == 0) {
-					string msg = "DONT_YOU_HAVE_CHARTS_OPEN_FOR_STRATEGY_LIVESIMMING?";
-					Assembler.PopupException(msg);
+					string msg = "BARS_UNSUBSCRIBED OR_DONT_YOU_HAVE_CHARTS_OPEN_FOR_STRATEGY_LIVESIMMING?";
+					Assembler.PopupException(msg, null, false);
 				}
 				#endregion
 

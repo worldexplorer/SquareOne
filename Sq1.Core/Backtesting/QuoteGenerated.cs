@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Text;
 
+using Newtonsoft.Json;
+
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Backtesting {
+	[JsonObject]
 	public sealed class QuoteGenerated : Quote {
-		public Bar			ParentBarSimulated;
-		public bool			HasParentBarSimulated			{ get { return this.ParentBarSimulated != null; } }
+		[JsonIgnore]	public Bar			ParentBarSimulated;
+		[JsonIgnore]	public bool			HasParentBarSimulated			{ get { return this.ParentBarSimulated != null; } }
 		public new string	ParentBarIdent					{ get { return (this.HasParentBarSimulated) ? this.ParentBarSimulated.ParentBarsIdent : "NO_PARENT_BAR_SIMULATED"; } }
-		public double		SpreadAligned					{ get {
+		[JsonIgnore]	public double		SpreadAligned					{ get {
 				if (this.ParentBarSimulated == null) {
 					return base.Spread;
 				}
@@ -22,7 +25,7 @@ namespace Sq1.Core.Backtesting {
 				double ret = symbolInfo.AlignToPriceLevel(base.Spread, PriceLevelRoundingMode.RoundUp);	//RoundUp so I wont' get spread = 0
 				return ret;
 			} }
-		public bool			WentThroughStreamingToScript;
+		[JsonIgnore]	public bool			WentThroughStreamingToScript;
 		
 		public QuoteGenerated(DateTime localTimeEqualsToServerTimeForGenerated) : base(localTimeEqualsToServerTimeForGenerated) {}
 

@@ -273,7 +273,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			//v1 dynamically taken now in BacktestMarketsim.cs:476 this.MarketsimBacktest.Initialize(this.Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
 			//v2
-			this.BacktesterOrLivesimulator.BacktestDataSource.BrokerAsBacktest_nullUnsafe.InitializeBacktestBroker(this);
+			this.BacktesterOrLivesimulator.BacktestDataSource.BrokerAsBacktest_nullUnsafe.InitializeMarketsim(this);
 
 			//v1, ATTACHED_TO_BARS.DATASOURCE.SYMBOLRENAMED_INSTEAD_OF_DATASOURCE_REPOSITORY
 			// if I listen to DataSourceRepository, all ScriptExecutors receive same notification including irrelated to my Bars
@@ -281,23 +281,46 @@ namespace Sq1.Core.StrategyBase {
 			//	new EventHandler<DataSourceSymbolEventArgs>(Assembler_InstanceInitialized_RepositoryJsonDataSource_OnSymbolRenamed);
 		}
 
-		void enrichAlerts_withQuoteCreated(List<Alert> alertsAfterStrategy, Quote quote) {
-			if (quote == null) return;
+		public void EnrichAlerts_withQuoteCreated(List<Alert> alertsAfterStrategy, Quote quote) {
+			if (quote == null) {
+				string msg = "WHEN_AM_I_NULL_BTW?";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (quote.HasParentBarStreaming == false && this.BacktesterOrLivesimulator.ImRunningLivesim == false) {
+				string msg = "BACKTEST I_REFUSE_TO_ENRICH_ALERT_WITH_QUOTE__SINCE_QUOTE_HAS_NO_PARENT_BAR__I_CAN_NOT_CHECK_IF_QUOTE_AND_ALERT_ARE_FOR_THE_SAME_BAR";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
 			foreach (Alert alert in alertsAfterStrategy) {
-				if (quote.HasParentBar == false) {
-					string msg = "I_REFUSE_TO_ENRICH_ALERT_WITH_QUOTE__SINCE_QUOTE_HAS_NO_PARENT_BAR__I_CAN_NOT_CHECK_IF_QUOTE_AND_ALERT_ARE_FOR_THE_SAME_BAR";
-					this.PopupException(msg);
+				if (alert.QuoteCreatedThisAlert != null) {		//quote.HasParentBar == false && 
+					if (this.BacktesterOrLivesimulator.ImRunningLivesim) {
+						string msg = "LIVESIM_GOOD__I_HAVE_ALREADY_ENRICHED_EACH_ALERT";
+						//Assembler.PopupException(msg, null, false);
+					} else {
+						string msg = "BACKTEST_BAD__I_SHOULD_NOT_HAVE_ALREADY_ENRICHED_EACH_ALERT";
+						Assembler.PopupException(msg, null, false);
+					}
 					continue;
 				}
+				if (quote.ParentBarStreaming == null) {
+					// essential for a postProcess to have a quoteFilled inside the alert already, to moveAround (illogical I know)
+					string msg = "I_REFUSE_TO_ENRICH_ALERT_WITH_QUOTE_HAVING_NO_PARENT_STREAMING_BAR";
+					Assembler.PopupException(msg, null, false);
+					continue;
+				}
+
 				int alertIsLateNbars = alert.PlacedBarIndex - quote.ParentBarStreaming.ParentBarsIndex;
 				if (alertIsLateNbars > 0) {
 					string msg = "I_REFUSE_TO_ENRICH_ALERT_WITH_QUOTE alertIsLateNbars[" + alertIsLateNbars + "] alert[" + alert + "]";
-					this.PopupException(msg, null, false);
+					Assembler.PopupException(msg, null, false);
 					continue;
 				}
+
 				//alert.PositionSize = this.PositionSize;
 				alert.QuoteCreatedThisAlertServerTime = quote.ServerTime;
 				alert.QuoteCreatedThisAlert = quote;
+				alert.QuoteCreatedThisAlert_deserializable = alert.QuoteCreatedThisAlert.Clone_asCoreQuote();
 			}
 		}
 
@@ -329,7 +352,7 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 			// OrderFollowed=null when executeStrategyBacktestEntryPoint() is in the call stack
-			this.OrderProcessor.AppendOrderMessage_propagateToGui(alert.OrderFollowed, msig + msg);
+			this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed, msig + msg);
 		}
 		public void RemovePendingExitAlerts_closePositionsBacktestLeftHanging(Alert alert) {
 			string msig = "RemovePendingExitAlertAndClosePositionAfterBacktestLeftItHanging(): ";
@@ -351,7 +374,7 @@ namespace Sq1.Core.StrategyBase {
 			//alert.PositionAffected.ExitAlertAttach(alert);
 
 			bool absenseInPositionsOpenNowIsAnError = true;
-			this.ExecutionDataSnapshot.MovePositionOpenToClosed(alert.PositionAffected, absenseInPositionsOpenNowIsAnError);
+			this.ExecutionDataSnapshot.MovePositionOpen_toClosed(alert.PositionAffected, absenseInPositionsOpenNowIsAnError);
 		}
 		void removePendingEntry(Alert alert) {
 			string msig = "RemovePendingEntry(): ";

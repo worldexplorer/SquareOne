@@ -8,6 +8,10 @@ namespace Sq1.Core.Livesim {
 		[JsonProperty]	public	int		DelayBeforeFillMillisMax;
 		[JsonProperty]	public	bool	DelayBeforeFillEnabled;
 
+		[JsonProperty]	public	int		KillPendingDelayMillisMin;
+		[JsonProperty]	public	int		KillPendingDelayMillisMax;
+		[JsonProperty]	public	bool	KillPendingDelayEnabled;
+
 		[JsonProperty]	public	int		OrderRejectionHappensOncePerXordersMin;
 		[JsonProperty]	public	int		OrderRejectionHappensOncePerXordersMax;
 		[JsonProperty]	public	bool	OrderRejectionEnabled;
@@ -30,10 +34,6 @@ namespace Sq1.Core.Livesim {
 		[JsonProperty]	public	int		PriceDeviationForMarketOrdersPercentageOfBestPriceMax;
 		[JsonProperty]	public	bool	PriceDeviationForMarketOrdersEnabled;
 
-		[JsonProperty]	public	int		KillPendingDelayMillisMin;
-		[JsonProperty]	public	int		KillPendingDelayMillisMax;
-		[JsonProperty]	public	bool	KillPendingDelayEnabled;
-
 		[JsonProperty]	public	int		AdaperDisconnectHappensOncePerQuoteMin;
 		[JsonProperty]	public	int		AdaperDisconnectHappensOncePerQuoteMax;
 		[JsonProperty]	public	int		AdaperDisconnectReconnectsAfterMillisMin;
@@ -42,12 +42,13 @@ namespace Sq1.Core.Livesim {
 
 		public LivesimBrokerSettings(Strategy strategy) : base() {
 			base.Initialize(strategy);
-			DelayBeforeFillEnabled = true;
-			OrderRejectionEnabled = true;
-			PartialFillEnabled = true;
-			OutOfOrderFillEnabled = true;
-			PriceDeviationForMarketOrdersEnabled = true;
-			AdaperDisconnectEnabled = true;
+			DelayBeforeFillEnabled					= true;
+			KillPendingDelayEnabled					= true;
+			OrderRejectionEnabled					= true;
+			PartialFillEnabled						= true;
+			OutOfOrderFillEnabled					= true;
+			PriceDeviationForMarketOrdersEnabled	= true;
+			AdaperDisconnectEnabled					= true;
 		}
 	}
 }

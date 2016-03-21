@@ -91,6 +91,12 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
+    <Compile Include="Broker\OrderProcessor.Accounting.cs">
+      <DependentUpon>OrderProcessor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Broker\OrderProcessor.BrokerHelpers.cs">
+      <DependentUpon>OrderProcessor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Broker\OrderProcessor.Collector.cs">
       <DependentUpon>OrderProcessor.cs</DependentUpon>
     </Compile>
@@ -134,12 +140,12 @@
     <Compile Include="DataTypes\SymbolInfo.EventGenerator.cs">
       <DependentUpon>SymbolInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Livesim\LivesimBroker.BrokerAdapterProtocol.cs">
+      <DependentUpon>LivesimBroker.cs</DependentUpon>
+    </Compile>
     <Compile Include="Livesim\LivesimBrokerDefault.cs" />
     <Compile Include="DataFeed\SymbolOfDataSource.cs" />
     <Compile Include="Livesim\LevelTwoGenerator.cs" />
-    <Compile Include="Livesim\LivesimBroker.Paranoid.cs">
-      <DependentUpon>LivesimBroker.cs</DependentUpon>
-    </Compile>
     <Compile Include="Livesim\LivesimBrokerEditorEmpty.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -314,6 +320,15 @@
     <Compile Include="StrategyBase\KPIs.cs" />
     <Compile Include="Backtesting\BacktestMarketsim.cs">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="StrategyBase\PositionPrototypeActivator.Annihilate.cs">
+      <DependentUpon>PositionPrototypeActivator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategyBase\PositionPrototypeActivator.Create.cs">
+      <DependentUpon>PositionPrototypeActivator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategyBase\PositionPrototypeActivator.Update.cs">
+      <DependentUpon>PositionPrototypeActivator.cs</DependentUpon>
     </Compile>
     <Compile Include="StrategyBase\Script.ReusableExecutorChecks.cs">
       <DependentUpon>Script.cs</DependentUpon>

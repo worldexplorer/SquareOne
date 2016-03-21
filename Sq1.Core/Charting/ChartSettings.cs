@@ -778,8 +778,8 @@ namespace Sq1.Core.Charting {
 			MousePositionTrackOnGuttersColorBackground = Color.Black;
 			MousePositionTrackOnGuttersColorForeground = Color.LightGray;
 			BarsBackgroundTransparencyAlpha = 24;
-			ChartLabelsUpperLeftYstartTopmost = 5;
-			ChartLabelsUpperLeftX = 5;
+			ChartLabelsUpperLeftYstartTopmost = 20;
+			ChartLabelsUpperLeftX = 7;
 			ChartLabelsUpperLeftPlatePadding = 1;
 			ChartLabelsUpperLeftIndicatorSquarePadding = 4;
 			ChartLabelsUpperLeftIndicatorSquareSize = 5;

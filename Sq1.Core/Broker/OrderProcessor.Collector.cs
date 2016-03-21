@@ -29,7 +29,7 @@ namespace Sq1.Core.Broker {
 				OrderStateMessage osm = new OrderStateMessage(orderFound, orderStateAbsorbed, message);
 				this.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(osm);
 			} else {
-				this.AppendOrderMessage_propagateToGui(orderFound, message);
+				this.AppendMessage_propagateToGui(orderFound, message);
 			}
 			return orderFound;
 		}
@@ -54,7 +54,7 @@ namespace Sq1.Core.Broker {
 			//}
 
 			// append message in any case; in messages log it will have the underscored state (message log refreshed), while the order itself will never have it (orders tree is not updated)
-			this.appendOrderMessage_propagateToGui(newStateWithReason);
+			this.AppendOrderMessage_propagateToGui(newStateWithReason);
 
 			string state_asString = Enum.GetName(typeof(OrderState), newStateWithReason.State);
 			bool newState_isUnderscored_thatOrderNeverGets_asyncCallbacksFromBroker = state_asString.StartsWith("_");
@@ -95,7 +95,7 @@ namespace Sq1.Core.Broker {
 				string prePostErrorMsg = "BrokerAdapter CALLBACK DUPE: Status[" + newStateOmsg.State + "] delivered for EmergencyCloseLimitReached "
 					//+ "; skipping PostProcess for [" + order + "]"
 					;
-				this.AppendOrderMessage_propagateToGui(order, prePostErrorMsg);
+				this.AppendMessage_propagateToGui(order, prePostErrorMsg);
 				return;
 			}
 			if (newStateOmsg.State == OrderState.Rejected && order.InState_emergency) {
@@ -103,7 +103,7 @@ namespace Sq1.Core.Broker {
 					+ " order.inEmergencyState[" + order.State + "] "
 					//+ "; skipping PostProcess for [" + order + "]"
 					;
-				this.AppendOrderMessage_propagateToGui(order, prePostErrorMsg);
+				this.AppendMessage_propagateToGui(order, prePostErrorMsg);
 				return;
 			}
 
@@ -117,14 +117,14 @@ namespace Sq1.Core.Broker {
 				if (order.PriceFill != 0) {
 					string msg1 = "ORDER_WAS_ALREADY_FILLED NYI:PARTIAL_FILL_WITH_DIFFERENT_FILL_PRICE";
 					Assembler.PopupException(msg1, null, false);
-					order.AppendMessage(msg1);
+					order.appendMessage(msg1);
 
 					bool marketWasSubstituted = order.Alert.MarketLimitStop == MarketLimitStop.Limit
 							&& order.Alert.Bars.SymbolInfo.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
 					if (order.PriceFill != priceFill && marketWasSubstituted == false) {
 						string msg = "got priceFill[" + priceFill + "] while order.PriceFill=[" + order.PriceFill + "]"
 							+ "; weird for Order.Alert.MarketLimitStop=[" + order.Alert.MarketLimitStop + "]";
-						order.AppendMessage(msg);
+						order.appendMessage(msg);
 					}
 				}
 			}
@@ -134,7 +134,7 @@ namespace Sq1.Core.Broker {
 				if (newStateOmsg.State != OrderState.Filled || newStateOmsg.State != OrderState.Filled) {
 					string msg = "YOU_MUST_INTENT_TO_SET_STATE_FILLED_WHEN_QTY_FILL!=0";
 					Assembler.PopupException(msg, null, false);
-					order.AppendMessage(msg);
+					order.appendMessage(msg);
 				}
 				// postProcess()_WILL_DO_IT order.FillWith(priceFill, qtyFill);
 			}
@@ -166,26 +166,33 @@ namespace Sq1.Core.Broker {
 		//	}
 		//}
 		public void BrokerCallback_pendingKilled_withKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(Order orderPending_victimKilled, string msigInvoker) {
-			if (orderPending_victimKilled.State != OrderState.KillerTransSubmittedOK) {
-				string msg = "I_SERVE_ONLY_BROKER_CONFIRMED_VICTIMS_WITH_STATE=KillTransSubmittedOK";
+			bool inRightState =
+			    //orderPending_victimKilled.State == OrderState.KillerTransSubmittedOK ||		// ???
+			    orderPending_victimKilled.State == OrderState.SLAnnihilated ||	// prototype hit TP
+			    orderPending_victimKilled.State == OrderState.TPAnnihilated ||	// prototype hit TP
+				orderPending_victimKilled.State == OrderState.VictimKilled;		// ScriptExecutor.PositionCloseImmediately()
+
+			if (inRightState == false) {
+				string msg = "I_SERVE_ONLY_BROKER_CONFIRMED_VICTIMS_WITH_STATE {KillTransSubmittedOK,SLAnnihilated,TPAnnihilated}";
 				Assembler.PopupException(msg);
 				return;
 			}
+
 			Alert alert_forVictim = orderPending_victimKilled.Alert;
 			if (alert_forVictim == null) {
 				string msg = "orderPending_victimKilled.Alert=null; dunno what to remove from PendingAlerts";
-				orderPending_victimKilled.AppendMessage(msg + msigInvoker + " " + orderPending_victimKilled);
+				orderPending_victimKilled.appendMessage(msg + msigInvoker + " " + orderPending_victimKilled);
 				return;
 			}
 			ScriptExecutor executor = alert_forVictim.Strategy.Script.Executor;
 			try {
 				executor.CallbackAlertKilled_invokeScript_nonReenterably(alert_forVictim);
 				string msg = orderPending_victimKilled.State + " => AlertsPending.Remove.Remove(orderExecuted.Alert)'d";
-				orderPending_victimKilled.AppendMessage(msg + msigInvoker);
+				orderPending_victimKilled.appendMessage(msg + msigInvoker);
 			} catch (Exception e) {
 				string msg = orderPending_victimKilled.State + " is a Cemetery but [" + e.Message + "]"
 					+ "; comment the State out; alert[" + alert_forVictim + "]";
-				orderPending_victimKilled.AppendMessage(msg + msigInvoker);
+				orderPending_victimKilled.appendMessage(msg + msigInvoker);
 			}
 		}
 	}

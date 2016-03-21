@@ -39,7 +39,7 @@ namespace Sq1.Core.Broker {
 						List<Order> ordersOpen = this.ordersCloseOpen[ordersCloseFound];
 						this.ordersCloseOpen.Remove(ordersCloseFound);
 						if (ordersOpen.Count == 0) continue;
-						this.orderProcessor.AppendOrderMessage_propagateToGui(order,
+						this.orderProcessor.AppendMessage_propagateToGui(order,
 							"last CloseOpenSequence order filled, unlocking submission of [" + ordersOpen.Count + "]ordersOpen");
 						foreach (Order submitting in ordersOpen) {
 							OrderStateMessage omsg = new OrderStateMessage(submitting, OrderState.Submitting,

@@ -190,8 +190,8 @@ namespace Sq1.Core.DataTypes {
 			string msgSame = "BARS_IDENTICAL";
 			bool sameDOHLCV = this.BarStreaming_nullUnsafe.HasSameDOHLCVas(bar, "barAbsorbed", "BarStreaming", ref msgSame);
 			if (sameDOHLCV) {
-				string msg = "NO_NEED_TO_ABSORB_ANYTHING__DESTINATION_HasSameDOHLCV msgSame[" + msgSame + "]";
-				Assembler.PopupException(msg, null, false);
+				string msg = "IN_BAR_QUOTE NO_NEED_TO_ABSORB_ANYTHING__DESTINATION_HasSameDOHLCV msgSame[" + msgSame + "]";
+				//Assembler.PopupException(msg, null, false);
 				return;
 			} else {
 				string msg = "THERE_IS_NEED_TO_ABSORB_ANYTHING__DESTINATION_HasSameDOHLCV msgSame[" + msgSame + "]";

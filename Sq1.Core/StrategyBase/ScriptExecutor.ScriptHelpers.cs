@@ -36,7 +36,7 @@ namespace Sq1.Core.StrategyBase {
 				return similar.PositionAffected;
 			}
 
-			this.ExecutionDataSnapshot.AlertEnrichedRegister(alert, registerInNew);
+			this.ExecutionDataSnapshot.AlertEnriched_register(alert, registerInNew);
 
 			// ok for single-entry strategies; nogut if we had many Streaming alerts and none of orders was filled yet...
 			// MOVED_TO_ON_ALERT_FILLED_CALBACK
@@ -109,7 +109,7 @@ namespace Sq1.Core.StrategyBase {
 				return alert;
 			}
 
-			this.ExecutionDataSnapshot.AlertEnrichedRegister(alert, registerInNewAfterExec);
+			this.ExecutionDataSnapshot.AlertEnriched_register(alert, registerInNewAfterExec);
 
 			return alert;
 		}
@@ -128,16 +128,20 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msig + " for Bars=[" + this.Bars + "]" + invoker);
 			}
 		}
+
+
 		public void AlertPending_kill(Alert alert) {
-			//v1 ScriptExecutor trying be too smart
-			////if (this.Backtester.IsBacktestingNow) {
-			//if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
-			//	this.MarketsimBacktest.SimulateAlertKillPending(alert);
-			//} else {
-			//	this.AlertGenerator.AlertKillPending(alert);
-			//}
-			//v2 BrokerAdapter is now responsible for the implementation (Backtest/Livesim/Live)
-			this.DataSource_fromBars.BrokerAdapter.AlertPending_kill(alert);
+			string msig = " //AlertPending_kill(WAIT)";
+			bool doomedAlready = this.ExecutionDataSnapshot.AlertsDoomed.Contains(alert, this, msig);
+			if (doomedAlready) {
+				string msg = "ALREADY_DOOMED__YOU_INVOKED_Script.AlertPending_kill()_MORE_THAN_ONCE_FOR_THE_SAME_ALERT";
+				Assembler.PopupException(msg + msig);
+				if (alert.OrderFollowed != null) {
+					this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed, msg + msig);
+				}
+				return;
+			}
+			this.ExecutionDataSnapshot.AlertsDoomed.AddNoDupe(alert, this, msig);
 		}
 	}
 }
