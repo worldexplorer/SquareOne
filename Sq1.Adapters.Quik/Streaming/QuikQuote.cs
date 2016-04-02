@@ -21,8 +21,17 @@ namespace Sq1.Adapters.Quik.Streaming {
 		[JsonProperty]	public	string	FortsPriceMin_formatted		{ get { return string.Format("{0:" + base.PriceFormat + "}", this.FortsPriceMin); } }
 		[JsonProperty]	public	string	PriceStepFromDde_formatted	{ get { return string.Format("{0:" + base.PriceFormat + "}", this.PriceStepFromDde); } }
 
-		public QuoteQuik(DateTime quoteDate) : base(quoteDate) {
-		}
+		//public QuoteQuik(DateTime quoteDate) : base(quoteDate) {}
+
+		public QuoteQuik(DateTime localTime, DateTime serverTime,
+						string symbol, long absno_perSymbol_perStreamingAdapter = -1,
+						double bid = double.NaN, double ask = double.NaN, double size = -1,
+						BidOrAsk tradedAt = BidOrAsk.UNKNOWN)
+					: base(localTime, serverTime,
+						symbol, absno_perSymbol_perStreamingAdapter,
+						bid, ask, size,
+						tradedAt) {}
+
 
 		public void Enrich_fromStreamingDataSnapshotQuik(QuikStreamingDataSnapshot quikStreamingDataSnapshot) {
 			this.FortsDepositBuy	= quikStreamingDataSnapshot.FortsGetDepositBuyForSymbol	(base.Symbol);

@@ -90,7 +90,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			double priceFill = order.PriceRequested;
 			this.QuikDllConnector.OrderSubmit_sendTransaction_async(opBuySell, typeMarketLimitStop,
 				order.Alert.Symbol, order.Alert.SymbolClass,
-				order.PriceRequested, (int)order.QtyRequested, order.GUID,
+				order.PriceRequested, (int)order.Qty, order.GUID,
 				out sernoSessionFromTerminal, out msgSubmittedFromTerminal, out orderState_fromTerminal_mustBeSubmitted);
 
 			msg = msgSubmittedFromTerminal + " order.SernoSession[" + order.SernoSession + "]=>[" + sernoSessionFromTerminal + "] ";
@@ -172,7 +172,7 @@ namespace Sq1.Adapters.Quik.Broker {
 			
 			if (order.Alert.QuoteCreatedThisAlert == null) {
 				Quote lastMayNotBeTheCreatorHereHavingNoParentBars = this.StreamingAdapter.StreamingDataSnapshot
-					.LastQuote_getForSymbol(order.Alert.Symbol);
+					.GetQuoteCurrent_forSymbol_nullUnsafe(order.Alert.Symbol);
 				order.Alert.QuoteCreatedThisAlert = lastMayNotBeTheCreatorHereHavingNoParentBars;
 				order.Alert.QuoteCreatedThisAlert_deserializable = order.Alert.QuoteCreatedThisAlert as Quote;
 				string msg2 = "AVOIDING_ORDER_MARKED_INCONSISTENT: " + order.Alert.QuoteCreatedThisAlert;

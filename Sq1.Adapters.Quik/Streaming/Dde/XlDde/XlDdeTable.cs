@@ -73,11 +73,18 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			this.LastDataReceived = DateTime.UtcNow;
 
 			this.IncomingTableBegun();
-			using (XlReader reader = new XlReader(data)) {
-				this.ParseMessage_readAsTable_convertEachRowToDataStructures(reader);
-				this.DdeRowsReceived++;
+			try {
+				using (XlReader reader = new XlReader(data)) {
+					this.ParseMessage_readAsTable_convertEachRowToDataStructures(reader);
+					this.DdeRowsReceived++;
+				}
+			} catch (Exception ex) {
+				string msg = "IMPLEMENT_YOUR_IncomingTableRow_convertToDataStructure(rowParsed)_PROPERLY_FOR_" + this.ToString();
+				Assembler.PopupException(msg, ex);
+			} finally {
+				string msg = "THIS_MUST_BE_INVOKED__DdeTableDepth_LOCKS_LEVEL2_FOR_SYMBOL__AND_HERE_IT_UNLOCKS_IT__OTHERWIZE_GUI_THREAD_WILL_WAIT_FOREVER_FOR_L2FROZENSORTED";
+				this.IncomingTableTerminated();
 			}
-			this.IncomingTableTerminated();
 			this.DdeMessagesReceived++;
 		}
 		protected virtual void ParseMessage_readAsTable_convertEachRowToDataStructures(XlReader reader) {

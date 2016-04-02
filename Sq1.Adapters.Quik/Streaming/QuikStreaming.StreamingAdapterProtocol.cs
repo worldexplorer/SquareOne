@@ -21,7 +21,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 
 			if (base.LivesimStreaming_ownImplementation == null) {
 				base.LivesimStreaming_ownImplementation	= new QuikStreamingLivesim("LIVESIM_OWN_IMPLEMENTATION " + base.ReasonToExist);
-				//base.LivesimStreaming_ownImplementation.CreateDataDistributors_onlyWhenNecessary("USED_FOR_OWN_IMPLEMENTATION");
+				//base.LivesimStreaming_ownImplementation.CreateDistributors_onlyWhenNecessary("USED_FOR_OWN_IMPLEMENTATION");
 			} else {
 				string msg = "ALREADY_INITIALIZED_OWN_DISTRIBUTOR MUST_NEVER_HAPPEN_BUT_CRITICAL_WHEN_IT_DOES";
 				Assembler.PopupException(msg);
@@ -56,17 +56,36 @@ namespace Sq1.Adapters.Quik.Streaming {
 			if (base.UpstreamConnected == true) return;
 			// MOVED_TO_CTOR_TO_AVOID_NPE_IN_MONITOR this.DdeBatchSubscriber.Tables_CommonForAllSymbols_Add();
 			string symbolsSubscribed = this.upstreamSubscribeAllDataSourceSymbols();
+			if (string.IsNullOrEmpty(symbolsSubscribed)) {
+				string msg = "AREADY_STARTED_IN_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()"
+					+ " NO_SYMBOLS_IN_DATASORCE??? YOU_WERE_NOT_CONNECTED_BUT_AFTER_CONNECT_symbolsSubscribed[" + symbolsSubscribed + "]_EMPTY???"
+					+ " this.DataSource.SymbolsCSV[" + this.DataSource.SymbolsCSV + "]"
+					//+ " upstreamSubscribeAllDataSourceSymbols() didn't subscribe any symbol"
+					;
+				//Assembler.PopupException(msg, null, false);
+			}
 			this.DdeServerRegister();	// ConnectionState.UpstreamConnected_downstreamUnsubscribed;		// will result in StreamingConnected=true
 			this.DdeBatchSubscriber.AllDdeMessagesReceivedCounter_reset();
 			this.UpstreamConnectionState = ConnectionState.Streaming_UpstreamConnected_downstreamSubscribedAll;
 			Assembler.DisplayConnectionStatus(base.UpstreamConnectionState, this.Name + " started DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
 		} }
 		public override void UpstreamDisconnect() { lock (base.SymbolsSubscribedLock) {
-			if (base.UpstreamConnected == false) return;
+			if (base.UpstreamConnected == false) {
+				string msg = "HERE??? FIRST_LIVESIM_DOESNT_REMOVE_DEPTH_TABLE";
+				Assembler.PopupException(msg);
+				return;
+			}
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms == false) {
 				Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]", null, false);
 			}
 			string symbolsUnsubscribed = this.upstreamUnsubscribeAllDataSourceSymbols();
+			if (string.IsNullOrEmpty(symbolsUnsubscribed)) {
+				string msg = "NO_SYMBOLS_IN_DATASORCE??? YOU_WERE_CONNECTED_BUT_AFTER_DISCONNECT_symbolsUnsubscribed[" + symbolsUnsubscribed + "]_EMPTY???"
+					+ " this.DataSource.SymbolsCSV[" + this.DataSource.SymbolsCSV + "]"
+					//+ " upstreamSubscribeAllDataSourceSymbols() didn't subscribe any symbol"
+					;
+				Assembler.PopupException(msg, null, false);
+			}
 			this.UpstreamConnectionState = ConnectionState.Streaming_UpstreamConnected_downstreamUnsubscribedAll;
 			Assembler.DisplayConnectionStatus(base.UpstreamConnectionState, this.Name + " symbolsUnsubscribedAll[" + symbolsUnsubscribed + "]");
 			this.DdeServerUnregister();
@@ -114,29 +133,25 @@ namespace Sq1.Adapters.Quik.Streaming {
 			return this.DdeBatchSubscriber.SymbolIsSubscribedForLevel2(symbol);
 		} }
 
-		public override void PushQuoteReceived(Quote quote) {
-			DateTime thisDayClose = this.DataSource.MarketInfo.getThisDayClose(quote);
-			DateTime preMarketQuotePoitingToThisDayClose = quote.ServerTime.AddSeconds(1);
-			bool isQuikPreMarketQuote = preMarketQuotePoitingToThisDayClose >= thisDayClose;
-			if (isQuikPreMarketQuote) {
-				string msg = "skipping pre-market quote"
-					+ " quote.ServerTime[" + quote.ServerTime + "].AddSeconds(1) >= thisDayClose[" + thisDayClose + "]"
-					+ " quote=[" + quote + "]";
-				Assembler.PopupException(msg);
+		public override void PushQuoteReceived(Quote quoteQuk_unboundUnattached) {
+			bool preMarket_orPreClearingResume = 
+				//quote.Size == 0 ||
+				quoteQuk_unboundUnattached.Bid == 0 ||
+				quoteQuk_unboundUnattached.Ask == 0;
+			if (preMarket_orPreClearingResume) {
+				string msg = "SKIPPING_QUOTE_PRE_MARKET"
+					//+ " since CHARTS will screw up painting price=0 and orders with LimitPrice=0 will be stuck forever;"
+					+ " quote=[" + quoteQuk_unboundUnattached + "]";
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			//if (quote.PriceLastDeal == 0) {
-			//	string msg = "skipping pre-market quote since CHARTS will screw up painting price=0;"
-			//		+ " quote=[" + quote + "]";
-			//	Assembler.PopupException(msg);
-			//	Assembler.PopupException(new Exception(msg));
-			//	return;
-			//}
-			if (string.IsNullOrEmpty(quote.Source)) quote.Source = "Quik.Source_INPRECISE";
-			QuoteQuik quoteQuik = QuoteQuik.SafeUpcast(quote);
+
+			if (string.IsNullOrEmpty(quoteQuk_unboundUnattached.Source)) quoteQuk_unboundUnattached.Source = "Quik.SourceUnknown_PLEASE_ELABORATE";
+			QuoteQuik quoteQuik = QuoteQuik.SafeUpcast(quoteQuk_unboundUnattached);
 			this.StreamingDataSnapshotQuik.StoreFortsSpecifics(quoteQuik);
 			this.syncSymbolClass_toSymbolInfo(quoteQuik);
-			base.PushQuoteReceived(quote);
+
+			base.PushQuoteReceived(quoteQuk_unboundUnattached);
 		}
 
 		void syncSymbolClass_toSymbolInfo(QuoteQuik quoteQuik) {

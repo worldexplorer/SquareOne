@@ -130,6 +130,7 @@
 			this.OlvQuotes.HideSelection = false;
 			this.OlvQuotes.Location = new System.Drawing.Point(6, 19);
 			this.OlvQuotes.Name = "OlvQuotes";
+			this.OlvQuotes.ShowCommandMenuOnRightClick = true;
 			this.OlvQuotes.ShowGroups = false;
 			this.OlvQuotes.Size = new System.Drawing.Size(564, 64);
 			this.OlvQuotes.TabIndex = 2;
@@ -241,6 +242,7 @@
 			// 
 			this.splitContainer2.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer2.Panel2.Controls.Add(this.grpTrades);
+			this.splitContainer2.Panel2Collapsed = true;
 			this.splitContainer2.Size = new System.Drawing.Size(594, 481);
 			this.splitContainer2.SplitterDistance = 383;
 			this.splitContainer2.TabIndex = 0;
@@ -254,7 +256,7 @@
 			this.grpDom.Location = new System.Drawing.Point(9, 3);
 			this.grpDom.Margin = new System.Windows.Forms.Padding(9, 3, 9, 9);
 			this.grpDom.Name = "grpDom";
-			this.grpDom.Size = new System.Drawing.Size(576, 371);
+			this.grpDom.Size = new System.Drawing.Size(576, 469);
 			this.grpDom.TabIndex = 0;
 			this.grpDom.TabStop = false;
 			this.grpDom.Text = "Depths Of Market [Sq1-RIM3-dom]:3213 [Sq1-LKOH-dom]:5116";
@@ -268,7 +270,7 @@
 			this.flpDoms.BackColor = System.Drawing.SystemColors.Control;
 			this.flpDoms.Location = new System.Drawing.Point(6, 19);
 			this.flpDoms.Name = "flpDoms";
-			this.flpDoms.Size = new System.Drawing.Size(564, 346);
+			this.flpDoms.Size = new System.Drawing.Size(564, 444);
 			this.flpDoms.TabIndex = 3;
 			// 
 			// grpTrades

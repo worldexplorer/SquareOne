@@ -74,7 +74,7 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 			//}
 			this.grpQuotes.Text = this.quikStreaming.DdeBatchSubscriber.TableQuotes.ToString();
 			this.grpDom.Text	= this.quikStreaming.DdeBatchSubscriber.DomGroupboxTitle;
-			this.grpTrades.Text = this.quikStreaming.DdeBatchSubscriber.TableTrades.ToString();
+			//this.grpTrades.Text = this.quikStreaming.DdeBatchSubscriber.TableTrades.ToString();
 		}
 	}
 }

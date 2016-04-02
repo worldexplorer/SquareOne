@@ -40,13 +40,23 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		}
 
 		public override void InitializeLivesim(LivesimDataSource livesimDataSource, StreamingAdapter streamingOriginalPassed, string symbolLivesimming) {
+			int usefulThingsDone = 0;
 			if (livesimDataSource == null) {
 				string msg = "DID_ACTIVATOR_PICK_THE_WRONG_CONSTRUCTOR?...";
 				Assembler.PopupException(msg);
 			}
 			//this.livesimDataSource = livesimDataSource;
-			base.DataSource = livesimDataSource;
-			this.StreamingOriginal = streamingOriginalPassed;
+			if (base.DataSource != livesimDataSource) {
+				base.DataSource  = livesimDataSource;
+				usefulThingsDone++;
+			}
+			if (this.StreamingOriginal != streamingOriginalPassed) {
+				this.StreamingOriginal  = streamingOriginalPassed;
+				usefulThingsDone++;
+			} else {
+				string msg = "DO_YOU_STILL_SEE_SOME_PROBLEMS_WHILE_LIVESIMMING_SECOND_TIME?... HERE_YOU_RESOLVE_THEM";
+				Assembler.PopupException(msg, null, false);
+			}
 
 			// disabled comparing to base.InitializeLivesim()
 			//LevelTwoGeneratorLivesim levelTwoGeneratorLivesim = this.LevelTwoGenerator as LevelTwoGeneratorLivesim;
@@ -55,9 +65,13 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			//	Assembler.PopupException(msg);
 			//}
 			//levelTwoGeneratorLivesim.InitializeLevelTwo(symbolLivesimming);
+
+			if (usefulThingsDone == 0) {
+				Assembler.PopupException("DONT_INVOKE_ME_UPSTACK //QuikStreamingLivesim.InitializeLivesim()");
+			}
 		}
 
-		protected override void SolidifierAllSymbolsSubscribe_onAppRestart() {
+		protected override void SolidifierSubscribe_toAllSymbols_ofDataSource_onAppRestart() {
 			string msg = "LIVESIM_MUST_NOT_SAVE_ANY_BARS EMPTY_HERE_TO_PREVENT_BASE_FROM_SUBSCRIBING_SOLIDIFIER";
 		}
 
@@ -69,7 +83,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			
 			//FIRST_LINES_OF_QuikStreamingLivesim.UpstreamConnect_LivesimStarting()_MAKE_SENSE_FOR_OTHERS
 			//base.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor();
-			//LivesimDataSource is now having LivesimBacktester and no-solidifier DataDistributor
+			//LivesimDataSource is now having LivesimBacktester and no-solidifier Distributor
 
 			//v1 this.QuikStreamingOriginal.InitializeDataSource_inverse(base.Livesimulator.DataSourceAsLivesim_nullUnsafe, false);
 			//v2 this.QuikStreamingOriginal.InitializeFromDataSource(base.Livesimulator.DataSourceAsLivesim_nullUnsafe);
@@ -77,18 +91,27 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			this.UpstreamConnectionState = ConnectionState.Streaming_JustInitialized_solidifiersUnsubscribed;
 			
 			//NO,GOOD_FOR_BOTH GOOD_FOR_LivesimStreamingDefault_BUT_BAD_FOR_QuikStreamingLivesim
-			this.StreamingDataSnapshot = this.QuikStreamingOriginal.StreamingDataSnapshot;
+			//YOU_PARASITE this.StreamingDataSnapshot = this.QuikStreamingOriginal.StreamingDataSnapshot;
+			if (this.StreamingDataSnapshot != null) {
+			    if (this.StreamingDataSnapshot.ToString().Contains("OWN_IMPLEME")) {
+			        bool good = true;
+			    } else {
+			        // first time you set it was in base.base.base.ctor(); now I'm letting Level2 be generated on MY OWN snap, because DDE-received Level2 will go to streamingOriginal.snap
+			        this.StreamingDataSnapshot = new StreamingDataSnapshot(this);
+			    }
+			}
+			
 
 
 			if (this.upstreamWasSubscribed_preLivesim == false) {
 				this.QuikStreamingOriginal.UpstreamConnect();
 			}
 
-			// MarketLive checks for LastQuote, which I don't save anymore in QuikStreamingLivesim
+			// MarketLive checks for QuoteLast, which I don't save anymore in QuikStreamingLivesim
 			// QuikStreamingLivesim is a handicap without StreamingDataSnapshot; normally Snap is maintained by
-			// 1) DataDistributorChart.StreamingDataSnapshot.LastQuoteCloneInitialize(symbol)
-			//		but QuikStreamingLivesim.DataDistributor is donated to the Puppet
-			// 2) StreamingAdapter(base).PushQuoteGenerated(): StreamingDataSnapshot.LastQuoteCloneSetForSymbol(quote);
+			// 1) DistributorChart.StreamingDataSnapshot.QuoteLastCloneInitialize(symbol)
+			//		but QuikStreamingLivesim.Distributor is donated to the Puppet
+			// 2) StreamingAdapter(base).PushQuoteGenerated(): StreamingDataSnapshot.QuoteLastCloneSetForSymbol(quote);
 			//		but QuikStreamingLivesim doesnt invoke base.PushQuoteGenerated(quote) because it shoots the quote to DDE and doesnt deal with Distributor
 			//if (this.StreamingDataSnapshot != null) {
 			//	string msg1 = "MUST_BE_NULL__ONLY_INITIALIZED_FOR_MarketLive_FOR_A_LIVESIM_SESSION__OTHERWIZE_MUST_BE_NULL";
@@ -96,6 +119,10 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			//}
 			//NOT_USED_IN_LIVESIM_SINCE_NO_PUSH_QUOTE_INVOKED this.StreamingDataSnapshot = this.QuikStreamingOriginal.StreamingDataSnapshot;
 
+			if (this.QuikLivesimBatchPublisher == null) {
+				string msg1 = "AVOIDING_CAN_NOT_ACCESS_DISPOSED_OBJECT__INSIDE_DDE => CREATING_AGAIN_ANYWAY";
+				//this.QuikLivesimBatchPublisher = new QuikLivesimBatchPublisher(this);
+			}
 			this.QuikLivesimBatchPublisher = new QuikLivesimBatchPublisher(this);
 			this.QuikLivesimBatchPublisher.ConnectAll();
 			string msg = "DDE_CLIENT_PUBLISHING_ALL_TOPICS_NEEDED_FOR_LIVESIM: [" + this.QuikLivesimBatchPublisher.TopicsAsString + "]";
@@ -123,7 +150,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
-			string threadName = "LIVESIM_QUOTE_GENERATING_FOR " + this.StreamingOriginal.DataDistributor_replacedForLivesim.ReasonIwasCreated;
+			string threadName = "LIVESIM_QUOTE_GENERATING_FOR " + this.StreamingOriginal.Distributor_substitutedDuringLivesim.ReasonIwasCreated;
 			Assembler.SetThreadName(threadName, "SETTING_LIVESIM_THREAD_NAME_FROM_STREAMING_IS_TOO_LATE__AND_DONT_DO_IT_TWICE");
 
 			//second Livesim gets NPE - fixed but the caveat is when you clicked on "stopping" disabled button, new livesim restarts with lots of NPE...)
@@ -170,32 +197,33 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			
 			// FUNDAMENTAL: QuikStreamingLivesim doesn't use base.DataDitstributor AT ALL; I push to the DDE and I expect the QuikStreaming to:
 			// 1. extract only chart subscribed to bars and quotes for the Symbol-livesimming
-			// 2. assign this new DataDistributor to QuikStreamingOriginal; restore old DataDistributor+Streaming at the Livesim end/abort
+			// 2. assign this new Distributor to QuikStreamingOriginal; restore old Distributor+Streaming at the Livesim end/abort
 			// 3. other charts open for the livesimming Symbol (same or different timeframes) won't receive anything
 			// 4. solidifiers for original datasource timeframe won't receive anything
 
 			string msg1 = "I_PREFER_TO_PUSH_LEVEL2_NOW__BEFORE_base.PushQuoteGenerated(quote)";
 			//v3 REDIRECTING_PushQuoteGenerated_RADICAL_PARENT_DETACHED base.Level2generator.GenerateAndStoreInStreamingSnap(quote);
-			base.LevelTwoGenerator.GenerateForQuote(quote);
+
+			//LivesimStreamingSettings settings = base.Livesimulator.Executor.Strategy.LivesimStreamingSettings;
+			//if (base.LivesimStreamingSettings == settings) {
+			//    string msg = "EVEN_WHEN_NOT_PARASITING_ON_STREAMING_ORIGINAL__YOU_HAVE_SETTINGS_VIA_LIVESIM_DATASOURCE";
+			//    //Assembler.PopupException(msg);
+			//}
+
+			base.LevelTwoGenerator.GenerateForQuote(quote, base.LivesimStreamingSettings.LevelTwoLevelsToGenerate);
 
 			// two dde tables from quik will always be received asynchronously; I'm seding them here asynchronously, too; synchronization must be done on the server side (beware of one table suddenly being disconnected; don't ever rely they ARE synchronized in your strategy)
-			this.QuikLivesimBatchPublisher.SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(base.LevelTwoGenerator.LevelTwoAsks, base.LevelTwoGenerator.LevelTwoBids);
+			this.QuikLivesimBatchPublisher.SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(base.LevelTwoGenerator.LevelTwo_fromStreaming);
 			this.QuikLivesimBatchPublisher.SendQuote_DdeClientPokesDdeServer_waitServerProcessed(quote);
-
-			#region MOVED_TO_InvokeScript_onNewBar_onNewQuote() otherwize injectQuotesToFillPendings doesn't get invoked (copypaste from LivesimStreaming)
-			//AlertList notYetScheduled = base.LivesimBrokerSnap.Alerts_thatQuoteWillFill_forSchedulingDelayedFill(quote);
-			//if (notYetScheduled.Count > 0) {
-			//    if (quote.ParentBarStreaming != null) {
-			//        string msg = "I_MUST_HAVE_IT_UNATTACHED_HERE";
-			//        Assembler.PopupException(msg);
-			//    }
-			//    base.LivesimBroker.ConsumeQuoteUnattached_toFillPending(quote, notYetScheduled);
-			//} else {
-			//    string msg = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
-			//}
-			#endregion
-
 			base.LivesimStreamingSpoiler.Spoil_after_PushQuoteGenerated();
+
+			if (base.LivesimStreamingSettings.GenerateWideSpreadWithZeroSize) {
+				// generate again another one for same quote, widen the spread and send it; each second level2 you must see new unfilled quote is generated by reconstructSpreadQuote_pushToStreaming_ifChanged();
+				base.LevelTwoGenerator.GenerateForQuote(quote, base.LivesimStreamingSettings.LevelTwoLevelsToGenerate, 1);
+				this.QuikLivesimBatchPublisher.SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(base.LevelTwoGenerator.LevelTwo_fromStreaming);
+				base.LivesimStreamingSpoiler.Spoil_after_PushQuoteGenerated();
+			}
+
 			this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
 		}
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Globalization;
 
 using Newtonsoft.Json;
 
@@ -178,5 +179,50 @@ namespace Sq1.Adapters.Quik.Streaming {
 			return this.Name + "/[" + this.UpstreamConnectionState + "]: Symbols[" + base.SymbolsUpstreamSubscribedAsString + "]"
 				+ " DDE[" + this.ddeChannelsEstablished + "]";
 		}
+
+		public DateTime  ReconstructServerTime_useNowAndTimezoneFromMarketInfo(out string errmsg,
+					string dateReceived = "QUOTE_DATE_NOT_DELIVERED_DDE",
+					string timeReceived = "QUOTE_TIME_NOT_DELIVERED_DDE",
+					string dateFormat = "SKIP_ParseExact()",
+					string timeFormat = "SKIP_ParseExact()") {
+
+			DateTime ret = DateTime.MinValue;
+			errmsg = "";
+
+			// attempt#1
+			if (dateReceived == "QUOTE_DATE_NOT_DELIVERED_DDE" || timeReceived == "QUOTE_TIME_NOT_DELIVERED_DDE") {
+				MarketInfo marketInfo = this.DataSource.MarketInfo;
+				if (marketInfo != null) {
+					//v1 7hrs difference, while must be 8 ret = TimeZoneInfo.ConvertTime(DateTime.Now, marketInfo.TimeZoneInfo);
+					ret = marketInfo.Convert_localTime_toServerTime(DateTime.Now);
+					errmsg = "DATE_NOT_FOUND_IN_rowParsed__RETURNING_DateTime.Now=>marketInfo[" + this.DataSource.MarketName + "]"
+						+ ".TimeZoneInfo.BaseUtcOffset[" + marketInfo.TimeZoneInfo.BaseUtcOffset + "]";
+					return ret;
+				}
+			}
+
+			// attempt#2
+			string dateTimeReceived = dateReceived + " " + timeReceived;
+			try {
+				ret = DateTime.Parse(dateTimeReceived);
+				return ret;		// if not Parse()d fromAnyFormat then it'll throw and I'll continue with ParseExact()
+			} catch (Exception ex) {
+				errmsg += "TROWN_DateTime.Parse(" + dateTimeReceived + "): " + ex.Message;
+			}
+
+			// attempt#3
+			if (dateFormat == "SKIP_ParseExact()" ||
+				timeFormat == "SKIP_ParseExact()") return ret;
+
+			string dateTimeFormat = dateFormat + " " + timeFormat;
+			try {
+				ret = DateTime.ParseExact(dateTimeReceived, dateTimeFormat, CultureInfo.InvariantCulture);
+			} catch (Exception ex) {
+				errmsg = "TROWN_DateTime.ParseExact(" + dateTimeReceived + ", " + dateTimeFormat + "): " + ex.Message;
+			}
+
+			return ret;
+		}
+	
 	}
 }

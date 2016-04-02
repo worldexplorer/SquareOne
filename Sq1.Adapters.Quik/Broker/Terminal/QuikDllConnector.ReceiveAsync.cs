@@ -219,7 +219,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			if (nMode != 0) return;
 
 			OrderState newState_orderReceives = OrderState.Unknown;
-			int qtyFilled_forLimit_zeroForMarket = (int) (order.QtyRequested - (double)qtyLeftUnfilled_forLimit_zeroForMarket);
+			int qtyFilled_forLimit_zeroForMarket = (int) (order.Qty - (double)qtyLeftUnfilled_forLimit_zeroForMarket);
 			switch (status) {
 				case 1:		//PENDING	Значение «1» соответствует состоянию «Активна»
 					newState_orderReceives = OrderState.WaitingBrokerFill;
@@ -325,6 +325,18 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			}
 
 			if (orderSubmitting.State == OrderState.WaitingBrokerFill && orderSubmitting.IsVictim) {
+				string msg_dontPostProcess = "SUBMITTED_TRANSACTION_FOR_ME__BUT_LOGGING_TO_MY_KILLER" + msigHead + msg_findingOrder;
+				//orderSubmitting.AppendMessage(msg_dontPostProcess);
+				this.quikBroker.OrderProcessor.AppendMessage_propagateToGui(orderSubmitting, msg_dontPostProcess);
+
+				Order killer = orderSubmitting.KillerOrder;
+				OrderStateMessage newOrderState = new OrderStateMessage(killer, newState, msigHead + msg_findingOrder);
+				this.quikBroker.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState);
+
+				return;
+			}
+
+			if (orderSubmitting.State == OrderState.VictimsBulletFlying && orderSubmitting.IsVictim) {
 				string msg_dontPostProcess = "SUBMITTED_TRANSACTION_FOR_ME__BUT_LOGGING_TO_MY_KILLER" + msigHead + msg_findingOrder;
 				//orderSubmitting.AppendMessage(msg_dontPostProcess);
 				this.quikBroker.OrderProcessor.AppendMessage_propagateToGui(orderSubmitting, msg_dontPostProcess);

@@ -45,13 +45,13 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			}
 		}
 
-		internal void SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(LevelTwoHalf levelTwoAsks, LevelTwoHalf levelTwoBids) {
+		internal void SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(LevelTwo levelTwo) {
 			if (this.ddeTableGeneratorDepth == null) {
 				string msg = "I_REFUSE_TO_SendLevelTwo()__DATASOURCE_DIDNT_CONTAIN_ANY_SYMBOLS_TO_LAUNCH_DdeClient_FOR";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.ddeTableGeneratorDepth.Send_DdeClientPokesDdeServer_waitServerProcessed(levelTwoAsks, levelTwoBids);
+			this.ddeTableGeneratorDepth.Send_DdeClientPokesDdeServer_waitServerProcessed(levelTwo);
 		}
 
 		internal void SendQuote_DdeClientPokesDdeServer_waitServerProcessed(QuoteGenerated quote) {

@@ -88,8 +88,8 @@ namespace Sq1.Adapters.Quik.Broker {
 				}
 
 				string filled = qtyFilled_forMarket_zeroForLimit == 0 ? "NOT_FILLED" : "FILLED";
-				if (qtyFilled_forMarket_zeroForLimit > 0 && qtyFilled_forMarket_zeroForLimit != order.QtyRequested) {
-					filled = "PARTIAL_FILL_OF[" + order.QtyRequested + "]";
+				if (qtyFilled_forMarket_zeroForLimit > 0 && qtyFilled_forMarket_zeroForLimit != order.Qty) {
+					filled = "PARTIAL_FILL_OF[" + order.Qty + "]";
 				}
 				filled += " " + order.Alert.MarketLimitStopAsString;
 				string msg = filled + " [" + qtyFilled_forMarket_zeroForLimit + "]@[" + priceFilled_forMarket_zeroForLimit + "]"
@@ -107,21 +107,23 @@ namespace Sq1.Adapters.Quik.Broker {
 				}
 
 				if (order.Alert.Bars.SymbolInfo.MarketOrders_priceFill_bringBackFromOutrageous) {
-				    // for Market* orders (Futures), Quik declares Fill in TradeState(); Fill for Limit* (Futures) orders I should expect in OrderState()
-				    // but the price is outrageous (beoynd the bar High/Low) and looks like PriceMin/PriceMax (CONFIRM?)
-				    bool outOfBarPriceFilled = order.Alert.MarketOrderAs == MarketOrderAs.MarketUnchanged_DANGEROUS
-				                            || order.Alert.MarketOrderAs == MarketOrderAs.MarketZeroSentToBroker
-				                            || order.Alert.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
-				    if (outOfBarPriceFilled && order.Alert.SymbolClass == "SPBFUT") {
-				        if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) {
-				            priceFilled_forMarket_zeroForLimit = order.PriceRequested + commissionSum;
-				        } else {
-				            priceFilled_forMarket_zeroForLimit = order.PriceRequested - commissionSum;
-				        }
-				    }
+					// for Market* orders (Futures), Quik declares Fill in TradeState(); Fill for Limit* (Futures) orders I should expect in OrderState()
+					// but the price is outrageous (beoynd the bar High/Low) and looks like PriceMin/PriceMax (CONFIRM?)
+					bool outOfBarPriceFilled = order.Alert.MarketOrderAs == MarketOrderAs.MarketUnchanged_DANGEROUS
+											|| order.Alert.MarketOrderAs == MarketOrderAs.MarketZeroSentToBroker
+											|| order.Alert.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
+					if (outOfBarPriceFilled && order.Alert.SymbolClass == "SPBFUT") {
+						priceFilled_forMarket_zeroForLimit = order.PriceCurBidOrAsk;
+
+						//if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) {
+						//    priceFilled_forMarket_zeroForLimit += commissionSum;
+						//} else {
+						//    priceFilled_forMarket_zeroForLimit -= commissionSum;
+						//}
+					}
 				}
 
-			    // Quik declares Fill in TradeState() only for Market* orders (Futures), Fill for Limit* (Futures) orders I should expect in OrderState()
+				// Quik declares Fill in TradeState() only for Market* orders (Futures), Fill for Limit* (Futures) orders I should expect in OrderState()
 				bool fillHappened = priceFilled_forMarket_zeroForLimit > 0 && qtyFilled_forMarket_zeroForLimit > 0;
 				if (fillHappened) {
 					order.DateServerLastFillUpdate = tradeDate;
@@ -148,8 +150,8 @@ namespace Sq1.Adapters.Quik.Broker {
 
 			string filled = qtyFilled_forLimit_zeroForMarket == 0 ? "NOT_FILLED" : "FILLED";
 			if (qtyFilled_forLimit_zeroForMarket > 0) {
-				if (qtyFilled_forLimit_zeroForMarket != order.QtyRequested) {
-					filled = "PARTIAL_FILL_OF[" + order.QtyRequested + "]";
+				if (qtyFilled_forLimit_zeroForMarket != order.Qty) {
+					filled = "PARTIAL_FILL_OF[" + order.Qty + "]";
 					if (newOrderStateReceived != OrderState.FilledPartially) {
 						filled = "WRONG_STATE[" + newOrderStateReceived + "] " + filled;
 					}
@@ -235,7 +237,7 @@ namespace Sq1.Adapters.Quik.Broker {
 						if (priceMax <= 0) {
 							msg = "Price=Quote.FortsPriceMax[" + priceMax + "]=ZERO for"
 								+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
-								+ " (Slippage=" + order.SlippageFill + ")";
+								+ " (Slippage=" + order.SlippageApplied + ")";
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
 							this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState);
 							#if DEBUG
@@ -244,7 +246,7 @@ namespace Sq1.Adapters.Quik.Broker {
 							throw new Exception(msg);
 						}
 						order.PriceRequested = priceMax;
-						order.SlippageFill = 0;
+						order.SlippageApplied = 0;
 						msg = "Setting PriceRequested=[" + order.PriceRequested + "]=Quote.FortsPriceMax"
 							+ " since MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
 							//	+ "; (useless Slippage=" + order.Slippage + ")"
@@ -254,7 +256,7 @@ namespace Sq1.Adapters.Quik.Broker {
 						if (priceMin <= 0) {
 							msg = "Price=Quote.FortsPriceMin[" + priceMin + "]=ZERO for"
 								+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
-								+ " (Slippage=" + order.SlippageFill + ")";
+								+ " (Slippage=" + order.SlippageApplied + ")";
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
 							this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderState);
 							#if DEBUG
@@ -263,7 +265,7 @@ namespace Sq1.Adapters.Quik.Broker {
 							throw new Exception(msg);
 						}
 						order.PriceRequested = priceMin;
-						order.SlippageFill = 0;
+						order.SlippageApplied = 0;
 						msg = "Setting PriceRequested=[" + order.PriceRequested + "]=Quote.FortsPriceMin"
 							+ "; since Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
 							//	+ " (useless Slippage=" + order.Slippage + ")"

@@ -104,9 +104,6 @@
     <Compile Include="Broker\Terminal\QuikDllConnector.SendAsync.cs">
       <DependentUpon>QuikDllConnector.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\Dde\DdeBatchSubscriber.EventConsumer.cs">
-      <DependentUpon>DdeBatchSubscriber.cs</DependentUpon>
-    </Compile>
     <Compile Include="Streaming\Dde\DdeBatchSubscriber.EventGenerator.cs">
       <DependentUpon>DdeBatchSubscriber.cs</DependentUpon>
     </Compile>

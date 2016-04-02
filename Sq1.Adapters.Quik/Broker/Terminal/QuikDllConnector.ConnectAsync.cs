@@ -48,13 +48,15 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 		public void DisconnectDll() {
 			this.rescheduleToConnect = false;
 			if (this.DllConnected == false) {
-				string msg = "DLL_ALREADY_DISCONNECTED";
+				string msg = "DLL_ALREADY_DISCONNECTED => sending callback to uncheck the QuikBrokerEditorControl.cbxConnectDLL you clicked";
 				Assembler.PopupException(msg, null, false);
+				this.quikBroker.CallbackFromQuikDll_ConnectionStateUpdated(ConnectionState.Broker_DllDisconnected, this.Ident + "DisconnectDll()");
 			}
+			this.DllConnected = false;		// helps to identify that I clicked DISCONNECT_FROM_QUIK in DataSourceEditor
 			Trans2Quik.DISCONNECT(out anyCallback_error, this.anyCallback_msg, this.anyCallback_msg.Capacity);
-			this.DllConnected = false;
+			this.rescheduleToConnect = false;
 			this.QuikConnected = false;
-			this.quikBroker.CallbackFromQuikDll_ConnectionStateUpdated(ConnectionState.BrokerErrorConnectingNoRetriesAnymore, this.Ident + "DisconnectDll()");
+			//this.quikBroker.CallbackFromQuikDll_ConnectionStateUpdated(ConnectionState.BrokerErrorConnectingNoRetriesAnymore, this.Ident + "DisconnectDll()");
 		}
 		void tryConnect_timeredEntryPoint(object state_notUsed) {
 			//if (this.connectionAttempts == 0) Thread.Sleep(this.quikBroker.ReconnectTimeoutMillis);
@@ -171,12 +173,18 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 						break;
 
 					case Trans2Quik.Result.DLL_DISCONNECTED:
-						this.DllConnected = false;
-						this.connectionAttempts = 0;
-						this.rescheduleToConnect = true;
-						string msg3 = "RECONNECT_RESCHEDULED[" + this.quikBroker.ReconnectTimeoutMillis + "]ms";
-						Assembler.PopupException(msg3 + msig, null, false);
-						this.quikBroker.CallbackFromQuikDll_ConnectionStateUpdated(ConnectionState.Broker_DllConnecting, msg3);	//Broker_DllDisonnected
+						if (this.DllConnected == true) {
+							this.DllConnected = false;
+							this.connectionAttempts = 1;
+							this.rescheduleToConnect = true;
+							string msg3 = "YOU_CLOSED_QUIK_info.exe_WHILE_SQ1_WAS_CONNECTED__RECONNECT_RESCHEDULED[" + this.quikBroker.ReconnectTimeoutMillis + "]ms";
+							Assembler.PopupException(msg3 + msig, null, false);
+							this.quikBroker.CallbackFromQuikDll_ConnectionStateUpdated(ConnectionState.Broker_DllConnecting, msg3);	//Broker_DllDisonnected
+						} else {
+							string msg3 = "YOU_CLICKED_DISCONNECT_FROM_QUIK_DLL_IN_DATA_SOURCE_EDITOR__RECONNECT_NOT_RESCHEDULED";
+							Assembler.PopupException(msg3 + msig, null, false);
+							this.quikBroker.CallbackFromQuikDll_ConnectionStateUpdated(ConnectionState.Broker_DllDisconnected, msg3);
+						}
 						break;
 
 					default:
