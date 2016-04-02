@@ -15,6 +15,7 @@ namespace Sq1.Core.Backtesting {
 		public		string					WhoGeneratedQuote									{ get; protected set; }
 		protected	List<QuoteGenerated>	Quotes_generatedForOneBar_amountDependsOnEngineType;
 					Backtester				backtester;
+		protected	int						AbsnoPerSymbol;		// reset each InitializeQuoteGenerator() <= time we run a 
 
 		protected BacktestQuotesGenerator(BacktestStrokesPerBar engineType) {
 			this.REASON_TO_EXIST				= "DUMMY_GENERATOR_TO_BE_CLONED_AND_INITIALIZED__YOU_SELECT_ME_FROM_CHART_FORM_CONTEXT_MENU";
@@ -41,26 +42,27 @@ namespace Sq1.Core.Backtesting {
 		//	return initializedFromMni;
 		//}
 
-		protected QuoteGenerated GenerateNewQuoteChildrenHelper(int intraBarSerno, string symbol, DateTime serverTime,
-				BidOrAsk bidOrAsk, double priceFromAlignedBar, double volume, Bar barSimulated) {
+		protected QuoteGenerated GenerateNewQuote_childrenHelper(int intraBarSerno, string symbol, DateTime serverTime,
+				BidOrAsk bidOrAsk, double priceAligned, double volume, Bar barSimulated) {
 
-			QuoteGenerated ret = new QuoteGenerated(serverTime);
-			ret.ServerTime = serverTime;
+			QuoteGenerated ret = new QuoteGenerated(serverTime, symbol, ++this.AbsnoPerSymbol,
+													double.NaN, double.NaN, volume);
+			//ret.ServerTime = serverTime;
 			//FILLED_LATER_DONT_CONFUSE_STREAMING_ADAPDER ret.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;
 			//FILLED_LATER_DONT_CONFUSE_STREAMING_ADAPDER ret.IntraBarSerno = intraBarSerno;
 			ret.Source = this.WhoGeneratedQuote;
-			ret.Symbol = symbol;
+			//ret.Symbol = symbol;
 			ret.SymbolClass = this.backtester.BarsOriginal.SymbolInfo.SymbolClass;
-			ret.Size = volume;
+			//ret.Size = volume;
 			ret.ParentBarSimulated = barSimulated;
 			//v1 ret.PriceLastDeal = price;
 
 			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.SpreadModeler;
 			switch (bidOrAsk) {
 				case BidOrAsk.Bid:
-					ret.Bid = priceFromAlignedBar;
+					ret.Bid = priceAligned;
 					ret.TradedAt = BidOrAsk.Bid;
-					modeler.FillAskBasedOnBid(ret);
+					modeler.FillAskBasedOnBid_aligned(ret);
 					if (ret.Spread == 0) {
 						string msig = " returned by modeler[" + modeler + "] for quote[" + ret + "]";
 						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GenerateFillAskBasedOnBid()";
@@ -71,9 +73,9 @@ namespace Sq1.Core.Backtesting {
 					}
 					break;
 				case BidOrAsk.Ask:
-					ret.Ask = priceFromAlignedBar;
+					ret.Ask = priceAligned;
 					ret.TradedAt = BidOrAsk.Ask;
-					modeler.FillBidBasedOnAsk(ret);
+					modeler.FillBidBasedOnAsk_aligned(ret);
 					if (ret.Spread == 0) {
 						string msig = " returned by modeler[" + modeler + "] for quote[" + ret + "]";
 						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GenerateFillAskBasedOnBid()";
@@ -84,7 +86,7 @@ namespace Sq1.Core.Backtesting {
 					}
 					break;
 				case BidOrAsk.UNKNOWN:
-					modeler.GeneratedQuoteFillBidAsk(ret, barSimulated, priceFromAlignedBar);
+					modeler.GeneratedQuoteFillBidAsk(ret, barSimulated, priceAligned);
 					// I_DONT_KNOW_WHAT_TO_PUT_HERE
 					ret.TradedAt = BidOrAsk.Bid;
 					if (ret.Spread == 0) {
@@ -204,7 +206,7 @@ namespace Sq1.Core.Backtesting {
 
 			Quote quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde =
 				this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
-					.LastQuote_getForSymbol(quoteToReach.Symbol);
+					.GetQuoteCurrent_forSymbol_nullUnsafe(quoteToReach.Symbol);
 
 			if (quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde == null) {
 				string msg = "I_CANNOT_CONTINUE_LIVESIM_FIXME#1";
@@ -272,7 +274,7 @@ namespace Sq1.Core.Backtesting {
 				//}
 				string errModelingQuoteThatCouldFill;
 				QuoteGenerated quoteThatWillFillAlert = this.modelQuote_thatCouldFillAlert(alert,
-					new DateTime(quoteToReach.LocalTimeCreated.Ticks - 911), bar2simulate, out errModelingQuoteThatCouldFill);
+					new DateTime(quoteToReach.ServerTime.Ticks - 911), bar2simulate, out errModelingQuoteThatCouldFill);
 				if (quoteThatWillFillAlert == null) {
 					Assembler.PopupException(errModelingQuoteThatCouldFill);
 					continue;
@@ -361,19 +363,24 @@ namespace Sq1.Core.Backtesting {
 			//}
 			return ret;
 		}
-		QuoteGenerated modelQuote_thatCouldFillAlert(Alert alert, DateTime localDateTimeBasedOnServerForBacktest, Bar bar2simulate
+		QuoteGenerated modelQuote_thatCouldFillAlert(Alert alert, DateTime quoteServerTime, Bar bar2simulate
 				, out string errOut, bool checkAgainstPrevReceivedQuote = false) {
 			string msig = " //modelQuote_thatCouldFillAlert(alert[" + alert+ "] bar2simulate[" +bar2simulate+ "])";
 			errOut = "NO_ERROR__QUOTE_MODELLED_MUST_BE_NON_NULL";
 
-			QuoteGenerated ret = new QuoteGenerated(localDateTimeBasedOnServerForBacktest);
+			//QuoteGenerated ret = new QuoteGenerated(localDateTimeBasedOnServerForBacktest);
+
+			QuoteGenerated ret = new QuoteGenerated(quoteServerTime,
+													alert.Symbol, -1,
+													double.NaN, double.NaN, alert.Qty);
+
 			//ret.Source = "GENERATED_TO_FILL_" + alert.ToString();			// PROFILER_SAID_TOO_SLOW + alert.ToString();
 			ret.Source = "GENERATED_TO_FILL_alert@bar#" + alert.PlacedBarIndex;
 			ret.Size = alert.Qty;
 			ret.ParentBarSimulated = bar2simulate;
 
 			//v2
-			double priceScriptAligned = alert.PriceScriptAligned;
+			double priceScriptAligned = alert.PriceEmitted;
 
 			//#if DEBUG
 			////v1
@@ -416,7 +423,7 @@ namespace Sq1.Core.Backtesting {
 			//v2
 			Quote quotePrev_QuoteGenerated_orQuoteQuik_irretraceableAfterDde =
 				this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
-					.LastQuote_getForSymbol(alert.Symbol);
+					.GetQuoteCurrent_forSymbol_nullUnsafe(alert.Symbol);
 			QuoteGenerated quotePrev = quotePrev_QuoteGenerated_orQuoteQuik_irretraceableAfterDde as QuoteGenerated;
 			if (quotePrev == null) {
 				string msg = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"
@@ -436,7 +443,7 @@ namespace Sq1.Core.Backtesting {
 							}
 							ret.Ask = priceScriptAligned;
 							ret.TradedAt = BidOrAsk.Ask;
-							modeler.FillBidBasedOnAsk(ret);
+							modeler.FillBidBasedOnAsk_aligned(ret);
 							break;
 						case Direction.Short:
 						case Direction.Sell:
@@ -446,7 +453,7 @@ namespace Sq1.Core.Backtesting {
 							}
 							ret.Bid = priceScriptAligned;
 							ret.TradedAt = BidOrAsk.Bid;
-							modeler.FillAskBasedOnBid(ret);
+							modeler.FillAskBasedOnBid_aligned(ret);
 							break;
 						default:
 							string msg = "ALERT_LIMIT_DIRECTION_UNKNOWN direction[" + alert.Direction
@@ -464,7 +471,7 @@ namespace Sq1.Core.Backtesting {
 							}
 							ret.Ask = priceScriptAligned;
 							ret.TradedAt = BidOrAsk.Ask;
-							modeler.FillBidBasedOnAsk(ret);
+							modeler.FillBidBasedOnAsk_aligned(ret);
 							break;
 						case Direction.Short:
 						case Direction.Sell:
@@ -474,7 +481,7 @@ namespace Sq1.Core.Backtesting {
 							}
 							ret.Bid = priceScriptAligned;
 							ret.TradedAt = BidOrAsk.Bid;
-							modeler.FillAskBasedOnBid(ret);
+							modeler.FillAskBasedOnBid_aligned(ret);
 							break;
 						default:
 							string msg = "ALERT_STOP_DIRECTION_UNKNOWN direction[" + alert.Direction
@@ -488,13 +495,13 @@ namespace Sq1.Core.Backtesting {
 						case Direction.Cover:
 							ret.Ask = quotePrev.Ask;
 							ret.TradedAt = BidOrAsk.Ask;
-							modeler.FillBidBasedOnAsk(ret);
+							modeler.FillBidBasedOnAsk_aligned(ret);
 							break;
 						case Direction.Short:
 						case Direction.Sell:
 							ret.Bid = quotePrev.Bid;
 							ret.TradedAt = BidOrAsk.Bid;
-							modeler.FillAskBasedOnBid(ret);
+							modeler.FillAskBasedOnBid_aligned(ret);
 							break;
 						default:
 							string msg = "ALERT_MARKET_DIRECTION_UNKNOWN direction[" + alert.Direction
@@ -547,15 +554,22 @@ namespace Sq1.Core.Backtesting {
 			TimeSpan timespanIncrementInterquote = new TimeSpan(0, 0, incrementSeconds);
 			TimeSpan timespanBarBeginningOffsetCumulative = new TimeSpan(0);
 			
+			SymbolInfo symbolInfo = barSimulated.ParentBars.SymbolInfo;
+
 			for (int stroke = 0; stroke < this.BacktestStrokesPerBarAsInt; stroke++) {
-				double price = 0;
+				double price_withGranularStrokes_requiresAlignement = 0;
 				BidOrAsk bidOrAsk = BidOrAsk.UNKNOWN;
-				this.Assign_priceAndBidOrAsk_dependingOnQuotesPerBar_forStroke(barSimulated, stroke, out price, out bidOrAsk);
+				this.Assign_priceAndBidOrAsk_dependingOnQuotesPerBar_forStroke(barSimulated, stroke, out price_withGranularStrokes_requiresAlignement, out bidOrAsk);
+				double priceAligned = symbolInfo.AlignToPriceLevel(price_withGranularStrokes_requiresAlignement);
+
+				if (priceAligned != price_withGranularStrokes_requiresAlignement) {
+					string msg = "OUT_OF_BAR_CHECK_IS_WAITING_FOR_US_IN_this.GenerateNewQuote_childrenHelper()";
+				}
 
 				DateTime timeServerForStroke = barOpenOrResume + timespanBarBeginningOffsetCumulative;
 				// for clearing[14:00...14:03].GetClearingResumes(14:00)=14:03, will be shifted now
 				DateTime timeClearingResumes = marketInfo.GetClearingResumes(timeServerForStroke);
-				if (timeClearingResumes >= barOpenNext) {
+				if (timeClearingResumes != DateTime.MinValue && timeClearingResumes >= barOpenNext) {
 					string msg = "CLEARING_EXTENDS_BEOYND_BAR_SIMULATED SKIPPING_QUOTE_GENERATION_TILL_END_OF_BAR EXPECTING_BAR_INCREASE_UPSTACK";
 					Assembler.PopupException(msg, null, false);
 					break;
@@ -568,8 +582,8 @@ namespace Sq1.Core.Backtesting {
 					recalcShrunkenIncrementDueToIntrabarClearing = true;
 				}
 				
-				QuoteGenerated quote = this.GenerateNewQuoteChildrenHelper(stroke, barSimulated.Symbol,
-					timeServerForStroke, BidOrAsk.UNKNOWN, price, volumeOneQuarterOfBar, barSimulated);
+				QuoteGenerated quote = this.GenerateNewQuote_childrenHelper(stroke, barSimulated.Symbol,
+					timeServerForStroke, BidOrAsk.UNKNOWN, priceAligned, volumeOneQuarterOfBar, barSimulated);
 				this.Quotes_generatedForOneBar_amountDependsOnEngineType.Add(quote);
 
 				if (stroke == this.BacktestStrokesPerBarAsInt - 1) break;		// avoiding expensive {cumulativeOffset += increment} at last stroke 
@@ -612,7 +626,7 @@ namespace Sq1.Core.Backtesting {
 		}
 
 		protected abstract void Assign_priceAndBidOrAsk_dependingOnQuotesPerBar_forStroke(
-			Bar barSimulated, int stroke, out double price, out BidOrAsk bidOrAsk);
+			Bar barSimulated, int stroke, out double priceFromBar_granularStrokes_willBeAligned_upstack, out BidOrAsk bidOrAsk);
 
 		public static BacktestQuotesGenerator CreateForQuotesPerBar_initialize(BacktestStrokesPerBar backtestStrokesPerBar, Backtester backtester) {
 			BacktestQuotesGenerator ret = new BacktestQuotesGeneratorFourStroke();

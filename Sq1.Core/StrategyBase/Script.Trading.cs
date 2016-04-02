@@ -72,48 +72,8 @@ namespace Sq1.Core.StrategyBase {
 		public void AlertPending_kill(Alert alert) {
 			this.Executor.AlertPending_kill(alert);
 		}
-
-		[Obsolete("looks unreliable until refactored; must kill previous alertExit AFTER killing market completes => userland callback or more intelligent management in CORE level")]
-		public List<Alert> PositionClose_immediately(Position position, string signalName) {
-			List<Alert> killedOnce = this.Position_exitAlert_kill(position, signalName);
-			this.ExitAtMarket(this.Bars.BarStreaming_nullUnsafe, position, signalName);
-			// BETTER WOULD BE KILL PREVIOUS PENDING ALERT FROM A CALBACK AFTER MARKET EXIT ORDER GETS FILLED, IT'S UNRELIABLE EXIT IF WE KILL IT HERE
-			// LOOK AT EMERGENCY CLASSES, SOLUTION MIGHT BE THERE ALREADY
-			return killedOnce;
-		}
-		public List<Alert> Position_exitAlert_kill(Position position, string signalName) {
-			List<Alert> alertsSubmittedToKill = new List<Alert>();
-			if (position.IsEntryFilled == false) {
-				string msg = "I_REFUSE_TO_KILL_UNFILLED_ENTRY_ALERT position[" + position + "]";
-				Assembler.PopupException(msg);
-				return alertsSubmittedToKill;
-			}
-			if (null == position.ExitAlert) {
-				string msg = "FIXME I_REFUSE_TO_KILL_UNFILLED_EXIT_ALERT {for prototyped position, position.ExitAlert contains TakeProfit} position[" + position + "]";
-				Debugger.Break();
-				return alertsSubmittedToKill;
-			}
-			if (string.IsNullOrEmpty(signalName)) signalName = "PositionCloseImmediately()";
-			if (position.Prototype != null) {
-				alertsSubmittedToKill = this.PositionPrototype_killWhateverIsPending(position.Prototype, signalName);
-				return alertsSubmittedToKill;
-			}
-			this.AlertPending_kill(position.ExitAlert);
-			alertsSubmittedToKill.Add(position.ExitAlert);
-			return alertsSubmittedToKill;
-		}
-		
-		public List<Alert> PositionPrototype_killWhateverIsPending(PositionPrototype proto, string signalName) {
-			List<Alert> alertsSubmittedToKill = new List<Alert>();
-			if (proto.StopLossAlert_forMoveAndAnnihilation != null) {
-				this.AlertPending_kill(proto.StopLossAlert_forMoveAndAnnihilation);
-				alertsSubmittedToKill.Add(proto.StopLossAlert_forMoveAndAnnihilation);
-			}
-			if (proto.TakeProfitAlert_forMoveAndAnnihilation != null) {
-				this.AlertPending_kill(proto.TakeProfitAlert_forMoveAndAnnihilation);
-				alertsSubmittedToKill.Add(proto.TakeProfitAlert_forMoveAndAnnihilation);
-			}
-			return alertsSubmittedToKill;
+		public List<Alert> PositionClose_immediately(Position position, string signalName, bool annotateAtBars_forEachClosedPosition = false) {
+			return this.Executor.PositionClose_immediately(position, signalName, annotateAtBars_forEachClosedPosition);
 		}
 		#endregion
 	}

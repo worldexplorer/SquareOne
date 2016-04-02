@@ -86,11 +86,13 @@ namespace Sq1.Widgets.Level2 {
 			base.WindowTitle = this.windowTitle;
 		}
 
-		public void PopulateLevel2ToDomControl(LevelTwo levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl) {
-			if (levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl == null) {
-				string msg = "LEVEL2_PROXY_WASNT_CREATED_DUE_TO_A_TYPO....";
-				Assembler.PopupException(msg);
-				return;
+		public void PopulateLevel2_asFlattenedRows_toOLV(LevelTwo level2fromDde_freezeSortFlatten_insertPriceLevels_pushToOLV_nullToClearDom) {
+			if (level2fromDde_freezeSortFlatten_insertPriceLevels_pushToOLV_nullToClearDom == null) {
+				string msg = "DdeTableDepth_MANUALLY_RAISED_EVENT_WITH_EMPTY_LIST_TO_CLEAR_EVERYTHING_IN_DDE_MONITOR_(QUOTES/LEVEL2/TRADES)_RIGHT_AFTER_USER_STOPPED_DDE_FEED"
+					//v1 + "LEVEL2_PROXY_WASNT_CREATED_DUE_TO_A_TYPO...."
+					;
+				Assembler.PopupException(msg, null, false);
+				//v1 return;
 			}
 			if (this.OlvLevelTwo.IsDisposed) return;
 			if (base.IsDisposed) return;
@@ -100,14 +102,20 @@ namespace Sq1.Widgets.Level2 {
 			//this.stopwatchRarifyingUIupdates.Restart();
 
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.PopulateLevel2ToDomControl(levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl); });
+				base.BeginInvoke((MethodInvoker)delegate { this.PopulateLevel2_asFlattenedRows_toOLV(level2fromDde_freezeSortFlatten_insertPriceLevels_pushToOLV_nullToClearDom); });
 				return;
 			}
 			// I paid the price of switching to GuiThread, but I don' have to worry if I already stopwatch.Restart()ed
 			//if (this.stopwatchRarifyingUIupdates.ElapsedMilliseconds < this.quikStreaming.DdeMonitorRefreshRate) return;
 			//this.stopwatchRarifyingUIupdates.Restart();
 
-			List<LevelTwoEachLine> level2rows = levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl.FrozenSortedFlattened_priceLevelsInserted;
+			if (level2fromDde_freezeSortFlatten_insertPriceLevels_pushToOLV_nullToClearDom == null) {
+				string msg = "DdeTableDepth_MANUALLY_RAISED_EVENT_WITH_EMPTY_LIST_TO_CLEAR_EVERYTHING_IN_DDE_MONITOR_(QUOTES/LEVEL2/TRADES)_RIGHT_AFTER_USER_STOPPED_DDE_FEED";
+				this.OlvLevelTwo.SetObjects(new List<LevelTwoEachLine>(), true);
+				return;
+			}
+
+			List<LevelTwoEachLine> level2rows = level2fromDde_freezeSortFlatten_insertPriceLevels_pushToOLV_nullToClearDom.FrozenSortedFlattened_priceLevelsInserted_forOlv;
 			this.OlvLevelTwo.SetObjects(level2rows, true);
 		}
 	}

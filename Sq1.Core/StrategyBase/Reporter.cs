@@ -64,33 +64,33 @@ namespace Sq1.Core.StrategyBase {
 		// dont make it runtime error, bring the error to the earliest stage!
 		//The designer must create an instance of type 'Sq1.Core.StrategyBase.Reporter' but it cannot because the type is declared as abstract. 
 		//public abstract void BuildFullOnBacktestFinished();
-		public virtual void BuildFullOnBacktestFinished() {
+		public virtual void BuildFull_onBacktestFinished() {
 			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildFullOnBacktestFinished()" + this.TabText + "/" + this.GetType();
 			msg = "; don't forget to do base.SystemPerformance=performance so that Reporter.Format picks up DecimalsPrice";
 			throw new NotImplementedException(msg);
 		}
 		//public abstract void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit);
-		public virtual void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
+		public virtual void BuildIncremental_onPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
 			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
 			throw new NotImplementedException(msg);
 		}
 		//public abstract void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit);
-		public virtual void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
+		public virtual void BuildIncremental_updateOpenPositions_dueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
 			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT OpenPositionsUpdatedDueToStreamingNewQuote(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
 			throw new NotImplementedException(msg);
 		}
 		//public abstract void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit);
-		public virtual void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
+		public virtual void BuildIncremental_onBrokerFilled_alertsOpening_forPositions_step1of3(ReporterPokeUnit pokeUnit) {
 			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
 			throw new NotImplementedException(msg);
 		}
 
-		public virtual object CreateSnapshotToStoreInScriptContext() {
+		public virtual object CreateSnapshot_toStore_inScriptContext() {
 			return null;
 		}
 
-		public virtual void StashWindowTextSuffixInBaseTabText_usefulToUpdateAutohiddenStatsWithoutRebuildingFullReport_OLVisSlow() { }
-		public virtual void RebuildingFullReportForced_onLivesimPaused() { }
+		public virtual void Stash_windowTextSuffix_inBaseTabText_usefulToUpdateAutohiddenStats_withoutRebuildingFullReport_OLVisSlow() { }
+		public virtual void RebuildingFullReport_forced_onLivesimPaused() { }
 
 		public void RaiseContextScriptChangedContainerShouldSerialize() {
 			this.Chart.RaiseOnContextScriptChanged_containerShouldSerialize();

@@ -151,7 +151,7 @@ namespace Sq1.Widgets.CsvImporter {
 				if (this.targetSymbolClicked != this.barsParsed.Symbol) {
 					this.barsParsed = new Bars(symbolClickedThenDetected, this.barsParsed.ScaleInterval, this.barsParsed.ReasonToExist);
 					foreach (CsvBar csvBar in this.csvParsedByFormat) {
-						this.barsParsed.BarCreateAppendBindStatic(csvBar.DateTime, csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume);
+						this.barsParsed.BarStatic_createAppendAttach(csvBar.DateTime, csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume);
 					}
 				}
 				bool overwrote = true;

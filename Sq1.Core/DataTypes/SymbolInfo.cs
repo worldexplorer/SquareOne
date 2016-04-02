@@ -23,8 +23,8 @@ namespace Sq1.Core.DataTypes {
 		[Category("1. Essential"), Description("For {RTSIndex = MICEX * USD/RUR}: {Position.Size = Position.Size * SymbolInfo.Point2Dollar}"), DefaultValue(1)]
 		[JsonProperty]	public	double			Point2Dollar				{ get; set; }
 
-		[Category("1. Essential"), Description("when received same Bid and Ask as for the previous Quote, don't push it to consumers and to DdeMonitor; reduces size=-1"), DefaultValue(true)]
-		[JsonProperty]	public	bool			FilterOutSameBestBidAskDupes		{ get; set; }
+		[Category("1. Essential"), Description("0=DISABLED Forces killUnfilledPendings, closeOpenPositions N seconds prior to MarketInfo.GetReason_ifMarket_closedOrSuspended_secondsFromNow(int secondsFromNow) Backtest,Livesim,Live: no timer/thread, just inside StrategyExecutor for each newQuote")]
+		[JsonProperty]	public	int				GoFlat_priorTo_marketClose_clearing_sec	{ get; set; }
 
 		//[Category("EmergencyProcessor"), Description("NOT_USED Connected somehow with Point2Dollar")]
 		//[JsonProperty]	public	double			LeverageForFutures			{ get; set; }
@@ -150,7 +150,7 @@ namespace Sq1.Core.DataTypes {
 			this.Symbol							= "UNKNOWN_SYMBOL";
 			this.SymbolClass					= "";
 			this.Point2Dollar					= 1.0;
-			this.FilterOutSameBestBidAskDupes	= true;
+			this.GoFlat_priorTo_marketClose_clearing_sec = 0;
 
 			this.PriceDecimals					= 2;
 			this.PriceStepFromDde				= SymbolInfo.PriceStepFromDde_NOT_RECEIVED;
@@ -207,9 +207,9 @@ namespace Sq1.Core.DataTypes {
 			if (slippages != null) ret = slippages.Length - 1;
 			return ret;
 		}
-		public double GetSlippage_signAware_forLimitOrdersOnly(Alert alert, int slippageIndex=0, bool isStreaming=true) {
-			return this.GetSlippage_signAware_forLimitOrdersOnly(alert.PriceScriptAligned, alert.Direction, alert.MarketOrderAs, slippageIndex, isStreaming);
-		}
+		//public double GetSlippage_signAware_forLimitAlertsOnly(Alert alert, int slippageIndex=0, bool isStreaming=true) {
+		//    return this.GetSlippage_signAware_forLimitOrdersOnly(alert.PriceScriptAligned, alert.Direction, alert.MarketOrderAs, slippageIndex, isStreaming);
+		//}
 
 		public double GetSlippage_signAware_forLimitOrdersOnly(double priceAligned, Direction direction, MarketOrderAs crossOrTidal, int slippageIndex=0, bool isStreaming=true) {
 			double ret = 0;
@@ -326,14 +326,15 @@ namespace Sq1.Core.DataTypes {
 		}
 		#else
 		public double AlignToPriceLevel(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest) {
-			if (this.PriceDecimals < 0) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new NotImplementedException();
+			decimal integefier = Convert.ToDecimal(this.PriceStepFromDde);
+			if (integefier == -1) {
+				integefier = Convert.ToDecimal(Math.Pow(10, this.PriceDecimals));	// 10 ^ 2 = 100;
+				//integefier = this.PriceStepFromDecimal;
 			}
-			int integefier = (int)Math.Pow(10, this.PriceDecimals);		// 10 ^ 2 = 100;
-			decimal ret = (decimal) price * integefier; 				// 90.145 => 9014.5
+			if (integefier < 0) {
+				throw new ArithmeticException();
+			}
+			decimal ret = (decimal) price * integefier; 							// 90.145 => 9014.5
 			switch (upOrDown) {
 				case PriceLevelRoundingMode.RoundDown:		ret = Math.Floor(ret);		break;		// 9014.5 => 9014.0
 				case PriceLevelRoundingMode.RoundUp:		ret = Math.Ceiling(ret);	break;		// 9014.5 => 9015.0
@@ -347,9 +348,14 @@ namespace Sq1.Core.DataTypes {
 				default:
 				throw new NotImplementedException("AlignToPriceLevel() for PriceLevelRoundingMode." + upOrDown);
 			}
-			ret /= integefier;	// 9015.0 => 90.15
-			ret = Math.Round(ret, this.PriceDecimals);
-			return (double)ret;
+			ret /= integefier;														// 9015.0 => 90.15
+			//ret = Math.Round(ret, integefier);
+			if (ret < integefier) {
+				ret = integefier;
+			} else {
+				ret = Math.Round(ret, (int)integefier);	// DIRTY
+			}
+			return Convert.ToDouble(ret);
 		}
 		#endif
 		public double AlignToVolumeStep(double volume, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest) {

@@ -70,7 +70,7 @@ namespace Sq1.Core.DataTypes {
 			Bars clone = new Bars(this.Symbol, this.ScaleInterval, reasonToExist);
 			foreach (Bar each in this.BarsList) {
 				Bar cloneBar = each.CloneDetached();
-				clone.BarAppendBind(cloneBar);
+				clone.BarAppendAttach(cloneBar);
 			}
 			clone.DataSource = this.DataSource;
 			clone.MarketInfo = this.MarketInfo;
@@ -101,7 +101,7 @@ namespace Sq1.Core.DataTypes {
 				return ret;
 			}
 			Bar firstBar_noParentBackRef = this[0].CloneDetached();
-			ret.BarAppendBindStatic(firstBar_noParentBackRef);
+			ret.BarStatic_appendAttach(firstBar_noParentBackRef);
 			return ret;
 		}
 		public Bars CloneBars_zeroBarsInside(string reasonToExist = null, BarScaleInterval scaleIntervalConvertingTo = null, bool exposedInnerBars_forEditor = false) {
@@ -116,34 +116,34 @@ namespace Sq1.Core.DataTypes {
 			ret.ClonedFromInstanceName = this.InstanceScaleCount;
 			return ret;
 		}
-		public Bar BarStreaming_createNewOrAbsorb(Bar barToMergeToStreaming) { lock (base.BarsLock) {
-			bool shouldAppend = this.BarLast == null || barToMergeToStreaming.DateTimeOpen >= this.BarLast.DateTimeNextBarOpenUnconditional;
+		public Bar BarStreaming_createNewAttach_orAbsorb(Bar barToMerge_intoStreaming) { lock (base.BarsLock) {
+			bool shouldAppend = this.BarLast == null || barToMerge_intoStreaming.DateTimeOpen >= this.BarLast.DateTimeNextBarOpenUnconditional;
 			if (shouldAppend) {	// if this.BarStreaming == null I'll have just one bar in Bars which will be streaming and no static 
-				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, barToMergeToStreaming.DateTimeOpen);
-				barAdding.SetOHLCValigned(barToMergeToStreaming.Open, barToMergeToStreaming.High,
-					barToMergeToStreaming.Low, barToMergeToStreaming.Close, barToMergeToStreaming.Volume, this.SymbolInfo);
-				this.BarAppendBind(barAdding);
+				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, barToMerge_intoStreaming.DateTimeOpen);
+				barAdding.SetOHLCValigned(barToMerge_intoStreaming.Open, barToMerge_intoStreaming.High,
+					barToMerge_intoStreaming.Low, barToMerge_intoStreaming.Close, barToMerge_intoStreaming.Volume, this.SymbolInfo);
+				this.BarAppendAttach(barAdding);
 				this.BarStreaming_nullUnsafe = barAdding;
-				this.raiseOnBarStreamingAdded(barAdding);
+				//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.raiseOnBarStreamingAdded(barAdding);
 			} else {
 				if (this.BarStreaming_nullUnsafe == null) {
 					this.BarStreaming_nullUnsafe = this.BarLast;
 				}
 				//base.BarAbsorbAppend(this.StreamingBar, open, high, low, close, volume);
-				this.BarStreaming_nullUnsafe.MergeExpandHLCVwhileCompressingManyBarsToOne(barToMergeToStreaming, false);	// duplicated volume for just added bar; moved up
-				this.raiseOnBarStreamingUpdated(barToMergeToStreaming);
+				this.BarStreaming_nullUnsafe.MergeExpandHLCV_whileCompressingManyBarsToOne(barToMerge_intoStreaming, false);	// duplicated volume for just added bar; moved up
+				//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.raiseOnBarStreamingUpdated(barToMerge_intoStreaming);
 			}
 			return this.BarStreaming_nullUnsafe;
 		} }
-		public Bar BarCreateAppendBindStatic(DateTime dateTime,
+		public Bar BarStatic_createAppendAttach(DateTime dateTime,
 				double open, double high, double low, double close, double volume,
 				bool exceptionPullUpstack = false) { lock (base.BarsLock) {
 			Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, dateTime);
 			barAdding.SetOHLCValigned(open, high, low, close, volume, this.SymbolInfo);
-			this.BarAppendBindStatic(barAdding, true);
+			this.BarStatic_appendAttach(barAdding, true);
 			return barAdding;
 		} }
-		public void BarAppendBindStatic(Bar barAdding, bool exceptionPullUpstack = false) { lock (base.BarsLock) {
+		public void BarStatic_appendAttach(Bar barAdding, bool exceptionPullUpstack = false) { lock (base.BarsLock) {
 			try {
 				barAdding.CheckOHLCVthrow();
 			} catch (Exception ex) {
@@ -152,8 +152,8 @@ namespace Sq1.Core.DataTypes {
 				Assembler.PopupException(msg, ex, false);
 			}
 			this.BarStreaming_nullUnsafe = null;
-			this.BarAppendBind(barAdding);
-			this.raiseOnBarStaticAdded(barAdding);
+			this.BarAppendAttach(barAdding);
+			//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.raiseOnBarStaticAdded(barAdding);
 		} }
 		protected override void CheckThrowDateIsNotLessThanScaleDictates(DateTime dateAdding) {
 			if (this.Count == 0) return;
@@ -162,7 +162,7 @@ namespace Sq1.Core.DataTypes {
 				+ ": dateAdding[" + dateAdding + "]<this.BarStaticLast.DateTimeNextBarOpenUnconditional["
 				+ this.BarLast.DateTimeNextBarOpenUnconditional + "]");
 		}
-		protected void BarAppendBind(Bar barAdding) { lock (base.BarsLock) {
+		protected void BarAppendAttach(Bar barAdding) { lock (base.BarsLock) {
 			try {
 				base.BarAppend(barAdding);
 			} catch (Exception e) {
@@ -178,7 +178,7 @@ namespace Sq1.Core.DataTypes {
 				return;
 			}
 		} }
-		public void BarStreamingOverrideDOHLCVwith(Bar bar) {
+		public void BarStreaming_overrideDOHLCVwith(Bar bar) {
 			if (bar == null) {
 				string msg = "I_DONT_ACCEPT_NULL_BARS_TO OverrideStreamingDOHLCVwith(" + bar + ")";
 				throw new Exception(msg);
@@ -200,7 +200,7 @@ namespace Sq1.Core.DataTypes {
 			//this.streamingBar.DateTimeOpen = bar.DateTimeOpen;
 			this.BarStreaming_nullUnsafe.AbsorbOHLCVfrom(bar);
 			// IMPORTANT!! this.BarStreamingCloneReadonly freezes changes in the clone so that subscribers get the same StreamingBar
-			this.raiseOnBarStreamingUpdated(this.BarStreaming_nullUnsafeCloneReadonly);
+			//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.raiseOnBarStreamingUpdated(this.BarStreaming_nullUnsafeCloneReadonly);
 		}
 		public override string ToString() {
 			string ret = this.Symbol + "-" + this.IntervalScaleCount + this.MyInstanceAsString;
@@ -283,7 +283,7 @@ namespace Sq1.Core.DataTypes {
 				int high = rand.Next(candleBodyHigh, candleBodyHigh + shadowLimit);
 				int low = rand.Next(candleBodyLow - shadowLimit, candleBodyLow);
 				int volume = rand.Next(volumeMax);
-				this.BarCreateAppendBindStatic(dateCurrent, open, high, low, close, volume);
+				this.BarStatic_createAppendAttach(dateCurrent, open, high, low, close, volume);
 				dateCurrent = dateCurrent.AddSeconds(this.ScaleInterval.AsTimeSpanInSeconds);
 				open = close;
 			}
@@ -306,7 +306,7 @@ namespace Sq1.Core.DataTypes {
 				if (startDate > DateTime.MinValue && barAdding.DateTimeOpen < startDate) skipThisBar = true; 
 				if (endDate < DateTime.MaxValue && barAdding.DateTimeOpen > endDate) skipThisBar = true;
 				if (skipThisBar) continue;
-				clone.BarAppendBindStatic(barAdding.CloneDetached());
+				clone.BarStatic_appendAttach(barAdding.CloneDetached());
 			}
 			if (exposeInnerBars_forEditor) {
 				clone.InnerBars_exposedOnlyForEditor = clone.BarsList;
@@ -324,7 +324,7 @@ namespace Sq1.Core.DataTypes {
 			if (string.IsNullOrEmpty(msg)) return;
 			throw new Exception(msg + msig);
 		}
-		public Bars ToLargerScaleInterval(BarScaleInterval scaleIntervalTo) {
+		public Bars ToLarger_scaleInterval(BarScaleInterval scaleIntervalTo) {
 			if (this.ScaleInterval == scaleIntervalTo) return this;
 			this.checkThrowCanConvert(scaleIntervalTo);
 
@@ -340,11 +340,11 @@ namespace Sq1.Core.DataTypes {
 			for (int i = 1; i < this.Count; i++) {
 				Bar barEach = this[i];
 				if (barEach.DateTimeOpen >= barCompressing.DateTimeNextBarOpenUnconditional) {
-					barsConverted.BarAppendBindStatic(barCompressing);
+					barsConverted.BarStatic_appendAttach(barCompressing);
 					barCompressing = new Bar(this.Symbol, scaleIntervalTo, barEach.DateTimeOpen);
 					barCompressing.AbsorbOHLCVfrom(barEach);
 				} else {
-					barCompressing.MergeExpandHLCVwhileCompressingManyBarsToOne(barEach, true);
+					barCompressing.MergeExpandHLCV_whileCompressingManyBarsToOne(barEach, true);
 				}
 			}
 			return barsConverted;

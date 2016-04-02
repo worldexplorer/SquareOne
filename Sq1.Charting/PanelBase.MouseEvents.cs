@@ -299,7 +299,7 @@ namespace Sq1.Charting {
 			if (barIndexMouseIsOverNow < this.VisibleBarLeft_cached) return tooltipPositionShown;
 			if (barIndexMouseIsOverNow > this.VisibleBarRight_cached) return tooltipPositionShown;	//Debugger.Break();
 
-			Dictionary<int, List<AlertArrow>> alertArrowsListByBar = this.ChartControl.ScriptExecutorObjects.AlertArrowsListByBar;
+			Dictionary<int, List<AlertArrow>> alertArrowsListByBar = this.ChartControl.ExecutorObjects_frozenForRendering.AlertArrowsListByBar;
 			if (alertArrowsListByBar.ContainsKey(barIndexMouseIsOverNow) == false) {
 				this.ChartControl.TooltipPositionHide();
 				return tooltipPositionShown;

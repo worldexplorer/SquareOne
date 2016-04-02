@@ -74,7 +74,7 @@ namespace Sq1.Core.Broker {
 					}
 
 					Alert alertFirst = ordersOpen[0].Alert;
-					BrokerAdapter broker = alertFirst.DataSource.BrokerAdapter;
+					BrokerAdapter broker = alertFirst.DataSource_fromBars.BrokerAdapter;
 					//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrders_threadEntry_delayed),
 					//    new object[] { ordersOpen, ordersOpen[0].Alert.Bars.SymbolInfo.SequencedOpeningAfterClosedDelayMillis });
 

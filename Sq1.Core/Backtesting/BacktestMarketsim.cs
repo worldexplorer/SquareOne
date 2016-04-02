@@ -33,7 +33,7 @@ namespace Sq1.Core.Backtesting {
 		public bool Check_entryAlertWillBeFilled_byQuote(Alert entryAlert, Quote quote, out double entryPriceOut, out double entrySlippageOutNotUsed) {
 			// if entry is triggered, call position.EnterFinalize(entryPrice, entrySlippage, entryCommission);
 			//v2
-			entryPriceOut = entryAlert.PriceScriptAligned;
+			entryPriceOut = entryAlert.PriceEmitted;
 
 			entrySlippageOutNotUsed = 0;
 			//Direction directionPositionClose = MarketConverter.ExitDirectionFromLongShort(alert.PositionLongShortFromDirection);
@@ -87,6 +87,9 @@ namespace Sq1.Core.Backtesting {
 					//	entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
 					break;
 				case MarketLimitStop.Market:
+					Sq1.Core.Streaming.StreamingDataSnapshot snap = this.scriptExecutor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot;
+					entryPriceOut = snap.GetBidOrAsk_forDirection_fromQuoteCurrent(entryAlert.Symbol, entryAlert.PositionLongShortFromDirection);
+
 					switch (entryAlert.Direction) {
 						case Direction.Buy:
 							if (entryPriceOut > quote.Ask) {
@@ -95,19 +98,19 @@ namespace Sq1.Core.Backtesting {
 									+ "], signalName[" + entryAlert.PositionAffected.EntrySignal + "]) "
 									+ "entryPrice[" + entryPriceOut + "] > := quoteToReach.Ask["
 									+ barIndexTested + "]=[" + quote.Ask + "]"
-									+ " while basisPrice=[" + entryAlert.PositionAffected.LastQuoteForMarketOrStopLimitImplicitPrice + "]";
+									+ " while basisPrice=[" + entryAlert.PositionAffected.QuoteLast_forMarketOrStopLimit_implicitPrice + "]";
 							}
 							//entrySlippageOutNotUsed = slippageNonLimit;
 							//priceScriptAligned += entrySlippageOutNotUsed;
 							break;
 						case Direction.Short:
-							if (entryAlert.PriceScript < quote.Bid) {
+							if (entryPriceOut < quote.Bid) {
 								entryPriceOut = quote.Bid;
 								string msg = "ShortAtMarket/ShortAtClose(bar[" + barIndexTested
 									+ "], signalName[" + entryAlert.PositionAffected.EntrySignal + "]) "
 									+ "entryPrice[" + entryPriceOut + "] < := quoteToReach.Bid["
 									+ barIndexTested + "]=[" + quote.Bid + "]"
-									+ " while basisPrice=[" + entryAlert.PositionAffected.LastQuoteForMarketOrStopLimitImplicitPrice + "]";
+									+ " while basisPrice=[" + entryAlert.PositionAffected.QuoteLast_forMarketOrStopLimit_implicitPrice + "]";
 							}
 							//entrySlippageOutNotUsed = -slippageNonLimit;
 							//priceScriptAligned += entrySlippageOutNotUsed;
@@ -167,7 +170,7 @@ namespace Sq1.Core.Backtesting {
 				, out double exitPriceOut, out double exitSlippageOut) {
 
 			//v2
-			exitPriceOut = exitAlert.PriceScriptAligned;
+			exitPriceOut = exitAlert.PriceEmitted;
 
 			exitSlippageOut = 0;
 			//double slippageLimit = this.backtestBroker.ScriptExecutor.getSlippage(exitAlert.PriceScript
@@ -308,6 +311,8 @@ namespace Sq1.Core.Backtesting {
 					break;
 				case MarketLimitStop.Market:
 					// WHY (IsBacktestingNow == true): market orders during LIVE could be filled at virtually ANY price
+					Sq1.Core.Streaming.StreamingDataSnapshot snap = this.scriptExecutor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot;
+					exitPriceOut = snap.GetBidOrAsk_forDirection_fromQuoteCurrent(exitAlert.Symbol, exitAlert.PositionLongShortFromDirection);
 					if (quote.PriceBetweenBidAsk(exitPriceOut) == false && this.scriptExecutor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == true) {
 						string msg = "exitPriceOut[" + exitPriceOut + "] must be inside the bar; we'll need to generate one more quote onTheWayTo exitPriceOut";
 						Assembler.PopupException(msg);
@@ -559,10 +564,14 @@ namespace Sq1.Core.Backtesting {
 				action_afterAlertFilled_beforeMovedAround(alert, quote, priceFill, alert.Qty);
 				return filled;
 			}
-			string msg4 = "AM_I_CHARTLESS_BACKTEST?";
-			this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptNonReenterably(alert, quote,
-				priceFill, alert.Qty, slippageFill, entryCommission);
-			return filled;
+			if (this.broker_backtestOrLivesim is BacktestBroker) {
+				this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptNonReenterably(alert, quote,
+					priceFill, alert.Qty, slippageFill, entryCommission);
+				return filled;
+			}
+			string msg4 = "YOU_CAN_NOT_USE_simulatePendingFill*_FOR_LIVE_BROKER_IMPLEMENTATIONS";
+			Assembler.PopupException(msg4 + msig);
+			throw new Exception(msg4 + msig);
 		}
 		bool simulatePendingFill_exit(Alert alert, Quote quote, Action<Alert, Quote, double, double> executeAfterAlertFilled = null) {
 			string msig = " //simulatePendingFill_exit(alert[" + alert + "], quote[" + quote + "]) " + this.scriptExecutor;
@@ -596,10 +605,14 @@ namespace Sq1.Core.Backtesting {
 				}
 				return filled;
 			}
-			string msg4 = "AM_I_CHARTLESS_BACKTEST?";
-			this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptNonReenterably(alert, quote,
-				priceFill, alert.Qty, slippageFill, exitCommission);
-			return filled;
+			if (this.broker_backtestOrLivesim is BacktestBroker) {
+				this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptNonReenterably(alert, quote,
+					priceFill, alert.Qty, slippageFill, exitCommission);
+				return filled;
+			}
+			string msg4 = "YOU_CAN_NOT_USE_simulatePendingFill*_FOR_LIVE_BROKER_IMPLEMENTATIONS";
+			Assembler.PopupException(msg4 + msig);
+			throw new Exception(msg4 + msig);
 		}
 
 		public void StopLoss_simulateMoved(Alert alertToBeKilled) {

@@ -313,6 +313,7 @@ namespace Sq1.Gui {
 				}
 				//DataSourceEditorForm.Instance.ShowAsDocumentTabNotPane(this.mainForm.DockPanel);
 				DataSourceEditorForm.Instance.Show(this.mainForm.DockPanel);		// as DockRight (Designer)
+				this.mainForm.MainFormSerialize();	// after appRestart, DataSourceEditor was loosing last edited datasource
 			} catch (Exception exc) {
 				string msg = "DataSourceEditorForm(DataSource[" + e.DataSource + "]): internal Exception";
 				Assembler.PopupException(msg, exc);

@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 using Sq1.Core.Execution;
 using Sq1.Core.Backtesting;
 using Sq1.Core.Broker;
-using System.Threading.Tasks;
 
 namespace Sq1.Core.Livesim {
 	public partial class LivesimBroker : BrokerAdapter {
@@ -106,7 +106,6 @@ namespace Sq1.Core.Livesim {
 			msigHead = " orderVictim[" + orderVictim.SernoExchange + "]=>[" + OrderState.VictimKilled + "] <= orderKiller[" + orderKiller.SernoExchange + "][" + orderKiller.State + "]";
 			OrderStateMessage omsg_killed_victim = new OrderStateMessage(orderVictim, OrderState.VictimKilled, "SIMULATING_VICTIM_KILLED_CALLBACK" + msigHead);
 			base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg_killed_victim);
-			base.OrderProcessor.BrokerCallback_pendingKilled_withKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(orderVictim, msig);
 		}
 
 		//public override void Order_killPending_withoutKiller(Order orderPendingToKill) {

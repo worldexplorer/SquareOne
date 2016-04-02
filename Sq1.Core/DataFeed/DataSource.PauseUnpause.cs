@@ -11,8 +11,7 @@ namespace Sq1.Core.DataFeed {
 	public partial class DataSource {
 
 		public bool QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executorImBacktesting, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
-				.GetDistributionChannelFor_nullUnsafe(executorImBacktesting.Bars.Symbol, executorImBacktesting.Bars.ScaleInterval);
+			SymbolChannel channel = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImBacktesting.Bars.Symbol);
 			string msig = " //QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executorImBacktesting + ")";
 			if (channel == null) {
 				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
@@ -22,7 +21,7 @@ namespace Sq1.Core.DataFeed {
 				return false;
 			}
 			if (channel.ImQueueNotPump_trueOnlyForBacktest == false ||
-				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == true) {
+				channel.QueueWhenBacktesting_PumpForLiveAndLivesim.HasSeparatePushingThread == true) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_NOT_PAUSE_PUMP DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
 					Assembler.PopupException(msg + msig);
@@ -40,8 +39,7 @@ namespace Sq1.Core.DataFeed {
 				return false;
 			}
 
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
-				.GetDistributionChannelFor_nullUnsafe(executorImBacktesting.Bars.Symbol, executorImBacktesting.Bars.ScaleInterval);
+			SymbolChannel channel = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImBacktesting.Bars.Symbol);
 			if (channel == null) {
 				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
 					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
@@ -51,7 +49,7 @@ namespace Sq1.Core.DataFeed {
 			}
 
 			if (channel.ImQueueNotPump_trueOnlyForBacktest == false ||
-				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == true) {
+				channel.QueueWhenBacktesting_PumpForLiveAndLivesim.HasSeparatePushingThread == true) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_NOT_UNPAUSE_PUMP DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
 					Assembler.PopupException(msg + msig, null, false);
@@ -62,8 +60,7 @@ namespace Sq1.Core.DataFeed {
 			return true;
 		}
 		public bool OwnLivesimHelper_PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
-				.GetDistributionChannelFor_nullUnsafe(executorImLivesimming.Bars.Symbol, executorImLivesimming.Bars.ScaleInterval);
+			SymbolChannel channel = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
 			string msig = " //OwnLivesimPumpHelper_PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executorImLivesimming + ")";
 			if (channel == null) {
 				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
@@ -73,7 +70,7 @@ namespace Sq1.Core.DataFeed {
 				return false;
 			}
 			if (channel.ImQueueNotPump_trueOnlyForBacktest == true ||
-				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == false) {
+				channel.QueueWhenBacktesting_PumpForLiveAndLivesim.HasSeparatePushingThread == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_PAUSE DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
 					Assembler.PopupException(msg + msig);
@@ -91,8 +88,7 @@ namespace Sq1.Core.DataFeed {
 				return false;
 			}
 
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
-				.GetDistributionChannelFor_nullUnsafe(executorImLivesimming.Bars.Symbol, executorImLivesimming.Bars.ScaleInterval);
+			SymbolChannel channel = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
 			if (channel == null) {
 				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
 					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
@@ -102,7 +98,7 @@ namespace Sq1.Core.DataFeed {
 			}
 
 			if (channel.ImQueueNotPump_trueOnlyForBacktest == true ||
-				channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == false) {
+				channel.QueueWhenBacktesting_PumpForLiveAndLivesim.HasSeparatePushingThread == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_UNPAUSE DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
 					Assembler.PopupException(msg + msig, null, false);
@@ -113,21 +109,22 @@ namespace Sq1.Core.DataFeed {
 			return true;
 		}
 		//public bool PumpingPausedGet(Bars bars) {
-		//	DataDistributor distr = this.StreamingAdapter.DataDistributor;
+		//	Distributor distr = this.StreamingAdapter.Distributor;
 		//	SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
 		//	bool paused = channel.QuotePump.Paused;
 		//	return paused;
 		//}
 		//public bool PumpingWaitUntilUnpaused(Bars bars, int maxWaitingMillis = 1000) {
-		//	DataDistributor distr = this.StreamingAdapter.DataDistributor;
+		//	Distributor distr = this.StreamingAdapter.Distributor;
 		//	SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
 		//	bool unpaused = channel.QuotePump.WaitUntilUnpaused(maxWaitingMillis);
 		//	return unpaused;
 		//}
 		public bool PumpingWaitUntilPaused(Bars bars, int maxWaitingMillis = 1000) {
-			DataDistributor distr = this.StreamingAdapter.DataDistributor_replacedForLivesim;
-			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
-			bool paused = channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.WaitUntilPaused(maxWaitingMillis);
+			//Distributor distr = this.StreamingAdapter.Distributor_replacedForLivesim;
+			//SymbolScaleStream channel = distr.GetStreamFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
+			SymbolChannel channel = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(bars.Symbol);
+			bool paused = channel.QueueWhenBacktesting_PumpForLiveAndLivesim.WaitUntilPaused(maxWaitingMillis);
 			return paused;
 		}
 
@@ -161,26 +158,28 @@ namespace Sq1.Core.DataFeed {
 
 		public int LivesimStreamingDefault_PumpPause_freezeOtherConsumers_forSameSymbolScale(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
 			string msig = " //LivesimStreamingDefault_PumpPause_freezeOtherConsumers_forSameSymbolScale(" + executorImLivesimming + ")";
-			List<SymbolScaleDistributionChannel> channels = this.StreamingAdapter.DataDistributor_replacedForLivesim
-				.GetDistributionChannels_allScaleIntervals_forSymbol(executorImLivesimming.Bars.Symbol);
 			int channelsPaused = 0;
-			foreach (SymbolScaleDistributionChannel channel in channels) {
-				if (channel.ImQueueNotPump_trueOnlyForBacktest == true ||
-					channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == false) {
-					if (wrongUsagePopup == true) {
-						string msg = "WILL_PAUSE DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
-						Assembler.PopupException(msg + msig);
-					}
-					continue;
+			//List<SymbolScaleStream> channels = this.StreamingAdapter.Distributor_replacedForLivesim
+			//    .GetStreams_allScaleIntervals_forSymbol(executorImLivesimming.Bars.Symbol);
+			//foreach (SymbolScaleStream channel in channels) {
+			SymbolChannel channel_nullUnsafe = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
+			if (channel_nullUnsafe == null) return channelsPaused;		// no charts (including the livesimming one) were subscribed
+
+			if (channel_nullUnsafe.ImQueueNotPump_trueOnlyForBacktest == true ||
+				channel_nullUnsafe.QueueWhenBacktesting_PumpForLiveAndLivesim.HasSeparatePushingThread == false) {
+				if (wrongUsagePopup == true) {
+					string msg = "WILL_PAUSE DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
+					Assembler.PopupException(msg + msig);
 				}
-				if (channel.QuotePump_nullUnsafe.Paused == true) {
-					string msg = "PUMP_ALREADY_PAUSED_BY_ANOTHER_LIVESIM";
-					Assembler.PopupException(msg, null, false);
-					continue;
-				}
-				channel.QuotePump_nullUnsafe.PusherPause();
-				channelsPaused++;
+				return channelsPaused;
 			}
+			if (channel_nullUnsafe.QuotePump_nullUnsafe.Paused == true) {
+				string msg = "PUMP_ALREADY_PAUSED_BY_ANOTHER_LIVESIM";
+				Assembler.PopupException(msg, null, false);
+				return channelsPaused;
+			}
+			channel_nullUnsafe.QuotePump_nullUnsafe.PusherPause_waitUntilPaused();
+			channelsPaused++;
 			return channelsPaused;
 		}
 		public int LivesimStreamingDefault_PumpResume_unfreezeOtherConsumers_forSameSymbolScale(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
@@ -192,25 +191,27 @@ namespace Sq1.Core.DataFeed {
 				return channelsPaused;
 			}
 
-			List<SymbolScaleDistributionChannel> channels = this.StreamingAdapter.DataDistributor_replacedForLivesim
-				.GetDistributionChannels_allScaleIntervals_forSymbol(executorImLivesimming.Bars.Symbol);
-			foreach (SymbolScaleDistributionChannel channel in channels) {
-				if (channel.ImQueueNotPump_trueOnlyForBacktest == true ||
-					channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.HasSeparatePushingThread == false) {
-					if (wrongUsagePopup == true) {
-						string msg = "WILL_UNPAUSE DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
-						Assembler.PopupException(msg + msig, null, false);
-					}
-					continue;
+			//List<SymbolScaleStream> channels = this.StreamingAdapter.Distributor_replacedForLivesim
+			//    .GetStreams_allScaleIntervals_forSymbol(executorImLivesimming.Bars.Symbol);
+			//foreach (SymbolScaleStream channel in channels) {
+			SymbolChannel channel_nullUnsafe = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
+			if (channel_nullUnsafe == null) return channelsPaused;		// no charts (including the livesimming one) were subscribed
+
+			if (channel_nullUnsafe.ImQueueNotPump_trueOnlyForBacktest == true ||
+				channel_nullUnsafe.QueueWhenBacktesting_PumpForLiveAndLivesim.HasSeparatePushingThread == false) {
+				if (wrongUsagePopup == true) {
+					string msg = "WILL_UNPAUSE DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
+					Assembler.PopupException(msg + msig, null, false);
 				}
-				if (channel.QuotePump_nullUnsafe.Paused == false) {
-					string msg = "PUMP_ALREADY_UNPAUSED_BY_ANOTHER_LIVESIM";
-					Assembler.PopupException(msg, null, false);
-					continue;
-				}
-				channel.QuotePump_nullUnsafe.PusherUnpause();
-				channelsPaused++;
+				return channelsPaused;
 			}
+			if (channel_nullUnsafe.QuotePump_nullUnsafe.Paused == false) {
+				string msg = "PUMP_ALREADY_UNPAUSED_BY_ANOTHER_LIVESIM";
+				Assembler.PopupException(msg, null, false);
+				return channelsPaused;
+			}
+			channel_nullUnsafe.QuotePump_nullUnsafe.PusherUnpause_waitUntilUnpaused();
+			channelsPaused++;
 			return channelsPaused;
 		}
 

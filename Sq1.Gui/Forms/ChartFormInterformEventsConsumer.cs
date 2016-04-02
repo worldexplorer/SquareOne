@@ -83,7 +83,7 @@ namespace Sq1.Gui.Forms {
 				//string dataSource_beforeChange		= contextChart.DataSourceName;
 				//string reasonToSubscribeUnsubscribe = "USER_MADE_CHART?_CHANGE_BARS[" + symbol_beforeChange + "@" + dataSource_beforeChange + "]=>[" + e.Symbol + "@" + e.DataSource.Name + "]";
 				//ChartStreamingConsumer	amIsubscribed				= this.chartFormManager.ChartForm.ChartControl.ChartStreamingConsumer;
-				//DataDistributor			hopefullyLiveStreaming		= this.chartFormManager.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim;
+				//Distributor			hopefullyLiveStreaming		= this.chartFormManager.Executor.DataSource_fromBars.StreamingAdapter.Distributor_replacedForLivesim;
 				//bool chartMustBeSubscribedToNewBars = contextChart.DownstreamSubscribed;
 				//if (chartMustBeSubscribedToNewBars) {
 				//	BarScaleInterval		scaleInterval_beforeChange	= contextChart.ScaleInterval;

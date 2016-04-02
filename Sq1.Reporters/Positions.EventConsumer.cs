@@ -31,12 +31,12 @@ namespace Sq1.Reporters {
 					Assembler.PopupException(msg);
 					return;
 				}
-				if (this.positionsAllReversedCached.Count < selected) {
-					string msg = "SELECTED_INDEX_OUT_OF_RANGE positionsAllReversedCached.Count[" + this.positionsAllReversedCached.Count + "] < selected[" + selected + "]";
+				if (this.positionsAll_reversedCached.Count < selected) {
+					string msg = "SELECTED_INDEX_OUT_OF_RANGE positionsAllReversedCached.Count[" + this.positionsAll_reversedCached.Count + "] < selected[" + selected + "]";
 					Assembler.PopupException(msg);
 					return;
 				}
-				Position pos = this.positionsAllReversedCached[selected];
+				Position pos = this.positionsAll_reversedCached[selected];
 				if (pos == null) {
 					string msg = "POSITION_STORED_IN_REVERSED_CACHED_AS_NULL positionsAllReversedCached[" + selected + "]=null";
 					Assembler.PopupException(msg);

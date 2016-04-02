@@ -318,7 +318,7 @@ namespace Sq1.Widgets.CsvImporter {
 			this.barsParsed = new Bars(this.symbolDetectedInCsv, this.scaleIntervalDetectedInCsv, this.csvDataSnapshot.FileSelectedAbsname);
 			//BarsUnscaled barsParsed = new BarsUnscaled(symbol, this.dataSnapshot.FileSelectedAbsname);
 			foreach (CsvBar csvBar in this.csvParsedByFormat) {
-				this.barsParsed.BarCreateAppendBindStatic(csvBar.DateTime, csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume);
+				this.barsParsed.BarStatic_createAppendAttach(csvBar.DateTime, csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume);
 			}
 
 			this.bars_selectRange_flushToGui(new BarDataRange());

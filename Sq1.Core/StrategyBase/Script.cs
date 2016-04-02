@@ -319,5 +319,9 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return ret;
 		}
+
+		public List<Alert> CloseAllOpenPositions_killAllPendingAlerts() {
+			return this.Executor.CloseAllOpenPositions_killAllPendingAlerts();
+		}
 	}
 }

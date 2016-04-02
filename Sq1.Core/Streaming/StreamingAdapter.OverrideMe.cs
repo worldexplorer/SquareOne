@@ -11,7 +11,7 @@ namespace Sq1.Core.Streaming {
 		public virtual void InitializeDataSource_inverse(DataSource dataSource, bool subscribeSolidifier = true) {
 			this.InitializeFromDataSource(dataSource);
 			if (subscribeSolidifier == false) return;
-			this.SolidifierAllSymbolsSubscribe_onAppRestart();
+			this.SolidifierSubscribe_toAllSymbols_ofDataSource_onAppRestart();
 		}
 
 		#region the essence#1 of streaming adapter

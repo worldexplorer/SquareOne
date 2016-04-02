@@ -20,7 +20,7 @@ namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor : IDisposable {
 		#region constructed (my own data)
 		public	string							ReasonToExist				{ get; protected set; }
-		public	ExecutionDataSnapshot			ExecutionDataSnapshot		{ get; protected set; }
+		public	ExecutorDataSnapshot			ExecutionDataSnapshot		{ get; protected set; }
 		public	SystemPerformance				PerformanceAfterBacktest	{ get; protected set; }
 		public	Backtester						BacktesterOrLivesimulator;					//{ get; private set; }
 		public	PositionPrototypeActivator		PositionPrototypeActivator	{ get; protected set; }
@@ -180,7 +180,7 @@ namespace Sq1.Core.StrategyBase {
 
 		public ScriptExecutor(string reasonToExist) {
 			ReasonToExist				= reasonToExist;
-			ExecutionDataSnapshot		= new ExecutionDataSnapshot(this);
+			ExecutionDataSnapshot		= new ExecutorDataSnapshot(this);
 			BacktesterOrLivesimulator	= new Backtester(this);
 			PositionPrototypeActivator	= new PositionPrototypeActivator(this);
 			AlertFactory				= new AlertFactory(this);
@@ -332,7 +332,7 @@ namespace Sq1.Core.StrategyBase {
 		//NOW_INLINE void invokeScriptEvents(Alert alertFilled) {}
 		void removePendingExitAlert(Alert alert, string msig) {
 			string msg = "";
-			ExecutionDataSnapshot snap = alert.Strategy.Script.Executor.ExecutionDataSnapshot;
+			ExecutorDataSnapshot snap = alert.Strategy.Script.Executor.ExecutionDataSnapshot;
 			//this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert);
 			string orderState = (alert.OrderFollowed == null) ? "alert.OrderFollowed=NULL" : alert.OrderFollowed.State.ToString();
 			if (snap.AlertsPending.Contains(alert, this, "RemovePendingExitAlert(WAIT)")) {
@@ -386,7 +386,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 
-		public void SetBars(Bars barsClicked) {
+		public void SetBars(Bars barsClicked, bool subscribeDownstream) {
 			if (barsClicked == null) {
 				string msg = "don't feed Bars=null into the foodchain!";
 				#if DEBUG
@@ -407,8 +407,21 @@ namespace Sq1.Core.StrategyBase {
 				// unfollowing old Bars (so that it'll be only renaming .BAR file); most likely those Bars will be GarbageCollected
 				this.Bars.DataSource.OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull -=
 					new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull);
+				if (this.ChartShadow != null && this.ChartShadow.ChartStreamingConsumer != null) {
+					this.ChartShadow.ChartStreamingConsumer.StreamingUnsubscribe("UNSUBSCRIBING_FROM_OLD_BARS oldBars[" + this.Bars + "]=>newBars[" + barsClicked + "]");
+				} else {
+					string msg = "LOOKS_LIKE_WE_SPAWN_REUSABLE_EXECUTORS_FOR_PARALLEL_CHARTLESS_BACKTESTING";
+					Assembler.PopupException(msg);
+				}
 			}
 			this.Bars = barsClicked;
+			if (this.ChartShadow != null && this.ChartShadow.ChartStreamingConsumer != null && subscribeDownstream) {
+				this.ChartShadow.ChartStreamingConsumer.StreamingSubscribe("SUBSCRIBING_TO_NEW_BARS oldBars[" + this.Bars + "]=>newBars[" + barsClicked + "]");
+			} else {
+				string msg = "LOOKS_LIKE_WE_SPAWN_REUSABLE_EXECUTORS_FOR_PARALLEL_CHARTLESS_BACKTESTING";
+				Assembler.PopupException(msg);
+			}
+
 			if (this.Bars.DataSource == null) {
 				string msg = "BARS_CLONED_FOR_SEQUENCER_DONT_HAVE_DATASOURCE[" + this.Bars.ReasonToExist + "]";
 				Assembler.PopupException(msg);

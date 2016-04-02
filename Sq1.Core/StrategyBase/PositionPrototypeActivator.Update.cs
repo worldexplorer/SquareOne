@@ -124,7 +124,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			string msg = "";
-			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BidOrAsk_forDirection(proto.Symbol, proto.LongShort);
+			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteCurrent(proto.Symbol, proto.LongShort);
 			double newStopLossPrice = proto.OffsetToPrice(newStopLoss_negativeOffset);
 			//switch (proto.StopLossAlertForAnnihilation.MarketLimitStop) {
 			switch (marketLimitStopPlanned) {
@@ -167,7 +167,7 @@ namespace Sq1.Core.StrategyBase {
 					if (proto.StopLossAlert_forMoveAndAnnihilation != null) slDirectionAssumedOrActualIfFilled = proto.StopLossAlert_forMoveAndAnnihilation.Direction;
 					switch (slDirectionAssumedOrActualIfFilled) {
 						case Direction.Sell:
-							double ask = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BestAsk_getForMarketOrder(proto.Symbol);
+							double ask = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBestAsk_notAligned_forMarketOrder_fromQuoteCurrent(proto.Symbol);
 							if (newStopLossPrice > ask) {
 								msg = "NEW_STOP_PRICE_BELOW_ASK_WILL_BE_REJECTED_BY_MARKET"
 									+ " newStopLossPrice[" + newStopLossPrice + "] < Ask[" + ask + "] " + ident2
@@ -175,7 +175,7 @@ namespace Sq1.Core.StrategyBase {
 							}
 							break;
 						case Direction.Cover:
-							double bid = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BestBid_getForMarketOrder(proto.Symbol);
+							double bid = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBestBid_notAligned_forMarketOrder_fromQuoteCurrent(proto.Symbol);
 							if (newStopLossPrice < bid) {
 								msg = "NEW_STOP_PRICE_ABOVE_BID_WILL_BE_REJECTED_BY_MARKET"
 									+ " newStopLossPrice[" + newStopLossPrice + "] > Bid[" + bid + "] " + ident2
@@ -213,8 +213,8 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg1 + msig);
 				throw new Exception(msg1 + msig);
 			}
-			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuote_getForSymbol(proto.Symbol);
-			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BidOrAsk_forDirection(proto.Symbol, proto.LongShort);
+			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(proto.Symbol);
+			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteCurrent(proto.Symbol, proto.LongShort);
 			double newTakeProfitPrice = proto.OffsetToPrice(newTakeProfit_positiveOffset);
 			bool willBeExecutedImmediately = false;
 			string ident = "TakeProfit{old[" + proto.PriceTakeProfit + "]:new[" + newTakeProfitPrice + "]}";

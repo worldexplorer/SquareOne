@@ -176,7 +176,7 @@ namespace Sq1.Core.StrategyBase {
 				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive.ItriggeredFillAtBidOrAsk = alertFilled.BidOrAskWillFillMe;
 			} else {
 				//LIVEISM
-				alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuote_getForSymbol(alertFilled.Symbol);
+				alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(alertFilled.Symbol);
 				alertFilled.QuoteLastWhenThisAlertFilled_deserializable = alertFilled.QuoteLastWhenThisAlertFilled.Clone_asCoreQuote();
 			}
 
@@ -297,11 +297,19 @@ namespace Sq1.Core.StrategyBase {
 							if (proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed == null) {
 								string msg = "StopLossAlert.OrderFollowed is NULL!!! CreateOrdersSubmitToBrokerAdapterInNewThreads() didnt do its job; engaging ManualResetEvent.WaitOne()";
 								this.PopupException(msg);
+
 								Stopwatch waitedForStopLossOrder = new Stopwatch();
 								waitedForStopLossOrder.Start();
-								proto.StopLossAlert_forMoveAndAnnihilation.MreOrderFollowedIsAssignedNow.WaitOne(twoMinutes);
+
+								if (this.BacktesterOrLivesimulator.ImRunningLivesim) {
+									bool unpaused = this.Livesimulator.IsPaused_waitForever_untilUnpaused;
+								} else {
+									proto.StopLossAlert_forMoveAndAnnihilation.MreOrderFollowedIsAssignedNow.WaitOne(twoMinutes);
+								}
+
 								waitedForStopLossOrder.Stop();
 								msg = "waited " + waitedForStopLossOrder.ElapsedMilliseconds + "ms for StopLossAlert.OrderFollowed";
+
 								if (proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed == null) {
 									msg += ": NO_SUCCESS still null!!!";
 									this.PopupException(msg);
@@ -456,7 +464,7 @@ namespace Sq1.Core.StrategyBase {
 			//alertExitClonedStub.Direction = MarketConverter.ExitDirectionFromLongShort(alert.PositionLongShortFromDirection);
 			//// REFACTORED_POSITION_HAS_AN_ALERT_AFTER_ALERTS_CONSTRUCTOR we can exit by TP or SL - position doesn't have an ExitAlert assigned until Position.EntryAlert was filled!!!
 			//alert.PositionAffected.ExitAlertAttach(alertExitClonedStub);
-			alert.PositionAffected.FillExitWith(alert.FilledBar, alert.PriceScript, alert.Qty, 0, 0);
+			alert.PositionAffected.FillExitWith(alert.FilledBar, alert.PriceEmitted, alert.Qty, 0, 0);
 			//alertFilled.FillPositionAffectedEntryOrExitRespectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
 
 			bool absenseInPositionsOpenNowIsAnError = false;

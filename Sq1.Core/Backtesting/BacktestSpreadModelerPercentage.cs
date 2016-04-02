@@ -64,7 +64,7 @@ namespace Sq1.Core.Backtesting {
 			}
 			return spreadAligned;
 		}
-		public override void FillAskBasedOnBid(QuoteGenerated quote) {
+		public override void FillAskBasedOnBid_aligned(QuoteGenerated quote) {
 			string msig = " " + this.GetType().Name + ".GenerateFillBidAskSymmetrically(" + quote.ToString() + ")";
 			SymbolInfo symbolInfo;
 			try {
@@ -88,7 +88,7 @@ namespace Sq1.Core.Backtesting {
 			//base.AlignBidAskToPriceLevel(quote, PriceLevelRoundingMode.RoundUp, spreadAligned);
 			//if (quote.Spread == 0) Debugger.Break();
 		}
-		public override void FillBidBasedOnAsk(QuoteGenerated quote) {
+		public override void FillBidBasedOnAsk_aligned(QuoteGenerated quote) {
 			string msig = " " + this.GetType().Name + ".GenerateFillBidAskSymmetrically(" + quote.ToString() + ")";
 			SymbolInfo symbolInfo;
 			try {

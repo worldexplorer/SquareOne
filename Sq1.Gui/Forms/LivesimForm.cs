@@ -48,7 +48,7 @@ namespace Sq1.Gui.Forms {
 				//livesimStreaming.QuotePushedToAllDistributionChannels += new EventHandler<QuoteEventArgs>(this.livesimulator_QuotePushedToDistributor);
 				//v2
 				//Bars bars = this.chartFormManager.Executor.Bars;
-				//SymbolScaleDistributionChannel channel = livesimStreaming.DataDistributor.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
+				//SymbolScaleDistributionChannel channel = livesimStreaming.Distributor.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
 				//channel.QuoteSyncPushedToAllConsumers += new EventHandler<QuoteEventArgs>(this.livesimulator_QuotePushedToDistributor);
 				//v3
 				// ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint

@@ -23,7 +23,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public	bool	HasParentBars		{ get { return this.ParentBars != null; } }
 		[JsonProperty]	public	string	ParentBarsIdent		{ get {
 				if (this.HasParentBars == false) return "NO_PARENT_BARS";
-				StringBuilder sb = new StringBuilder("StaticBar");
+				StringBuilder sb = new StringBuilder("");
 				//if (this.ParentBarsIndex <  this.ParentBars.Count - 1) ret = this.ParentBarsIndex.ToString();
 				//if (this.ParentBarsIndex == this.ParentBars.Count - 1) ret = "LastStaticBar";// +this.ParentBarsIndex;
 				//if (this.ParentBarsIndex == this.ParentBars.Count) ret = "StreamingBar";// +this.ParentBarsIndex;
@@ -34,7 +34,7 @@ namespace Sq1.Core.DataTypes {
 				sb.Append("#");
 				sb.Append(this.ParentBarsIndex);
 				sb.Append("/");
-				sb.Append((this.ParentBars.Count-1));
+				sb.Append(this.ParentBars.Count-1);
 				return sb.ToString();
 			} }
 		// Perst deserializer invokes default ctor()
@@ -371,7 +371,7 @@ namespace Sq1.Core.DataTypes {
 			return dateTime;
 		}
 		#endregion
-		public void MergeExpandHLCVwhileCompressingManyBarsToOne(Bar bar, bool addVolumeWeAreCompressingStaticBarsToLargerScaleInterval = true) {
+		public void MergeExpandHLCV_whileCompressingManyBarsToOne(Bar bar, bool addVolumeWeAreCompressingStaticBarsToLargerScaleInterval = true) {
 			if (bar.High > this.High) this.High = bar.High;
 			if (bar.Low < this.Low) this.Low = bar.Low;
 			this.Close = bar.Close;
@@ -381,7 +381,7 @@ namespace Sq1.Core.DataTypes {
 				this.Volume = bar.Volume;
 			}
 		}
-		public void MergeExpandHLCVforStreamingBarUnattached(Quote quoteClone) {
+		public void MergeExpandHLCV_forStreamingBarUnattached(Quote quoteClone) {
 			//if (quoteClone.PriceLastDeal > this.High) this.High = quoteClone.PriceLastDeal;
 			//if (quoteClone.PriceLastDeal < this.Low) this.Low = quoteClone.PriceLastDeal;
 			if (quoteClone.Ask > this.High) this.High = quoteClone.Ask;
@@ -391,6 +391,10 @@ namespace Sq1.Core.DataTypes {
 					quoteClone + "] => " + this.ToString();
 			}
 			this.Close = quoteClone.TradedPrice;
+			if (quoteClone.Size < 0) {
+				string msg = "WHATEVER_QUOTE_YOU_CREATE_IN_STREAMING__MUST_HAVE_NON_DEFAULT_SIZE quoteClone[" + quoteClone + "]";
+				Assembler.PopupException(msg);
+			}
 			this.Volume += quoteClone.Size;
 		}
 		public override string ToString() {

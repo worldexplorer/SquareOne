@@ -10,7 +10,7 @@ namespace Sq1.Core.Backtesting {
 	public sealed class QuoteGenerated : Quote {
 		[JsonIgnore]	public Bar			ParentBarSimulated;
 		[JsonIgnore]	public bool			HasParentBarSimulated			{ get { return this.ParentBarSimulated != null; } }
-		public new string	ParentBarIdent					{ get { return (this.HasParentBarSimulated) ? this.ParentBarSimulated.ParentBarsIdent : "NO_PARENT_BAR_SIMULATED"; } }
+						public new string	ParentBarIdent					{ get { return (this.HasParentBarSimulated) ? this.ParentBarSimulated.ParentBarsIdent : "NO_PARENT_BAR_SIMULATED"; } }
 		[JsonIgnore]	public double		SpreadAligned					{ get {
 				if (this.ParentBarSimulated == null) {
 					return base.Spread;
@@ -27,43 +27,58 @@ namespace Sq1.Core.Backtesting {
 			} }
 		[JsonIgnore]	public bool			WentThroughStreamingToScript;
 		
-		public QuoteGenerated(DateTime localTimeEqualsToServerTimeForGenerated) : base(localTimeEqualsToServerTimeForGenerated) {}
+		//public QuoteGenerated(DateTime localTimeEqualsToServerTimeForGenerated) : base(localTimeEqualsToServerTimeForGenerated) {}
+		// why in .NET ctors() are not inherited??? even the public ones!
+		public QuoteGenerated(DateTime serverTime,
+						string symbol, long absno_perSymbol_perStreamingAdapter = -1,
+						double bid = double.NaN, double ask = double.NaN, double size = -1,
+						BidOrAsk tradedAt = BidOrAsk.UNKNOWN) : base
+							 (serverTime, serverTime,
+						symbol, absno_perSymbol_perStreamingAdapter,
+						bid, ask, size,
+						tradedAt) {}
+
 
 		// only for DDE-transformed QuoteGenerated => QuoteQuik, in the livesim to 
-		public QuoteGenerated(Quote quote, Bar parentBarSimulated) : base() {
-			this.Symbol					= quote.Symbol;
+		public QuoteGenerated(Quote quote, Bar parentBarSimulated)
+						: this(quote.ServerTime.AddMilliseconds(911),
+								quote.Symbol, ++quote.AbsnoPerSymbol,
+								quote.Bid, quote.Ask, quote.Size,
+								quote.TradedAt) {
+			//this.Symbol					= quote.Symbol;
 			this.SymbolClass			= quote.SymbolClass;
 			this.Source					= "DERIVED_FROM_" + quote.ToStringShort() + " " + quote.Source;
-			this.ServerTime				= quote.ServerTime.AddMilliseconds(911);
-			this.LocalTimeCreated		= quote.LocalTimeCreated.AddMilliseconds(911);
-			this.TradedAt				= quote.TradedAt;
+			//this.ServerTime				= quote.ServerTime.AddMilliseconds(911);
+			//this.LocalTimeCreated		= quote.LocalTimeCreated.AddMilliseconds(911);
+			//this.TradedAt				= quote.TradedAt;
 			this.ItriggeredFillAtBidOrAsk = quote.ItriggeredFillAtBidOrAsk;
-			this.Bid					= quote.Bid;
-			this.Ask					= quote.Ask;
-			this.Size					= quote.Size;
+			//this.Bid					= quote.Bid;
+			//this.Ask					= quote.Ask;
+			//this.Size					= quote.Size;
 			this.IntraBarSerno			= quote.IntraBarSerno + Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill;
-			this.AbsnoPerSymbol			= ++quote.AbsnoPerSymbol;		// HACK_TO_ALLOW_LIVESIM_BROKER_TO_FILL_PENDING_ALERTS
+			//this.AbsnoPerSymbol			= ++quote.AbsnoPerSymbol;		// HACK_TO_ALLOW_LIVESIM_BROKER_TO_FILL_PENDING_ALERTS
 			this.ParentBarSimulated		= parentBarSimulated;	// was there before I noticed "injected quotes don't seem to have ParentBarSimulated"
 			this.ParentBarStreaming		= quote.ParentBarStreaming;	// this may fix it injected quotes don't seem to have ParentBarSimulated
 		}
 
 		#region SORRY_FOR_THE_MESS__I_NEED_TO_DERIVE_IDENTICAL_ONLY_FOR_GENERATED__IF_YOU_NEED_IT_IN_BASE_QUOTE_MOVE_IT_THERE
 		public QuoteGenerated DeriveIdenticalButFresh() {
-			QuoteGenerated identicalButFresh = new QuoteGenerated(this.ServerTime);
-			identicalButFresh.Symbol				= this.Symbol;
+			//QuoteGenerated identicalButFresh = new QuoteGenerated(this.ServerTime);
+			QuoteGenerated identicalButFresh = (QuoteGenerated) this.MemberwiseClone();
+			//identicalButFresh.Symbol				= this.Symbol;
 			identicalButFresh.SymbolClass			= this.SymbolClass;
 			identicalButFresh.Source				= "DERIVED_FROM_" + this.ToStringShort() + " " + this.Source;
 			identicalButFresh.ServerTime			= this.ServerTime.AddMilliseconds(911);
-			identicalButFresh.LocalTimeCreated		= this.LocalTimeCreated.AddMilliseconds(911);
-			identicalButFresh.TradedAt				= this.TradedAt;
-			identicalButFresh.ItriggeredFillAtBidOrAsk = this.ItriggeredFillAtBidOrAsk;
-			identicalButFresh.Bid					= this.Bid;
-			identicalButFresh.Ask					= this.Ask;
-			identicalButFresh.Size					= this.Size;
+			identicalButFresh.LocalTime				= this.LocalTime.AddMilliseconds(911);
+			//identicalButFresh.TradedAt				= this.TradedAt;
+			//identicalButFresh.ItriggeredFillAtBidOrAsk = this.ItriggeredFillAtBidOrAsk;
+			//identicalButFresh.Bid					= this.Bid;
+			//identicalButFresh.Ask					= this.Ask;
+			//identicalButFresh.Size					= this.Size;
 			identicalButFresh.IntraBarSerno			= this.IntraBarSerno + Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill;
 			identicalButFresh.AbsnoPerSymbol		= ++this.AbsnoPerSymbol;		// HACK_TO_ALLOW_LIVESIM_BROKER_TO_FILL_PENDING_ALERTS
-			identicalButFresh.ParentBarSimulated = this.ParentBarSimulated;	// was there before I noticed "injected quotes don't seem to have ParentBarSimulated"
-			identicalButFresh.ParentBarStreaming	= this.ParentBarStreaming;	// this may fix it injected quotes don't seem to have ParentBarSimulated
+			//identicalButFresh.ParentBarSimulated = this.ParentBarSimulated;	// was there before I noticed "injected quotes don't seem to have ParentBarSimulated"
+			//identicalButFresh.ParentBarStreaming	= this.ParentBarStreaming;	// this may fix it injected quotes don't seem to have ParentBarSimulated
 			return identicalButFresh;
 		}
 		#endregion
@@ -118,7 +133,7 @@ namespace Sq1.Core.Backtesting {
 				sb.Append("]");
 			}
 			sb.Append("[");
-			sb.Append(LocalTimeCreated.ToString("HH:mm:ss.fff"));
+			sb.Append(LocalTime.ToString("HH:mm:ss.fff"));
 			sb.Append("]LOCAL");
 			if (string.IsNullOrEmpty(this.Source) == false) {
 				sb.Append(" ");

@@ -68,17 +68,20 @@ namespace Sq1.Widgets.Execution {
 				this.olvcKilledByGUID
 				});
 			columnsByFilter.Add(this.mniShowPrice, new List<OLVColumn>() {
-				this.olvcPriceScript,
 				this.olvcSpreadSide,
-				this.olvcPriceScriptRequested,
-				this.olvcPriceFilled
+				this.olvcPriceScript,
+				this.olvcPriceCurBidOrAsk,
+				this.olvcSlippageApplied,
+				this.olvcPriceRequested_withSlippageApplied,
+				this.olvcPriceFilled,
+				this.olvcSlippageFilledMinusApplied,
+				this.olvcPriceDeposited_DollarForPoint
 				});
 			columnsByFilter.Add(this.mniShowQty, new List<OLVColumn>() {
 				this.olvcQtyRequested,
 				this.olvcQtyFilled
 				});
 			columnsByFilter.Add(this.mniShowExchange, new List<OLVColumn>() {
-				this.olvcPriceDeposited,
 				this.olvcSernoSession,
 				this.olvcSernoExchange,
 				this.olvcGUID,
@@ -106,8 +109,8 @@ namespace Sq1.Widgets.Execution {
 			
 			try {
 				this.SuspendLayout();
-				this.mniToggleMessagesPaneSplitHorizontally.Checked = this.DataSnapshot.ToggleMessagePaneSplittedHorizontally;
-				Orientation newOrientation = this.DataSnapshot.ToggleMessagePaneSplittedHorizontally ? Orientation.Horizontal : Orientation.Vertical;			
+				this.mniToggleMessagesPaneSplitHorizontally.Checked = this.DataSnapshot.ShowMessagePaneSplittedHorizontally;
+				Orientation newOrientation = this.DataSnapshot.ShowMessagePaneSplittedHorizontally ? Orientation.Horizontal : Orientation.Vertical;			
 				try {
 					if (this.splitContainerMessagePane.Orientation != newOrientation) {
 						this.splitContainerMessagePane.Orientation =  newOrientation;
@@ -117,7 +120,7 @@ namespace Sq1.Widgets.Execution {
 					Assembler.PopupException(msg, ex);
 				}
 				
-				this.mniToggleMessagesPane.Checked = this.DataSnapshot.ToggleMessagesPane;
+				this.mniToggleMessagesPane.Checked = this.DataSnapshot.ShowMessagesPane;
 				this.splitContainerMessagePane.Panel2Collapsed = !this.mniToggleMessagesPane.Checked;
 				if (this.Width == 0) {
 					DockContentImproved executionForm = base.Parent as DockContentImproved;
@@ -163,9 +166,9 @@ namespace Sq1.Widgets.Execution {
 				this.ResumeLayout(true);
 			}
 			
-			this.mniToggleBrokerTime		.Checked = this.DataSnapshot.ToggleBrokerTime;
-			this.mniToggleCompletedOrders	.Checked = this.DataSnapshot.ToggleCompletedOrders;
-			this.mniToggleSyncWithChart		.Checked = this.DataSnapshot.ToggleSingleClickSyncWithChart;
+			this.mniToggleBrokerTime		.Checked = this.DataSnapshot.ShowBrokerTime;
+			this.mniToggleCompletedOrders	.Checked = this.DataSnapshot.ShowCompletedOrders;
+			this.mniToggleSyncWithChart		.Checked = this.DataSnapshot.SingleClickSyncWithChart;
 			
 			this.DataSnapshot.FirstRowShouldStaySelected = true;
 			this.RebuildAllTree_focusOnTopmost();
@@ -180,7 +183,7 @@ namespace Sq1.Widgets.Execution {
 				Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded);
 			this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
 			if (createdNewFile) {
-				this.DataSnapshot.ToggleMessagePaneSplittedHorizontally = (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) ? true : false;
+				this.DataSnapshot.ShowMessagePaneSplittedHorizontally = (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) ? true : false;
 				//this.DataSnapshot.MessagePaneSplitDistanceHorizontal = this.splitContainerMessagePane.SplitterDistance;
 				//int newDistance = this.splitContainerMessagePane.SplitterDistance - this.splitContainerMessagePane.SplitterWidth;
 				//this.DataSnapshot.MessagePaneSplitDistanceVertical = newDistance;

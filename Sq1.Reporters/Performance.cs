@@ -29,7 +29,7 @@ namespace Sq1.Reporters {
 			this.objectListViewCustomize();
 			fontCache = new FontCache(this.Font);
 		}
-		public override void BuildFullOnBacktestFinished() {
+		public override void BuildFull_onBacktestFinished() {
 			this.propagatePerformanceReport();
 		}
 		void propagatePerformanceReport() {
@@ -189,11 +189,11 @@ namespace Sq1.Reporters {
 //			if (colorFore	!= Color.Empty) subLvi.ForeColor = colorFore;
 			lvi.SubItems.Add(subLvi);
 		}
-		public override object CreateSnapshotToStoreInScriptContext() {
+		public override object CreateSnapshot_toStore_inScriptContext() {
 			return null;
 		}
 		double lastKnownCashAvailable = -1;
-		public override void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
+		public override void BuildIncremental_onBrokerFilled_alertsOpening_forPositions_step1of3(ReporterPokeUnit pokeUnit) {
 			if (base.SystemPerformance == null) {
 				string msg = "YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES";
 				Assembler.PopupException(msg, null, false);
@@ -203,7 +203,7 @@ namespace Sq1.Reporters {
 			}
 			this.propagatePerformanceReport();
 		}
-		public override void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
+		public override void BuildIncremental_onPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
 			if (base.SystemPerformance == null) {
 				string msg = "YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES";
 				Assembler.PopupException(msg);
@@ -213,7 +213,7 @@ namespace Sq1.Reporters {
 			}
 			this.propagatePerformanceReport();
 		}
-		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
+		public override void BuildIncremental_updateOpenPositions_dueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
 			if (base.SystemPerformance == null) {
 				string msg = "YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES__QUOTES_PUMP_SHOULD_BE_UNPAUSED_AFTER_BACKTEST_COMPLETES";
 				Assembler.PopupException(msg);

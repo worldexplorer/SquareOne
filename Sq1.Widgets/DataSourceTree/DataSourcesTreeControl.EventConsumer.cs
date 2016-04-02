@@ -85,7 +85,9 @@ namespace Sq1.Widgets.DataSourcesTree {
 				this.mniltbSymbolAdd		.Visible = true;
 				this.toolStripSeparator1	.Visible = true;
 
-				this.mniDataSourceBrief		.Text = "DataSource [" + this.DataSourceSelected.Name + "][" + this.DataSourceSelected.ScaleInterval + "], [" + this.DataSourceSelected.Symbols.Count + "]Symbols";
+				if (this.DataSourceSelected == null) return;
+				this.mniDataSourceBrief		.Text = "DataSource [" + this.DataSourceSelected.Name + "]"
+						+ "[" + this.DataSourceSelected.ScaleInterval + "], [" + this.DataSourceSelected.Symbols.Count + "]Symbols";
 				this.mniDataSourceEdit		.Enabled = (subscribersPolled.DoNotDeleteItsUsedElsewhere == false);
 				this.mniDataSourceEdit		.Text = "Edit [" + this.DataSourceSelected.Name + "] DataSource";
 				this.mniltbDataSourceRename	.TextLeft = "Rename [" + this.DataSourceSelected.Name + "] to";
@@ -314,7 +316,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// literally: create, add, make it visible, emulate a click on the newborn, popup editor 
 			var dataSourceNewborn = new DataSource(newDataSourceName);
 			dataSourceNewborn.Initialize(this.dataSourceRepository.AbsPath, Assembler.InstanceInitialized.OrderProcessor);
-			this.dataSourceRepository.ItemAdd(dataSourceNewborn, this, true);
+			this.dataSourceRepository.ItemAdd(dataSourceNewborn, this);
 			// all the rest was already done in dataSourceRepository.ItemAdd() => dataSourceRepository_OnDataSourceAdded(),
 //			this.populateDataSourcesIntoTreeListView();
 //			this.tree.EnsureModelVisible(foundWithSameName);

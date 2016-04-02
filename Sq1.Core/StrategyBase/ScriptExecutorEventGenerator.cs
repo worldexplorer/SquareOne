@@ -46,7 +46,7 @@ namespace Sq1.Core.StrategyBase {
 			try {
 				this.OnBacktesterContextRestoredAfterExecutingAllBars_step4of4(this, new QuoteEventArgs(quote));
 			} catch (Exception e) {
-				string msg = "EVENT_CONSUMER(USED_ONLY_FOR_LIVE_SIMULATOR)_THROWN //DataDistributor.RaiseQuotePushedToDistributor(" + quote + ")";
+				string msg = "EVENT_CONSUMER(USED_ONLY_FOR_LIVE_SIMULATOR)_THROWN //Distributor.RaiseQuotePushedToDistributor(" + quote + ")";
 				Assembler.PopupException(msg, e);
 			}
 		}

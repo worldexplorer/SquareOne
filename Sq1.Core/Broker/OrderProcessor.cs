@@ -40,7 +40,7 @@ namespace Sq1.Core.Broker {
 				errormsg += "Shares<=0 for positionShouldBeFilled[" + positionShouldBeFilled + "]; skipping PositionClose ";
 				order.SetState_localTimeNow(OrderState.IRefuseToCloseUnfilledEntry);
 			}
-			if (positionShouldBeFilled.EntryFilledPrice <= 0) {
+			if (positionShouldBeFilled.EntryFilled_price <= 0) {
 				errormsg += "EntryPrice<=0 for positionShouldBeFilled[" + positionShouldBeFilled + "]; skipping PositionClose ";
 				order.SetState_localTimeNow(OrderState.IRefuseToCloseUnfilledEntry);
 			}
@@ -78,7 +78,7 @@ namespace Sq1.Core.Broker {
 		Order createOrder_propagateToGui_fromAlert(Alert alert, bool setStatusSubmitting, bool emittedByScript) {
 			Order newborn = new Order(alert, emittedByScript, false);
 			try {
-				newborn.Alert.DataSource.BrokerAdapter.Order_modifyOrderType_priceRequesting_accordingToMarketOrderAs(newborn);
+				newborn.Alert.DataSource_fromBars.BrokerAdapter.Order_modifyOrderType_priceRequesting_accordingToMarketOrderAs(newborn);
 			} catch (Exception e) {
 				string msg = "hoping that MarketOrderAs.MarketMinMax influenced order.Alert.MarketLimitStop["
 					+ newborn.Alert.MarketLimitStop + "]=MarketLimitStop.Limit for further match; PREV=" + newborn.LastMessage;
@@ -218,6 +218,7 @@ namespace Sq1.Core.Broker {
 					string msg_killer = "orderKiller[" + killerOrder.SernoExchange + "]=>[" + OrderState.KillerDone + "] <= orderVictim[" + victimOrder.SernoExchange + "][" + victimOrder.State + "]";
 					OrderStateMessage omg_done_killer = new OrderStateMessage(killerOrder, OrderState.KillerDone, msg_killer + " //postProcess_victimOrder()");
 					this.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(omg_done_killer);
+					this.BrokerCallback_pendingKilled_withKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(victimOrder, msg_killer);
 					break;
 
 				default:
@@ -272,14 +273,14 @@ namespace Sq1.Core.Broker {
 				case OrderState.FilledPartially:
 					double slippageByFact = 0;
 					// you should save it to SlippageEffective! calc "implied" slippage from executed price, instead of assumed for LimitCrossMarket
-					if (order.SlippageFill == 0
+					if (order.SlippageApplied == 0
 						// && order.Alert.MarketLimitStop == MarketLimitStop.Market
 						// && order.Alert.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker
 							) {
 						if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) {
-							slippageByFact = order.PriceFill - order.CurrentBid;
+							slippageByFact = order.PriceFilled - order.CurrentBid;
 						} else {
-							slippageByFact = order.PriceFill - order.CurrentAsk;
+							slippageByFact = order.PriceFilled - order.CurrentAsk;
 						}
 					}
 
@@ -292,7 +293,7 @@ namespace Sq1.Core.Broker {
 					this.OPPsequencer.OrderFilled_unlockSequence_submitOpening(order);
 					try {
 						order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptNonReenterably(order.Alert, null,
-							order.PriceFill, order.QtyFill, order.SlippageFill, order.CommissionFill);
+							order.PriceFilled, order.QtyFill, order.SlippageFilled, order.CommissionFill);
 					} catch (Exception ex) {
 						string msg3 = "PostProcessOrderState caught from CallbackAlertFilledMoveAroundInvokeScript() ";
 						Assembler.PopupException(msg3 + msig, ex);
@@ -310,7 +311,7 @@ namespace Sq1.Core.Broker {
 				case OrderState.ErrorSubmittingOrder:
 				case OrderState.ErrorSlippageCalc:
 					Assembler.PopupException("PostProcess(): order.PriceFill=0 " + msig);
-					order.PriceFill = 0;
+					order.PriceFilled = 0;
 					//NEVER order.PricePaid = 0;
 					break;
 
@@ -338,7 +339,7 @@ namespace Sq1.Core.Broker {
 					}
 			
 					Assembler.PopupException("PostProcess(): order.PriceFill=0 " + msig, null, false);
-					order.PriceFill = 0;
+					order.PriceFilled = 0;
 					//NEVER order.PricePaid = 0;
 
 					if (order.IsEmergencyClose) {

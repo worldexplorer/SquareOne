@@ -7,7 +7,7 @@ using Sq1.Core.Backtesting;
 using System.Collections.Generic;
 
 namespace Sq1.Core.Execution {
-	public partial class ExecutionDataSnapshot {
+	public partial class ExecutorDataSnapshot {
 				ScriptExecutor					executor;
 				object 							addingSynchronouslyToAlertsMasterPendingNew;
 				object positionsMasterLock;
@@ -25,7 +25,7 @@ namespace Sq1.Core.Execution {
 		public	PositionList					PositionsOpenNow			{ get; private set; }
 
 
-		public ExecutionDataSnapshot(ScriptExecutor strategyExecutor) {
+		public ExecutorDataSnapshot(ScriptExecutor strategyExecutor) {
 			this.executor						= strategyExecutor;
 			addingSynchronouslyToAlertsMasterPendingNew					= new object();
 			positionsMasterLock					= new object();

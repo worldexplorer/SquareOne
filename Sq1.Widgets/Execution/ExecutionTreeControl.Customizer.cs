@@ -81,7 +81,7 @@ namespace Sq1.Widgets.Execution {
 						? order.Alert.QuoteCreatedThisAlertServerTime : order.CreatedBrokerTime;
 				} else {
 					if (order.Alert.Bars != null) {
-						orderCreated = order.Alert.Bars.MarketInfo.ConvertServerTimeToLocal(order.CreatedBrokerTime);
+						orderCreated = order.Alert.Bars.MarketInfo.Convert_serverTime_toLocalTime(order.CreatedBrokerTime);
 					} else {
 						orderCreated = order.CreatedBrokerTime;
 					}
@@ -98,11 +98,11 @@ namespace Sq1.Widgets.Execution {
 				if (order == null) return "olvcDirection.AspectGetter: order=null";
 				return order.IsKiller ? "KILLER" : order.Alert.Direction.ToString();
 			};
-			this.olvcDirection.ImageGetter = delegate(object o) {
-				var order = o as Order;
-				if (order == null) return "olvcDirection.ImageGetter: order=null";
-				return (int)order.Alert.Direction - 1;
-			};
+			//this.olvcDirection.ImageGetter = delegate(object o) {
+			//    var order = o as Order;
+			//    if (order == null) return "olvcDirection.ImageGetter: order=null";
+			//    return (int)order.Alert.Direction - 1;
+			//};
 			this.olvcOrderType.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcOrderType.AspectGetter: order=null";
@@ -118,20 +118,35 @@ namespace Sq1.Widgets.Execution {
 				if (order == null) return "olvcPriceScript.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.Alert.PriceScript.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
-			this.olvcSlippage.AspectGetter = delegate(object o) {
+			this.olvcPriceCurBidOrAsk.AspectGetter = delegate(object o) {
+				var order = o as Order;
+				if (order == null) return "olvcPriceCurBidOrAsk.AspectGetter: order=null";
+				return order.IsKiller ? "" : order.PriceCurBidOrAsk.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
+			};
+			this.olvcSlippageApplied.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcSlippage.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.SlippageFill.ToString();
+				return order.IsKiller ? "" : order.SlippageApplied.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
-			this.olvcPriceScriptRequested.AspectGetter = delegate(object o) {
+			this.olvcPriceRequested_withSlippageApplied.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "olvcPriceScriptRequested.AspectGetter: order=null";
+				if (order == null) return "olvcPriceRequested_withSlippageApplied.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.PriceRequested.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
 			this.olvcPriceFilled.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcPriceFilled.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.PriceFill.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
+				return order.IsKiller ? "" : order.PriceFilled.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
+			};
+			this.olvcSlippageFilledMinusApplied.AspectGetter = delegate(object o) {
+				var order = o as Order;
+				if (order == null) return "olvcSlippageFilledMinusApplied.AspectGetter: order=null";
+				return order.IsKiller ? "" : order.SlippageApplied.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
+			};
+			this.olvcCommission.AspectGetter = delegate(object o) {
+				var order = o as Order;
+				if (order == null) return "olvcCommission.AspectGetter: order=null";
+				return order.IsKiller ? "" : order.CommissionFill.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
 			this.olvcStateTime.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -153,7 +168,7 @@ namespace Sq1.Widgets.Execution {
 //				return (order.ExpectingCallbackFromBroker) ? this.fontBold : this.fontNormal;
 //			};
 			
-			this.olvcPriceDeposited.AspectGetter = delegate(object o) {
+			this.olvcPriceDeposited_DollarForPoint.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcPriceDeposited.AspectGetter: order=null";
 				return (order.QtyFill == 0) ? "0" : order.Alert.PriceDeposited.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
@@ -161,7 +176,7 @@ namespace Sq1.Widgets.Execution {
 			this.olvcQtyRequested.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcQtyRequested.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.QtyRequested.ToString();
+				return order.IsKiller ? "" : order.Qty.ToString();
 			};
 			this.olvcQtyFilled.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -229,12 +244,12 @@ namespace Sq1.Widgets.Execution {
 		string formatOrderPriceSpreadSide(Order order, int pricingDecimalForSymbol) {
 			string ret = "";
 			switch (order.SpreadSide) {
-				case OrderSpreadSide.AskCrossed:
-				case OrderSpreadSide.AskTidal:
+				case SpreadSide.AskCrossed:
+				case SpreadSide.AskTidal:
 					ret = order.CurrentAsk.ToString("N" + pricingDecimalForSymbol) + " " + order.SpreadSide;
 					break;
-				case OrderSpreadSide.BidCrossed:
-				case OrderSpreadSide.BidTidal:
+				case SpreadSide.BidCrossed:
+				case SpreadSide.BidTidal:
 					ret = order.CurrentBid.ToString("N" + pricingDecimalForSymbol) + " " + order.SpreadSide;
 					break;
 				default:

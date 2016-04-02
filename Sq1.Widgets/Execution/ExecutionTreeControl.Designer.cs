@@ -29,10 +29,12 @@ namespace Sq1.Widgets.Execution {
 			this.olvcOrderType = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcSpreadSide = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcPriceScript = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcSlippage = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcPriceScriptRequested = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcPriceCurBidOrAsk = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcSlippageApplied = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcPriceRequested_withSlippageApplied = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcPriceFilled = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcPriceDeposited = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcSlippageFilledMinusApplied = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcPriceDeposited_DollarForPoint = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcQtyRequested = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcQtyFilled = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcSernoSession = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -85,6 +87,7 @@ namespace Sq1.Widgets.Execution {
 			this.olvcMessageState = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMessageText = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.splitContainerMessagePane = new System.Windows.Forms.SplitContainer();
+			this.olvcCommission = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			((System.ComponentModel.ISupportInitialize)(this.OlvOrdersTree)).BeginInit();
 			this.ctxOrder.SuspendLayout();
 			this.ctxColumnsGrouped.SuspendLayout();
@@ -112,12 +115,15 @@ namespace Sq1.Widgets.Execution {
 			this.OlvOrdersTree.AllColumns.Add(this.olvcOrderType);
 			this.OlvOrdersTree.AllColumns.Add(this.olvcSpreadSide);
 			this.OlvOrdersTree.AllColumns.Add(this.olvcPriceScript);
-			this.OlvOrdersTree.AllColumns.Add(this.olvcSlippage);
-			this.OlvOrdersTree.AllColumns.Add(this.olvcPriceScriptRequested);
+			this.OlvOrdersTree.AllColumns.Add(this.olvcPriceCurBidOrAsk);
+			this.OlvOrdersTree.AllColumns.Add(this.olvcSlippageApplied);
+			this.OlvOrdersTree.AllColumns.Add(this.olvcPriceRequested_withSlippageApplied);
 			this.OlvOrdersTree.AllColumns.Add(this.olvcPriceFilled);
-			this.OlvOrdersTree.AllColumns.Add(this.olvcPriceDeposited);
+			this.OlvOrdersTree.AllColumns.Add(this.olvcSlippageFilledMinusApplied);
+			this.OlvOrdersTree.AllColumns.Add(this.olvcPriceDeposited_DollarForPoint);
 			this.OlvOrdersTree.AllColumns.Add(this.olvcQtyRequested);
 			this.OlvOrdersTree.AllColumns.Add(this.olvcQtyFilled);
+			this.OlvOrdersTree.AllColumns.Add(this.olvcCommission);
 			this.OlvOrdersTree.AllColumns.Add(this.olvcSernoSession);
 			this.OlvOrdersTree.AllColumns.Add(this.olvcSernoExchange);
 			this.OlvOrdersTree.AllColumns.Add(this.olvcStrategyName);
@@ -144,12 +150,15 @@ namespace Sq1.Widgets.Execution {
             this.olvcOrderType,
             this.olvcSpreadSide,
             this.olvcPriceScript,
-            this.olvcSlippage,
-            this.olvcPriceScriptRequested,
+            this.olvcPriceCurBidOrAsk,
+            this.olvcSlippageApplied,
+            this.olvcPriceRequested_withSlippageApplied,
             this.olvcPriceFilled,
-            this.olvcPriceDeposited,
+            this.olvcSlippageFilledMinusApplied,
+            this.olvcPriceDeposited_DollarForPoint,
             this.olvcQtyRequested,
             this.olvcQtyFilled,
+            this.olvcCommission,
             this.olvcSernoSession,
             this.olvcSernoExchange,
             this.olvcStrategyName,
@@ -223,7 +232,7 @@ namespace Sq1.Widgets.Execution {
 			// olvcState
 			// 
 			this.olvcState.Text = "OrderState";
-			this.olvcState.Width = 111;
+			this.olvcState.Width = 120;
 			// 
 			// olvcStateTime
 			// 
@@ -235,7 +244,7 @@ namespace Sq1.Widgets.Execution {
 			this.olvcBarNum.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcBarNum.Text = "#Bar";
 			this.olvcBarNum.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcBarNum.Width = 52;
+			this.olvcBarNum.Width = 40;
 			// 
 			// olvcOrderCreated
 			// 
@@ -269,19 +278,25 @@ namespace Sq1.Widgets.Execution {
 			this.olvcPriceScript.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcPriceScript.Width = 62;
 			// 
-			// olvcSlippage
+			// olvcPriceCurBidOrAsk
 			// 
-			this.olvcSlippage.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcSlippage.Text = "Slippage";
-			this.olvcSlippage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcSlippage.Width = 30;
+			this.olvcPriceCurBidOrAsk.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcPriceCurBidOrAsk.Text = "Bid/Ask";
+			this.olvcPriceCurBidOrAsk.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
-			// olvcPriceScriptRequested
+			// olvcSlippageApplied
 			// 
-			this.olvcPriceScriptRequested.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcPriceScriptRequested.Text = "$Requested";
-			this.olvcPriceScriptRequested.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcPriceScriptRequested.Width = 62;
+			this.olvcSlippageApplied.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcSlippageApplied.Text = "SlippageApplied";
+			this.olvcSlippageApplied.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcSlippageApplied.Width = 30;
+			// 
+			// olvcPriceRequested_withSlippageApplied
+			// 
+			this.olvcPriceRequested_withSlippageApplied.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcPriceRequested_withSlippageApplied.Text = "$Requested";
+			this.olvcPriceRequested_withSlippageApplied.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcPriceRequested_withSlippageApplied.Width = 62;
 			// 
 			// olvcPriceFilled
 			// 
@@ -290,12 +305,19 @@ namespace Sq1.Widgets.Execution {
 			this.olvcPriceFilled.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcPriceFilled.Width = 62;
 			// 
-			// olvcPriceDeposited
+			// olvcSlippageFilledMinusApplied
 			// 
-			this.olvcPriceDeposited.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcPriceDeposited.Text = "$Deposited";
-			this.olvcPriceDeposited.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcPriceDeposited.Width = 62;
+			this.olvcSlippageFilledMinusApplied.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcSlippageFilledMinusApplied.Text = "SlippageDifference";
+			this.olvcSlippageFilledMinusApplied.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcSlippageFilledMinusApplied.Width = 30;
+			// 
+			// olvcPriceDeposited_DollarForPoint
+			// 
+			this.olvcPriceDeposited_DollarForPoint.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcPriceDeposited_DollarForPoint.Text = "$Deposited";
+			this.olvcPriceDeposited_DollarForPoint.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcPriceDeposited_DollarForPoint.Width = 62;
 			// 
 			// olvcQtyRequested
 			// 
@@ -690,6 +712,7 @@ namespace Sq1.Widgets.Execution {
             this.olvcMessageDateTime,
             this.olvcMessageState,
             this.olvcMessageText});
+			this.olvMessages.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvMessages.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olvMessages.EmptyListMsg = "";
 			this.olvMessages.FullRowSelect = true;
@@ -750,6 +773,12 @@ namespace Sq1.Widgets.Execution {
 			this.splitContainerMessagePane.Size = new System.Drawing.Size(1033, 249);
 			this.splitContainerMessagePane.SplitterDistance = 146;
 			this.splitContainerMessagePane.TabIndex = 22;
+			// 
+			// olvcCommission
+			// 
+			this.olvcCommission.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcCommission.Text = "Commission";
+			this.olvcCommission.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// ExecutionTreeControl
 			// 
@@ -823,11 +852,11 @@ namespace Sq1.Widgets.Execution {
 		private BrightIdeasSoftware.OLVColumn olvcDirection;
 		private BrightIdeasSoftware.OLVColumn olvcOrderType;
 		private BrightIdeasSoftware.OLVColumn olvcQtyRequested;
-		private BrightIdeasSoftware.OLVColumn olvcPriceScriptRequested;
+		private BrightIdeasSoftware.OLVColumn olvcPriceRequested_withSlippageApplied;
 		private BrightIdeasSoftware.OLVColumn olvcQtyFilled;
 		private BrightIdeasSoftware.OLVColumn olvcPriceFilled;
-		private BrightIdeasSoftware.OLVColumn olvcPriceDeposited;
-		private BrightIdeasSoftware.OLVColumn olvcSlippage;
+		private BrightIdeasSoftware.OLVColumn olvcPriceDeposited_DollarForPoint;
+		private BrightIdeasSoftware.OLVColumn olvcSlippageApplied;
 		private BrightIdeasSoftware.OLVColumn olvcSpreadSide;
 		private BrightIdeasSoftware.OLVColumn olvcStrategyName;
 		private BrightIdeasSoftware.OLVColumn olvcSignalName;
@@ -841,5 +870,8 @@ namespace Sq1.Widgets.Execution {
 		private BrightIdeasSoftware.OLVColumn olvcBrokerAdapterName;
 		private BrightIdeasSoftware.OLVColumn olvcDataSourceName;
 		private Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox mniltbSerializationInterval;
+		private BrightIdeasSoftware.OLVColumn olvcPriceCurBidOrAsk;
+		private BrightIdeasSoftware.OLVColumn olvcSlippageFilledMinusApplied;
+		private BrightIdeasSoftware.OLVColumn olvcCommission;
 	}
 }

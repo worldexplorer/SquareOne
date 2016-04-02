@@ -171,7 +171,7 @@ namespace Sq1.Gui.Forms {
 					Assembler.PopupException(msg);
 					return;
 				}
-				quote = this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuote_getForSymbol(this.ChartFormManager.Executor.Bars.Symbol);
+				quote = this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(this.ChartFormManager.Executor.Bars.Symbol);
 			}
 			if (quote == null) return;
 			this.btnQuoteTimingRealtime.Text = quote.QuoteTiming_localRemoteLeft;

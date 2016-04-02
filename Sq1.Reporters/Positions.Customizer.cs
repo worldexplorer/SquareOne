@@ -32,7 +32,7 @@ namespace Sq1.Reporters {
 		void oLVColumn_VisibilityChanged(object sender, EventArgs e) {
 			OLVColumn oLVColumn = sender as OLVColumn;
 			if (oLVColumn == null) return;
-			this.olvBinaryStateSaveRaiseStrategySerialize();
+			this.olvBinaryState_save_raiseStrategySerialize();
 		}
 		void objectListViewReCustomize_OnPriceDecimalsChanged() {
 			if (this.olvcEntryPrice			.AspectToStringFormat == "{0:" + base.FormatPrice + "}") {
@@ -52,7 +52,7 @@ namespace Sq1.Reporters {
 		}
 		void objectListViewCustomize() {
 			this.objectListViewCustomizeColors();
-			this.olvBinaryStateRestore();
+			this.olvBinaryState_restore();
 
 			this.olvcPosition.ImageGetter = delegate(object o) {
 				var position = o as Position;
@@ -127,7 +127,7 @@ namespace Sq1.Reporters {
 				var position = o as Position;
 				if (position == null) return "olvcEntryPrice.AspectGetter: position=null";
 				//string format = "N" + position.Bars.SymbolInfo.DecimalsPrice;
-				return position.EntryFilledPrice;
+				return position.EntryFilled_price;
 			};
 			this.olvcEntryPrice.AspectToStringFormat = "{0:" + base.FormatPrice + "}";
 
@@ -155,7 +155,7 @@ namespace Sq1.Reporters {
 				//if (position.ExitDate == DateTime.MinValue) return "STILL_OPEN"
 				//string format = "N" + position.Bars.SymbolInfo.DecimalsPrice;
 				//return position.ExitFilledPrice.ToString("{0:" + base.FormatPrice + "}");
-				return position.ExitFilledPrice;
+				return position.ExitFilled_price;
 			};
 			this.olvcExitPrice.AspectToStringFormat = "{0:" + base.FormatPrice + "}";
 
@@ -258,7 +258,7 @@ namespace Sq1.Reporters {
 			this.olvcComission.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "clhComission.AspectGetter: position=null";
-				double commission = position.EntryFilledCommission + position.ExitFilledCommission;
+				double commission = position.EntryFilled_commission + position.ExitFilled_commission;
 				//return commission.ToString("F2") + " $";
 				return commission;
 			};
@@ -269,7 +269,7 @@ namespace Sq1.Reporters {
 
 		void olvPositions_ColumnWidthChanged(object sender, ColumnWidthChangedEventArgs e) {
 			if (this.ignoreColumnWidthChanged_onNewReportDataFlushed_dontSaveStrategy) return;
-			this.olvBinaryStateSaveRaiseStrategySerialize();
+			this.olvBinaryState_save_raiseStrategySerialize();
 		}
 	}
 }

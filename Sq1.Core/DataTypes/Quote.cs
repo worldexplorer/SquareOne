@@ -11,7 +11,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	string		SymbolClass;
 		[JsonProperty]	public	string		Source;
 		[JsonProperty]	public	DateTime	ServerTime;
-		[JsonProperty]	public	DateTime	LocalTimeCreated	{ get; protected set; }
+		[JsonProperty]	public	DateTime	LocalTime				{ get; protected set; }
 
 		[JsonProperty]	public	double		Bid;
 		[JsonProperty]	public	double		Ask;
@@ -22,18 +22,19 @@ namespace Sq1.Core.DataTypes {
 			get { return this.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill; } }
 		[JsonProperty]	public	long		AbsnoPerSymbol;
 
-		[JsonIgnore]	public	Bar			ParentBarStreaming	{ get; protected set; }
-		[JsonIgnore]	public	bool		HasParentBarStreaming		{ get { return this.ParentBarStreaming != null; } }
-		[JsonProperty]	public	string		ParentBarIdent		{ get { return (this.HasParentBarStreaming) ? this.ParentBarStreaming.ParentBarsIdent : "NO_PARENT_BAR"; } }
+		[JsonIgnore]	public	Bar			ParentBarStreaming		{ get; protected set; }
+		[JsonIgnore]	public	bool		HasParentBarStreaming	{ get { return this.ParentBarStreaming != null; } }
+		[JsonProperty]	public	string		ParentBarIdent			{ get { return (this.HasParentBarStreaming) ? this.ParentBarStreaming.ParentBarsIdent : "NO_PARENT_BAR"; } }
 
 		[Obsolete("NOT_REALLY_USED")]
 		[JsonIgnore]	public	BidOrAsk	ItriggeredFillAtBidOrAsk;
 		[JsonProperty]	public	BidOrAsk	TradedAt;
-		[JsonProperty]	public	double		TradedPrice			{ get {		//WRITTEN_ONLY_BY_QUOTE_GENERATOR MADE_READONLY_COZ_WRITING_IS_A_WRONG_CONCEPT
-				if (this.TradedAt == BidOrAsk.UNKNOWN) return double.NaN;
+		[JsonProperty]	public	double		TradedPrice				{ get {
+				if (this.TradedAt == BidOrAsk.UNKNOWN) return this.Median_forBarOpen_fromLevel2;		// CAUSED CANT_FILL_STREAMING_CLOSE_FROM_BID_OR_ASK_UNKNOWN double.NaN;
 				return (this.TradedAt == BidOrAsk.Bid) ? this.Bid : this.Ask;
 			} }
-		[JsonProperty]	public	double		Spread				{ get { return this.Ask - this.Bid; } }
+		[JsonProperty]	public	double		Spread					{ get { return this.Ask - this.Bid; } }
+		[JsonIgnore]	public	double		Median_forBarOpen_fromLevel2				{ get { return this.Bid - this.Spread / 2d; } }
 
 		#region long story short
 		[JsonIgnore]			SymbolInfo	symbolInfo_nullUnsafe					{ get {
@@ -72,54 +73,100 @@ namespace Sq1.Core.DataTypes {
 			sb.Append(this.IntraBarSerno.ToString("000"));
 			sb.Append(" ");
 			sb.Append(this.ServerTime.ToString("HH:mm:ss.fff"));
-			bool quoteTimesDifferMoreThanOneMicroSecond = this.ServerTime.ToString("HH:mm:ss.f") != this.LocalTimeCreated.ToString("HH:mm:ss.f");
-			if (quoteTimesDifferMoreThanOneMicroSecond) {
+			bool quoteTimesDifferMoreThanOneDeciSecond = this.ServerTime.ToString("HH:mm:ss.f") != this.LocalTime.ToString("HH:mm:ss.f");
+			if (quoteTimesDifferMoreThanOneDeciSecond) {
 				sb.Append(" :: ");
-				sb.Append(this.LocalTimeCreated.ToString("HH:mm:ss.fff"));
+				sb.Append(this.LocalTime.ToString("HH:mm:ss.fff"));
 			}
 			if (this.HasParentBarStreaming) {
 				TimeSpan timeLeft = (this.ParentBarStreaming.DateTimeNextBarOpenUnconditional > this.ServerTime)
-					? this.ParentBarStreaming.DateTimeNextBarOpenUnconditional.Subtract(this.ServerTime)
-					: this.ServerTime.Subtract(this.ParentBarStreaming.DateTimeNextBarOpenUnconditional);
+				    ? this.ParentBarStreaming.DateTimeNextBarOpenUnconditional.Subtract(this.ServerTime)
+				    : this.ServerTime.Subtract(this.ParentBarStreaming.DateTimeNextBarOpenUnconditional);
 				string format = "mm:ss";
 				if (timeLeft.Minutes > 0) format = "mm:ss";
 				if (timeLeft.Hours > 0) format = "HH:mm:ss";
 				sb.Append(" ");
-				sb.Append(new DateTime(timeLeft.Ticks).ToString(format));
+				string timeLeftFormatted = new DateTime(timeLeft.Ticks).ToString(format);
+				if (this.ParentBarStreaming.DateTimeNextBarOpenUnconditional < this.ServerTime) timeLeftFormatted = "-" + timeLeftFormatted;
+				sb.Append(timeLeftFormatted);
 			}
 			return sb.ToString();
 		} }
 
-
-		protected Quote() {	// make it proteted and use it when you'll need to super-modify a quote in StreamingAdapter-derived 
-			ServerTime = DateTime.MinValue;
+		Quote() {
+			//ServerTime = DateTime.MinValue;
 			//Absno = ++AbsnoStaticCounterForAllSymbolsUseless;
-			AbsnoPerSymbol = -1;	// QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_ADAPDER
-			IntraBarSerno = -1;
-			Bid = double.NaN;
-			Ask = double.NaN;
-			Size = -1;
+			//AbsnoPerSymbol = -1;	// QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_ADAPDER
+			IntraBarSerno = -1;		// filled in lateBinder
+			//Bid = double.NaN;
+			//Ask = double.NaN;
+			//Size = -1;
 			ItriggeredFillAtBidOrAsk = BidOrAsk.UNKNOWN;
-			TradedAt = BidOrAsk.UNKNOWN;
+			//TradedAt = BidOrAsk.UNKNOWN;
+			//LocalTimeCreated = DateTime.Now;
 		}
-		public Quote(DateTime localTimeEqualsToServerTimeForGenerated) : this() {
-			// PROFILER_SAID_DATETIME.NOW_IS_SLOW__I_DONT_NEED_IT_FOR_BACKTEST_ANYWAY
-			LocalTimeCreated = (localTimeEqualsToServerTimeForGenerated != DateTime.MinValue)
-				? localTimeEqualsToServerTimeForGenerated : DateTime.Now;
+
+		public Quote(DateTime localTime, DateTime serverTime,
+						string symbol, long absno_perSymbol_perStreamingAdapter = -1,
+						double bid = double.NaN, double ask = double.NaN, double size = -1,
+						BidOrAsk tradedAt = BidOrAsk.UNKNOWN) : this() {
+			LocalTime		= localTime;
+			ServerTime		= serverTime;
+			Symbol			= symbol;
+			AbsnoPerSymbol	= absno_perSymbol_perStreamingAdapter;
+			Bid				= bid;
+			Ask				= ask;
+			Size			= size;
+			TradedAt		= tradedAt;
 		}
-		public void SetParentBarStreaming(Bar parentBar) {
-			if (parentBar == null) {
+		//public Quote(DateTime localTimeEqualsToServerTimeForGenerated, DateTime serverTime,
+		//            string symbol, long absno_perSymbol_perStreamingAdapter = -1,
+		//            double bid = double.NaN, double ask = double.NaN,
+		//            BidOrAsk tradedAt = BidOrAsk.UNKNOWN)
+		//                : this(symbol, absno_perSymbol_perStreamingAdapter) {
+
+		//    // PROFILER_SAID_DATETIME.NOW_IS_SLOW__I_DONT_NEED_IT_FOR_BACKTEST_ANYWAY
+		//    LocalTime = (localTimeEqualsToServerTimeForGenerated != DateTime.MinValue)
+		//        ? localTimeEqualsToServerTimeForGenerated : DateTime.Now;
+		//}
+		public void Replace_myStreamingBar_withConsumersStreamingBar(Bar streamingParentBar) {
+			string msig = " //(" + streamingParentBar.ToString() + ") => quote[" + this.ToString() + "]";
+			if (streamingParentBar == null) {
 				string msg = "NULL_BAR_NOT_ATTACHED_TO_THIS_QUOTE";
-			} else  if (parentBar.ParentBars == null) {
+			} else if (streamingParentBar.ParentBars == null) {
 				string msg = "UNATTACHED_BAR_ASSIGNED_INTO_THIS_QUOTE";
+				Assembler.PopupException(msg + msig, null, false);
 			} else {
 				string msg = "ATTACHED_BAR_ASSIGNED_INTO_THIS_QUOTE";
 			}
-			if (parentBar != null && this.Symbol != parentBar.Symbol) {
-				string msg = "SYMBOL_MISMATCH__CANT_SET_PARENT_BAR_FOR_QUOTE quote.Symbol[" + this.Symbol + "] != parentBar.Symbol[" + parentBar.Symbol + "]";
+			if (streamingParentBar != null && this.Symbol != streamingParentBar.Symbol) {
+				string msg = "SYMBOL_MISMATCH__CANT_SET_PARENT_BAR_FOR_QUOTE quote.Symbol[" + this.Symbol + "] != parentBar.Symbol[" + streamingParentBar.Symbol + "]";
 				Assembler.PopupException(msg);
 			}
-			this.ParentBarStreaming = parentBar;
+			if (streamingParentBar.IsBarStreaming == false) {
+				string msg = "UNATTACHED_BAR_ASSIGNED_INTO_THIS_QUOTE PREVENTING[I_REFUSE_TO_PUSH COULD_NOT_ENRICH_QUOTE]";
+				Assembler.PopupException(msg + msig, null, false);
+			}
+			if (this.ParentBarStreaming == streamingParentBar) {
+				string msg = "BAR_ALREADY_ATTACHED__UPSTACK_DIDNT_REALIZE_THIS";
+				Assembler.PopupException(msg + msig, null, false);
+			}
+			this.ParentBarStreaming = streamingParentBar;
+		}
+		public void Bind_streamingBar_unattached(Bar streamingBar_fromFactory_forUnattachedBars) {
+			if (streamingBar_fromFactory_forUnattachedBars == null) {
+				string msg = "I_REFUSE_TO_BIND_TO_NULL_STREAMING_BAR";
+				throw new Exception(msg);
+			}
+			if (streamingBar_fromFactory_forUnattachedBars.ParentBars != null) {
+				string msg = "I_REFUSE_TO_BIND_ATTACHED_BAR__MUST_HAVE_NO_PARENTS";
+				throw new Exception(msg);
+			}
+			if (this.ParentBarStreaming != null) {
+				string msg = "I_REFUSE_TO_BIND_UNATTACHED_STREAMING_BAR__THIS_QUOTE_IS_ALREADY_BOUND__USE_Replace_myStreamingBar_withConsumersStreamingBar()";
+				throw new Exception(msg);
+			}
+			this.ParentBarStreaming = streamingBar_fromFactory_forUnattachedBars;
 		}
 
 		#region SORRY_FOR_THE_MESS__I_NEED_TO_DERIVE_IDENTICAL_ONLY_FOR_GENERATED__IF_YOU_NEED_IT_IN_BASE_QUOTE_MOVE_IT_THERE
@@ -157,7 +204,7 @@ namespace Sq1.Core.DataTypes {
 			sb.Append(" ");
 			bool timesAreDifferent = true;
 			if (this.ServerTime != null) {
-				if (this.ServerTime == this.LocalTimeCreated) {
+				if (this.ServerTime == this.LocalTime) {
 					timesAreDifferent = false;
 				}
 				if (timesAreDifferent == true) {
@@ -167,15 +214,27 @@ namespace Sq1.Core.DataTypes {
 				}
 			}
 			sb.Append("[");
-			sb.Append(this.LocalTimeCreated.ToString("HH:mm:ss.fff"));
+			sb.Append(this.LocalTime.ToString("HH:mm:ss.fff"));
 			sb.Append("]");
 			if (timesAreDifferent == true) {
 				sb.Append("LOCAL");
 			}
-			sb.Append(" ");
-			if (string.IsNullOrEmpty(this.Source) == false) sb.Append(this.Source);
-			sb.Append("STR:");
-			sb.Append(this.ParentBarIdent);
+			if (string.IsNullOrEmpty(this.Source) == false) {
+				sb.Append(" ");
+				sb.Append(this.Source);
+			}
+
+			sb.Append(" STR:");
+			string firstEver_withNaNs_willThrow = "NULL";
+			if (this.ParentBarStreaming != null) {
+				firstEver_withNaNs_willThrow = double.IsNaN(this.ParentBarStreaming.Open)
+					? "NaN"
+					//: this.ParentBarIdent
+					: this.ParentBarStreaming.ToString()
+					;
+			}
+			sb.Append(firstEver_withNaNs_willThrow);
+
 			return sb.ToString();
 		}
 		//public string ToStringShort() {

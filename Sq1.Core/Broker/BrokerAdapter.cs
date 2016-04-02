@@ -87,7 +87,7 @@ namespace Sq1.Core.Broker {
 
 		        case ConnectionState.Broker_DllConnected:							ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
 		        case ConnectionState.Broker_DllConnecting:							ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
-		        case ConnectionState.Broker_DllDisconnected:							ret = false;	break;
+		        case ConnectionState.Broker_DllDisconnected:						ret = false;	break;
 		        case ConnectionState.Broker_TerminalConnected:						ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
 		        case ConnectionState.Broker_TerminalDisconnected:					ret = true;		break;	// set by callback after first order?... I want the button in Editor pressed, linked to DllConnected only
 
@@ -311,8 +311,8 @@ namespace Sq1.Core.Broker {
 			order.AbsorbCurrentBidAsk_fromStreamingSnapshot(this.StreamingAdapter.StreamingDataSnapshot);
 
 			Alert alert = order.Alert;
-			double priceBestBidAsk = this.StreamingAdapter.StreamingDataSnapshot.BidOrAsk_forDirection(
-				order.Alert.Symbol, alert.PositionLongShortFromDirection);
+			double priceBestBidAsk = this.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteCurrent(
+				alert.Symbol, alert.PositionLongShortFromDirection);
 				
 			SymbolInfo symbolInfo = alert.Bars.SymbolInfo;
 			switch (alert.MarketLimitStop) {
@@ -335,7 +335,7 @@ namespace Sq1.Core.Broker {
 						case MarketOrderAs.MarketZeroSentToBroker:
 							order.PriceRequested = 0;
 							msg = "SYMBOL_INFO_CONVERSION_MarketZeroSentToBroker SymbolInfo[" + alert.Symbol + "/" + alert.SymbolClass + "].OverrideMarketPriceToZero==true"
-								+ "; setting Price=0 (Slippage=" + order.SlippageFill + ")";
+								+ "; setting Price=0 (Slippage=" + order.SlippageApplied + ")";
 							break;
 
 						case MarketOrderAs.MarketMinMaxSentToBroker:
@@ -356,9 +356,13 @@ namespace Sq1.Core.Broker {
 							alert.MarketLimitStopAsString += " => " + alert.MarketLimitStop + " (" + alert.MarketOrderAs + ")";
 							msg = "";
 							if (symbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(alert) > 0) {
-								double slippage = symbolInfo.GetSlippage_signAware_forLimitOrdersOnly(alert, 0);
+								//double slippage = symbolInfo.GetSlippage_signAware_forLimitAlertsOnly(alert, 0);
+								double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly();
 								order.PriceRequested += slippage;
 								msg += "ADDED_FIRST_SLIPPAGE[" + slippage + "]";
+								if (order.Alert.PriceEmitted != order.PriceRequested) {
+									msg += "!=Alert.PriceRequested[" + order.Alert.PriceEmitted + "]";
+								}
 							} else {
 								msg += "DOING_NOTHING__AS_SymbolInfo[" + symbolInfo.Symbol + "].SlippagesCrossMarketCsv_ARE_NOT_DEFINED";
 							}
@@ -370,9 +374,13 @@ namespace Sq1.Core.Broker {
 							alert.MarketLimitStopAsString += " => " + alert.MarketLimitStop + " (" + alert.MarketOrderAs + ")";
 							msg = "";
 							if (symbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(alert) > 0) {
-								double slippage = symbolInfo.GetSlippage_signAware_forLimitOrdersOnly(alert, 0);
+								//double slippage = symbolInfo.GetSlippage_signAware_forLimitAlertsOnly(alert, 0);
+								double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly();
 								order.PriceRequested += slippage;
 								msg += "ADDED_FIRST_SLIPPAGE[" + slippage + "]";
+								if (order.Alert.PriceEmitted != order.PriceRequested) {
+									msg += "!=Alert.PriceRequested[" + order.Alert.PriceEmitted + "]";
+								}
 							} else {
 								msg += "DOING_NOTHING__AS_SymbolInfo[" + symbolInfo.Symbol + "].SlippagesTidalCsv_ARE_NOT_DEFINED";
 							}
@@ -399,15 +407,15 @@ namespace Sq1.Core.Broker {
 					break;
 
 				case MarketLimitStop.Limit:
-					order.SpreadSide = OrderSpreadSide.ERROR;
+					order.SpreadSide = SpreadSide.ERROR;
 					switch (alert.Direction) {
 						case Direction.Buy:
 						case Direction.Cover:
-							if (priceBestBidAsk <= order.PriceRequested) order.SpreadSide = OrderSpreadSide.BidTidal;
+							if (priceBestBidAsk <= order.PriceRequested) order.SpreadSide = SpreadSide.BidTidal;
 							break;
 						case Direction.Sell:
 						case Direction.Short:
-							if (priceBestBidAsk >= order.PriceRequested) order.SpreadSide = OrderSpreadSide.AskTidal;
+							if (priceBestBidAsk >= order.PriceRequested) order.SpreadSide = SpreadSide.AskTidal;
 							break;
 						default:
 							msg += " No Direction[" + alert.Direction + "] handler for order[" + order.ToString() + "]"
@@ -421,15 +429,15 @@ namespace Sq1.Core.Broker {
 
 				case MarketLimitStop.Stop:
 				case MarketLimitStop.StopLimit:
-					order.SpreadSide = OrderSpreadSide.ERROR;
+					order.SpreadSide = SpreadSide.ERROR;
 					switch (alert.Direction) {
 						case Direction.Buy:
 						case Direction.Cover:
-							if (priceBestBidAsk >= order.PriceRequested) order.SpreadSide = OrderSpreadSide.AskTidal;
+							if (priceBestBidAsk >= order.PriceRequested) order.SpreadSide = SpreadSide.AskTidal;
 							break;
 						case Direction.Sell:
 						case Direction.Short:
-							if (priceBestBidAsk <= order.PriceRequested) order.SpreadSide = OrderSpreadSide.BidTidal;
+							if (priceBestBidAsk <= order.PriceRequested) order.SpreadSide = SpreadSide.BidTidal;
 							break;
 						default:
 							msg += " No Direction[" + alert.Direction + "] handler for order[" + order.ToString() + "]"
@@ -495,18 +503,18 @@ namespace Sq1.Core.Broker {
 				//orderFound.Alert.Bars = orderFound.;
 				return orderFound;
 			}
-			if (orderFound.Alert.DataSource == null) {
+			if (orderFound.Alert.DataSource_fromBars == null) {
 				string msg = "UNREPAIRABLE__ORDER_FOUND_HAS_DataSource_NULL orderFound[" + orderFound.ToString()
 					+ "] this[" + this.ToString() + "]";
 				Assembler.PopupException(msg + msig, null, false);
 				//orderFound.Alert.DataSource = this.DataSource;
 				return orderFound;
 			}
-			if (orderFound.Alert.DataSource.BrokerAdapter == null) {
+			if (orderFound.Alert.DataSource_fromBars.BrokerAdapter == null) {
 				string msg = "ORDER_FOUND_HAS_BROKER_NULL__ASSIGNING_MYSELF orderFound[" + orderFound.ToString()
 					+ "] this[" + this.ToString() + "]";
 				Assembler.PopupException(msg + msig, null, false);
-				orderFound.Alert.DataSource.BrokerAdapter = this;
+				orderFound.Alert.DataSource_fromBars.BrokerAdapter = this;
 			}
 			return orderFound;
 		}

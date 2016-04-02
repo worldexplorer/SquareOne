@@ -14,7 +14,7 @@ using Sq1.Core.Support;
 using Sq1.Charting.OnChart;
 
 namespace Sq1.Charting {
-	public class ChartControlFrozenForRendering {
+	public class ExecutorObjects_FrozenForRendering {
 		public Dictionary<int, List<AlertArrow>>	AlertArrowsListByBar	{ get; private set; }
 		public Dictionary<string, Indicator>		Indicators				{ get; set; }
 		public Dictionary<int, AlertList>			AlertsPlacedByBar		{ get; private set; }
@@ -29,9 +29,8 @@ namespace Sq1.Charting {
 		public Dictionary<string, OnChartLabel>		OnChartLabelsById		{ get; private set; }
 		public Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
 
-		public Quote QuoteLast;
-		public LevelTwoHalfSortedFrozen Bids_sortedCachedForOnePaint;
-		public LevelTwoHalfSortedFrozen Asks_sortedCachedForOnePaint;
+		public Quote								QuoteLast;
+		public LevelTwoFrozen						LevelTwo_frozen_forOnePaint;
 
 		// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
 		public bool IndicatorsAllHaveNoOwnValues { get {
@@ -52,7 +51,7 @@ namespace Sq1.Charting {
 				return ret;
 			} }
 		
-		public ChartControlFrozenForRendering() {
+		public ExecutorObjects_FrozenForRendering() {
 			AlertArrowsListByBar		= new Dictionary<int, List<AlertArrow>>();
 			Indicators					= new Dictionary<string, Indicator>();
 			AlertsPlacedByBar			= new Dictionary<int, AlertList>();

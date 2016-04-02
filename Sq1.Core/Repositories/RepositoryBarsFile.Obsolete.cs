@@ -60,7 +60,7 @@ namespace Sq1.Core.Repositories {
 		#endregion
 		
 		[Obsolete("replaced by barAppendStaticUnconditional()")]
-		int barAppendStaticFullCopySlow(Bar barLastFormed) {
+		int barStaticAppend_saveToFileFullCopy_slow(Bar barLastFormed) {
 			//v1
 			Bars allBars = this.BarsLoadAll_nullUnsafe_threadSafe();
 			if (allBars == null) {
@@ -80,7 +80,7 @@ namespace Sq1.Core.Repositories {
 				return 0;
 			}
 			
-			allBars.BarAppendBindStatic(barLastFormed);
+			allBars.BarStatic_appendAttach(barLastFormed);
 			int barsSaved = this.BarsSave_threadSafe(allBars);
 			return barsSaved;
 		}
@@ -150,27 +150,27 @@ namespace Sq1.Core.Repositories {
 			return saved;
 		}
 		
-		public Bars BarsLoad_nullUnsafeThreadSafe_NOT_USED(DateTime dateFrom, DateTime dateTill, int maxBars) {
-			Bars barsAll = this.BarsLoadAll_nullUnsafe_threadSafe();
-			if (barsAll == null) return barsAll;
+		//public Bars BarsLoad_nullUnsafeThreadSafe_NOT_USED(DateTime dateFrom, DateTime dateTill, int maxBars) {
+		//    Bars barsAll = this.BarsLoadAll_nullUnsafe_threadSafe();
+		//    if (barsAll == null) return barsAll;
 			
-			//Assembler.PopupException("Loaded [ " + bars.Count + "] bars; symbol[" + this.Symbol + "] scaleInterval[" + this.BarsFolder.ScaleInterval + "]");
-			if (dateFrom == DateTime.MinValue && dateTill == DateTime.MaxValue && maxBars == 0) return barsAll;
+		//    //Assembler.PopupException("Loaded [ " + bars.Count + "] bars; symbol[" + this.Symbol + "] scaleInterval[" + this.BarsFolder.ScaleInterval + "]");
+		//    if (dateFrom == DateTime.MinValue && dateTill == DateTime.MaxValue && maxBars == 0) return barsAll;
 
-			string start = (dateFrom == DateTime.MinValue) ? "MIN" : dateFrom.ToString("dd-MMM-yyyy");
-			string end = (dateTill == DateTime.MaxValue) ? "MAX" : dateTill.ToString("dd-MMM-yyyy");
-			Bars bars = new Bars(barsAll.Symbol, barsAll.ScaleInterval, barsAll.ReasonToExist + " [" + start + "..." + end + "]max[" + maxBars + "]");
-			for (int i = 0; i < barsAll.Count; i++) {
-				if (maxBars > 0 && i >= maxBars) break;
-				Bar barAdding = barsAll[i];
-				bool skipThisBar = false;
-				if (dateFrom > DateTime.MinValue && barAdding.DateTimeOpen < dateFrom) skipThisBar = true;
-				if (dateTill < DateTime.MaxValue && barAdding.DateTimeOpen > dateTill) skipThisBar = true;
-				if (skipThisBar) continue;
-				bars.BarAppendBindStatic(barAdding.CloneDetached());
-			}
-			return bars;
-		}
+		//    string start = (dateFrom == DateTime.MinValue) ? "MIN" : dateFrom.ToString("dd-MMM-yyyy");
+		//    string end = (dateTill == DateTime.MaxValue) ? "MAX" : dateTill.ToString("dd-MMM-yyyy");
+		//    Bars bars = new Bars(barsAll.Symbol, barsAll.ScaleInterval, barsAll.ReasonToExist + " [" + start + "..." + end + "]max[" + maxBars + "]");
+		//    for (int i = 0; i < barsAll.Count; i++) {
+		//        if (maxBars > 0 && i >= maxBars) break;
+		//        Bar barAdding = barsAll[i];
+		//        bool skipThisBar = false;
+		//        if (dateFrom > DateTime.MinValue && barAdding.DateTimeOpen < dateFrom) skipThisBar = true;
+		//        if (dateTill < DateTime.MaxValue && barAdding.DateTimeOpen > dateTill) skipThisBar = true;
+		//        if (skipThisBar) continue;
+		//        bars.BarStatic_appendAttach(barAdding.CloneDetached());
+		//    }
+		//    return bars;
+		//}
 
 	}
 }

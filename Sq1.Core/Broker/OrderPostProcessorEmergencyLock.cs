@@ -37,7 +37,7 @@ namespace Sq1.Core.Broker {
 		}
 		public bool Equals(OrderPostProcessorEmergencyLock other) {
 			return this.strategy == other.strategy && this.script == other.script
-				&& this.OrderReasonForLock.Alert.DataSource == other.OrderReasonForLock.Alert.DataSource
+				&& this.OrderReasonForLock.Alert.DataSource_fromBars == other.OrderReasonForLock.Alert.DataSource_fromBars
 				&& this.OrderReasonForLock.Alert.Symbol == other.OrderReasonForLock.Alert.Symbol
 				;
 		}

@@ -115,14 +115,14 @@ namespace Sq1.Core.StrategyBase {
 		public void BacktesterRunSimulation_threadEntry_exceptionCatcher() {
 			Exception backtestException = null;
 			try {
-				this.barStaticExecutedLast = null;
+				this.barStatic_lastExecuted = null;
 				this.ExecutionDataSnapshot.Initialize();
 				this.PerformanceAfterBacktest.Initialize();
 				this.Strategy.Script.InitializeBacktestWrapper();
 
 				if (this.ChartShadow != null) this.ChartShadow.SetIndicators(this.Strategy.Script.IndicatorsByName_ReflectedCached);
 
-				this.BacktesterOrLivesimulator.InitializeAndRun_step1of2();
+				this.BacktesterOrLivesimulator.Initialize_runSimulation_backtestAndLivesim_step1of2();
 			} catch (Exception exBacktest) {
 				backtestException = exBacktest;
 				string msg = "BACKTEST_FAILED for Strategy[" + this.Strategy + "] on Bars[" + this.Bars + "]";

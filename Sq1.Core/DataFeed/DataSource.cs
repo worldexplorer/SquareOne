@@ -105,7 +105,7 @@ namespace Sq1.Core.DataFeed {
 
 				if (this.BarsRepository.DataFileExistsForSymbol(symbol)) continue;
 				Bars barsEmpty = new Bars(symbol, this.ScaleInterval, "DISCOVERED_NON_EXISTING");
-				// FAILED_FIXING_IN_DataDistributor BarStaticLast_nullUnsafe=null for freshly added Symbol
+				// FAILED_FIXING_IN_Distributor BarStaticLast_nullUnsafe=null for freshly added Symbol
 				//barsEmpty.BarAppendBindStatic(new Bar(symbol, this.ScaleInterval, DateTime.Now));
 				//barsEmpty.BarCreateAppendBindStatic(DateTime.Now, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN);
 
@@ -206,7 +206,7 @@ namespace Sq1.Core.DataFeed {
 
 			Bars barsCompressed;
 			try {
-				barsCompressed = barsOriginal.ToLargerScaleInterval(scaleIntervalRq);
+				barsCompressed = barsOriginal.ToLarger_scaleInterval(scaleIntervalRq);
 			} catch (Exception e) {
 				Assembler.PopupException("BARS_COMPRESSION_FAILED (ret, scaleIntervalRq)", e);
 				throw e;

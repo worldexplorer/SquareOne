@@ -6,8 +6,8 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Backtesting {
 	public abstract class BacktestSpreadModeler {
 		public abstract double	FillBidAskSymmetrically(QuoteGenerated quote, double medianPrice, Bar barSimulated);
-		public abstract void	FillAskBasedOnBid(QuoteGenerated quote);
-		public abstract void	FillBidBasedOnAsk(QuoteGenerated quote);
+		public abstract void	FillAskBasedOnBid_aligned(QuoteGenerated quote);
+		public abstract void	FillBidBasedOnAsk_aligned(QuoteGenerated quote);
 
 		public bool AlignToPriceLevel;
 		
@@ -15,7 +15,7 @@ namespace Sq1.Core.Backtesting {
 			AlignToPriceLevel = alignToPriceLevel;
 		}
 		
-		public void GeneratedQuoteFillBidAsk(QuoteGenerated quote, Bar barSimulated, double priceFromAlignedBarForSymmetricFillAtOpenOrClose = -1) {
+		public void GeneratedQuoteFillBidAsk(QuoteGenerated quote, Bar barSimulated, double priceAligned_fromBar_forSymmetricFill_atOpenOrClose = -1) {
 			if (quote == null) {
 				string msg = "I_REFUSE_TO_GENERATE_BIDASK QUOTE_NULL";
 				Assembler.PopupException(msg);
@@ -37,7 +37,7 @@ namespace Sq1.Core.Backtesting {
 					+ " bar boundaries very precise; check generateNewQuoteChildrenHelper() for BidOrAsk=UNKNOWN";
 				//Assembler.PopupException(msg);
 				
-				double spreadAligned = this.FillBidAskSymmetrically(quote, priceFromAlignedBarForSymmetricFillAtOpenOrClose, barSimulated);
+				double spreadAligned = this.FillBidAskSymmetrically(quote, priceAligned_fromBar_forSymmetricFill_atOpenOrClose, barSimulated);
 				
 				// QUOTEGEN_PROBLEM#2 : at Open/Close, when they are == to Low/High, the Symmetrical quote will go beoynd bar boundaries => MarketSim will freak out
 				if (quote.Ask > barSimulated.High) {
@@ -63,11 +63,11 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			if (double.IsNaN(quote.Bid)) {
-				this.FillAskBasedOnBid(quote);
+				this.FillAskBasedOnBid_aligned(quote);
 				return;
 			}
 			if (double.IsNaN(quote.Ask)) {
-				this.FillBidBasedOnAsk(quote);
+				this.FillBidBasedOnAsk_aligned(quote);
 				return;
 			}			
 		}

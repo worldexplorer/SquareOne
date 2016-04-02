@@ -62,7 +62,7 @@ namespace Sq1.Core.StrategyBase {
 				if (pos == null) continue;
 				if (pos.EntryAlert == null) continue;
 				if (pos.EntryAlert == entryPosition.EntryAlert) return true;
-				if (pos.EntryAlert.IsIdenticalForOrdersPending(entryPosition.EntryAlert)) return true;
+				if (pos.EntryAlert.IsIdentical_forOrdersPending(entryPosition.EntryAlert)) return true;
 			}
 			return false;
 		}
@@ -104,7 +104,7 @@ namespace Sq1.Core.StrategyBase {
 
 			if (proto.PriceEntry == 0) {
 				string msg = "POSITION_PROTOTYPE_SUPPORTS_MARKET_ENTRY";
-				proto.PriceEntryAbsorb(position.EntryFilledPrice);
+				proto.PriceEntryAbsorb(position.EntryFilled_price);
 			}
 			Alert alertStopLoss = executor.SellOrCover_alertCreate_dontRegisterInNew (
 				this.executor.Bars.BarStreaming_nullUnsafe,
@@ -164,9 +164,9 @@ namespace Sq1.Core.StrategyBase {
 		//    }
 		//}
 		string reasonWhy_placingProto_doesntMakeSense(PositionPrototype proto, bool internalCallee = false) {
-			double lastPrice = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuote_getPriceForMarketOrder(proto.Symbol);
-			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuote_getForSymbol(proto.Symbol);
-			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.BidOrAsk_forDirection(proto.Symbol, proto.LongShort);
+			double lastPrice = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetPriceForMarketOrder_notAligned_fromQuoteCurrent(proto.Symbol);
+			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(proto.Symbol);
+			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteCurrent(proto.Symbol, proto.LongShort);
 			bool willBeExecutedImmediately = false;
 			MarketLimitStop planningEntryUsing = MarketConverter.EntryMarketLimitStopFromDirection(
 				this.executor.Bars.BarStreaming_nullUnsafeCloneReadonly.Close, proto.PriceEntry, proto.LongShort);

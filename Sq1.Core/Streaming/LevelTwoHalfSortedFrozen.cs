@@ -27,13 +27,25 @@ namespace Sq1.Core.Streaming {
 			ImFrozen = true;
 			BidOrAsk = bidOrAsk;
 			ReasonToExist = reasonToExist;
+
 			ImSortedAscending = orderby is LevelTwoHalfSortedFrozen.ASC;
+#if DEBUG
+			if (BidOrAsk == BidOrAsk.Ask && ImSortedAscending == false) {
+				string msg = "ASKS_MUST_GROW_UP_ON_PANEL.LEVEL2 AVOIDING_REVERSAL_ON_LOTS_CUMULATIVE MOUSTACHES_SHOULDNT_POINT_INWARDS";
+				Assembler.PopupException(msg);
+			}
+			if (BidOrAsk == BidOrAsk.Bid && ImSortedAscending == true) {
+				string msg = "BIDS_MUST_GROW_DOWN_ON_PANEL.LEVEL2 AVOIDING_REVERSAL_ON_LOTS_CUMULATIVE MOUSTACHES_SHOULDNT_POINT_INWARDS";
+				Assembler.PopupException(msg);
+			}
+#endif
+
 			LotsCumulative = new Dictionary<double, double>();
 			if (base.Count == 0) return;
-			this.calcProperties_addingRemovingNotSupported();
+			this.calc_LotsCumulative_allMinMaxProperties();
 		}
 
-		void calcProperties_addingRemovingNotSupported() {
+		void calc_LotsCumulative_allMinMaxProperties() {
 			List<KeyValuePair<double, double>> sortedFromSpreadToTheEdgeOfMarket_toCalculateLotsCumulative = new List<KeyValuePair<double, double>>();
 			bool iShouldRevert = false;
 			if (this.BidOrAsk == BidOrAsk.Ask) {
@@ -41,12 +53,12 @@ namespace Sq1.Core.Streaming {
 				if (this.ImSortedAscending) {
 					iShouldRevert = false;
 				} else {
-					iShouldRevert = true;
+					iShouldRevert = true;		// ASKS_MUST_GROW_UP_ON_PANEL.LEVEL2 AVOIDING_REVERSAL_ON_LOTS_CUMULATIVE MOUSTACHES_SHOULDNT_POINT_INWARDS
 				}
 			} else {
 				// bigger values = spread; smaller values => edge of maket
 				if (this.ImSortedAscending) {
-					iShouldRevert = true;
+					iShouldRevert = true;		// BIDS_MUST_GROW_DOWN_ON_PANEL.LEVEL2 AVOIDING_REVERSAL_ON_LOTS_CUMULATIVE MOUSTACHES_SHOULDNT_POINT_INWARDS
 				} else {
 					iShouldRevert = false;
 				}
@@ -60,12 +72,32 @@ namespace Sq1.Core.Streaming {
 				sortedFromSpreadToTheEdgeOfMarket_toCalculateLotsCumulative.AddRange(this);
 			}
 
+#if DEBUG
+			double prevPrice = 0;
+#endif
 			double prevLot = 0;
 			//foreach (double price in base.Keys) {
 			//foreach (KeyValuePair<double, double> keyValue in this) {
 			foreach (KeyValuePair<double, double> keyValue in sortedFromSpreadToTheEdgeOfMarket_toCalculateLotsCumulative) {
 				double price = keyValue.Key;
 				double lot = keyValue.Value;
+
+#if DEBUG
+				if (prevPrice != 0) {
+					if (this.ImSortedAscending) {
+						if (price <= prevPrice) {
+							string msg = "YOUR_ASK_MOUSTACHES_SHOULDNT_POINT_INWARDS";
+							Assembler.PopupException(msg);
+						}
+					} else {
+						if (price >= prevPrice) {
+							string msg = "YOUR_BID_MOUSTACHES_SHOULDNT_POINT_INWARDS";
+							Assembler.PopupException(msg);
+						}
+					}
+				}
+				prevPrice = price;
+#endif
 
 				if (this.PriceMin == 0) this.PriceMin = price;
 				if (this.PriceMax == 0) this.PriceMax = price;

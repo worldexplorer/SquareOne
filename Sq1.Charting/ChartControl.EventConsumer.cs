@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Sq1.Core;
@@ -143,26 +144,48 @@ namespace Sq1.Charting {
 				base.BeginInvoke((MethodInvoker)delegate { this.chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline(sender, e); });
 				return;
 			}
-			
-			this.ScriptExecutorObjects.QuoteLast = this.Bars.LastQuoteClone_nullUnsafe;
 
 			// doing same thing from GUI thread at PanelLevel2.renderLevel2() got me even closer to realtime (after pausing a Livesim
 			// and repainting Level2 whole thing was misplaced comparing to PanelPrice spread) but looked really random, not behind and not ahead;
 			// but main reason is ConcurrentLocker was spitting messages (I dont remember what exactly but easy to move back to renderLevel2() and see)
 			StreamingDataSnapshot snap = this.Bars.DataSource.StreamingAdapter.StreamingDataSnapshot;
+			
+			//v1 this.ScriptExecutorObjects.QuoteLast = this.Bars.QuoteLastClone_nullUnsafe;
+			this.ExecutorObjects_frozenForRendering.QuoteLast = snap.GetQuoteCurrent_forSymbol_nullUnsafe(this.Bars.Symbol);
 
-			LevelTwoHalf asksOriginal = snap.LevelTwoAsks_getForSymbol_nullUnsafe(this.Bars.Symbol);
-			this.ScriptExecutorObjects.Asks_sortedCachedForOnePaint = new LevelTwoHalfSortedFrozen(
-				BidOrAsk.Ask, "ASKS_FOR_PanelLevel2",
-				asksOriginal.SafeCopy(this, "CLONING_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
-				new LevelTwoHalfSortedFrozen.ASC());
 
-			LevelTwoHalf bidsOriginal = snap.LevelTwoBids_getForSymbol_nullUnsafe(this.Bars.Symbol);
-			this.ScriptExecutorObjects.Bids_sortedCachedForOnePaint = new LevelTwoHalfSortedFrozen(
-				BidOrAsk.Bid, "BIDS_FOR_PanelLevel2",
-				bidsOriginal.SafeCopy(this, "CLONING_BIDS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
-				new LevelTwoHalfSortedFrozen.DESC());
+#region moved to Level2 => never reverted anymore
+			//LevelTwoHalf asksOriginal = snap.LevelTwoAsks_getForSymbol_nullUnsafe(this.Bars.Symbol);
+			//this.ScriptExecutorObjects.Asks_frozenAsc_forOnePaint = new LevelTwoHalfSortedFrozen(
+			//    BidOrAsk.Ask, "ASKS_FOR_PanelLevel2",
+			//    asksOriginal.SafeCopy(this, "CLONING_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
+			//    new LevelTwoHalfSortedFrozen.ASC());
 
+			//LevelTwoHalf bidsOriginal = snap.LevelTwoBids_getForSymbol_nullUnsafe(this.Bars.Symbol);
+			//this.ScriptExecutorObjects.Bids_frozenDesc_forOnePaint = new LevelTwoHalfSortedFrozen(
+			//    BidOrAsk.Bid, "BIDS_FOR_PanelLevel2",
+			//    bidsOriginal.SafeCopy(this, "CLONING_BIDS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
+			//    new LevelTwoHalfSortedFrozen.DESC());
+
+			//#if DEBUG moved to Level2 => never reverted anymore
+			//if (this.ScriptExecutorObjects.Asks_frozenAsc_forOnePaint.Count > 0 && this.ScriptExecutorObjects.Bids_frozenDesc_forOnePaint.Count > 0) {
+			//    List<double> ask_priceLevels_ASC = new List<double>(this.ScriptExecutorObjects.Asks_frozenAsc_forOnePaint.Keys);
+			//    double askBest_lowest =  ask_priceLevels_ASC[0];
+			//    List<double> bids_priceLevels_DESC = new List<double>(this.ScriptExecutorObjects.Bids_frozenDesc_forOnePaint.Keys);
+			//    double bidBest_highest =  bids_priceLevels_DESC[bids_priceLevels_DESC.Count-1];
+			//    if (askBest_lowest < bidBest_highest) {
+			//        string msg = "YOUR_MOUSTACHES_GOT_REVERTED";
+			//        Assembler.PopupException(msg, null, false);
+			//    }
+			//}
+			//#endif
+#endregion
+
+			this.ExecutorObjects_frozenForRendering.LevelTwo_frozen_forOnePaint =
+				snap.GetLevelTwoFrozenSorted_forSymbol_nullUnsafe(this.Bars.Symbol,
+					"CLONING_BIDS_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2",
+					"PanelLevel2");
+	
 			if (this.VisibleBarRight != this.Bars.Count - 1) {
 				string msg = "I_WILL_MOVE_SLIDER_IF_ONLY_LAST_BAR_IS_VISIBLE";
 				//I_WILL_MOVE_ANYWAYS__WE_ARE_HERE_WHEN_PAUSED_LIVESIM_WAS_HSCROLLED_BACKWARDS return;

@@ -63,12 +63,12 @@ namespace Sq1.Core.Support {
 			}
 			return ret;
 		}
-		ConcurrentList(string reasonToExist, ExecutionDataSnapshot snap, List<T> copyFrom) : this(reasonToExist, snap) {
+		ConcurrentList(string reasonToExist, ExecutorDataSnapshot snap, List<T> copyFrom) : this(reasonToExist, snap) {
 			InnerList	= new List<T>();
 			InnerList.AddRange(copyFrom);
 			Count = InnerList.Count;
 		}
-		public ConcurrentList(string reasonToExist, ExecutionDataSnapshot snap = null) : base(reasonToExist, snap) {
+		public ConcurrentList(string reasonToExist, ExecutorDataSnapshot snap = null) : base(reasonToExist, snap) {
 			Snap		= snap;
 			InnerList	= new List<T>();
 		}

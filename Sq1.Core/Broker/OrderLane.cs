@@ -189,7 +189,7 @@ namespace Sq1.Core.Broker {
 				if (order.Alert == alert) {
 					found = order; break;
 				}
-				if (order.Alert.IsIdenticalOrderlessPriceless(alert)) {
+				if (order.Alert.IsIdentical_orderlessPriceless(alert)) {
 					found = order; break;
 				}
 			}
@@ -204,7 +204,7 @@ namespace Sq1.Core.Broker {
 			foreach (Order orderSimilar in this.InnerOrderList_recentFirst) {
 				if (orderSimilar.Alert == null) continue;	// orders deserialized might have no alerts attached
 				if (order == orderSimilar) continue;
-				if (order.Alert.IsIdenticalForOrdersPending(orderSimilar.Alert) == false) continue;
+				if (order.Alert.IsIdentical_forOrdersPending(orderSimilar.Alert) == false) continue;
 				found = orderSimilar;
 				break;
 			}

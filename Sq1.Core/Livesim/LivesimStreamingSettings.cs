@@ -26,6 +26,7 @@ namespace Sq1.Core.Livesim {
 		[JsonProperty]	public	int		AdaperDisconnectReconnectsAfterMillisMax;
 		[JsonProperty]	public	bool	AdaperDisconnectEnabled;
 
+		[JsonProperty]	public	bool	GenerateWideSpreadWithZeroSize;
 		[JsonProperty]	public	int		LevelTwoLevelsToGenerate;
 
 		public LivesimStreamingSettings(Strategy strategy) : base() {
@@ -35,6 +36,7 @@ namespace Sq1.Core.Livesim {
 			QuoteGenerationFreezeEnabled = true;
 			AdaperDisconnectEnabled = true;
 			LevelTwoLevelsToGenerate = 10;
+			GenerateWideSpreadWithZeroSize = false;
 		}
 	}
 }

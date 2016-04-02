@@ -99,7 +99,7 @@ namespace Sq1.Core.Repositories {
 				string key = this.ExtractKeyFromJsonAbsname(absFileName);
 				//v1 this.ItemsByName.Add(key, deserialized);
 				//v2
-				this.ItemAdd(deserialized);
+				this.ItemAdd(deserialized, this, false);
 			}
 		}
 		public virtual DATASOURCE DeserializeSingle(string jsonAbsfile) {
@@ -128,7 +128,8 @@ namespace Sq1.Core.Repositories {
 		public virtual void SerializeSingle(DATASOURCE itemStored, string jsonRelname = null) {
 			bool shouldRenameAndSave =
 				string.IsNullOrEmpty(	  itemStored.NameImStoredUnder_asUniqueKeyForRename) == false
-					&& itemStored.Name != itemStored.NameImStoredUnder_asUniqueKeyForRename;
+					&& itemStored.Name != itemStored.NameImStoredUnder_asUniqueKeyForRename
+					&& this.ItemsAsList.Contains(itemStored);
 
 			if (shouldRenameAndSave) {
 				string newName = itemStored.Name;
@@ -146,9 +147,9 @@ namespace Sq1.Core.Repositories {
 					});
 				File.WriteAllText(jsonAbsname, json);
 				// NO__USE_DeserializeJsonsInFolder()_MANUALLY_UPSTACK__AFTER_EACH_SerializeSingle();
-				//if (this.ItemsByName.ContainsKey(itemStored.Name) == false) {
-				//	this.ItemAdd(itemStored);
-				//}
+				if (this.ItemsByName.ContainsKey(itemStored.Name) == false) {
+					this.ItemAdd(itemStored, this, false);
+				}
 			} catch (Exception ex) {
 				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::SerializeSingle(): ";
 				string msg = "FAILED_SerializeSingle_WITH_this.jsonAbsname[" + jsonAbsname + "]";
@@ -168,7 +169,7 @@ namespace Sq1.Core.Repositories {
 		public string jsonRelnameForItem(DATASOURCE itemStored) {
 			return itemStored.Name + this.Extension;
 		}
-		public void ItemAdd(DATASOURCE itemCandidate, object sender = null, bool serialize = false) {
+		public void ItemAdd(DATASOURCE itemCandidate, object sender = null, bool serialize = true) {
 			if (sender == null) sender = this;
 			string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::ItemAdd(" + itemCandidate.Name + "): ";
 			try {

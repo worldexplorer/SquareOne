@@ -23,6 +23,9 @@ namespace Sq1.Core.Livesim {
 			} else if (whatIchecked == this.cbx_AdaperDisconnectEnabled) {
 				this.livesimStreamingSettings.AdaperDisconnectEnabled = whatIchecked.Checked;
 
+			} else if (whatIchecked == this.cbx_GenerateWideSpreadWithZeroSize) {
+				this.livesimStreamingSettings.GenerateWideSpreadWithZeroSize = whatIchecked.Checked;
+
 			} else {
 				Assembler.PopupException("ADD_TARGET_FOR_CLICK_PROPAGATION_FOR_whatIchecked[" + whatIchecked.Text + "]/[" + whatIchecked.Name + "]");
 				return;
@@ -101,6 +104,9 @@ namespace Sq1.Core.Livesim {
 
 			} else if (whereItyped == this.txt_AdaperDisconnectReconnectsAfterMillisMax) {
 				this.livesimStreamingSettings.AdaperDisconnectReconnectsAfterMillisMax = parsedInt;
+
+			} else if (whereItyped == this.txt_levelTwoLevelsToGenerate) {
+				this.livesimStreamingSettings.LevelTwoLevelsToGenerate = parsedInt;
 
 			} else {
 				Assembler.PopupException("ADD_TARGET_FOR_TYPING_PROPAGATION_FOR whereItyped[" + whereItyped.Text + "]/[" + whereItyped.Name + "]");

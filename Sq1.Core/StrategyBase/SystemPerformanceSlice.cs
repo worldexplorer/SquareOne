@@ -432,9 +432,9 @@ namespace Sq1.Core.StrategyBase {
 				positionsOpenAbsorbedBoth++;
 
 				double priceSpent = //(entryPosition.EntryAlert.PriceDeposited != -1) ? entryPosition.EntryAlert.PriceDeposited :
-					positionOpened.EntryFilledPrice;
+					positionOpened.EntryFilled_price;
 				//if (entryPosition.IsShort) priceSpent *= -1;
-				cashBalanceAtBar -= (priceSpent + positionOpened.EntryFilledCommission);
+				cashBalanceAtBar -= (priceSpent + positionOpened.EntryFilled_commission);
 				//if (entryPosition.IsExitFilled == false) continue;
 			}
 
@@ -467,14 +467,14 @@ namespace Sq1.Core.StrategyBase {
 				positionsClosedAbsorbedBoth++;
 
 				double priceReceived = //(exitPosition.ExitAlert.PriceDeposited != -1) ? exitPosition.ExitAlert.PriceDeposited :
-					positionClosed.ExitFilledPrice;
+					positionClosed.ExitFilled_price;
 				//if (exitPosition.IsShort) priceReceived *= -1;
-				cashBalanceAtBar		+= (priceReceived - positionClosed.ExitFilledCommission);
+				cashBalanceAtBar		+= (priceReceived - positionClosed.ExitFilled_commission);
 				netProfitAtBarBoth		+= positionClosed.NetProfit;
 				netProfitPctAtBarBoth	+= positionClosed.NetProfitPercent;
 				barsHeldAtBarBoth		+= positionClosed.BarsHeld;
 				if (positionClosed.NetProfit > 0) {
-					commissionWinners			+= positionClosed.ExitFilledCommission + positionClosed.EntryFilledCommission;
+					commissionWinners			+= positionClosed.ExitFilled_commission + positionClosed.EntryFilled_commission;
 					netProfitAtBarWinners		+= positionClosed.NetProfit;
 					netProfitPctAtBarWinners	+= positionClosed.NetProfitPercent;
 					barsHeldAtBarWinners		+= positionClosed.BarsHeld;
@@ -483,7 +483,7 @@ namespace Sq1.Core.StrategyBase {
 					this.curConsecWinners++;
 					if (this.MaxConsecWinners < this.curConsecWinners) this.MaxConsecWinners = this.curConsecWinners;
 				} else {
-					commissionLosers			+= positionClosed.ExitFilledCommission + positionClosed.EntryFilledCommission;
+					commissionLosers			+= positionClosed.ExitFilled_commission + positionClosed.EntryFilled_commission;
 					netProfitAtBarLosers		+= positionClosed.NetProfit;
 					netProfitPctAtBarLosers		+= positionClosed.NetProfitPercent;
 					barsHeldAtBarLosers			+= positionClosed.BarsHeld;

@@ -138,7 +138,7 @@ namespace Sq1.Strategies.Demo {
 				//	Debugger.Break();
 				//	#endif
 				//	StreamingDataSnapshot streaming = this.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot;
-				//	Quote lastQuote = streaming.LastQuoteCloneGetForSymbol(barStaticFormed.Symbol);
+				//	Quote quoteLast = streaming.LastQuoteCloneGetForSymbol(barStaticFormed.Symbol);
 				//	double priceForMarketOrder = streaming.LastQuoteGetPriceForMarketOrder(barStaticFormed.Symbol);
 				//}
 
@@ -151,7 +151,7 @@ namespace Sq1.Strategies.Demo {
 				log("Execute(): " + msg);
 			}
 
-			ExecutionDataSnapshot snap = base.Executor.ExecutionDataSnapshot;
+			ExecutorDataSnapshot snap = base.Executor.ExecutionDataSnapshot;
 
 			if (base.HasAlertsPendingOrPositionsOpenNow) {
 			//if (base.HasAlertsPendingAndPositionsOpenNow) {
@@ -232,14 +232,12 @@ namespace Sq1.Strategies.Demo {
 			}
 		}
 		public override void OnAlertKilled_callback(Alert alertKilled) {
-			#if DEBUG
-			Debugger.Break();
-			#endif
+			string msg = "OnAlertKilled_callback";
+			Assembler.PopupException(msg, null, false);
 		}
 		public override void OnAlertNotSubmitted_callback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
-			#if DEBUG
-			Debugger.Break();
-			#endif
+			string msg = "OnAlertNotSubmitted_callback";
+			Assembler.PopupException(msg, null, false);
 		}
 		public override void OnPositionOpened_callback(Position positionOpened) {
 			//if (positionOpened.EntryFilledBarIndex == 37) {
@@ -249,9 +247,8 @@ namespace Sq1.Strategies.Demo {
 			//}
 		}
 		public override void OnPositionOpened_prototypeSlTpPlaced_callback(Position positionOpenedByPrototype) {
-			#if DEBUG
-			Debugger.Break();
-			#endif
+			string msg = "OnPositionOpened_prototypeSlTpPlaced_callback";
+			Assembler.PopupException(msg, null, false);
 		}
 		public override void OnPositionClosed_callback(Position positionClosed) {
 			//if (positionClosed.EntryFilledBarIndex == 37) {

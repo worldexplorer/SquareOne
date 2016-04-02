@@ -34,7 +34,8 @@ namespace Sq1.Core.Charting {
 
 			if (streaming_nullReported != null) {
 				string branch = " DATA_SOURCE_HAS_STREAMING_ASSIGNED_1/2";
-				streaming_nullReported.UnsubscribeChart(symbolSafe, scaleIntervalSafe, this, branch + base.MsigForNpExceptions);
+				//streaming_nullReported.UnsubscribeChart(symbolSafe, scaleIntervalSafe, this, branch + base.MsigForNpExceptions);
+				streaming_nullReported.ChartStreamingConsumer_Unsubscribe(this, branch + base.MsigForNpExceptions);
 
 				//
 				bool downstreamMustBeUnSubscribed_reReadingToBe100sure = this.DownstreamSubscribed == false;
@@ -112,7 +113,7 @@ namespace Sq1.Core.Charting {
 				//	Assembler.PopupException(msg);
 				//}
 
-				streaming_nullReported.SubscribeChart(symbolSafe, scaleIntervalSafe, this, branch + base.MsigForNpExceptions);
+				streaming_nullReported.ChartStreamingConsumer_Subscribe(this, branch + base.MsigForNpExceptions);
 
 				downstreamAfterWeAttemptedToSubscribe_mustBeSubscribed = this.DownstreamSubscribed == true;	// reReadingToBe100sure => will go to final msg2
 				if (downstreamAfterWeAttemptedToSubscribe_mustBeSubscribed == false) {
@@ -163,18 +164,18 @@ namespace Sq1.Core.Charting {
 				return ret;
 			} }
 
-		public override void UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart) {
+		public override void UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirstAfterStart) {
 		}
-		public override void UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
+		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLastBeforeStop) {
 		}
 		public override void ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
 			if (barLastFormed == null) {
 				string msg = "WRONG_SHOW_BRO";
 				Assembler.PopupException(msg);
 			}
-			base.MsigForNpExceptions = " //ChartStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(" + barLastFormed.ToString() + ")";
+			base.MsigForNpExceptions = " //ChartStreamingConsumer.ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(" + barLastFormed.ToString() + ")";
 
-			var barsSafe = this.Bars_nullReported;
+			var barsSafe = this.Bars_nullReported;		// Livesim-clone inside the Executor on receiving side? Is this right?
 			#if DEBUG	// TEST_INLINE
 			if (barsSafe.ScaleInterval != barLastFormed.ScaleInterval) {
 				string msg = "SCALEINTERVAL_RECEIVED_DOESNT_MATCH_CHARTS ChartForm[" + base.ChartShadow_nullReported.Text + "]"
@@ -233,43 +234,45 @@ namespace Sq1.Core.Charting {
 				chartFormSafe.InvalidateAllPanels();
 			}
 		}
-		public override void ConsumeQuoteOfStreamingBar(Quote quote) {
-			base.MsigForNpExceptions = " //ChartStreamingConsumer.ConsumeQuoteOfStreamingBar(" + quote.ToString() + ")";
+		public override void ConsumeQuoteOfStreamingBar(Quote quoteClone_boundAttached) {
+			base.MsigForNpExceptions = " //ChartStreamingConsumer.ConsumeQuoteOfStreamingBar(" + quoteClone_boundAttached.ToString() + ")";
 
 			var barsSafe = this.Bars_nullReported;
 			#if DEBUG	// TEST_INLINE_BEGIN
-			if (barsSafe.ScaleInterval != quote.ParentBarStreaming.ScaleInterval) {
-				string msg = "SCALEINTERVAL_RECEIVED_DOESNT_MATCH_CHARTS ChartForm[" + base.ChartShadow_nullReported.Text + "]"
-					+ " bars[" + barsSafe.ScaleInterval + "] quote.ParentStreamingBar[" + quote.ParentBarStreaming.ScaleInterval + "]";
-				Assembler.PopupException(msg + base.MsigForNpExceptions, null, false);
+			if (barsSafe.BarStreaming_nullUnsafe != quoteClone_boundAttached.ParentBarStreaming) {
+				string msg1 = "BARS_STREAMING_MUST_BE_THE_SAME__NOT_CLONES STREAMING_BINDER_DIDNT_DO_ITS_JOB#3 bars[" + barsSafe
+					+ "] quote.ParentStreamingBar[" + quoteClone_boundAttached.ParentBarStreaming + "]";
+				Assembler.PopupException(msg1 + base.MsigForNpExceptions, null, false);
+
+				if (barsSafe.ScaleInterval != quoteClone_boundAttached.ParentBarStreaming.ScaleInterval) {
+					string msg = "SCALEINTERVAL_RECEIVED_DOESNT_MATCH_CHARTS ChartForm[" + base.ChartShadow_nullReported.Text + "]"
+						+ " bars[" + barsSafe.ScaleInterval + "] quote.ParentStreamingBar[" + quoteClone_boundAttached.ParentBarStreaming.ScaleInterval + "]";
+					Assembler.PopupException(msg + base.MsigForNpExceptions, null, false);
+					return;
+				}
+				if (barsSafe.Symbol != quoteClone_boundAttached.ParentBarStreaming.Symbol) {
+					string msg = "SYMBOL_RECEIVED_DOESNT_MATCH_CHARTS ChartForm[" + base.ChartShadow_nullReported.Text + "]"
+						+ " bars[" + barsSafe.Symbol + "] quote.ParentStreamingBar[" + quoteClone_boundAttached.ParentBarStreaming.Symbol + "]";
+					Assembler.PopupException(msg + base.MsigForNpExceptions);
+					return;
+				}
 				return;
 			}
-			if (barsSafe.Symbol != quote.ParentBarStreaming.Symbol) {
-				string msg = "SYMBOL_RECEIVED_DOESNT_MATCH_CHARTS ChartForm[" + base.ChartShadow_nullReported.Text + "]"
-					+ " bars[" + barsSafe.Symbol + "] quote.ParentStreamingBar[" + quote.ParentBarStreaming.Symbol + "]";
-				Assembler.PopupException(msg + base.MsigForNpExceptions);
-				return;
-			}
+
 			string msg2 = "BARS_IDENTICAL";
-			bool sameDOHLCV = barsSafe.BarStreaming_nullUnsafe.HasSameDOHLCVas(quote.ParentBarStreaming, "quote.ParentStreamingBar", "barsSafe.BarStreaming", ref msg2);
+			bool sameDOHLCV = barsSafe.BarStreaming_nullUnsafe.HasSameDOHLCVas(quoteClone_boundAttached.ParentBarStreaming, "quote.ParentStreamingBar", "barsSafe.BarStreaming", ref msg2);
 			if (sameDOHLCV == false) {
 				string msg = "FIXME_MUST_BE_THE_SAME EARLY_BINDER_DIDNT_DO_ITS_JOB#3 [" + msg2 + "] this.Executor.Bars.BarStreaming[" + barsSafe.BarStreaming_nullUnsafe
-					+ "].HasSameDOHLCVas(quote.ParentStreamingBar[" + quote.ParentBarStreaming + "])=false";
-				Assembler.PopupException(msg + base.MsigForNpExceptions);
-				return;
-			}
-			if (barsSafe.BarStreaming_nullUnsafe != quote.ParentBarStreaming) {
-				string msg = "SHOULD_THEY_BE_CLONES_OR_SAME? EARLY_BINDER_DIDNT_DO_ITS_JOB#3 bars[" + barsSafe
-					+ "] quote.ParentStreamingBar[" + quote.ParentBarStreaming + "]";
-				Assembler.PopupException(msg + base.MsigForNpExceptions);
+					+ "].HasSameDOHLCVas(quote.ParentStreamingBar[" + quoteClone_boundAttached.ParentBarStreaming + "])=false";
+				Assembler.PopupException(msg + base.MsigForNpExceptions, null, false);
 				return;
 			}
 			#endif	// TEST_INLINE_END
 
-			StreamingAdapter	streamingSafe	= this.StreamingAdapter_nullReported;
-			var					chartFormSafe	= base.ChartShadow_nullReported;
-			ScriptExecutor		executorSafe	= base.Executor_nullReported;
-			DataSource			dataSourceSafe	= this.DataSource_nullReported;
+			StreamingAdapter	streamingSafe		= this.StreamingAdapter_nullReported;
+			ChartShadow			chartControlSafe	= base.ChartShadow_nullReported;
+			ScriptExecutor		executorSafe		= base.Executor_nullReported;
+			DataSource			dataSourceSafe		= this.DataSource_nullReported;
 
 			// STREAMING_BAR_IS_ALREADY_MERGED_IN_EARLY_BINDER_WITH_QUOTE_RECIPROCALLY
 			//try {
@@ -278,61 +281,63 @@ namespace Sq1.Core.Charting {
 			//	Assembler.PopupException("didn't merge with Partial, continuing", e, false);
 			//}
 
-			if (quote.ParentBarStreaming.ParentBarsIndex > quote.ParentBarStreaming.ParentBars.Count) {
+			if (quoteClone_boundAttached.ParentBarStreaming.ParentBarsIndex > quoteClone_boundAttached.ParentBarStreaming.ParentBars.Count) {
 				string msg = "should I add a bar into Chart.Bars?... NO !!! already added";
 			}
 
 			// #1/4 launch update in GUI thread
 			//MOVED_TO_chartControl_BarAddedUpdated_ShouldTriggerRepaint chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = quote.Clone();
 			// TUNNELLED_TO_CHART_FORMS_MANAGER chartFormSafe.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(quote);
-			executorSafe.EventGenerator.RaiseOnStrategyPreExecute_oneQuote(quote);
+			executorSafe.EventGenerator.RaiseOnStrategyPreExecute_oneQuote(quoteClone_boundAttached);
 
 			// #2/4 execute strategy in the thread of a StreamingAdapter (DDE server for MockQuickProvider)
-			if (executorSafe.Strategy != null) {
-				if (executorSafe.IsStreamingTriggeringScript) {
-					try {
-						//v1
-						//bool wrongUsagePopup = executorSafe.Livesimulator.IsBacktestingNoLivesimNow;
-						//bool thereWereNeighbours = dataSourceSafe.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe, wrongUsagePopup);		// NOW_FOR_LIVE_MOCK_BUFFERING
-						//v2
-						bool thereWereNeighbours = dataSourceSafe
-							.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe, barsSafe);
+			if (executorSafe.Strategy == null) {
+				string msg = "WANNA_SAY_SOMETHING??? NPE_AHEAD?...";
+				Assembler.PopupException(msg);
+			}
+			if (executorSafe.IsStreamingTriggeringScript) {
+				try {
+					//v1
+					//bool wrongUsagePopup = executorSafe.Livesimulator.IsBacktestingNoLivesimNow;
+					//bool thereWereNeighbours = dataSourceSafe.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe, wrongUsagePopup);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					//v2
+					bool thereWereNeighbours = dataSourceSafe
+						.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe, barsSafe);
 
-						// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
-						ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = executorSafe.InvokeScript_onNewBar_onNewQuote(quote, true);
-						//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
-						if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
-							pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
-						}
-					} finally {
-						//v1 bool thereWereNeighbours = dataSourceSafe.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING
-						//v2
-						bool thereWereNeighbours = dataSourceSafe
-							.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe);
+					// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
+					ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = executorSafe.InvokeScript_onNewBar_onNewQuote(quoteClone_boundAttached, true);
+					//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
+					if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
+						pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
 					}
-				} else {
-					// UPDATE_REPORTS_OPEN_POSITIONS_WITH_EACH_QUOTE_DESPITE_STRATEGY_IS_NOT_TRIGGERED
-					// copypaste from Executor.ExecuteOnNewBarOrNewQuote()
-					ReporterPokeUnit pokeUnit_dontForgetToDispose = new ReporterPokeUnit(quote,
-						executorSafe.ExecutionDataSnapshot.AlertsNewAfterExec		.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
-						executorSafe.ExecutionDataSnapshot.PositionsOpenedAfterExec	.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
-						executorSafe.ExecutionDataSnapshot.PositionsClosedAfterExec	.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
-						executorSafe.ExecutionDataSnapshot.PositionsOpenNow			.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)")
-					);
-					using(pokeUnit_dontForgetToDispose) {
-						// FROM_ChartStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
-						if (pokeUnit_dontForgetToDispose.PositionsOpenNow.Count > 0) {
-							executorSafe.PerformanceAfterBacktest.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(executorSafe.ExecutionDataSnapshot.PositionsOpenNow);
-							executorSafe.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnit_dontForgetToDispose);
-						}
+				} finally {
+					//v1 bool thereWereNeighbours = dataSourceSafe.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING
+					//v2
+					bool thereWereNeighbours = dataSourceSafe
+						.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(executorSafe);
+				}
+			} else {
+				// UPDATE_REPORTS_OPEN_POSITIONS_WITH_EACH_QUOTE_DESPITE_STRATEGY_IS_NOT_TRIGGERED
+				// copypaste from Executor.ExecuteOnNewBarOrNewQuote()
+				ReporterPokeUnit pokeUnit_dontForgetToDispose = new ReporterPokeUnit(quoteClone_boundAttached,
+					executorSafe.ExecutionDataSnapshot.AlertsNewAfterExec		.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
+					executorSafe.ExecutionDataSnapshot.PositionsOpenedAfterExec	.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
+					executorSafe.ExecutionDataSnapshot.PositionsClosedAfterExec	.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
+					executorSafe.ExecutionDataSnapshot.PositionsOpenNow			.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)")
+				);
+				using(pokeUnit_dontForgetToDispose) {
+					// FROM_ChartStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
+					if (pokeUnit_dontForgetToDispose.PositionsOpenNow.Count > 0) {
+						executorSafe.PerformanceAfterBacktest.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(executorSafe.ExecutionDataSnapshot.PositionsOpenNow);
+						executorSafe.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnit_dontForgetToDispose);
 					}
 				}
 			}
 
 			// #3/4 trigger ChartControl to repaint candles with new positions and bid/ask lines
-			// ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
+			//DOESNT_WORK_WHEN_LIVESIMMING_OWN_IMPLEMETATION_THER ALREADY_HANDLED_BY_chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline
 			//if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming) {
-			//	chartFormSafe.ChartControl.InvalidateAllPanels();
+				chartControlSafe.InvalidateAllPanels();
 			//}
 
 			// MOVED_TO_ScriptExecutor_USING_RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background

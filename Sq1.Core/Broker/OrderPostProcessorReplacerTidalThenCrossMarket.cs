@@ -48,7 +48,7 @@ namespace Sq1.Core.Broker {
 								+ " by orderClose=[" + order + "]");
 							this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 						}
-						BrokerAdapter broker = ordersOpen[0].Alert.DataSource.BrokerAdapter;
+						BrokerAdapter broker = ordersOpen[0].Alert.DataSource_fromBars.BrokerAdapter;
 						//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersOpen });
 						this.orderProcessor.SubmitToBrokerAdapter_inNewThread(ordersOpen, broker);
 					}

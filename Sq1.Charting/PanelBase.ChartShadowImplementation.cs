@@ -18,7 +18,7 @@ namespace Sq1.Charting {
 				}
 				
 				barX -= this.BarWidthIncludingPadding_cached;
-				ChartControlFrozenForRendering seo = this.ChartControl.ScriptExecutorObjects;
+				ExecutorObjects_FrozenForRendering seo = this.ChartControl.ExecutorObjects_frozenForRendering;
 				if (seo.BarBackgroundsByBar.ContainsKey(barIndex) == false) continue;
 				
 				Rectangle barFullHeight = new Rectangle();
