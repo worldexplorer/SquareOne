@@ -150,7 +150,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
-			string threadName = "LIVESIM_QUOTE_GENERATING_FOR " + this.StreamingOriginal.Distributor_substitutedDuringLivesim.ReasonIwasCreated;
+			string threadName = "LIVESIM_QUOTE_GENERATING_FOR " + this.StreamingOriginal.DistributorCharts_substitutedDuringLivesim.ReasonIwasCreated;
 			Assembler.SetThreadName(threadName, "SETTING_LIVESIM_THREAD_NAME_FROM_STREAMING_IS_TOO_LATE__AND_DONT_DO_IT_TWICE");
 
 			//second Livesim gets NPE - fixed but the caveat is when you clicked on "stopping" disabled button, new livesim restarts with lots of NPE...)
