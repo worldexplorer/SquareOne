@@ -57,29 +57,29 @@ namespace Sq1.Core.Repositories {
 				if (market.ClearingTimespans.Count == 0) continue;
 				List<DateTime> holidaysTrimmed = new List<DateTime>();
 				foreach (MarketClearingTimespan clearing in market.ClearingTimespans) {
-					if (clearing.SuspendServerTimeOfDay.TimeOfDay < market.MarketOpenServerTime.TimeOfDay) {
+					if (clearing.SuspendServerTimeOfDay.TimeOfDay < market.MarketOpen_serverTime.TimeOfDay) {
 						ret += " adjusting: clearing[" + clearing + "].SuspendServerTimeOfDay.TimeOfDay["
 							+ clearing.SuspendServerTimeOfDay.TimeOfDay + "] < market.MarketOpenServerTime.TimeOfDay["
-							+ market.MarketOpenServerTime.TimeOfDay + "]";
-						clearing.SuspendServerTimeOfDay = market.MarketOpenServerTime;
+							+ market.MarketOpen_serverTime.TimeOfDay + "]";
+						clearing.SuspendServerTimeOfDay = market.MarketOpen_serverTime;
 					}
-					if (clearing.ResumeServerTimeOfDay.TimeOfDay < market.MarketOpenServerTime.TimeOfDay) {
+					if (clearing.ResumeServerTimeOfDay.TimeOfDay < market.MarketOpen_serverTime.TimeOfDay) {
 						ret += " adjusting: clearing[" + clearing + "].ResumeServerTimeOfDay.TimeOfDay["
 							+ clearing.ResumeServerTimeOfDay.TimeOfDay + "] < market.MarketOpenServerTime.TimeOfDay["
-							+ market.MarketOpenServerTime.TimeOfDay + "]";
-						clearing.ResumeServerTimeOfDay = market.MarketOpenServerTime;
+							+ market.MarketOpen_serverTime.TimeOfDay + "]";
+						clearing.ResumeServerTimeOfDay = market.MarketOpen_serverTime;
 					}
-					if (clearing.SuspendServerTimeOfDay.TimeOfDay > market.MarketCloseServerTime.TimeOfDay) {
+					if (clearing.SuspendServerTimeOfDay.TimeOfDay > market.MarketClose_serverTime.TimeOfDay) {
 						ret += " adjusting: clearing[" + clearing + "].SuspendServerTimeOfDay.TimeOfDay["
 							+ clearing.SuspendServerTimeOfDay.TimeOfDay + "] > market.MarketCloseServerTime.TimeOfDay["
-							+ market.MarketCloseServerTime.TimeOfDay + "]";
-						clearing.SuspendServerTimeOfDay = market.MarketCloseServerTime;
+							+ market.MarketClose_serverTime.TimeOfDay + "]";
+						clearing.SuspendServerTimeOfDay = market.MarketClose_serverTime;
 					}
-					if (clearing.ResumeServerTimeOfDay.TimeOfDay > market.MarketCloseServerTime.TimeOfDay) {
+					if (clearing.ResumeServerTimeOfDay.TimeOfDay > market.MarketClose_serverTime.TimeOfDay) {
 						ret += " adjusting: clearing[" + clearing + "].ResumeServerTimeOfDay.TimeOfDay["
 							+ clearing.ResumeServerTimeOfDay.TimeOfDay + "] > market.MarketCloseServerTime.TimeOfDay["
-							+ market.MarketCloseServerTime.TimeOfDay + "]";
-						clearing.ResumeServerTimeOfDay = market.MarketCloseServerTime;
+							+ market.MarketClose_serverTime.TimeOfDay + "]";
+						clearing.ResumeServerTimeOfDay = market.MarketClose_serverTime;
 					}
 				}
 			}
@@ -106,8 +106,8 @@ namespace Sq1.Core.Repositories {
 				MarketInfo mockMarket = new MarketInfo() {
 					Name = "MOCK",
 					Description = "23:59 hours open",
-					MarketOpenServerTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0),// 10, 30, 0);
-					MarketCloseServerTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59)
+					MarketOpen_serverTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0),// 10, 30, 0);
+					MarketClose_serverTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59)
 					,TimeZoneName = "Russian Standard Time"
 					//,TimeZoneInfo = TimeZoneInfo.CreateCustomTimeZone("MSK_CUSTOM", new TimeSpan(4, 0, 0),
 					//	"Moscow Daylight (UTC+04:00)", "Moscow Standard non-auto-adjusting-for-winter")
@@ -120,8 +120,8 @@ namespace Sq1.Core.Repositories {
 				MarketInfo russianMarket = new MarketInfo() {
 					Name = MarketDefaultName,
 					Description = "RTS Index Futures and Options Market (RIM3)",
-					MarketOpenServerTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 10, 0, 0),
-					MarketCloseServerTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 50, 0)
+					MarketOpen_serverTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 10, 0, 0),
+					MarketClose_serverTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 50, 0)
 					,TimeZoneName = "Russian Standard Time"
 					//,TimeZoneInfo = TimeZoneInfo.CreateCustomTimeZone("MSK_CUSTOM", new TimeSpan(4, 0, 0),
 					//	"Moscow Daylight (UTC+04:00)", "Moscow Standard non-auto-adjusting-for-winter")
@@ -143,8 +143,8 @@ namespace Sq1.Core.Repositories {
 				MarketInfo usMarket = new MarketInfo() {
 					Name = "US",
 					Description = "NYSE, Nasdaq and Amex equities",
-					MarketOpenServerTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 9, 30, 0),
-					MarketCloseServerTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 16, 0, 0),
+					MarketOpen_serverTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 9, 30, 0),
+					MarketClose_serverTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 16, 0, 0),
 					TimeZoneName = "Eastern Standard Time"
 				};
 				for (int i = 2007; i < 2020; i++) {

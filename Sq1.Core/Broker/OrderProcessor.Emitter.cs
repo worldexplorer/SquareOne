@@ -63,11 +63,11 @@ namespace Sq1.Core.Broker {
 					continue;
 				}
 				if (broker == null) {
-					broker = alert.DataSource.BrokerAdapter;
+					broker = alert.DataSource_fromBars.BrokerAdapter;
 				} else {
-					if (broker != alert.DataSource.BrokerAdapter) {
+					if (broker != alert.DataSource_fromBars.BrokerAdapter) {
 						string msg = "CROSS_EXCHANGE_ALERTS_NYI alertsBatch MUST contain alerts for the same broker"
-							+ "; prevAlert.Broker[" + broker + "] while thisAlert.DataSource.BrokerAdapter[" + alert.DataSource.BrokerAdapter + "]";
+							+ "; prevAlert.Broker[" + broker + "] while thisAlert.DataSource.BrokerAdapter[" + alert.DataSource_fromBars.BrokerAdapter + "]";
 						throw new Exception(msg);
 					}
 				}
@@ -116,13 +116,13 @@ namespace Sq1.Core.Broker {
 			}
 			if (orders_polarClosingFirst.Count > 0 && orders_polarOpeningSecond.Count == 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry orders_polarClosingFirst[" + orders_polarClosingFirst.Count + "] through [" + broker + "]";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 				this.SubmitToBrokerAdapter_inNewThread(orders_polarClosingFirst, broker);
 				return orders_polarClosingFirst;
 			}
 			if (orders_polarClosingFirst.Count == 0 && orders_polarOpeningSecond.Count > 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry orders_polarOpeningSecond[" + orders_polarOpeningSecond.Count + "] through [" + broker + "]";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 				//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersOpening });
 				this.SubmitToBrokerAdapter_inNewThread(orders_polarOpeningSecond, broker);
 				return orders_polarOpeningSecond;
@@ -355,7 +355,7 @@ namespace Sq1.Core.Broker {
 				return emitted;
 			};
 
-			BrokerAdapter broker = killerOrder_withRefToVictim.Alert.DataSource.BrokerAdapter;
+			BrokerAdapter broker = killerOrder_withRefToVictim.Alert.DataSource_fromBars.BrokerAdapter;
 			broker.Order_killPending_usingKiller(killerOrder_withRefToVictim);
 			emitted = true;
 			return emitted;

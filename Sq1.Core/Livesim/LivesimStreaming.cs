@@ -20,7 +20,7 @@ namespace Sq1.Core.Livesim {
 		//[JsonIgnore]				ChartShadow					chartShadow_notUsed;
 		[JsonIgnore]				LivesimDataSource			livesimDataSource			{ get { return base.DataSource as LivesimDataSource; } }
 		[JsonIgnore]	public		Livesimulator				Livesimulator				{ get { return this.livesimDataSource.Executor.Livesimulator; } }
-		[JsonIgnore]	internal	LivesimStreamingSettings	LivesimStreamingSettings	{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
+		[JsonIgnore]	public		LivesimStreamingSettings	LivesimStreamingSettings	{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
 
 		//v2 HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2
 		//[JsonIgnore]	protected	LivesimBroker				LivesimBroker				{ get { return this.livesimDataSource.BrokerAsLivesim_nullUnsafe; } }
@@ -44,10 +44,10 @@ namespace Sq1.Core.Livesim {
 			base.StreamingSolidifier		= null;
 			base.QuotePumpSeparatePushingThreadEnabled = true;
 			this.UnpausedMre				= new ManualResetEvent(true);
-			this.LevelTwoGenerator			= new LevelTwoGeneratorLivesim(this);
+			//USE_ATOMIC_FROM_BASE this.LevelTwoGenerator			= new LevelTwoGeneratorLivesim(this);
 			this.LivesimStreamingSpoiler	= new LivesimStreamingSpoiler(this);
 		}
-		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, StreamingAdapter streamingOriginalPassed, string symbolLivesimming) {
+		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, StreamingAdapter streamingOriginalPassed, string symbol_iAmLivesimming) {
 			if (livesimDataSource == null) {
 				string msg = "DID_ACTIVATOR_PICK_THE_WRONG_CONSTRUCTOR?...";
 				Assembler.PopupException(msg);
@@ -56,12 +56,18 @@ namespace Sq1.Core.Livesim {
 			base.DataSource = livesimDataSource;
 			this.StreamingOriginal = streamingOriginalPassed;
 
-			LevelTwoGeneratorLivesim levelTwoGeneratorLivesim = this.LevelTwoGenerator as LevelTwoGeneratorLivesim;
-			if (levelTwoGeneratorLivesim == null) {
-				string msg = "WHERE_AM_I? NPE_GUARANTEED";
-				Assembler.PopupException(msg);
-			}
-			levelTwoGeneratorLivesim.InitializeLevelTwo(symbolLivesimming);
+			//v1 USE_ATOMIC_FROM_BASE
+			//LevelTwoGeneratorLivesim levelTwoGeneratorLivesim = this.LevelTwoGenerator as LevelTwoGeneratorLivesim;
+			//if (levelTwoGeneratorLivesim == null) {
+			//    string msg = "WHERE_AM_I? NPE_GUARANTEED";
+			//    Assembler.PopupException(msg);
+			//}
+			//levelTwoGeneratorLivesim.InitializeLevelTwo(symbol_iAmLivesimming);
+			//v2
+			base.StreamingDataSnapshot.Initialize_levelTwo_lastPrevQuotes_forSymbol(symbol_iAmLivesimming);
+			LevelTwo sureItExists = base.StreamingDataSnapshot.GetLevelTwo_forSymbol_nullUnsafe(symbol_iAmLivesimming);
+			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(symbol_iAmLivesimming);
+			this.LevelTwoGenerator.Initialize(sureItExists, symbolInfo, symbolInfo.Level2PriceLevels, this.ToString());
 		}
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			LivesimStreamingEditorEmpty emptyEditor = new LivesimStreamingEditorEmpty();
@@ -73,7 +79,8 @@ namespace Sq1.Core.Livesim {
 		// invoked after LivesimFormShow(), but must have meaning "Executor.Bars changed"...
 		public void PushSymbolInfo_toLevelTwoGenerator(SymbolInfo symbolInfo_fromExecutor) {
 			int howMany = this.LivesimStreamingSettings.LevelTwoLevelsToGenerate;
-			this.LevelTwoGenerator.Initialize(symbolInfo_fromExecutor, howMany);
+			LevelTwo levelTwo_livesimsOwn_notQuikStreamings = this.StreamingDataSnapshot.GetLevelTwo_forSymbol_nullUnsafe(symbolInfo_fromExecutor.Symbol);
+			this.LevelTwoGenerator.Initialize(levelTwo_livesimsOwn_notQuikStreamings, symbolInfo_fromExecutor, howMany, this.ToString());
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
@@ -92,22 +99,19 @@ namespace Sq1.Core.Livesim {
 			if (quote.IamInjectedToFillPendingAlerts) {
 				string msg = "PROOF_THAT_IM_SERVING_ALL_QUOTES__REGULAR_AND_INJECTED";
 			}
-			this.LevelTwoGenerator.GenerateForQuote(quote);
+
+
+			this.LevelTwoGenerator.GenerateForQuote(quote, this.LivesimStreamingSettings.LevelTwoLevelsToGenerate);
 			base.PushQuoteGenerated(quote);
 	
-			//v2 MOVED_TO_InvokeScript_onNewBar_onNewQuote() HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2
-			//AlertList notYetScheduled = this.LivesimBrokerSnap.Alerts_thatQuoteWillFill_forSchedulingDelayedFill(quote);
-			//if (notYetScheduled.Count > 0) {
-			//    if (quote.ParentBarStreaming != null) {
-			//        string msg = "I_MUST_HAVE_IT_UNATTACHED_HERE";
-			//        //Assembler.PopupException(msg);
-			//    }
-			//    this.LivesimBroker.ConsumeQuoteUnattached_toFillPending(quote, notYetScheduled);
-			//} else {
-			//    string msg = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
-			//}
-
 			this.LivesimStreamingSpoiler.Spoil_after_PushQuoteGenerated();
+
+			if (this.LivesimStreamingSettings.GenerateWideSpreadWithZeroSize) {
+				// generate again another one for same quote, widen the spread and send it; each second level2 you must see new unfilled quote is generated by reconstructSpreadQuote_pushToStreaming_ifChanged();
+				this.LevelTwoGenerator.GenerateForQuote(quote, this.LivesimStreamingSettings.LevelTwoLevelsToGenerate);
+				base.PushQuoteGenerated(quote);
+			}
+
 			this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
 		}
 
@@ -119,7 +123,7 @@ namespace Sq1.Core.Livesim {
 				string msg = "RELAX_IM_NOT_FORWARING_IT_TO_BASE_BUT_I_HANDLE_InitializeDataSource()_IN_LivesimStreaming";
 			}
 		}
-		protected override void SolidifierAllSymbolsSubscribe_onAppRestart() {
+		protected override void SolidifierSubscribe_toAllSymbols_ofDataSource_onAppRestart() {
 			string msg = "LIVESIM_MUST_NOT_SAVE_ANY_BARS EMPTY_HERE_TO_PREVENT_BASE_FROM_SUBSCRIBING_SOLIDIFIER";
 		}
 		#endregion
@@ -142,13 +146,14 @@ namespace Sq1.Core.Livesim {
 			this.IsDisposed = true;
 		}
 
-		public void				Original_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor() {
-			bool chartBarsSubscribeSelected = true;		//, this.Executor.Strategy.ScriptContextCurrent.DownstreamSubscribed
-			this.StreamingOriginal.	SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(this, chartBarsSubscribeSelected);
+		public void				Original_SubstituteDistributor_forSymbolLivesimming_extractChartIntoSeparateDistributor_subscribe() {
+			bool chartBars_subscribeSelected_cbxChecked_whenLivesimStarts = true;
+				 chartBars_subscribeSelected_cbxChecked_whenLivesimStarts = this.Livesimulator.Executor.Strategy.ScriptContextCurrent.DownstreamSubscribed;
+			this.StreamingOriginal.	SubstituteDistributor_withOneSymbolLivesimming__extractChart_intoSeparateDistributor(this, chartBars_subscribeSelected_cbxChecked_whenLivesimStarts);
 		}
 
-		public void				Original_SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor() {
-			this.StreamingOriginal.	SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor();
+		public void				Original_SubstituteDistributor_forSymbolLivesimming_restoreOriginalDistributor() {
+			this.StreamingOriginal.	SubstituteDistributor_withOneSymbolLivesimming_restoreOriginalDistributor();
 		}
 
 		//mandantory DataSource.Streaming=LivesimStreamingDefault allowed Streaming implementors to play with BarsOriginal
@@ -162,66 +167,5 @@ namespace Sq1.Core.Livesim {
 		public override bool BacktestContextRestore_unpauseQueueForBacktest_leavePumpUnPausedForLivesimDefault_overrideable(ScriptExecutor executor) {
 			return false;
 		}
-
-		//public void SubscribeLivesimQuoteBarConsumer_toDataDistributor_replacedForLivesim(Livesimulator livesimulator) {
-		//	if (base.DataDistributorsAreReplacedByLivesim_ifYesDontPauseNeighborsOnBacktestContextInitRestore == false) return;
-
-		//	bool runningOnLivesimStreamingDefault = this.StreamingOriginal is LivesimStreamingDefault;
-		//		 runningOnLivesimStreamingDefault = false;
-		//	if (runningOnLivesimStreamingDefault) return;
-	
-		//	// will allow to reach DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol()
-		//	// in PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread()
-
-		//	// DONT_DELETE NOT_A_GARBAGE
-		//	livesimulator.BarsSimulating.DataSource = livesimulator.DataSourceAsLivesim_nullUnsafe;	// may not need to restore (base.BarsSimulating is not needed after Livesim is done)
-		//	// DONT_DELETE NOT_A_GARBAGE
-
-			
-		//	string					symbol			= livesimulator.BarsSimulating.Symbol;
-		//	BarScaleInterval		scaleInterval	= livesimulator.BarsSimulating.ScaleInterval;
-		//	StreamingConsumer		chartless		= livesimulator.LivesimQuoteBarConsumer;
-		//	ScriptExecutor			executor		= livesimulator.Executor;
-
-		//	//DataDistributor distr = livesimulator.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim;
-		//	DataDistributor distr = base.DataDistributor_replacedForLivesim;
-		//	bool livesimIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count > 0;
-		//	if (livesimIsSubscribed_toBarsSimulated == false) {
-		//		bool willPumpInNewThread = true;	// false led to deadlock on BeginInvoke both in DDE Server and in my GuiThread
-		//		distr.ConsumerQuoteSubscribe(symbol, scaleInterval, chartless, willPumpInNewThread);
-		//		distr.ConsumerBarSubscribe	(symbol, scaleInterval, chartless, willPumpInNewThread);
-		//		distr.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(symbol, scaleInterval);
-		//	} else {
-		//		string msg1 = " USER_SUBSCRIBED_CHART_TO_QUOTES&BARS"
-		//			+ " 1) DID_YOU_INVOKE_ALREADY_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()"
-		//			+ " 2) DUPLICATE_CALL_TO_SimulationPreBarsSubstitute_overrideable()";
-		//		Assembler.PopupException(msg1, null, false);
-		//	}
-		//}
-
-		//public void UnSubscribeLivesimQuoteBarConsumer_fromDataDistributor_replacedForLivesim(Livesimulator livesimulator) {
-		//	if (base.DataDistributorsAreReplacedByLivesim_ifYesDontPauseNeighborsOnBacktestContextInitRestore == false) return;
-
-		//	bool runningOnLivesimStreamingDefault = this.StreamingOriginal is LivesimStreamingDefault;
-		//		 runningOnLivesimStreamingDefault = false;
-		//	if (runningOnLivesimStreamingDefault) return;
-
-
-		//	//DataDistributor distr = this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim;
-		//	DataDistributor distr = base.DataDistributor_replacedForLivesim;
-		//	bool livesimIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count == 1;
-		//	if (livesimIsSubscribed_toBarsSimulated) {
-		//		string					symbol			= livesimulator.BarsSimulating.Symbol;
-		//		BarScaleInterval		scaleInterval	= livesimulator.BarsSimulating.ScaleInterval;
-		//		StreamingConsumer		chartless		= livesimulator.LivesimQuoteBarConsumer;
-
-		//		distr.ConsumerQuoteUnsubscribe	(symbol, scaleInterval, chartless);
-		//		distr.ConsumerBarUnsubscribe	(symbol, scaleInterval, chartless);
-		//	} else {
-		//		string msg1 = "WHO_UNSUBSCRIBED_LIVESIM.STREAMING_TO_BARS_SIMULATING??? DUPLICATE_CALL_TO_SimulationPostBarsRestore_overrideable()";
-		//		Assembler.PopupException(msg1);
-		//	}
-	
-		//}
 	}
 }

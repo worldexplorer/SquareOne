@@ -2,7 +2,7 @@
 using System.Threading;
 
 namespace Sq1.Core.Execution {
-	public partial class ExecutionDataSnapshot : IDisposable {
+	public partial class ExecutorDataSnapshot : IDisposable {
 			ManualResetEvent	ScriptRunningOnBarStaticLast					;//	{ get; private set; }
 			ManualResetEvent	ScriptRunningOnNewQuote							;//	{ get; private set; }
 			ManualResetEvent	ScriptRunningOnAlertFilled						;//	{ get; private set; }

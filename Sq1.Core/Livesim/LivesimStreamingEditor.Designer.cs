@@ -109,11 +109,16 @@ namespace Sq1.Core.Livesim {
 			this.textBox3 = new System.Windows.Forms.TextBox();
 			this.textBox4 = new System.Windows.Forms.TextBox();
 			this.label27 = new System.Windows.Forms.Label();
+			this.cbx_GenerateWideSpreadWithZeroSize = new System.Windows.Forms.CheckBox();
+			this.groupBox6 = new System.Windows.Forms.GroupBox();
+			this.label28 = new System.Windows.Forms.Label();
+			this.txt_levelTwoLevelsToGenerate = new System.Windows.Forms.TextBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
 			this.groupBox4.SuspendLayout();
 			this.groupBox5.SuspendLayout();
+			this.groupBox6.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// groupBox1
@@ -678,19 +683,62 @@ namespace Sq1.Core.Livesim {
 			this.label27.TabIndex = 20;
 			this.label27.Text = "quotes generated";
 			// 
+			// cbx_GenerateWideSpreadWithZeroSize
+			// 
+			this.cbx_GenerateWideSpreadWithZeroSize.Checked = true;
+			this.cbx_GenerateWideSpreadWithZeroSize.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbx_GenerateWideSpreadWithZeroSize.Location = new System.Drawing.Point(6, 45);
+			this.cbx_GenerateWideSpreadWithZeroSize.Name = "cbx_GenerateWideSpreadWithZeroSize";
+			this.cbx_GenerateWideSpreadWithZeroSize.Size = new System.Drawing.Size(333, 17);
+			this.cbx_GenerateWideSpreadWithZeroSize.TabIndex = 31;
+			this.cbx_GenerateWideSpreadWithZeroSize.Text = "Generate Wider Spread With Zero Size";
+			this.cbx_GenerateWideSpreadWithZeroSize.UseVisualStyleBackColor = true;
+			this.cbx_GenerateWideSpreadWithZeroSize.CheckedChanged += new System.EventHandler(this.anyCheckBox_CheckedChanged);
+			// 
+			// groupBox6
+			// 
+			this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox6.Controls.Add(this.label28);
+			this.groupBox6.Controls.Add(this.cbx_GenerateWideSpreadWithZeroSize);
+			this.groupBox6.Controls.Add(this.txt_levelTwoLevelsToGenerate);
+			this.groupBox6.Location = new System.Drawing.Point(3, 467);
+			this.groupBox6.Name = "groupBox6";
+			this.groupBox6.Size = new System.Drawing.Size(345, 64);
+			this.groupBox6.TabIndex = 31;
+			this.groupBox6.TabStop = false;
+			this.groupBox6.Text = "Level2 generation";
+			// 
+			// label28
+			// 
+			this.label28.Location = new System.Drawing.Point(6, 22);
+			this.label28.Name = "label28";
+			this.label28.Size = new System.Drawing.Size(96, 17);
+			this.label28.TabIndex = 28;
+			this.label28.Text = "Depth to generate";
+			// 
+			// txt_levelTwoLevelsToGenerate
+			// 
+			this.txt_levelTwoLevelsToGenerate.Location = new System.Drawing.Point(119, 19);
+			this.txt_levelTwoLevelsToGenerate.Name = "txt_levelTwoLevelsToGenerate";
+			this.txt_levelTwoLevelsToGenerate.Size = new System.Drawing.Size(30, 20);
+			this.txt_levelTwoLevelsToGenerate.TabIndex = 14;
+			this.txt_levelTwoLevelsToGenerate.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			// 
 			// LivesimStreamingEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoScroll = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Controls.Add(this.groupBox6);
 			this.Controls.Add(this.groupBox5);
 			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.Name = "LivesimStreamingEditor";
-			this.Size = new System.Drawing.Size(351, 466);
+			this.Size = new System.Drawing.Size(351, 537);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
 			this.groupBox2.ResumeLayout(false);
@@ -701,6 +749,8 @@ namespace Sq1.Core.Livesim {
 			this.groupBox4.PerformLayout();
 			this.groupBox5.ResumeLayout(false);
 			this.groupBox5.PerformLayout();
+			this.groupBox6.ResumeLayout(false);
+			this.groupBox6.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -727,5 +777,9 @@ namespace Sq1.Core.Livesim {
 		private System.Windows.Forms.TextBox textBox3;
 		private System.Windows.Forms.TextBox textBox4;
 		private System.Windows.Forms.Label label27;
+		private System.Windows.Forms.CheckBox cbx_GenerateWideSpreadWithZeroSize;
+		private System.Windows.Forms.GroupBox groupBox6;
+		private System.Windows.Forms.Label label28;
+		private System.Windows.Forms.TextBox txt_levelTwoLevelsToGenerate;
 	}
 }

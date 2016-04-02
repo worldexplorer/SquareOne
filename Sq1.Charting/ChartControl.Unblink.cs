@@ -66,7 +66,7 @@ namespace Sq1.Charting {
 		//	bool ret = false;
 		//	if (this.Bars == null) return ret;
 		//	try {
-		//		ret = this.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim.ConsumerQuoteIsSubscribed(
+		//		ret = this.Executor.DataSource_fromBars.StreamingAdapter.Distributor_replacedForLivesim.ConsumerQuoteIsSubscribed(
 		//			this.Bars.Symbol, this.Bars.ScaleInterval, this.ChartStreamingConsumer, false);
 		//	} catch (Exception ex) {
 		//		string msg = "1)NYI__CHART_ROW_SHOULD_CHANGE_BACKGROUND_WHEN_NO_CHARTS_DISPLAY_THEM"

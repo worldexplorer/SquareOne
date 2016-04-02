@@ -114,15 +114,15 @@ namespace Sq1.Core.Broker {
 			}
 
 			if (priceFill != 0) {
-				if (order.PriceFill != 0) {
+				if (order.PriceFilled != 0) {
 					string msg1 = "ORDER_WAS_ALREADY_FILLED NYI:PARTIAL_FILL_WITH_DIFFERENT_FILL_PRICE";
 					Assembler.PopupException(msg1, null, false);
 					order.appendMessage(msg1);
 
 					bool marketWasSubstituted = order.Alert.MarketLimitStop == MarketLimitStop.Limit
 							&& order.Alert.Bars.SymbolInfo.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
-					if (order.PriceFill != priceFill && marketWasSubstituted == false) {
-						string msg = "got priceFill[" + priceFill + "] while order.PriceFill=[" + order.PriceFill + "]"
+					if (order.PriceFilled != priceFill && marketWasSubstituted == false) {
+						string msg = "got priceFill[" + priceFill + "] while order.PriceFill=[" + order.PriceFilled + "]"
 							+ "; weird for Order.Alert.MarketLimitStop=[" + order.Alert.MarketLimitStop + "]";
 						order.appendMessage(msg);
 					}

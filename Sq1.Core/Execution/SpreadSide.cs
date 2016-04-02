@@ -1,5 +1,5 @@
 ﻿namespace Sq1.Core.Execution {
-	public enum OrderSpreadSide {
+	public enum SpreadSide {
 		ERROR		= 0,
 		Unknown		= 1,
 		AskTidal	= 2,

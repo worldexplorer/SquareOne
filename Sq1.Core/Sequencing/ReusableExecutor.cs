@@ -19,7 +19,7 @@ namespace Sq1.Core.Sequencing {
 			base.Sequencer = scriptExecutor.Sequencer;		// this one has event handlers attached
 			//NOPE_I_NEED_SEQUENCER_FOR_EXECUTOR_ETHALON WILL_BE_CLONED_FOR_EACH_TO_HAVE_FRESH_SCRIPT_AND_EMPTY_CURRENT_CONTEXT
 			base.Strategy	= scriptExecutor.Strategy.CloneMinimalForEachThread_forEachDisposableExecutorInSequencerPool();
-			base.SetBars(scriptExecutor.Bars.SafeCopy_oneCopyForEachDisposableExecutors(reasonToExist));	// frozen, streamingBar detached
+			base.SetBars(scriptExecutor.Bars.SafeCopy_oneCopyForEachDisposableExecutors(reasonToExist), true);	// frozen, streamingBar detached
 
 			// DO_I_NEED_IT??_MOVE_TO_BASE? dummy empty one instance for all spawned
 			this.ChartShadow = new ChartShadow();

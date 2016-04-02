@@ -28,14 +28,18 @@ namespace Sq1.Core.Livesim {
 				ToolStripButton			btnPauseResume;
 
 				ChartShadow				chartShadow;
-		public	LivesimQuoteBarConsumer LivesimQuoteBarConsumer			{ get; private set; }
+		public	LivesimStreamingConsumer LivesimQuoteBarConsumer			{ get; private set; }
+
+		public	bool					IsPaused_waitForever_untilUnpaused	{ get {
+			return this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.UnpausedMre.WaitOne(-1);
+		} }
 
 
 		public Livesimulator(ScriptExecutor executor) : base(executor) {
 			base.BacktestDataSource			= new LivesimDataSource(executor);
 			this.DataSourceAsLivesim_nullUnsafe.Initialize(Assembler.InstanceInitialized.OrderProcessor);
 			// MOVED_TO_DATASOURCE base.SeparatePushingThreadEnabled = false;
-			this.LivesimQuoteBarConsumer	= new LivesimQuoteBarConsumer(this);
+			this.LivesimQuoteBarConsumer	= new LivesimStreamingConsumer(this);
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_YOU_THEN!!! base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
 		}
 
@@ -82,7 +86,7 @@ namespace Sq1.Core.Livesim {
 
 				#region MOVED_BACK_DOWNSTACK NEVER_COMMENT_OUT__I_SPENT_TWO_DAYS_TO_DEBUG_IT
 				//string reasonToPauseSymbol = "SYMBOL_PAUSED_LIVESIMMING-" + this.Executor.ToString();
-				//this.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim.AllQuotePumps_Pause(reasonToPauseSymbol);
+				//this.Executor.DataSource_fromBars.StreamingAdapter.Distributor_replacedForLivesim.AllQuotePumps_Pause(reasonToPauseSymbol);
 				int pumpsPaused = this.Executor.DataSource_fromBars.LivesimStreamingDefault_PumpPause_freezeOtherConsumers_forSameSymbolScale(this.Executor);
 				if (pumpsPaused == 0) {
 					string msg = "BARS_UNSUBSCRIBED OR_DONT_YOU_HAVE_CHARTS_OPEN_FOR_STRATEGY_LIVESIMMING?";
@@ -90,8 +94,8 @@ namespace Sq1.Core.Livesim {
 				}
 				#endregion
 
-				StreamingAdapter originalAdapterFromDataSource = this.Executor.DataSource_fromBars.StreamingAdapter;
-				if (originalAdapterFromDataSource == null) {
+				StreamingAdapter originalAdapter_fromDataSource = this.Executor.DataSource_fromBars.StreamingAdapter;
+				if (originalAdapter_fromDataSource == null) {
 					string msg = "STREAMING_ADAPTER_MUST_BE_AT_LEAST_StreamingLivesimDefault"
 						+ " ASSIGN_IT_IN_DATASOURCE_EDITOR_FOR[" + this.Executor.DataSource_fromBars + "]";
 					Assembler.PopupException(msg);
@@ -99,10 +103,10 @@ namespace Sq1.Core.Livesim {
 					return;
 				}
 
-				this.DataSourceAsLivesim_nullUnsafe.PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource();	// no need to restore (this.DataSourceAsLivesim_nullUnsafe will be re-initialized at next Livesim)
+				this.DataSourceAsLivesim_nullUnsafe.Propagate_preInstantiated_ownImplementationLivesimAdapters_intoLivesimDataSource();	// no need to restore (this.DataSourceAsLivesim_nullUnsafe will be re-initialized at next Livesim)
 				// NO!!! KEEP_THEM_TO_ORIGINAL_DATASOURCE_BECAUSE_DDE_SERVER_DELIVERS_LEVEL2_TO_ORIGINAL_DATA_SNAPSHOT base.BarsSimulating.DataSource = this.DataSourceAsLivesim_nullUnsafe;	// will need to restore (base.BarsSimulating is not needed after Livesim is done)
-				this.DataSourceAsLivesim_nullUnsafe.InitializeLivesim_tunnelToBacktest(base.Executor.ToString(), base.BarsSimulating, spreadModeler);
-				base.BarsSimulating.DataSource = this.DataSourceAsLivesim_nullUnsafe;		// DISTRIBUTORS_INSIDE_SINGLE_STREAMING_ARE_REPLACED_AND_DDE_SERVER_IS_FED_VIA_FAKE_DDE_CLIENT
+				this.DataSourceAsLivesim_nullUnsafe.InitializeLivesim_tunnelToBacktest(base.Executor.ToString(), base.BarsSimulating, spreadModeler);		// NOW_OWN_IMPLEMENTATION_WILL_GENERATE_QUOTES_FOR_BarsSimulating
+				// MAKE_DDE_CLIENT_SERVER_WORK base.BarsSimulating.DataSource = this.DataSourceAsLivesim_nullUnsafe;		// DISTRIBUTORS_INSIDE_SINGLE_STREAMING_ARE_REPLACED_AND_DDE_SERVER_IS_FED_VIA_FAKE_DDE_CLIENT
 				//DURING_LIVESIM_I_LEFT_STREAMING_EXACTLY_THE_SAME_AS_FOR_LIVE_TRADING_TO_TEST_IT!!! this.StreamingOriginal = this.Executor.DataSource.StreamingAdapter;		// will have to restore
 				
 				if (this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe != null) {
@@ -114,14 +118,14 @@ namespace Sq1.Core.Livesim {
 				// now I have those two assigned from Streaming/Broker-own-implemented instantiated adapters
 
 				LivesimStreaming livesimStreaming = this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe;	// = ownLivesimStreaming here (QuikLivesimStreaming, )
-				livesimStreaming.InitializeLivesim(this.DataSourceAsLivesim_nullUnsafe, originalAdapterFromDataSource, base.BarsSimulating.Symbol);
+				livesimStreaming.InitializeLivesim(this.DataSourceAsLivesim_nullUnsafe, originalAdapter_fromDataSource, base.BarsSimulating.Symbol);
 
-				//livesimming without DataDistributor replacement routes to wrong Bars and creates problems with ChartMultisplitter
+				//livesimming without Distributor replacement routes to wrong Bars and creates problems with ChartMultisplitter
 				//FIRST_LINE_OF_QuikStreamingLivesim.UpstreamConnect_LivesimStarting()_MAKE_SENSE_FOR_OTHERS
-				livesimStreaming.Original_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor();
-				//LivesimDataSource is now having LivesimBacktester and no-solidifier DataDistributor
+				livesimStreaming.Original_SubstituteDistributor_forSymbolLivesimming_extractChartIntoSeparateDistributor_subscribe();
+				//LivesimDataSource is now having LivesimBacktester and no-solidifier Distributor
 
-				this.CheckSubscribed_LivesimQuoteBarConsumer_toDataDistributor_replacedForLivesim();
+				this.CheckSubscribed_LivesimQuoteBarConsumer_toDistributor_replacedForLivesim();
 
 				livesimStreaming.UpstreamConnect_LivesimStarting();
 
@@ -232,11 +236,11 @@ namespace Sq1.Core.Livesim {
 				//DURING_LIVESIM_I_LEFT_STREAMING_EXACTLY_THE_SAME_AS_FOR_LIVE_TRADING_TO_TEST_IT!!! this.Executor.DataSource.StreamingAdapter = this.StreamingOriginal;
 
 				//LAST_LINE_OF_QuikStreamingLivesim.UpstreamConnect_LivesimStarting()_MAKES_SENSE_FOR_OTHERS
-				livesimStreaming.Original_SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor();
+				livesimStreaming.Original_SubstituteDistributor_forSymbolLivesimming_restoreOriginalDistributor();
 
 				#region MOVED_BACK_DOWNSTACK NEVER_COMMENT_OUT__I_SPENT_TWO_DAYS_TO_DEBUG_IT
 				//string reasonToUnPauseSymbol = "SYMBOL_UNPAUSED_LIVESIMMING-" + this.Executor.ToString();
-				//this.Executor.DataSource_fromBars.StreamingAdapter.DataDistributor_replacedForLivesim.AllQuotePumps_Unpause(reasonToUnPauseSymbol);
+				//this.Executor.DataSource_fromBars.StreamingAdapter.Distributor_replacedForLivesim.AllQuotePumps_Unpause(reasonToUnPauseSymbol);
 				int pumpsUnpaused = this.Executor.DataSource_fromBars.LivesimStreamingDefault_PumpResume_unfreezeOtherConsumers_forSameSymbolScale(this.Executor);
 				if (pumpsUnpaused == 0) {
 					string msg = "BARS_UNSUBSCRIBED OR_DONT_YOU_HAVE_CHARTS_OPEN_FOR_STRATEGY_LIVESIMMING?";
@@ -262,44 +266,49 @@ namespace Sq1.Core.Livesim {
 			}
 		}
 
-		public void CheckSubscribed_LivesimQuoteBarConsumer_toDataDistributor_replacedForLivesim() {
+		public void CheckSubscribed_LivesimQuoteBarConsumer_toDistributor_replacedForLivesim() {
 			string					symbol		= base.BarsSimulating.Symbol;
 			ScriptExecutor			executor	= this.Executor;
-			LivesimQuoteBarConsumer	chartless	= this.LivesimQuoteBarConsumer;
-			DataDistributor			distr		= this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim;
+			//v1 LivesimQuoteBarConsumer	chartless	= this.LivesimQuoteBarConsumer;
+			//v1 Distributor				distr		= this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.Distributor_substitutedDuringLivesim;
+			//v2
+			StreamingConsumer		chart		= executor.ChartShadow.ChartStreamingConsumer;
+			Distributor				distr		= this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.StreamingOriginal.Distributor_substitutedDuringLivesim;
 
 			if (symbol != executor.Bars.Symbol) {
 				string msg1 = "WHEN_ARE_SYMBOLS_DIFFERENT??..";
 				Assembler.PopupException(msg1);
 			}
-			List<SymbolScaleDistributionChannel> mustBeOneTimeframe = distr.GetDistributionChannels_allScaleIntervals_forSymbol(symbol);
+			List<SymbolScaleStream> mustBeOneTimeframe = distr.GetStreams_allScaleIntervals_forSymbol(symbol);
 			if (mustBeOneTimeframe.Count != 1) {
 				string msg1 = "USER_DIDNT_CLICK_CHART>BARS>SUBSCRIBE [" + symbol + "] STARTING_LIVESIM_FOR:" + executor.ToString()
 					//+ " BAD_JOB#1_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()"
 					;
 				Assembler.PopupException(msg1, null, false);
+				return;
+			}
+			SymbolScaleStream mustBeChartSubscribedToQuotesAndBars = mustBeOneTimeframe[0];
+			if (mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteCount != 1) {
+				string msg1 = "BAD_JOB#2_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDistributor()";
+				Assembler.PopupException(msg1);
 			} else {
-				SymbolScaleDistributionChannel mustBeChartSubscribedToQuotesAndBars = mustBeOneTimeframe[0];
-				if (mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteCount != 1) {
-					string msg1 = "BAD_JOB#2_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
+				//v1 bool mustBeChartSubscribedToQuotes = mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteContains(chartless);
+				bool mustBeChartSubscribedToQuotes = mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteContains(chart);
+				if (mustBeChartSubscribedToQuotes == false) {
+					string msg1 = "BAD_JOB#3_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDistributor()";
 					Assembler.PopupException(msg1);
-				} else {
-					bool mustBeChartSubscribedToQuotes = mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteContains(chartless);
-					if (mustBeChartSubscribedToQuotes == false) {
-						string msg1 = "BAD_JOB#3_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
-						Assembler.PopupException(msg1);
-					}
 				}
+			}
 
-				if (mustBeChartSubscribedToQuotesAndBars.ConsumersBarCount != 1) {
-					string msg1 = "BAD_JOB#4_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
+			if (mustBeChartSubscribedToQuotesAndBars.ConsumersBarCount != 1) {
+				string msg1 = "BAD_JOB#4_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDistributor()";
+				Assembler.PopupException(msg1);
+			} else {
+				//v1 bool mustBeChartSubscribedToBars = mustBeChartSubscribedToQuotesAndBars.ConsumersBarContains(chartless);
+				bool mustBeChartSubscribedToBars = mustBeChartSubscribedToQuotesAndBars.ConsumersBarContains(chart);
+				if (mustBeChartSubscribedToBars == false) {
+					string msg1 = "BAD_JOB#5_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDistributor()";
 					Assembler.PopupException(msg1);
-				} else {
-					bool mustBeChartSubscribedToBars = mustBeChartSubscribedToQuotesAndBars.ConsumersBarContains(chartless);
-					if (mustBeChartSubscribedToBars == false) {
-						string msg1 = "BAD_JOB#5_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDataDistributor()";
-						Assembler.PopupException(msg1);
-					}
 				}
 			}
 		}
@@ -362,7 +371,7 @@ namespace Sq1.Core.Livesim {
 			});
 		}
 
-		public void  Stop_invokedFromGuiThread() {
+		public void Stop_invokedFromGuiThread() {
 			string msig = " //Livesimulator.Stop_inGuiThread()";
 			if (this.ImRunningLivesim == false) {
 				Assembler.PopupException("WHY_DID_YOU_INVOKE_ME? LIVESIM_IS_NOT_RUNNING_NOW" + msig);

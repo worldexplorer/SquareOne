@@ -32,7 +32,7 @@ namespace Sq1.Widgets.Execution {
 				}
 				this.mniStopEmergencyClose.Enabled = removeEmergencyLockEnabled;*/
 				
-				if (this.DataSnapshot.ToggleSingleClickSyncWithChart) {
+				if (this.DataSnapshot.SingleClickSyncWithChart) {
 					//v1 this.raiseOnOrderDoubleClickedChartFormNotification(this, this.OrdersTree.SelectedObject as Order);
 					this.olvOrdersTree_DoubleClick(this, null);
 				}
@@ -77,7 +77,7 @@ namespace Sq1.Widgets.Execution {
 		void mniToggleBrokerTime_Click(object sender, EventArgs e) {
 			try {
 				// F4.CheckOnClick=True this.mniBrokerTime.Checked = !this.mniBrokerTime.Checked; 
-				this.DataSnapshot.ToggleBrokerTime = this.mniToggleBrokerTime.Checked;
+				this.DataSnapshot.ShowBrokerTime = this.mniToggleBrokerTime.Checked;
 				this.DataSnapshotSerializer.Serialize();
 				this.RebuildAllTree_focusOnTopmost();
 			} catch (Exception ex) {
@@ -89,7 +89,7 @@ namespace Sq1.Widgets.Execution {
 		}
 		void mniToggleSyncWithChart_Click(object sender, EventArgs e) {
 			try {
-				this.DataSnapshot.ToggleSingleClickSyncWithChart = this.mniToggleSyncWithChart.Checked;
+				this.DataSnapshot.SingleClickSyncWithChart = this.mniToggleSyncWithChart.Checked;
 				this.DataSnapshotSerializer.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleSyncWithChart_Click", ex);
@@ -101,7 +101,7 @@ namespace Sq1.Widgets.Execution {
 		void mniToggleMessagesPane_Click(object sender, EventArgs e) {
 			try {
 				this.splitContainerMessagePane.Panel2Collapsed = !this.mniToggleMessagesPane.Checked;
-				this.DataSnapshot.ToggleMessagesPane = this.mniToggleMessagesPane.Checked;
+				this.DataSnapshot.ShowMessagesPane = this.mniToggleMessagesPane.Checked;
 				this.DataSnapshotSerializer.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleMessagesPane_Click", ex);
@@ -114,14 +114,14 @@ namespace Sq1.Widgets.Execution {
 			Orientation newOrientation = this.mniToggleMessagesPaneSplitHorizontally.Checked
 					? Orientation.Horizontal : Orientation.Vertical;
 			this.splitContainerMessagePane.Orientation = newOrientation;
-			this.DataSnapshot.ToggleMessagePaneSplittedHorizontally = this.mniToggleMessagesPaneSplitHorizontally.Checked;
+			this.DataSnapshot.ShowMessagePaneSplittedHorizontally = this.mniToggleMessagesPaneSplitHorizontally.Checked;
 			this.DataSnapshotSerializer.Serialize();
 		}		
 		void mniToggleCompletedOrders_Click(object sender, EventArgs e) {
 			try {
 				// do something with filters
 				this.RebuildAllTree_focusOnTopmost();
-				this.DataSnapshot.ToggleCompletedOrders = this.mniToggleCompletedOrders.Checked;
+				this.DataSnapshot.ShowCompletedOrders = this.mniToggleCompletedOrders.Checked;
 				this.DataSnapshotSerializer.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleCompletedOrders_Click", ex);

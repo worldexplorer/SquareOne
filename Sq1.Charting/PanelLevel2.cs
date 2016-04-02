@@ -137,10 +137,10 @@ namespace Sq1.Charting {
 				base.DrawError(g, "CHART_CONTROL_HAS_NO_BARS");
 				this.errorDetected = true;
 			}
-			Quote lastQuote = null;
+			Quote quoteLast = null;
 			if (this.errorDetected == false) {
-				lastQuote = this.StreamingDataSnapshot_nullUnsafe.LastQuote_getForSymbol(base.ChartControl.Bars.Symbol);
-				if (lastQuote == null) {
+				quoteLast = this.StreamingDataSnapshot_nullUnsafe.GetQuoteCurrent_forSymbol_nullUnsafe(base.ChartControl.Bars.Symbol);
+				if (quoteLast == null) {
 					base.DrawError(g, "CONNECT_STREAMING__OR__CHART>BARS>SUBSCRIBE");
 					this.errorDetected = true;
 				}
@@ -156,13 +156,13 @@ namespace Sq1.Charting {
 			}
 
 			try {
-				this.renderLevel2(pe.Graphics, lastQuote);
+				this.renderLevel2(pe.Graphics, quoteLast);
 				this.renderBidAsk(pe.Graphics);
 			} catch (Exception ex) {
 				base.DrawError(pe.Graphics, ex.ToString());
 			}
 		}
-		void renderLevel2(Graphics g, Quote lastQuote) {
+		void renderLevel2(Graphics g, Quote quoteLast) {
 			PanelPrice panelPrice = base.ChartControl.PanelPrice;
 			double priceStep = panelPrice.PriceStep;
 
@@ -175,16 +175,21 @@ namespace Sq1.Charting {
 			//	+ "]/VisibleMaxPlusBottomSqueezer_cached[" + panelPrice.VisibleMaxPlusBottomSqueezer_cached + "]";
 			//base.DrawError(g, msgCalc);
 
-			LevelTwoHalfSortedFrozen asks_sortedCachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Asks_sortedCachedForOnePaint;
-			LevelTwoHalfSortedFrozen bids_sortedCachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Bids_sortedCachedForOnePaint;
+			//v1
+			//LevelTwoHalfSortedFrozen asks_frozenAsc_forOnePaint		= base.ChartControl.ScriptExecutorObjects.Asks_frozenAsc_forOnePaint;
+			//LevelTwoHalfSortedFrozen bids_frozenDesc_forOnePaint	= base.ChartControl.ScriptExecutorObjects.Bids_frozenDesc_forOnePaint;
+			//v2
+			LevelTwoFrozen levelTwo_frozenForOnePaint = base.ChartControl.ExecutorObjects_frozenForRendering.LevelTwo_frozen_forOnePaint;
+			LevelTwoHalfSortedFrozen asks_frozenAsc_forOnePaint		= levelTwo_frozenForOnePaint.Asks_sortedAsc;
+			LevelTwoHalfSortedFrozen bids_frozenDesc_forOnePaint	= levelTwo_frozenForOnePaint.Bids_sortedDesc;
 
-			if (asks_sortedCachedForOnePaint == null) {
+			if (asks_frozenAsc_forOnePaint == null) {
 				string msg = "HAPPENS_AT_FIRST_FEW_QUOTES_OF_STARTING_LIVESIM base.ChartControl.ScriptExecutorObjects.Asks_sortedCachedForOnePaint=null";
 				//Assembler.PopupException(msg);
 				return;
 			}
-			if (bids_sortedCachedForOnePaint == null) {
-				string msg = "HAPPENS_AT_FIRST_FEW_QUOTES_OF_STARTING_LIVESIM base.ChartControl.ScriptExecutorObjects.Asks_sortedCachedForOnePaint=null";
+			if (bids_frozenDesc_forOnePaint == null) {
+				string msg = "HAPPENS_AT_FIRST_FEW_QUOTES_OF_STARTING_LIVESIM base.ChartControl.ScriptExecutorObjects.Bids_frozenDesc_forOnePaint=null";
 				//Assembler.PopupException(msg);
 				return;
 			}
@@ -200,11 +205,11 @@ namespace Sq1.Charting {
 				throw new Exception(msg);
 			}
 
-			double quoteAsk = lastQuote.Ask;
+			double quoteAsk = quoteLast.Ask;
 			//quoteAsk = priceMin;
 			int quoteAskYoffsetted = panelPrice.ValueToYinverted(quoteAsk) + pxPricePanelVertialOffset;
 
-			double quoteBid = lastQuote.Bid;
+			double quoteBid = quoteLast.Bid;
 			//quoteBid = priceMax;
 			int quoteBidYofsetted = panelPrice.ValueToYinverted(quoteBid) + pxPricePanelVertialOffset;
 
@@ -226,17 +231,17 @@ namespace Sq1.Charting {
 				//}
 				//v2 cut moustaches separately
 				//if (howManyAskPriceLevelsWillFit < depthFittingToDisplayedHeight) {
-				if (howManyAskPriceLevelsWillFit < asks_sortedCachedForOnePaint.Count) {
-					asks_sortedCachedForOnePaint = asks_sortedCachedForOnePaint.Clone_noDeeperThan(howManyAskPriceLevelsWillFit);
+				if (howManyAskPriceLevelsWillFit < asks_frozenAsc_forOnePaint.Count) {
+					asks_frozenAsc_forOnePaint = asks_frozenAsc_forOnePaint.Clone_noDeeperThan(howManyAskPriceLevelsWillFit);
 				}
 				//if (howManyBidPriceLevelsWillFit < depthFittingToDisplayedHeight) {
-				if (howManyBidPriceLevelsWillFit < bids_sortedCachedForOnePaint.Count) {
-					bids_sortedCachedForOnePaint = bids_sortedCachedForOnePaint.Clone_noDeeperThan(howManyBidPriceLevelsWillFit);
+				if (howManyBidPriceLevelsWillFit < bids_frozenDesc_forOnePaint.Count) {
+					bids_frozenDesc_forOnePaint = bids_frozenDesc_forOnePaint.Clone_noDeeperThan(howManyBidPriceLevelsWillFit);
 				}
 			}
 
-			double	lotsMax = Math.Max(bids_sortedCachedForOnePaint.LotSum, asks_sortedCachedForOnePaint.LotSum);
-			double	lotsMin = Math.Min(bids_sortedCachedForOnePaint.LotSum, asks_sortedCachedForOnePaint.LotSum);
+			double	lotsMax = Math.Max(bids_frozenDesc_forOnePaint.LotSum, asks_frozenAsc_forOnePaint.LotSum);
+			double	lotsMin = Math.Min(bids_frozenDesc_forOnePaint.LotSum, asks_frozenAsc_forOnePaint.LotSum);
 
 			double	lotsMaxVisible = lotsMax;
 			double	lotsMinVisible = lotsMin;
@@ -254,14 +259,29 @@ namespace Sq1.Charting {
 
 			//using (Pen black = new Pen(Color.Black)) g.DrawLine(black, 0, pxPricePanelVertialOffset, base.Width, pxPricePanelVertialOffset);
 
+
+
 			#region draw Asks upwards [spread...Y=0]
 			//v1 foreach (double ask in asks_cachedForOnePaint.Keys) {		// Keys may be unsorted in a regular Dictionary => rendering price levels randomly
 			//	double lotAbsolute = asks_cachedForOnePaint[ask];
-			foreach (KeyValuePair<double, double> keyValue in asks_sortedCachedForOnePaint) {
-				double ask = keyValue.Key;
+#if DEBUG
+			double lotCumulativePrev = 0;
+#endif
+			foreach (KeyValuePair<double, double> keyValue in asks_frozenAsc_forOnePaint) {
+				double ask				= keyValue.Key;
 				double lotAbsolute		= keyValue.Value;
-				double lotCumulative	= asks_sortedCachedForOnePaint.LotsCumulative[ask];
+				double lotCumulative	= asks_frozenAsc_forOnePaint.LotsCumulative[ask];
 				double lotsRelative		= lotCumulative;// -lotsMin;
+
+#if DEBUG
+				if (lotCumulativePrev != 0) {
+					if (lotCumulativePrev >= lotCumulative) {
+						string msg = "ASKS_MUST_INCREASE_AND_LOTS_CUMULATIVE_MUST_GROW";
+						Assembler.PopupException(msg);
+					}
+				}
+				lotCumulativePrev = lotCumulative;
+#endif
 
 				int yAsk = -1;
 				if (stripeHeightWillContainMeasuredText) {
@@ -330,12 +350,25 @@ namespace Sq1.Charting {
 			#endregion
 
 			#region draw Bids downwards [spread...Y=base.Height]
-			//int askY = panelPrice.ValueToYinverted(this.lastQuote_cached.Ask);
-			foreach (KeyValuePair<double, double> keyValue in bids_sortedCachedForOnePaint) {
-				double bid = keyValue.Key;
+			//int askY = panelPrice.ValueToYinverted(this.quoteLast_cached.Ask);
+#if DEBUG
+			lotCumulativePrev = 0;
+#endif
+			foreach (KeyValuePair<double, double> keyValue in bids_frozenDesc_forOnePaint) {
+				double bid				= keyValue.Key;
 				double lotAbsolute		= keyValue.Value;
-				double lotCumulative	= bids_sortedCachedForOnePaint.LotsCumulative[bid];
+				double lotCumulative	= bids_frozenDesc_forOnePaint.LotsCumulative[bid];
 				double lotsRelative		= lotCumulative;// -lotsMin;
+
+#if DEBUG
+				if (lotCumulativePrev != 0) {
+					if (lotCumulativePrev >= lotCumulative) {
+						string msg = "BIDS_MUST_DECREAS_BUT_LOTS_CUMULATIVE_MUST_GROW";
+						Assembler.PopupException(msg);
+					}
+				}
+				lotCumulativePrev = lotCumulative;
+#endif
 
 				int yBid = -1;
 				if (stripeHeightWillContainMeasuredText) {
@@ -406,7 +439,7 @@ namespace Sq1.Charting {
 		void renderBidAsk(Graphics g) {
 			if (base.ChartControl.ChartSettings.SpreadLabelColor == Color.Empty) return;
 
-			Quote quoteLast = base.ChartControl.ScriptExecutorObjects.QuoteLast;
+			Quote quoteLast = base.ChartControl.ExecutorObjects_frozenForRendering.QuoteLast;
 			if (quoteLast == null) return;
 
 			//Quote quoteLastFromDictionary = this.StreamingDataSnapshot_nullUnsafe.LastQuoteCloneGetForSymbol(base.ChartControl.Bars.Symbol);

@@ -6,9 +6,9 @@ using Sq1.Core.Streaming;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Livesim {
-	public class LivesimQuoteBarConsumer : StreamingConsumer {
+	public class LivesimStreamingConsumer : StreamingConsumer {
 				Livesimulator livesimulator;
-		public	LivesimQuoteBarConsumer(Livesimulator livesimulatorPassed) {
+		public	LivesimStreamingConsumer(Livesimulator livesimulatorPassed) {
 			this.livesimulator = livesimulatorPassed;
 		}
 
@@ -19,17 +19,17 @@ namespace Sq1.Core.Livesim {
 				return ret;
 			} }
 
-		public override Bars ConsumerBarsToAppendInto { get { return this.livesimulator.BarsSimulating; } }
-		public override void UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart) {
+		public override Bars ConsumerBars_toAppendInto { get { return this.livesimulator.BarsSimulating; } }
+		public override void UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirstAfterStart) {
 			base.ReasonToExist = "Livesim[" + base.Symbol_nullReported + "]";
 			if (this.Strategy_nullReported != null) this.ReasonToExist += "[" + this.Strategy_nullReported.Name + "]";
 		}
-		public override void UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
+		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLastBeforeStop) {
 		}
-		public override void ConsumeQuoteOfStreamingBar(Quote quote) {
+		public override void ConsumeQuoteOfStreamingBar(Quote quoteClone_boundAttached) {
 			bool guiHasTime = this.livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
 			ScriptExecutor executor = this.livesimulator.Executor;
-			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.livesimulator.Executor.InvokeScript_onNewBar_onNewQuote(quote);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.livesimulator.Executor.InvokeScript_onNewBar_onNewQuote(quoteClone_boundAttached);
 			using (pokeUnit_nullUnsafe_dontForgetToDispose) {
 				if (	pokeUnit_nullUnsafe_dontForgetToDispose != null
 					 && pokeUnit_nullUnsafe_dontForgetToDispose.PositionsOpenNow.Count > 0) {

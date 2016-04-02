@@ -321,12 +321,12 @@ namespace Sq1.Gui.Forms {
 				bool skipBacktest = true;
 				this.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(msig, loadNewBars, skipBacktest, saveStrategyOrCtx);
 				//v1 if (this.DataSnapshot.ContextChart.IsStreaming) {
-				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
-				ContextChart ctx = this.ContextCurrentChartOrStrategy;
-				if (ctx.DownstreamSubscribed) {
-					string reason = "contextChart[" + ctx.ToString() + "].DownstreamSubscribed=true";
-					this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
-				}
+				//v2 ALREADY_DONE_IN_this.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy() universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
+				//ContextChart ctx = this.ContextCurrentChartOrStrategy;
+				//if (ctx.DownstreamSubscribed) {
+				//    string reason = "contextChart[" + ctx.ToString() + "].DownstreamSubscribed=true";
+				//    this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
+				//}
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
 				Assembler.PopupException(msg + msig, ex);
@@ -490,7 +490,7 @@ namespace Sq1.Gui.Forms {
 					this.Executor.Bars.DataSource.OnDataSourceEditedChartsDisplayedShouldRunBacktestAgain -=
 						new EventHandler<DataSourceEventArgs>(chartFormManager_DataSourceEdited_chartsDisplayedShouldRunBacktestAgain);
 				}
-				this.Executor.SetBars(barsClicked);
+				this.Executor.SetBars(barsClicked, this.ContextCurrentChartOrStrategy.DownstreamSubscribed);
 				this.Executor.Bars.DataSource.OnDataSourceEditedChartsDisplayedShouldRunBacktestAgain +=
 						new EventHandler<DataSourceEventArgs>(chartFormManager_DataSourceEdited_chartsDisplayedShouldRunBacktestAgain);
 
@@ -1085,7 +1085,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingUnsubscribe(msig);
-			this.ChartForm.ChartControl.ScriptExecutorObjects.QuoteLast = null;
+			this.ChartForm.ChartControl.ExecutorObjects_frozenForRendering.QuoteLast = null;
 
 			this.ReportersFormsManager	.Dispose_workspaceReloading();
 			this.ChartForm				.Dispose();
@@ -1112,7 +1112,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			this.Executor.SetBars(barsUserSelected);
+			this.Executor.SetBars(barsUserSelected, this.ContextCurrentChartOrStrategy.DownstreamSubscribed);
 			this.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("ChartRangeBar_AnyValueChanged");
 			this.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 		}

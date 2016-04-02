@@ -412,12 +412,12 @@ namespace Sq1.Charting {
 
 		protected void RenderIndicators(Graphics graphics) {
 			// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
-			bool skipPaintingIndicatorsBacktestDidntRunOrIncomplete = this.ChartControl.ScriptExecutorObjects.IndicatorsAllHaveNoOwnValues;
+			bool skipPaintingIndicatorsBacktestDidntRunOrIncomplete = this.ChartControl.ExecutorObjects_frozenForRendering.IndicatorsAllHaveNoOwnValues;
 			if (skipPaintingIndicatorsBacktestDidntRunOrIncomplete) {
 				return;
 			}
 			// ALREADY_CHECKED_FOR_NULL_OR_EMPTY
-			Dictionary<string, Indicator> indicators = this.ChartControl.ScriptExecutorObjects.Indicators;
+			Dictionary<string, Indicator> indicators = this.ChartControl.ExecutorObjects_frozenForRendering.Indicators;
 			
 			//just increase Y; otherwize first indicator's label will be covered by Symbol
 			this.ChartLabelsUpperLeftYincremental += 13;

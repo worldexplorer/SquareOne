@@ -21,14 +21,14 @@ namespace Sq1.Core.DataTypes {
 			//return null;
 			throw new Exception("both Bars.BarLast and Bars.BarPreLast point to Bars.StreamingBar???");
 		} }
-		public Quote LastQuoteClone_nullUnsafe { get {
-			Quote ret = null;
-			if (this.DataSource == null) return ret;
-			if (this.DataSource.StreamingAdapter == null) return ret;
-			if (this.DataSource.StreamingAdapter.StreamingDataSnapshot == null) return ret;
-			ret = this.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuote_getForSymbol(this.Symbol);
-			return ret;
-		} }
+		//public Quote QuoteLastClone_nullUnsafe { get {
+		//    Quote ret = null;
+		//    if (this.DataSource == null) return ret;
+		//    if (this.DataSource.StreamingAdapter == null) return ret;
+		//    if (this.DataSource.StreamingAdapter.StreamingDataSnapshot == null) return ret;
+		//    ret = this.DataSource.StreamingAdapter.StreamingDataSnapshot.QuoteLast_getForSymbol_nullUnsafe(this.Symbol);
+		//    return ret;
+		//} }
 
 //		public Bar BarMarketClosedTodayScanBackward(Bar barLastToday) {
 //			Bar ret = null;
@@ -202,7 +202,7 @@ namespace Sq1.Core.DataTypes {
 			//v2
 			// TODO: use Weekends, year-dependent irregular Holidays
 			// TODO: this calculation is irrelevant for FOREX since FOREX doesn't interrupt overnight
-			DateTime marketOpenServerTime = this.MarketInfo.MarketOpenServerTime;
+			DateTime marketOpenServerTime = this.MarketInfo.MarketOpen_serverTime;
 			if (marketOpenServerTime == DateTime.MinValue) return ret;
 			DateTime todayMarketOpenServerTime = Bars.CombineBarDateWithMarketOpenTime(dateTimeToFind, marketOpenServerTime);
 			if (dateTimeToFind < todayMarketOpenServerTime) {
@@ -234,12 +234,12 @@ namespace Sq1.Core.DataTypes {
 			if (this.MarketInfo == null) return ret;
 			// TODO: use Weekends, year-dependent irregular Holidays
 			// TODO: this calculation is irrelevant for FOREX since FOREX doesn't interrupt overnight 
-			DateTime marketCloseServerTime = this.MarketInfo.MarketCloseServerTime;
+			DateTime marketCloseServerTime = this.MarketInfo.MarketClose_serverTime;
 			if (marketCloseServerTime == DateTime.MinValue) return ret;
 			DateTime todayMarketCloseServerTime = Bars.CombineBarDateWithMarketOpenTime(dateTimeToFind, marketCloseServerTime);
 			if (dateTimeToFind > todayMarketCloseServerTime) {
 				string msg = "BAR_INVALID_MARKET_IS_ALREADY_CLOSED bar.DateTimeOpen[" + dateTimeToFind + 
-					"] while MarketInfo.MarketCloseServerTime[" + this.MarketInfo.MarketCloseServerTime + "]";
+					"] while MarketInfo.MarketCloseServerTime[" + this.MarketInfo.MarketClose_serverTime + "]";
 				Assembler.PopupException(msg + msig);
 				return ret;
 			}

@@ -56,14 +56,23 @@ namespace Sq1.Core.Livesim {
 		}
 
 		//public void ConsumeQuoteUnattached_toFillPending(QuoteGenerated quoteUnattachedVolatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
-		public void ConsumeQuoteUnattached_toFillPending(Quote quoteUnattachedVolatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
+		public void ConsumeQuoteBoundUnattached_toFillPending(Quote quoteBoundUnattached_volatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
 			string msig = " //LivesimBroker.ConsumeQuoteUnattached_toFillPending(WAIT)";
-	
+
+			//if (quoteUnattached_volatilePointer.ParentBarStreaming != null) {
+			//    string msg = "QUOTE_ALREADY_BOUND_TO_STREAMING_BAR__UPSTACK_DIDNT_REALIZE_THIS";
+			//    Assembler.PopupException(msg + msig, null, false);
+			//}
+			if (quoteBoundUnattached_volatilePointer.ParentBarStreaming.HasParentBars == false) {
+				string msg = "QUOTE_BOUND_TO_A_STREAMING_BAR_THAT_MUST_BE_ATTACHED_TO_BARS_LIVEMMING__UPSTACK_DIDNT_REALIZE_THIS";
+				Assembler.PopupException(msg + msig, null, false);
+			}
+
 			if (willBeFilled.Count == 0) return;
 
 			int delayBeforeFill = this.LivesimBrokerSpoiler.DelayBeforeFill_calculate();
 			if (delayBeforeFill == 0) {
-				this.consumeQuoteUnattached_toFillPendingAsync(quoteUnattachedVolatilePointer, willBeFilled);
+				this.consumeQuoteUnattached_attach_fillPendingAsync(quoteBoundUnattached_volatilePointer, willBeFilled);
 				return;
 			}
 
@@ -74,12 +83,12 @@ namespace Sq1.Core.Livesim {
 
 			ManualResetEvent quotePointerCaptured = new ManualResetEvent(false);
 			Task t = new Task(delegate() {
-				string threadName = "DELAYED_FILL delayBeforeFill[" + delayBeforeFill + "]ms " + quoteUnattachedVolatilePointer;
+				string threadName = "DELAYED_FILL delayBeforeFill[" + delayBeforeFill + "]ms " + quoteBoundUnattached_volatilePointer;
 				Assembler.SetThreadName(threadName, "CANT_SET_THREAD_NAME" + msig);
 
 				AlertList willBeFilled_minusAlreadyScheduled_localScoped = willBeFilled_minusAlreadyScheduled_volatilePointer;
 				//QuoteGenerated quoteUnattachedLocalScoped = quoteUnattachedVolatilePointer;
-				Quote quoteUnattached_localScoped = quoteUnattachedVolatilePointer;
+				Quote quoteBoundUnattached_localScoped = quoteBoundUnattached_volatilePointer;
 				quotePointerCaptured.Set();
 
 				//this.ScriptExecutor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = true;
@@ -91,7 +100,7 @@ namespace Sq1.Core.Livesim {
 				    //Assembler.PopupException(msg);
 				    return;
 				}
-				this.consumeQuoteUnattached_toFillPendingAsync(quoteUnattached_localScoped, willBeFilled_minusAlreadyScheduled_localScoped);
+				this.consumeQuoteUnattached_attach_fillPendingAsync(quoteBoundUnattached_localScoped, willBeFilled_minusAlreadyScheduled_localScoped);
 				this.ScriptExecutor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
 			});
 			t.ContinueWith(delegate {
@@ -116,33 +125,40 @@ namespace Sq1.Core.Livesim {
 			this.DataSnapshot.AlertsPending_scheduledForDelayedFill.AddRange(safe, this, msig);
 		} }
 		//void consumeQuoteUnattached_toFillPendingAsync(QuoteGenerated quoteUnattached, AlertList expectingToFill) {
-		void consumeQuoteUnattached_toFillPendingAsync(Quote quoteUnattached, AlertList expectingToFill) {
-			Bar barStreaming = this.ScriptExecutor.Bars.BarStreaming_nullUnsafe;
-			if (barStreaming == null) {
-				string msg = "I_REFUSE_TO_SIMULATE_FILL_PENDING_ALERTS_WITH_BAR_STREAMING_NULL__END_OF_LIVESIM?";
+		void consumeQuoteUnattached_attach_fillPendingAsync(Quote quoteBoundUnattached, AlertList expectingToFill) {
+			Quote quoteBoundAttached = null;
+			if (quoteBoundUnattached.ParentBarStreaming.HasParentBars) {
+				string msg = "QUOTE_BOUND_TO_A_STREAMING_BAR_THAT_IS_ALREADY_ATTACHED_TO_BARS_LIVEMMING__UPSTACK_DIDNT_REALIZE_THIS";
 				Assembler.PopupException(msg, null, false);
-				return;
-			}
-			if (this.ScriptExecutor.BacktesterOrLivesimulator.ImRunningLivesim == false) {
-				string msg = "I_REFUSE_TO_SIMULATE_FILL_PENDING_ALERTS_LIVESIM_NOT_RUNNING__PROBABLY_STOPPED/ABORTED?";
-				Assembler.PopupException(msg, null, false);
-				return;
-			}
-			ExecutionDataSnapshot snap = this.ScriptExecutor.ExecutionDataSnapshot;
-			if (snap.AlertsPending.Count == 0) {
-				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //consumeQuoteUnattached_toFillPendingAsync(" + expectingToFill + ")";
-				Assembler.PopupException(msg, null, false);
-				return;
-			}
+				quoteBoundAttached = quoteBoundUnattached;
+			} else {
+				Bar barStreaming = this.ScriptExecutor.Bars.BarStreaming_nullUnsafe;
+				if (barStreaming == null) {
+					string msg = "I_REFUSE_TO_SIMULATE_FILL_PENDING_ALERTS_WITH_BAR_STREAMING_NULL__END_OF_LIVESIM?";
+					Assembler.PopupException(msg, null, false);
+					return;
+				}
+				if (this.ScriptExecutor.BacktesterOrLivesimulator.ImRunningLivesim == false) {
+					string msg = "I_REFUSE_TO_SIMULATE_FILL_PENDING_ALERTS_LIVESIM_NOT_RUNNING__PROBABLY_STOPPED/ABORTED?";
+					Assembler.PopupException(msg, null, false);
+					return;
+				}
+				ExecutorDataSnapshot snap = this.ScriptExecutor.ExecutionDataSnapshot;
+				if (snap.AlertsPending.Count == 0) {
+					string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //consumeQuoteUnattached_toFillPendingAsync(" + expectingToFill + ")";
+					Assembler.PopupException(msg, null, false);
+					return;
+				}
 
-			//QuoteGenerated quoteAttachedToStreamingToConsumerBars = quoteUnattached.DeriveIdenticalButFresh();
-			Quote quoteAttachedToStreamingToConsumerBars = quoteUnattached.Clone_asCoreQuote();
-			quoteAttachedToStreamingToConsumerBars.SetParentBarStreaming(barStreaming);
+				//QuoteGenerated quoteAttachedToStreamingToConsumerBars = quoteUnattached.DeriveIdenticalButFresh();
+				quoteBoundAttached = quoteBoundUnattached.Clone_asCoreQuote();	// do you really need a clone here???
+				quoteBoundAttached.Replace_myStreamingBar_withConsumersStreamingBar(barStreaming);
+			}
 
 			int pendingCountPre = this.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Count;
 			//int pendingFilled = executor.MarketsimBacktest.SimulateFillAllPendingAlerts(
-			int pendingFilled = this.LivesimMarketsim.SimulateFill_allPendingAlerts(
-					quoteAttachedToStreamingToConsumerBars, new Action<Alert, Quote, double, double>(this.action_afterAlertFilled_inducePostProcessing_movedAroundOnReturn));
+			int pendingFilled = this.LivesimMarketsim.SimulateFill_allPendingAlerts(quoteBoundAttached,
+					new Action<Alert, Quote, double, double>(this.action_afterAlertFilled_inducePostProcessing_movedAroundOnReturn));
 			int pendingCountNow = this.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Count;
 			if (pendingCountNow != pendingCountPre - pendingFilled) {
 				string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";
@@ -152,7 +168,7 @@ namespace Sq1.Core.Livesim {
 			}
 			//executor.Script.OnNewQuoteCallback(quoteToReach);
 
-			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.ScriptExecutor.InvokeScript_onNewBar_onNewQuote(quoteAttachedToStreamingToConsumerBars);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.ScriptExecutor.InvokeScript_onNewBar_onNewQuote(quoteBoundAttached);
 			//base.GeneratedQuoteEnrichSymmetricallyAndPush(quote, bar2simulate);
 			if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
 				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();

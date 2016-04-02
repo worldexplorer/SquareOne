@@ -401,7 +401,7 @@ namespace Sq1.Gui.Forms {
 				this.mnitlbSpreadGeneratorPct.TextRight = "%price " + this.ChartFormManager.Executor.SpreadPips;
 				
 				if (this.ChartFormManager.Executor.BacktesterOrLivesimulator.BacktestDataSource == null) {
-					this.ChartFormManager.Executor.BacktesterOrLivesimulator.InitializeQuoteGenerator();
+					this.ChartFormManager.Executor.BacktesterOrLivesimulator.Create_quoteGenerator_eachBacktesterSimulation();
 				}
 
 				this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("mnitlbSpreadGeneratorPct_UserTyped");
@@ -430,7 +430,7 @@ namespace Sq1.Gui.Forms {
 					}
 				} else {
 					this.ChartControl.ChartStreamingConsumer.StreamingUnsubscribe(reason);
-					this.ChartControl.ScriptExecutorObjects.QuoteLast = null;
+					this.ChartControl.ExecutorObjects_frozenForRendering.QuoteLast = null;
 				}
 
 				bool nowStreaming = ctxChart.DownstreamSubscribed;

@@ -14,58 +14,84 @@ namespace Sq1.Core.Execution {
 //SEARCH_MESSAGES_FOR_STATE_YOU_NEED		[JsonProperty]	public DateTime		FilledBrokerTime;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
 //SEARCH_MESSAGES_FOR_STATE_YOU_NEED 		[JsonProperty]	public DateTime		KilledBrokerTime;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
 		
-		[JsonProperty]	public double		PriceRequested;				// SET_IN_BROKER_ADAPDER	{ get; protected set; }
-		[JsonProperty]	public double		PriceFill;					// SET_IN_ORDER_PROCESSOR   { get; protected set; }
-		[JsonProperty]	public double		QtyRequested;				// SET_IN_ORDER_PROCESSOR   { get; protected set; }
-		[JsonProperty]	public double		QtyFill;						// SET_IN_ORDER_PROCESSOR   { get; protected set; }
+		[JsonProperty]	public	double		PriceRequested;				// SET_IN_BROKER_ADAPDER	{ get; protected set; }
+		[JsonProperty]	public	double		PriceFilled;					// SET_IN_ORDER_PROCESSOR   { get; protected set; }
+		[JsonProperty]	public	double		Qty;				// SET_IN_ORDER_PROCESSOR   { get; protected set; }
+		[JsonProperty]	public	double		QtyFill;						// SET_IN_ORDER_PROCESSOR   { get; protected set; }
 
-		[JsonProperty]	public string		GUID						{ get; protected set; }
-		[JsonProperty]	public OrderState	State						{ get; protected set; }
-		[JsonProperty]	public DateTime		StateUpdateLastTimeLocal	{ get; protected set; }
-		[JsonProperty]	public int			SernoSession;				// SET_IN_BROKER_QUIK	{ get; protected set; }
-		[JsonProperty]	public long			SernoExchange;				// SET_IN_BROKER_QUIK	{ get; protected set; }
+		[JsonProperty]	public	string		GUID						{ get; protected set; }
+		[JsonProperty]	public	OrderState	State						{ get; protected set; }
+		[JsonProperty]	public	DateTime	StateUpdateLastTimeLocal	{ get; protected set; }
+		[JsonProperty]	public	int			SernoSession;				// SET_IN_BROKER_QUIK	{ get; protected set; }
+		[JsonProperty]	public	long		SernoExchange;				// SET_IN_BROKER_QUIK	{ get; protected set; }
 
-		[JsonProperty]	public bool			IsReplacement;				// SET_IN_ORDER_PROCESSOR   { get; protected set; }
-		[JsonProperty]	public string		ReplacementForGUID			{ get; protected set; }
-		[JsonProperty]	public string		ReplacedByGUID				{ get; protected set; }
+		[JsonProperty]	public	bool		IsReplacement;				// SET_IN_ORDER_PROCESSOR   { get; protected set; }
+		[JsonProperty]	public	string		ReplacementForGUID			{ get; protected set; }
+		[JsonProperty]	public	string		ReplacedByGUID				{ get; protected set; }
 
-		[JsonProperty]	public bool			IsEmergencyClose;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
-		[JsonProperty]	public int			EmergencyCloseAttemptSerno;	// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
-		[JsonProperty]	public string		EmergencyReplacementForGUID;	// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
-		[JsonProperty]	public string		EmergencyReplacedByGUID;		// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public	bool		IsEmergencyClose;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public	int			EmergencyCloseAttemptSerno;	// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public	string		EmergencyReplacementForGUID;	// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public	string		EmergencyReplacedByGUID;		// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
 
-		[JsonProperty]	public bool			IsKiller					{ get; protected set; }
-		[JsonProperty]	public bool			IsVictim					{ get; protected set; }
-		[JsonProperty]	public string		VictimGUID					{ get; protected set; }
-		[JsonIgnore]	public Order		VictimToBeKilled			{ get; protected set; }
-		[JsonProperty]	public string		KillerGUID					{ get; protected set; }
-		[JsonIgnore]	public Order		KillerOrder					{ get; protected set; }
+		[JsonProperty]	public	bool		IsKiller					{ get; protected set; }
+		[JsonProperty]	public	bool		IsVictim					{ get; protected set; }
+		[JsonProperty]	public	string		VictimGUID					{ get; protected set; }
+		[JsonIgnore]	public	Order		VictimToBeKilled			{ get; protected set; }
+		[JsonProperty]	public	string		KillerGUID					{ get; protected set; }
+		[JsonIgnore]	public	Order		KillerOrder					{ get; protected set; }
 
-		[JsonProperty]	public DateTime		DateServerLastFillUpdate;	// SET_IN_BROKER_QUIK	{ get; protected set; }
-		[JsonProperty]	public bool			EmittedByScript 			{ get; protected set; }
-		[JsonProperty]	public double		SlippageFill;				// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
-		[JsonProperty]	public int			SlippageIndex;				// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
-		[JsonProperty]	public double		CurrentAsk					{ get; protected set; }
-		[JsonProperty]	public double		CurrentBid					{ get; protected set; }
-		[JsonProperty]	public OrderSpreadSide SpreadSide;				// SET_IN_BROKER_ADAPDER	{ get; protected set; }
-		[JsonProperty]	public string		PriceSpreadSideAsString		{ get {
-				string ret = "";
+		[JsonProperty]	public	DateTime	DateServerLastFillUpdate;	// SET_IN_BROKER_QUIK	{ get; protected set; }
+		[JsonProperty]	public	bool		EmittedByScript 			{ get; protected set; }
+
+		[JsonProperty]	public	int			SlippageAppliedIndex;		// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public	double		SlippageApplied;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public	double		SlippageFilled;				// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public	double		SlippageFilledMinusApplied	{ get {
+				if (this.SlippageApplied	== 0) return 0;
+				if (this.PriceFilled		== 0) return 0;
+				if (this.PriceRequested		== 0) return 0;
+				double slippageFilled = this.PriceFilled - this.PriceRequested;
+				return slippageFilled - this.SlippageApplied;
+		} }
+		[JsonProperty]	public	double		CurrentAsk					{ get; protected set; }
+		[JsonProperty]	public	double		CurrentBid					{ get; protected set; }
+		[JsonProperty]	public	double		PriceCurBidOrAsk			{ get {
+				double ret = 0;
 				switch (this.SpreadSide) {
-					case OrderSpreadSide.AskCrossed:
-					case OrderSpreadSide.AskTidal:
-						ret = CurrentAsk + " " + SpreadSide;
+					case SpreadSide.AskCrossed:
+					case SpreadSide.AskTidal:
+						ret = this.CurrentAsk;
 						break;
-					case OrderSpreadSide.BidCrossed:
-					case OrderSpreadSide.BidTidal:
-						ret = CurrentBid + " " + SpreadSide;
+					case SpreadSide.BidCrossed:
+					case SpreadSide.BidTidal:
+						ret = this.CurrentBid;
 						break;
 					default:
-						ret = SpreadSide + " bid[" + CurrentBid + "] ask[" + CurrentAsk + "]";
+						break;
+				}
+				return ret;
+		} }
+		[JsonProperty]	public	SpreadSide	SpreadSide;					// SET_IN_BROKER_ADAPDER	{ get; protected set; }
+		[JsonProperty]	public	string		PriceSpreadSideAsString		{ get {
+				string ret = "";
+				switch (this.SpreadSide) {
+					case SpreadSide.AskCrossed:
+					case SpreadSide.AskTidal:
+						ret = this.CurrentAsk + " " + this.SpreadSide;
+						break;
+					case SpreadSide.BidCrossed:
+					case SpreadSide.BidTidal:
+						ret = this.CurrentBid + " " + this.SpreadSide;
+						break;
+					default:
+						ret = this.SpreadSide + " bid[" + CurrentBid + "] ask[" + CurrentAsk + "]";
 						break;
 				}
 				return ret;
 			} }
-		[JsonProperty]	public Alert		Alert						{ get; private set; }
+
+		[JsonProperty]	public	Alert		Alert						{ get; private set; }
 		[JsonIgnore]	public	bool		OnlyDeserializedHasNoBars	{ get { return this.Alert.Bars == null; } }
 
 		// why Concurrent: OrderProcessor adds while GUI reads (a copy); why Stack: ExecutionTree displays Messages RecentOnTop;
@@ -107,9 +133,9 @@ namespace Sq1.Core.Execution {
 		//[JsonIgnore]	public ListViewItem		ListViewItemInExecutionForm	{ get; protected set; }
 		//[JsonIgnore]	public int				StateImageIndex				{ get; protected set; }
 		
-		[JsonIgnore]	public List<Order>		DerivedOrders				{ get; protected set; }		// rebuilt on app restart from	DerivedOrdersGuids 
-		[JsonProperty]	public List<string>		DerivedOrdersGuids			{ get; protected set; }
-		[JsonProperty]	public Order			DerivedFrom	;				// SET_IN_OrdersShadowTreeDerived	{ get; protected set; }		// one parent with possibly its own parent, but not too deep; lazy to restore from DerivedFromGui only to rebuild Tree after restart
+		[JsonIgnore]	public	List<Order>		DerivedOrders				{ get; protected set; }		// rebuilt on app restart from	DerivedOrdersGuids 
+		[JsonProperty]	public	List<string>	DerivedOrdersGuids			{ get; protected set; }
+		[JsonProperty]	public	Order			DerivedFrom	;				// SET_IN_OrdersShadowTreeDerived	{ get; protected set; }		// one parent with possibly its own parent, but not too deep; lazy to restore from DerivedFromGui only to rebuild Tree after restart
 
 		
 		#region TODO OrderStateCollections: REFACTOR states to be better named/handled in OrderStateCollections.cs
@@ -161,22 +187,10 @@ namespace Sq1.Core.Execution {
 
 
 
-		[JsonProperty]	public int				AddedToOrdersListCounter;	// SET_IN_ORDER_LIST { get; protected set; }
-		//v1
-		//[JsonProperty]	public string			LastMessage { get {
-		//        int count = this.messages.Count; 
-		//        if (count == 0) return "";
-		//        OrderStateMessage lastOmsg;
-		//        bool success = this.messages.TryPop(out lastOmsg);
-		//        if (!success) {
-		//            throw new Exception("messages.TryPop() failed while messages.Count[" + count + "/" + messages.Count + "]");
-		//        }
-		//        return lastOmsg.Message; 
-		//    } }
-		//v2
-		[JsonProperty]	public string			LastMessage;
+		[JsonProperty]	public	int				AddedToOrdersListCounter;	// SET_IN_ORDER_LIST { get; protected set; }
+		[JsonProperty]	public	string			LastMessage;
 
-		[JsonIgnore]	public bool				hasSlippagesDefined { get {
+		[JsonIgnore]	public	bool			HasSlippagesDefined { get {
 				string msg1 = "[JsonIgnore]	to let orders restored after app restart fly over it; they don't have alert.Bars restored yet";
 				if (this.Alert == null) {
 					string msg = "PROBLEMATIC_Order.Alert=NULL_hasSlippagesDefined";
@@ -193,7 +207,7 @@ namespace Sq1.Core.Execution {
 				int slippageIndexMax = this.Alert.Bars.SymbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(this.Alert);
 				return (slippageIndexMax == -1) ? false : true;
 			} }
-		[JsonIgnore]	public bool				noMoreSlippagesAvailable { get {
+		[JsonIgnore]	public	bool			NoMoreSlippagesAvailable { get {
 				string msg1 = "[JsonIgnore]	to let orders restored after app restart fly over it; they don't have alert.Bars restored yet";
 				if (this.Alert == null) {
 					string msg = "PROBLEMATIC_Order.Alert=NULL_noMoreSlippagesAvailable";
@@ -210,9 +224,9 @@ namespace Sq1.Core.Execution {
 				string msg2 = "slippagesNotDefinedOr?";
 				int slippageIndexMax = this.Alert.Bars.SymbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(this.Alert);
 				if (slippageIndexMax == -1) return false;
-				return (this.SlippageIndex > slippageIndexMax) ? true : false;
+				return (this.SlippageAppliedIndex > slippageIndexMax) ? true : false;
 			} }
-		[JsonIgnore]	public bool				EmergencyCloseAttemptSernoExceedLimit { get {
+		[JsonIgnore]	public	bool			EmergencyCloseAttemptSernoExceedLimit { get {
 				if (this.Alert.Bars == null) {
 					string msg = "ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.BARS=NULL__ADDED_[JsonIgnore] //Order.EmergencyCloseAttemptSernoExceedLimit";
 					Assembler.PopupException(msg);
@@ -225,16 +239,15 @@ namespace Sq1.Core.Execution {
 			} }
 
 		[JsonProperty]	static int absno = 0;
-		[JsonProperty]	public double CommissionFill				{ get; protected set; }
-		//[JsonIgnore]	public ManualResetEvent MreActiveCanCome	{ get; protected set; }		// JSON restore of a ManualResetEvent makes GC thread throw SEHException (thanx for a great free library anyway)
+		[JsonProperty]	public	double			CommissionFill				{ get; protected set; }
 		[JsonProperty]	public	string			BrokerAdapterName			{ get { return this.Alert.BrokerName; } }
 
  		public Order() {	// called by Json.Deserialize(); what if I'll make it protected?
 			GUID = newGUID();
 			messages = new ConcurrentStack<OrderStateMessage>();
 			PriceRequested = 0;
-			PriceFill = 0;
-			QtyRequested = 0;
+			PriceFilled = 0;
+			Qty = 0;
 			QtyFill = 0;
 
 			State = OrderState.Unknown;
@@ -252,11 +265,11 @@ namespace Sq1.Core.Execution {
 			//StateImageIndex = 0;
 			StateUpdateLastTimeLocal = DateTime.MinValue;
 			EmittedByScript = false;
-			SlippageFill = 0;
-			SlippageIndex = 0;
+			SlippageApplied = 0;
+			SlippageAppliedIndex = 0;
 			CurrentAsk = 0;
 			CurrentBid = 0;
-			SpreadSide = OrderSpreadSide.Unknown;
+			SpreadSide = SpreadSide.Unknown;
 			//MreActiveCanCome = new ManualResetEvent(false);
 			DerivedOrders = new List<Order>();
 			DerivedOrdersGuids = new List<string>();
@@ -279,33 +292,33 @@ namespace Sq1.Core.Execution {
 				Assembler.PopupException(msg);
 			}
 			
-			this.PriceRequested			= alert.PriceScript;
-			this.QtyRequested			= alert.Qty;
+			this.Qty					= alert.Qty;
+
+			//if (alert.DataSource != null && alert.DataSource.StreamingAdapter != null) {
+			//    this.CurrentBid = alert.DataSource.StreamingAdapter.StreamingDataSnapshot.BestBid_getForMarketOrder(alert.Symbol);
+			//    this.CurrentAsk = alert.DataSource.StreamingAdapter.StreamingDataSnapshot.BestAsk_getForMarketOrder(alert.Symbol);
+			//}
+			this.CurrentBid				= alert.CurrentBid;
+			this.CurrentAsk				= alert.CurrentAsk;
+
+			this.SpreadSide				= alert.SpreadSide;
+
+			this.PriceRequested			= alert.PriceEmitted;
+			this.SlippageAppliedIndex	= 0;
+			this.SlippageApplied		= alert.SlippageApplied;
+
 			this.EmittedByScript		= emittedByScript;
 			//due to serverTime lagging, replacements orders are born before the original order... this.TimeCreatedServer = alert.TimeCreatedLocal;
 			if (alert.Bars == null) {
 				string msg1 = "NYI:KILLING_ORDERS_AFTER_APPRESTART ORDER_DESERIALIZED_IS_NOT_ATTACHED_TO_BAR";
 				Assembler.PopupException(msg1, null, false);
 			} else {
-				this.CreatedBrokerTime		= alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
-			}
-			//Order.PositionFollowed will be created when order.State becomes OrderState.Filled this.PositionFollowed		= new Position()
-			this.SpreadSide				= alert.OrderSpreadSide;
-
-			// Bid/Ask Dictionaries are synchronized => no exceptions
-			if (alert.DataSource != null && alert.DataSource.StreamingAdapter != null) {
-				this.CurrentBid = alert.DataSource.StreamingAdapter.StreamingDataSnapshot.BestBid_getForMarketOrder(alert.Symbol);
-				this.CurrentAsk = alert.DataSource.StreamingAdapter.StreamingDataSnapshot.BestAsk_getForMarketOrder(alert.Symbol);
+				this.CreatedBrokerTime		= alert.Bars.MarketInfo.Convert_localTime_toServerTime(DateTime.Now);
 			}
 
 			this.Alert = alert;
 			alert.OrderFollowed = this;
 			
-//MOVED_TO OrderProcessor::CreatePropagateOrderFromAlert() for {if (alert.IsExitAlert) alert.PositionAffected.EntryAlert.OrderFollowed.DerivedOrdersAdd(newborn);}
-//			if (alert.PositionAffected != null && alert.PositionAffected.EntryAlert != null && alert.PositionAffected.EntryAlert.OrderFollowed != null) {
-//				alert.PositionAffected.EntryAlert.OrderFollowed.DerivedOrdersAdd(this);
-//				// TODO will also have to notify ExecutionForm on this Order, which will close a Position 
-//			}
 			alert.MreOrderFollowedIsAssignedNow.Set();	// simple alert submission is single threaded, including proto.StopLossAlertForAnnihilation!
 		}
 		public static string newGUID() {
@@ -327,8 +340,8 @@ namespace Sq1.Core.Execution {
 			Order killer = new Order(this.Alert, this.EmittedByScript, true);
 			killer.State = OrderState.JustConstructed;
 			killer.PriceRequested = 0;
-			killer.PriceFill = 0;
-			killer.QtyRequested = 0;
+			killer.PriceFilled = 0;
+			killer.Qty = 0;
 			killer.QtyFill = 0;
 
 			killer.VictimToBeKilled = this;
@@ -342,7 +355,7 @@ namespace Sq1.Core.Execution {
 			
 			this.DerivedOrdersAdd(killer);
 			
-			DateTime serverTimeNow = this.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
+			DateTime serverTimeNow = this.Alert.Bars.MarketInfo.Convert_localTime_toServerTime(DateTime.Now);
 			killer.CreatedBrokerTime = serverTimeNow;
 
 			return killer;
@@ -354,13 +367,13 @@ namespace Sq1.Core.Execution {
 			}
 			Order replacement = new Order(this.Alert, this.EmittedByScript, true);
 			replacement.State = OrderState.JustConstructed;
-			replacement.SlippageIndex = this.SlippageIndex;
+			replacement.SlippageAppliedIndex = this.SlippageAppliedIndex;
 			replacement.ReplacementForGUID = this.GUID;
 			this.ReplacedByGUID = replacement.GUID;
 			
 			this.DerivedOrdersAdd(replacement);
 
-			DateTime serverTimeNow = this.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
+			DateTime serverTimeNow = this.Alert.Bars.MarketInfo.Convert_localTime_toServerTime(DateTime.Now);
 			replacement.CreatedBrokerTime = serverTimeNow;
 
 			return replacement;
@@ -421,7 +434,7 @@ namespace Sq1.Core.Execution {
 			ret += this.GUID + " ";
 			if (this.IsKiller) ret += "KILLER_FOR ";
 			if (this.Alert != null) {
-				ret += this.Alert.ToStringForOrder();
+				ret += this.Alert.ToString_forOrder();
 			} else {
 				ret += " this.Alert=null_CONSTRUCTOR_NOT_COMPLETE";
 			}
@@ -435,7 +448,7 @@ namespace Sq1.Core.Execution {
 			//if (GUID != "") ret += " GUID[" + GUID + "]";
 			//if (SernoExchange != 0) ret += " SernoExchange[" + SernoExchange + "]";
 			if (this.QtyFill != 0.0) ret += " FillQty[" + this.QtyFill + "]";
-			if (this.PriceFill != 0.0) ret += " PriceFilled[" + this.PriceFill.ToString(formatPrice) + "]";
+			if (this.PriceFilled != 0.0) ret += " PriceFilled[" + this.PriceFilled.ToString(formatPrice) + "]";
 			//if (this.Alert.PriceDeposited != 0) ret += " PricePaid[" + this.Alert.PriceDeposited + "]";
 			if (this.EmittedByScript) ret += " EmittedByScript";
 			if (this.Alert.MyBrokerIsLivesim) ret += " Livesim";
@@ -444,11 +457,11 @@ namespace Sq1.Core.Execution {
 		public bool hasBrokerAdapter(string callerMethod) {
 			bool ret = true;
 			string errormsg = "";
-			if (this.Alert.DataSource == null) {
+			if (this.Alert.DataSource_fromBars == null) {
 				errormsg += "order.Alert[" + this.Alert + "].DataSource property must be set ";
 			}
-			if (this.Alert.DataSource.BrokerAdapter == null) {
-				errormsg += "order.Alert.DataSource[" + this.Alert.DataSource + "].BrokerAdapter property must be set ";
+			if (this.Alert.DataSource_fromBars.BrokerAdapter == null) {
+				errormsg += "order.Alert.DataSource[" + this.Alert.DataSource_fromBars + "].BrokerAdapter property must be set ";
 			}
 			if (errormsg != "") {
 				this.appendMessage(callerMethod + errormsg);
@@ -457,10 +470,10 @@ namespace Sq1.Core.Execution {
 			return ret;
 		}
 		public void FillWith(double priceFill, double qtyFill, double slippageFill = 0, double commissionFill = 0) {
-			this.PriceFill = priceFill;
+			this.PriceFilled = priceFill;
 			this.QtyFill = qtyFill;
-			if (this.SlippageFill == 0 && slippageFill != 0) {
-				this.SlippageFill = slippageFill;
+			if (this.SlippageFilled == 0 && slippageFill != 0) {
+				this.SlippageFilled = slippageFill;
 			}
 			if (this.CommissionFill == 0 && commissionFill != 0) {
 				this.CommissionFill = commissionFill;
@@ -485,8 +498,8 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public void AbsorbCurrentBidAsk_fromStreamingSnapshot(StreamingDataSnapshot snap) {
-			this.CurrentBid = snap.BestBid_getForMarketOrder(this.Alert.Symbol);
-			this.CurrentAsk = snap.BestAsk_getForMarketOrder(this.Alert.Symbol);
+			this.CurrentBid = snap.GetBestBid_notAligned_forMarketOrder_fromQuoteCurrent(this.Alert.Symbol);
+			this.CurrentAsk = snap.GetBestAsk_notAligned_forMarketOrder_fromQuoteCurrent(this.Alert.Symbol);
 		}
 
 		internal void SetState_localTime_fromMessage(OrderStateMessage newStateWithReason) {

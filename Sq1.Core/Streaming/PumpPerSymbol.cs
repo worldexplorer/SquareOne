@@ -2,15 +2,15 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
-using System.Collections.Generic;
 
 namespace Sq1.Core.Streaming {
 	// REASON_TO_EXIST: allows to store temporarily incoming streaming quotes to backtest while streaming is on;
 	// steps to reproduce 1) I have quotes being generated, 2) Executor.IsStreaming+IsStreamingTriggeringScript,
 	// 3) I run Backtest => I need to postpone the reception of the incoming quotes for the duration of the backtest and then continue live orders emission
-	public class QuotePumpPerChannel : QuoteQueuePerChannel, IDisposable {
+	public class PumpPerSymbol<QUOTE> : QueuePerSymbol<QUOTE>, IDisposable {
 		const string THREAD_PREFIX = "PUMP_";	//SEPARATE_THREAD_QUOTE_FOR_
 
 					ManualResetEvent	hasQuoteToPush;			// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
@@ -31,7 +31,7 @@ namespace Sq1.Core.Streaming {
 		const		int		WARN_AFTER_QUOTES_BUFFERED = 10;
 					int		timesThreadWasStarted;
 
-					bool	isPushingThreadStarted;
+		public		bool	IsPushingThreadStarted		{ get; private set; }
 					bool	signalledTo_pauseUnpauseAbort;
 
 		bool iShouldWaitConfirmationFromPusherThread_notYetInLoop { get {
@@ -68,7 +68,8 @@ namespace Sq1.Core.Streaming {
 			return signalledTrue_expiredFalse;
 		} }
 
-		public QuotePumpPerChannel(SymbolScaleDistributionChannel channel, int heartbeatTimeout = HEARTBEAT_TIMEOUT_DEFAULT) : base(channel) {
+		~PumpPerSymbol() { this.Dispose(); }
+		public PumpPerSymbol(SymbolChannel channel, int heartbeatTimeout = HEARTBEAT_TIMEOUT_DEFAULT) : base(channel) {
 			this.heartbeatTimeout	= heartbeatTimeout;
 			hasQuoteToPush			= new ManualResetEvent(false);
 			bufferPusher			= new Task(this.pusherEntryPoint);
@@ -79,7 +80,7 @@ namespace Sq1.Core.Streaming {
 			base.UpdateThreadNameAfterMaxConsumersSubscribed = false;
 			//v1 NOPE_ITS_TOO_THICK_FOR_POST_CONSTRUCTOR_TIMES_this.PusherPause();	// ALL_PUMPS_AT_BIRTH_ARE_PAUSED__AVOIDING_INDICATORS_NOT_HAVING_EXECUTOR_AT_APP_RESTART_BACKTEST
 			this.confirmPaused.Set();		// IF_ON_APP_RESTART_WE_HAVE_BACKTESTS_SCHEDULED_SymbolCScaleDistributionChannel.PumpResumeBacktesterFinishedRemove()_WILL_UNPAUSE_AFTER_THEY_FINISH
-			this.pushingThreadStart();
+			this.pushingThreadStart_waitConfirmed();
 			if (this.Paused) {
 				string msg = "PUSHER_THREAD_STARTED__DONT_FORGET_UNPAUSE " + this.ToString();
 #if DEBUG_STREAMING
@@ -88,9 +89,9 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		public void PushingThreadStop() {
-			string msig = " //PushingThreadStop isPushingThreadStarted[" + this.isPushingThreadStarted + "]=>[" + false + "] " + this.ToString();
-			if (this.isPushingThreadStarted == false) {
+		public void PushingThreadStop_waitConfirmed() {
+			string msig = " //PushingThreadStop isPushingThreadStarted[" + this.IsPushingThreadStarted + "]=>[" + false + "] " + this.ToString();
+			if (this.IsPushingThreadStarted == false) {
 				// this.simulationPreBarsSubstitute() waits for 10 seconds
 				// you'll be waiting for confirmThreadExited.WaitOne(1000) because there was no running thread to confirm its own exit
 				return;
@@ -106,11 +107,11 @@ namespace Sq1.Core.Streaming {
 				string msg = "IMPOSSIBLE_HAPPENED_WHILE_PUSHING_THREAD_STARTING/STOPPING";
 				Assembler.PopupException(msg + msig, ex);
 			}
-			this.isPushingThreadStarted = false;
+			this.IsPushingThreadStarted = false;
 		}
-		void pushingThreadStart() {
-			string msig = " //pushingThreadStart isPushingThreadStarted[" + this.isPushingThreadStarted + "]=>[" + true + "] " + this.ToString();
-			if (this.isPushingThreadStarted == true) {
+		void pushingThreadStart_waitConfirmed() {
+			string msig = " //pushingThreadStart isPushingThreadStarted[" + this.IsPushingThreadStarted + "]=>[" + true + "] " + this.ToString();
+			if (this.IsPushingThreadStarted == true) {
 				// this.simulationPreBarsSubstitute() waits for 10 seconds
 				// you'll be waiting for confirmThreadExited.WaitOne(1000) because there was no running thread to confirm its own exit
 				return;
@@ -126,12 +127,15 @@ namespace Sq1.Core.Streaming {
 				this.bufferPusher.Start();
 				bool startConfirmed = this.confirmThreadStarted.WaitOne(this.heartbeatTimeout * 2);
 				string msg = startConfirmed ? "PUMPING_THREAD_STARTED_CONFIRMED" : "PUMPING_THREAD_STARTED_NOT_CONFIRMED";
-				//Assembler.PopupException(msg + msig, null, false);
+				if (startConfirmed == false) {
+					msg += " is this the reason for slow appStartup?...";
+					Assembler.PopupException(msg + msig, null, false);
+				}
 			} catch (Exception ex) {
 				string msg = "IMPOSSIBLE_HAPPENED_WHILE_PUSHING_THREAD_STARTING";
 				Assembler.PopupException(msg + msig, ex);
 			}
-			this.isPushingThreadStarted = true;
+			this.IsPushingThreadStarted = true;
 		}
 		void signalTo_pauseUnpauseAbort() {
 			// this must go first!!
@@ -154,9 +158,9 @@ namespace Sq1.Core.Streaming {
 				this.timesThreadWasStarted++;
 				this.confirmThreadStarted.Set();
 				while (this.exitPushingThreadRequested == false) {
-					bool chartDiThread = this.Channel.ReasonIwasCreated_propagatedFromDistributor.Contains("DataDistributorCharts");
-					bool solidifThread = this.Channel.ReasonIwasCreated_propagatedFromDistributor.Contains("DataDistributorSolidifier");
-					bool livesimThread = this.Channel.ReasonIwasCreated_propagatedFromDistributor.Contains("LIVESIM_STARTED");
+					bool chartDiThread = this.SymbolChannel.ReasonIwasCreated_propagatedFromDistributor.Contains(Distributor.LIVE_CHARTS_FOR);
+					bool solidifThread = this.SymbolChannel.ReasonIwasCreated_propagatedFromDistributor.Contains(Distributor.SOLIDIFIERS_FOR);
+					bool livesimThread = this.SymbolChannel.ReasonIwasCreated_propagatedFromDistributor.Contains(Distributor.SUBSTITUTED_LIVESIM_STARTED);
 					msig = this.ToString();
 
 					#region OPTIMIZE_ME
@@ -274,8 +278,8 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig, ex);
 			}
 		}
-		public override int PushStraightOrBuffered(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
-			if (this.isPushingThreadStarted == false) {
+		public override int Push_straightOrBuffered(QUOTE quote_singleInstance_tillStreamBindsAll) {
+			if (this.IsPushingThreadStarted == false) {
 				string msg = "PUSHING_THREAD_MUST_START_IN_CTOR_OTHERWISE_USE_SINGLE_THREADED_QUEUE";
 				Assembler.PopupException(msg);
 				return 0;
@@ -289,23 +293,34 @@ namespace Sq1.Core.Streaming {
 				string msg = "QUOTES_BACKLOG_GREW [" + WARN_AFTER_QUOTES_BUFFERED + "] qq.Count[" + this.QQ.Count + "]";
 				Assembler.PopupException(msg, null, false);		// just adding to buffered List<Exception> => very quick (sync'ing with GUI is a separate 200ms-timered Task)
 			}
-			this.QQ.Enqueue(quoteSernoEnrichedWithUnboundStreamingBar);
+			this.QQ.Enqueue(quote_singleInstance_tillStreamBindsAll);
 			if (this.hasQuoteToPush_nonBlocking == false) {
 				this.hasQuoteToPush_nonBlocking  = true;
 			}
 			return 1;
 		}
 
-		#region NOT_USED_YET if I'll need to stop the Pump+AllConsumers when ChartFormsManager gets disposed
-		void IDisposable.Dispose() {
-			this.DisposeAllHandles();
-		}
-		public void DisposeAllHandles() {
+		public	bool IsDisposed { get; private set; }
+		public	void Dispose() {
 			if (this.IsDisposed) {
 				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
 				Assembler.PopupException(msg);
 				return;
 			}
+
+			if (this.IsPushingThreadStarted) {
+				try {
+					this.PushingThreadStop_waitConfirmed();
+				} catch(Exception ex) {
+					Assembler.PopupException("QuotePumpPerSymbol[" + this.ToString() + "].PushingThreadStop()", ex, false);
+				}
+			}
+			try {
+				this.bufferPusher.Dispose();
+			} catch(Exception ex) {
+				Assembler.PopupException("QuotePumpPerSymbol[" + this.ToString() + "].bufferPusher.Dispose()", ex, false);
+			}
+			
 			this.hasQuoteToPush			.Dispose();
 			this.bufferPusher			.Dispose();
 			this.confirmThreadStarted	.Dispose();
@@ -321,10 +336,8 @@ namespace Sq1.Core.Streaming {
 
 			this.IsDisposed = true;
 		}
-		public bool IsDisposed { get; private set; }
-		#endregion
 
-		public override void PusherPause() {
+		public override void PusherPause_waitUntilPaused(int waitUntilPaused_millis = -1) {
 			bool currentlyPaused = this.Paused;
 			if (currentlyPaused == true) {
 				// this.simulationPreBarsSubstitute() waits for 10 seconds
@@ -344,8 +357,9 @@ namespace Sq1.Core.Streaming {
 					//this.signalledTo_pauseUnpauseAbort = true;
 					this.signalTo_pauseUnpauseAbort();
 
-					//bool pausedConfirmed = this.confirmPaused.WaitOne(this.heartbeatTimeout * 2);
-					bool pausedConfirmed = this.confirmPaused.WaitOne(-1);
+					//v1 bool pausedConfirmed = this.confirmPaused.WaitOne(this.heartbeatTimeout * 2);
+					//v2 bool pausedConfirmed = this.confirmPaused.WaitOne(-1);
+					bool pausedConfirmed = this.WaitUntilPaused(waitUntilPaused_millis);
 					string msg2 = pausedConfirmed ? "PUSHER_THREAD_PAUSED_PUMPING" : "PUSHER_THREAD_PAUSED_PUMPING_BUT_NOT_CONFIRMED";
 #if DEBUG_STREAMING
 					Assembler.PopupException(msg2 + msig, null, false);
@@ -375,7 +389,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig, ex);
 			}
 		}
-		public override void PusherUnpause() {
+		public override void PusherUnpause_waitUntilUnpaused(int waitUntilUnpaused_millis = -1) {
 			bool currentlyPaused = this.Paused;
 			if (currentlyPaused == false) {
 				// this.simulationPreBarsSubstitute() waits for 10 seconds
@@ -394,8 +408,10 @@ namespace Sq1.Core.Streaming {
 					//this.signalledTo_pauseUnpauseAbort = true;
 					this.signalTo_pauseUnpauseAbort();
 
-					//bool unPausedConfirmed = this.confirmUnpaused.WaitOne(this.heartbeatTimeout * 2);
-					bool unPausedConfirmed = this.confirmUnpaused.WaitOne(-1);
+					//v1 bool unPausedConfirmed = this.confirmUnpaused.WaitOne(this.heartbeatTimeout * 2);
+					//v2 bool unPausedConfirmed = this.confirmUnpaused.WaitOne(-1);
+					bool unPausedConfirmed = this.WaitUntilUnpaused(waitUntilUnpaused_millis);
+
 					string msg = unPausedConfirmed ? "PUSHER_THREAD_UNPAUSED_PUMPING" : "PUSHER_THREAD_UNPAUSED_PUMPING_BUT_NOT_CONFIRMED";
 #if DEBUG_STREAMING
 					Assembler.PopupException(msg + msig, null, false);
@@ -427,19 +443,19 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig, ex);
 			}
 		}
-		public override bool WaitUntilUnpaused(int maxWaitingMillis = 1000) {
-			bool unpaused = this.confirmUnpaused.WaitOne(maxWaitingMillis);
-			return unpaused;
-		}
 		public override bool WaitUntilPaused(int maxWaitingMillis = 1000) {
 			bool paused = this.confirmPaused.WaitOne(maxWaitingMillis);
 			return paused;
 		}
+		public override bool WaitUntilUnpaused(int maxWaitingMillis = 1000) {
+			bool unpaused = this.confirmUnpaused.WaitOne(maxWaitingMillis);
+			return unpaused;
+		}
 
 		void notifyConsumers_pumpWasPaused() {
 			List<StreamingConsumer> consumersMerged = new List<StreamingConsumer>();
-			consumersMerged.AddRange(this.Channel.ConsumersBar);
-			consumersMerged.AddRange(this.Channel.ConsumersQuote);
+			consumersMerged.AddRange(this.SymbolChannel.ConsumersBar);
+			consumersMerged.AddRange(this.SymbolChannel.ConsumersQuote);
 			List<StreamingConsumer> alreadyNotified = new List<StreamingConsumer>();
 			foreach (StreamingConsumer consumer in consumersMerged) {
 				if (alreadyNotified.Contains(consumer)) continue;
@@ -449,8 +465,8 @@ namespace Sq1.Core.Streaming {
 		}
 		void notifyConsumers_pumpWasUnPaused() {
 			List<StreamingConsumer> consumersMerged = new List<StreamingConsumer>();
-			consumersMerged.AddRange(this.Channel.ConsumersBar);
-			consumersMerged.AddRange(this.Channel.ConsumersQuote);
+			consumersMerged.AddRange(this.SymbolChannel.ConsumersBar);
+			consumersMerged.AddRange(this.SymbolChannel.ConsumersQuote);
 			List<StreamingConsumer> alreadyNotified = new List<StreamingConsumer>();
 			foreach (StreamingConsumer consumer in consumersMerged) {
 				if (alreadyNotified.Contains(consumer)) continue;
@@ -459,6 +475,6 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		public override string ToString() { return THREAD_PREFIX + this.Channel.ConsumerNames; }
+		public override string ToString() { return THREAD_PREFIX + this.SymbolChannel.ConsumerNames; }
 	}
 }

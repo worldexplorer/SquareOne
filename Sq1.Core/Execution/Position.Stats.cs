@@ -5,15 +5,15 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Execution {
 	public partial class Position {
 		public double NetProfit { get {
-				double netProfit = this.GrossProfit - this.EntryFilledCommission;
-				if (this.ExitFilledBarIndex != -1) netProfit -= this.ExitFilledCommission;
+				double netProfit = this.GrossProfit - this.EntryFilled_commission;
+				if (this.ExitFilledBarIndex != -1) netProfit -= this.ExitFilled_commission;
 				return netProfit;
 			} }
 		public double GrossProfit { get { return this.Shares * this.DistanceInPoints * this.Bars.SymbolInfo.Point2Dollar; } }
 		public double DistanceInPoints { get {
 				return (this.PositionLongShort == PositionLongShort.Long)
-					? this.ExitOrStreamingPrice - this.EntryFilledPrice
-					: this.EntryFilledPrice - this.ExitOrStreamingPrice;;
+					? this.ExitFilled_orBarsClose_forOpenPositions - this.EntryFilled_price
+					: this.EntryFilled_price - this.ExitFilled_orBarsClose_forOpenPositions;
 			} }
 //		public double DistanceInPointsNoSlippage { get {
 //				return (this.PositionLongShort == PositionLongShort.Long)
@@ -26,7 +26,7 @@ namespace Sq1.Core.Execution {
 //				if (this.ExitFilledBarIndex != -1) netProfitNoSlippage -= this.ExitFilledCommission;
 //				return netProfitNoSlippage;
 //			} }
-		public double PositionCost { get { return this.Shares * this.EntryFilledPrice * this.Bars.SymbolInfo.Point2Dollar; } }
+		public double PositionCost { get { return this.Shares * this.EntryFilled_price * this.Bars.SymbolInfo.Point2Dollar; } }
 		public double NetProfitPercent { get {
 				if (this.Bars == null) return -999999;
 				return 100.0 * this.NetProfit / this.PositionCost;
@@ -60,7 +60,7 @@ namespace Sq1.Core.Execution {
 					Bar bar = this.Bars[i];
 					if (bar == null) throw new Exception("POSITION.MFE_BAR_BETWEEN_ENTRY_AND_EXIT_IS_NULL " + this.ToString());
 					double mfeAtBar = (this.PositionLongShort == PositionLongShort.Long)
-						? bar.High - this.EntryFilledPrice : this.EntryFilledPrice - bar.Low;
+						? bar.High - this.EntryFilled_price : this.EntryFilled_price - bar.Low;
 					if (mfeAtBar < 0) continue;
 					if (mfe < mfeAtBar) {
 						mfe = mfeAtBar;
@@ -95,7 +95,7 @@ namespace Sq1.Core.Execution {
 					Bar bar = this.Bars[i];
 					if (bar == null) throw new Exception("POSITION.MAE_BAR_BETWEEN_ENTRY_AND_EXIT_IS_NULL " + this.ToString());
 					double maeAtBar = (this.PositionLongShort == PositionLongShort.Long)
-						? bar.Low - this.EntryFilledPrice : this.EntryFilledPrice - bar.High;
+						? bar.Low - this.EntryFilled_price : this.EntryFilled_price - bar.High;
 					if (maeAtBar > 0) continue;
 					if (mae > maeAtBar) {
 						mae = maeAtBar;

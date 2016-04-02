@@ -8,12 +8,15 @@ using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
 	public abstract class StreamingConsumer {
-		protected 		string	MsigForNpExceptions	= "Failed to StreamingSubscribe(): ";
-		public			string	ReasonToExist				{ get; protected set; }
-		public virtual	Bars	ConsumerBarsToAppendInto	{ get { return this.Bars_nullReported; } }
+		protected 		string				MsigForNpExceptions			= "Failed to StreamingSubscribe(): ";
+		public			string				ReasonToExist				{ get; protected set; }
 
-		public abstract	void	UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart);
-		public abstract	void	UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop);
+		public virtual	Bars				ConsumerBars_toAppendInto	{ get { return this.Bars_nullReported; } }
+		public virtual	BarScaleInterval	ScaleInterval				{ get { return this.ConsumerBars_toAppendInto.ScaleInterval; } }
+		public virtual	string				Symbol						{ get { return this.ConsumerBars_toAppendInto.Symbol; } }
+
+		public abstract	void	UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirstAfterStart);
+		public abstract	void	UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLastBeforeStop);
 		public abstract	void	ConsumeQuoteOfStreamingBar(Quote quote);
 		public abstract	void	ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated);
 
@@ -50,7 +53,7 @@ namespace Sq1.Core.Streaming {
 				ScriptExecutor executor_nullUnsafe = this.Executor_nullReported;
 				string symbol = (executor_nullUnsafe.Strategy == null) ? executor_nullUnsafe.Bars.Symbol : this.ContextCurrentChartOrStrategy_nullReported.Symbol;
 				if (String.IsNullOrEmpty(symbol)) {
-					this.Action("this.Executor.Strategy.ScriptContextCurrent.Symbol IsNullOrEmpty");
+					this.action("this.Executor.Strategy.ScriptContextCurrent.Symbol IsNullOrEmpty");
 				}
 				return symbol;
 			} }
@@ -64,7 +67,7 @@ namespace Sq1.Core.Streaming {
 				var ret = this.ScaleInterval_nullReported.Scale;
 				this.ActionForNullPointer(ret, "this.Executor.Strategy.ScriptContextCurrent.ScaleInterval.Scale=null");
 				if (ret == BarScale.Unknown) {
-					this.Action("this.Executor.Strategy.ScriptContextCurrent.ScaleInterval.Scale=Unknown");
+					this.action("this.Executor.Strategy.ScriptContextCurrent.ScaleInterval.Scale=Unknown");
 				}
 				return ret;
 			} }
@@ -122,12 +125,12 @@ namespace Sq1.Core.Streaming {
 				var symbolSafe			= this.Symbol_nullReported;
 				var scaleIntervalSafe	= this.ScaleInterval_nullReported;
 
-				if (streamingSafe.DataDistributor_replacedForLivesim == null) {
+				if (streamingSafe.Distributor_substitutedDuringLivesim == null) {
 					// quick hack; make QuikStreaming use base(reasonIwasCreated)
-					this.StreamingAdapter_nullReported.CreateDataDistributors_onlyWhenNecessary(this.ReasonToExist);
+					this.StreamingAdapter_nullReported.CreateDistributors_onlyWhenNecessary(this.ReasonToExist);
 				}
-				bool quote	= streamingSafe.DataDistributor_replacedForLivesim.ConsumerQuoteIsSubscribed(	symbolSafe, scaleIntervalSafe, this);
-				bool bar	= streamingSafe.DataDistributor_replacedForLivesim.ConsumerBarIsSubscribed(		symbolSafe, scaleIntervalSafe, this);
+				bool quote	= streamingSafe.Distributor_substitutedDuringLivesim.ConsumerQuoteIsSubscribed(this);
+				bool bar	= streamingSafe.Distributor_substitutedDuringLivesim.ConsumerBarIsSubscribed(this);
 				bool ret = quote & bar;
 				return ret;
 			}}
@@ -147,11 +150,11 @@ namespace Sq1.Core.Streaming {
 		}
 		#endregion
 
-		public void ActionForNullPointer(object mustBeInstance, string msgIfNull) {
+		protected void ActionForNullPointer(object mustBeInstance, string msgIfNull) {
 			if (mustBeInstance != null) return;
-			this.Action(msgIfNull);
+			this.action(msgIfNull);
 		}
-		public void Action(string msgIfNull) {
+		void action(string msgIfNull) {
 			Assembler.PopupException(msgIfNull + this.MsigForNpExceptions, null, false);
 			//throw new Exception(msg);
 		}

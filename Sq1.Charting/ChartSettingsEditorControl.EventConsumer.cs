@@ -178,7 +178,8 @@ namespace Sq1.Charting {
 			ChartSettings clone = selected.Clone();
 			clone.Name = e.StringUserTyped;
 			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.SerializeSingle(clone);
-			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder();
+			//RENAMES_INSTEAD_OF_SAVING_CLONE Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.ItemAdd(clone);
+			//Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder();
 			this.populateTemplate(clone);
 		}
 		void mniltbRenameTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {

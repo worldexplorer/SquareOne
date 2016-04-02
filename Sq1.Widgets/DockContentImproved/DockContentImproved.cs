@@ -209,7 +209,7 @@ namespace Sq1.Widgets {
 		public bool IsShown				{ get { return base.Visible && base.DockState != DockState.Unknown; } }
 		public bool IsFloatingWindow	{ get { return base.Visible && base.DockState == DockState.Float; } }
 		public bool IsInDocumentArea	{ get { return base.Visible && base.DockState == DockState.Document; } }
-		public bool IsDocked			{ get { return base.Visible && DockHelper.IsDockWindowState(base.DockState); } }
+		public bool IsDocked			{ get { return DockHelper.IsDockWindowState(base.DockState); } }
 		public bool IsDockedAutoHide	{ get { return DockHelper.IsDockStateAutoHide(base.DockState); } }
 		public bool IsCoveredOrAutoHidden { get {
 				//if (base.Visible == false) return false;
@@ -245,6 +245,11 @@ namespace Sq1.Widgets {
 					#if DEBUG
 					Debugger.Break();
 					#endif
+					return true;
+				}
+				
+				if (base.Visible == false && this.IsDocked) {
+					string msg = "OPEN_IN_ONE_OF_THE_TABS__BUT_IS_NOT_ACTIVE";
 					return true;
 				}
 				

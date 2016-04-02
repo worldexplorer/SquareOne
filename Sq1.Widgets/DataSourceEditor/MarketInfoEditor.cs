@@ -25,7 +25,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			//return;
 			//if (base.DesignMode) return;
 			// DOESNT_RESET_SELECTED_INDEX_TO_ZERO_DESPITE_LOOKS_CLOWNISH DockContent.Shows() resets SelectedIndex...
-			this.populateMarketFromDataSource();
+			this.populateMarket_fromDataSource();
 			this.dgMarketName.SelectionChanged += new System.EventHandler(this.dgMarketName_SelectionChanged);
 		}
 		public void Initialize(DataSource dataSource, RepositoryJsonDataSources dataSourceRepository, RepositorySerializerMarketInfos marketInfoRepository) {
@@ -33,9 +33,9 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.dataSource = dataSource;
 			this.dataSourceRepository = dataSourceRepository;
 			this.marketInfoRepository = marketInfoRepository;
-			this.populateMarketFromDataSource();
+			this.populateMarket_fromDataSource();
 		}
-		public void populateMarketFromDataSource() {
+		public void populateMarket_fromDataSource() {
 			if (base.DesignMode) return;
 			if (this.dataSource == null) return;
 			this.populateMarketNamesDataGrid();
@@ -105,8 +105,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 		}
 		void populateMarketOpenCloseTexts() {
 			if (this.dataSource.MarketInfo == null) return;
-			this.txtMarketServerOpen.Text = this.dataSource.MarketInfo.MarketOpenServerTime.ToString("HH:mm");
-			this.txtMarketServerClose.Text = this.dataSource.MarketInfo.MarketCloseServerTime.ToString("HH:mm");
+			this.txtMarketServerOpen.Text = this.dataSource.MarketInfo.MarketOpen_serverTime.ToString("HH:mm");
+			this.txtMarketServerClose.Text = this.dataSource.MarketInfo.MarketClose_serverTime.ToString("HH:mm");
 			this.txtMarketDaysOfWeek.Text = this.dataSource.MarketInfo.DaysOfWeekOpenAsString;
 		}
 		void populateTimeZonesSelector() {

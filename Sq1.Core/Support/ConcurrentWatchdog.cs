@@ -11,7 +11,7 @@ namespace Sq1.Core.Support {
 		public		const int		TIMEOUT_DEFAULT				= 3000;		// 3000ms = 3s
 
 		public		string					ReasonToExist { get; protected set; }
-		protected	ExecutionDataSnapshot	Snap;
+		protected	ExecutorDataSnapshot	Snap;
 
 					object				customerLockingQueue;
 					ManualResetEvent	isFree;
@@ -28,7 +28,7 @@ namespace Sq1.Core.Support {
 					Thread				unlockedThread;
 					Stack<string>		recursionDetector;
 
-		public ConcurrentWatchdog(string reasonToExist, ExecutionDataSnapshot snap = null) {
+		public ConcurrentWatchdog(string reasonToExist, ExecutorDataSnapshot snap = null) {
 			ReasonToExist			= reasonToExist;
 			Snap					= snap;
 			customerLockingQueue	= new object();
@@ -58,7 +58,7 @@ namespace Sq1.Core.Support {
 			bool unlocked = this.isFree.WaitOne(waitMillis);
 			return unlocked;
 		}
-		public bool WaitAndLockFor(object owner, string lockPurpose,
+		public bool WaitAndLockFor(object lockOwner, string lockPurpose,
 					int waitMillis = TIMEOUT_DEFAULT, bool engageWaitingForEva = true) {
 			// lock(){} above WAS DEADLY when, between two stack frames, another thread locked me
 			// 1. Thread1,stack1shallow: locked, unlock to come on top level;
@@ -70,7 +70,7 @@ namespace Sq1.Core.Support {
 				return false;
 			}
 
-			string msig = " //WaitAndLockFor(owner[" + owner + "] lockPurpose[" + lockPurpose + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
+			string msig = " //WaitAndLockFor(owner[" + lockOwner + "] lockPurpose[" + lockPurpose + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
 			//string msig = "LOCK_REQUESTED_BY[" + owner.ToString() + "]_FOR[" + lockPurpose + "] ";
 			if (this.IsDisposed) {
 				string msg = "DISPOSED_WAS_AREADY_INVOKED#1 ";
@@ -118,7 +118,7 @@ namespace Sq1.Core.Support {
 				}
 
 				this.lockedThread = Thread.CurrentThread;
-				this.lockedClass = owner;
+				this.lockedClass = lockOwner;
 				this.lockedPurposeFirstInTheStack = lockPurpose;
 
 				this.sameThreadLocksRequestedStackDepth++;
@@ -126,7 +126,7 @@ namespace Sq1.Core.Support {
 				return true;
 			}
 		}
-		public bool UnLockFor(object owner, string releasingAfter, bool reportViolation = false,
+		public bool UnLockFor(object lockOwner, string releasingAfter, bool reportViolation = false,
 						int waitMillis = TIMEOUT_DEFAULT, bool engageWaitingForEva = true) {
 			// lock(){} above WAS DEADLY when, between two stack frames, another thread locked me
 			// 1. Thread1,stack1shallow: locked, unlock to come on top level;
@@ -139,7 +139,7 @@ namespace Sq1.Core.Support {
 					return false;
 				} // if no stacked locks from the same owner - unlock it! 6 last lines
 			}
-			string msig = " //UnLockFor(owner[" + owner + "] releasingAfter[" + releasingAfter + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
+			string msig = " //UnLockFor(owner[" + lockOwner + "] releasingAfter[" + releasingAfter + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
 			if (this.IsDisposed) {
 				string msg = "DISPOSED_WAS_AREADY_INVOKED#1 ";
 				Assembler.PopupException(msg + msig);
@@ -164,8 +164,8 @@ namespace Sq1.Core.Support {
 					msg = "MUST_BE_LOCKED__UNPROOF_OF_CONCEPT";
 					// DONT_WORRY__BE_HAPPY throw new Exception(msg + msig);
 				} else {
-					if (this.lockedClass != owner) {
-						msg = "YOU_MUST_BE_THE_SAME_OBJECT_WHO_LOCKED this.lockOwner[" + this.lockedClass + "] != owner[" + owner + "]";
+					if (this.lockedClass != lockOwner) {
+						msg = "YOU_MUST_BE_THE_SAME_OBJECT_WHO_LOCKED this.lockOwner[" + this.lockedClass + "] != owner[" + lockOwner + "]";
 						throw new Exception(msg + msig);
 					}
 					if (this.lockedPurposeFirstInTheStack != releasingAfter) {
@@ -198,7 +198,7 @@ namespace Sq1.Core.Support {
 				this.lockedClass = null;
 				this.lockedPurposeFirstInTheStack = null;
 
-				this.unlockedClass = owner;
+				this.unlockedClass = lockOwner;
 				this.unlockedAfter = releasingAfter;
 				this.unlockedThread = Thread.CurrentThread;
 

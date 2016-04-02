@@ -38,7 +38,7 @@ namespace Sq1.Charting {
 			string alertsAsString = "";
 			foreach (var alert in alersForBar) {
 				if (alertsAsString != "") alertsAsString += "\r\n";
-				alertsAsString += alert.ToStringForTooltip();
+				alertsAsString += alert.ToString_forTooltip();
 			}
 			//this.toolTipAlerts.SetToolTip(this.lnkAlertsVal, alertsAsString);
 			this.lnkAlertsVal.Text = alersForBar.Count + "";

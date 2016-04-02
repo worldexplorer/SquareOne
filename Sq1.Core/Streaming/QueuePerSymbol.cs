@@ -7,16 +7,16 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
-	public class QuoteQueuePerChannel {
+	public class QueuePerSymbol<QUOTE> {
 		const string THREAD_PREFIX = "QUEUE_";	//SINGLE_THREADED_FOR_
 
-		protected	SymbolScaleDistributionChannel	Channel;
-		protected	ConcurrentQueue<Quote>			QQ;
-					Stopwatch						waitedForBacktestToFinish;
+		protected	SymbolChannel				SymbolChannel;
+		protected	ConcurrentQueue<QUOTE>		QQ;
+					Stopwatch					waitedForBacktestToFinish;
 
-		public			bool						UpdateThreadNameAfterMaxConsumersSubscribed;
-		public			bool						HasSeparatePushingThread						{ get { return this is QuotePumpPerChannel; } }
-		public virtual	bool						Paused											{ get {
+		public			bool					UpdateThreadNameAfterMaxConsumersSubscribed;
+		public			bool					HasSeparatePushingThread						{ get { return this is PumpPerSymbol<QUOTE>; } }
+		public virtual	bool					Paused											{ get {
 				string msg = "QuoteQueue.Paused: OVERRIDE_ME_KOZ_PAUSING_MAKES_SENSE_FOR_REAL_STREAMING_QUOTE_PUMP_NOT_QUEUE"
 					+ " WHILE_ACTIVATING_ONE_OPRIMIZATION_RESULT_YOU_PAUSE_SINGLE_THREADED_BACKTESTER_INSTEAD_OF_STREAMING_PROVIDER?";
 				#if DEBUG
@@ -24,18 +24,18 @@ namespace Sq1.Core.Streaming {
 				#endif
 				throw new Exception(msg); } }
 
-		public QuoteQueuePerChannel(SymbolScaleDistributionChannel channel) {
-			QQ							= new ConcurrentQueue<Quote>();
+		public QueuePerSymbol(SymbolChannel channel) {
+			QQ							= new ConcurrentQueue<QUOTE>();
 			waitedForBacktestToFinish	= new Stopwatch();
 			//UpdateThreadNameAfterMaxConsumersSubscribed = true;
-			Channel						= channel;
+			SymbolChannel				= channel;
 		}
-		public virtual int PushStraightOrBuffered(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
+		public virtual int Push_straightOrBuffered(QUOTE quote_singleInstance_tillStreamBindsAll) {
 			if (this.QQ.Count != 0) {
 				string msg = "MUST_BE_EMPTY__NOW_HAS_[" + this.QQ.Count + "] QUEUE_IS_NOT_FULLY_USED_IN_SINGLE_THREADED";
 				Assembler.PopupException(msg);
 			}
-			this.Channel.PushQuoteToConsumers(quoteSernoEnrichedWithUnboundStreamingBar);
+			this.SymbolChannel.PushQuote_toStreams(quote_singleInstance_tillStreamBindsAll as Quote);
 			return 1;
 		}
 		protected int FlushQuotesQueued() {
@@ -49,15 +49,15 @@ namespace Sq1.Core.Streaming {
 			}
 			int quotesProcessed = 0;
 			int customerCalls = 0;
-			Quote quoteDequeued;
-			while (this.QQ.TryDequeue(out quoteDequeued)) {
+			QUOTE quoteDequeued_singleInstance_tillStreamBindsAll;
+			while (this.QQ.TryDequeue(out quoteDequeued_singleInstance_tillStreamBindsAll)) {
 				try {
-					this.Channel.PushQuoteToConsumers(quoteDequeued);
+					this.SymbolChannel.PushQuote_toStreams(quoteDequeued_singleInstance_tillStreamBindsAll as Quote);
 					quotesProcessed++;
-					customerCalls += this.Channel.ConsumersBarCount + this.Channel.ConsumersQuoteCount;
+					customerCalls += this.SymbolChannel.ConsumersBarCount + this.SymbolChannel.ConsumersQuoteCount;
 				} catch (Exception ex) {
-					string msg2 = "CONSUMER_FAILED_TO_DIGEST_QUOTE recipient[" + this.Channel.ToString()
-						+ "] quoteDequeued[" + quoteDequeued.ToString() + "]";
+					string msg2 = "CONSUMER_FAILED_TO_DIGEST_QUOTE recipient[" + this.SymbolChannel.ToString()
+						+ "] quoteDequeued_clonedUboundUnattached[" + quoteDequeued_singleInstance_tillStreamBindsAll.ToString() + "]";
 					Assembler.PopupException(msg2 + msig, ex, true);
 					continue;
 				}
@@ -72,18 +72,18 @@ namespace Sq1.Core.Streaming {
 			return quotesProcessed;
 		}
 
-		public virtual void PusherPause() {
+		public virtual void PusherPause_waitUntilPaused(int waitUntilPaused_millis = -1) {
 			string msg = "I_REFUSE_TO_BE_PAUSED_BEACUSE_IM_SINGLE_THREADED__USE_MULTI_THREADED_QUOTE_PUMP_TO_PAUSE";
 			Assembler.PopupException(msg);
 		}
 
-		public virtual void PusherUnpause() {
+		public virtual void PusherUnpause_waitUntilUnpaused(int waitUntilUnpaused_millis = -1) {
 			string msg = "I_REFUSE_TO_BE_UNPAUSED_BEACUSE_IM_SINGLE_THREADED__USE_MULTI_THREADED_QUOTE_PUMP_TO_UNPAUSE";
 			Assembler.PopupException(msg);
 		}
 
 		public virtual bool WaitUntilUnpaused(int maxWaitingMillis = 1000) {
-			bool servingLivesimChannels = this.Channel.ConsumersQuoteAsString.Contains(Livesimulator.TO_STRING_PREFIX);
+			bool servingLivesimChannels = this.SymbolChannel.ConsumersQuoteAsString.Contains(Livesimulator.TO_STRING_PREFIX);
 			if (this.HasSeparatePushingThread == false && servingLivesimChannels == false) {
 				string msg = "PAUSING_MAKES_SENSE_FOR_REAL_STREAMING_QUOTE_PUMP_NOT_QUEUE"
 					+ " ONLY_GOOD_FOR_NON-BACKTEST_AND_NON-LIVESIM_CONTROLLED_CHANNELS //WaitUntilUnpaused()";
@@ -92,7 +92,7 @@ namespace Sq1.Core.Streaming {
 			return false;
 		}
 		public virtual bool WaitUntilPaused(int maxWaitingMillis = 1000) {
-			bool servingLivesimChannels = this.Channel.ConsumersQuoteAsString.Contains(Livesimulator.TO_STRING_PREFIX);
+			bool servingLivesimChannels = this.SymbolChannel.ConsumersQuoteAsString.Contains(Livesimulator.TO_STRING_PREFIX);
 			if (this.HasSeparatePushingThread == false && servingLivesimChannels == false) {
 				string msg = "PAUSING_MAKES_SENSE_FOR_REAL_STREAMING_QUOTE_PUMP_NOT_QUEUE"
 					+ " ONLY_GOOD_FOR_NON-BACKTEST_AND_NON-LIVESIM_CONTROLLED_CHANNELS //WaitUntilPaused()";
@@ -112,7 +112,7 @@ namespace Sq1.Core.Streaming {
 			//if (Thread.CurrentThread.Name == msig) return;
 			if (msig.Contains("UNKNOWN")) return;
 
-			if (this.Channel.ConsumersBarCount == 0) {
+			if (this.SymbolChannel.ConsumersBarCount == 0) {
 				string msg = "INVOKE_ME_LATER_SO_THAT_THREAD_NAME_WILL_CONTAIN_CONSUMER_NAMES_AS_WELL ";
 				//Assembler.PopupException(msg + msig, null, false);
 				return;
@@ -125,6 +125,6 @@ namespace Sq1.Core.Streaming {
 
 			return;
 		}
-		public override string ToString() { return THREAD_PREFIX + this.Channel.ConsumerNames; }
+		public override string ToString() { return THREAD_PREFIX + this.SymbolChannel.ConsumerNames; }
 	}
 }

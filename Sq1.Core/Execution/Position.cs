@@ -17,7 +17,7 @@ namespace Sq1.Core.Execution {
 		public Bars					Bars					{ get; protected set; }
 		public string				Symbol					{ get { return this.Bars.Symbol; } }
 		public double				Shares					{ get; protected set; }
-		public double				LastQuoteForMarketOrStopLimitImplicitPrice;// { get; protected set; }
+		public double				QuoteLast_forMarketOrStopLimit_implicitPrice;// { get; protected set; }
 
 		public PositionPrototype	Prototype;
 
@@ -25,23 +25,23 @@ namespace Sq1.Core.Execution {
 		public MarketLimitStop		EntryMarketLimitStop	{ get; protected set; }
 		public int					EntryFilledBarIndex		{ get; protected set; }
 		public Bar					EntryBar				{ get { return this.Bars[this.EntryFilledBarIndex]; } }
-		public double				EntryFilledPrice		{ get; protected set; }
-		public double				EntryPriceScript;		// { get; protected set; }
-		private double				EntryFilledQty;			// { get; protected set; }
-		public double				EntryFilledSlippage		{ get; protected set; }
+		public double				EntryFilled_price		{ get; protected set; }
+		public double				EntryEmitted_price;		// { get; protected set; }
+		private double				EntryFilled_qty;		// { get; protected set; }
+		public double				EntryFilled_slippage	{ get; protected set; }
 		public string				EntrySignal				{ get; protected set; }
-		public double				EntryFilledCommission	{ get; protected set; }
+		public double				EntryFilled_commission	{ get; protected set; }
 
 		public Alert				ExitAlert;				// { get; protected set; }
 		public MarketLimitStop		ExitMarketLimitStop		{ get; protected set; }
 		public int					ExitFilledBarIndex		{ get; protected set; }
 		public Bar					ExitBar					{ get { return this.Bars[this.ExitFilledBarIndex]; } }
-		public double				ExitFilledPrice			{ get; protected set; }
-		public double				ExitPriceScript;		// { get; protected set; }
-		private double				ExitFilledQty;			// { get; protected set; }
-		public double				ExitFilledSlippage		{ get; protected set; }
+		public double				ExitFilled_price		{ get; protected set; }
+		public double				ExitEmitted_price;		// { get; protected set; }
+		private double				ExitFilled_qty;			// { get; protected set; }
+		public double				ExitFilled_slippage		{ get; protected set; }
 		public string				ExitSignal				{ get; protected set; }
-		public double				ExitFilledCommission	{ get; protected set; }
+		public double				ExitFilled_commission	{ get; protected set; }
 
 		public string				StrategyID;
 		//public bool NoExitBarOrStreaming { get { return (this.ExitBarIndex == -1 || this.ExitBarIndex == this.Bars.Count); } }
@@ -68,58 +68,58 @@ namespace Sq1.Core.Execution {
 				if (this.Bars.SymbolInfo.SecurityType == SecurityType.Futures) {
 					return this.Bars.SymbolInfo.Point2Dollar * this.Shares;
 				}
-				return this.EntryFilledPrice * this.Shares;
+				return this.EntryFilled_price * this.Shares;
 			} }
 
-		public double ExitOrStreamingPrice { get {
+		public double ExitFilled_orBarsClose_forOpenPositions { get {
 				double ret = -1;
-				if (this.ExitFilledPrice != 0 && this.ExitFilledPrice != -1) {	//-1 is a standard for justInitialized nonFilled position's Entry/Exit Prices and Bars;
-					ret = this.ExitFilledPrice;
+				if (this.ExitFilled_price != 0 && this.ExitFilled_price != -1) {	//-1 is a standard for justInitialized nonFilled position's Entry/Exit Prices and Bars;
+					ret = this.ExitFilled_price;
 				} else {
 					if (this.Bars.BarStreaming_nullUnsafe == null) {
 						throw new Exception("Position.ExitOrStreamingPrice: this.Bars.StreamingBar=null; @ExitBar[" + this.ExitFilledBarIndex + "] position=[" + this + "]; ");
 					}
 					ret = this.Bars.BarStreaming_nullUnsafe.Close;
 				}
-				if (this.ExitFilledSlippage != -1) ret += this.ExitFilledSlippage;
+				if (this.ExitFilled_slippage != -1) ret += this.ExitFilled_slippage;
 				return ret;
 			} }
 		public double EntryPriceNoSlippage { get {
 				double ret = 0;
-				if (this.EntryFilledPrice == -1) return ret;
-				ret = this.EntryFilledPrice - this.EntryFilledSlippage;
+				if (this.EntryFilled_price == -1) return ret;
+				ret = this.EntryFilled_price - this.EntryFilled_slippage;
 				return ret;
 			} }
 		public double ExitOrCurrentPriceNoSlippage { get {
-				double ret = this.ExitOrStreamingPrice;
-				if (this.ExitFilledSlippage != -1) ret -= this.ExitFilledSlippage;
+				double ret = this.ExitFilled_orBarsClose_forOpenPositions;
+				if (this.ExitFilled_slippage != -1) ret -= this.ExitFilled_slippage;
 				return ret;
 			} }
 		public bool IsEntryFilled { get {
-				if (this.EntryFilledPrice == -1) return false;
-				if (this.EntryFilledQty == -1) return false;
-				if (this.EntryFilledCommission == -1) return false;
-				if (this.EntryFilledSlippage == -1) return false;
+				if (this.EntryFilled_price == -1) return false;
+				if (this.EntryFilled_qty == -1) return false;
+				if (this.EntryFilled_commission == -1) return false;
+				if (this.EntryFilled_slippage == -1) return false;
 				return true;
 			} }
 		public bool IsExitFilled { get {
-				if (this.ExitFilledPrice == -1) return false;
-				if (this.ExitFilledQty == -1) return false;
-				if (this.ExitFilledCommission == -1) return false;
-				if (this.ExitFilledSlippage == -1) return false;
+				if (this.ExitFilled_price == -1) return false;
+				if (this.ExitFilled_qty == -1) return false;
+				if (this.ExitFilled_commission == -1) return false;
+				if (this.ExitFilled_slippage == -1) return false;
 				return true;
 			} }
 		public bool ClosedByTakeProfitLogically { get {
-				if (this.EntryFilledPrice == -1) {
+				if (this.EntryFilled_price == -1) {
 					throw new Exception("position.EntryPrice=-1, make sure you called EntryFilledWith()");
 				}
-				if (this.ExitFilledPrice == -1) {
+				if (this.ExitFilled_price == -1) {
 					throw new Exception("position.ExitPrice=-1, make sure you called ExitFilledWith()");
 				}
 				if (this.IsExitFilled == false) {
 					throw new Exception("position isn't closed yet, ExitFilled=false");
 				}
-				bool exitAboveEntry = this.ExitFilledPrice > this.EntryFilledPrice;
+				bool exitAboveEntry = this.ExitFilled_price > this.EntryFilled_price;
 
 				if (this.PositionLongShort == PositionLongShort.Long) return exitAboveEntry;
 				else return !exitAboveEntry;
@@ -193,23 +193,23 @@ namespace Sq1.Core.Execution {
 
 			EntryMarketLimitStop = MarketLimitStop.Unknown;
 			EntryFilledBarIndex = -1;
-			EntryFilledPrice = -1;
-			EntryFilledQty = -1;
-			EntryFilledSlippage = -1;
-			EntryFilledCommission = -1;
+			EntryFilled_price = -1;
+			EntryFilled_qty = -1;
+			EntryFilled_slippage = -1;
+			EntryFilled_commission = -1;
 
 			ExitMarketLimitStop = MarketLimitStop.Unknown;
 			ExitFilledBarIndex = -1;
-			ExitFilledPrice = -1;
-			ExitFilledQty = -1;
-			ExitFilledSlippage = -1;
-			ExitFilledCommission = -1;
+			ExitFilled_price = -1;
+			ExitFilled_qty = -1;
+			ExitFilled_slippage = -1;
+			ExitFilled_commission = -1;
 		}
 		Position(Bars bars, PositionLongShort positionLongShort, string strategyID, double basisPrice, double shares) : this() {
 			this.Bars = bars;
 			this.PositionLongShort = positionLongShort;
 			this.StrategyID = strategyID;
-			this.LastQuoteForMarketOrStopLimitImplicitPrice = basisPrice;
+			this.QuoteLast_forMarketOrStopLimit_implicitPrice = basisPrice;
 			this.Shares = shares;
 		}
 		public Position(Alert alertEntry, double basisPrice) : this(alertEntry.Bars
@@ -217,7 +217,7 @@ namespace Sq1.Core.Execution {
 				, basisPrice, alertEntry.Qty) {
 			this.EntryAlert = alertEntry;
 			this.EntryMarketLimitStop = alertEntry.MarketLimitStop;
-			this.EntryPriceScript = alertEntry.PriceScript;
+			this.EntryEmitted_price = alertEntry.PriceEmitted;
 			this.EntrySignal = alertEntry.SignalName;
 		}
 		public void ExitAlertAttach(Alert alertExit) {
@@ -231,7 +231,7 @@ namespace Sq1.Core.Execution {
 				}
 				if (this.ExitMarketLimitStop != MarketLimitStop.Unknown) {
 					string msg = "POSITION_WAS_ALREADY_SYNCHED_WITH_FILLED_ALERT_ON_ALERT_FILLED_CALLBACK: ExitPriceScript["
-						+ this.ExitPriceScript + "]";
+						+ this.ExitEmitted_price + "]";
 					#if DEBUG
 					Debugger.Break();
 					#endif
@@ -250,11 +250,11 @@ namespace Sq1.Core.Execution {
 			}
 			this.ExitAlert = alertExit;
 			this.ExitMarketLimitStop = alertExit.MarketLimitStop;
-			this.ExitPriceScript = alertExit.PriceScript;
+			this.ExitEmitted_price = alertExit.PriceEmitted;
 			this.ExitSignal = alertExit.SignalName;
 		}
-		public void FillEntryWith(Bar entryBar, double entryFillPrice, double entryFillQty, double entrySlippage, double entryCommission) {
-			string msig = " FillEntryWith(" + entryBar + ", " + entryFillPrice + ", " + entryFillQty + ", " + entrySlippage + ", " + entryCommission + ")";
+		public void FillEntryWith(Bar entryBar, double entryFill_price, double entryFill_qty, double entryFill_slippage, double entryFill_commission) {
+			string msig = " FillEntryWith(" + entryBar + ", " + entryFill_price + ", " + entryFill_qty + ", " + entryFill_slippage + ", " + entryFill_commission + ")";
 			string alertOpenedThisPosition = (this.EntryAlert == null) ? "NO_ENTRY_ALERT" : this.EntryAlert.ToString();
 			// 1) absolutely acceptable to have a limit order beoynd the bar;
 			// 2) Market order must be filled now at SpreadGenerator-generated ANY price while StreamingBar may contain only 1 quote (height=0)
@@ -262,9 +262,9 @@ namespace Sq1.Core.Execution {
 			//	string msg = "PRICE_FILLED_POSITION_ENTRY_DOESNT_EXIST_IN_ENTRYBAR entryFilledPrice[" + entryFillPrice + "] entryBar[" + entryBar + "]";
 			//	throw new Exception(msg + msig);
 			//}
-			if (entryBar.Volume < entryFillQty) {
+			if (entryBar.Volume < entryFill_qty) {
 				string msg = "VOLUME_FILLED_POSITION_ENTRY_NEVER_TRADED_DURING_THE_ENTRYBAR entryFilledQty["
-					+ entryFillQty + "] entryBar.Volume[" + entryBar.Volume + "]";
+					+ entryFill_qty + "] entryBar.Volume[" + entryBar.Volume + "]";
 				#if DEBUG
 				Debugger.Break();
 				#endif
@@ -296,22 +296,22 @@ namespace Sq1.Core.Execution {
 				#endif
 				throw new Exception(msg + msig);
 			}
-			this.EntryFilledPrice = entryFillPrice;
-			this.EntryFilledQty = entryFillQty;
-			this.EntryFilledSlippage = entrySlippage;
-			this.EntryFilledCommission = entryCommission;
+			this.EntryFilled_price		= entryFill_price;
+			this.EntryFilled_qty		= entryFill_qty;
+			this.EntryFilled_slippage	= entryFill_slippage;
+			this.EntryFilled_commission	= entryFill_commission;
 		}
-		public void FillExitWith(Bar exitBar, double exitFillPrice, double exitFillQty, double exitSlippage, double exitCommission) {
-			string msig = " FillExitWith(" + exitBar + ", " + exitFillPrice + ", " + exitFillQty + ", " + exitSlippage + ", " + exitCommission + ")";
+		public void FillExitWith(Bar exitBar, double exitFill_price, double exitFill_qty, double exitFill_slippage, double exitFill_commission) {
+			string msig = " FillExitWith(" + exitBar + ", " + exitFill_price + ", " + exitFill_qty + ", " + exitFill_slippage + ", " + exitFill_commission + ")";
 			// 1) absolutely acceptable to have a limit order beoynd the bar;
 			// 2) Market order must be filled now at SpreadGenerator-generated ANY price while StreamingBar may contain only 1 quote (height=0)
 			//if (exitBar.ContainsPrice(exitFillPrice) == false) {
 			//	string msg = "PRICE_FILLED_POSITION_EXIT_DOESNT_EXIST_IN_EXITBAR exitFilledPrice[" + exitFillPrice + "] exitBar[" + exitBar + "]";
 			//	throw new Exception(msg + msig);
 			//}
-			if (exitBar.Volume < exitFillQty) {
+			if (exitBar.Volume < exitFill_qty) {
 				string msg = "VOLUME_FILLED_POSITION_EXIT_NEVER_TRADED_DURING_THE_EXITBAR exitFilledQty["
-					+ exitFillQty + "] exitBar.Volume[" + exitBar.Volume + "]";
+					+ exitFill_qty + "] exitBar.Volume[" + exitBar.Volume + "]";
 				#if DEBUG
 				Debugger.Break();
 				#endif
@@ -380,10 +380,10 @@ namespace Sq1.Core.Execution {
 					throw new Exception(msg + msig);
 				}
 			}
-			this.ExitFilledPrice = exitFillPrice;
-			this.ExitFilledQty = exitFillQty;
-			this.ExitFilledSlippage = exitSlippage;
-			this.ExitFilledCommission = exitCommission;
+			this.ExitFilled_price		= exitFill_price;
+			this.ExitFilled_qty			= exitFill_qty;
+			this.ExitFilled_slippage	= exitFill_slippage;
+			this.ExitFilled_commission	= exitFill_commission;
 		}
 		public override string ToString() {
 			StringBuilder msg = new StringBuilder();
@@ -400,7 +400,7 @@ namespace Sq1.Core.Execution {
 			if (this.EntryFilledBarIndex != -1) {
 				msg.Append(EntryMarketLimitStop);
 				msg.Append("@");
-				msg.Append(EntryFilledPrice);
+				msg.Append(EntryFilled_price);
 				msg.Append("/bar");
 				msg.Append(EntryFilledBarIndex);
 				msg.Append(":");
@@ -420,7 +420,7 @@ namespace Sq1.Core.Execution {
 			if (this.ExitFilledBarIndex != -1) {
 				msg.Append(ExitMarketLimitStop);
 				msg.Append("@");
-				msg.Append(ExitFilledPrice);
+				msg.Append(ExitFilled_price);
 				msg.Append("/bar");
 				msg.Append(ExitFilledBarIndex);
 				msg.Append(":");
@@ -437,9 +437,9 @@ namespace Sq1.Core.Execution {
 				msg.Append("EXIT_BAR-1");
 			}
 			msg.Append("]");
-			if (this.LastQuoteForMarketOrStopLimitImplicitPrice != 0) {
+			if (this.QuoteLast_forMarketOrStopLimit_implicitPrice != 0) {
 				msg.Append(" BasisPrice[");
-				msg.Append(this.LastQuoteForMarketOrStopLimitImplicitPrice);
+				msg.Append(this.QuoteLast_forMarketOrStopLimit_implicitPrice);
 				msg.Append("]");
 			}
 			if (this.Prototype != null) {

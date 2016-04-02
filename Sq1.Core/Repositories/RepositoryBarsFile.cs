@@ -149,7 +149,7 @@ namespace Sq1.Core.Repositories {
 						this.oneBarSize = binaryReader.BaseStream.Position - this.headerSize;	// BARS_LOAD_TELEMETRY
 					}
 					try {
-						Bar barAdded = bars.BarCreateAppendBindStatic(dateTimeOpen, open, high, low, close, volume, true);
+						Bar barAdded = bars.BarStatic_createAppendAttach(dateTimeOpen, open, high, low, close, volume, true);
 					} catch (Exception ex) {
 						barsFailedCheckOHLCV++;
 						// already reported exception in CheckOHLCVthrow
@@ -311,8 +311,8 @@ namespace Sq1.Core.Repositories {
 			int barsAppendedOrReplaced = -1;
 			lock (this.fileReadWriteSequentialLock) {
 				barsAppendedOrReplaced = this.barAppendStatic_orReplaceStreaming(barLastFormed);
-				string msg = "barsAppendedOrReplaced[" + barsAppendedOrReplaced + "] " + this.Symbol + ":" + this.barsRepository.ScaleInterval;
-				Assembler.PopupException(msg, null, false);
+				string msg = "barsAppendedOrReplaced[" + barsAppendedOrReplaced + "] " + this.Symbol + ":" + this.barsRepository.ScaleInterval + " barLastFormed[" + barLastFormed + "]";
+				//Assembler.PopupException(msg, null, false);
 			}
 			return barsAppendedOrReplaced;
 		}
@@ -341,7 +341,7 @@ namespace Sq1.Core.Repositories {
 				Assembler.PopupException(msg + msig, ex);
 				return saved;
 			}
-			bool myFirstBarEver_justAdd_withoutMerging = false;
+			bool beyoundHeaderAndOneBar_seekToMergeOverwrite = false;
 			try {
 				binaryWriter = new BinaryWriter(fileStream);
 				binaryReader = new BinaryReader(fileStream);
@@ -357,8 +357,8 @@ namespace Sq1.Core.Repositories {
 					// THIS_WAS_GENERATING_ZERO_BAR__YOU_WANTED_TO_PASS_NEGATIVE_VALUE_RELATIVE_TO_END_TO_SEEK_BACK_AND_ANALYZE_DATE_IF_STREAMING_SHOULD_BE_OVERWRITTEN_OR_STATIC_APPENDED fileStream.Seek(barSize, SeekOrigin.End);
 					fileStream.Seek(0, SeekOrigin.End);
 					long posEof = fileStream.Position;
-					myFirstBarEver_justAdd_withoutMerging = posEof >= headerSize + barSize;		//bool imNOtGoingBackOverZero = barSize > posEof;
-					if (myFirstBarEver_justAdd_withoutMerging) {
+					beyoundHeaderAndOneBar_seekToMergeOverwrite = posEof >= headerSize + barSize;		//bool imNOtGoingBackOverZero = barSize > posEof;
+					if (beyoundHeaderAndOneBar_seekToMergeOverwrite) {
 						fileStream.Seek(-barSize, SeekOrigin.End);
 					}
 				} catch (Exception ex) {
@@ -367,27 +367,28 @@ namespace Sq1.Core.Repositories {
 					return saved;
 				}
 
-				if (myFirstBarEver_justAdd_withoutMerging) {
+				if (beyoundHeaderAndOneBar_seekToMergeOverwrite) {
 					// 1/3 - read the date and see if the timestamp is the same as 
-					DateTime dateTimeOpenLastStored = new DateTime(binaryReader.ReadInt64());
-					if (barLastFormedStatic_orCurrentStreaming.DateTimeOpen < dateTimeOpenLastStored) {
-						string msg = "I_REFUSE_TO_STORE_BAR_EARLIER_THAN_LAST_STORED barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
-							+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] > dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
+					long ticksOpen_lastStored = binaryReader.ReadInt64();
+					DateTime dateTimeOpen_lastStored = new DateTime(ticksOpen_lastStored);
+					if (barLastFormedStatic_orCurrentStreaming.DateTimeOpen < dateTimeOpen_lastStored) {
+						string msg = "I_REFUSE_TO_STORE_BAR_EARLIER_THAN_LAST_STORED barLastFormedStatic_orCurrentStreaming.DateTimeOpen["
+							+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] > dateTimeOpen_lastStored[" + dateTimeOpen_lastStored + "]"
 							+ " IMPOSSIBLE_TO_CATCH_UPSTACK_KOZ_SOLIDIFIER_DOESNT_KEEP_BARS";
 						Assembler.PopupException(msg, null, false);
 						return saved;
 					}
 					long fileStreamLength = fileStream.Length;
-					if (barLastFormedStatic_orCurrentStreaming.DateTimeOpen == dateTimeOpenLastStored) {
+					if (barLastFormedStatic_orCurrentStreaming.DateTimeOpen == dateTimeOpen_lastStored) {
 						try {
 							long fileStreamPositionAfterSeekToLastBar = fileStream.Seek(-barSize, SeekOrigin.End);
-							string msg = "OVERWRITING_LAST_BAR_WITH_STREAMING barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
-								+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] == dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
+							string msg = "OVERWRITING_LAST_BAR_WITH_STREAMING barLastFormedStatic_orCurrentStreaming.DateTimeOpen["
+								+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] == dateTimeOpen_lastStored[" + dateTimeOpen_lastStored + "]"
 								+ " fileStreamPositionAfterSeekToLastBar[" + fileStreamPositionAfterSeekToLastBar + "] fileStreamLength[" + fileStreamLength + "]"
 								;
-							#if DEBUG_VERBOSE
+							//#if DEBUG_VERBOSE
 							Assembler.PopupException(msg, null, false);
-							#endif
+							//#endif
 						} catch (Exception ex) {
 							string msg = "3/4_FILESTREAM_SEEK_ONE_BAR_FROM_END_THROWN barSize[" + barSize + "]";
 							Assembler.PopupException(msg + msig, ex);
@@ -396,13 +397,13 @@ namespace Sq1.Core.Repositories {
 					} else {
 						try {
 							long fileStreamPositionAfterSeekToEnd = fileStream.Seek(0, SeekOrigin.End);
-							string msg = "APPENDING_FRESHLY_FORMED_STATIC_BAR: barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
-								+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] > dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
+							string msg = "APPENDING_FRESHLY_FORMED_STATIC_BAR: barLastFormedStatic_orCurrentStreaming.DateTimeOpen["
+								+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] > dateTimeOpen_lastStored[" + dateTimeOpen_lastStored + "]"
 								+ " fileStreamPositionAfterSeekToEnd[" + fileStreamPositionAfterSeekToEnd + "] fileStreamLength[" + fileStreamLength + "]"
 								;
-							#if DEBUG_VERBOSE
+							//#if DEBUG_VERBOSE
 							Assembler.PopupException(msg, null, false);
-							#endif
+							//#endif
 						} catch (Exception ex) {
 							string msg = "3/4_FILESTREAM_SEEK_END_THROWN";
 							Assembler.PopupException(msg + msig, ex);

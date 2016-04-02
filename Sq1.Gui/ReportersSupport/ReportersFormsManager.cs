@@ -101,7 +101,7 @@ namespace Sq1.Gui.ReportersSupport {
 			}
 
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
-				rep.BuildFullOnBacktestFinished();
+				rep.BuildFull_onBacktestFinished();
 			}
 			this.WindowTitlePullFromStrategy_allReporterWrappers();
 		}
@@ -133,7 +133,7 @@ namespace Sq1.Gui.ReportersSupport {
 				Assembler.PopupException(msg);
 			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
-				rep.BuildFullOnBacktestFinished();
+				rep.BuildFull_onBacktestFinished();
 				this.populateWindowTextFromTabTextStashed(rep);
 			}
 		}
@@ -150,7 +150,7 @@ namespace Sq1.Gui.ReportersSupport {
 				return;
 			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
-				rep.BuildIncrementalOnPositionsOpenedClosed_step3of3(pokeUnit);
+				rep.BuildIncremental_onPositionsOpenedClosed_step3of3(pokeUnit);
 				this.populateWindowTextFromTabTextStashed(rep);
 			}
 		}
@@ -167,7 +167,7 @@ namespace Sq1.Gui.ReportersSupport {
 				return;
 			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
-				rep.BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(pokeUnit);
+				rep.BuildIncremental_updateOpenPositions_dueToStreamingNewQuote_step2of3(pokeUnit);
 				this.populateWindowTextFromTabTextStashed(rep);
 			}
 		}
@@ -177,7 +177,7 @@ namespace Sq1.Gui.ReportersSupport {
 				return;
 			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
-				rep.BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit);
+				rep.BuildIncremental_onBrokerFilled_alertsOpening_forPositions_step1of3(pokeUnit);
 				this.populateWindowTextFromTabTextStashed(rep);
 			}
 		}
@@ -188,9 +188,9 @@ namespace Sq1.Gui.ReportersSupport {
 				return;
 			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
-				rep.StashWindowTextSuffixInBaseTabText_usefulToUpdateAutohiddenStatsWithoutRebuildingFullReport_OLVisSlow();
+				rep.Stash_windowTextSuffix_inBaseTabText_usefulToUpdateAutohiddenStats_withoutRebuildingFullReport_OLVisSlow();
 				this.populateWindowTextFromTabTextStashed(rep);
-				rep.RebuildingFullReportForced_onLivesimPaused();
+				rep.RebuildingFullReport_forced_onLivesimPaused();
 			}
 		}
 
@@ -242,7 +242,7 @@ namespace Sq1.Gui.ReportersSupport {
 				Assembler.PopupException(msg);
 				return ret;
 			}
-			reporterActivated.BuildFullOnBacktestFinished();
+			reporterActivated.BuildFull_onBacktestFinished();
 			return ret;
 		}
 		object findOrCreateReportersSnapshot_nullUnsafe(Reporter reporterActivated) {

@@ -79,10 +79,10 @@ namespace Sq1.Core.Broker {
 					Assembler.PopupException(msg);
 					continue;
 				}
-				if (broker == null) broker = order.Alert.DataSource.BrokerAdapter;
-				if (broker != order.Alert.DataSource.BrokerAdapter) {
+				if (broker == null) broker = order.Alert.DataSource_fromBars.BrokerAdapter;
+				if (broker != order.Alert.DataSource_fromBars.BrokerAdapter) {
 					throw new Exception(callerMethod + "NIY: orderProcessor can not handle orders for several brokers"
-						+ "; prevOrder.Broker[" + broker + "] while someOrderBroker[" + order.Alert.DataSource.BrokerAdapter + "]");
+						+ "; prevOrder.Broker[" + broker + "] while someOrderBroker[" + order.Alert.DataSource_fromBars.BrokerAdapter + "]");
 				}
 			}
 			return broker;

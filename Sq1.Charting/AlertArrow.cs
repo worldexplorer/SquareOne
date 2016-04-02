@@ -23,9 +23,9 @@ namespace Sq1.Charting {
 		public double PriceAt { get {
 				double ret = -1;
 				if (this.ArrowIsForPositionEntry) {
-					ret = this.Position.IsEntryFilled ? this.Position.EntryPriceScript : this.Position.EntryFilledPrice;
+					ret = this.Position.IsEntryFilled ? this.Position.EntryEmitted_price : this.Position.EntryFilled_price;
 				} else {
-					ret = this.Position.IsExitFilled ? this.Position.ExitPriceScript : this.Position.ExitFilledPrice;
+					ret = this.Position.IsExitFilled ? this.Position.ExitEmitted_price : this.Position.ExitFilled_price;
 				}
 				return ret;
 			} }
@@ -69,7 +69,7 @@ namespace Sq1.Charting {
 						Bitmap ret = this.AboveBar
 								? (this.Position.NetProfit > 0.0) ? Sq1.Charting.Properties.Resources.ShortEntryProfit : Sq1.Charting.Properties.Resources.ShortEntryLoss
 								: (this.Position.NetProfit > 0.0) ? Sq1.Charting.Properties.Resources.LongEntryProfit : Sq1.Charting.Properties.Resources.LongEntryLoss;
-						if (this.Position.ExitFilledPrice == -1) {
+						if (this.Position.ExitFilled_price == -1) {
 							// v2 don't cache bitmaps for opening Alerts, calculate their color on-the-fly for every incoming quote
 							return ret;							
 						}

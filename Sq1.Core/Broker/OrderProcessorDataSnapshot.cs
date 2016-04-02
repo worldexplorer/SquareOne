@@ -95,11 +95,11 @@ namespace Sq1.Core.Broker {
 			this.OrdersAll				.RemoveAll(ordersToRemove);
 			this.OrdersAutoTree			.Remove_fromRootLevel_keepOrderPointers(ordersToRemove);
 
-			this.OrdersSubmitting		.RemoveAll(ordersToRemove, true);
-			this.OrdersPending			.RemoveAll(ordersToRemove, true);
-			this.OrdersPendingFailed	.RemoveAll(ordersToRemove, true);
-			this.OrdersCemeteryHealthy	.RemoveAll(ordersToRemove, true);
-			this.OrdersCemeterySick		.RemoveAll(ordersToRemove, true);
+			this.OrdersSubmitting		.RemoveAll(ordersToRemove, false);
+			this.OrdersPending			.RemoveAll(ordersToRemove, false);
+			this.OrdersPendingFailed	.RemoveAll(ordersToRemove, false);
+			this.OrdersCemeteryHealthy	.RemoveAll(ordersToRemove, false);
+			this.OrdersCemeterySick		.RemoveAll(ordersToRemove, false);
 
 			this.orderProcessor.RaiseAsyncOrderRemoved_executionControlShouldRebuildOLV(this, ordersToRemove);
 			this.SerializerLogrotateOrders.Remove(ordersToRemove);

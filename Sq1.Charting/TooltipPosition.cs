@@ -27,8 +27,8 @@ namespace Sq1.Charting {
 				lblEntry.Text = "Short" + position.ExitMarketLimitStop.ToString().Substring(0, 1);
 				lblExit.Text = "Covered" + position.ExitMarketLimitStop.ToString().Substring(0, 1);
 			}
-			lblEntry.Text += " (" + position.EntryPriceScript.ToString(priceFormat) + ")";
-			lblExit.Text += " (" + position.ExitPriceScript.ToString(priceFormat) + ")";
+			lblEntry.Text += " (" + position.EntryEmitted_price.ToString(priceFormat) + ")";
+			lblExit.Text += " (" + position.ExitEmitted_price.ToString(priceFormat) + ")";
 
 			this.lblEntrySignalVal.Text = position.EntrySignal;
 			this.lblExitSignalVal.Text = position.ExitSignal;
@@ -43,8 +43,8 @@ namespace Sq1.Charting {
 			text = text + position.EntryDateBarTimeOpen.ToString("ddd dd-MMM-yyyy");
 			this.lblDateVal.Text = text;
 
-			this.lblEntryVal.Text = position.EntryFilledPrice.ToString(priceFormat);
-			this.lblExitVal.Text = position.ExitFilledPrice.ToString(priceFormat);
+			this.lblEntryVal.Text = position.EntryFilled_price.ToString(priceFormat);
+			this.lblExitVal.Text = position.ExitFilled_price.ToString(priceFormat);
 
 			double distancePoints = position.DistanceInPoints;
 			this.lblDistancePointsVal.Text = distancePoints.ToString(priceFormat);
@@ -56,10 +56,10 @@ namespace Sq1.Charting {
 			this.lblPoint2DollarVal.Text = position.Bars.SymbolInfo.Point2Dollar.ToString();
 			this.lblNetProfitLossValue.Text = position.NetProfit.ToString(priceFormat);
 			
-			double commissions = position.EntryFilledCommission + position.ExitFilledCommission;
+			double commissions = position.EntryFilled_commission + position.ExitFilled_commission;
 			this.lblCommissionVal.Text = commissions.ToString();
 			this.lblPriceLevelSizeVal.Text = position.Bars.SymbolInfo.PriceStep.ToString(priceFormat);
-			this.lblBasisPriceVal.Text = position.EntryFilledPrice.ToString(priceFormat);
+			this.lblBasisPriceVal.Text = position.EntryFilled_price.ToString(priceFormat);
 	
 			Color color = (position.NetProfit > 0.0) ? Color.Green : Color.Red;
 			this.lblDistancePoints.ForeColor = color;
@@ -77,7 +77,7 @@ namespace Sq1.Charting {
 				this.lblGrossProfitLoss.Text = "Grs Loss";
 			}
 
-			this.lblSlippagesVal.Text = position.EntryFilledSlippage.ToString() + " / " + position.ExitFilledSlippage.ToString();
+			this.lblSlippagesVal.Text = position.EntryFilled_slippage.ToString() + " / " + position.ExitFilled_slippage.ToString();
 		}
 	}
 }

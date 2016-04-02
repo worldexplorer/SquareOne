@@ -73,16 +73,14 @@ namespace Sq1.Core.Charting {
 			// 4) LIVESIM_END Livesimulator.afterBacktesterComplete()
 
 			if (removeChartShadowFromOldSymbolAndAddToLoadingBars && this.Bars != null)	this.ChartShadow_RemoveFromDataSource();
-			if (this.Bars != null) {
-				this.Bars.OnBarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(this.bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
-			}
+			//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD if (this.Bars != null) this.Bars.OnBarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(this.bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
 
 			this.Bars = barsNotNull;
 			if (removeChartShadowFromOldSymbolAndAddToLoadingBars)						this.ChartShadow_AddToDataSource();
 			#endregion
 
 			// ChartForm wants to update last received quote datetime; FOR_NON_CORE_CONSUMERS_ONLY CORE_DEFINED_CONSUMERS_IMPLEMENT_IStreamingConsumer.ConsumeQuoteOfStreamingBar()
-			this.Bars.OnBarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(this.bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
+			//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.Bars.OnBarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(this.bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
 		}
 		void bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm(object sender, BarEventArgs e) {
 			this.raiseOnBarStreamingUpdatedMerged(e);

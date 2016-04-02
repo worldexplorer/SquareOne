@@ -17,7 +17,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			if (marketInfo == null) return;
 			try {
 				this.dataSource.MarketInfo = marketInfo;
-				this.populateMarketFromDataSource();
+				this.populateMarket_fromDataSource();
 				this.lnkMarketNameDelete.Enabled = (this.dataSourceRepository.SameMarketInfoInHowManyDataSources(marketInfo) > 0) ? true : false;
 				this.dataSourceRepository.SerializeSingle(this.dataSource);
 			} catch (Exception ex) {
@@ -189,13 +189,13 @@ namespace Sq1.Widgets.DataSourceEditor {
 			string cellValueAsString = this.txtMarketServerClose.Text;
 			try {
 				DateTime newTime = DateTime.Parse(cellValueAsString);
-				this.dataSource.MarketInfo.MarketCloseServerTime = newTime;
+				this.dataSource.MarketInfo.MarketClose_serverTime = newTime;
 			} catch (Exception ex) {
 				string errormsg = "InputAsString[" + cellValueAsString + "] " + ex.Message
-					+ ", back to old value [" + this.dataSource.MarketInfo.MarketOpenServerTimeAsString + "]";
+					+ ", back to old value [" + this.dataSource.MarketInfo.MarketOpen_serverTime_asString + "]";
 				Assembler.PopupException(errormsg + " /txtMarketServerClose_Validating", ex);
 			}
-			this.txtMarketServerClose.Text = this.dataSource.MarketInfo.MarketOpenServerTimeAsString;
+			this.txtMarketServerClose.Text = this.dataSource.MarketInfo.MarketOpen_serverTime_asString;
 			this.ignoreSelectionEventDuringPopulate = false;
 			this.marketInfoRepository.Serialize();
 		}
@@ -205,13 +205,13 @@ namespace Sq1.Widgets.DataSourceEditor {
 			string cellValueAsString = this.txtMarketServerOpen.Text;
 			try {
 				DateTime newTime = DateTime.Parse(cellValueAsString);
-				this.dataSource.MarketInfo.MarketOpenServerTime = newTime;
+				this.dataSource.MarketInfo.MarketOpen_serverTime = newTime;
 			} catch (Exception ex) {
 				string errormsg = "InputAsString[" + cellValueAsString + "] " + ex.Message
-					+ ", back to old value [" + this.dataSource.MarketInfo.MarketCloseServerTimeAsString + "]";
+					+ ", back to old value [" + this.dataSource.MarketInfo.MarketClose_serverTime_asString + "]";
 				Assembler.PopupException(errormsg + " txtMarketServerOpen_Validating", ex);
 			}
-			this.txtMarketServerOpen.Text = this.dataSource.MarketInfo.MarketCloseServerTimeAsString;
+			this.txtMarketServerOpen.Text = this.dataSource.MarketInfo.MarketClose_serverTime_asString;
 			this.ignoreSelectionEventDuringPopulate = false;
 			this.marketInfoRepository.Serialize();
 		}

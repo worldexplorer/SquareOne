@@ -19,8 +19,8 @@ namespace Sq1.Core.Livesim {
 			this.Executor = executor;
 		}
 
-		public void PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource() {
-			string msig = " //PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource() [" + this.ToString() + "]";
+		public void Propagate_preInstantiated_ownImplementationLivesimAdapters_intoLivesimDataSource() {
+			string msig = " //Propagate_preInstantiated_ownImplementationLivesimAdapters_intoLivesimDataSource() [" + this.ToString() + "]";
 			if (this.Executor.DataSource_fromBars.StreamingAdapter.LivesimStreaming_ownImplementation != null) {
 				base.StreamingAdapter = this.Executor.DataSource_fromBars.StreamingAdapter.LivesimStreaming_ownImplementation;
 				string msg1 = "STREAMING_SUBSTITUTED_FOR_LIVESIM_DATASOURCE";
@@ -38,10 +38,10 @@ namespace Sq1.Core.Livesim {
 						+ " LivesimDataSource.ctor() should have created its own basic LivesimStreaming<=BacktestStreaming, now NULL";
 					Assembler.PopupException(msg1);
 				} else {
-					//base.StreamingAsLivesim_nullUnsafe.CreateDataDistributors_onlyWhenNecessary("DD_FOR_ONE_LIVESIM");
+					//base.StreamingAsLivesim_nullUnsafe.CreateDistributors_onlyWhenNecessary("DD_FOR_ONE_LIVESIM");
 					string msg1 = "WILL_LIVESIM_VIA"
 						+ " StreamingAsLivesim_nullUnsafe[" + base.StreamingAsLivesim_nullUnsafe + "]"
-						+ ".DataDistributor_replacedForLivesim[" + base.StreamingAsLivesim_nullUnsafe.DataDistributor_replacedForLivesim.ReasonIwasCreated + "]"
+						+ ".Distributor_replacedForLivesim[" + base.StreamingAsLivesim_nullUnsafe.Distributor_substitutedDuringLivesim.ReasonIwasCreated + "]"
 						//+ " (LivesimStreamingDefault was probably chosen in DataSourceEditor which QuoteGen=>Pumps)"
 						;
 					Assembler.PopupException(msg1 + msig, null, false);

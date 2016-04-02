@@ -150,39 +150,40 @@ namespace Sq1.Core.Broker {
 			try {
 				this.OPPsequencer.ReplaceLockingCloseOrder(rejectedOrderToReplace, replacement);
 
-				double priceScript = replacement.Alert.DataSource.StreamingAdapter.StreamingDataSnapshot
-					.BidOrAsk_getAligned_forTidalOrCrossMarket_fromStreamingSnap(
+				double priceScript = replacement.Alert.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot
+					.GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteCurrent(
 					replacement.Alert.Bars.Symbol, replacement.Alert.Direction, out replacement.SpreadSide, true);
-				replacement.Alert.PositionAffected.ExitPriceScript = priceScript;
+				replacement.Alert.PositionAffected.ExitEmitted_price = priceScript;
 
 				if (replacement.Alert.Bars.SymbolInfo.ReSubmittedUsesNextSlippage == true) {
-					replacement.SlippageIndex++;
+					replacement.SlippageAppliedIndex++;
 				}
 
 				int emergencyCloseAttemptsMax = replacement.Alert.Bars.SymbolInfo.EmergencyCloseAttemptsMax;
 				string serno = "#[" + replacement.EmergencyCloseAttemptSerno + "]/[" + emergencyCloseAttemptsMax + "]";
 				string msg_replacement = "This is an EMERGENCY replacement " + serno + " for order["
-					+ replacement.EmergencyReplacementForGUID + "]; SlippageIndex[" + replacement.SlippageIndex + "]";
+					+ replacement.EmergencyReplacementForGUID + "]; SlippageIndex[" + replacement.SlippageAppliedIndex + "]";
 				this.orderProcessor.AppendMessage_propagateToGui(replacement, msg_replacement);
 
-				if (replacement.hasSlippagesDefined && replacement.noMoreSlippagesAvailable) {
+				if (replacement.HasSlippagesDefined && replacement.NoMoreSlippagesAvailable) {
 					addMessage_noMoreSlippagesAvailable(replacement);
-					replacement.SlippageIndex = replacement.Alert.Bars.SymbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(replacement.Alert);
+					replacement.SlippageAppliedIndex = replacement.Alert.Bars.SymbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(replacement.Alert);
 				}
-				double slippage = replacement.Alert.Bars.SymbolInfo.GetSlippage_signAware_forLimitOrdersOnly(
-					priceScript, replacement.Alert.Direction, replacement.Alert.MarketOrderAs, replacement.SlippageIndex);
-				replacement.SlippageFill = slippage;
+				//double slippage = replacement.Alert.Bars.SymbolInfo.GetSlippage_signAware_forLimitOrdersOnly(
+				//	priceScript, replacement.Alert.Direction, replacement.Alert.MarketOrderAs, replacement.SlippageAppliedIndex);
+				double slippage = replacement.Alert.GetSlippage_signAware_forLimitAlertsOnly(priceScript, replacement.SlippageAppliedIndex);
+				replacement.SlippageApplied = slippage;
 				replacement.PriceRequested = priceScript + slippage;
 
 				string msg = "Scheduling SubmitOrdersThreadEntry [" + replacement.ToString() + "] slippageIndex["
-					+ replacement.SlippageIndex + "] through [" + replacement.Alert.DataSource.BrokerAdapter + "]";
+					+ replacement.SlippageAppliedIndex + "] through [" + replacement.Alert.DataSource_fromBars.BrokerAdapter + "]";
 				OrderStateMessage omsg = new OrderStateMessage(replacement, OrderState.PreSubmit, msg);
 				this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 
 				//ThreadPool.QueueUserWorkItem(new WaitCallback(replacement.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
 				//	new object[] { new List<Order>() { replacement } });
 				List<Order> replacementOrder_oneInTheList = new List<Order>() { replacement };
-				BrokerAdapter broker = replacement.Alert.DataSource.BrokerAdapter;
+				BrokerAdapter broker = replacement.Alert.DataSource_fromBars.BrokerAdapter;
 				this.orderProcessor.SubmitToBrokerAdapter_inNewThread(replacementOrder_oneInTheList, broker);
 			} catch (Exception e) {
 				Assembler.PopupException("Replacement wasn't submitted [" + replacement + "]", e);
@@ -208,7 +209,7 @@ namespace Sq1.Core.Broker {
 			}
 			emergencyReplacement = rejectedOrderToReplace.DeriveReplacementOrder();
 			// for a first emergencyReplacement, set slippage=0;
-			if (string.IsNullOrEmpty(rejectedOrderToReplace.EmergencyReplacementForGUID)) emergencyReplacement.SlippageIndex = 0;
+			if (string.IsNullOrEmpty(rejectedOrderToReplace.EmergencyReplacementForGUID)) emergencyReplacement.SlippageAppliedIndex = 0;
 			rejectedOrderToReplace.EmergencyReplacedByGUID = emergencyReplacement.GUID;
 			emergencyReplacement.EmergencyReplacementForGUID = rejectedOrderToReplace.GUID;
 			emergencyReplacement.IsEmergencyClose = true;
@@ -217,7 +218,7 @@ namespace Sq1.Core.Broker {
 			} else {
 				emergencyReplacement.EmergencyCloseAttemptSerno = 1;
 			}
-			DateTime serverTimeNow = rejectedOrderToReplace.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
+			DateTime serverTimeNow = rejectedOrderToReplace.Alert.Bars.MarketInfo.Convert_localTime_toServerTime(DateTime.Now);
 			emergencyReplacement.CreatedBrokerTime = serverTimeNow;
 
 			this.orderProcessor.DataSnapshot.OrderInsert_notifyGuiAsync(emergencyReplacement);
@@ -282,7 +283,7 @@ namespace Sq1.Core.Broker {
 		void addMessage_noMoreSlippagesAvailable(Order order) {
 			int slippageIndexMax = order.Alert.Bars.SymbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(order.Alert);
 			string msg2 = "EMERGENCY Reached max slippages available for [" + order.Alert.Bars.Symbol + "]"
-				+ " order.SlippageIndex[" + order.SlippageIndex + "] > slippageIndexMax[" + slippageIndexMax + "]"
+				+ " order.SlippageIndex[" + order.SlippageAppliedIndex + "] > slippageIndexMax[" + slippageIndexMax + "]"
 				+ "; Order will have slippageIndexMax[" + slippageIndexMax + "]";
 			Assembler.PopupException(msg2);
 			//orderProcessor.updateOrderStatusError(orderExecuted, OrderState.RejectedLimitReached, msg2);

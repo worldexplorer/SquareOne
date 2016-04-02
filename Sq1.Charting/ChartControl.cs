@@ -30,14 +30,14 @@ namespace Sq1.Charting {
 	 	public int GutterRightWidth_cached = -1;
 		public int GutterBottomHeight_cached = -1;
 		public ChartSettings ChartSettings;
-		public ChartControlFrozenForRendering ScriptExecutorObjects;
+		public ExecutorObjects_FrozenForRendering ExecutorObjects_frozenForRendering;
 
 		public int HeightMinusBottomHscrollbar { get { return base.Height - this.hScrollBar.Height; } }
 		public int BarIndexMouseIsOverNow;
 
 		public ChartControl() {
 			this.ChartSettings = new ChartSettings(ChartSettings.NAME_DEFAULT);
-			this.ScriptExecutorObjects = new ChartControlFrozenForRendering();
+			this.ExecutorObjects_frozenForRendering = new ExecutorObjects_FrozenForRendering();
 
 			InitializeComponent();
 			//when previous line doesn't help and Designer still throws exceptions return;
@@ -289,8 +289,8 @@ namespace Sq1.Charting {
 			}
 			// quite useless since I don't plan to append-statically to displayed-bars; I'll use Initialize(newBars)
 			//this.Bars.BarStaticAdded					+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
-			this.Bars.OnBarStreamingAdded				+= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
-			this.Bars.OnBarStreamingUpdatedMerged		+= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
+			//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.Bars.OnBarStreamingAdded				+= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
+			//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.Bars.OnBarStreamingUpdatedMerged		+= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
 			this.Bars.SymbolInfo.PriceDecimalsChanged	+= new EventHandler<EventArgs>(bars_symbolInfo_PriceDecimalsChanged);
 
 			if (Assembler.IsInitialized == false) return;	// ChartForm: avoiding Designer's complains about Assembler.Initialized==false
@@ -305,8 +305,8 @@ namespace Sq1.Charting {
 				return;
 			}
 			this.Bars.SymbolInfo.PriceDecimalsChanged	-= new EventHandler<EventArgs>(bars_symbolInfo_PriceDecimalsChanged);
-			this.Bars.OnBarStreamingUpdatedMerged		-= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
-			this.Bars.OnBarStreamingAdded				-= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
+			//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.Bars.OnBarStreamingUpdatedMerged		-= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
+			//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.Bars.OnBarStreamingAdded				-= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
 
 			// quite useless since I don't plan to append-statically to displayed-bars; I'll use Initialize(newBars)
 			//this.Bars.BarStaticAdded					-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
@@ -487,7 +487,7 @@ namespace Sq1.Charting {
 			//			Dictionary<int, List<Alert>> alertsForBarsFromExecution = this.executor.ExecutionDataSnapshot
 			//				.AlertsPendingHistorySafeCopyForRenderer(mouseBar, mouseBar);
 			//			if (alertsForBarsFromExecution.ContainsKey(mouseBar)) tooltipAlertsForBar = alertsForBarsFromExecution[mouseBar];
-			Dictionary<string, Indicator> indicators = this.ScriptExecutorObjects.Indicators;
+			Dictionary<string, Indicator> indicators = this.ExecutorObjects_frozenForRendering.Indicators;
 			this.tooltipPrice.PopulateTooltip(barToPopulate, indicators, tooltipAlertsForBar);
 			//this.tooltipPrice.Capture = false;
 			this.tooltipPrice.Location = newLocation;

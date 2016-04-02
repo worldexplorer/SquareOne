@@ -79,7 +79,7 @@ namespace Sq1.Charting {
 			if (barIndex < this.VisibleBarLeft) return tooltipPositionShown;
 			if (barIndex > this.VisibleBarRight) return tooltipPositionShown;	//Debugger.Break();
 
-			Dictionary<int, List<AlertArrow>> alertArrowsListByBar = this.ScriptExecutorObjects.AlertArrowsListByBar;
+			Dictionary<int, List<AlertArrow>> alertArrowsListByBar = this.ExecutorObjects_frozenForRendering.AlertArrowsListByBar;
 			if (alertArrowsListByBar.ContainsKey(barIndex) == false) {
 				this.TooltipPositionHide();
 				#if DEBUG
@@ -126,25 +126,25 @@ namespace Sq1.Charting {
 			return tooltipPositionShown; 
 		}
 		public override void ClearAllScriptObjectsBeforeBacktest() {
-			this.ScriptExecutorObjects.ClearAllBeforeBacktest();
+			this.ExecutorObjects_frozenForRendering.ClearAllBeforeBacktest();
 		}
 		public override void PositionsBacktestAdd(List<Position> positionsMaster) {
-			this.ScriptExecutorObjects.PositionArrowsBacktestAdd(positionsMaster);
+			this.ExecutorObjects_frozenForRendering.PositionArrowsBacktestAdd(positionsMaster);
 		}
 		public override void PositionsRealtimeAdd(ReporterPokeUnit pokeUnit) {
-			this.ScriptExecutorObjects.PositionArrowsRealtimeAdd(pokeUnit);
+			this.ExecutorObjects_frozenForRendering.PositionArrowsRealtimeAdd(pokeUnit);
 		}
 //		public override void PendingHistoryClearBacktestStarting() {
 //			this.ScriptExecutorObjects.PendingHistoryClearBacktestStarting();
 //		}
 		public override void PendingHistoryBacktestAdd(Dictionary<int, AlertList> alertsPendingHistorySafeCopy) {
-			this.ScriptExecutorObjects.AlertsPlacedBacktestAdd(alertsPendingHistorySafeCopy);
+			this.ExecutorObjects_frozenForRendering.AlertsPlacedBacktestAdd(alertsPendingHistorySafeCopy);
 		}
 		public override void AlertsPlaced_addRealtime(List<Alert> alertsNewPlaced) {
-			this.ScriptExecutorObjects.AlertsPlacedRealtimeAdd(alertsNewPlaced);
+			this.ExecutorObjects_frozenForRendering.AlertsPlacedRealtimeAdd(alertsNewPlaced);
 		}
 		public override void AlertsPendingStillNotFilledForBarAdd(int barIndex, List<Alert> alertsPendingAtCurrentBarSafeCopy) {
-			this.ScriptExecutorObjects.AlertsPendingStillNotFilledForBarAdd(barIndex, alertsPendingAtCurrentBarSafeCopy);
+			this.ExecutorObjects_frozenForRendering.AlertsPendingStillNotFilledForBarAdd(barIndex, alertsPendingAtCurrentBarSafeCopy);
 		}
 		
 		Dictionary<Indicator, PanelIndicator> PanelsByIndicator = new Dictionary<Indicator, PanelIndicator>();
@@ -187,7 +187,7 @@ namespace Sq1.Charting {
 			}
 		}
 		public override void SetIndicators(Dictionary<string, Indicator> indicators) {
-			this.ScriptExecutorObjects.SetIndicators(indicators);
+			this.ExecutorObjects_frozenForRendering.SetIndicators(indicators);
 		}
 		public override OnChartObjectOperationStatus LineDrawModify (
 					// parameters could be a class, but I didnt introduce class Sq1.Core.Line because:
@@ -210,7 +210,7 @@ namespace Sq1.Charting {
 			// TODO define what you want and how you distribute roles among DLLs before refactoring
 			OnChartLine line = null;
 			try {
-				line = this.ScriptExecutorObjects.LineAddOrModify(lineId, barStart, priceStart, barEnd, priceEnd, color, width, debugParametersDidntChange);
+				line = this.ExecutorObjects_frozenForRendering.LineAddOrModify(lineId, barStart, priceStart, barEnd, priceEnd, color, width, debugParametersDidntChange);
 			} catch (Exception ex) {
 				if (line != null) {
 					Assembler.PopupException(line.ToString() + " //LineAddOrModify()");
@@ -226,7 +226,7 @@ namespace Sq1.Charting {
 			bool ret = false;
 			if (colorBg == Color.Empty) return ret; 
 			try {
-				ret = this.ScriptExecutorObjects.BarBackgroundSet(barIndex, colorBg);
+				ret = this.ExecutorObjects_frozenForRendering.BarBackgroundSet(barIndex, colorBg);
 			} catch (Exception ex) {
 				string msg = "EXECUTOROBJECTS_COULDNT_FIND_BAR";
 				Assembler.PopupException(msg + " //BarBackgroundSet()");
@@ -234,12 +234,12 @@ namespace Sq1.Charting {
 			return ret;
 		}
 		public override Color BarBackgroundGet(int barIndex) {
-			return this.ScriptExecutorObjects.BarBackgroundGet(barIndex);
+			return this.ExecutorObjects_frozenForRendering.BarBackgroundGet(barIndex);
 		}
 		public override bool BarForegroundSet(int barIndex, Color colorFg) {
 			bool ret = false;
 			try {
-				ret = this.ScriptExecutorObjects.BarForegroundSet(barIndex, colorFg);
+				ret = this.ExecutorObjects_frozenForRendering.BarForegroundSet(barIndex, colorFg);
 			} catch (Exception ex) {
 				string msg = "EXECUTOROBJECTS_COULDNT_FIND_BAR";
 				Assembler.PopupException(msg + " //LineAddOrModify()");
@@ -247,13 +247,13 @@ namespace Sq1.Charting {
 			return ret;
 		}
 		public override Color BarForegroundGet(int barIndex) {
-			return this.ScriptExecutorObjects.BarForegroundGet(barIndex);
+			return this.ExecutorObjects_frozenForRendering.BarForegroundGet(barIndex);
 		}
 		public override OnChartObjectOperationStatus ChartLabelDrawOnNextLineModify(
 				string labelId, string labelText, Font font, Color colorFore, Color colorBack) {
 			OnChartObjectOperationStatus ret = OnChartObjectOperationStatus.Unknown;
 			try {
-				OnChartLabel label = this.ScriptExecutorObjects.ChartLabelAddOrModify(labelId, labelText, font, colorFore, colorBack);
+				OnChartLabel label = this.ExecutorObjects_frozenForRendering.ChartLabelAddOrModify(labelId, labelText, font, colorFore, colorBack);
 				ret = label.Status;
 			} catch (Exception ex) {
 				string msg = "DID_YOU_RUN_BACKTEST_TWICE??__MULTITHREADING_DUPLICATES_FOR_LABEL[" + labelId + "]";
@@ -272,7 +272,7 @@ namespace Sq1.Charting {
 				if (colorBackground != Color.Empty) {
 					colorBackground = Color.FromArgb(this.ChartSettings.BarsBackgroundTransparencyAlpha, colorBackground);
 				}
-				barAnnotation = this.ScriptExecutorObjects.BarAnnotationAddOrModify(
+				barAnnotation = this.ExecutorObjects_frozenForRendering.BarAnnotationAddOrModify(
 					barIndex, barAnnotationId, barAnnotationText,
 					font, colorForeground, colorBackground, aboveBar,
 					verticalPadding, popupParametersDidntChange);

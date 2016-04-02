@@ -11,12 +11,14 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Livesim;
 using Sq1.Core.Charting;
 using Sq1.Core.Backtesting;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Core.Execution {
 	public	class Alert : IDisposable {
 		[JsonIgnore]	public const string FORCEFULLY_CLOSED_BACKTEST_LAST_POSITION = "IGNORED_FOR_KPIs__FORCEFULLY_CLOSED_BY_BACKTESTER";
 
 		[JsonIgnore]	public	Bars				Bars;
+		[JsonProperty]	public	BarScaleInterval	BarsScaleInterval				{ get; protected set; }
 		[JsonProperty]	public	Bar					PlacedBar						{ get; protected set; }
 		[JsonProperty]	public	int					PlacedBarIndex					{ get; protected set; }
 		[JsonProperty]	public	Bar					FilledBar						{ get; protected set; }
@@ -36,45 +38,54 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	string				SymbolClass						{ get; protected set; }
 		[JsonProperty]	public	string				AccountNumber					{ get; protected set; }
 		[JsonProperty]	public	string				DataSourceName					{ get; protected set; }		// containsBidAsk BrokerAdapter for further {new Order(Alert)} execution
-		[JsonIgnore]	public	DataSource			DataSource						{ get {
+		[JsonIgnore]	public	DataSource			DataSource_fromBars				{ get {
 				if (this.Bars == null) {
 					throw new Exception("alert.Bars=null for alert[" + this + "]");
 				}
 				if (this.Bars.DataSource == null) {
 					throw new Exception("alert.Bars.DataSource=null for alert[" + this + "]");
 				}
-				DataSourceName = this.Bars.DataSource.Name;
+				if (this.DataSourceName != this.Bars.DataSource.Name) {
+					this.DataSourceName  = this.Bars.DataSource.Name;
+				}
 				return this.Bars.DataSource;
 			} }
-		[JsonProperty]	public	double				PriceScript						{ get; protected set; }				//doesn't contain Slippage
-		[JsonProperty]	public	double				PriceScriptAligned				{ get; protected set; }
 
-		[JsonIgnore]		 	double				priceStopLimitActivation;
-		[JsonProperty]	public	double				PriceStopLimitActivation {
-			get { return this.priceStopLimitActivation; }
-			set {
-				this.priceStopLimitActivation = value;
-//				if (this.Bars == null) {
-//					string msg = "DONT_FORGET_TO_GENERATE_PriceStopLimitActivationAligned_AFTER_JSON_DESERIALIZATION";
-//					Assembler.PopupException(msg);
-//					return;
-//				}
-//				if (this.Bars.SymbolInfo == null) {
-//					string msg = "ATTACH_SYMBOL_INFO_TO_BARS__TO_CALCULATE_PRICE_SCRIPT_ALIGNED";
-//					Assembler.PopupException(msg);
-//					return;
-//				}
-//				this.priceStopLimitActivation = this.Bars.SymbolInfo.AlignAlertToPriceLevelSimplified(this.priceStopLimitActivation, this.Direction, this.MarketLimitStop);
-			}
-		}
-		[JsonProperty]	public	double				PriceStopLimitActivationAligned	{ get; protected set; }
 		[JsonProperty]	public	double				Qty								{ get; protected set; }
+		[JsonProperty]	public	double				PriceScript						{ get; protected set; }				//doesn't contain Slippage; ZERO for Market
+		[JsonProperty]	public	double				PriceScriptAligned				{ get; protected set; }				//doesn't contain Slippage
+		[JsonProperty]	public	double				CurrentAsk						{ get; protected set; }
+		[JsonProperty]	public	double				CurrentBid						{ get; protected set; }
+		[JsonProperty]	public	double				PriceCurBidOrAsk				{ get {
+				double ret = 0;
+				switch (this.SpreadSide) {
+					case SpreadSide.AskCrossed:
+					case SpreadSide.AskTidal:
+						ret = this.CurrentAsk;
+						break;
+					case SpreadSide.BidCrossed:
+					case SpreadSide.BidTidal:
+						ret = this.CurrentBid;
+						break;
+					default:
+						break;
+				}
+				return ret;
+		} }
+		[JsonProperty]	public	double				SlippageApplied					{ get; protected set; }				//from SymbolInfo
+		[JsonProperty]	public	SpreadSide			SpreadSide						{ get; protected set; }
+		[JsonProperty]	public	double				PriceEmitted					{ get; protected set; }				//PriceRequested = PriceFromStreaming + Slippage
+
 		[JsonProperty]	public	MarketLimitStop		MarketLimitStop;				//BROKER_ADAPDER_CAN_REPLACE_ORIGINAL_ALERT_TYPE { get; protected set; }
 		[JsonProperty]	public	MarketOrderAs		MarketOrderAs					{ get; protected set; }
 		[JsonProperty]	public	string 				MarketLimitStopAsString;		//BROKER_ADAPDER_LEAVES_COMMENTS_WHEN_CHANGING__ORIGINAL_ALERT_TYPE { get; protected set; }
 		[JsonProperty]	public	Direction			Direction						{ get; protected set; }
 		[JsonIgnore]	public	string				DirectionAsString				{ get; protected set; }
 		[JsonIgnore]	public	PositionLongShort	PositionLongShortFromDirection	{ get { return MarketConverter.LongShortFromDirection(this.Direction); } }
+
+		[JsonProperty]	public	double				PriceStopLimitActivation;
+		[JsonProperty]	public	double				PriceStopLimitActivationAligned	{ get; protected set; }
+
 		[JsonIgnore]	public	bool				IsExitAlert						{ get { return !IsEntryAlert; } }
 		[JsonIgnore]	public	bool				IsEntryAlert					{ get { return MarketConverter.IsEntryFromDirection(this.Direction); } }
 
@@ -124,8 +135,6 @@ namespace Sq1.Core.Execution {
 				return this.Strategy.Script.Executor.BacktesterOrLivesimulator.ImRunningLivesim;
 			}
 		}
-		[JsonProperty]	public	BarScaleInterval	BarsScaleInterval				{ get; protected set; }
-		[JsonProperty]	public	OrderSpreadSide		OrderSpreadSide;
 
 		[JsonProperty]	public	Quote				QuoteCreatedThisAlert_deserializable;
 		[JsonProperty]	public	Quote				QuoteLastWhenThisAlertFilled_deserializable;
@@ -152,7 +161,7 @@ namespace Sq1.Core.Execution {
 				}
 				return ret;
 			} }
-		[JsonIgnore]	public	double QtyFilledThroughPosition { get {
+		[JsonIgnore]	public	double				QtyFilledThroughPosition { get {
 				double ret = 0;
 				if (this.PositionAffected == null) return ret;
 				if (this.IsEntryAlert && this.PositionAffected.EntryAlert == this) {
@@ -163,26 +172,26 @@ namespace Sq1.Core.Execution {
 				}
 				return ret;
 			} }
-		[JsonIgnore]	public	double PriceFilledThroughPosition { get {
+		[JsonIgnore]	public	double				PriceFilledThroughPosition { get {
 				double ret = 0;
 				if (this.PositionAffected == null) return ret;
 				if (this.IsEntryAlert && this.PositionAffected.EntryAlert == this) {
-					ret = this.PositionAffected.EntryFilledPrice;
+					ret = this.PositionAffected.EntryFilled_price;
 				}
 				if (this.IsExitAlert && this.PositionAffected.ExitAlert == this) {
-					ret = this.PositionAffected.ExitFilledPrice;
+					ret = this.PositionAffected.ExitFilled_price;
 				}
 				return ret;
 			} }
 
-		[JsonProperty]	public	bool IsFilled { get {
+		[JsonProperty]	public	bool				IsFilled { get {
 				if (this.PositionAffected == null) return false;
 				return this.IsEntryAlert
 					? this.PositionAffected.IsEntryFilled
 					: this.PositionAffected.IsExitFilled;
 			} }
-		[JsonProperty]	public	bool IsKilled;
-		[JsonIgnore]	public	bool IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK { get {
+		[JsonProperty]	public	bool				IsKilled;
+		[JsonIgnore]	public	bool				IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK { get {
 				bool notFilled = (this.FilledBarSnapshotFrozenAtFill == null);
 				if (notFilled) {
 					#if DEBUG
@@ -249,7 +258,7 @@ namespace Sq1.Core.Execution {
 		//		#endif
 		//		return outsideBar;
 		//	} }
-		[JsonIgnore]	public	bool IsFilledOutsideQuote_DEBUG_CHECK { get {
+		[JsonIgnore]	public	bool				IsFilledOutsideQuote_DEBUG_CHECK { get {
 				if (this.QuoteFilledThisAlertDuringBacktestNotLive == null) return false;		// this is LIVE - I'm just notified "your order is filled" at a random moment; no way I could possibly figure out
 				bool insideQuote = (this.PriceFilledThroughPosition >= this.QuoteFilledThisAlertDuringBacktestNotLive.Bid && this.PriceFilledThroughPosition <= this.QuoteFilledThisAlertDuringBacktestNotLive.Ask);
 				bool outsideQuote = !insideQuote; 
@@ -260,23 +269,23 @@ namespace Sq1.Core.Execution {
 				#endif
 				return outsideQuote;
 			} }
-		[JsonProperty]	public	BidOrAsk BidOrAskWillFillMe { get {
+		[JsonProperty]	public	BidOrAsk			BidOrAskWillFillMe { get {
 				return MarketConverter.BidOrAskWillFillAlert(this);
 			}}
 		
-		[JsonProperty]	public	string		BrokerName { get {
+		[JsonProperty]	public	string				BrokerName { get {
 			if (this.Bars == null) return "BARS_NULL";
-			if (this.DataSource == null) return "DATASOURCE_NULL";
-			if (this.DataSource.BrokerAdapter == null) return "BROKER_NULL";
-			return this.DataSource.BrokerAdapterName;
+			if (this.DataSource_fromBars == null) return "DATASOURCE_NULL";
+			if (this.DataSource_fromBars.BrokerAdapter == null) return "BROKER_NULL";
+			return this.DataSource_fromBars.BrokerAdapterName;
 		} }
-		[JsonProperty]	public	bool		MyBrokerIsLivesim { get {
+		[JsonProperty]	public	bool				MyBrokerIsLivesim { get {
 			if (this.Bars == null) return false;
-			if (this.DataSource == null) return false;
-			if (this.DataSource.BrokerAdapter is LivesimBroker) return true;
+			if (this.DataSource_fromBars == null) return false;
+			if (this.DataSource_fromBars.BrokerAdapter is LivesimBroker) return true;
 			return false;
 		} }
-		[JsonProperty]	public	bool		GuiHasTimeRebuildReportersAndExecution { get {
+		[JsonProperty]	public	bool				GuiHasTimeRebuildReportersAndExecution { get {
 			bool ret = true;
 			if (this.MyBrokerIsLivesim == false) return ret;
 			try {
@@ -296,8 +305,7 @@ namespace Sq1.Core.Execution {
 		} }
 		[JsonIgnore]	public	bool				IsDisposed;
 
-		
-		[JsonProperty]	public	bool		ImTakeProfit_prototyped { get {
+		[JsonIgnore]	public	bool				ImTakeProfit_prototyped { get {
 			string msig = " //ImTakeProfit_prototyped.Get() " + this;
 
 			bool ret = false;
@@ -312,8 +320,7 @@ namespace Sq1.Core.Execution {
 			ret = this.PositionAffected.Prototype.TakeProfitAlert_forMoveAndAnnihilation == this;
 			return ret;
 		} }
-
-		[JsonProperty]	public	bool		ImStopLoss_prototyped { get {
+		[JsonIgnore]	public	bool				ImStopLoss_prototyped { get {
 			string msig = " //ImStopLoss_prototyped.Get() " + this;
 
 			bool ret = false;
@@ -328,7 +335,6 @@ namespace Sq1.Core.Execution {
 			ret = this.PositionAffected.Prototype.StopLossAlert_forMoveAndAnnihilation == this;
 			return ret;
 		} }
-
 
 		public void Dispose() {
 			if (this.IsDisposed || this.MreOrderFollowedIsAssignedNow == null) {
@@ -352,7 +358,13 @@ namespace Sq1.Core.Execution {
 			Symbol						= "UNKNOWN_JUST_DESERIALIZED";
 			//SymbolClass				= "";		//QUIK
 			//AccountNumber				= "";
+
 			PriceScript					= 0;
+			PriceScriptAligned			= 0;
+			//priceCurBidOrAsk			= 0;
+			SlippageApplied				= 0;
+			PriceEmitted				= 0;
+
 			PriceDeposited				= -1;		// for a Future, we pay less that it's quoted (GUARANTEE DEPOSIT)
 			Qty							= 0;
 			MarketLimitStop				= MarketLimitStop.Unknown;
@@ -365,29 +377,49 @@ namespace Sq1.Core.Execution {
 			OrderFollowed				= null;
 			MreOrderFollowedIsAssignedNow	= new ManualResetEvent(false);
 		}
-		public	Alert(Bar bar, double qty, double priceScript, string signalName,
-				Direction direction, MarketLimitStop marketLimitStop, OrderSpreadSide orderSpreadSide,
-				Strategy strategy) : this() {
+		public	Alert(Bar bar, double qty, double priceScript_limitOrStop_zeroForMarket, string signalName,
+				Direction direction, MarketLimitStop marketLimitStop, Strategy strategy) : this() {
+
+			string msig = " //Alert.ctor(" + qty + "@" + priceScript_limitOrStop_zeroForMarket
+				+ " " + direction + " " + marketLimitStop + " " + signalName + " " + strategy + ")";
 
 			if (direction == Direction.Unknown) {
-				string msg = "ALERT_CTOR_DIRECTION_MUST_NOT_BE_UNKNOWN: when creating an Alert, direction parameter can't be null";
-				throw new Exception(msg);
+				string msg = "DIRECTION_MUST_NOT_BE_UNKNOWN: when creating an Alert, direction parameter can't be null";
+				Assembler.PopupException(msg + msig);
+				throw new Exception(msg + msig);
 			}
 			if (bar == null) {
-				string msg = "ALERT_CTOR_BAR_MUST_NOT_BE_NULL: when creating an Alert, bar parameter can't be null";
-				throw new Exception(msg);
+				string msg = "BAR_MUST_NOT_BE_NULL: when creating an Alert, bar parameter can't be null";
+				Assembler.PopupException(msg + msig);
+				throw new Exception(msg + msig);
 			}
 			if (bar.ParentBars == null) {
-				string msg = "ALERT_CTOR_PARENT_BARS_MUST_NOT_BE_NULL: when creating an Alert, bar.ParentBars can't be null";
-				throw new Exception(msg);
+				string msg = "PARENT_BARS_MUST_NOT_BE_NULL: when creating an Alert, bar.ParentBars can't be null";
+				Assembler.PopupException(msg + msig);
+				throw new Exception(msg + msig);
 			}
-			if (priceScript < 0) {
-				string msg = "ALERT_CTOR_PRICE_SCRIPT_CANT_BE_NEGATIVE";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
+
+			if (priceScript_limitOrStop_zeroForMarket < 0) {
+				string msg = "PRICE_SCRIPT_CANT_BE_NEGATIVE";
+				Assembler.PopupException(msg + msig);
+				throw new Exception(msg + msig);
 			}
+
+			if (marketLimitStop == MarketLimitStop.Market) {
+				if (priceScript_limitOrStop_zeroForMarket != 0) {
+					string msg = "YOU_MUST_SPECIFY_ZERO_PRICE_FOR_MARKET_ORDERS";
+					Assembler.PopupException(msg + msig);
+					throw new Exception(msg + msig);
+				}
+			} else {
+				if (priceScript_limitOrStop_zeroForMarket == 0) {
+					string msg = "YOU_MUST_SPECIFY_EXACT_PRICE_FOR_LIMIT_AND_STOP_ORDERS";
+					Assembler.PopupException(msg + msig);
+					throw new Exception(msg + msig);
+				}
+			}
+
+
 			this.Bars			= bar.ParentBars;
 			this.PlacedBar		= bar;
 			this.PlacedBarIndex	= bar.ParentBarsIndex;
@@ -401,24 +433,15 @@ namespace Sq1.Core.Execution {
 			}
 			
 			this.AccountNumber = "UNKNOWN_ACCOUNT";
-			if (this.DataSource.BrokerAdapter != null && this.DataSource.BrokerAdapter.AccountAutoPropagate != null
+			if (this.DataSource_fromBars.BrokerAdapter != null && this.DataSource_fromBars.BrokerAdapter.AccountAutoPropagate != null
 				&& string.IsNullOrEmpty(this.Bars.DataSource.BrokerAdapter.AccountAutoPropagate.AccountNumber) != false) {
 				this.AccountNumber = this.Bars.DataSource.BrokerAdapter.AccountAutoPropagate.AccountNumber;
 			}
 			
 
-			this.Qty = qty;
-			this.PriceScript = priceScript;
-			this.SignalName = signalName;
-			this.Direction = direction;
-			this.DirectionAsString = this.Direction.ToString();
-			this.MarketLimitStop = marketLimitStop;
-			this.MarketLimitStopAsString = this.MarketLimitStop.ToString();
-			this.OrderSpreadSide = orderSpreadSide;
-
 			if (strategy == null) {
 				string msg = "SERIALIZER_LOGROTATE<ORDER>_GOT_A_SUBMITTED_ALERT_WITH_STRATEGY_NULL__HOW_COME?";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg + msig);
 			}
 			this.Strategy = strategy;
 			if (this.Strategy != null) {
@@ -431,19 +454,44 @@ namespace Sq1.Core.Execution {
 			//	Assembler.PopupException(msg, null, false);
 			//}
 
-			if (this.Bars.SymbolInfo == null) {
-				string msg = "ATTACH_SYMBOL_INFO_TO_BARS__TO_CALCULATE_PRICE_SCRIPT_ALIGNED";
+
+			this.Qty = qty;
+			this.PriceScript = priceScript_limitOrStop_zeroForMarket;
+
+			this.SignalName = signalName;
+			this.Direction = direction;
+			this.DirectionAsString = this.Direction.ToString();
+
+			this.MarketLimitStop = marketLimitStop;
+			this.MarketLimitStopAsString = this.MarketLimitStop.ToString();
+
+			StreamingDataSnapshot snap = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot;
+			if (this.DataSource_fromBars.StreamingAdapter is LivesimStreaming) {
+				string msg = "NPE_AHEAD?... OR_ONLY_WITH_OWN_LIVEIM_ADAPTERS???...";
 				Assembler.PopupException(msg);
+			}
+			this.CurrentBid = snap.GetBestBid_notAligned_forMarketOrder_fromQuoteCurrent(this.Symbol);
+			this.CurrentAsk = snap.GetBestAsk_notAligned_forMarketOrder_fromQuoteCurrent(this.Symbol);
+
+			
+			bool willGetFromStreaming =
+				this.MarketOrderAs == Execution.MarketOrderAs.LimitCrossMarket ||
+				this.MarketOrderAs == Execution.MarketOrderAs.LimitTidal;
+
+			if (this.MarketLimitStop == MarketLimitStop.Market && willGetFromStreaming) {
+				SpreadSide spreadSide = SpreadSide.Unknown;
+				this.PriceEmitted = snap.GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteCurrent(
+						this.Symbol, this.Direction, out spreadSide, false);
+				this.SlippageApplied = this.GetSlippage_signAware_forLimitAlertsOnly(this.PriceEmitted, 0);
+				this.PriceEmitted += this.SlippageApplied;
+				this.SpreadSide = spreadSide;
 			} else {
 				this.PriceScriptAligned = this.Bars.SymbolInfo.Alert_alignToPriceLevel(this.PriceScript, this.Direction, this.MarketLimitStop);
-			}
-
-			if (this.PriceScriptAligned < 0) {
-				string msg = "ALERT_CTOR_PRICE_SCRIPT_CANT_BE_NEGATIVE";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
+				this.PriceEmitted = this.PriceScriptAligned;
+				if (this.PriceScriptAligned < 0) {
+					string msg = "ALERT_CTOR_PRICE_SCRIPT_CANT_BE_NEGATIVE";
+					Assembler.PopupException(msg + msig);
+				}
 			}
 		}
 
@@ -502,7 +550,7 @@ namespace Sq1.Core.Execution {
 			}
 			return msg.ToString();
 		}
-		public	string ToStringForTooltip() {
+		public	string ToString_forTooltip() {
 			string longOrderType = (MarketLimitStop == MarketLimitStop.StopLimit) ? "" : "\t";
 
 			string msg = DirectionAsString
@@ -516,7 +564,7 @@ namespace Sq1.Core.Execution {
 			msg += "\t[" + SignalName + "]";
 			return msg;
 		}
-		public	string ToStringForOrder() {
+		public	string ToString_forOrder() {
 			string msg = Direction
 				+ " " + MarketLimitStop
 				// not Symbol coz stack overflow
@@ -526,7 +574,7 @@ namespace Sq1.Core.Execution {
 			//if (this.MyBrokerIsLivesim) msg += " Livesim";
 			return msg;
 		}
-		public	bool IsIdenticalOrderlessPriceless(Alert alert) {
+		public	bool IsIdentical_orderlessPriceless(Alert alert) {
 			if (alert == null) {
 				throw new Exception("you must've cleaned Executor.MasterAlerts from another thread while enumerating?...");
 			}
@@ -547,7 +595,7 @@ namespace Sq1.Core.Execution {
 			bool streamingBarMayBeDifferent = this.PriceScript == alert.PriceScript;
 			return basic && streamingBarMayBeDifferent;
 		}
-		public	bool IsIdenticalForOrdersPending(Alert alert) {
+		public	bool IsIdentical_forOrdersPending(Alert alert) {
 			if (alert == null) {
 				throw new Exception("you must've cleaned Executor.DataSnapshot from another thread while enumerating?...");
 			}
@@ -564,8 +612,6 @@ namespace Sq1.Core.Execution {
 				&& this.PlacedBarIndex == alert.PlacedBarIndex
 				;
 			return basic && streamingBarMayBeDifferent;
-		}
-		public	virtual void AbsorbFromExecutor_afterCreated_byMarketReal(ScriptExecutor executor) {
 		}
 		public	void FillPositionAffected_entryOrExit_respectively(Bar barFill, int barFillRelno,
 				double priceFill, double qtyFill, double slippageFill, double commissionFill) {
@@ -617,5 +663,13 @@ namespace Sq1.Core.Execution {
 			}
 			return true;
 		}
+
+		internal double GetSlippage_signAware_forLimitAlertsOnly(double priceRequested = -1, int slippageApplyingIndex = 0) {
+			if (priceRequested == -1) priceRequested = this.PriceEmitted;
+			double slippage = this.Bars.SymbolInfo.GetSlippage_signAware_forLimitOrdersOnly(priceRequested,
+				this.Direction, this.MarketOrderAs, slippageApplyingIndex);
+			return slippage;
+		}
+
 	}
 }

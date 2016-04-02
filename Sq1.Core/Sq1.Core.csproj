@@ -70,7 +70,7 @@
     <Compile Include="Assembler.cs" />
     <Compile Include="AssemblerDataSnapshot.cs" />
     <Compile Include="Backtesting\Backtester.cs" />
-    <Compile Include="Backtesting\BacktestQuoteBarConsumer.cs" />
+    <Compile Include="Backtesting\BacktestStreamingConsumer.cs" />
     <Compile Include="Backtesting\BacktestQuotesGeneratorFourStroke.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -150,7 +150,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Livesim\LivesimBrokerSpoiler.cs" />
-    <Compile Include="Livesim\LivesimQuoteBarConsumer.cs">
+    <Compile Include="Livesim\LivesimStreamingConsumer.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Livesim\LivesimStreamingDefault.cs" />
@@ -216,8 +216,8 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Execution\AlertList.cs" />
-    <Compile Include="Execution\ExecutionDataSnapshot.ScriptExecWatchdog.cs">
-      <DependentUpon>ExecutionDataSnapshot.cs</DependentUpon>
+    <Compile Include="Execution\ExecutorDataSnapshot.ScriptExecWatchdog.cs">
+      <DependentUpon>ExecutorDataSnapshot.cs</DependentUpon>
     </Compile>
     <Compile Include="Execution\PositionList.cs" />
     <Compile Include="Execution\OrderEventArgs.cs" />
@@ -240,7 +240,6 @@
     <Compile Include="Indicators\IndicatorParameterEventArgs.cs" />
     <Compile Include="Livesim\LivesimBroker.cs" />
     <Compile Include="Livesim\LivesimDataSource.cs" />
-    <Compile Include="Livesim\LevelTwoGeneratorLivesim.cs" />
     <Compile Include="Livesim\LivesimStreaming.cs" />
     <Compile Include="Livesim\LivesimBrokerEditor.cs">
       <SubType>UserControl</SubType>
@@ -365,11 +364,18 @@
     <Compile Include="StrategyBase\Strategy.ScriptContext.cs">
       <DependentUpon>Strategy.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\DataDistributor.DebuggingLivesim.cs">
-      <DependentUpon>DataDistributor.cs</DependentUpon>
+    <Compile Include="Streaming\Distributor.Channels.cs">
+      <DependentUpon>Distributor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\DataDistributorCharts.cs" />
-    <Compile Include="Streaming\DataDistributorSolidifiers.cs" />
+    <Compile Include="Streaming\Distributor.Pumps.cs">
+      <DependentUpon>Distributor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\LevelTwoFrozen.cs" />
+    <Compile Include="Streaming\Distributor.DebuggingLivesim.cs">
+      <DependentUpon>Distributor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\DistributorCharts.cs" />
+    <Compile Include="Streaming\DistributorSolidifiers.cs" />
     <Compile Include="Streaming\LevelTwo.cs" />
     <Compile Include="Streaming\LevelTwoHalf.cs" />
     <Compile Include="Streaming\LevelTwoHalfSortedFrozen.cs" />
@@ -380,21 +386,31 @@
     <Compile Include="Streaming\StreamingAdapter.ReplaceDistributorsForLivesim.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\QuotePumpPerChannel.cs" />
-    <Compile Include="Streaming\QuoteQueuePerChannel.cs" />
+    <Compile Include="Streaming\PumpPerSymbol.cs" />
+    <Compile Include="Streaming\QueuePerSymbol.cs" />
     <Compile Include="Streaming\StreamingAdapter.EventDistributor.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
+    <Compile Include="Streaming\UnattachedStreamingBar_factory.cs" />
     <Compile Include="Streaming\StreamingEditor.EventConsumer.cs">
       <DependentUpon>StreamingEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Streaming\StreamingLateBinder.cs" />
+    <Compile Include="Streaming\BinderAttacherPerConsumer.cs" />
     <Compile Include="Streaming\StreamingAdapter.EditorSupport.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\StreamingSolidifier.cs" />
+    <Compile Include="Streaming\SymbolChannel.cs" />
+    <Compile Include="Streaming\SymbolScaleStream.EventGenerator.cs">
+      <DependentUpon>SymbolScaleStream.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\SymbolScaleStream.Push.cs">
+      <DependentUpon>SymbolScaleStream.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\SymbolScaleStream.Subscribe.cs">
+      <DependentUpon>SymbolScaleStream.cs</DependentUpon>
+    </Compile>
     <Compile Include="Support\ConcurrentDictionary.cs" />
     <Compile Include="Support\ConcurrentList.cs" />
     <Compile Include="Support\ConcurrentWatchdog.cs">
@@ -425,12 +441,12 @@
     <Compile Include="Execution\OrderStatesCollections.cs" />
     <Compile Include="Execution\MarketConverter.cs" />
     <Compile Include="Execution\MarketOrderAs.cs" />
-    <Compile Include="Execution\OrderSpreadSide.cs" />
+    <Compile Include="Execution\SpreadSide.cs" />
     <Compile Include="DataTypes\QuoteEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Execution\PositionPrototype.cs" />
-    <Compile Include="Execution\ExecutionDataSnapshot.cs" />
+    <Compile Include="Execution\ExecutorDataSnapshot.cs" />
     <Compile Include="Execution\AlertEventArgs.cs" />
     <Compile Include="Execution\ReporterPokeUnitEventArgs.cs" />
     <Compile Include="Execution\PositionEventArgs.cs" />
@@ -461,9 +477,9 @@
     <Compile Include="Backtesting\BacktestSpreadModelerPercentage.cs" />
     <Compile Include="Backtesting\BacktestQuotesGenerator.cs" />
     <Compile Include="Streaming\StreamingConsumer.cs" />
-    <Compile Include="Streaming\DataDistributor.cs" />
+    <Compile Include="Streaming\Distributor.cs" />
     <Compile Include="Streaming\StreamingDataSnapshot.cs" />
-    <Compile Include="Streaming\SymbolScaleDistributionChannel.cs" />
+    <Compile Include="Streaming\SymbolScaleStream.cs" />
     <Compile Include="Streaming\StreamingAdapter.cs" />
     <Compile Include="StrategyBase\StrategyEventArgs.cs" />
     <Compile Include="Support\SymbolParser.cs" />

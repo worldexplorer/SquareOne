@@ -6,9 +6,9 @@ using Sq1.Core.Streaming;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Backtesting {
-	public class BacktestQuoteBarConsumer : StreamingConsumer {
+	public class BacktestStreamingConsumer : StreamingConsumer {
 				Backtester backtester;
-		public	BacktestQuoteBarConsumer(Backtester backtesterPassed) {
+		public	BacktestStreamingConsumer(Backtester backtesterPassed) {
 			this.backtester = backtesterPassed;
 		}
 
@@ -19,15 +19,15 @@ namespace Sq1.Core.Backtesting {
 				return ret;
 			} }
 
-		public override Bars ConsumerBarsToAppendInto { get { return this.backtester.BarsSimulating; } }
-		public override void UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart) {
+		public override Bars ConsumerBars_toAppendInto { get { return this.backtester.BarsSimulating; } }
+		public override void UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirstAfterStart) {
 			base.ReasonToExist = "Backtest[" + base.Symbol_nullReported + "]";
 		}
-		public override void UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
+		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLastBeforeStop) {
 		}
-		public override void ConsumeQuoteOfStreamingBar(Quote quote) {
+		public override void ConsumeQuoteOfStreamingBar(Quote quoteClone_boundAttached) {
 			//Bar barLastFormed = quoteToReach.ParentStreamingBar;
-			ExecutionDataSnapshot snap = this.backtester.Executor.ExecutionDataSnapshot;
+			ExecutorDataSnapshot snap = this.backtester.Executor.ExecutionDataSnapshot;
 
 			if (snap.AlertsPending.Count > 0) {
 				//var dumped = snap.DumpPendingAlertsIntoPendingHistoryByBar();
@@ -39,7 +39,7 @@ namespace Sq1.Core.Backtesting {
 				//	string msg = "DUMPED_BEFORE_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
 				//}
 				int pendingCountPre	= this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
-				int pendingFilled	= this.backtester.Executor.DataSource_fromBars.BrokerAsBacktest_nullUnsafe.BacktestMarketsim.SimulateFill_allPendingAlerts(quote, null);
+				int pendingFilled	= this.backtester.Executor.DataSource_fromBars.BrokerAsBacktest_nullUnsafe.BacktestMarketsim.SimulateFill_allPendingAlerts(quoteClone_boundAttached, null);
 				int pendingCountNow	= this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				if (pendingCountNow != pendingCountPre - pendingFilled) {
 					string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";
@@ -48,13 +48,14 @@ namespace Sq1.Core.Backtesting {
 					string msg = "pending=[" + pendingCountNow + "], it must be prototype-induced 2 closing TP & SL";
 				}
 			}
-			//this.backtester.Executor.Script.OnNewQuoteCallback(quoteToReach);
-			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.InvokeScript_onNewBar_onNewQuote(quote);
+			//v1 this.backtester.Executor.Script.OnNewQuoteCallback(quoteToReach);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.InvokeScript_onNewBar_onNewQuote(quoteClone_boundAttached);
+			//v3 ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.ConsumeQuoteOfStreamingBar(quote);
 			if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
 				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
 			}
 		}
-		public override void ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
+		public override void ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quote) {
 			string msig = " //BacktestQuoteBarConsumer.ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended";
 			if (barLastFormed == null) {
 				string msg = "THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING"
@@ -65,7 +66,8 @@ namespace Sq1.Core.Backtesting {
 			}
 			msig += "(" + barLastFormed.ToString() + ")";
 			//v1 this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
-			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.InvokeScript_onNewBar_onNewQuote(quoteForAlertsCreated, false);
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.InvokeScript_onNewBar_onNewQuote(quote, false);
+			//v3 ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(barLastFormed, quote);
 			if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
 				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
 			}

@@ -293,7 +293,7 @@ namespace Sq1.Core.StrategyBase {
 		public object FindOrCreateReportersSnapshot(Reporter reporterActivated) {
 			string reporterName = reporterActivated.TabText;
 			if (this.ReportersSnapshots.ContainsKey(reporterName) == false) {
-				this.ReportersSnapshots.Add(reporterName, reporterActivated.CreateSnapshotToStoreInScriptContext());
+				this.ReportersSnapshots.Add(reporterName, reporterActivated.CreateSnapshot_toStore_inScriptContext());
 			}
 			return this.ReportersSnapshots[reporterName];
 		}

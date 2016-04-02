@@ -78,7 +78,7 @@ namespace Sq1.Core.Backtesting {
 				string msg = "RELAX_IM_NOT_FORWARING_IT_TO_BASE_BUT_I_HANDLE_InitializeDataSource()_IN_LivesimStreaming";
 			}
 		}
-		protected override void SolidifierAllSymbolsSubscribe_onAppRestart() {
+		protected override void SolidifierSubscribe_toAllSymbols_ofDataSource_onAppRestart() {
 			string msg = "BACKTESTER_MUST_NOT_SAVE_ANY_BARS EMPTY_HERE_TO_PREVENT_BASE_FROM_SUBSCRIBING_SOLIDIFIER";
 		}
 		#endregion

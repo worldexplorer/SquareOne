@@ -30,7 +30,7 @@ namespace Sq1.Strategies.Demo {
 
 			if (base.HasAlertsPending) {
 				// only kill pending entries, but leave activated SL & TP for an open position UNTOUCHED !!!!
-				ExecutionDataSnapshot snap = this.Executor.ExecutionDataSnapshot;
+				ExecutorDataSnapshot snap = this.Executor.ExecutionDataSnapshot;
 				List<Alert> pendings = snap.AlertsPending.SafeCopy(this, "placePrototypeOncePositionClosed(WAIT)");
 				if (pendings.Count > 0) {
 					string msg = pendings.Count + " last AlertsPending[" + snap.AlertsPending.Last_nullUnsafe(this, "placePrototypeOncePositionClosed(WAIT)") + "]";
