@@ -10,7 +10,8 @@ namespace Sq1.Core.Streaming {
 	// REASON_TO_EXIST: allows to store temporarily incoming streaming quotes to backtest while streaming is on;
 	// steps to reproduce 1) I have quotes being generated, 2) Executor.IsStreaming+IsStreamingTriggeringScript,
 	// 3) I run Backtest => I need to postpone the reception of the incoming quotes for the duration of the backtest and then continue live orders emission
-	public class PumpPerSymbol<QUOTE> : QueuePerSymbol<QUOTE>, IDisposable {
+	public class PumpPerSymbol<QUOTE, STREAMING_CONSUMER_CHILD> : QueuePerSymbol<QUOTE, STREAMING_CONSUMER_CHILD>, IDisposable
+								 where STREAMING_CONSUMER_CHILD : StreamingConsumer {
 		const string THREAD_PREFIX = "PUMP_";	//SEPARATE_THREAD_QUOTE_FOR_
 
 					ManualResetEvent	hasQuoteToPush;			// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
@@ -69,7 +70,9 @@ namespace Sq1.Core.Streaming {
 		} }
 
 		~PumpPerSymbol() { this.Dispose(); }
-		public PumpPerSymbol(SymbolChannel channel, int heartbeatTimeout = HEARTBEAT_TIMEOUT_DEFAULT) : base(channel) {
+		//v1 BEFORE_STREAM_WENT_GENERIC
+		public PumpPerSymbol(SymbolChannel<STREAMING_CONSUMER_CHILD> channel, int heartbeatTimeout = HEARTBEAT_TIMEOUT_DEFAULT) : base(channel) {
+		//v2public PumpPerSymbol(int heartbeatTimeout = HEARTBEAT_TIMEOUT_DEFAULT) : base() {
 			this.heartbeatTimeout	= heartbeatTimeout;
 			hasQuoteToPush			= new ManualResetEvent(false);
 			bufferPusher			= new Task(this.pusherEntryPoint);
@@ -158,9 +161,9 @@ namespace Sq1.Core.Streaming {
 				this.timesThreadWasStarted++;
 				this.confirmThreadStarted.Set();
 				while (this.exitPushingThreadRequested == false) {
-					bool chartDiThread = this.SymbolChannel.ReasonIwasCreated_propagatedFromDistributor.Contains(Distributor.LIVE_CHARTS_FOR);
-					bool solidifThread = this.SymbolChannel.ReasonIwasCreated_propagatedFromDistributor.Contains(Distributor.SOLIDIFIERS_FOR);
-					bool livesimThread = this.SymbolChannel.ReasonIwasCreated_propagatedFromDistributor.Contains(Distributor.SUBSTITUTED_LIVESIM_STARTED);
+					bool chartDiThread = this.SymbolChannel.ReasonIwasCreated_propagatedFromDistributor.Contains(DistributorCharts.LIVE_CHARTS_FOR);
+					bool solidifThread = this.SymbolChannel.ReasonIwasCreated_propagatedFromDistributor.Contains(DistributorCharts.SOLIDIFIERS_FOR);
+					bool livesimThread = this.SymbolChannel.ReasonIwasCreated_propagatedFromDistributor.Contains(DistributorCharts.SUBSTITUTED_LIVESIM_STARTED);
 					msig = this.ToString();
 
 					#region OPTIMIZE_ME
@@ -464,7 +467,7 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		void notifyConsumers_pumpWasUnPaused() {
-			List<StreamingConsumer> consumersMerged = new List<StreamingConsumer>();
+			List<STREAMING_CONSUMER_CHILD> consumersMerged = new List<STREAMING_CONSUMER_CHILD>();
 			consumersMerged.AddRange(this.SymbolChannel.ConsumersBar);
 			consumersMerged.AddRange(this.SymbolChannel.ConsumersQuote);
 			List<StreamingConsumer> alreadyNotified = new List<StreamingConsumer>();

@@ -85,7 +85,7 @@ namespace Sq1.Gui {
 						Assembler.SetThreadName("ABORTING_LIVESIM livesimRunning[" + livesimRunning.ToString() + "]");
 						int oneMinute = 60 * 1000;
 						livesimRunning.AbortRunningBacktest_waitAborted(msig, oneMinute);
-						int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.Distributor_substitutedDuringLivesim.ChannelsBySymbol.Count;
+						int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.DistributorCharts_substitutedDuringLivesim.ChannelsBySymbol.Count;
 						if (mustBeZero_AbortedOk != 0) {
 							string msg = "mustBeZero_AbortedOk[" + mustBeZero_AbortedOk + "]";
 							Assembler.PopupException(msg, null, false);

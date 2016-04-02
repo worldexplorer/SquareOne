@@ -6,7 +6,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Streaming {
-	public class StreamingSolidifier : StreamingConsumer {
+	public class StreamingConsumerSolidifier : StreamingConsumer {
 		DataSource	dataSource;
 
 		double		barStreamingDumpIntervalSeconds;
@@ -14,7 +14,7 @@ namespace Sq1.Core.Streaming {
 		string		barStreamingLastDumpedLocalAsString;
 
 		//IMPORTANT_SPLITTED_TO_CTOR+INITIALIZE_FOR_EDITED_DATASOURCE_TO_NOT_SUBSCRIBE_MY_MULTIPLE_INSTANCES
-		public StreamingSolidifier() { }
+		public StreamingConsumerSolidifier() { }
 
 		public void Initialize(DataSource dataSource, double barStreamingDumpIntervalSeconds = 10) {
 			if (dataSource == null) {

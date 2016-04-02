@@ -272,14 +272,14 @@ namespace Sq1.Core.Livesim {
 			//v1 LivesimQuoteBarConsumer	chartless	= this.LivesimQuoteBarConsumer;
 			//v1 Distributor				distr		= this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.Distributor_substitutedDuringLivesim;
 			//v2
-			StreamingConsumer		chart		= executor.ChartShadow.ChartStreamingConsumer;
-			Distributor				distr		= this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.StreamingOriginal.Distributor_substitutedDuringLivesim;
+			StreamingConsumerChart	chart		= executor.ChartShadow.ChartStreamingConsumer;
+			DistributorCharts		distr		= this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.StreamingOriginal.DistributorCharts_substitutedDuringLivesim;
 
 			if (symbol != executor.Bars.Symbol) {
 				string msg1 = "WHEN_ARE_SYMBOLS_DIFFERENT??..";
 				Assembler.PopupException(msg1);
 			}
-			List<SymbolScaleStream> mustBeOneTimeframe = distr.GetStreams_allScaleIntervals_forSymbol(symbol);
+			List<SymbolScaleStream<StreamingConsumerChart>> mustBeOneTimeframe = distr.GetStreams_allScaleIntervals_forSymbol(symbol);
 			if (mustBeOneTimeframe.Count != 1) {
 				string msg1 = "USER_DIDNT_CLICK_CHART>BARS>SUBSCRIBE [" + symbol + "] STARTING_LIVESIM_FOR:" + executor.ToString()
 					//+ " BAD_JOB#1_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()"
@@ -287,7 +287,7 @@ namespace Sq1.Core.Livesim {
 				Assembler.PopupException(msg1, null, false);
 				return;
 			}
-			SymbolScaleStream mustBeChartSubscribedToQuotesAndBars = mustBeOneTimeframe[0];
+			SymbolScaleStream<StreamingConsumerChart> mustBeChartSubscribedToQuotesAndBars = mustBeOneTimeframe[0];
 			if (mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteCount != 1) {
 				string msg1 = "BAD_JOB#2_SubstituteDistributorForSymbolsLivesimming_subscribeLivesimConsumerToLivesimStreamingDistributor()";
 				Assembler.PopupException(msg1);

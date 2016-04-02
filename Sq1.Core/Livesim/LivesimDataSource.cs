@@ -41,7 +41,7 @@ namespace Sq1.Core.Livesim {
 					//base.StreamingAsLivesim_nullUnsafe.CreateDistributors_onlyWhenNecessary("DD_FOR_ONE_LIVESIM");
 					string msg1 = "WILL_LIVESIM_VIA"
 						+ " StreamingAsLivesim_nullUnsafe[" + base.StreamingAsLivesim_nullUnsafe + "]"
-						+ ".Distributor_replacedForLivesim[" + base.StreamingAsLivesim_nullUnsafe.Distributor_substitutedDuringLivesim.ReasonIwasCreated + "]"
+						+ ".Distributor_replacedForLivesim[" + base.StreamingAsLivesim_nullUnsafe.DistributorCharts_substitutedDuringLivesim.ReasonIwasCreated + "]"
 						//+ " (LivesimStreamingDefault was probably chosen in DataSourceEditor which QuoteGen=>Pumps)"
 						;
 					Assembler.PopupException(msg1 + msig, null, false);

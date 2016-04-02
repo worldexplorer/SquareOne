@@ -7,7 +7,7 @@ using Sq1.Core.Backtesting;
 using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
-	public partial class Distributor {
+	public partial class Distributor<STREAMING_CONSUMER_CHILD> where STREAMING_CONSUMER_CHILD : StreamingConsumer {
 		public const string LIVE_CHARTS_FOR				= "LIVE_CHARTS_FOR";
 		public const string SOLIDIFIERS_FOR				= "SOLIDIFIERS_FOR";
 		public const string SUBSTITUTED_LIVESIM_STARTED	= "SUBSTITUTED_LIVESIM_STARTED";
@@ -19,7 +19,7 @@ namespace Sq1.Core.Streaming {
 
 		Distributor(string reasonIwasCreated) {
 			//DistributionChannels	= new Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>>();
-			ChannelsBySymbol		= new Dictionary<string, SymbolChannel>();
+			ChannelsBySymbol		= new Dictionary<string, SymbolChannel<STREAMING_CONSUMER_CHILD>>();
 			lockConsumersBySymbol	= new object();
 			ReasonIwasCreated		= reasonIwasCreated;
 		}
@@ -27,8 +27,8 @@ namespace Sq1.Core.Streaming {
 			this.StreamingAdapter = streamingAdapter;
 			//this.ReasonIwasCreated = this.StreamingAdapter + ":" + this.ReasonIwasCreated;
 			this.storeAllInstancesEverCreated(streamingAdapter);
-			var keepNecessaryOnly = Distributor.AllDistributorsEverCreated;
-			InstanceSerno = Distributor.AllDistributorsEverCreated_total;
+			var keepNecessaryOnly = Distributor<STREAMING_CONSUMER_CHILD>.AllDistributorsEverCreated;
+			InstanceSerno = Distributor<STREAMING_CONSUMER_CHILD>.AllDistributorsEverCreated_total;
 		}
 
 
@@ -37,7 +37,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException("quote[" + quoteUnboundUnattached + "]'se Symbol is null or empty, returning");
 				return;
 			}
-			SymbolChannel channel = this.GetChannelFor_nullMeansWasntSubscribed(quoteUnboundUnattached.Symbol);
+			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.GetChannelFor_nullMeansWasntSubscribed(quoteUnboundUnattached.Symbol);
 			if (channel == null) {
 				string msg = "I_REFUSE_TO_PUSH_QUOTE_FOR_UNSUBSCRIBED_SYMBOL quoteUnboundUnattached.Symbol[" + quoteUnboundUnattached.Symbol + "]"
 					+ " DO_YOU_PUSH_QUOTE_TO_DISTRIB_SOLIDIFIERS_THAT_IS_EMPTY_DURING_LIVESIM???";
@@ -70,10 +70,10 @@ namespace Sq1.Core.Streaming {
 			string ret = "#" + this.InstanceSerno + " " + this.ReasonIwasCreated + " ForStreamingAdapter[" + this.StreamingAdapter.Name + "]: ";
 			foreach (string symbol in this.ChannelsBySymbol.Keys) {
 				string consumers = "";
-				SymbolChannel channel = this.ChannelsBySymbol[symbol];
+				SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbol];
 				foreach (BarScaleInterval scaleInterval in channel.StreamsByScaleInterval.Keys) {
 					if (consumers != "") consumers += ",";
-					SymbolScaleStream stream = channel.StreamsByScaleInterval[scaleInterval];
+					SymbolScaleStream<STREAMING_CONSUMER_CHILD> stream = channel.StreamsByScaleInterval[scaleInterval];
 					consumers += consumerNamesOnly ? stream.ToStringNames : channel.ToString();
 				}
 				ret += symbol + "{" + consumers + "}";

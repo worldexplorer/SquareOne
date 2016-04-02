@@ -261,7 +261,7 @@ namespace Sq1.Core.Backtesting {
 				this.BarsSimulating.DataSource = this.BacktestDataSource;
 
 				StreamingAdapter streaming = this.BacktestDataSource.StreamingAdapter;
-				Distributor distr = streaming.Distributor_substitutedDuringLivesim;
+				DistributorCharts distr = streaming.DistributorCharts_substitutedDuringLivesim;
 				if (distr == null) {
 					string msg = "YOU_DIDNT_RESTORE_DISTRIBUTOR_PROPERLY_AFTER_LIVESIM";
 					Assembler.PopupException(msg);
@@ -329,7 +329,7 @@ namespace Sq1.Core.Backtesting {
 				//	streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
 				//}
 
-				Distributor distr = this.BacktestDataSource.StreamingAdapter.Distributor_substitutedDuringLivesim;
+				DistributorCharts distr = this.BacktestDataSource.StreamingAdapter.DistributorCharts_substitutedDuringLivesim;
 				distr.ConsumerQuoteUnsubscribe	(this.backtestQuoteBarConsumer);
 				distr.ConsumerBarUnsubscribe	(this.backtestQuoteBarConsumer);
 

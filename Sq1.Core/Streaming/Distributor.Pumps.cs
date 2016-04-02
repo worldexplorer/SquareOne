@@ -7,7 +7,7 @@ using Sq1.Core.Backtesting;
 using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
-	public partial class Distributor {
+	public partial class Distributor<STREAMING_CONSUMER_CHILD> {
 
 		internal void PumpPause_forSymbolLivesimming(string symbolLivesimming, string reasonForNewDistributor) {
 			string msig = " //PumpPause_forSymbolLivesimming(" + symbolLivesimming + "," + reasonForNewDistributor + ") DISTRIBUTOR[" + this.ReasonIwasCreated + "]";
@@ -17,7 +17,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			SymbolChannel channel = this.ChannelsBySymbol[symbolLivesimming];
+			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbolLivesimming];
 			if (channel.QuotePump_nullUnsafe == null) {
 				msg += "PUMP_NULL_ONLY_WHEN_BACKTESTING";
 				Assembler.PopupException(msg + msig);
@@ -41,7 +41,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			SymbolChannel channel = this.ChannelsBySymbol[symbolLivesimming];
+			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbolLivesimming];
 			if (channel.QuotePump_nullUnsafe == null) {
 				msg += "PUMP_NULL_ONLY_WHEN_BACKTESTING";
 				Assembler.PopupException(msg + msig);
@@ -65,7 +65,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			SymbolChannel channel = this.ChannelsBySymbol[symbolLivesimming];
+			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbolLivesimming];
 			if (channel.QuotePump_nullUnsafe == null) {
 				msg += "PUMP_NULL_ONLY_WHEN_BACKTESTING";
 				Assembler.PopupException(msg + msig);
@@ -85,7 +85,7 @@ namespace Sq1.Core.Streaming {
 		//internal void AllQuotePumps_Pause(string livesimCausingPauseName) {
 		//	string msig = " //AllQuotePumps_Pause(" + livesimCausingPauseName + ") DISTRIBUTOR[" + this.ReasonIwasCreated + "]";
 		//	string msg = "";
-		//	foreach(SymbolChannel eachChannel in this.ChannelsBySymbol.Values) {
+		//	foreach(SymbolChannel<STREAMING_CONSUMER_CHILD> eachChannel in this.ChannelsBySymbol.Values) {
 		//		if (eachChannel.QuotePump_nullUnsafe == null) {
 		//			string msg1 = "CHANNEL_IS_A_QUEUE_NOT_PUMP__CAN_NOT_PAUSE eachChannel=[" + eachChannel + "]";
 		//			Assembler.PopupException(msg1 + msig);
@@ -109,7 +109,7 @@ namespace Sq1.Core.Streaming {
 		//internal void AllQuotePumps_Unpause(string livesimCausedPauseName) {
 		//	string msig = " //AllQuotePumps_Unpause(" + livesimCausedPauseName + ") DISTRIBUTOR[" + this.ReasonIwasCreated + "]";
 		//	string msg = "";
-		//	foreach(SymbolChannel eachChannel in this.ChannelsBySymbol.Values) {
+		//	foreach(SymbolChannel<STREAMING_CONSUMER_CHILD> eachChannel in this.ChannelsBySymbol.Values) {
 		//		if (eachChannel.QuotePump_nullUnsafe == null) {
 		//			string msg1 = "CHANNEL_IS_A_QUEUE_NOT_PUMP__CAN_NOT_PAUSE eachChannel=[" + eachChannel + "]";
 		//			Assembler.PopupException(msg1 + msig);
@@ -133,7 +133,7 @@ namespace Sq1.Core.Streaming {
 		//internal void AllQuotePumps_Stop(string livesimCausedPauseName) {
 		//	string msig = " //AllQuotePumps_Stop(" + livesimCausedPauseName + ") DISTRIBUTOR[" + this.ReasonIwasCreated + "]";
 		//	string msg = "";
-		//	foreach(SymbolChannel eachChannel in this.ChannelsBySymbol.Values) {
+		//	foreach(SymbolChannel<STREAMING_CONSUMER_CHILD> eachChannel in this.ChannelsBySymbol.Values) {
 		//		//v1 if (eachChannel.QuoteQueue.HasSeparatePushingThread == false) {
 		//		if (eachChannel.QuotePump_nullUnsafe == null) {
 		//			string msg1 = "QUOTE_PUMP_IS_A_QUEUE_MUST_BE_PUMP livesimCausedPauseName=[" + livesimCausedPauseName + "]";
