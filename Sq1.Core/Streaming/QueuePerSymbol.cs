@@ -7,15 +7,17 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
-	public class QueuePerSymbol<QUOTE> {
+	public class QueuePerSymbol<QUOTE, STREAMING_CONSUMER_CHILD>
+								 where STREAMING_CONSUMER_CHILD : StreamingConsumer {
 		const string THREAD_PREFIX = "QUEUE_";	//SINGLE_THREADED_FOR_
 
-		protected	SymbolChannel				SymbolChannel;
+		//v1 BEFORE_STREAM_WENT_GENERIC
+		protected	SymbolChannel<STREAMING_CONSUMER_CHILD>				SymbolChannel;
 		protected	ConcurrentQueue<QUOTE>		QQ;
 					Stopwatch					waitedForBacktestToFinish;
 
 		public			bool					UpdateThreadNameAfterMaxConsumersSubscribed;
-		public			bool					HasSeparatePushingThread						{ get { return this is PumpPerSymbol<QUOTE>; } }
+		public			bool					HasSeparatePushingThread						{ get { return this is PumpPerSymbol<QUOTE, STREAMING_CONSUMER_CHILD>; } }
 		public virtual	bool					Paused											{ get {
 				string msg = "QuoteQueue.Paused: OVERRIDE_ME_KOZ_PAUSING_MAKES_SENSE_FOR_REAL_STREAMING_QUOTE_PUMP_NOT_QUEUE"
 					+ " WHILE_ACTIVATING_ONE_OPRIMIZATION_RESULT_YOU_PAUSE_SINGLE_THREADED_BACKTESTER_INSTEAD_OF_STREAMING_PROVIDER?";
@@ -24,10 +26,13 @@ namespace Sq1.Core.Streaming {
 				#endif
 				throw new Exception(msg); } }
 
-		public QueuePerSymbol(SymbolChannel channel) {
+		//v1 BEFORE_STREAM_WENT_GENERIC
+		public QueuePerSymbol(SymbolChannel<STREAMING_CONSUMER_CHILD> channel) {
+		//public QueuePerSymbol() {
 			QQ							= new ConcurrentQueue<QUOTE>();
 			waitedForBacktestToFinish	= new Stopwatch();
 			//UpdateThreadNameAfterMaxConsumersSubscribed = true;
+			//v1 BEFORE_STREAM_WENT_GENERIC 
 			SymbolChannel				= channel;
 		}
 		public virtual int Push_straightOrBuffered(QUOTE quote_singleInstance_tillStreamBindsAll) {

@@ -7,24 +7,24 @@ using Sq1.Core.Backtesting;
 using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
-	public partial class Distributor {
+	public partial class Distributor<STREAMING_CONSUMER_CHILD> {
 				static	int																		AllDistributorsEverCreated_total;
-				static	Dictionary<Type, Dictionary<StreamingAdapter, List<Distributor>>>	allDistributorsEverCreated;
-		public	static	Dictionary<Type, Dictionary<StreamingAdapter, List<Distributor>>>	AllDistributorsEverCreated 	{ get {
-			if (Distributor.allDistributorsEverCreated == null) Distributor.allDistributorsEverCreated = new Dictionary<Type, Dictionary<StreamingAdapter, List<Distributor>>>();
-			return Distributor.allDistributorsEverCreated;
+				static	Dictionary<Type, Dictionary<StreamingAdapter, List<Distributor<STREAMING_CONSUMER_CHILD>>>>	allDistributorsEverCreated;
+		public	static	Dictionary<Type, Dictionary<StreamingAdapter, List<Distributor<STREAMING_CONSUMER_CHILD>>>>	AllDistributorsEverCreated 	{ get {
+			if (Distributor<STREAMING_CONSUMER_CHILD>.allDistributorsEverCreated == null) Distributor<STREAMING_CONSUMER_CHILD>.allDistributorsEverCreated = new Dictionary<Type, Dictionary<StreamingAdapter, List<Distributor<STREAMING_CONSUMER_CHILD>>>>();
+			return Distributor<STREAMING_CONSUMER_CHILD>.allDistributorsEverCreated;
 		} }
 
 		void storeAllInstancesEverCreated(StreamingAdapter streamingAdapter) {
 			Type adapterType = streamingAdapter.GetType();
-			if (Distributor.AllDistributorsEverCreated.ContainsKey(adapterType) == false) {
-				Distributor.AllDistributorsEverCreated.Add(adapterType, new Dictionary<StreamingAdapter, List<Distributor>>());
+			if (Distributor<STREAMING_CONSUMER_CHILD>.AllDistributorsEverCreated.ContainsKey(adapterType) == false) {
+				Distributor<STREAMING_CONSUMER_CHILD>.AllDistributorsEverCreated.Add(adapterType, new Dictionary<StreamingAdapter, List<Distributor<STREAMING_CONSUMER_CHILD>>>());
 			}
-			if (Distributor.AllDistributorsEverCreated[adapterType].ContainsKey(streamingAdapter) == false) {
-				Distributor.AllDistributorsEverCreated[adapterType].Add(streamingAdapter, new List<Distributor>());
+			if (Distributor<STREAMING_CONSUMER_CHILD>.AllDistributorsEverCreated[adapterType].ContainsKey(streamingAdapter) == false) {
+				Distributor<STREAMING_CONSUMER_CHILD>.AllDistributorsEverCreated[adapterType].Add(streamingAdapter, new List<Distributor<STREAMING_CONSUMER_CHILD>>());
 			}
-			Distributor.AllDistributorsEverCreated[adapterType][streamingAdapter].Add(this);
-			Distributor.AllDistributorsEverCreated_total++;
+			Distributor<STREAMING_CONSUMER_CHILD>.AllDistributorsEverCreated[adapterType][streamingAdapter].Add(this);
+			Distributor<STREAMING_CONSUMER_CHILD>.AllDistributorsEverCreated_total++;
 		}
 	}
 }

@@ -7,49 +7,49 @@ using Sq1.Core.Livesim;
 using Sq1.Core.Charting;
 
 namespace Sq1.Core.Streaming {
-	public partial class SymbolScaleStream {
-		public	List<StreamingConsumer>		ConsumersQuote					{ get; protected set; }
-		public	List<StreamingConsumer>		ConsumersBar					{ get; protected set; }
+	public partial class SymbolScaleStream<STREAMING_CONSUMER_CHILD> {
+		public		List<STREAMING_CONSUMER_CHILD>		ConsumersQuote					{ get; protected set; }
+		public		List<STREAMING_CONSUMER_CHILD>		ConsumersBar					{ get; protected set; }
 
-				object						lockConsumersQuote;
-				object						lockConsumersBar;
+		protected	object						LockConsumersQuote;
+		protected	object						LockConsumersBar;
 
-		public	List<StreamingConsumer>		ConsumersAll						{ get { lock (this.lockConsumersQuote) {
-			List<StreamingConsumer> ret = new List<StreamingConsumer>(this.ConsumersQuote);
-			foreach (StreamingConsumer consumer in this.ConsumersBar) {
+		public	List<STREAMING_CONSUMER_CHILD>		ConsumersAll						{ get { lock (this.LockConsumersQuote) {
+			List<STREAMING_CONSUMER_CHILD> ret = new List<STREAMING_CONSUMER_CHILD>(this.ConsumersQuote);
+			foreach (STREAMING_CONSUMER_CHILD consumer in this.ConsumersBar) {
 				if (ret.Contains(consumer)) continue;
 				ret.Add(consumer);
 			}
 			return ret;
 		} } }
 
-		public string ConsumersQuoteAsString { get { lock (this.lockConsumersQuote) {
+		public string ConsumersQuoteAsString { get { lock (this.LockConsumersQuote) {
 					string ret = "";
-					foreach (StreamingConsumer consumer in this.ConsumersQuote) {
+					foreach (STREAMING_CONSUMER_CHILD consumer in this.ConsumersQuote) {
 						if (ret != "") ret += ", ";
 						ret += consumer.ToString();
 					}
 					return ret;
 				} } }
-		public string ConsumersBarAsString { get { lock (this.lockConsumersBar) {
+		public string ConsumersBarAsString { get { lock (this.LockConsumersBar) {
 					string ret = "";
-					foreach (StreamingConsumer consumer in this.ConsumersBar) {
+					foreach (STREAMING_CONSUMER_CHILD consumer in this.ConsumersBar) {
 						if (ret != "") ret += ", ";
 						ret += consumer.ToString();
 					}
 					return ret;
 				} } }
-		public string ConsumersQuoteNames { get { lock (this.lockConsumersQuote) {
+		public string ConsumersQuoteNames { get { lock (this.LockConsumersQuote) {
 					string ret = "";
-					foreach (StreamingConsumer consumer in this.ConsumersQuote) {
+					foreach (STREAMING_CONSUMER_CHILD consumer in this.ConsumersQuote) {
 						if (ret != "") ret += ",";
 						ret += consumer.ReasonToExist;
 					}
 					return ret;
 				} } }
-		public string ConsumersBarNames { get { lock (this.lockConsumersBar) {
+		public string ConsumersBarNames { get { lock (this.LockConsumersBar) {
 					string ret = "";
-					foreach (StreamingConsumer consumer in this.ConsumersBar) {
+					foreach (STREAMING_CONSUMER_CHILD consumer in this.ConsumersBar) {
 						if (ret != "") ret += ",";
 						ret += consumer.ReasonToExist;
 					}
@@ -58,12 +58,12 @@ namespace Sq1.Core.Streaming {
 
 
 		public string ConsumerNames	{ get {
-			List<StreamingConsumer>	merged = new List<StreamingConsumer>();
+			List<STREAMING_CONSUMER_CHILD>	merged = new List<STREAMING_CONSUMER_CHILD>();
 			merged.AddRange(this.ConsumersQuote);
 			merged.AddRange(this.ConsumersBar);
 
 			string ret = "";
-			foreach (StreamingConsumer consumerEach in merged) {
+			foreach (STREAMING_CONSUMER_CHILD consumerEach in merged) {
 				string reasonOrFullDump = string.IsNullOrEmpty(consumerEach.ReasonToExist) ? consumerEach.ToString() : consumerEach.ReasonToExist;
 				if (string.IsNullOrEmpty(reasonOrFullDump)) continue;
 				if (ret.Contains(reasonOrFullDump)) continue;
@@ -78,7 +78,7 @@ namespace Sq1.Core.Streaming {
 
 		//public string ConsumersQuoteAsShortString { get { lock (this.lockConsumersQuote) {
 		//			string ret = "";
-		//			foreach (IStreamingConsumer consumer in this.ConsumersQuote) {
+		//			foreach (ISTREAMING_CONSUMER_CHILD consumer in this.ConsumersQuote) {
 		//				if (ret != "") ret += ", ";
 		//				ret += consumer.Na();
 		//			}
@@ -86,7 +86,7 @@ namespace Sq1.Core.Streaming {
 		//		} } }
 		//public string ConsumersBarAsShortString { get { lock (this.lockConsumersBar) {
 		//			string ret = "";
-		//			foreach (IStreamingConsumer consumer in this.ConsumersBar) {
+		//			foreach (ISTREAMING_CONSUMER_CHILD consumer in this.ConsumersBar) {
 		//				if (ret != "") ret += ", ";
 		//				ret += consumer.ToString();
 		//			}
@@ -94,56 +94,43 @@ namespace Sq1.Core.Streaming {
 		//		} } }
 		//public override string ToShortString() { return this.SymbolScaleInterval + ":Quotes[" + this.ConsumersQuoteAsShortString + "],Bars[" + this.ConsumersBarAsShortString + "]"; }
 
-		public bool ConsumersQuoteContains(StreamingConsumer consumer) { lock (this.lockConsumersQuote) { return this.ConsumersQuote.Contains(consumer); } }
-		public bool ConsumerQuoteAdd(StreamingConsumer quoteConsumer) { lock (this.lockConsumersQuote) {
-				if (this.ConsumersQuoteContains(quoteConsumer)) {
-					Assembler.PopupException("I_REFUSE_TO_SUBSCRIBE_TWICE quoteConsumer[" + quoteConsumer + "] to [" + this + "]");
-					return false;
-				}
-				this.ConsumersQuote.Add(quoteConsumer);
-				if (this.binderPerConsumer.ContainsKey(quoteConsumer) == false) {
-					this.binderPerConsumer.Add(quoteConsumer, new BinderAttacherPerConsumer(this, quoteConsumer));
-				}
-				return true;
-			} }
-		public bool ConsumerQuoteRemove(StreamingConsumer quoteConsumer) { lock (this.lockConsumersQuote) {
-				if (this.ConsumersQuoteContains(quoteConsumer) == false) {
-					Assembler.PopupException("I_REFUSE_TO_REMOVE_UNSUBSCRIBED_CONSUMER quoteConsumer[" + quoteConsumer + "] from [" + this + "]");
-					return false;
-				}
-				this.ConsumersQuote.Remove(quoteConsumer);
-				if (this.ConsumersBar.Contains(quoteConsumer)) return true;		// will remove binder only if there is no other consumers for it to serve & protect
-				if (this.binderPerConsumer.ContainsKey(quoteConsumer) == false) return true;
-				this.binderPerConsumer.Remove(quoteConsumer);
-				return true;
-			} }
-		public int ConsumersQuoteCount { get { lock (this.lockConsumersQuote) { return this.ConsumersQuote.Count; } } }
+		public virtual bool ConsumersQuoteContains(STREAMING_CONSUMER_CHILD consumer) { lock (this.LockConsumersQuote) { return this.ConsumersQuote.Contains(consumer); } }
+		public virtual bool ConsumerQuoteAdd(STREAMING_CONSUMER_CHILD quoteConsumer) { lock (this.LockConsumersQuote) {
+			if (this.ConsumersQuoteContains(quoteConsumer)) {
+				Assembler.PopupException("I_REFUSE_TO_SUBSCRIBE_TWICE quoteConsumer[" + quoteConsumer + "] to [" + this + "]");
+				return false;
+			}
+			this.ConsumersQuote.Add(quoteConsumer);
+			return true;
+		} }
+		public virtual bool ConsumerQuoteRemove(STREAMING_CONSUMER_CHILD quoteConsumer) { lock (this.LockConsumersQuote) {
+			if (this.ConsumersQuoteContains(quoteConsumer) == false) {
+				Assembler.PopupException("I_REFUSE_TO_REMOVE_UNSUBSCRIBED_CONSUMER quoteConsumer[" + quoteConsumer + "] from [" + this + "]");
+				return false;
+			}
+			this.ConsumersQuote.Remove(quoteConsumer);
+			return true;
+		} }
+		public virtual int ConsumersQuoteCount { get { lock (this.LockConsumersQuote) { return this.ConsumersQuote.Count; } } }
 
-		public bool ConsumersBarContains(StreamingConsumer consumer) { lock (this.lockConsumersBar) { return this.ConsumersBar.Contains(consumer); } }
-		public bool ConsumerBarAdd(StreamingConsumer barConsumer) { lock (this.lockConsumersBar) {
-				if (this.ConsumersBar.Contains(barConsumer)) {
-					Assembler.PopupException("I_REFUSE_TO_SUBSCRIBE_TWICE barConsumer[" + barConsumer + "] to [" + this + "]");
-					return false;
-				}
-				this.ConsumersBar.Add(barConsumer);
-				if (this.binderPerConsumer.ContainsKey(barConsumer) == false) {
-					this.binderPerConsumer.Add(barConsumer, new BinderAttacherPerConsumer(this, barConsumer));
-				}
-				return true;
-			} }
-		public bool ConsumerBarRemove(StreamingConsumer barConsumer) { lock (this.lockConsumersBar) {
-				if (this.ConsumersBar.Contains(barConsumer) == false) {
-					Assembler.PopupException("I_REFUSE_TO_REMOVE_UNSUBSCRIBED_CONSUMER barConsumer[" + barConsumer + "] from [" + this + "]");
-					return false;
-				}
-				this.ConsumersBar.Remove(barConsumer);
-				//if (earlyBinders.ContainsKey(consumer) && this.consumersQuote.Contains(consumer) == false) {
-				if (this.ConsumersQuote.Contains(barConsumer)) return true;		// will remove binder only if there is no other consumers for it to serve & protect
-				if (this.binderPerConsumer.ContainsKey(barConsumer) == false) return true;
-				this.binderPerConsumer.Remove(barConsumer);
-				return true;
-			} }
-		public int ConsumersBarCount { get { lock (this.lockConsumersBar) { return this.ConsumersBar.Count; } } }
+		public virtual bool ConsumersBarContains(STREAMING_CONSUMER_CHILD consumer) { lock (this.LockConsumersBar) { return this.ConsumersBar.Contains(consumer); } }
+		public virtual bool ConsumerBarAdd(STREAMING_CONSUMER_CHILD barConsumer) { lock (this.LockConsumersBar) {
+			if (this.ConsumersBar.Contains(barConsumer)) {
+				Assembler.PopupException("I_REFUSE_TO_SUBSCRIBE_TWICE barConsumer[" + barConsumer + "] to [" + this + "]");
+				return false;
+			}
+			this.ConsumersBar.Add(barConsumer);
+			return true;
+		} }
+		public virtual bool ConsumerBarRemove(STREAMING_CONSUMER_CHILD barConsumer) { lock (this.LockConsumersBar) {
+			if (this.ConsumersBar.Contains(barConsumer) == false) {
+				Assembler.PopupException("I_REFUSE_TO_REMOVE_UNSUBSCRIBED_CONSUMER barConsumer[" + barConsumer + "] from [" + this + "]");
+				return false;
+			}
+			this.ConsumersBar.Remove(barConsumer);
+			return true;
+		} }
+		public int ConsumersBarCount { get { lock (this.LockConsumersBar) { return this.ConsumersBar.Count; } } }
 
 	}
 }

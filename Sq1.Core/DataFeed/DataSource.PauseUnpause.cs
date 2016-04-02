@@ -6,12 +6,13 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Livesim;
 using Sq1.Core.Backtesting;
+using Sq1.Core.Charting;
 
 namespace Sq1.Core.DataFeed {
 	public partial class DataSource {
 
 		public bool QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executorImBacktesting, bool wrongUsagePopup = true) {
-			SymbolChannel channel = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImBacktesting.Bars.Symbol);
+			SymbolChannel<StreamingConsumerChart> channel = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImBacktesting.Bars.Symbol);
 			string msig = " //QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executorImBacktesting + ")";
 			if (channel == null) {
 				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
@@ -39,7 +40,7 @@ namespace Sq1.Core.DataFeed {
 				return false;
 			}
 
-			SymbolChannel channel = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImBacktesting.Bars.Symbol);
+			SymbolChannel<StreamingConsumerChart> channel = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImBacktesting.Bars.Symbol);
 			if (channel == null) {
 				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
 					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
@@ -60,7 +61,7 @@ namespace Sq1.Core.DataFeed {
 			return true;
 		}
 		public bool OwnLivesimHelper_PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
-			SymbolChannel channel = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
+			SymbolChannel<StreamingConsumerChart> channel = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
 			string msig = " //OwnLivesimPumpHelper_PumpPause_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst(" + executorImLivesimming + ")";
 			if (channel == null) {
 				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
@@ -88,7 +89,7 @@ namespace Sq1.Core.DataFeed {
 				return false;
 			}
 
-			SymbolChannel channel = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
+			SymbolChannel<StreamingConsumerChart> channel = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
 			if (channel == null) {
 				string msg = "NOT_AN_ERROR__BACKTESTER_EMPLOYS_OWN_QUEUE__NO_CHART_NOR_SOLIDIFIER_AT_TIMEFRAME_DIFFERENT_TO_DS'S_CAN_BE_POSSIBLE"
 					//+ " THERE_MUSTBE_AT_LEAST_ONE_EXECUTOR_THAT_INVOKED_ME_UPSTACK"
@@ -123,7 +124,7 @@ namespace Sq1.Core.DataFeed {
 		public bool PumpingWaitUntilPaused(Bars bars, int maxWaitingMillis = 1000) {
 			//Distributor distr = this.StreamingAdapter.Distributor_replacedForLivesim;
 			//SymbolScaleStream channel = distr.GetStreamFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
-			SymbolChannel channel = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(bars.Symbol);
+			SymbolChannel<StreamingConsumerChart> channel = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(bars.Symbol);
 			bool paused = channel.QueueWhenBacktesting_PumpForLiveAndLivesim.WaitUntilPaused(maxWaitingMillis);
 			return paused;
 		}
@@ -162,7 +163,7 @@ namespace Sq1.Core.DataFeed {
 			//List<SymbolScaleStream> channels = this.StreamingAdapter.Distributor_replacedForLivesim
 			//    .GetStreams_allScaleIntervals_forSymbol(executorImLivesimming.Bars.Symbol);
 			//foreach (SymbolScaleStream channel in channels) {
-			SymbolChannel channel_nullUnsafe = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
+			SymbolChannel<StreamingConsumerChart> channel_nullUnsafe = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
 			if (channel_nullUnsafe == null) return channelsPaused;		// no charts (including the livesimming one) were subscribed
 
 			if (channel_nullUnsafe.ImQueueNotPump_trueOnlyForBacktest == true ||
@@ -194,7 +195,7 @@ namespace Sq1.Core.DataFeed {
 			//List<SymbolScaleStream> channels = this.StreamingAdapter.Distributor_replacedForLivesim
 			//    .GetStreams_allScaleIntervals_forSymbol(executorImLivesimming.Bars.Symbol);
 			//foreach (SymbolScaleStream channel in channels) {
-			SymbolChannel channel_nullUnsafe = this.StreamingAdapter.Distributor_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
+			SymbolChannel<StreamingConsumerChart> channel_nullUnsafe = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
 			if (channel_nullUnsafe == null) return channelsPaused;		// no charts (including the livesimming one) were subscribed
 
 			if (channel_nullUnsafe.ImQueueNotPump_trueOnlyForBacktest == true ||

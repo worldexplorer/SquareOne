@@ -14,11 +14,11 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public		string					Name								{ get; protected set; }
 		[JsonIgnore]	public		string					ReasonToExist						{ get; protected set; }
 		[JsonIgnore]	public		Bitmap					Icon								{ get; protected set; }
-		[JsonIgnore]	public		StreamingSolidifier		StreamingSolidifier					{ get; protected set; }
+		[JsonIgnore]	public		StreamingConsumerSolidifier		StreamingSolidifier					{ get; protected set; }
 		[JsonIgnore]	public		DataSource				DataSource							{ get; protected set; }
 		[JsonIgnore]	public		string					marketName							{ get { return this.DataSource.MarketInfo.Name; } }
-		[JsonIgnore]	public		Distributor				Distributor_substitutedDuringLivesim					{ get; protected set; }
-		[JsonIgnore]	public		Distributor				DistributorSolidifiers_substitutedDuringLivesim			{ get; protected set; }
+		[JsonIgnore]	public		DistributorCharts		DistributorCharts_substitutedDuringLivesim					{ get; protected set; }
+		[JsonIgnore]	public		DistributorSolidifier	DistributorSolidifiers_substitutedDuringLivesim			{ get; protected set; }
 		[JsonIgnore]	public		StreamingDataSnapshot	StreamingDataSnapshot				{ get; protected set; }
 		[JsonIgnore]	public		virtual List<string>	SymbolsUpstreamSubscribed			{ get; private set; }
 		[JsonIgnore]	protected	object					SymbolsSubscribedLock;
@@ -108,7 +108,7 @@ namespace Sq1.Core.Streaming {
 			SymbolsSubscribedLock							= new object();
 			SymbolsUpstreamSubscribed						= new List<string>();
 			StreamingDataSnapshot							= new StreamingDataSnapshot(this);
-			StreamingSolidifier								= new StreamingSolidifier();
+			StreamingSolidifier								= new StreamingConsumerSolidifier();
 			Level2RefreshRateMs								= 200;
 			QuotePumpSeparatePushingThreadEnabled			= true;
 			LivesimStreaming_ownImplementation				= null;		// so that be careful addressing it here! valid only for StreamingAdapter-derived!!!
@@ -122,12 +122,12 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public void CreateDistributors_onlyWhenNecessary(string reasonToExist) {
-			if (this.Distributor_substitutedDuringLivesim == null) {
-				this.Distributor_substitutedDuringLivesim			= new DistributorCharts		(this, reasonToExist);
+			if (this.DistributorCharts_substitutedDuringLivesim == null) {
+				this.DistributorCharts_substitutedDuringLivesim			= new DistributorCharts(this, reasonToExist);
 			} else {
 				//this.Distributor_replacedForLivesim.ForceUnsubscribeLeftovers_mustBeEmptyAlready(reasonToExist);
 			}
-			this.DistributorSolidifiers_substitutedDuringLivesim	= new DistributorSolidifiers(this, reasonToExist);
+			this.DistributorSolidifiers_substitutedDuringLivesim	= new DistributorSolidifier(this, reasonToExist);
 		}
 		public virtual void InitializeFromDataSource(DataSource dataSource) {
 			this.DataSource = dataSource;
@@ -203,7 +203,7 @@ namespace Sq1.Core.Streaming {
 				string msg = "IGNORE_ME_IF_YOU_ARE_STARTED_LIVESIM SOLIDIFIER_NOT_SUBSCRIBED_QUOTES symbol[" + symbol + "] ScaleInterval[" + this.DataSource.ScaleInterval + "]";
 				Assembler.PopupException(msg, null, false);
 			}
-			SymbolChannel channel = this.DistributorSolidifiers_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(symbol);
+			SymbolChannel<StreamingConsumerSolidifier> channel = this.DistributorSolidifiers_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(symbol);
 			if (channel == null) {
 				string msg = "I_START_LIVESIM_WITHOUT_ANY_PRIOR_SUBSCRIBED_SOLIDIFIERS symbol[" + symbol + "]";
 				Assembler.PopupException(msg, null, false);
@@ -332,7 +332,7 @@ namespace Sq1.Core.Streaming {
 		public virtual void PushQuoteReceived(Quote quoteUnboundUnattached) {
 			string msig = " //StreamingAdapter.PushQuoteReceived()" + this.ToString();
 
-			if (this.Distributor_substitutedDuringLivesim.ChannelsBySymbol.Count == 0) {
+			if (this.DistributorCharts_substitutedDuringLivesim.ChannelsBySymbol.Count == 0) {
 				this.RaiseOnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange(quoteUnboundUnattached);
 
 				string msg = "I_REFUSE_TO_PUSH_QUOTE NO_SOLIDIFIER_NOR_CHARTS_SUBSCRIBED";
@@ -390,7 +390,7 @@ namespace Sq1.Core.Streaming {
 			this.StreamingDataSnapshot.SetQuoteCurrent_forSymbol_shiftOldToQuotePrev(quoteUnboundUnattached);
 
 			try {
-				this.Distributor_substitutedDuringLivesim			.Push_quoteUnboundUnattached_toChannel(quoteUnboundUnattached);
+				this.DistributorCharts_substitutedDuringLivesim			.Push_quoteUnboundUnattached_toChannel(quoteUnboundUnattached);
 			} catch (Exception ex) {
 				string msg = "CHART_OR_STRATEGY__FAILED_INSIDE"
 					+ " Distributor.PushQuoteToDistributionChannels(" + quoteUnboundUnattached + ")";
@@ -398,8 +398,8 @@ namespace Sq1.Core.Streaming {
 			}
 
 			string symbol = quoteUnboundUnattached.Symbol;
-			SymbolChannel channelForSymbol = this.DistributorSolidifiers_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(symbol);
-			bool okayForDistrib_toBe_empty = this.DistributorSolidifiers_substitutedDuringLivesim.ReasonIwasCreated.Contains(Distributor.SUBSTITUTED_LIVESIM_STARTED);
+			SymbolChannel<StreamingConsumerSolidifier> channelForSymbol = this.DistributorSolidifiers_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(symbol);
+			bool okayForDistrib_toBe_empty = this.DistributorSolidifiers_substitutedDuringLivesim.ReasonIwasCreated.Contains(Distributor<StreamingConsumerSolidifier>.SUBSTITUTED_LIVESIM_STARTED);
 			if (channelForSymbol == null) {
 				if (okayForDistrib_toBe_empty) return;
 				string msg = "YOUR_BARS_ARE_NOT_SAVED__SOLIDIFIERS_ARE_NOT_SUBSCRIBED_TO symbol[" + symbol + "]";
@@ -416,13 +416,13 @@ namespace Sq1.Core.Streaming {
 
 		}
 		public void UpstreamSubscribedToSymbolPokeConsumersHelper(string symbol) {
-			List<SymbolScaleStream> channels = this.Distributor_substitutedDuringLivesim.GetStreams_allScaleIntervals_forSymbol(symbol);
+			List<SymbolScaleStream<StreamingConsumerChart>> channels = this.DistributorCharts_substitutedDuringLivesim.GetStreams_allScaleIntervals_forSymbol(symbol);
 			foreach (var channel in channels) {
 				channel.UpstreamSubscribedToSymbol_pokeConsumers(symbol);
 			}
 		}
 		public void UpstreamUnSubscribedFromSymbolPokeConsumersHelper(string symbol) {
-			List<SymbolScaleStream> channels = this.Distributor_substitutedDuringLivesim.GetStreams_allScaleIntervals_forSymbol(symbol);
+			List<SymbolScaleStream<StreamingConsumerChart>> channels = this.DistributorCharts_substitutedDuringLivesim.GetStreams_allScaleIntervals_forSymbol(symbol);
 			Quote lastQuoteReceived = this.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(symbol);
 			foreach (var channel in channels) {
 				channel.UpstreamUnSubscribedFromSymbolPokeConsumers(symbol, lastQuoteReceived);
@@ -439,66 +439,66 @@ namespace Sq1.Core.Streaming {
 			return ret;
 		}
 
-		internal void FactoryStreamingBar_absorbFromStream_onBacktestComplete(StreamingAdapter streamingBacktest, string symbol, BarScaleInterval barScaleInterval) {
-			SymbolScaleStream streamBacktest = streamingBacktest.Distributor_substitutedDuringLivesim.GetStreamFor_nullUnsafe(symbol, barScaleInterval);
-			if (streamBacktest == null) return;
-			Bar barLastFormedBacktest = streamBacktest.UnattachedStreamingBar_factory.BarLastFormedUnattached_nullUnsafe;
-			if (barLastFormedBacktest == null) return;
+		//internal void FactoryStreamingBar_absorbFromStream_onBacktestComplete(StreamingAdapter streamingBacktest, string symbol, BarScaleInterval barScaleInterval) {
+		//    SymbolScaleStream<StreamingConsumerChart> streamBacktest = streamingBacktest.DistributorCharts_substitutedDuringLivesim.GetStreamFor_nullUnsafe(symbol, barScaleInterval);
+		//    if (streamBacktest == null) return;
+		//    Bar barLastFormedBacktest = streamBacktest.UnattachedStreamingBar_factoryPerSymbolScale.BarLastFormedUnattached_nullUnsafe;
+		//    if (barLastFormedBacktest == null) return;
 
-			Bar barStreamingBacktest = streamBacktest.UnattachedStreamingBar_factory.BarStreaming_unattached;
+		//    Bar barStreamingBacktest = streamBacktest.UnattachedStreamingBar_factoryPerSymbolScale.BarStreaming_unattached;
 
-			SymbolScaleStream streamOriginal = this.Distributor_substitutedDuringLivesim.GetStreamFor_nullUnsafe(symbol, barScaleInterval);
-			if (streamOriginal == null) return;
-			Bar barLastFormedOriginal = streamOriginal.UnattachedStreamingBar_factory.BarLastFormedUnattached_nullUnsafe;
-			//if (barLastFormedOriginal == null) return;
+		//    SymbolScaleStream<StreamingConsumerChart> streamOriginal = this.DistributorCharts_substitutedDuringLivesim.GetStreamFor_nullUnsafe(symbol, barScaleInterval);
+		//    if (streamOriginal == null) return;
+		//    Bar barLastFormedOriginal = streamOriginal.UnattachedStreamingBar_factoryPerSymbolScale.BarLastFormedUnattached_nullUnsafe;
+		//    //if (barLastFormedOriginal == null) return;
 
-			streamOriginal.UnattachedStreamingBar_factory.BarLastStatic_absorbFromStream_onBacktestComplete(streamBacktest);
-			Bar barLastFormedAbsorbed = streamOriginal.UnattachedStreamingBar_factory.BarLastFormedUnattached_nullUnsafe;
-			if (barLastFormedOriginal == null || barLastFormedAbsorbed.DateTimeOpen != barLastFormedOriginal.DateTimeOpen) {
-				string msg = "GUT";
-			}
+		//    streamOriginal.UnattachedStreamingBar_factoryPerSymbolScale.BarLastStatic_absorbFromStream_onBacktestComplete(streamBacktest);
+		//    Bar barLastFormedAbsorbed = streamOriginal.UnattachedStreamingBar_factoryPerSymbolScale.BarLastFormedUnattached_nullUnsafe;
+		//    if (barLastFormedOriginal == null || barLastFormedAbsorbed.DateTimeOpen != barLastFormedOriginal.DateTimeOpen) {
+		//        string msg = "GUT";
+		//    }
 
-			Bar barStreamingOriginal = streamOriginal.UnattachedStreamingBar_factory.BarStreaming_unattached;
-			streamOriginal.UnattachedStreamingBar_factory.BarStreaming_absorbFromStream_onBacktestComplete(streamBacktest);
-			Bar barStreamingAbsorbed = streamOriginal.UnattachedStreamingBar_factory.BarStreaming_unattached;
-			if (barStreamingAbsorbed == null || barStreamingAbsorbed.DateTimeOpen != barStreamingOriginal.DateTimeOpen) {
-				string msg = "GUT";
-			}
-			return;
-		}
+		//    Bar barStreamingOriginal = streamOriginal.UnattachedStreamingBar_factoryPerSymbolScale.BarStreaming_unattached;
+		//    streamOriginal.UnattachedStreamingBar_factoryPerSymbolScale.BarStreaming_absorbFromStream_onBacktestComplete(streamBacktest);
+		//    Bar barStreamingAbsorbed = streamOriginal.UnattachedStreamingBar_factoryPerSymbolScale.BarStreaming_unattached;
+		//    if (barStreamingAbsorbed == null || barStreamingAbsorbed.DateTimeOpen != barStreamingOriginal.DateTimeOpen) {
+		//        string msg = "GUT";
+		//    }
+		//    return;
+		//}
 
-		internal void ChartStreamingConsumer_Subscribe(ChartStreamingConsumer chartStreamingConsumer, string msigForNpExceptions) {
+		internal void ChartStreamingConsumer_Subscribe(StreamingConsumerChart chartStreamingConsumer, string msigForNpExceptions) {
 			bool iWantChartToConsumeQuotesInSeparateThreadToLetStreamingGoWithoutWaitingForStrategyToFinish = true;
 
 			//NPE_AFTER_SEPARATED_SOLIDIFIERS SymbolScaleDistributionChannel channel = streamingSafe.Distributor.GetDistributionChannelFor_nullUnsafe(symbolSafe, scaleIntervalSafe);
-			if (this.Distributor_substitutedDuringLivesim.ConsumerQuoteIsSubscribed(chartStreamingConsumer) == true) {
+			if (this.DistributorCharts_substitutedDuringLivesim.ConsumerQuoteIsSubscribed(chartStreamingConsumer) == true) {
 				Assembler.PopupException("CHART_STREAMING_ALREADY_SUBSCRIBED_CONSUMER_QUOTE" + msigForNpExceptions);
 			} else {
 				//Assembler.PopupException("Subscribing QuoteConsumer [" + this + "]  to " + plug + "  (wasn't registered)");
-				this.Distributor_substitutedDuringLivesim.ConsumerQuoteSubscribe(chartStreamingConsumer,
+				this.DistributorCharts_substitutedDuringLivesim.ConsumerQuoteSubscribe(chartStreamingConsumer,
 						iWantChartToConsumeQuotesInSeparateThreadToLetStreamingGoWithoutWaitingForStrategyToFinish);
 			}
 
-			if (this.Distributor_substitutedDuringLivesim.ConsumerBarIsSubscribed(chartStreamingConsumer) == true) {
+			if (this.DistributorCharts_substitutedDuringLivesim.ConsumerBarIsSubscribed(chartStreamingConsumer) == true) {
 				Assembler.PopupException("CHART_STREAMING_ALREADY_SUBSCRIBED_CONSUMER_BAR" + msigForNpExceptions);
 			} else {
 				//Assembler.PopupException("Subscribing BarsConsumer [" + this + "] to " + this.ToString() + " (wasn't registered)");
-				this.Distributor_substitutedDuringLivesim.ConsumerBarSubscribe(chartStreamingConsumer, true);
+				this.DistributorCharts_substitutedDuringLivesim.ConsumerBarSubscribe(chartStreamingConsumer, true);
 			}
 		}
-		internal void ChartStreamingConsumer_Unsubscribe(ChartStreamingConsumer chartStreamingConsumer, string msigForNpExceptions) {
-			if (this.Distributor_substitutedDuringLivesim.ConsumerQuoteIsSubscribed(chartStreamingConsumer) == false) {
+		internal void ChartStreamingConsumer_Unsubscribe(StreamingConsumerChart chartStreamingConsumer, string msigForNpExceptions) {
+			if (this.DistributorCharts_substitutedDuringLivesim.ConsumerQuoteIsSubscribed(chartStreamingConsumer) == false) {
 				Assembler.PopupException("CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_QUOTE" + msigForNpExceptions);
 			} else {
 				//Assembler.PopupException("UnSubscribing QuoteConsumer [" + this + "]  to " + plug + "  (was subscribed)");
-				this.Distributor_substitutedDuringLivesim.ConsumerQuoteUnsubscribe(chartStreamingConsumer);
+				this.DistributorCharts_substitutedDuringLivesim.ConsumerQuoteUnsubscribe(chartStreamingConsumer);
 			}
 
-			if (this.Distributor_substitutedDuringLivesim.ConsumerBarIsSubscribed(chartStreamingConsumer) == false) {
+			if (this.DistributorCharts_substitutedDuringLivesim.ConsumerBarIsSubscribed(chartStreamingConsumer) == false) {
 				Assembler.PopupException("CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_BAR" + msigForNpExceptions);
 			} else {
 				//Assembler.PopupException("UnSubscribing BarsConsumer [" + this + "] to " + this.ToString() + " (was subscribed)");
-				this.Distributor_substitutedDuringLivesim.ConsumerBarUnsubscribe(chartStreamingConsumer);
+				this.DistributorCharts_substitutedDuringLivesim.ConsumerBarUnsubscribe(chartStreamingConsumer);
 			}
 		}
 

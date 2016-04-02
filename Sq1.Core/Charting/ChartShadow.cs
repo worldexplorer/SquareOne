@@ -40,7 +40,7 @@ namespace Sq1.Core.Charting {
 		public	bool					BarsEmpty				{ get { return this.Bars == null || this.Bars.Count == 0; } }
 		public	bool					BarsNotEmpty			{ get { return this.Bars != null && this.Bars.Count > 0; } }
 		public	ScriptExecutor			Executor				{ get; private set; }
-		public	ChartStreamingConsumer	ChartStreamingConsumer	{ get; private set; }
+		public	StreamingConsumerChart	ChartStreamingConsumer	{ get; private set; }
 
 		public	Color					ColorBackground_inDataSourceTree;
 		public	ContextChart			CtxChart;
@@ -49,7 +49,7 @@ namespace Sq1.Core.Charting {
 			paintAllowed = new ManualResetEvent(true);
 			this.register();
 			this.ColorBackground_inDataSourceTree	= Color.White;
-			this.ChartStreamingConsumer				= new ChartStreamingConsumer(this);
+			this.ChartStreamingConsumer				= new StreamingConsumerChart(this);
 		}
 		void register(bool dontAccessAssemblerWhileInDesignMode = false) {
 			if (base.DesignMode) return;

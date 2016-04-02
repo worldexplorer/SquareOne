@@ -9,10 +9,10 @@ using Sq1.Core.Backtesting;
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Charting {
-	public class ChartStreamingConsumer : StreamingConsumer {
+	public class StreamingConsumerChart : StreamingConsumer {
 		public	ChartShadow ChartShadow	{ get; private set; }
 
-		public ChartStreamingConsumer(ChartShadow chartShadow) {
+		public StreamingConsumerChart(ChartShadow chartShadow) {
 			this.ChartShadow = chartShadow;
 		}
 

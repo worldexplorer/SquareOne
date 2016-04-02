@@ -123,7 +123,7 @@
     <Compile Include="Charting\ChartShadow.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Charting\ChartStreamingConsumer.cs" />
+    <Compile Include="Charting\StreamingConsumerChart.cs" />
     <Compile Include="Charting\DictionaryManyToOne.cs" />
     <Compile Include="Charting\HostPanelForIndicator.cs" />
     <Compile Include="Charting\MultiSplitterProperties.cs" />
@@ -137,6 +137,7 @@
     <Compile Include="DataFeed\DataSource.RepositoryExposed.cs">
       <DependentUpon>DataSource.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataFeed\SymbolChannelChart.cs" />
     <Compile Include="DataTypes\SymbolInfo.EventGenerator.cs">
       <DependentUpon>SymbolInfo.cs</DependentUpon>
     </Compile>
@@ -364,6 +365,7 @@
     <Compile Include="StrategyBase\Strategy.ScriptContext.cs">
       <DependentUpon>Strategy.cs</DependentUpon>
     </Compile>
+    <Compile Include="Streaming\BinderAttacher_perStreamingChart.cs" />
     <Compile Include="Streaming\Distributor.Channels.cs">
       <DependentUpon>Distributor.cs</DependentUpon>
     </Compile>
@@ -375,7 +377,7 @@
       <DependentUpon>Distributor.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\DistributorCharts.cs" />
-    <Compile Include="Streaming\DistributorSolidifiers.cs" />
+    <Compile Include="Streaming\DistributorSolidifier.cs" />
     <Compile Include="Streaming\LevelTwo.cs" />
     <Compile Include="Streaming\LevelTwoHalf.cs" />
     <Compile Include="Streaming\LevelTwoHalfSortedFrozen.cs" />
@@ -391,16 +393,29 @@
     <Compile Include="Streaming\StreamingAdapter.EventDistributor.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\UnattachedStreamingBar_factory.cs" />
+    <Compile Include="Streaming\SymbolScaleStreamChart.cs" />
+    <Compile Include="Streaming\SymbolScaleStreamChart.Push.cs">
+      <DependentUpon>SymbolScaleStreamChart.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\SymbolScaleStreamChart.Subscribe.cs">
+      <DependentUpon>SymbolScaleStreamChart.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\SymbolScaleStreamSolidifier.cs" />
+    <Compile Include="Streaming\SymbolScaleStreamSolidifier.Push.cs">
+      <DependentUpon>SymbolScaleStreamSolidifier.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\SymbolScaleStreamSolidifier.Subscribe.cs">
+      <DependentUpon>SymbolScaleStreamSolidifier.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\SolidifierBarsEmulator.cs" />
     <Compile Include="Streaming\StreamingEditor.EventConsumer.cs">
       <DependentUpon>StreamingEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Streaming\BinderAttacherPerConsumer.cs" />
     <Compile Include="Streaming\StreamingAdapter.EditorSupport.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\StreamingSolidifier.cs" />
+    <Compile Include="Streaming\StreamingConsumerSolidifier.cs" />
     <Compile Include="Streaming\SymbolChannel.cs" />
     <Compile Include="Streaming\SymbolScaleStream.EventGenerator.cs">
       <DependentUpon>SymbolScaleStream.cs</DependentUpon>

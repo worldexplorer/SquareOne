@@ -86,7 +86,7 @@ namespace Sq1.Core.Streaming {
 				this.ActionForNullPointer(ret, "STREAMING_ADAPDER_NOT_ASSIGNED_IN_DATASOURCE this.Executor.DataSource[" + this.DataSource_nullReported + "].StreamingAdapter=null");
 				return ret;
 			} }
-		protected 		StreamingSolidifier StreamingSolidifierDeep { get {
+		protected 		StreamingConsumerSolidifier StreamingSolidifierDeep { get {
 				if (this.StreamingAdapter_nullReported is LivesimStreamingDefault) {
 					return null;
 				}
@@ -96,7 +96,7 @@ namespace Sq1.Core.Streaming {
 			} }
 
 		protected 		ChartShadow ChartShadow_nullReported { get {
-				ChartStreamingConsumer thisAsChartConsumer = this as ChartStreamingConsumer;
+				StreamingConsumerChart thisAsChartConsumer = this as StreamingConsumerChart;
 				if (thisAsChartConsumer != null) return thisAsChartConsumer.ChartShadow;
 				var ret = this.Executor_nullReported.ChartShadow;
 				this.ActionForNullPointer(ret, "this.Executor.ChartShadow=null");
@@ -125,12 +125,12 @@ namespace Sq1.Core.Streaming {
 				var symbolSafe			= this.Symbol_nullReported;
 				var scaleIntervalSafe	= this.ScaleInterval_nullReported;
 
-				if (streamingSafe.Distributor_substitutedDuringLivesim == null) {
+				if (streamingSafe.DistributorCharts_substitutedDuringLivesim == null) {
 					// quick hack; make QuikStreaming use base(reasonIwasCreated)
 					this.StreamingAdapter_nullReported.CreateDistributors_onlyWhenNecessary(this.ReasonToExist);
 				}
-				bool quote	= streamingSafe.Distributor_substitutedDuringLivesim.ConsumerQuoteIsSubscribed(this);
-				bool bar	= streamingSafe.Distributor_substitutedDuringLivesim.ConsumerBarIsSubscribed(this);
+				bool quote	= streamingSafe.DistributorCharts_substitutedDuringLivesim.ConsumerQuoteIsSubscribed(this);
+				bool bar	= streamingSafe.DistributorCharts_substitutedDuringLivesim.ConsumerBarIsSubscribed(this);
 				bool ret = quote & bar;
 				return ret;
 			}}

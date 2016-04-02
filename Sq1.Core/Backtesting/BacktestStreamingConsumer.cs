@@ -4,11 +4,13 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Charting;
 
 namespace Sq1.Core.Backtesting {
-	public class BacktestStreamingConsumer : StreamingConsumer {
+	public class BacktestStreamingConsumer : StreamingConsumerChart {
 				Backtester backtester;
-		public	BacktestStreamingConsumer(Backtester backtesterPassed) {
+
+		public	BacktestStreamingConsumer(Backtester backtesterPassed) : base(backtesterPassed.Executor.ChartShadow) {
 			this.backtester = backtesterPassed;
 		}
 

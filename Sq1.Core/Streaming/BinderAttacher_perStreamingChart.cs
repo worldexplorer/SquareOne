@@ -1,24 +1,18 @@
 using System;
 using Sq1.Core.DataTypes;
 
-namespace Sq1.Core.Streaming {
-	public class BinderAttacherPerConsumer {
-				SymbolScaleStream	symbolScaleStream;
-		public	StreamingConsumer	Consumer				{ get; private set;}
+using Sq1.Core.Charting;
 
-		public BinderAttacherPerConsumer(SymbolScaleStream symbolScaleStream, StreamingConsumer consumer) {
-			if (consumer is StreamingSolidifier) {
-				string msg = "NEVER_INVOKE_ME_FOR_consumer=StreamingSolidifier //StreamingBinderPerConsumer()";
-				throw new Exception(msg);
-			}
+namespace Sq1.Core.Streaming {
+	public class BinderAttacher_perStreamingChart {
+				SymbolScaleStreamChart	symbolScaleStream_chart;
+		public	StreamingConsumerChart	Consumer					{ get; private set;}
+
+		public BinderAttacher_perStreamingChart(SymbolScaleStreamChart symbolScaleStream, StreamingConsumerChart consumer) {
+			this.symbolScaleStream_chart = symbolScaleStream;
 			this.Consumer = consumer;
 		}
 		public Bar BarAttach(Bar barStreamingUnattached_clonedFromFactory) {
-			if (this.Consumer is StreamingSolidifier) {
-				string msg = "NEVER_INVOKE_ME_WHEN_this.Consumer_is_StreamingSolidifier //BarAttach(" + barStreamingUnattached_clonedFromFactory + ")";
-				throw new Exception(msg);
-			}
-
 			Bars bars = this.Consumer.ConsumerBars_toAppendInto;
 			if (bars == null) {
 				string msg = "BAR_NOT_ATTACHED CHECK_UPSTACK_WHETHER_CONSUMER_BARS_ARE_NULL StreamingSolidifier will attach the Bar itself";
@@ -46,11 +40,6 @@ namespace Sq1.Core.Streaming {
 		public Quote QuoteBoundToStreamingBar__streamingBarAttach_toConsumerBars(Quote quoteClone_sernoEnriched_unbound) {
 			Quote quote = quoteClone_sernoEnriched_unbound;	// to avoid SCALEINTERVAL_RECEIVED_DOESNT_MATCH_CHARTS
 
-			if (this.Consumer is StreamingSolidifier) {
-				string msg = "NEVER_INVOKE_ME_WHEN_this.Consumer_is_StreamingSolidifier //QuoteBind_toStreamingBar__streamingBarAttach_toConsumerBars(" + quoteClone_sernoEnriched_unbound + ")";
-				throw new Exception(msg);
-			}
-
 			Bars consumerBars = null;
 			try {
 				consumerBars = this.Consumer.ConsumerBars_toAppendInto;
@@ -73,7 +62,8 @@ namespace Sq1.Core.Streaming {
 			//    //quote.Bind_streamingBar_unattached(this.Factory_ofUnattached_streamingBars.BarStreaming_unattached);
 			//    return quote;
 			//}
-			if (this.symbolScaleStream.UnattachedStreamingBar_factory.BarStreaming_unattached == null) {
+			//if (this.symbolScaleStream_chart.UnattachedStreamingBar_factoryPerSymbolScale.BarStreaming_unattached == null) {
+			if (this.symbolScaleStream_chart.GetBarsOfChart(this.Consumer) == null) {
 				string msg = "AM_I_ON_FIRST_QUOTE_OF_THE_BAR";
 				Assembler.PopupException(msg);
 				return quote;
@@ -97,7 +87,8 @@ namespace Sq1.Core.Streaming {
 			        + " FIRST_STREAMING_QUOTE_PER_BACKTEST_ON_STREAMINGLESS_BARS_JUST_FORKED_FROM_BARS_ORIGINAL_AT_BACKTEST_INITIALIZATION";
 			    //v1 I_LEFT_QUOTE_UNATTACHED_UPSTACK,ATTACHING_TO_FACTORY_HERE
 			    //v1 this.consumer.ConsumerBarsToAppendInto.BarStreamingCreateNewOrAbsorb(quoteCloneSernoEnrichedFactoryUnattachedStreamingBar.ParentBarStreaming);
-			    Bar streamingCreatedAttached = consumerBars.BarStreaming_createNewAttach_orAbsorb(this.Factory_ofUnattached_streamingBars.BarStreaming_unattached);
+			    //v2 Bar streamingCreatedAttached = consumerBars.BarStreaming_createNewAttach_orAbsorb(this.Factory_ofUnattached_streamingBars.BarStreaming_unattached);
+			    Bar streamingCreatedAttached = consumerBars.BarStreaming_createNewAttach_orAbsorb(this.Consumer.ChartShadow.Bars.BarStreaming_nullUnsafe);
 			    if (streamingCreatedAttached != consumerBars.BarStreaming_nullUnsafe) {
 			        string msg2 = "MUST_BE_THE_SAME_BAR PARANOID_CHECK";
 			        Assembler.PopupException(msg2);
@@ -124,7 +115,8 @@ namespace Sq1.Core.Streaming {
 			return quote;
 		}
 		public override string ToString() {
-			string ret = "BarFactory[" + this.symbolScaleStream.UnattachedStreamingBar_factory.ToString() + "]";
+			//string ret = "BarFactory[" + this.symbolScaleStream_chart.UnattachedStreamingBar_factoryPerSymbolScale.ToString() + "]";
+			string ret = "BarFactory[" + this.symbolScaleStream_chart.GetBarsOfChart(this.Consumer) + "]";
 			if (this.Consumer.ConsumerBars_toAppendInto != null) {
 				ret += " with ConsumerBars[" + this.Consumer.ConsumerBars_toAppendInto.ToString() + "]";
 			} else {

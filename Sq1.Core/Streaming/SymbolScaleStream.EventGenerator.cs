@@ -3,7 +3,7 @@ using System;
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Streaming {
-	public partial class SymbolScaleDistributionChannel {
+	public partial class SymbolScaleStream<STREAMING_CONSUMER_CHILD> {
 		//public event EventHandler<QuoteEventArgs> OnQuoteSyncPushedToAllConsumers;
 		
 		//public void RaiseOnQuoteSyncPushedToAllConsumers(Quote quote) {

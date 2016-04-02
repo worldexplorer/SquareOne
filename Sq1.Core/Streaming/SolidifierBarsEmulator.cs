@@ -4,7 +4,7 @@ using Sq1.Core.DataTypes;
 using System.Diagnostics;
 
 namespace Sq1.Core.Streaming {
-	public class UnattachedStreamingBar_factory {
+	public class SolidifierBarsEmulator {
 		public string			Symbol									{ get; private set; }
 		public BarScaleInterval ScaleInterval							{ get; set; }
 		public int				IntraBarSerno							{ get; private set; }
@@ -18,7 +18,7 @@ namespace Sq1.Core.Streaming {
 				||	double.IsNaN(this.BarLastFormedUnattached_nullUnsafe.Close);
 		} }
 
-		public UnattachedStreamingBar_factory(string symbol, BarScaleInterval scaleInterval) {
+		public SolidifierBarsEmulator(string symbol, BarScaleInterval scaleInterval) {
 			Symbol = symbol;
 			ScaleInterval = scaleInterval;
 			BarLastFormedUnattached_nullUnsafe = null;
@@ -163,16 +163,16 @@ namespace Sq1.Core.Streaming {
 			return this.Symbol + "_" + this.ScaleInterval.ToString() + ":StreamingBar[" + this.BarStreaming_unattached.ToString() + "]";
 		}
 
-		internal void BarLastStatic_absorbFromStream_onBacktestComplete(SymbolScaleStream streamBacktest) {
-			string msig = " //UnattachedStreamingBar_factory.BarLastStatic_absorbFromStream_onBacktestComplete(" + streamBacktest + ")";
-			string msg = this.BarLastFormedUnattached_nullUnsafe == null ? "NULL" : this.BarLastFormedUnattached_nullUnsafe.ToString();
-			this.BarLastFormedUnattached_nullUnsafe = streamBacktest.UnattachedStreamingBar_factory.BarLastFormedUnattached_nullUnsafe.CloneDetached();
-			msg += " => " + this.BarLastFormedUnattached_nullUnsafe.ToString();
-			Assembler.PopupException(msg + msig, null, false);
-		}
-// KEEP_THIS_NOT_HAPPENING_BY_LEAVING_STATIC_LAST_ON_APPRESTART_NULL_ON_LIVEBACKTEST_CONTAINING_LAST_INCOMING_QUOTE
-		internal void BarStreaming_absorbFromStream_onBacktestComplete(SymbolScaleStream streamOriginal) {
-			this.BarStreaming_unattached = streamOriginal.UnattachedStreamingBar_factory.BarStreaming_unattached.CloneDetached();
-		}
+		//internal void BarLastStatic_absorbFromStream_onBacktestComplete(SymbolScaleStream streamBacktest) {
+		//    string msig = " //UnattachedStreamingBar_factory.BarLastStatic_absorbFromStream_onBacktestComplete(" + streamBacktest + ")";
+		//    string msg = this.BarLastFormedUnattached_nullUnsafe == null ? "NULL" : this.BarLastFormedUnattached_nullUnsafe.ToString();
+		//    this.BarLastFormedUnattached_nullUnsafe = streamBacktest.UnattachedStreamingBar_factoryPerSymbolScale.BarLastFormedUnattached_nullUnsafe.CloneDetached();
+		//    msg += " => " + this.BarLastFormedUnattached_nullUnsafe.ToString();
+		//    Assembler.PopupException(msg + msig, null, false);
+		//}
+		//// KEEP_THIS_NOT_HAPPENING_BY_LEAVING_STATIC_LAST_ON_APPRESTART_NULL_ON_LIVEBACKTEST_CONTAINING_LAST_INCOMING_QUOTE
+		//internal void BarStreaming_absorbFromStream_onBacktestComplete(SymbolScaleStream streamOriginal) {
+		//    this.BarStreaming_unattached = streamOriginal.UnattachedStreamingBar_factoryPerSymbolScale.BarStreaming_unattached.CloneDetached();
+		//}
 	}
 }
