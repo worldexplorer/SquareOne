@@ -24,7 +24,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			this.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(symbol_passed);
 			this.levelTwo_fromStreamingSnap = base.QuikStreaming.StreamingDataSnapshot.GetLevelTwo_forSymbol_nullUnsafe(this.symbol);
 			if (this.levelTwo_fromStreamingSnap == null) {
-				string msg = "";
+				string msg = "YOU_DIDNT_INITIALIZE_LevelTwo_FOR symbol[" + this.symbol + "] base.QuikStreaming[" + base.QuikStreaming + "]";
 				throw new Exception(msg);
 			}
 		}

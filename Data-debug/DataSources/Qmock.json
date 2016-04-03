@@ -22,9 +22,9 @@
     "DdeTopicTrades": "trades",
     "DdeTopicSuffixDom": "dom",
     "DdeMonitorRefreshRateMs": 200,
-    "DdeMonitorPopupOnRestart": false,
+    "DdeMonitorPopupOnRestart": true,
     "Level2RefreshRateMs": 200,
-    "UpstreamConnectedOnAppRestart": true
+    "UpstreamConnectedOnAppRestart": false
   },
   "BrokerAdapter": {
     "$type": "Sq1.Adapters.Quik.Broker.QuikBroker, Sq1.Adapters.Quik",
@@ -46,7 +46,7 @@
     "QuikClientCode": null,
     "ReconnectTimeoutMillis": 3000,
     "GoRealDontUseOwnLivesim": false,
-    "UpstreamConnectedOnAppRestart": true
+    "UpstreamConnectedOnAppRestart": false
   },
   "MarketName": "FORTS",
   "Name": "Qmock",
