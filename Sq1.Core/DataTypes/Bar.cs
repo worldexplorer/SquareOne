@@ -381,11 +381,18 @@ namespace Sq1.Core.DataTypes {
 				this.Volume = bar.Volume;
 			}
 		}
-		public void MergeExpandHLCV_forStreamingBarUnattached(Quote quoteClone) {
+		public bool MergeExpandHLCV_forStreamingBarUnattached(Quote quoteClone) {
+			bool barExpanded = false;
 			//if (quoteClone.PriceLastDeal > this.High) this.High = quoteClone.PriceLastDeal;
 			//if (quoteClone.PriceLastDeal < this.Low) this.Low = quoteClone.PriceLastDeal;
-			if (quoteClone.Ask > this.High) this.High = quoteClone.Ask;
-			if (quoteClone.Bid < this.Low) this.Low = quoteClone.Bid;
+			if (quoteClone.Ask > this.High) {
+				this.High = quoteClone.Ask;
+				barExpanded = true;
+			}
+			if (quoteClone.Bid < this.Low) {
+				this.Low = quoteClone.Bid;
+				barExpanded = true;
+			}
 			if (double.IsNaN(quoteClone.TradedPrice)) {
 				string msg = "FYI LAST_DEAL_PRICE_IS_NAN WHILE_MERGING_QUOTE_INTO_STREAMING_BAR quoteClone[" +
 					quoteClone + "] => " + this.ToString();
@@ -396,6 +403,7 @@ namespace Sq1.Core.DataTypes {
 				Assembler.PopupException(msg);
 			}
 			this.Volume += quoteClone.Size;
+			return barExpanded;
 		}
 		public override string ToString() {
 			bool formatValues = false;

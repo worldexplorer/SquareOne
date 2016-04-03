@@ -160,14 +160,14 @@ namespace Sq1.Core.Repositories {
 		}
 
 		public RepositoryBarsFile DataFileForSymbol(string symbol, bool throwIfDoesntExist = true, bool createIfDoesntExist = false) {
-			lock (barsForDataSourceSymbolsLock) {   //FILE.OPEN_FILE_CANT_BE_ACCESSED_FIXED_BY_ROUTING_ALL_FILE_ACCESS_THROUGH_ONE_SYNCHRONIZED_INSTANCE
+			// NO_NEED__PUMP_WAITS_FOR_END_OF_QUOTE_PROCESSING_WE_DO_HERE lock (barsForDataSourceSymbolsLock) {   //FILE.OPEN_FILE_CANT_BE_ACCESSED_FIXED_BY_ROUTING_ALL_FILE_ACCESS_THROUGH_ONE_SYNCHRONIZED_INSTANCE
 				if (this.barsForDataSourceSymbols.ContainsKey(symbol) == false) {
 					RepositoryBarsFile barsFileNew = new RepositoryBarsFile(this, symbol, throwIfDoesntExist, createIfDoesntExist);
 					this.barsForDataSourceSymbols.Add(symbol, barsFileNew);
 				}
 				RepositoryBarsFile barsFile = this.barsForDataSourceSymbols[symbol];
 				return barsFile;
-			}
+			//}
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public		string					Name								{ get; protected set; }
 		[JsonIgnore]	public		string					ReasonToExist						{ get; protected set; }
 		[JsonIgnore]	public		Bitmap					Icon								{ get; protected set; }
-		[JsonIgnore]	public		StreamingConsumerSolidifier		StreamingSolidifier					{ get; protected set; }
+		[JsonIgnore]	public		StreamingConsumerSolidifier		StreamingSolidifier_oneForAllSymbols					{ get; protected set; }
 		[JsonIgnore]	public		DataSource				DataSource							{ get; protected set; }
 		[JsonIgnore]	public		string					marketName							{ get { return this.DataSource.MarketInfo.Name; } }
 		[JsonIgnore]	public		DistributorCharts		DistributorCharts_substitutedDuringLivesim					{ get; protected set; }
@@ -107,11 +107,13 @@ namespace Sq1.Core.Streaming {
 			ReasonToExist									= "DUMMY_FOR_LIST_OF_STREAMING_PROVIDERS_IN_DATASOURCE_EDITOR";
 			SymbolsSubscribedLock							= new object();
 			SymbolsUpstreamSubscribed						= new List<string>();
-			StreamingDataSnapshot							= new StreamingDataSnapshot(this);
-			StreamingSolidifier								= new StreamingConsumerSolidifier();
+
+			StreamingDataSnapshot							= new StreamingDataSnapshot(this);			// not in DataSource because YOU may want to implement your own Level2, e.g. for Options (3D, containing multiple Strikes for one Symbol, to let the strategy choose "the best" strike for emiting Orders)
+			StreamingSolidifier_oneForAllSymbols			= new StreamingConsumerSolidifier();		// not in DataSource because YOU may want to create a StreamingAdapter that doean't save incoming quotes directly to file, but YOU will save some crazy composite index / Synthetic-you-own Symbol (collected across multiple StreamingAdapters) separately
+
 			Level2RefreshRateMs								= 200;
-			QuotePumpSeparatePushingThreadEnabled			= true;
-			LivesimStreaming_ownImplementation				= null;		// so that be careful addressing it here! valid only for StreamingAdapter-derived!!!
+			QuotePumpSeparatePushingThreadEnabled			= true;		// set FALSE for Queue-based BacktestStreamingAdapter(s)
+			LivesimStreaming_ownImplementation				= null;		// be careful addressing it! valid only for StreamingAdapter-derived!!!
 			//if (this is LivesimStreaming) return;
 			//NULL_UNTIL_QUIK_PROVIDES_OWN_DDE_REDIRECTOR LivesimStreamingImplementation					= new LivesimStreamingDefault(true, "USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_STREAMING");	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
 		}
@@ -139,7 +141,7 @@ namespace Sq1.Core.Streaming {
 			//Assembler.PopupException(msg, null, false);
 
 			this.CreateDistributors_onlyWhenNecessary(this.ReasonToExist);
-			this.StreamingSolidifier.Initialize(this.DataSource);
+			this.StreamingSolidifier_oneForAllSymbols.Initialize(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
 				this.solidifierSubscribeOneSymbol(symbol);
 			}
@@ -161,9 +163,9 @@ namespace Sq1.Core.Streaming {
 			}
 
 			this.DistributorSolidifiers_substitutedDuringLivesim.ConsumerBarSubscribe_solidifiers(symbol,
-				this.DataSource.ScaleInterval, this.StreamingSolidifier, this.QuotePumpSeparatePushingThreadEnabled);
+				this.DataSource.ScaleInterval, this.StreamingSolidifier_oneForAllSymbols, this.QuotePumpSeparatePushingThreadEnabled);
 			this.DistributorSolidifiers_substitutedDuringLivesim.ConsumerQuoteSubscribe_solidifiers(symbol,
-				this.DataSource.ScaleInterval, this.StreamingSolidifier, this.QuotePumpSeparatePushingThreadEnabled);
+				this.DataSource.ScaleInterval, this.StreamingSolidifier_oneForAllSymbols, this.QuotePumpSeparatePushingThreadEnabled);
 
 			//v1
 			//SymbolScaleDistributionChannel channel = this.DistributorSolidifiers_replacedForLivesim.GetDistributionChannelFor_nullUnsafe(symbol, this.DataSource.ScaleInterval);
@@ -191,14 +193,14 @@ namespace Sq1.Core.Streaming {
 				symbol  = this.LivesimStreaming_ownImplementation.DataSource.Symbols[0];
 			}
 
-			if (this.DistributorSolidifiers_substitutedDuringLivesim.ConsumerBarIsSubscribed_solidifiers(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier)) {
-				this.DistributorSolidifiers_substitutedDuringLivesim.ConsumerBarUnsubscribe_solidifiers(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
+			if (this.DistributorSolidifiers_substitutedDuringLivesim.ConsumerBarIsSubscribed_solidifiers(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier_oneForAllSymbols)) {
+				this.DistributorSolidifiers_substitutedDuringLivesim.ConsumerBarUnsubscribe_solidifiers(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier_oneForAllSymbols);
 			} else {
 				string msg = "IGNORE_ME_IF_YOU_ARE_STARTED_LIVESIM SOLIDIFIER_NOT_SUBSCRIBED_BARS symbol[" + symbol + "] ScaleInterval[" + this.DataSource.ScaleInterval + "]";
 				Assembler.PopupException(msg, null, false);
 			}
-			if (this.DistributorSolidifiers_substitutedDuringLivesim.ConsumerQuoteIsSubscribed_solidifiers(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier)) {
-				this.DistributorSolidifiers_substitutedDuringLivesim.ConsumerQuoteUnsubscribe_solidifiers(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
+			if (this.DistributorSolidifiers_substitutedDuringLivesim.ConsumerQuoteIsSubscribed_solidifiers(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier_oneForAllSymbols)) {
+				this.DistributorSolidifiers_substitutedDuringLivesim.ConsumerQuoteUnsubscribe_solidifiers(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier_oneForAllSymbols);
 			} else {
 				string msg = "IGNORE_ME_IF_YOU_ARE_STARTED_LIVESIM SOLIDIFIER_NOT_SUBSCRIBED_QUOTES symbol[" + symbol + "] ScaleInterval[" + this.DataSource.ScaleInterval + "]";
 				Assembler.PopupException(msg, null, false);

@@ -9,9 +9,11 @@ using Sq1.Core.Charting;
 namespace Sq1.Core.Streaming {
 	public class SymbolChannel<STREAMING_CONSUMER_CHILD> : IDisposable
 						 where STREAMING_CONSUMER_CHILD : StreamingConsumer {
-				string					symbol;
-		public	string					ReasonIwasCreated_propagatedFromDistributor		{ get; private set; }
-		public	Distributor<STREAMING_CONSUMER_CHILD>				Distributor										{ get; private set; }
+
+				Type									ofWhatAmI;
+				string									symbol;
+		public	string									ReasonIwasCreated_propagatedFromDistributor		{ get; private set; }
+		public	Distributor<STREAMING_CONSUMER_CHILD>	Distributor										{ get; private set; }
 
 				object					lockStreamsDictionary;
 
@@ -27,6 +29,7 @@ namespace Sq1.Core.Streaming {
 
 		~SymbolChannel() { this.Dispose(); }
 		SymbolChannel() {
+			ofWhatAmI								= typeof(STREAMING_CONSUMER_CHILD);
 			lockStreamsDictionary					= new object();
 			backtestersRunning_causingPumpingPause	= new List<Backtester>();
 			StreamsByScaleInterval					= new Dictionary<BarScaleInterval, SymbolScaleStream<STREAMING_CONSUMER_CHILD>>();
@@ -52,7 +55,7 @@ namespace Sq1.Core.Streaming {
 		}
 
 
-		public void PushQuote_toStreams(Quote quoteDequeued_singleInstance_tillStreamBindsAll) {
+		public void PushQuote_toStreams(Quote quoteDequeued_singleInstance_tillStreamBindsAll) { lock (this.lockStreamsDictionary) {
 			foreach (SymbolScaleStream<STREAMING_CONSUMER_CHILD> stream in this.StreamsByScaleInterval.Values)  {
 				try {
 					stream.PushQuote_toConsumers(quoteDequeued_singleInstance_tillStreamBindsAll);
@@ -61,7 +64,7 @@ namespace Sq1.Core.Streaming {
 					Assembler.PopupException(msg, ex);
 				}
 			}
-		}
+		} }
 
 		public void PushQuote_viaPumpOrQueue(Quote quoteDequeued_singleInstance_tillStreamBindsAll) {
 			Quote quote = quoteDequeued_singleInstance_tillStreamBindsAll;
@@ -84,6 +87,8 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
+
+
 		public bool ConsumerQuoteAdd(BarScaleInterval scaleInterval, STREAMING_CONSUMER_CHILD quoteConsumer) { lock (this.lockStreamsDictionary) {
 			if (this.StreamsByScaleInterval.ContainsKey(scaleInterval) == false) {
 				//v1 CAN_NOT_CREATE_INSTANCE_OF_AN_ABSTRACT SymbolScaleStream<STREAMING_CONSUMER_CHILD> newScaleChannel = new SymbolScaleStream<STREAMING_CONSUMER_CHILD>(this, symbol, scaleInterval, this.ReasonIwasCreated_propagatedFromDistributor);
@@ -95,17 +100,25 @@ namespace Sq1.Core.Streaming {
 		} }
 
 		SymbolScaleStream<STREAMING_CONSUMER_CHILD> streamingConsumer_factory(BarScaleInterval scaleInterval, STREAMING_CONSUMER_CHILD quoteConsumer) {
+			string msig = " //streamingConsumer_factory() << ConsumerQuoteAdd()";
 			SymbolScaleStream<STREAMING_CONSUMER_CHILD> newScaleChannel = null;	// default(SymbolScaleStream<STREAMING_CONSUMER_CHILD>);
-			if (quoteConsumer.GetType().IsInstanceOfType(typeof(StreamingConsumerChart))) {
+
+			bool iAmServingCharts		= ofWhatAmI == typeof(StreamingConsumerChart);
+			bool iAmServingSolidifier	= ofWhatAmI == typeof(StreamingConsumerSolidifier);
+
+			if (iAmServingCharts) {
 				SymbolChannel<StreamingConsumerChart> myself = this as SymbolChannel<StreamingConsumerChart>;
 				SymbolScaleStream<StreamingConsumerChart> concrete = new SymbolScaleStreamChart(myself, symbol, scaleInterval, this.ReasonIwasCreated_propagatedFromDistributor);
 				newScaleChannel = concrete as SymbolScaleStream<STREAMING_CONSUMER_CHILD>;
-			} else if (quoteConsumer.GetType().IsInstanceOfType(typeof(StreamingConsumerSolidifier))) {
+			} else if (iAmServingSolidifier) {
 				SymbolChannel<StreamingConsumerSolidifier> myself = this as SymbolChannel<StreamingConsumerSolidifier>;
 				SymbolScaleStream<StreamingConsumerSolidifier> concrete = new SymbolScaleStreamSolidifier(myself, symbol, scaleInterval, this.ReasonIwasCreated_propagatedFromDistributor);
 				newScaleChannel = concrete as SymbolScaleStream<STREAMING_CONSUMER_CHILD>;
 			} else {
-				throw new Exception("YOU_ADDED_NEW_CHILD_OF_StreamingConsumer_BUT_DIDNT_IMPLEMENT_CASE_INDIDE_ConsumerQuoteAdd()");
+				throw new Exception("YOU_ADDED_NEW_CHILD_OF_StreamingConsumer_BUT_DIDNT_IMPLEMENT_CASE_INDIDE" + msig);
+			}
+			if (newScaleChannel == null) {
+				throw new Exception("I_FAILED_TO_CREATE_STREAM_FOR_TYPE[" + ofWhatAmI + "]" + msig);
 			}
 			return newScaleChannel;
 		}
@@ -131,7 +144,7 @@ namespace Sq1.Core.Streaming {
 			if (this.StreamsByScaleInterval.ContainsKey(scaleInterval) == false) {
 				string msg = "I_REFUSE_TO_CHECK_SUBSCRIBED__SCALE_INTERVAL_NOT_SUBSCRIBED [" + scaleInterval + "] for [" + quoteConsumer + "]"
 					+ " NOT_FOUND_AMONG_[" + this.ConsumersQuoteAsString + "]";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg);
 				return false;
 			}
 			SymbolScaleStream<STREAMING_CONSUMER_CHILD> stream = this.StreamsByScaleInterval[scaleInterval];
@@ -180,7 +193,7 @@ namespace Sq1.Core.Streaming {
 			if (this.StreamsByScaleInterval.ContainsKey(scaleInterval) == false) {
 				string msg = "I_REFUSE_TO_CHECK_SUBSCRIBED__SCALE_INTERVAL_NOT_SUBSCRIBED [" + scaleInterval + "] for [" + barConsumer + "]"
 					+ " NOT_FOUND_AMONG_[" + this.ConsumersBarAsString + "]";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg);
 				return false;
 			}
 			SymbolScaleStream<STREAMING_CONSUMER_CHILD> stream = this.StreamsByScaleInterval[scaleInterval];
@@ -279,7 +292,7 @@ namespace Sq1.Core.Streaming {
 			return ret;
 		} } }
 
-		public string ToString() { lock (this.lockStreamsDictionary) {
+		public override string ToString() { lock (this.lockStreamsDictionary) {
 			string ret = "";
 			foreach (STREAMING_CONSUMER_CHILD consumer in this.Consumers) {
 				if (ret != "") ret += ",";

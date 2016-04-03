@@ -11,7 +11,9 @@ namespace Sq1.Core.Streaming {
 		public const string LIVE_CHARTS_FOR				= "LIVE_CHARTS_FOR";
 		public const string SOLIDIFIERS_FOR				= "SOLIDIFIERS_FOR";
 		public const string SUBSTITUTED_LIVESIM_STARTED	= "SUBSTITUTED_LIVESIM_STARTED";
+		public const string BACKTEST_FOR				= "BACKTEST_STARTED";
 
+					Type				ofWhatAmI;
 					object				lockConsumersBySymbol;
 		public		StreamingAdapter	StreamingAdapter 	{ get; protected set; }
 		public		string				ReasonIwasCreated 	{ get; protected set; }
@@ -21,7 +23,8 @@ namespace Sq1.Core.Streaming {
 			//DistributionChannels	= new Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>>();
 			ChannelsBySymbol		= new Dictionary<string, SymbolChannel<STREAMING_CONSUMER_CHILD>>();
 			lockConsumersBySymbol	= new object();
-			ReasonIwasCreated		= reasonIwasCreated;
+			ofWhatAmI				= typeof(STREAMING_CONSUMER_CHILD);
+			ReasonIwasCreated		= "<" + ofWhatAmI.Name + "> " + reasonIwasCreated;
 		}
 		public Distributor(StreamingAdapter streamingAdapter, string reasonIwasCreated) : this(reasonIwasCreated) {
 			this.StreamingAdapter = streamingAdapter;

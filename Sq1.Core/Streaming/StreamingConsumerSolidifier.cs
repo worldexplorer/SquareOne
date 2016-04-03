@@ -9,21 +9,21 @@ namespace Sq1.Core.Streaming {
 	public class StreamingConsumerSolidifier : StreamingConsumer {
 		DataSource	dataSource;
 
-		double		barStreamingDumpIntervalSeconds;
-		DateTime	barStreamingLastDumpedLocal;
-		string		barStreamingLastDumpedLocalAsString;
+		double		barStreaming_dumpIntervalSeconds;
+		DateTime	barStreaming_lastDumpedLocal;
+		string		barStreaming_lastDumpedLocal_asString;
 
 		//IMPORTANT_SPLITTED_TO_CTOR+INITIALIZE_FOR_EDITED_DATASOURCE_TO_NOT_SUBSCRIBE_MY_MULTIPLE_INSTANCES
 		public StreamingConsumerSolidifier() { }
 
-		public void Initialize(DataSource dataSource, double barStreamingDumpIntervalSeconds = 10) {
+		public void Initialize(DataSource dataSource, double barStreaming_dumpIntervalSeconds = 10) {
 			if (dataSource == null) {
 				string msg = "DATASOURCE_NULL_ABSOLUTELY_INACCEPTABLE_FOR_SOLIDIFIER";
 				throw new Exception(msg);
 			}
 			this.dataSource = dataSource;
-			this.barStreamingDumpIntervalSeconds = barStreamingDumpIntervalSeconds;
-			this.barStreamingLastDumpedLocal = DateTime.MinValue;
+			this.barStreaming_dumpIntervalSeconds = barStreaming_dumpIntervalSeconds;
+			this.barStreaming_lastDumpedLocal = DateTime.MinValue;
 			base.ReasonToExist = "SOLIDIFIER[" + dataSource.ToString() + "]";
 		}
 
@@ -40,40 +40,38 @@ namespace Sq1.Core.Streaming {
 		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLastBeforeStop) {
 			this.barsSaveToFile_replaceStreamingBar(quoteLastBeforeStop, true);
 		}
-		public override void ConsumeQuoteOfStreamingBar(Quote quoteClone_boundAttached) {
-			this.barsSaveToFile_replaceStreamingBar(quoteClone_boundAttached);
+		public override void ConsumeQuoteOfStreamingBar(Quote quoteWith_pseudoExpanded) {
+			this.barsSaveToFile_replaceStreamingBar(quoteWith_pseudoExpanded);
 		}
-		public override void ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barStaticLast_justFormed_byEarlyBinder, Quote quoteForAlertsCreated_WILL_BE_NULL) {
-			string millisSavingTook;
-			if (barStaticLast_justFormed_byEarlyBinder.IsBarStreaming) {
-				string msg1 = "DONT_PASS_STREAMING_BAR_HERE__UNMESS_FILESEEKS_OR_BINDER";
-				Assembler.PopupException(msg1);
-			}
-			int barsSaved = this.dataSource.BarAppend_orReplaceLast(barStaticLast_justFormed_byEarlyBinder, out millisSavingTook);
-			string msg = millisSavingTook + " barLastFormed[" + barStaticLast_justFormed_byEarlyBinder + "] from streaming DataSource[" + this.dataSource.Name + "]";
+		public override void ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barStaticLast_justFormed_byBarsEmulator, Quote quoteWithPseudo) {
+			string millisTook_updateLast;
+			string millisTook_appendNew;
+			int barsReplaced = this.dataSource.BarAppend_orReplaceLast(barStaticLast_justFormed_byBarsEmulator	, out millisTook_updateLast);
+			int barsAppended = this.dataSource.BarAppend_orReplaceLast(quoteWithPseudo.ParentBarStreaming		, out millisTook_appendNew);	// will be OHLCV=NaN
+			string msg = millisTook_updateLast + " barLastFormed[" + barStaticLast_justFormed_byBarsEmulator + "] into DataSource[" + this.dataSource.Name + "]";
 			Assembler.PopupException(msg, null, false);
 		}
 		#endregion
 
-		void barsSaveToFile_replaceStreamingBar(Quote quote, bool ignoreInterval_forceReplaceBar_immediately = false) {
-			string msig = " //StreamingSolidifier.replaceStreamingBar(" + quote + ")";
-			if (quote is QuoteGenerated) {
-				string msg2 = "I_REFUSE_TO_STORE_QuoteGenerated_INTO_FILE [" + quote.Symbol + "].bar";
+		void barsSaveToFile_replaceStreamingBar(Quote quoteWith_pseudoExpanded, bool ignoreInterval_forceReplaceBar_immediately = false) {
+			string msig = " //StreamingConsumerSolidifier.barsSaveToFile_replaceStreamingBar(" + quoteWith_pseudoExpanded + ")";
+			if (quoteWith_pseudoExpanded is QuoteGenerated) {
+				string msg2 = "I_REFUSE_TO_STORE_QuoteGenerated_INTO_FILE [" + quoteWith_pseudoExpanded.Symbol + "].bar";
 				Assembler.PopupException(msg2 + msig);
 				return;
 			}
 
-			if (this.barStreamingLastDumpedLocal == DateTime.MinValue) {
-				this.barStreamingLastDumpedLocal = quote.LocalTime;
+			if (this.barStreaming_lastDumpedLocal == DateTime.MinValue) {
+				this.barStreaming_lastDumpedLocal = quoteWith_pseudoExpanded.LocalTime;
 			}
 	
-			double secondsSinceLastDumped = quote.LocalTime.Subtract(barStreamingLastDumpedLocal).TotalSeconds;
-			if (ignoreInterval_forceReplaceBar_immediately == false && secondsSinceLastDumped <= this.barStreamingDumpIntervalSeconds) return;
+			double secondsSinceLastDumped = quoteWith_pseudoExpanded.LocalTime.Subtract(barStreaming_lastDumpedLocal).TotalSeconds;
+			if (ignoreInterval_forceReplaceBar_immediately == false && secondsSinceLastDumped <= this.barStreaming_dumpIntervalSeconds) return;
 
 			string millisElapsed;
 			
 
-			Bar quoteParentBarStreaming = quote.ParentBarStreaming;
+			Bar quoteParentBarStreaming = quoteWith_pseudoExpanded.ParentBarStreaming;
 			if (quoteParentBarStreaming == null) {
 				string msg2 = "STREAMING_SOLIDIFIER_FAILED_TO_STORE_LAST_QUOTE FIX_quote.ParentBarStreaming=null_HERE";
 				Assembler.PopupException(msg2 + msig);
@@ -94,17 +92,17 @@ namespace Sq1.Core.Streaming {
 
 			int barsSaved = this.dataSource.BarAppend_orReplaceLast(quoteParentBarStreaming, out millisElapsed);
 
-			msig = " //StreamingSolidifier.replaceStreamingBar(" + quote.ParentBarStreaming.Close + ")";
+			msig = " //StreamingConsumerSolidifier.barsSaveToFile_replaceStreamingBar(" + quoteWith_pseudoExpanded.ParentBarStreaming.Close + ")";
 			string msg = millisElapsed
-				+ " quote[" + quote.LocalTime.ToString("mm:ss.fff") + "]=>[" + this.barStreamingLastDumpedLocal.ToString("mm:ss.fff") + "]"
-				+ " secondsSinceLastDumped[" + secondsSinceLastDumped.ToString("N3") + "] >= dumpInterval[" + this.barStreamingDumpIntervalSeconds + "]";
+				+ " quote[" + quoteWith_pseudoExpanded.LocalTime.ToString("mm:ss.fff") + "]=>[" + this.barStreaming_lastDumpedLocal.ToString("mm:ss.fff") + "]"
+				+ " secondsSinceLastDumped[" + secondsSinceLastDumped.ToString("N3") + "] >= dumpInterval[" + this.barStreaming_dumpIntervalSeconds + "]";
 			// TOO_NOISY Assembler.PopupException(msg + msig, null, false);
 
-			this.barStreamingLastDumpedLocal = quote.LocalTime;
-			this.barStreamingLastDumpedLocalAsString = quote.LocalTime.ToString("HH:mm:ss.fff");
+			this.barStreaming_lastDumpedLocal = quoteWith_pseudoExpanded.LocalTime;
+			this.barStreaming_lastDumpedLocal_asString = quoteWith_pseudoExpanded.LocalTime.ToString("HH:mm:ss.fff");
 		}
 		public override string ToString() {
-			return "StreamingSolidifier[" + this.dataSource.ToString() + "]";
+			return "StreamingConsumerSolidifier_FOR_DATASOURCE[" + this.dataSource.ToString() + "]";
 		}
 	}
 }

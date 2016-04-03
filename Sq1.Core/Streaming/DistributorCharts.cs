@@ -89,11 +89,15 @@ namespace Sq1.Core.Streaming {
 		}
 
 		internal bool ConsumerQuoteIsSubscribed(StreamingConsumer streamingConsumer) {
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
+		    return base.ConsumerQuoteIsSubscribed(streamingConsumer as StreamingConsumerChart);
+		    //return base.ConsumerQuoteIsSubscribed_solidifiers(streamingConsumer.Symbol, streamingConsumer.ScaleInterval, streamingConsumer);
 		}
 
 		internal bool ConsumerBarIsSubscribed(StreamingConsumer streamingConsumer) {
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
+		    return base.ConsumerBarIsSubscribed(streamingConsumer as StreamingConsumerChart);
+		    //return base.ConsumerBarIsSubscribed_solidifiers(streamingConsumer.Symbol, streamingConsumer.ScaleInterval, streamingConsumer);
 		}
 	}
 }

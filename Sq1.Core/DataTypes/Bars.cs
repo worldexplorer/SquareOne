@@ -7,6 +7,8 @@ using System.Collections.Generic;
 namespace Sq1.Core.DataTypes {
 	//v1 public partial class Bars : BarsUnscaledSortedList {
 	public partial class Bars : BarsUnscaled {
+		[JsonIgnore]	public const string RANDOM_GENERATED_BARS = "RANDOM_GENERATED_BARS";
+
 		[JsonIgnore]	public static int InstanceAbsno = 0;
 		
 		[JsonIgnore]	public	string				SymbolHumanReadable;

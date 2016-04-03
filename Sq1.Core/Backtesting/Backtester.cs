@@ -66,7 +66,6 @@ namespace Sq1.Core.Backtesting {
 			RequestingBacktestAbortMre		= new ManualResetEvent(false);
 			BacktestAbortedMre				= new ManualResetEvent(false);
 			BacktestIsRunningMre			= new ManualResetEvent(false);
-			backtestQuoteBarConsumer		= new BacktestStreamingConsumer(this);
 			BacktestDataSource				= new BacktestDataSource();
 			ExceptionsHappenedSinceBacktestStarted = 0;
 			//this.QuotesGenerator = BacktestQuotesGeneratorFourStroke.CreateForQuotesPerBarAndInitialize(BacktestQuotesPerBar.FourStrokeOHLC, this);
@@ -74,6 +73,7 @@ namespace Sq1.Core.Backtesting {
 		}
 		public Backtester(ScriptExecutor executor) : this() {
 			this.Executor = executor;
+			backtestQuoteBarConsumer		= new BacktestStreamingConsumer(this);
 			if (this.Executor.Strategy == null) return;
 			//MIGHT_BE_NULL_IF_NOT_COMPILED_YET if (Executor.Strategy.Script == null) return;
 			this.Create_quoteGenerator_eachBacktesterSimulation();
@@ -266,8 +266,13 @@ namespace Sq1.Core.Backtesting {
 					string msg = "YOU_DIDNT_RESTORE_DISTRIBUTOR_PROPERLY_AFTER_LIVESIM";
 					Assembler.PopupException(msg);
 				}
-				distr.ConsumerQuoteSubscribe(this.backtestQuoteBarConsumer, false);
-				distr.ConsumerBarSubscribe  (this.backtestQuoteBarConsumer, false);
+				//distr.ConsumerQuoteSubscribe(this.backtestQuoteBarConsumer, false);
+				//distr.ConsumerBarSubscribe  (this.backtestQuoteBarConsumer, false);
+
+				//v2
+				//BacktestStreaming streaming = this.BacktestDataSource.StreamingAsBacktest_nullUnsafe;
+				//DistributorBacktest distr = streaming.DistributorBacktest;
+	
 				distr.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol);
 				
 				this.Executor.BacktestContext_initialize(this.BarsSimulating);

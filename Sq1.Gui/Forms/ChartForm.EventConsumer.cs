@@ -145,7 +145,7 @@ namespace Sq1.Gui.Forms {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnStreaming.CheckOnClick=True this.BtnStreaming.Checked = !this.BtnStreaming.Checked;
 			try {
 				if (this.BtnStreamingTriggersScript.Checked) {
-					this.ChartControl.ChartStreamingConsumer.StreamingTriggeringScriptStart();
+					this.ChartFormManager.Executor.IsStreamingTriggeringScript = true;
 					// same idea as in mniSubscribedToStreamingAdapterQuotesBars_Click();
 					ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
 					if (	this.ChartFormManager.Executor.Strategy != null
@@ -156,7 +156,7 @@ namespace Sq1.Gui.Forms {
 						this.ChartFormManager.BacktesterRunSimulation();
 					}
 				} else {
-					this.ChartControl.ChartStreamingConsumer.StreamingTriggeringScriptStop();
+					this.ChartFormManager.Executor.IsStreamingTriggeringScript = false;
 				}
 				this.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 				if (this.ChartFormManager.Strategy != null) {

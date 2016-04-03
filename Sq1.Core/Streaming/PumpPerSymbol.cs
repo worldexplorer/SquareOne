@@ -44,7 +44,7 @@ namespace Sq1.Core.Streaming {
 				return this.bufferPusherThreadId != Thread.CurrentThread.ManagedThreadId;
 			} }
 		bool hasQuoteToPush_nonBlocking {
-			get { return this.hasQuoteToPush.WaitOne(0); }
+			get { return this.IsDisposed ? false : this.hasQuoteToPush.WaitOne(0); }
 			set {
 				if (value == hasQuoteToPush_nonBlocking) {
 					string msg = "DONT_INVOKE_ME_TWICE__I_DONT_WANNA_SIGNAL_AGAIN_THOSE_WHO_ARE_WAITING__YOU_HAVE_TO_FIX_IT";

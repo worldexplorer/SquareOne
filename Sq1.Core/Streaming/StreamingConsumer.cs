@@ -90,7 +90,7 @@ namespace Sq1.Core.Streaming {
 				if (this.StreamingAdapter_nullReported is LivesimStreamingDefault) {
 					return null;
 				}
-				var ret = this.StreamingAdapter_nullReported.StreamingSolidifier;
+				var ret = this.StreamingAdapter_nullReported.StreamingSolidifier_oneForAllSymbols;
 				this.ActionForNullPointer(ret, "SOLIDIFIER_NULL_IN_STREAMING this.Executor.DataSource[" + this.DataSource_nullReported.Name + "].StreamingAdapter[" + this.DataSource_nullReported.StreamingAdapterName + "].StreamingSolidifier=null");
 				return ret;
 			} }

@@ -4,28 +4,28 @@ using Sq1.Core.DataTypes;
 using System.Diagnostics;
 
 namespace Sq1.Core.Streaming {
-	public class SolidifierBarsEmulator {
-		public string			Symbol									{ get; private set; }
-		public BarScaleInterval ScaleInterval							{ get; set; }
-		public int				IntraBarSerno							{ get; private set; }
-		public Bar				BarStreaming_unattached					{ get; private set; }
+	public class BarsEmulator_forSolidifier {
+				string				symbol;									//{ get; private set; }
+				BarScaleInterval	scaleInterval;							//{ get; set; }
+				int					intraBarSerno;							//{ get; private set; }
+		public	Bar					PseudoBarStreaming_unattached			{ get; private set; }
 
-		public Bar				BarLastFormedUnattached_nullUnsafe		{ get; protected set; }
-		public bool				BarLastFormed_unattached_notYetFormed	{ get {
+		public Bar					BarLastFormedUnattached_nullUnsafe		{ get; protected set; }
+		public bool					BarLastFormed_unattached_notYetFormed	{ get {
 			return
 					this.BarLastFormedUnattached_nullUnsafe == null
 				||	this.BarLastFormedUnattached_nullUnsafe.DateTimeOpen == DateTime.MinValue
 				||	double.IsNaN(this.BarLastFormedUnattached_nullUnsafe.Close);
 		} }
 
-		public SolidifierBarsEmulator(string symbol, BarScaleInterval scaleInterval) {
-			Symbol = symbol;
-			ScaleInterval = scaleInterval;
+		public BarsEmulator_forSolidifier(string symbol_passed, BarScaleInterval scaleInterval_passed) {
+			symbol			= symbol_passed;
+			scaleInterval	= scaleInterval_passed;
 			BarLastFormedUnattached_nullUnsafe = null;
-			BarStreaming_unattached = new Bar(this.Symbol, this.ScaleInterval, DateTime.MinValue);
-			IntraBarSerno = 0;
+			PseudoBarStreaming_unattached = new Bar(this.symbol, this.scaleInterval, DateTime.MinValue);
+			intraBarSerno	= 0;
 		}
-		public virtual Quote Quote_cloneBind_enrichWithIntrabarSerno_updateStreamingBar_createNewBar(Quote quote2bCloned) {
+		public virtual Quote Quote_cloneBind_toUnattachedPseudoStreamingBar_enrichWithIntrabarSerno_updateStreamingBar_createNewBar(Quote quote2bCloned) {
 			//if (quote2bCloned.TradedAt == BidOrAsk.UNKNOWN) {
 			if (quote2bCloned.TradedPrice == double.NaN || quote2bCloned.TradedPrice <= 0) {
 				string msg = "CANT_FILL_STREAMING_CLOSE_FROM_BID_OR_ASK_UNKNOWN quote.PriceLastDeal[" + quote2bCloned.TradedPrice + "];"
@@ -35,8 +35,8 @@ namespace Sq1.Core.Streaming {
 				//return null;
 			}
 
-			if (this.BarStreaming_unattached.Symbol != quote2bCloned.Symbol) {
-				string msg = "StreamingBar.Symbol=[" + this.BarStreaming_unattached.Symbol + "]!=quote.Symbol["
+			if (this.PseudoBarStreaming_unattached.Symbol != quote2bCloned.Symbol) {
+				string msg = "StreamingBar.Symbol=[" + this.PseudoBarStreaming_unattached.Symbol + "]!=quote.Symbol["
 					+ quote2bCloned.Symbol + "] (" + quote2bCloned + ")";
 				Assembler.PopupException(msg, null, false);
 				//throw new Exception(msg);
@@ -45,7 +45,7 @@ namespace Sq1.Core.Streaming {
 
 			string source = quote2bCloned.Source;
 			Quote quoteClone_unbound = quote2bCloned.Clone_asCoreQuote();
-			quoteClone_unbound.Source = source + " QCLONE_FOR_" + this.ScaleInterval;
+			quoteClone_unbound.Source = source + " QCLONE_FOR_" + this.scaleInterval;
 
 			// included in if (quoteClone.ServerTime >= StreamingBar.DateTimeNextBarOpenUnconditional) !!!
 			// on very first quote StreamingBar.DateTimeNextBarOpenUnconditional = DateTime.MinValue
@@ -53,54 +53,50 @@ namespace Sq1.Core.Streaming {
 			//SEE_BELOW 	this.initStreamingBarResetIntraBarSerno(quoteClone.ServerTime, quoteClone.PriceLastDeal, quoteClone.Size);
 			//SEE_BELOW }
 
-			if (quoteClone_unbound.ServerTime >= this.BarStreaming_unattached.DateTimeNextBarOpenUnconditional) {
+			if (quoteClone_unbound.ServerTime >= this.PseudoBarStreaming_unattached.DateTimeNextBarOpenUnconditional) {
 				if (this.BarLastFormedUnattached_nullUnsafe != null && this.BarLastFormedUnattached_nullUnsafe.DateTimeOpen == DateTime.MinValue) {
 					string msg = "beware! on the very first quote LastBarFormed.DateTimeOpen == DateTime.MinValue";
 				}
-				this.BarLastFormedUnattached_nullUnsafe = this.BarStreaming_unattached.Clone();
+				this.BarLastFormedUnattached_nullUnsafe = this.PseudoBarStreaming_unattached.Clone();
 
-				this.BarStreaming_unattached		= new Bar(this.Symbol, this.ScaleInterval, quoteClone_unbound.ServerTime);
-				this.BarStreaming_unattached.Open	= quoteClone_unbound.TradedPrice;
-				this.BarStreaming_unattached.High	= quoteClone_unbound.TradedPrice;
-				this.BarStreaming_unattached.Low	= quoteClone_unbound.TradedPrice;
-				this.BarStreaming_unattached.Close	= quoteClone_unbound.TradedPrice;
-				this.BarStreaming_unattached.Volume	= quoteClone_unbound.Size;
-				this.IntraBarSerno = 0;
+				this.PseudoBarStreaming_unattached		= new Bar(this.symbol, this.scaleInterval, quoteClone_unbound.ServerTime);
+				this.PseudoBarStreaming_unattached.Open	= quoteClone_unbound.TradedPrice;
+				this.PseudoBarStreaming_unattached.High	= quoteClone_unbound.TradedPrice;
+				this.PseudoBarStreaming_unattached.Low	= quoteClone_unbound.TradedPrice;
+				this.PseudoBarStreaming_unattached.Close	= quoteClone_unbound.TradedPrice;
+				this.PseudoBarStreaming_unattached.Volume	= quoteClone_unbound.Size;
+				this.intraBarSerno = 0;
 
 				// quoteClone.IntraBarSerno doesn't feel new Bar; can contain 100004 for generatedQuotes;
 				// I only want to reset to 0 when it's attributed to a new Bar; it's unlikely to face a new bar here for generatedQuotes;
-				if (this.IntraBarSerno != 0) {
-					string msg = "NEVER_HAPPENED_SO_FAR STREAMING_JUST_INITED_TO_ZERO WHY_NOW_IT_IS_NOT?";
-					Assembler.PopupException(msg);
-				}
 				if (quoteClone_unbound.IntraBarSerno != 0) {
 					if (quoteClone_unbound.IamInjectedToFillPendingAlerts) {
 						string msg = "NEVER_HAPPENED_SO_FAR GENERATED_QUOTES_ARENT_SUPPOSED_TO_GO_TO_NEXT_BAR";
 						Assembler.PopupException(msg);
 					}
-					// moved down as final result of "Enriching" quoteClone.IntraBarSerno = this.IntraBarSerno;
+					// moved down as a final result of "Enriching": quoteClone.IntraBarSerno = this.IntraBarSerno;
 				}
-				if (this.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
+				if (this.intraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
 					string msg = "NEVER_HAPPENED_SO_FAR BAR_FACTORY_INTRABAR_SERNO_NEVER_GOES_TO_SYNTHETIC_ZONE";
 					Assembler.PopupException(msg);
 				}
 			} else {
-				if (double.IsNaN(this.BarStreaming_unattached.Open) || this.BarStreaming_unattached.Open == 0.0) {
+				if (double.IsNaN(this.PseudoBarStreaming_unattached.Open) || this.PseudoBarStreaming_unattached.Open == 0.0) {
 					string msg = "we should've had StreamingBar already initialized with first quote of a bar"
 						+ "; should only happen on first quote of first bar ever of a symbol freshly added to DataSource";
 					if (double.IsNaN(quoteClone_unbound.TradedPrice)) {
 						msg = "INITIALIZED_OPEN_WITH_NAN_FROM_quoteClone.LastDealPrice " + msg;
 					}
 					Assembler.PopupException(msg, null, false);
-					this.BarStreaming_unattached.Open = quoteClone_unbound.TradedPrice;
+					this.PseudoBarStreaming_unattached.Open = quoteClone_unbound.TradedPrice;
 					//this.StreamingBarUnattached.High = quoteClone.LastDealPrice;
 					//this.StreamingBarUnattached.Low = quoteClone.LastDealPrice;
 				}
 				if (quoteClone_unbound.Size > 0) {
 					// spread can be anywhere outside the bar; but a bar freezes only traded spreads inside (Quotes DDE table from Quik, not Level2-generated with Size=0)
-					this.BarStreaming_unattached.MergeExpandHLCV_forStreamingBarUnattached(quoteClone_unbound);
+					bool barExpanded = this.PseudoBarStreaming_unattached.MergeExpandHLCV_forStreamingBarUnattached(quoteClone_unbound);
 				}
-				this.IntraBarSerno++;
+				this.intraBarSerno++;
 			}
 
 			if (quoteClone_unbound.IntraBarSerno != -1) {
@@ -108,7 +104,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg, null, true);
 			}
 
-			quoteClone_unbound.IntraBarSerno  = this.IntraBarSerno;
+			quoteClone_unbound.IntraBarSerno  = this.intraBarSerno;
 
 			if (quoteClone_unbound.ParentBarStreaming != null) {
 				string msg = "ARE_YOU_SURE_ITS_REASONABLE_TO_SET_quoteClone.IntraBarSerno_OUTSIDE_StreamingBarFactory?..";
@@ -133,34 +129,34 @@ namespace Sq1.Core.Streaming {
 			//}
 			
 			Quote quoteClone_bound = quoteClone_unbound;
-			quoteClone_bound.Bind_streamingBar_unattached(this.BarStreaming_unattached);
+			quoteClone_bound.StreamingBar_Replace(this.PseudoBarStreaming_unattached);
 	
 			return quoteClone_bound;
 		}
-		public void InitWithStreamingBarInsteadOfEmpty(Bar StreamingBarInsteadOfEmpty) {
+		public void InitWithStreamingBar_insteadOfEmpty(Bar StreamingBar_insteadOfEmpty) {
 			string msg = "";
-			if (StreamingBarInsteadOfEmpty.DateTimeOpen <= this.BarStreaming_unattached.DateTimeOpen) {
-				msg += "StreamingBarInsteadOfEmpty.DateTimeOpen[" + StreamingBarInsteadOfEmpty.DateTimeOpen
-					+ "] <= CurrentStreamingBar.Open[" + this.BarStreaming_unattached.Open + "]";
+			if (StreamingBar_insteadOfEmpty.DateTimeOpen <= this.PseudoBarStreaming_unattached.DateTimeOpen) {
+				msg += "StreamingBar_insteadOfEmpty.DateTimeOpen[" + StreamingBar_insteadOfEmpty.DateTimeOpen
+					+ "] <= CurrentStreamingBar.Open[" + this.PseudoBarStreaming_unattached.Open + "]";
 				//log.Warn(msg + " // " + this);
 				return;
 			}
-			if (StreamingBarInsteadOfEmpty.DateTimeOpen == DateTime.MinValue) {
-				msg += "StreamingBarInsteadOfEmpty.DateTimeOpen[" + StreamingBarInsteadOfEmpty.DateTimeOpen + "] == DateTime.MinValue ";
+			if (StreamingBar_insteadOfEmpty.DateTimeOpen == DateTime.MinValue) {
+				msg += "StreamingBar_insteadOfEmpty.DateTimeOpen[" + StreamingBar_insteadOfEmpty.DateTimeOpen + "] == DateTime.MinValue ";
 			}
-			if (double.IsNaN(StreamingBarInsteadOfEmpty.Open)) {
-				msg += "double.IsNaN(StreamingBarInsteadOfEmpty.Open[" + StreamingBarInsteadOfEmpty.Open + "]) ";
+			if (double.IsNaN(StreamingBar_insteadOfEmpty.Open)) {
+				msg += "double.IsNaN(StreamingBar_insteadOfEmpty.Open[" + StreamingBar_insteadOfEmpty.Open + "]) ";
 			}
-			if (StreamingBarInsteadOfEmpty.Open == 0) {
-				msg += "StreamingBarInsteadOfEmpty.Open[" + StreamingBarInsteadOfEmpty.Open + "] == 0 ";
+			if (StreamingBar_insteadOfEmpty.Open == 0) {
+				msg += "StreamingBar_insteadOfEmpty.Open[" + StreamingBar_insteadOfEmpty.Open + "] == 0 ";
 			}
-			this.BarStreaming_unattached = StreamingBarInsteadOfEmpty.Clone();
+			this.PseudoBarStreaming_unattached = StreamingBar_insteadOfEmpty.Clone();
 			if (string.IsNullOrEmpty(msg) == false) {
-				Assembler.PopupException("InitWithStreamingBarInsteadOfEmpty: " + msg + " // " + this);
+				Assembler.PopupException("InitWithStreamingBar_insteadOfEmpty: " + msg + " // " + this);
 			}
 		}
 		public override string ToString() {
-			return this.Symbol + "_" + this.ScaleInterval.ToString() + ":StreamingBar[" + this.BarStreaming_unattached.ToString() + "]";
+			return this.symbol + "_" + this.scaleInterval.ToString() + ":StreamingBar[" + this.PseudoBarStreaming_unattached.ToString() + "]";
 		}
 
 		//internal void BarLastStatic_absorbFromStream_onBacktestComplete(SymbolScaleStream streamBacktest) {

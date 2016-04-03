@@ -9,6 +9,10 @@ namespace Sq1.Core.Streaming {
 		public	StreamingConsumerChart	Consumer					{ get; private set;}
 
 		public BinderAttacher_perStreamingChart(SymbolScaleStreamChart symbolScaleStream, StreamingConsumerChart consumer) {
+			if (this.Consumer.ConsumerBars_toAppendInto != null) {
+				string msg = "I_MAY_POSTPONE_THE_CHECK__BUT_WONT_TOLERATE_EMPTY_BARS_WHEN_BINDING_ATTACHING";
+				Assembler.PopupException(msg, null, false);
+			}
 			this.symbolScaleStream_chart = symbolScaleStream;
 			this.Consumer = consumer;
 		}
@@ -63,7 +67,8 @@ namespace Sq1.Core.Streaming {
 			//    return quote;
 			//}
 			//if (this.symbolScaleStream_chart.UnattachedStreamingBar_factoryPerSymbolScale.BarStreaming_unattached == null) {
-			if (this.symbolScaleStream_chart.GetBarsOfChart(this.Consumer) == null) {
+			//if (this.symbolScaleStream_chart.GetBarsOfChart(this.Consumer) == null) {
+			if (this.Consumer.ConsumerBars_toAppendInto == null) {
 				string msg = "AM_I_ON_FIRST_QUOTE_OF_THE_BAR";
 				Assembler.PopupException(msg);
 				return quote;
@@ -108,7 +113,6 @@ namespace Sq1.Core.Streaming {
 			if (quote.ParentBarStreaming == null) {
 			}
 
-
 			consumerBars.BarStreaming_overrideDOHLCVwith(quote.ParentBarStreaming);
 			quote.Replace_myStreamingBar_withConsumersStreamingBar(consumerBars.BarStreaming_nullUnsafe);
 
@@ -116,11 +120,12 @@ namespace Sq1.Core.Streaming {
 		}
 		public override string ToString() {
 			//string ret = "BarFactory[" + this.symbolScaleStream_chart.UnattachedStreamingBar_factoryPerSymbolScale.ToString() + "]";
-			string ret = "BarFactory[" + this.symbolScaleStream_chart.GetBarsOfChart(this.Consumer) + "]";
-			if (this.Consumer.ConsumerBars_toAppendInto != null) {
-				ret += " with ConsumerBars[" + this.Consumer.ConsumerBars_toAppendInto.ToString() + "]";
-			} else {
+			string ret = "BinderAttacher[" + this.symbolScaleStream_chart.SymbolScaleInterval + "]";
+			if (this.Consumer.ConsumerBars_toAppendInto == null) {
 				ret += " for Consumer[" + this.Consumer.ToString() + "]";
+				Assembler.PopupException("NULL_BARS_TO_APPEND_TO" + ret);
+			} else {
+			    ret += " with ConsumerBars[" + this.Consumer.ConsumerBars_toAppendInto.ToString() + "]";
 			}
 			return ret;
 		}

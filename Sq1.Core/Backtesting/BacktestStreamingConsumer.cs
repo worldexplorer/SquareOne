@@ -7,10 +7,15 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Charting;
 
 namespace Sq1.Core.Backtesting {
+	//v1
 	public class BacktestStreamingConsumer : StreamingConsumerChart {
+	//v2 public class BacktestStreamingConsumer : StreamingConsumer {
 				Backtester backtester;
 
-		public	BacktestStreamingConsumer(Backtester backtesterPassed) : base(backtesterPassed.Executor.ChartShadow) {
+		public	BacktestStreamingConsumer(Backtester backtesterPassed)
+				//v1 THROWS_KOZ_CHART_SHADOW_IS_NULL_HERE_NOW
+					: base(backtesterPassed.Executor.ChartShadow) {
+				//v2 : base() {
 			this.backtester = backtesterPassed;
 		}
 

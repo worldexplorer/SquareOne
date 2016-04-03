@@ -414,12 +414,20 @@ namespace Sq1.Core.StrategyBase {
 					Assembler.PopupException(msg);
 				}
 			}
+			Bars oldBars = this.Bars;
 			this.Bars = barsClicked;
-			if (this.ChartShadow != null && this.ChartShadow.ChartStreamingConsumer != null && subscribeDownstream) {
-				this.ChartShadow.ChartStreamingConsumer.StreamingSubscribe("SUBSCRIBING_TO_NEW_BARS oldBars[" + this.Bars + "]=>newBars[" + barsClicked + "]");
+			if (this.Bars.Symbol.Contains(Bars.RANDOM_GENERATED_BARS)) {
+				string msg = "IF_I_CONTINUE_QUIK_STREAMING_WILL_REGISTER_A_DDE_SERVER_FOR_THIS_SYMBOL";
+				return;
+			}
+
+			if (this.ChartShadow != null && this.ChartShadow.ChartStreamingConsumer != null) {
+				if (subscribeDownstream) {
+					this.ChartShadow.ChartStreamingConsumer.StreamingSubscribe("SUBSCRIBING_TO_NEW_BARS oldBars[" + oldBars + "]=>this.Bars[" + this.Bars + "]");
+				}
 			} else {
-				string msg = "LOOKS_LIKE_WE_SPAWN_REUSABLE_EXECUTORS_FOR_PARALLEL_CHARTLESS_BACKTESTING";
-				Assembler.PopupException(msg);
+				string msg1 = "LOOKS_LIKE_WE_SPAWN_REUSABLE_EXECUTORS_FOR_PARALLEL_CHARTLESS_BACKTESTING";
+				Assembler.PopupException(msg1);
 			}
 
 			if (this.Bars.DataSource == null) {

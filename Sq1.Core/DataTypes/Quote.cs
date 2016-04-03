@@ -129,7 +129,7 @@ namespace Sq1.Core.DataTypes {
 		//    LocalTime = (localTimeEqualsToServerTimeForGenerated != DateTime.MinValue)
 		//        ? localTimeEqualsToServerTimeForGenerated : DateTime.Now;
 		//}
-		public void Replace_myStreamingBar_withConsumersStreamingBar(Bar streamingParentBar) {
+		public void StreamingBar_Replace(Bar streamingParentBar, bool streamingParentBars_mustBeNullforSolidifier = false) {
 			string msig = " //(" + streamingParentBar.ToString() + ") => quote[" + this.ToString() + "]";
 			if (streamingParentBar == null) {
 				string msg = "NULL_BAR_NOT_ATTACHED_TO_THIS_QUOTE";
@@ -143,9 +143,16 @@ namespace Sq1.Core.DataTypes {
 				string msg = "SYMBOL_MISMATCH__CANT_SET_PARENT_BAR_FOR_QUOTE quote.Symbol[" + this.Symbol + "] != parentBar.Symbol[" + streamingParentBar.Symbol + "]";
 				Assembler.PopupException(msg);
 			}
-			if (streamingParentBar.IsBarStreaming == false) {
-				string msg = "UNATTACHED_BAR_ASSIGNED_INTO_THIS_QUOTE PREVENTING[I_REFUSE_TO_PUSH COULD_NOT_ENRICH_QUOTE]";
-				Assembler.PopupException(msg + msig, null, false);
+			if (streamingParentBars_mustBeNullforSolidifier) {
+				if (streamingParentBar.ParentBars != null) {
+					string msg = "I_REFUSE_TO_BIND_QUOTE_TO_ATTACHED_STREAMING_BAR____MUST_BE_NULL I_REFUSE_TO_PUSH_QUOTE_TO_SOLIDIFIER";
+					Assembler.PopupException(msg + msig, null, true);
+				}
+			} else {
+				if (streamingParentBar.ParentBars == null) {
+					string msg = "I_REFUSE_TO_BIND_QUOTE_TO_UNATTACHED_STREAMING_BAR";
+					Assembler.PopupException(msg + msig, null, true);
+				}
 			}
 			if (this.ParentBarStreaming == streamingParentBar) {
 				string msg = "BAR_ALREADY_ATTACHED__UPSTACK_DIDNT_REALIZE_THIS";
@@ -153,12 +160,12 @@ namespace Sq1.Core.DataTypes {
 			}
 			this.ParentBarStreaming = streamingParentBar;
 		}
-		public void Bind_streamingBar_unattached(Bar streamingBar_fromFactory_forUnattachedBars) {
-			if (streamingBar_fromFactory_forUnattachedBars == null) {
+		public void StreamingBar_Bind_toConsumersStreamingBar_expandedAttached(Bar streamingBar_fromBars) {
+			if (streamingBar_fromBars == null) {
 				string msg = "I_REFUSE_TO_BIND_TO_NULL_STREAMING_BAR";
 				throw new Exception(msg);
 			}
-			if (streamingBar_fromFactory_forUnattachedBars.ParentBars != null) {
+			if (streamingBar_fromBars.ParentBars != null) {
 				string msg = "I_REFUSE_TO_BIND_ATTACHED_BAR__MUST_HAVE_NO_PARENTS";
 				throw new Exception(msg);
 			}
@@ -166,7 +173,7 @@ namespace Sq1.Core.DataTypes {
 				string msg = "I_REFUSE_TO_BIND_UNATTACHED_STREAMING_BAR__THIS_QUOTE_IS_ALREADY_BOUND__USE_Replace_myStreamingBar_withConsumersStreamingBar()";
 				throw new Exception(msg);
 			}
-			this.ParentBarStreaming = streamingBar_fromFactory_forUnattachedBars;
+			this.StreamingBar_Replace(streamingBar_fromBars, false);
 		}
 
 		#region SORRY_FOR_THE_MESS__I_NEED_TO_DERIVE_IDENTICAL_ONLY_FOR_GENERATED__IF_YOU_NEED_IT_IN_BASE_QUOTE_MOVE_IT_THERE
@@ -178,6 +185,10 @@ namespace Sq1.Core.DataTypes {
 				return this;
 			}
 			Quote clone = (Quote)this.MemberwiseClone();
+			if (clone.ParentBarStreaming != null) {
+				Bar barCloned_justInCase = clone.ParentBarStreaming.CloneDetached();
+				clone.StreamingBar_Replace(barCloned_justInCase);
+			}
 			clone.Source = prefix + this.ToStringShort() + " " + clone.Source;
 			return clone;
 		}

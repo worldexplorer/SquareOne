@@ -113,12 +113,13 @@ namespace Sq1.Charting {
 			// this.Initialize()_BELOW_MAKES_DESIGNER_THROW_DUE_TO_ASSEMBLER_NON_INSTANTIATED
 			if (base.DesignMode) return;
 
+			return;	// DdeTableDepth was dealing with "stuck" bars
 			//this.chartRenderer.Initialize(this);
 			BarScaleInterval chartShouldntCare = new BarScaleInterval(BarScale.Minute, 5);
 			//REFLECTION_FAILS_FOR_DESIGNER BarsBasic.GenerateRandom(chartShouldntCare)
 			//this.Initialize(BarsBasic.GenerateRandom(chartShouldntCare));
 			int barsToGenerate = 250;
-			Bars generated = new Bars("RANDOM_GENERATED_BARS:" + barsToGenerate, chartShouldntCare, "test-ChartControl-DesignMode");
+			Bars generated = new Bars(Bars.RANDOM_GENERATED_BARS + ":" + barsToGenerate, chartShouldntCare, "test-ChartControl-DesignMode");
 			generated.GenerateAppend(barsToGenerate);
 			generated.SymbolInfo.PriceDecimals = 0;
 			this.ChartSettings.ScrollPositionAtBarIndex = barsToGenerate;

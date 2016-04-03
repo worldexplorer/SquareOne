@@ -14,6 +14,7 @@ namespace Sq1.Core.Backtesting {
 		// without [JsonIgnore] Livesim children will have these properties in JSON
 		[JsonIgnore] public BacktestSpreadModeler SpreadModeler;
 		[JsonIgnore] public const double PERCENTAGE_DEFAULT= 0.005;
+		//[JsonIgnore] internal DistributorBacktest DistributorBacktest;
 
 		public BacktestStreaming(string reasonToExist) : base(reasonToExist) {
 			base.Name = "BacktestStreamingAdapter";
@@ -24,6 +25,7 @@ namespace Sq1.Core.Backtesting {
 			//for medianPrice[80.36],percentageOfMedian[0.01] => spread[0.008036] => Bid[~80.35598],Ask[~80.36402]
 			this.SpreadModeler = new BacktestSpreadModelerPercentage(PERCENTAGE_DEFAULT);
 			base.QuotePumpSeparatePushingThreadEnabled = false;
+			//this.DistributorBacktest = new DistributorBacktest();
 		}
 
 		public virtual void PushQuoteGenerated(QuoteGenerated quote) {

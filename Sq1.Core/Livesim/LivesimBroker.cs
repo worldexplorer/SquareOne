@@ -152,7 +152,7 @@ namespace Sq1.Core.Livesim {
 
 				//QuoteGenerated quoteAttachedToStreamingToConsumerBars = quoteUnattached.DeriveIdenticalButFresh();
 				quoteBoundAttached = quoteBoundUnattached.Clone_asCoreQuote();	// do you really need a clone here???
-				quoteBoundAttached.Replace_myStreamingBar_withConsumersStreamingBar(barStreaming);
+				quoteBoundAttached.StreamingBar_Replace(barStreaming);
 			}
 
 			int pendingCountPre = this.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Count;

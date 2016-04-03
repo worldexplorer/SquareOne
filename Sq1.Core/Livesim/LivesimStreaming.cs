@@ -41,7 +41,7 @@ namespace Sq1.Core.Livesim {
 		//}
 		public LivesimStreaming(string reasonToExist) : base(reasonToExist) {
 			base.Name						= "LivesimStreaming-NOT_ATTACHED_TO_DATASOURCE_INVOKE-InitializeDataSource_inverse()";
-			base.StreamingSolidifier		= null;
+			base.StreamingSolidifier_oneForAllSymbols		= null;
 			base.QuotePumpSeparatePushingThreadEnabled = true;
 			this.UnpausedMre				= new ManualResetEvent(true);
 			//USE_ATOMIC_FROM_BASE this.LevelTwoGenerator			= new LevelTwoGeneratorLivesim(this);

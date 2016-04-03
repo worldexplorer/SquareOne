@@ -76,7 +76,9 @@
     </Compile>
     <Compile Include="Backtesting\BacktestQuotesGeneratorTenStroke.cs" />
     <Compile Include="Backtesting\BacktestQuotesGeneratorSixteenStroke.cs" />
+    <Compile Include="Backtesting\DistributorBacktest.cs" />
     <Compile Include="Backtesting\QuoteGenerated.cs" />
+    <Compile Include="Backtesting\StreamingConsumerBacktest.cs" />
     <Compile Include="Broker\BrokerAdapter.EditorSupport.cs">
       <DependentUpon>BrokerAdapter.cs</DependentUpon>
     </Compile>
@@ -365,7 +367,6 @@
     <Compile Include="StrategyBase\Strategy.ScriptContext.cs">
       <DependentUpon>Strategy.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\BinderAttacher_perStreamingChart.cs" />
     <Compile Include="Streaming\Distributor.Channels.cs">
       <DependentUpon>Distributor.cs</DependentUpon>
     </Compile>
@@ -407,7 +408,7 @@
     <Compile Include="Streaming\SymbolScaleStreamSolidifier.Subscribe.cs">
       <DependentUpon>SymbolScaleStreamSolidifier.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\SolidifierBarsEmulator.cs" />
+    <Compile Include="Streaming\BarsEmulator_forSolidifier.cs" />
     <Compile Include="Streaming\StreamingEditor.EventConsumer.cs">
       <DependentUpon>StreamingEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>

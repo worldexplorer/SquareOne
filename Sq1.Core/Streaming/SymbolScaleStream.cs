@@ -9,10 +9,13 @@ using Sq1.Core.Charting;
 namespace Sq1.Core.Streaming {
 	public abstract partial class SymbolScaleStream<STREAMING_CONSUMER_CHILD>
 											  where STREAMING_CONSUMER_CHILD : StreamingConsumer {
-		public		string										ReasonIwasCreated_propagatedFromDistributor;
-		protected	SymbolChannel<STREAMING_CONSUMER_CHILD>		SymbolChannel;
+
+					Type						ofWhatAmI;
 		public		string						Symbol			{ get; protected set; }
 		public		BarScaleInterval			ScaleInterval	{ get; protected set; }
+
+		public		string										ReasonIwasCreated_propagatedFromDistributor;
+		protected	SymbolChannel<STREAMING_CONSUMER_CHILD>		SymbolChannel;
 
 		//NB#1	QuotePump.PushStraightOrBuffered replaced this.PushQuoteToConsumers to:
 		//		1) set Streaming free without necessity to wait for Script.OnNewQuote/Bar and deliver the next quote ASAP;
@@ -23,7 +26,8 @@ namespace Sq1.Core.Streaming {
 		//public	QuotePumpPerSymbol			QuotePump_nullUnsafe									{ get { return this.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim as QuotePumpPerSymbol; } }
 		//public	bool						ImQueueNotPump_trueOnlyForBacktest						{ get { return this.QuotePump_nullUnsafe == null; } }
 
-		protected SymbolScaleStream() {
+		SymbolScaleStream() {
+			ofWhatAmI			= typeof(STREAMING_CONSUMER_CHILD);
 			LockConsumersQuote	= new object();
 			LockConsumersBar	= new object();
 			ConsumersQuote		= new List<STREAMING_CONSUMER_CHILD>();
@@ -58,7 +62,7 @@ namespace Sq1.Core.Streaming {
 			//}
 		}
 
-		public string SymbolScaleInterval { get { return this.Symbol + "_" + this.ScaleInterval; } }
+		public string SymbolScaleInterval { get { return "<" + this.ofWhatAmI.Name + "> " + this.Symbol + "_" + this.ScaleInterval; } }
 		public override string ToString() { return this.SymbolScaleInterval + ":Quotes[" + this.ConsumersQuoteAsString + "],Bars[" + this.ConsumersBarAsString + "]"; }
 		public string ToStringShort { get { return this.SymbolScaleInterval + "(b" + this.ConsumersBar.Count + "+" + this.ConsumersQuote.Count + "q)"; } }
 		public string ToStringNames { get { return this.SymbolScaleInterval + ":Quotes[" + this.ConsumersQuoteNames + "],Bars[" + this.ConsumersBarNames + "]"; } }
@@ -73,7 +77,7 @@ namespace Sq1.Core.Streaming {
 			}
 			foreach (STREAMING_CONSUMER_CHILD barConsumer in this.ConsumersBar) {
 				if (barConsumer is StreamingConsumerSolidifier == false) {
-					quoteLastReceived.Replace_myStreamingBar_withConsumersStreamingBar(barConsumer.ConsumerBars_toAppendInto.BarStreaming_nullUnsafe);
+					quoteLastReceived.StreamingBar_Replace(barConsumer.ConsumerBars_toAppendInto.BarStreaming_nullUnsafe);
 				}
 				barConsumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteLastReceived);
 			}
