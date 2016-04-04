@@ -11,7 +11,6 @@ namespace Sq1.Core.Backtesting {
 		public readonly int						BacktestStrokesPerBarAsInt;
 
 		public		string					REASON_TO_EXIST										{ get; protected set; }
-		public		int						LastGeneratedAbsnoPerSymbol;
 		public		string					WhoGeneratedQuote									{ get; protected set; }
 		protected	List<QuoteGenerated>	Quotes_generatedForOneBar_amountDependsOnEngineType;
 					Backtester				backtester;
@@ -22,7 +21,6 @@ namespace Sq1.Core.Backtesting {
 			this.BacktestStrokesPerBar			= engineType;
 			this.BacktestStrokesPerBarAsInt		= (int) this.BacktestStrokesPerBar;
 			this.Quotes_generatedForOneBar_amountDependsOnEngineType		= new List<QuoteGenerated>();
-			this.LastGeneratedAbsnoPerSymbol	= -1;
 
 			string subclassName = this.GetType().Name;
 			//string BacktestQuotesGeneratorString = base.GetType().Name;	// assuming no grand-children; inheritance tree is ONE level deep
@@ -162,7 +160,6 @@ namespace Sq1.Core.Backtesting {
 				}
 				#endif
 
-				closestOnOurWay.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;		// DONT_FORGET_TO_ASSIGN_LATEST_ABSNO_TO_QUOTE_TO_REACH
 				closestOnOurWay.IntraBarSerno += injectedPushed.Count;						// first quote has IntraBarSerno=-1, rimemba?
 
 				//v1 "Received" is for Quik/InteractiveBrokers; "Generated" is for Backtest/Livesim  this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.PushQuoteReceived(closestOnOurWay);
@@ -204,12 +201,22 @@ namespace Sq1.Core.Backtesting {
 				return null;
 			}
 
-			Quote quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde =
-				this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
-					.GetQuoteCurrent_forSymbol_nullUnsafe(quoteToReach.Symbol);
+			//v1
+			//Quote quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde =
+			//    this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
+			//        .GetQuoteCurrent_forSymbol_nullUnsafe(quoteToReach.Symbol);
+			//v2
+			Sq1.Core.Streaming.StreamingAdapter streaming = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe;
+			Sq1.Core.Streaming.StreamingDataSnapshot snap = streaming.StreamingDataSnapshot;
+			Livesim.LivesimStreaming livesimStreaming = streaming as Livesim.LivesimStreaming;
+			if (this.backtester.ImRunningLivesim && livesimStreaming != null) {
+				snap = livesimStreaming.StreamingOriginal.StreamingDataSnapshot;
+			}
+
+			Quote quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde = snap.GetQuoteCurrent_forSymbol_nullUnsafe(quoteToReach.Symbol);
 
 			if (quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde == null) {
-				string msg = "I_CANNOT_CONTINUE_LIVESIM_FIXME#1";
+				string msg = "I_CANNOT_CONTINUE_LIVESIM_FIXME__1";
 				Assembler.PopupException(msg + msig, null, false);
 				return null;
 			}
@@ -220,7 +227,7 @@ namespace Sq1.Core.Backtesting {
 					+ " Source[" + quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde.Source + "]";
 				quotePrev = new QuoteGenerated(quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde, bar2simulate);
 				if (quotePrev == null) {
-					string msg1 = "I_CANNOT_CONTINUE_LIVESIM_FIXME#1";
+					string msg1 = "I_CANNOT_CONTINUE_LIVESIM_FIXME__2";
 					Assembler.PopupException(msg1 + msig);
 					return null;
 				}
@@ -375,41 +382,14 @@ namespace Sq1.Core.Backtesting {
 													double.NaN, double.NaN, alert.Qty);
 
 			//ret.Source = "GENERATED_TO_FILL_" + alert.ToString();			// PROFILER_SAID_TOO_SLOW + alert.ToString();
-			ret.Source = "GENERATED_TO_FILL_alert@bar#" + alert.PlacedBarIndex;
+			ret.Source = Quote.GENERATED_TO_FILL_ALERT + "@bar#" + alert.PlacedBarIndex;
 			ret.Size = alert.Qty;
+			//v1
 			ret.ParentBarSimulated = bar2simulate;
+			//v2 ret.ParentBarSimulated = alert.PlacedBar;	// most likely O=H=L=C
 
 			//v2
 			double priceScriptAligned = alert.PriceEmitted;
-
-			//#if DEBUG
-			////v1
-			//double priceScriptAligned1 = this.backtester.Executor.AlertPrice_alignToPriceLevel(alert.Bars, alert.PriceScript, true,
-			//	alert.PositionLongShortFromDirection, alert.MarketLimitStop);
-			////quick check
-			//if (priceScriptAligned1 != alert.PriceScript) {
-			//	if (alert.MarketLimitStop == MarketLimitStop.Market) {
-			//		string msg = "WHY_YOU_DID_CHANGE_THE_PRICE__PRICE_SCRIPT_MUST_BE_ALREADY_GOOD";
-			//		Assembler.PopupException(msg);
-			//	}
-			//}
-			////long check, switch marketSim calculations to alert.PriceScriptAligned 
-			////v1 if (priceScriptAligned != alert.PriceScriptAligned) {
-			////v2 
-			//bool alignedDifferently_iHateDoublesComparison = Math.Round(priceScriptAligned, 1) != Math.Round(alert.PriceScriptAligned, 1);
-			//if (alignedDifferently_iHateDoublesComparison) {
-			//	string msg = "FIX_Alert.PriceScriptAligned";
-			//	Assembler.PopupException(msg);
-			//} else {
-			//	string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
-			//	//Assembler.PopupException(msg, null, false);
-			//}
-
-			//if (alert.MarketLimitStop.ToString() != alert.MarketLimitStopAsString) {
-			//	string msg = "IT_WAS_TIDAL_OR_OTHER_EXOTIC_MARKET_ORDER";
-			//	//Assembler.PopupException(msg);
-			//}
-			//#endif
 
 			//v1
 			//Quote quotePrevDowncasted = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
@@ -421,14 +401,26 @@ namespace Sq1.Core.Backtesting {
 			//}
 
 			//v2
-			Quote quotePrev_QuoteGenerated_orQuoteQuik_irretraceableAfterDde =
-				this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
-					.GetQuoteCurrent_forSymbol_nullUnsafe(alert.Symbol);
-			QuoteGenerated quotePrev = quotePrev_QuoteGenerated_orQuoteQuik_irretraceableAfterDde as QuoteGenerated;
+			//Quote quotePrev_QuoteGenerated_orQuoteQuik_irretraceableAfterDde =
+			//    this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
+			//        .GetQuoteCurrent_forSymbol_nullUnsafe(alert.Symbol);
+
+			//v3
+			Sq1.Core.Streaming.StreamingAdapter streaming = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe;
+			Sq1.Core.Streaming.StreamingDataSnapshot snap = streaming.StreamingDataSnapshot;
+			Livesim.LivesimStreaming livesimStreaming = streaming as Livesim.LivesimStreaming;
+			if (this.backtester.ImRunningLivesim && livesimStreaming != null) {
+				snap = livesimStreaming.StreamingOriginal.StreamingDataSnapshot;
+			}
+
+			Quote quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde = snap.GetQuoteCurrent_forSymbol_nullUnsafe(alert.Symbol);
+
+
+			QuoteGenerated quotePrev = quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde as QuoteGenerated;
 			if (quotePrev == null) {
 				string msg = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"
-					+ " Source[" + quotePrev_QuoteGenerated_orQuoteQuik_irretraceableAfterDde.Source + "]";
-				quotePrev = new QuoteGenerated(quotePrev_QuoteGenerated_orQuoteQuik_irretraceableAfterDde, bar2simulate);
+					+ " Source[" + quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde.Source + "]";
+				quotePrev = new QuoteGenerated(quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde, bar2simulate);
 			}
 
 			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.SpreadModeler;
@@ -518,6 +510,7 @@ namespace Sq1.Core.Backtesting {
 					throw new Exception("ALERT_TYPE_UNKNOWN MarketLimitStop[" + alert.MarketLimitStop + "] is not Market/Limit/Stop modelQuote_thatCouldFillAlert()");
 			}
 
+			ret.AbsnoPerSymbol = quotePrev.AbsnoPerSymbol + 1;
 			return ret;
 		}
 		public virtual List<QuoteGenerated> Generate_quotesFromBar_avoidClearing(Bar barSimulated) {

@@ -144,7 +144,7 @@ namespace Sq1.Core.Streaming {
 			if (this.ChannelsBySymbol.ContainsKey(symbol) == false) {
 				string msg = "LIVESIM_WITH_OWN_IMPLEMENTATION_SHOULD_HAVE_BEEN_SUBSCRIBED_TO_LIVESIMMING_BARS"
 					+ " YOU_REQUESTED_CHANNEL_THAT_YOU_DIDNT_TELL_ME_TO_CREATE";
-				Assembler.PopupException(msg, null, false);
+				// WILL_POPUP_UPSTACK_SEE[okayForDistribSolidifiers_toBe_empty] Assembler.PopupException(msg, null, false);
 				return null;
 			}
 			SymbolChannel<STREAMING_CONSUMER_CHILD> ret = this.ChannelsBySymbol[symbol];

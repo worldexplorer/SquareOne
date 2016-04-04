@@ -68,7 +68,7 @@ namespace Sq1.Core.Execution {
 				return;
 			}
 				
-			positionOpening.SernoAbs = ++this.positionSernoAbs;
+			positionOpening.SernoAbs = this.positionSernoAbs + 1;
 			this.PositionsMaster			.AddOpened_step1of2(positionOpening, this, msig);
 			this.PositionsOpenedAfterExec	.AddOpened_step1of2(positionOpening, this, msig);
 			this.PositionsOpenNow			.AddOpened_step1of2(positionOpening, this, msig);

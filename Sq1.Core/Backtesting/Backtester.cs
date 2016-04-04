@@ -266,8 +266,8 @@ namespace Sq1.Core.Backtesting {
 					string msg = "YOU_DIDNT_RESTORE_DISTRIBUTOR_PROPERLY_AFTER_LIVESIM";
 					Assembler.PopupException(msg);
 				}
-				//distr.ConsumerQuoteSubscribe(this.backtestQuoteBarConsumer, false);
-				//distr.ConsumerBarSubscribe  (this.backtestQuoteBarConsumer, false);
+				distr.ConsumerQuoteSubscribe(this.backtestQuoteBarConsumer, false);
+				distr.ConsumerBarSubscribe  (this.backtestQuoteBarConsumer, false);
 
 				//v2
 				//BacktestStreaming streaming = this.BacktestDataSource.StreamingAsBacktest_nullUnsafe;

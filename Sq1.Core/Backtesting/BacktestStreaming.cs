@@ -26,6 +26,7 @@ namespace Sq1.Core.Backtesting {
 			this.SpreadModeler = new BacktestSpreadModelerPercentage(PERCENTAGE_DEFAULT);
 			base.QuotePumpSeparatePushingThreadEnabled = false;
 			//this.DistributorBacktest = new DistributorBacktest();
+			base.DistributorSolidifiers_substitutedDuringLivesim = null;
 		}
 
 		public virtual void PushQuoteGenerated(QuoteGenerated quote) {

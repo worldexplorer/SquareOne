@@ -62,6 +62,7 @@ namespace Sq1.Core.Streaming {
 					Assembler.PopupException(msg);
 				}
 				this.signalledTo_pauseUnpauseAbort = false;
+				Thread.Sleep(10);	// that helped somewhere else
 				// avoiding 100%CPU after livesim paused   original Solidifier/Charts pumps; was done by "fake gateway open" to process pauseRequested=true		in signalTo_pauseUnpauseAbort()
 				// avoiding 100%CPU after livesim unpaused original Solidifier/Charts pumps; was done by "fake gateway open" to process unPauseRequested=true	in signalTo_pauseUnpauseAbort()
 				this.hasQuoteToPush_nonBlocking  = false;
@@ -103,7 +104,7 @@ namespace Sq1.Core.Streaming {
 				this.confirmThreadExited.Reset();
 				this.exitPushingThreadRequested = true;
 				this.signalTo_pauseUnpauseAbort();
-				bool exitConfirmed = this.confirmThreadExited.WaitOne(this.heartbeatTimeout * 2);
+				bool exitConfirmed = this.confirmThreadExited.WaitOne(this.heartbeatTimeout * 5);
 				string msg = exitConfirmed ? "THREAD_EXITED__" : "EXITING_THREAD_DIDNT_CONFIRM_ITS_OWN_EXIT__";
 				Assembler.PopupException(msg + msig, null, false);
 			} catch (Exception ex) {

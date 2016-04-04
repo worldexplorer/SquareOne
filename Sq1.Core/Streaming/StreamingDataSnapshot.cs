@@ -106,11 +106,13 @@ namespace Sq1.Core.Streaming {
 				if (this.level2_lastPrevQuotesUnbound_bySymbol.ContainsKey(symbol, this, msig) == false) return null;
 				LevelTwo level2 = this.level2_lastPrevQuotesUnbound_bySymbol.GetAtKey(symbol, this, msig);
 				if (level2 == null) return null;
-				Quote weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy = level2.QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno;
-				if (weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy == null) {
-					string msg = "MUST_NOT_BE_NULL_FOR_LIVESIM_TOO levelTwoAndLastQuote.QuoteLast_unbound_notCloned";
+				Quote attached_toOriginalBars_insteadOfRegeneratedGrowingCopy_forBacktest = level2.QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno;
+				if (attached_toOriginalBars_insteadOfRegeneratedGrowingCopy_forBacktest == null) {
+					string msg = "NULL_IS_OK_FOR_APP_RESTART MUST_NOT_BE_NULL_FOR_LIVESIM_TOO levelTwoAndLastQuote.QuoteLast_unbound_notCloned";
+				//} else {
+				//	string msg = "RENAME_ME QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno";
 				}
-				return weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy;
+				return attached_toOriginalBars_insteadOfRegeneratedGrowingCopy_forBacktest;
 			} finally {
 				this.level2_lastPrevQuotesUnbound_bySymbol.UnLockFor(this, msig);
 				//this.level2_quoteCurrentUnbound_bySymbol.UnLockFor(this, this.lockReason_getLastQuoteForSymbol);

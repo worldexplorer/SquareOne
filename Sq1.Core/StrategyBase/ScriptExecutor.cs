@@ -407,11 +407,11 @@ namespace Sq1.Core.StrategyBase {
 				// unfollowing old Bars (so that it'll be only renaming .BAR file); most likely those Bars will be GarbageCollected
 				this.Bars.DataSource.OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull -=
 					new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull);
-				if (this.ChartShadow != null && this.ChartShadow.ChartStreamingConsumer != null) {
+				if (this.ChartShadow != null && this.ChartShadow.ChartStreamingConsumer != null && subscribeDownstream == true) {
 					this.ChartShadow.ChartStreamingConsumer.StreamingUnsubscribe("UNSUBSCRIBING_FROM_OLD_BARS oldBars[" + this.Bars + "]=>newBars[" + barsClicked + "]");
 				} else {
-					string msg = "LOOKS_LIKE_WE_SPAWN_REUSABLE_EXECUTORS_FOR_PARALLEL_CHARTLESS_BACKTESTING";
-					Assembler.PopupException(msg);
+					string msg = "SWITCHED_BARS_FOR_OPEN_CHART_WHILE_NON_SUBSCRIBED LOOKS_LIKE_WE_SPAWN_REUSABLE_EXECUTORS_FOR_PARALLEL_CHARTLESS_BACKTESTING";
+					Assembler.PopupException(msg, null, false);
 				}
 			}
 			Bars oldBars = this.Bars;

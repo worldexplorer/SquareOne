@@ -42,7 +42,7 @@ namespace Sq1.Core.Backtesting {
 		// only for DDE-transformed QuoteGenerated => QuoteQuik, in the livesim to 
 		public QuoteGenerated(Quote quote, Bar parentBarSimulated)
 						: this(quote.ServerTime.AddMilliseconds(911),
-								quote.Symbol, ++quote.AbsnoPerSymbol,
+								quote.Symbol, quote.AbsnoPerSymbol + 1,
 								quote.Bid, quote.Ask, quote.Size,
 								quote.TradedAt) {
 			//this.Symbol					= quote.Symbol;
@@ -56,7 +56,7 @@ namespace Sq1.Core.Backtesting {
 			//this.Ask					= quote.Ask;
 			//this.Size					= quote.Size;
 			this.IntraBarSerno			= quote.IntraBarSerno + Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill;
-			//this.AbsnoPerSymbol			= ++quote.AbsnoPerSymbol;		// HACK_TO_ALLOW_LIVESIM_BROKER_TO_FILL_PENDING_ALERTS
+			//this.AbsnoPerSymbol			= quote.AbsnoPerSymbol + 1;		// HACK_TO_ALLOW_LIVESIM_BROKER_TO_FILL_PENDING_ALERTS
 			this.ParentBarSimulated		= parentBarSimulated;	// was there before I noticed "injected quotes don't seem to have ParentBarSimulated"
 			this.ParentBarStreaming		= quote.ParentBarStreaming;	// this may fix it injected quotes don't seem to have ParentBarSimulated
 		}
@@ -76,7 +76,7 @@ namespace Sq1.Core.Backtesting {
 			//identicalButFresh.Ask					= this.Ask;
 			//identicalButFresh.Size					= this.Size;
 			identicalButFresh.IntraBarSerno			= this.IntraBarSerno + Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill;
-			identicalButFresh.AbsnoPerSymbol		= ++this.AbsnoPerSymbol;		// HACK_TO_ALLOW_LIVESIM_BROKER_TO_FILL_PENDING_ALERTS
+			identicalButFresh.AbsnoPerSymbol		= this.AbsnoPerSymbol + 1;		// HACK_TO_ALLOW_LIVESIM_BROKER_TO_FILL_PENDING_ALERTS
 			//identicalButFresh.ParentBarSimulated = this.ParentBarSimulated;	// was there before I noticed "injected quotes don't seem to have ParentBarSimulated"
 			//identicalButFresh.ParentBarStreaming	= this.ParentBarStreaming;	// this may fix it injected quotes don't seem to have ParentBarSimulated
 			return identicalButFresh;

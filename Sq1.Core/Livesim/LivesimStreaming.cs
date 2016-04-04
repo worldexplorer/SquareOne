@@ -44,7 +44,8 @@ namespace Sq1.Core.Livesim {
 			base.StreamingSolidifier_oneForAllSymbols		= null;
 			base.QuotePumpSeparatePushingThreadEnabled = true;
 			this.UnpausedMre				= new ManualResetEvent(true);
-			//USE_ATOMIC_FROM_BASE this.LevelTwoGenerator			= new LevelTwoGeneratorLivesim(this);
+			//USE_ATOMIC_FROM_BASE
+			this.LevelTwoGenerator			= new LevelTwoGenerator();
 			this.LivesimStreamingSpoiler	= new LivesimStreamingSpoiler(this);
 		}
 		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, StreamingAdapter streamingOriginalPassed, string symbol_iAmLivesimming) {

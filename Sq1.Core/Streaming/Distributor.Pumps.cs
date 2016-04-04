@@ -71,7 +71,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			if (channel.QuotePump_nullUnsafe.IsPushingThreadStarted) {
+			if (channel.QuotePump_nullUnsafe.IsPushingThreadStarted == false) {
 				msg += "PUSHING_THREAD_NOT_STARTED";
 				Assembler.PopupException(msg + msig);
 				return;

@@ -64,6 +64,13 @@ namespace Sq1.Core.DataTypes {
 				this.RoundDateDownInitTwoAuxDates(dateTimeOpen);
 			}
 		}
+		public Bar(string symbol, BarScaleInterval scaleInterval, DateTime dateTimeOpen, double firstPriceOfBar, double firstVolumeOfBar, SymbolInfo symbolInfo)
+						: this(symbol, scaleInterval, dateTimeOpen) {
+			this.SetSame_OHLCValigned(firstPriceOfBar, firstVolumeOfBar, symbolInfo);
+		}
+		public void SetSame_OHLCValigned(double firstPriceOfBar, double firstVolumeOfBar, SymbolInfo symbolInfo) {
+			this.SetOHLCValigned(firstPriceOfBar, firstPriceOfBar, firstPriceOfBar, firstPriceOfBar, firstVolumeOfBar, symbolInfo);
+		}
 		public void SetOHLCValigned(double open, double high, double low, double close, double volume, SymbolInfo symbolInfo = null) {
 			this.Open = open;
 			this.High = high;

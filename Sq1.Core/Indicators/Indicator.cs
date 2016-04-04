@@ -342,8 +342,8 @@ namespace Sq1.Core.Indicators {
 				}
 				this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, derivedCalculated);
 			} else {
-				msg = "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS";
-				Assembler.PopupException(msg + msig, null, false);
+				msg = "ILL_BE_BACK_ON_QUASI_RENKO_AND_KAUFMAN INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS";
+				//Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
 		}

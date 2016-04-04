@@ -39,9 +39,10 @@ namespace Sq1.Gui.Singletons {
 					if (IamNotYetCreated == false && IamDisposed) {
 						//string ofWhatStatic = DockContentSingleton<T>.instance.GetType().GetGenericTypeDefinition().GetType().FullName;
 						string ofWhatStatic = "OF_WHAT_THREW";
-						string msig = " //DockContentSingleton<" + ofWhatStatic + ">[" + DockContentSingleton<T>.instance.Name + "].Instance";
+						string msig = " //DockContentSingleton<" + ofWhatStatic + ">";
+						//msig += " [" + DockContentSingleton<T>.instance.Name + "].Instance";
 						string msg = "IF_YOU_CLOSED_A_FORM__PLEASE_NULLIFY_THE_POINTER";
-						Assembler.PopupException(msg + msig);
+						//Assembler.PopupException(msg + msig, null, false);
 					}
 					DockContentSingleton<T>.instanceBeingConstructedUseForDesignMode = true;
 					DockContentSingleton<T>.instance = new T();

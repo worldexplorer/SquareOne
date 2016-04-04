@@ -2,10 +2,12 @@ using System;
 using System.Text;
 
 using Newtonsoft.Json;
+using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.DataTypes {
 	public class Quote {
-		[JsonIgnore]	public	const int	IntraBarSernoShiftForGeneratedTowardsPendingFill = 100000;
+		[JsonIgnore]	public	const string	GENERATED_TO_FILL_ALERT = "GENERATED_TO_FILL_ALERT";
+		[JsonIgnore]	public	const int		IntraBarSernoShiftForGeneratedTowardsPendingFill = 100000;
 
 		[JsonProperty]	public	string		Symbol;
 		[JsonProperty]	public	string		SymbolClass;
@@ -93,9 +95,16 @@ namespace Sq1.Core.DataTypes {
 			return sb.ToString();
 		} }
 
+		[JsonIgnore]	public	bool		IsGenerated { get {
+			bool ret = //quote.IntraBarSerno >= 99999 && 
+				this.Source.Contains(Quote.GENERATED_TO_FILL_ALERT) &&
+				this is QuoteGenerated;
+			return ret;
+		} }
+
 		Quote() {
 			//ServerTime = DateTime.MinValue;
-			//Absno = ++AbsnoStaticCounterForAllSymbolsUseless;
+			//Absno = AbsnoStaticCounterForAllSymbolsUseless + 1;
 			//AbsnoPerSymbol = -1;	// QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_ADAPDER
 			IntraBarSerno = -1;		// filled in lateBinder
 			//Bid = double.NaN;

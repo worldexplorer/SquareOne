@@ -8,6 +8,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Livesim;
 using Sq1.Core.Charting;
+using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Streaming {
 	public abstract partial class StreamingAdapter {
@@ -143,16 +144,16 @@ namespace Sq1.Core.Streaming {
 			this.CreateDistributors_onlyWhenNecessary(this.ReasonToExist);
 			this.StreamingSolidifier_oneForAllSymbols.Initialize(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
-				this.solidifierSubscribeOneSymbol(symbol);
+				this.solidifierSubscribe_oneSymbol(symbol);
 			}
 			this.UpstreamConnectionState = ConnectionState.Streaming_JustInitialized_solidifiersSubscribed;
 		}
 
 		//public void SolidifierSubscribeOneSymbol_iFinishedLivesimming(string symbol = null) {
-		void solidifierSubscribeOneSymbol(string symbol = null) {
+		void solidifierSubscribe_oneSymbol(string symbol) {
 			if (this.DistributorSolidifiers_substitutedDuringLivesim == null) {
 				string msg = "DONT_SUBSCRIBE_SOLIDIFIERS_FOR_DUMMY_ADAPTERS this[" + this + "]";
-				Assembler.PopupException(msg, null, false);
+				Assembler.PopupException(msg, null, true);
 				return;
 			}
 
@@ -188,7 +189,7 @@ namespace Sq1.Core.Streaming {
 		//}
 
 		//public void SolidifierUnsubscribeOneSymbol_imLivesimming(string symbol = null) {
-		void solidifierUnsubscribeOneSymbol(string symbol = null) {
+		void solidifierUnsubscribe_oneSymbol_useMe_whenAddingRenamingSymbols_inDataSource(string symbol) {
 			if (symbol == null) {
 				symbol  = this.LivesimStreaming_ownImplementation.DataSource.Symbols[0];
 			}
@@ -253,37 +254,49 @@ namespace Sq1.Core.Streaming {
 			int changesMade = 0;
 			string msig = " //StreamingAdapter.Quote_fixServerTime_absnoPerSymbol(" + quote + ")" + this.ToString();
 
-			Quote quoteLast = this.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(quote.Symbol);
-			if (quoteLast == null) {
+			Quote quoteCurrent = this.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(quote.Symbol);
+			if (quoteCurrent == null) {
 				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR#1 symbol[" + quote.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
 				Assembler.PopupException(msg + msig, null, false);
 				return changesMade;
 			}
-			if (quote == quoteLast) {
+			if (quote == quoteCurrent) {
 				string msg = "DONT_FEED_STREAMING_WITH_SAME_QUOTE__NOT_FIXING_ANYTHING";
 				Assembler.PopupException(msg + msig, null, false);
 				return changesMade;
 			}
 
+			if (quote.IsGenerated) {
+				string msg = "YES_ABSNO_IS_ZERO__SHOULD_SKIP_OTHER_CHECKS";
+				//Assembler.PopupException(msg);
+			} else {
+				long absnoDiff_mustBe1 = quote.AbsnoPerSymbol - quoteCurrent.AbsnoPerSymbol;
+				if (absnoDiff_mustBe1 <= 1) {
+					string msg = "IT_WAS_QUOTE_INJECTED__BRUTEFORCING_TIRED WHERE_DID_YOU_SNEAK_EXTRA_ABSNO_INCREMENT??";
+					//Assembler.PopupException(msg);
+					quote.AbsnoPerSymbol = quoteCurrent.AbsnoPerSymbol + 1;
+				}
+			}
+
 			if (quote.ServerTime == DateTime.MinValue) {		// spreadQuote arrived from DdeTableDepth without serverTime koz serverTime of Level2 changed is not transmitted over DDE
 				if (this.Name.Contains("NOPE_TEST_REAL_QUIK_TOO___StreamingLivesim") == false) {	// QuikStreamingLivesim
-					TimeSpan diff_inLocalTime = quote.LocalTime.Subtract(quoteLast.LocalTime);
-					DateTime serverTime_reconstructed_fromLastQuote = quoteLast.ServerTime.Add(diff_inLocalTime);
+					TimeSpan diff_inLocalTime = quote.LocalTime.Subtract(quoteCurrent.LocalTime);
+					DateTime serverTime_reconstructed_fromLastQuote = quoteCurrent.ServerTime.Add(diff_inLocalTime);
 					quote.ServerTime = serverTime_reconstructed_fromLastQuote;
 					changesMade++;
 				} else {
-					if (quoteLast.ParentBarStreaming == null) {
+					if (quoteCurrent.ParentBarStreaming == null) {
 						string msg = "WILL_BINDER_SET_QUOTE_TO_STREAMING_DATA_SNAPSHOT???";
 						Assembler.PopupException(msg, null, false);
 					} else {
-						quote.ServerTime = quoteLast.ParentBarStreaming.ParentBars.MarketInfo.Convert_localTime_toServerTime(DateTime.Now);
+						quote.ServerTime = quoteCurrent.ParentBarStreaming.ParentBars.MarketInfo.Convert_localTime_toServerTime(DateTime.Now);
 						changesMade++;
 					}
 				}
 			}
-			if (quote.ServerTime == quoteLast.ServerTime) {
+			if (quote.ServerTime == quoteCurrent.ServerTime) {
 				// increase granularity of QuikQuotes (they will have the same ServerTime within the same second, while must have increasing milliseconds; I can't force QUIK print fractions of seconds via DDE export)
-				TimeSpan diff_inLocalTime = quote.LocalTime.Subtract(quoteLast.LocalTime);
+				TimeSpan diff_inLocalTime = quote.LocalTime.Subtract(quoteCurrent.LocalTime);
 				// diff_localTime.Milliseconds will go to StreamingDataSnapshot with ServerTime fixed, and next diffMillis will be negative for the quote within same second
 				int diffMillis_willBeNegative_forSecondQuote_duringSameSecond = diff_inLocalTime.Milliseconds;
 				int diffMillis = Math.Abs(diffMillis_willBeNegative_forSecondQuote_duringSameSecond);
@@ -299,12 +312,12 @@ namespace Sq1.Core.Streaming {
 			}
 
 			long absnoPerSymbolNext = -1;
-			if (quoteLast.AbsnoPerSymbol == -1) {
+			if (quoteCurrent.AbsnoPerSymbol == -1) {
 				string msg = "LAST_QUOTE_DIDNT_HAVE_ABSNO_SET_BY_STREAMING_ADAPDER_ON_PREV_ITERATION FORCING_ZERO";
 				Assembler.PopupException(msg + msig, null, false);
 				absnoPerSymbolNext = 0;
 			} else {
-				absnoPerSymbolNext = quoteLast.AbsnoPerSymbol + 1;	// you must see lock(){} upstack
+				absnoPerSymbolNext = quoteCurrent.AbsnoPerSymbol + 1;	// you must see lock(){} upstack
 			}
 
 			if (quote.AbsnoPerSymbol == -1) {
@@ -324,8 +337,8 @@ namespace Sq1.Core.Streaming {
 				}
 			} else {
 				//QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_ADAPTER
-				if (absnoPerSymbolNext > -1 && absnoPerSymbolNext < quote.AbsnoPerSymbol && quoteLast.AbsnoPerSymbol != -1) {
-					string msg = "DONT_FEED_ME_WITH_SAME_QUOTE_BACKTESTER quote.AbsnoPerSymbol[" + quote.AbsnoPerSymbol + "] MUST_BE_GREATER_THAN lastQuote.AbsnoPerSymbol[" + quoteLast.AbsnoPerSymbol + "]";
+				if (absnoPerSymbolNext > -1 && absnoPerSymbolNext < quote.AbsnoPerSymbol && quoteCurrent.AbsnoPerSymbol != -1) {
+					string msg = "DONT_FEED_ME_WITH_SAME_QUOTE_BACKTESTER quote.AbsnoPerSymbol[" + quote.AbsnoPerSymbol + "] MUST_BE_GREATER_THAN lastQuote.AbsnoPerSymbol[" + quoteCurrent.AbsnoPerSymbol + "]";
 					Assembler.PopupException(msg + msig, null, false);
 				}
 			}
@@ -399,11 +412,22 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig, ex);
 			}
 
+			if (this.DistributorSolidifiers_substitutedDuringLivesim == null) {
+				if (this is Backtesting.BacktestStreaming) {
+					string msg = "YES_I_NULLIFY_SOLIDIFIERS_IN_BACKTEST_STREAMING";
+					//Assembler.PopupException(msg, null, false);
+				} else {
+					string msg = "ADD_THE_CASE_HERE_FOR_NULL_DISTRIBUTOR_SOLIDIFIERS";
+					Assembler.PopupException(msg);
+				}
+				return;
+			}
+
 			string symbol = quoteUnboundUnattached.Symbol;
 			SymbolChannel<StreamingConsumerSolidifier> channelForSymbol = this.DistributorSolidifiers_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(symbol);
-			bool okayForDistrib_toBe_empty = this.DistributorSolidifiers_substitutedDuringLivesim.ReasonIwasCreated.Contains(Distributor<StreamingConsumerSolidifier>.SUBSTITUTED_LIVESIM_STARTED);
+			bool okayForDistribSolidifiers_toBe_empty = this.DistributorSolidifiers_substitutedDuringLivesim.ReasonIwasCreated.Contains(Distributor<StreamingConsumerSolidifier>.SUBSTITUTED_LIVESIM_STARTED);
 			if (channelForSymbol == null) {
-				if (okayForDistrib_toBe_empty) return;
+				if (okayForDistribSolidifiers_toBe_empty) return;
 				string msg = "YOUR_BARS_ARE_NOT_SAVED__SOLIDIFIERS_ARE_NOT_SUBSCRIBED_TO symbol[" + symbol + "]";
 				Assembler.PopupException(msg);
 				return;
@@ -490,14 +514,16 @@ namespace Sq1.Core.Streaming {
 		}
 		internal void ChartStreamingConsumer_Unsubscribe(StreamingConsumerChart chartStreamingConsumer, string msigForNpExceptions) {
 			if (this.DistributorCharts_substitutedDuringLivesim.ConsumerQuoteIsSubscribed(chartStreamingConsumer) == false) {
-				Assembler.PopupException("CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_QUOTE" + msigForNpExceptions);
+				string msg = "CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_QUOTE";
+				Assembler.PopupException(msg + msigForNpExceptions, null, true);
 			} else {
 				//Assembler.PopupException("UnSubscribing QuoteConsumer [" + this + "]  to " + plug + "  (was subscribed)");
 				this.DistributorCharts_substitutedDuringLivesim.ConsumerQuoteUnsubscribe(chartStreamingConsumer);
 			}
 
 			if (this.DistributorCharts_substitutedDuringLivesim.ConsumerBarIsSubscribed(chartStreamingConsumer) == false) {
-				Assembler.PopupException("CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_BAR" + msigForNpExceptions);
+				string msg = "CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_BAR";
+				Assembler.PopupException(msg + msigForNpExceptions, null, true);
 			} else {
 				//Assembler.PopupException("UnSubscribing BarsConsumer [" + this + "] to " + this.ToString() + " (was subscribed)");
 				this.DistributorCharts_substitutedDuringLivesim.ConsumerBarUnsubscribe(chartStreamingConsumer);
