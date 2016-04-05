@@ -220,55 +220,8 @@ namespace Sq1.Core.Streaming {
 			}
 			if (this.StreamingAdapter.QuotePumpSeparatePushingThreadEnabled) {
 				channel.QueueWhenBacktesting_PumpForLiveAndLivesim.UpdateThreadNameAfterMaxConsumersSubscribed = true;
-				// SELF_MANAGED_BY_CHANNEL channel.QuoteQueue.PusherUnpause();
-				//DONT_SET_GUI_THREAD_NAME__FLAG_IS_SET_WILL_SET_THREAD_NAME_FROM_WITHIN channel.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim.SetThreadName();
 			}
 		}
 
-
-		//internal void ForceUnsubscribeLeftovers_mustBeEmptyAlready(string newReasonToExist) {
-		//    string ret = "";
-		//    //v1 - doesn't dispose Pump's MRE => Handles leak this.ChannelsBySymbol.Clear();
-
-		//    foreach (string symbol in this.ChannelsBySymbol.Keys) {
-		//        string perSymbol = "symbol[" + symbol + "]";
-		//        Dictionary<BarScaleInterval, SymbolScaleStream<STREAMING_CONSUMER_CHILD>> channelsForEachSymbol = new Dictionary<BarScaleInterval, SymbolScaleStream<STREAMING_CONSUMER_CHILD>>(this.ChannelsBySymbol[symbol]);
-		//        foreach(SymbolScaleStream<STREAMING_CONSUMER_CHILD> eachChannel in new List<SymbolScaleStream<STREAMING_CONSUMER_CHILD>>(channelsForEachSymbol.Values)) {
-		//            string perScaleInterval = "scaleInterval[" + eachChannel.ScaleInterval + "]";
-
-		//            string barConsumersUnsubscribed = "";
-		//            foreach (StreamingConsumer eachBarConsumer in eachChannel.ConsumersBar) {
-		//                if (barConsumersUnsubscribed != "") barConsumersUnsubscribed += ",";
-		//                barConsumersUnsubscribed += "[" + eachBarConsumer + "]";
-		//                this.ConsumerBarUnsubscribe(symbol, eachChannel.ScaleInterval, eachBarConsumer);	// affects original List, our new List<>() keeps enumerating
-		//            }
-		//            if (eachChannel.ConsumersBarCount > 0) {
-		//                string msg = "MUST_BE_EMPTY__BY_NOW eachChannel[" + eachChannel.ToString() + "].ConsumersBarCount[" + eachChannel.ConsumersBarCount + "]";
-		//                Assembler.PopupException(msg);
-		//            }
-
-		//            string quoteConsumersUnsubscribed = "";
-		//            foreach (StreamingConsumer eachQuoteConsumer in eachChannel.ConsumersQuote) {
-		//                if (quoteConsumersUnsubscribed != "") quoteConsumersUnsubscribed += ",";
-		//                quoteConsumersUnsubscribed += "[" + eachQuoteConsumer + "]";
-		//                this.ConsumerQuoteUnsubscribe(symbol, eachChannel.ScaleInterval, eachQuoteConsumer);	// affects original List, our new List<>() keeps enumerating
-		//            }
-		//            if (eachChannel.ConsumersQuoteCount > 0) {
-		//                string msg = "MUST_BE_EMPTY__BY_NOW eachChannel[" + eachChannel.ToString() + "].ConsumersQuoteCount[" + eachChannel.ConsumersQuoteCount + "]";
-		//                Assembler.PopupException(msg);
-		//            }
-
-		//            eachChannel.QuotePump_nullUnsafe.DisposeAllHandles();
-		//            perSymbol += perScaleInterval + ":barConsumers{" + barConsumersUnsubscribed + "},quoteConsumers{" + quoteConsumersUnsubscribed + "}";
-		//        }
-		//        ret += " " + perSymbol;
-		//    }
-		//    if (ret != "") {
-		//        string msig = " //ForceUnsubscribeLeftovers(newReasonToExist[" + newReasonToExist + "])";
-		//        string msg = "LIVESIM_DISTRIBUTOR_MUST_HAVE_BEEN_CLEAN_BEFORE_REUSING DISTRIBUTOR_FOR_DUMMY_STREAMING_MUST_BE_EMPTY";
-		//        Assembler.PopupException(msg + ret + msig);
-		//    }
-		//    this.ReasonIwasCreated = newReasonToExist;
-		//}
 	}
 }

@@ -86,7 +86,6 @@ namespace Sq1.Core.Livesim {
 
 				#region MOVED_BACK_DOWNSTACK NEVER_COMMENT_OUT__I_SPENT_TWO_DAYS_TO_DEBUG_IT
 				//string reasonToPauseSymbol = "SYMBOL_PAUSED_LIVESIMMING-" + this.Executor.ToString();
-				//this.Executor.DataSource_fromBars.StreamingAdapter.Distributor_replacedForLivesim.AllQuotePumps_Pause(reasonToPauseSymbol);
 				int pumpsPaused = this.Executor.DataSource_fromBars.LivesimStreamingDefault_PumpPause_freezeOtherConsumers_forSameSymbolScale(this.Executor);
 				if (pumpsPaused == 0) {
 					string msg = "BARS_UNSUBSCRIBED OR_DONT_YOU_HAVE_CHARTS_OPEN_FOR_STRATEGY_LIVESIMMING?";
@@ -217,8 +216,6 @@ namespace Sq1.Core.Livesim {
 				string strokesPerBar = base.QuotesGenerator.BacktestStrokesPerBar + "/Bar";
 				string stats = "Livesim took [" + sec + "]sec at " + strokesPerBar;
 				this.Executor.LastBacktestStatus = stats + this.Executor.LastBacktestStatus;
-
-				// down there, OnAllBarsBacktested will be raised and ChartFormManager will push performance to reporters.
 				base.Executor.BacktestContext_restore();
 
 				StreamingAdapter originalAdapterFromDataSource = this.Executor.DataSource_fromBars.StreamingAdapter;
@@ -231,16 +228,11 @@ namespace Sq1.Core.Livesim {
 				}
 
 				LivesimStreaming livesimStreaming = this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe;
-				
 				livesimStreaming.UpstreamDisconnect_LivesimTerminatedOrAborted();
-				//DURING_LIVESIM_I_LEFT_STREAMING_EXACTLY_THE_SAME_AS_FOR_LIVE_TRADING_TO_TEST_IT!!! this.Executor.DataSource.StreamingAdapter = this.StreamingOriginal;
-
-				//LAST_LINE_OF_QuikStreamingLivesim.UpstreamConnect_LivesimStarting()_MAKES_SENSE_FOR_OTHERS
 				livesimStreaming.Original_SubstituteDistributor_forSymbolLivesimming_restoreOriginalDistributor();
 
 				#region MOVED_BACK_DOWNSTACK NEVER_COMMENT_OUT__I_SPENT_TWO_DAYS_TO_DEBUG_IT
 				//string reasonToUnPauseSymbol = "SYMBOL_UNPAUSED_LIVESIMMING-" + this.Executor.ToString();
-				//this.Executor.DataSource_fromBars.StreamingAdapter.Distributor_replacedForLivesim.AllQuotePumps_Unpause(reasonToUnPauseSymbol);
 				int pumpsUnpaused = this.Executor.DataSource_fromBars.LivesimStreamingDefault_PumpResume_unfreezeOtherConsumers_forSameSymbolScale(this.Executor);
 				if (pumpsUnpaused == 0) {
 					string msg = "BARS_UNSUBSCRIBED OR_DONT_YOU_HAVE_CHARTS_OPEN_FOR_STRATEGY_LIVESIMMING?";

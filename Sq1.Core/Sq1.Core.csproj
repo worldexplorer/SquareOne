@@ -373,16 +373,16 @@
     <Compile Include="Streaming\Distributor.Pumps.cs">
       <DependentUpon>Distributor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\LevelTwoFrozen.cs" />
+    <Compile Include="DataTypes\LevelTwoFrozen.cs" />
     <Compile Include="Streaming\Distributor.DebuggingLivesim.cs">
       <DependentUpon>Distributor.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\DistributorCharts.cs" />
     <Compile Include="Streaming\DistributorSolidifier.cs" />
-    <Compile Include="Streaming\LevelTwo.cs" />
-    <Compile Include="Streaming\LevelTwoHalf.cs" />
-    <Compile Include="Streaming\LevelTwoHalfSortedFrozen.cs" />
-    <Compile Include="Streaming\LevelTwoEachLine.cs" />
+    <Compile Include="DataTypes\LevelTwo.cs" />
+    <Compile Include="DataTypes\LevelTwoHalf.cs" />
+    <Compile Include="DataTypes\LevelTwoHalfSortedFrozen.cs" />
+    <Compile Include="DataTypes\LevelTwoEachLine.cs" />
     <Compile Include="Streaming\StreamingAdapter.OverrideMe.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>

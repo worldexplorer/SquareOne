@@ -15,14 +15,34 @@ namespace Sq1.Core.Streaming {
 				return;
 			}
 
+			LevelTwoFrozen levelTwoFrozen = null;
 			if (quoteDequeued_singleInstance.Size <= 0) {
-				string msg = "PROTECTING_BARS_TO_HAVE_NO_NANs_EVER #2";
-				Assembler.PopupException(msg, null, false);
-				return;
+				//string msg = "PROTECTING_BARS_TO_HAVE_NO_NANs_EVER #2";
+				//Assembler.PopupException(msg, null, false);
+				//return;
+				try {
+					levelTwoFrozen = this.SymbolChannel.Distributor.StreamingAdapter
+						.StreamingDataSnapshot.GetLevelTwoFrozenSorted_forSymbol_nullUnsafe(
+							quoteDequeued_singleInstance.Symbol, msig, "ALL_SCRIPTS[" + this.SymbolScaleInterval + "]");
+				} catch (Exception ex) {
+					string msg = "PUSH_FAILED levelTwoFrozen[" + levelTwoFrozen + "]";
+					Assembler.PopupException(msg + msig, ex);
+					return;
+				}
 			}
-		
+
 
 			foreach (StreamingConsumerChart consumer in base.ConsumersAll) {
+				if (quoteDequeued_singleInstance.Size <= 0) {
+					try {
+						consumer.Consume_levelTwoChanged_noNewQuote(levelTwoFrozen);
+					} catch (Exception ex) {
+						string msg = "PUSH_FAILED levelTwoFrozen[" + levelTwoFrozen + "]";
+						Assembler.PopupException(msg + msig, ex);
+					}
+					continue;
+				}
+
 				Quote quote_clonedBoundAttached = null;
 				try {
 					quote_clonedBoundAttached = this.quote_cloneBind_attachToStreamingBar_ofConsumer_nullWhenNoConsumers(quoteDequeued_singleInstance, consumer);
@@ -37,7 +57,7 @@ namespace Sq1.Core.Streaming {
 
 				if (this.ConsumersQuote.Contains(consumer)) {
 					try {
-						consumer.ConsumeQuoteOfStreamingBar(quote_clonedBoundAttached);
+						consumer.Consume_quoteOfStreamingBar(quote_clonedBoundAttached);
 						string msg = "QUOTE_CONSUMER_FINISHED " + quote_clonedBoundAttached.ToStringShort() + " => " + consumer.ToString();
 						//Assembler.PopupException(msg, null, false);
 					} catch (Exception ex) {
@@ -52,7 +72,7 @@ namespace Sq1.Core.Streaming {
 					try {
 						//lock (this.lockConsumersBar) {
 						Bar barStaticLast = consumer.ConsumerBars_toAppendInto.BarStaticLast_nullUnsafe;
-						consumer.ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(
+						consumer.Consume_barLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(
 							barStaticLast, quote_clonedBoundAttached);
 						string msg = "BAR_CONSUMER_FINISHED " + barStaticLast.ToString() + " => " + consumer.ToString();
 						//Assembler.PopupException(msg, null, false);

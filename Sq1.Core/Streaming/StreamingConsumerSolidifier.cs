@@ -40,16 +40,19 @@ namespace Sq1.Core.Streaming {
 		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLastBeforeStop) {
 			this.barsSaveToFile_replaceStreamingBar(quoteLastBeforeStop, true);
 		}
-		public override void ConsumeQuoteOfStreamingBar(Quote quoteWith_pseudoExpanded) {
+		public override void Consume_quoteOfStreamingBar(Quote quoteWith_pseudoExpanded) {
 			this.barsSaveToFile_replaceStreamingBar(quoteWith_pseudoExpanded);
 		}
-		public override void ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barStaticLast_justFormed_byBarsEmulator, Quote quoteWithPseudo) {
+		public override void Consume_barLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barStaticLast_justFormed_byBarsEmulator, Quote quoteWithPseudo) {
 			string millisTook_updateLast;
 			string millisTook_appendNew;
 			int barsReplaced = this.dataSource.BarAppend_orReplaceLast(barStaticLast_justFormed_byBarsEmulator	, out millisTook_updateLast);
 			int barsAppended = this.dataSource.BarAppend_orReplaceLast(quoteWithPseudo.ParentBarStreaming		, out millisTook_appendNew);	// will be OHLCV=NaN
 			string msg = millisTook_updateLast + " barLastFormed[" + barStaticLast_justFormed_byBarsEmulator + "] into DataSource[" + this.dataSource.Name + "]";
 			Assembler.PopupException(msg, null, false);
+		}
+		public override void Consume_levelTwoChanged_noNewQuote(LevelTwoFrozen levelTwoFrozen) {
+			string msg = "SOLIDIFIER_DOESNT_SAVE_LEVELS_TWO____HOW_DO_YOU_WANT_YOUR_COFFEE?...";
 		}
 		#endregion
 
@@ -77,17 +80,20 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg2 + msig);
 				return;
 			}
-			if (quoteParentBarStreaming.IsBarStaticLast) {
-				string msg1 = "DONT_PASS_STATIC_BAR_HERE__UNMESS_FILESEEKS_OR_BINDER";
-				Assembler.PopupException(msg1);
-				return;
+			if (quoteParentBarStreaming.ParentBars == null) {
+				string msg1 = "AVOIDING_NPE_FOR_CHECKS_2_LINES_BELOW";
+			} else {
+				if (quoteParentBarStreaming.IsBarStaticLast) {
+					string msg1 = "DONT_PASS_STATIC_BAR_HERE__UNMESS_FILESEEKS_OR_BINDER";
+					Assembler.PopupException(msg1);
+					return;
+				}
+				if (quoteParentBarStreaming.IsBarStreaming == false) {
+					string msg1 = "I_REFUSE_TO_SAVE NOT_STATIC NOT_STREAMING WHAT_BAR_IS_THIS???";
+					Assembler.PopupException(msg1);
+					return;
+				}
 			}
-			if (quoteParentBarStreaming.IsBarStreaming == false) {
-				string msg1 = "I_REFUSE_TO_SAVE NOT_STATIC NOT_STREAMING WHAT_BAR_IS_THIS???";
-				Assembler.PopupException(msg1);
-				return;
-			}
-			
 			//lastQuoteReceived.SetParentBarStreaming(quoteConsumer.ConsumerBarsToAppendInto.BarStreaming);
 
 			int barsSaved = this.dataSource.BarAppend_orReplaceLast(quoteParentBarStreaming, out millisElapsed);

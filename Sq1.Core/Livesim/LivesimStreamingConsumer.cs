@@ -26,7 +26,7 @@ namespace Sq1.Core.Livesim {
 		}
 		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLastBeforeStop) {
 		}
-		public override void ConsumeQuoteOfStreamingBar(Quote quoteClone_boundAttached) {
+		public override void Consume_quoteOfStreamingBar(Quote quoteClone_boundAttached) {
 			bool guiHasTime = this.livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
 			ScriptExecutor executor = this.livesimulator.Executor;
 			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.livesimulator.Executor.InvokeScript_onNewBar_onNewQuote(quoteClone_boundAttached);
@@ -46,7 +46,7 @@ namespace Sq1.Core.Livesim {
 				}
 			}
 		}
-		public override void ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
+		public override void Consume_barLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
 			string msig = " //BacktestQuoteBarConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended";
 			if (barLastFormed == null) {
 				string msg = "THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING"
@@ -60,6 +60,12 @@ namespace Sq1.Core.Livesim {
 			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.livesimulator.Executor.InvokeScript_onNewBar_onNewQuote(quoteForAlertsCreated, false);
 			if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {
 				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
+			}
+		}
+		public override void Consume_levelTwoChanged_noNewQuote(LevelTwoFrozen levelTwoFrozen) {
+			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = base.Executor_nullReported.InvokeScript_onLevelTwoChanged_noNewQuote(levelTwoFrozen);
+			if (this.ContextCurrentChartOrStrategy_nullReported.DownstreamSubscribed) {
+				base.ChartShadow_nullReported.InvalidateAllPanels();
 			}
 		}
 		#endregion

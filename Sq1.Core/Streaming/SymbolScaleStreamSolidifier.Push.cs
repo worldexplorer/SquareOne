@@ -58,7 +58,6 @@ namespace Sq1.Core.Streaming {
 
 
 			Quote quote_clonedBoundUnattached_withPseudoExpanded = null;
-			Quote quote_clonedBoundAttached = quote_clonedBoundUnattached_withPseudoExpanded;
 			try {
 				quote_clonedBoundUnattached_withPseudoExpanded = this.barsEmulator_forSolidifier.Quote_cloneBind_toUnattachedPseudoStreamingBar_enrichWithIntrabarSerno_updateStreamingBar_createNewBar(quoteDequeued_singleInstance);
 			} catch (Exception ex) {
@@ -78,6 +77,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg);
 			}
 
+			Quote quote_clonedBoundAttached = quote_clonedBoundUnattached_withPseudoExpanded;
 			msig += " IntraBarSerno#" + quote_clonedBoundAttached.IntraBarSerno + "/" + quote_clonedBoundAttached.AbsnoPerSymbol;
 
 			if (quote_clonedBoundAttached.IntraBarSerno == 0) {
@@ -87,114 +87,27 @@ namespace Sq1.Core.Streaming {
 					//consumerBars.BarStreaming_overrideDOHLCVwith(quote.ParentBarStreaming);
 					//quote.Replace_myStreamingBar_withConsumersStreamingBar(consumerBars.BarStreaming_nullUnsafe);
 					Bar barStaticLast = barsEmulator_forSolidifier.BarLastFormedUnattached_nullUnsafe;
-					willUpdateLastStatic_andAppendNewFromPseudo.ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(
+					willUpdateLastStatic_andAppendNewFromPseudo.Consume_barLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(
 						barStaticLast, quote_clonedBoundAttached);
 					string msg1 = "BAR_CONSUMER_FINISHED " + barStaticLast.ToString() + " => " + willUpdateLastStatic_andAppendNewFromPseudo.ToString();
-					Assembler.PopupException(msg1 + msig, null, false);
+					//Assembler.PopupException(msg1 + msig, null, false);
 					//}
 				} catch (Exception ex) {
-					string msg = "PUSH_FAILED quoteDequeued_singleInstance[" + quoteDequeued_singleInstance.ToString() + "]";
+					string msg = "PUSH_FAILED quote_clonedBoundAttached[" + quote_clonedBoundAttached.ToString() + "]";
 					Assembler.PopupException(msg + msig, ex);
 				}
 
 			} else {
 				try {
 					StreamingConsumerSolidifier willReplaceLast = base.ConsumersQuote[0];
-					willReplaceLast.ConsumeQuoteOfStreamingBar(quote_clonedBoundUnattached_withPseudoExpanded);
-					string msg1 = "QUOTE_CONSUMER_FINISHED " + quote_clonedBoundUnattached_withPseudoExpanded.ToStringShort() + " => " + willReplaceLast.ToString();
-					Assembler.PopupException(msg1 + msig, null, false);
+					willReplaceLast.Consume_quoteOfStreamingBar(quote_clonedBoundAttached);
+					string msg1 = "QUOTE_CONSUMER_FINISHED " + quote_clonedBoundAttached.ToStringShort() + " => " + willReplaceLast.ToString();
+					//Assembler.PopupException(msg1 + msig, null, false);
 				} catch (Exception ex) {
-					string msg = "PUSH_FAILED quoteDequeued_singleInstance_tillStreamBindsAll[" + quoteDequeued_singleInstance.ToString() + "]";
+					string msg = "PUSH_FAILED quote_clonedBoundAttached[" + quote_clonedBoundAttached.ToString() + "]";
 					Assembler.PopupException(msg + msig, ex);
 				}
 			}
 		} //}
-
-		//void QuoteClonedBound_attachToStreamingBar_ofCosumer(Quote quoteClone_sernoEnriched_withStreamingBarUnattachedToParents, StreamingConsumerSolidifier barConsumer) {
-		//    string msig = " //SymbolScaleStreamSolidifier.Bar_lastStaticFormedAttached_consume() " + this.ToString();
-		//    Bar barStreamingUnattached = this.barsEmulator_forSolidifier.PseudoBarStreaming_unattached;
-		//    if (this.ConsumersBar.Count == 0) {
-		//        string msg = "NO_BARS_CONSUMERS__NOT_PUSHING lastBarFormed[" + barStreamingUnattached + "]";
-		//        Assembler.PopupException(msg + msig, null, false);
-		//        return;
-		//    }
-		//    msig += " missed barStreamingUnattached[" + barStreamingUnattached + "]: " + barConsumer.ToString();
-
-		//    try {
-		//        barConsumer.ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(barStreamingUnattached, null);
-		//    } catch (Exception ex) {
-		//        string msg = "BOUND_BAR_PUSH_FAILED " + barStreamingUnattached.ToString();
-		//        Assembler.PopupException(msg + msig, ex);
-		//    }
-		//}
-
-		//Quote Quote_cloneBind_nullWhenNoConsumers(Quote quoteCloned_intrabarSernoEnriched_unbound, StreamingConsumerSolidifier quoteConsumer) {
-		//    string msig = " //SymbolScaleStreamSolidifier.QuoteCloned_bindAttach() " + this.ToString();
-		//    Quote ret = null;
-
-		//    if (this.ConsumersQuote.Count == 0) {
-		//        string msg = "NO_QUOTE_CONSUMERS__NOT_PUSHING quoteSernoEnriched[" + quoteCloned_intrabarSernoEnriched_unbound + "]";
-		//        Assembler.PopupException(msg + msig, null, false);
-		//        return null;
-		//    }
-		//    int consumerSerno = 1;
-		//    int streamingSolidifiersPoked = 0;
-		//    msig = " //bindConsumeQuote(): quoteSernoEnrichedWithUnboundStreamingBar[" + quoteCloned_intrabarSernoEnriched_unbound.ToString()
-		//        + "]: QuoteConsumer#" + (consumerSerno++) + "/" + this.ConsumersQuote.Count + " " + quoteConsumer.ToString();
-
-		//    if (this.binderPerConsumer.ContainsKey(quoteConsumer) == false) {
-		//        string msg = "CONSUMER_WASNT_REGISTERED_IN_earlyBinders_INVOKE_ConsumersQuoteAdd()";
-		//        Assembler.PopupException(msg + msig);
-		//        continue;
-		//    }
-		//    // clone 
-		//    Quote quoteCloned_intrabarSernoEnriched_unbound = this.barsEmulator_forSolidifier.
-		//        Quote_cloneBind_toUnattachedPseudeStreamingBar_enrichWithIntrabarSerno_updateStreamingBar_createNewBar(quoteDequeued_singleInstance_tillStreamBindsAll);
-		//    if (quoteCloned_intrabarSernoEnriched_unbound == null) {
-		//        string msg = "I_REFUSE_TO_PUSH COULD_NOT_ENRICH_QUOTE quoteClone_intrabarSernoEnriched_unbound[null]"
-		//            + " quote2bCloned_bindingToEachConsumer_willHappen_afterDequeued[" + quoteDequeued_singleInstance_tillStreamBindsAll + "]"
-		//            + " this[" + this + "]"
-		//            ;
-		//        //Assembler.PopupException(msg, null, false);
-		//        return;
-		//    }
-
-		//    if (	quoteCloned_intrabarSernoEnriched_unbound.ParentBarStreaming == null
-		//         || quoteCloned_intrabarSernoEnriched_unbound.ParentBarStreaming.ParentBars == null) {
-		//        string msg = "HERE_NULL_IS_OK__UNATTACHED___BINDER_WILL_BE_INVOKED_DOWNSTACK_IN_PUMP_THREAD_SOON_FOR_QUOTE_CLONED"
-		//            + " StreamingEarlyBinder.BindStreamingBarForQuote()";
-		//    } else {
-		//        string msg = "STREAMING_FOR_QUOTE_MUST_NOT_BE_INITIALIZED_HERE";
-		//        Assembler.PopupException(msg, null, false);
-		//    }
-
-
-
-		//    if (quoteCloned_intrabarSernoEnriched_unbound.IntraBarSerno == -1) {
-		//        string msg = "QUOTE_WAS_NOT_ENRICHED_BY_StreamingBarFactoryUnattached.EnrichQuoteWithSernoUpdateStreamingBarCreateNewBar()";
-		//        Assembler.PopupException(msg);
-		//    }
-	
-			
-		//    BinderAttacher_perStreamingChart binderForConsumer = this.binderPerConsumer[quoteConsumer];
-
-		//    Quote quoteClone_boundAttached = null;
-		//    try {
-		//        quoteClone_boundAttached = binderForConsumer.QuoteBoundToStreamingBar__streamingBarAttach_toConsumerBars(quoteCloned_intrabarSernoEnriched_unbound);
-		//    } catch (Exception e) {
-		//        string msg = "QUOTE_BINDING_TO_PARENT_STREAMING_BAR_FAILED " + quoteClone_boundAttached.ToString();
-		//        Assembler.PopupException(msg + msig, e);
-		//        continue;
-		//    }
-
-		//    if (binderForConsumer.Consumer is StreamingConsumerChart &&
-		//            binderForConsumer.Consumer.ConsumerBars_toAppendInto.ScaleInterval != this.ScaleInterval) {
-		//        string msg2 = "CONSUMERS_BARS_AND_MINE_HAVE_DIFFERENT_SCALE_INTERVAL???? SOLVED_BY_RETURNING_CLONE_IN_BINDER";
-		//        Assembler.PopupException(msg2, null, false);
-		//    //}
-
-		//    return ret;
-		//}
-
 	}
 }

@@ -2,6 +2,7 @@ using System;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Core.StrategyBase {
 	public abstract partial class Script {
@@ -14,6 +15,9 @@ namespace Sq1.Core.StrategyBase {
 			string msg = "SCRIPT_DERIVED_MUST_IMPLEMENT Script[" + this.GetType().FullName + "]: public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar)";
 			throw new Exception(msg);
 		}
+		public virtual void OnLevelTwoChanged_noNewQuote_callback(LevelTwoFrozen levelTwoFrozen) {
+		}
+
 		public virtual void OnAlertFilled_callback(Alert alertFilled) {
 		}
 		public virtual void OnAlertKilled_callback(Alert alertKilled) {

@@ -103,16 +103,8 @@ namespace Sq1.Core.DataTypes {
 		} }
 
 		Quote() {
-			//ServerTime = DateTime.MinValue;
-			//Absno = AbsnoStaticCounterForAllSymbolsUseless + 1;
-			//AbsnoPerSymbol = -1;	// QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_ADAPDER
 			IntraBarSerno = -1;		// filled in lateBinder
-			//Bid = double.NaN;
-			//Ask = double.NaN;
-			//Size = -1;
 			ItriggeredFillAtBidOrAsk = BidOrAsk.UNKNOWN;
-			//TradedAt = BidOrAsk.UNKNOWN;
-			//LocalTimeCreated = DateTime.Now;
 		}
 
 		public Quote(DateTime localTime, DateTime serverTime,
@@ -128,16 +120,6 @@ namespace Sq1.Core.DataTypes {
 			Size			= size;
 			TradedAt		= tradedAt;
 		}
-		//public Quote(DateTime localTimeEqualsToServerTimeForGenerated, DateTime serverTime,
-		//            string symbol, long absno_perSymbol_perStreamingAdapter = -1,
-		//            double bid = double.NaN, double ask = double.NaN,
-		//            BidOrAsk tradedAt = BidOrAsk.UNKNOWN)
-		//                : this(symbol, absno_perSymbol_perStreamingAdapter) {
-
-		//    // PROFILER_SAID_DATETIME.NOW_IS_SLOW__I_DONT_NEED_IT_FOR_BACKTEST_ANYWAY
-		//    LocalTime = (localTimeEqualsToServerTimeForGenerated != DateTime.MinValue)
-		//        ? localTimeEqualsToServerTimeForGenerated : DateTime.Now;
-		//}
 		public void StreamingBar_Replace(Bar streamingParentBar, bool streamingParentBars_mustBeNullforSolidifier = false) {
 			string msig = " //(" + streamingParentBar.ToString() + ") => quote[" + this.ToString() + "]";
 			if (streamingParentBar == null) {

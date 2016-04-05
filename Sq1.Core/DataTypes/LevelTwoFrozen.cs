@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Sq1.Core.DataTypes;
-
-namespace Sq1.Core.Streaming {
+namespace Sq1.Core.DataTypes {
 	public class LevelTwoFrozen {
 		public	string						ReasonToExist		{ get; private set; }
 		public	LevelTwoHalfSortedFrozen	Asks_sortedAsc		{ get; private set; }

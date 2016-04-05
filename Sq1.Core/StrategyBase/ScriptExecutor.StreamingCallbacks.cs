@@ -7,6 +7,7 @@ using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators;
 using Sq1.Core.Livesim;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
@@ -360,6 +361,39 @@ namespace Sq1.Core.StrategyBase {
 				error = ex.Message + error;
 			}
 			return error;
+		}
+
+		internal ReporterPokeUnit InvokeScript_onLevelTwoChanged_noNewQuote(LevelTwoFrozen levelTwoFrozen) {
+			string msig = "InvokeScript_onNewBar_onNewQuote(WAIT)";
+			ReporterPokeUnit ret = null;
+
+			//this.ExecutionDataSnapshot.Clear_priorTo_InvokeScript_onNewBar_onNewQuote();
+
+			bool returnWithoutScriptInvocation = this.iShould_returnWithoutScriptInvocation_untilMarketOpen_orClearingFinished();
+			if (returnWithoutScriptInvocation) return ret;		//null here ReporterPokeUnit
+
+			string msig_imInvoking = "OnLevelTwoChanged_noNewQuote_callback(WAIT)";
+			try {
+				try {
+					this.ExecutionDataSnapshot.IsScriptRunningOnNewQuoteNonBlockingRead = true;
+					this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig_imInvoking);
+					if (this.IsStreamingTriggeringScript) {
+						this.Strategy.Script.OnLevelTwoChanged_noNewQuote_callback(levelTwoFrozen);
+					}
+				} finally {
+					this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msig_imInvoking);
+					this.ExecutionDataSnapshot.IsScriptRunningOnNewQuoteNonBlockingRead = false;
+				}
+				//this.EventGenerator.RaiseOnStrategyExecuted_onLevelTwoChanged(levelTwoFrozen);
+			} catch (Exception ex) {
+				msig_imInvoking = "OnLevelTwoChanged_noNewQuote_callback(" + levelTwoFrozen + ")";
+				string error = " //Script[" + this.Strategy.Script.GetType().Name + "]." + msig_imInvoking;
+				Assembler.PopupException(error, ex);
+				//error = ex.Message + error;
+			}
+
+			//ret = scriptInvoke_Post_dealWithNewAlerts_fillPendings_killDoomed_emitOrders_both_onNewQuote_onNewBar(quote_fromStreaming);
+			return ret;
 		}
 	}
 }

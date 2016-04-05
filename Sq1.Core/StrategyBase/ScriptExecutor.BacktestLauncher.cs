@@ -16,27 +16,11 @@ namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
 		Bars		preBacktestBars;
 		DataSource	preDataSource;
-		//LEAVE_IT_AS_USER_SELECTED	bool		preBacktestIsStreaming;
 
 		internal void BacktestContext_initialize(Bars barsEmptyButWillGrow) {
 			string msig = " //BacktestContextInitialize(" + barsEmptyButWillGrow + ")";
 
 			DataSource dataSourceFromBars = this.DataSource_fromBars;
-
-			// will only work for DataSource.Streaming=StreamingLivesimDefault; for quik will throw
-			//if (dataSourceFromBars == null) {
-			//	string msg = "MUST_NEVER_BE_NULL DataSource_fromBars[" + dataSourceFromBars + "]";
-			//	Assembler.PopupException(msg + msig);
-			//	this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
-			//	return;
-			//}
-			//if (dataSourceFromBars.StreamingAsBacktest_nullUnsafe == null) {
-			//	string msg = "MUST_NEVER_BE_NULL DataSource_fromBars.StreamingAsBacktest_nullUnsafe[" + dataSourceFromBars.StreamingAsBacktest_nullUnsafe + "]";
-			//	Assembler.PopupException(msg + msig);
-			//	this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
-			//	return;
-			//}
-
 			dataSourceFromBars.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(this, barsEmptyButWillGrow);
 
 			this.preBacktestBars = this.Bars;	// this.preBacktestBars != null will help ignore this.IsStreaming saving IsStreaming state to json
@@ -58,16 +42,6 @@ namespace Sq1.Core.StrategyBase {
 					throw new Exception(msg);
 				}
 			}
-			// LEAVE_IT_AS_USER_SELECTED
-			//if (this.preBacktestBars != null) {
-			//	string msg = "NOT_SAVING_IsStreamingTriggeringScript=ON_FOR_BACKTEST"
-			//		+ " preBacktestIsStreaming[" + this.preBacktestIsStreaming + "] preBacktestBars[" + this.preBacktestBars + "]";
-			//	//Assembler.PopupException(msg, null, false);
-			//}
-			//this.IsStreamingTriggeringScript = true;
-
-			//this.Strategy.ScriptBase.Initialize(this);
-
 			this.EventGenerator.RaiseOnBacktesterSimulationContextInitialized_step2of4();
 		}
 		internal void BacktestContext_restore() {
@@ -82,26 +56,9 @@ namespace Sq1.Core.StrategyBase {
 				indicator.BacktestContextRestoreSwitchToOriginalBarsContinueToLiveNorecalculate();
 			}
 
-			//this.DataSource = this.preDataSource;
-			// LEAVE_IT_AS_USER_SELECTED this.IsStreamingTriggeringScript = preBacktestIsStreaming;
-			// MOVED_HERE_AFTER_ASSIGNING_IS_STREAMING_TO"avoiding saving strategy each backtest due to streaming simulation switch on/off"
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 
 			DataSource dataSourceFromBars = this.DataSource_fromBars;
-			// will only work for DataSource.Streaming=StreamingLivesimDefault; for quik will throw
-			//if (dataSourceFromBars == null) {
-			//	string msg = "MUST_NEVER_BE_NULL DataSource_fromBars[" + dataSourceFromBars + "]";
-			//	Assembler.PopupException(msg + msig);
-			//	this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
-			//	return;
-			//}
-			//if (dataSourceFromBars.StreamingAsBacktest_nullUnsafe == null) {
-			//	string msg = "MUST_NEVER_BE_NULL BacktestDataSource_fromBars_nullUnsafe.StreamingAsBacktest_nullUnsafe[" + this.DataSource_fromBars.StreamingAsBacktest_nullUnsafe + "]";
-			//	Assembler.PopupException(msg + msig);
-			//	this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg + msig, 0);
-			//	return;
-			//}
-
 			dataSourceFromBars.QueueResumeIgnorePump_unfreezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(this);
 
 			this.EventGenerator.RaiseOnBacktesterContextRestoredAfterExecutingAllBars_step4of4(null);
@@ -136,7 +93,6 @@ namespace Sq1.Core.StrategyBase {
 					} catch (Exception exPerformance) {
 						string msg = "PERFORMANCE_THREW_AFTER_BACKTEST_FINISHED_OKAY__NOT_RE-THROWING_NEED_TO_RESTORE_BACKTEST_CONTEXT_FINALLY";
 						Assembler.PopupException(msg, exPerformance);
-						//throw new Exception(msg, exPerformance);
 					}
 				}
 			} else {
@@ -197,21 +153,8 @@ namespace Sq1.Core.StrategyBase {
 				this.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted("ALREADY_BACKTESTING_this.Backtester.IsBacktestingNow");
 			}
 
-			//???????
-			//AFTER F6 I want to run backtest with one slider changed; I click on the slider and get "did you forget to initialize Executor?..." error
-			//TOO_LATE_MOVED_TO_AFTER_Strategy.CompileInstantiate() this.Strategy.Script.Initialize(this);
-			// only to reset the Glyphs and Positions
-			//this.ChartForm.Chart.Renderer.InitializeBarsInvalidateChart(this.Executor);
-			//this.Executor.Renderer.InitializeBarsInvalidateChart(this.Executor);
 			if (this.ChartShadow != null) this.ChartShadow.ClearAllScriptObjectsBeforeBacktest();
 
-			//if (this.Strategy.ActivatedFromDll) {
-				// FIXED "EnterEveryBar doesn't draw MAfast"; editor-typed strategies already have indicators in SNAP after pre-backtest compilation
-				// DONT_COMMENT_LINE_BELOW indicators get lost when BacktestOnRestart = true
-				//SEQUENCER_ALREADY_DONE_IT_CloneForSequencer this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
-			//}
-			//SEQUENCER_ALREADY_DONE_IT_CloneForSequencer this.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
-			
 			//inNewThread = false;
 			if (inNewThread) {
 				int ThreadPoolAvailablePercentageLimit = 20;
@@ -227,20 +170,6 @@ namespace Sq1.Core.StrategyBase {
 				}
 				//this.MainForm.PopupException("SCHEDULING_RUN_SIMULATION for Strategy[" + this.Executor.Strategy + "] on Bars[" + this.Executor.Bars + "]");
 
-				//v1
-				//ThreadPool.QueueUserWorkItem(new WaitCallback(this.backtesterRunSimulationThreadEntryPoint));
-				
-				//v2
-				//http://stackoverflow.com/questions/7582853/what-wpf-threading-approach-should-i-go-with/7584422#7584422
-				//Task.Factory.StartNew(() => {
-				//	// Background work
-				//	this.backtesterRunSimulationThreadEntryPoint();
-				//}).ContinueWith((t) => {
-				//	// Update UI thread
-				//	executeAfterSimulation();
-				//}, TaskScheduler.FromCurrentSynchronizationContext());
-
-				//v3
 				Task backtesterTask = new Task(this.BacktesterRunSimulation_threadEntry_exceptionCatcher);
 				if (executeAfterSimulationEvenIfIFailed != null) {
 					backtesterTask.ContinueWith((t) => {

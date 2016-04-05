@@ -91,7 +91,7 @@ namespace Sq1.Core.DataTypes {
 				//this.Volume = Math.Round(this.Volume, symbolInfo.DecimalsVolume);
 			} else {
 				string msg = "PARENT_BARS_NOT_ACCESSIBLE OHLC_IS_NOT_ALIGNED_TRY_TO_AVOID_IT";
-				Assembler.PopupException(msg, null);
+				//Assembler.PopupException(msg, null);
 			}
 		}
 		public void AbsorbOHLCVfrom(Bar bar) {

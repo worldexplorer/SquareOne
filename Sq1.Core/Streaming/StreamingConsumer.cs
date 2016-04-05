@@ -17,8 +17,10 @@ namespace Sq1.Core.Streaming {
 
 		public abstract	void	UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirstAfterStart);
 		public abstract	void	UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLastBeforeStop);
-		public abstract	void	ConsumeQuoteOfStreamingBar(Quote quote);
-		public abstract	void	ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated);
+		public abstract	void	Consume_quoteOfStreamingBar(Quote quote);
+		public abstract	void	Consume_barLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated);
+		public abstract	void	Consume_levelTwoChanged_noNewQuote(LevelTwoFrozen levelTwoFrozen);
+
 
 
 		public abstract	ScriptExecutor	Executor			{ get; }

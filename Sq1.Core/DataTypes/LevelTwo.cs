@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Support;
 
-namespace Sq1.Core.Streaming {
+namespace Sq1.Core.DataTypes {
 	public class LevelTwo : ConcurrentWatchdog {
 								string			symbol;
 		[JsonIgnore]	public	Quote			QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno;

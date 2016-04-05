@@ -32,7 +32,7 @@ namespace Sq1.Core.Backtesting {
 		}
 		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLastBeforeStop) {
 		}
-		public override void ConsumeQuoteOfStreamingBar(Quote quoteClone_boundAttached) {
+		public override void Consume_quoteOfStreamingBar(Quote quoteClone_boundAttached) {
 			//Bar barLastFormed = quoteToReach.ParentStreamingBar;
 			ExecutorDataSnapshot snap = this.backtester.Executor.ExecutionDataSnapshot;
 
@@ -62,7 +62,7 @@ namespace Sq1.Core.Backtesting {
 				pokeUnit_nullUnsafe_dontForgetToDispose.Dispose();
 			}
 		}
-		public override void ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quote) {
+		public override void Consume_barLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quote) {
 			string msig = " //BacktestQuoteBarConsumer.ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended";
 			if (barLastFormed == null) {
 				string msg = "THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING"

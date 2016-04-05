@@ -329,7 +329,8 @@ namespace Sq1.Widgets.RangeBar {
 		public int RoundInt(double d) {
 			if (double.IsNaN(d)) {
 				string msg = "PREVENTING_ArithmeticOperationInvalid";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
+				return 0;
 			}
 			return (int)Math.Round(d);
 		}

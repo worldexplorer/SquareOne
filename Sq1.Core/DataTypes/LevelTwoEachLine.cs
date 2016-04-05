@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Sq1.Core.DataTypes;
-
-namespace Sq1.Core.Streaming {
+namespace Sq1.Core.DataTypes {
 	public class LevelTwoEachLine {
 		public	BidOrAsk	BidOrAsk		{ get; private set; }
 		public	double		PriceLevel		{ get; private set; }

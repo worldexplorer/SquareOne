@@ -17,15 +17,6 @@ namespace Sq1.Core.Streaming {
 		public		string										ReasonIwasCreated_propagatedFromDistributor;
 		protected	SymbolChannel<STREAMING_CONSUMER_CHILD>		SymbolChannel;
 
-		//NB#1	QuotePump.PushStraightOrBuffered replaced this.PushQuoteToConsumers to:
-		//		1) set Streaming free without necessity to wait for Script.OnNewQuote/Bar and deliver the next quote ASAP;
-		//		2) pause the Live trading and re-Backtest with new parameters imported from Sequencer, and continue Live with them (handling open positions at the edge NYI)
-		//NB#2	QuotePump.PushConsumersPaused will freeze max all opened charts and one Solidifier per DataSource:Symbol:ScaleInterval;
-		//		ability to control on per-consumer level costs more, including dissync between Solidifier.BarsStored and Executor.BarsInMemory
-		//public	QuoteQueuePerSymbol			QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim	{ get; protected set; }
-		//public	QuotePumpPerSymbol			QuotePump_nullUnsafe									{ get { return this.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim as QuotePumpPerSymbol; } }
-		//public	bool						ImQueueNotPump_trueOnlyForBacktest						{ get { return this.QuotePump_nullUnsafe == null; } }
-
 		SymbolScaleStream() {
 			ofWhatAmI			= typeof(STREAMING_CONSUMER_CHILD);
 			LockConsumersQuote	= new object();
@@ -44,22 +35,6 @@ namespace Sq1.Core.Streaming {
 			this.Symbol = symbol;
 			this.ScaleInterval = scaleInterval;
 			this.ReasonIwasCreated_propagatedFromDistributor = reasonIwasCreated;
-
-			//v1
-			//// delayed start to 1) give BacktestStreaming-created channels to not start PumpThread (both architecturally and for linear call stack in debugger)
-			//// 2) set Thread.CurrentThread.Name = QuotePump.channel.ToString() ( == this[SymbolScaleDistributionChannel].ToString), without subscribers it looks lame now
-			//if (this.QuotePump.SeparatePushingThreadEnabled != quotePumpSeparatePushingThreadEnabled) {
-			//	string msg = "I_MADE_IT_PROTECTED_TO_SET_THREAD_NAME_FOR_EASIER_DEBUGGING_IN_VISUAL_STUDIO";
-			//	//this.QuotePump.SeparatePushingThreadEnabled  = quotePumpSeparatePushingThreadEnabled;
-			//}
-			//v2 : SET_THREAD_NAME_FOR_EASIER_DEBUGGING_IN_VISUAL_STUDIO 1) default constructor this() made private, 2) QuotePump knows if it should launch pusherEntryPoint() now
-			//QuotePump = new QuotePumpPerChannel(this, quotePumpSeparatePushingThreadEnabled);
-			//v3 UNMESSING_QuotePump
-			//if (quotePumpSeparatePushingThreadEnabled) {
-			//    this.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim = new QuotePumpPerSymbol(this);
-			//} else {
-			//    this.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim = new QuoteQueuePerSymbol(this);
-			//}
 		}
 
 		public string SymbolScaleInterval { get { return "<" + this.ofWhatAmI.Name + "> " + this.Symbol + "_" + this.ScaleInterval; } }
@@ -89,7 +64,6 @@ namespace Sq1.Core.Streaming {
 			ret.Symbol									= this.Symbol;
 			ret.ScaleInterval							= this.ScaleInterval;
 			//ret.UnattachedStreamingBar_factoryPerSymbolScale			= this.UnattachedStreamingBar_factoryPerSymbolScale;
-			//ret.binderPerConsumer						= new Dictionary<STREAMING_CONSUMER_CHILD, BinderAttacher_perStreamingChart>(this.binderPerConsumer);
 			ret.ConsumersQuote							= new List<STREAMING_CONSUMER_CHILD>(this.ConsumersQuote);
 			ret.ConsumersBar							= new List<STREAMING_CONSUMER_CHILD>(this.ConsumersBar);
 			//ret.backtestersRunning_causingPumpingPause	= new List<Backtester>(this.backtestersRunning_causingPumpingPause);

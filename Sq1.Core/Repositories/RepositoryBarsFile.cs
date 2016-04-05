@@ -381,9 +381,28 @@ namespace Sq1.Core.Repositories {
 					long fileStreamLength = fileStream.Length;
 					if (barLastFormedStatic_orCurrentStreaming.DateTimeOpen == dateTimeOpen_lastStored) {
 						try {
+							Bar barBeingOverwritten = new Bar(this.Symbol, this.barsRepository.ScaleInterval, dateTimeOpen_lastStored);
+							try {
+								double open		= binaryReader.ReadDouble();
+								double high		= binaryReader.ReadDouble();
+								double low		= binaryReader.ReadDouble();
+								double close	= binaryReader.ReadDouble();
+								double volume	= binaryReader.ReadDouble();
+								if (fileStream.Position != fileStreamLength) {
+									string msg2 = "YOU_DIDNT_READ_THE_LAST_BAR_BUT_SOME_OTHER_BAR"
+										+ " YOU_MUST_BE_AT_THE_END_OF_FILE_NOW_BUT: fileStream.Position[" + fileStream.Position + "] != fileStreamLength[" + fileStreamLength + "]";
+									Assembler.PopupException(msg2);
+								}
+								barBeingOverwritten.SetOHLCValigned(open, high, low, close, volume);
+							} catch (Exception ex) {
+								string msg1 = "YOU_SHOULD_GO_OVER_FULL_HEADER_READING_&_BARS_MAY_DEPEND_ON_VERSION"
+									+ " parametrize barsLoadAll_nullUnsafe(barsToRead=0) or extract readHeader()+readBar()";
+								Assembler.PopupException(msg1, ex);
+							}
+
 							long fileStreamPositionAfterSeekToLastBar = fileStream.Seek(-barSize, SeekOrigin.End);
-							string msg = "OVERWRITING_LAST_BAR_WITH_STREAMING barLastFormedStatic_orCurrentStreaming.DateTimeOpen["
-								+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] == dateTimeOpen_lastStored[" + dateTimeOpen_lastStored + "]"
+							string msg = "OVERWRITING_LAST_BAR_WITH_STREAMING"
+								+ " barBeingOverwritten[" + barBeingOverwritten + "] => barLastFormedStatic_orCurrentStreaming[" + barLastFormedStatic_orCurrentStreaming + "]"
 								+ " fileStreamPositionAfterSeekToLastBar[" + fileStreamPositionAfterSeekToLastBar + "] fileStreamLength[" + fileStreamLength + "]"
 								;
 							//#if DEBUG_VERBOSE

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Sq1.Core.DataTypes;
-
-namespace Sq1.Core.Streaming {
+namespace Sq1.Core.DataTypes {
 	public class LevelTwoHalfSortedFrozen : SortedDictionary<double, double> {
 		public class  ASC : IComparer<double> { int IComparer<double>.Compare(double x, double y) { return x > y ? 1 : -1; } }
 		public class DESC : IComparer<double> { int IComparer<double>.Compare(double x, double y) { return x < y ? 1 : -1; } }
