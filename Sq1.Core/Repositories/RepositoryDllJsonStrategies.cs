@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Repositories {

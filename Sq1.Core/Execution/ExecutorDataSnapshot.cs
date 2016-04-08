@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Support;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Backtesting;
-using System.Collections.Generic;
 
 namespace Sq1.Core.Execution {
 	public partial class ExecutorDataSnapshot {

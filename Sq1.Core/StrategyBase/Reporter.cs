@@ -71,17 +71,17 @@ namespace Sq1.Core.StrategyBase {
 		}
 		//public abstract void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit);
 		public virtual void BuildIncremental_onPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
-			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
+			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncremental_onPositionsOpenedClosed_step3of3(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
 			throw new NotImplementedException(msg);
 		}
 		//public abstract void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit);
 		public virtual void BuildIncremental_updateOpenPositions_dueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
-			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT OpenPositionsUpdatedDueToStreamingNewQuote(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
+			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncremental_updateOpenPositions_dueToStreamingNewQuote_step2of3(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
 			throw new NotImplementedException(msg);
 		}
 		//public abstract void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit);
 		public virtual void BuildIncremental_onBrokerFilled_alertsOpening_forPositions_step1of3(ReporterPokeUnit pokeUnit) {
-			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
+			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncremental_onBrokerFilled_alertsOpening_forPositions_step1of3(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
 			throw new NotImplementedException(msg);
 		}
 

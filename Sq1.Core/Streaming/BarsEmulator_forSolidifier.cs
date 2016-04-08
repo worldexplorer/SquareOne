@@ -1,7 +1,6 @@
 using System;
 
 using Sq1.Core.DataTypes;
-using System.Diagnostics;
 
 namespace Sq1.Core.Streaming {
 	public class BarsEmulator_forSolidifier {
@@ -68,7 +67,7 @@ namespace Sq1.Core.Streaming {
 					}
 					// moved down as a final result of "Enriching": quoteClone.IntraBarSerno = this.IntraBarSerno;
 				}
-				if (this.intraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
+				if (this.intraBarSerno >= Quote.IntraBarSernoShift_forGenerated_towardsPendingFill) {
 					string msg = "NEVER_HAPPENED_SO_FAR BAR_FACTORY_INTRABAR_SERNO_NEVER_GOES_TO_SYNTHETIC_ZONE";
 					Assembler.PopupException(msg);
 				}

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui {
 	internal sealed class Program {

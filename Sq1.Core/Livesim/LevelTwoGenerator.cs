@@ -1,9 +1,7 @@
 ﻿using System;
 
 using Sq1.Core.Backtesting;
-using Sq1.Core.Support;
 using Sq1.Core.DataTypes;
-using Sq1.Core.Streaming;
 
 namespace Sq1.Core.Livesim {
 	public class LevelTwoGenerator {

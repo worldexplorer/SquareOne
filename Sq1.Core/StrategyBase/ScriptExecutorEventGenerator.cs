@@ -18,7 +18,7 @@ namespace Sq1.Core.StrategyBase {
 
 		public event EventHandler<ReporterPokeUnitEventArgs>	OnBrokerFilledAlertsOpeningForPositions_step1of3;
 		//YOU_KNOW_I_HATE_UNNECESSARY_EVENTS!!!__INVOKING_DIRECTLY_UpdateOpenPositionsDueToStreamingNewQuote()
-		public event EventHandler<ReporterPokeUnitEventArgs>	OnOpenPositionsUpdatedDueToStreamingNewQuote_step2of3;
+		public event EventHandler<ReporterPokeUnitEventArgs>	OnOpenPositionsUpdated_afterChartConsumedNewQuote_reportersOnly_step2of3;
 		public event EventHandler<ReporterPokeUnitEventArgs>	OnBrokerFilledAlertsClosingForPositions_step3of3;
 
 		public event EventHandler<QuoteEventArgs>	OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_tunnelToInterChartForm;
@@ -60,10 +60,10 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		public void RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
+		public void RaiseOpenPositionsUpdated_afterChartConsumedNewQuote_reportersOnly_step2of3(ReporterPokeUnit pokeUnit) {
 			try {
-				if (this.OnOpenPositionsUpdatedDueToStreamingNewQuote_step2of3 == null) return;
-				this.OnOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(this, new ReporterPokeUnitEventArgs(pokeUnit));
+				if (this.OnOpenPositionsUpdated_afterChartConsumedNewQuote_reportersOnly_step2of3 == null) return;
+				this.OnOpenPositionsUpdated_afterChartConsumedNewQuote_reportersOnly_step2of3(this, new ReporterPokeUnitEventArgs(pokeUnit));
 			} catch (Exception ex) {
 				string msg = "EVENT_SUBSCRIBER_THREW_WHILE_BeginInvoke__OpenPositionsUpdatedDueToStreamingNewQuote_step2of3()";
 				Assembler.PopupException(msg, ex);

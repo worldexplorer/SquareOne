@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Collections.Generic;
 
 using Sq1.Core.Serializers;
-using System.Collections.Generic;
 
 namespace Sq1.Core.Serializers {
 	public class SerializerLogrotatePeriodic<T> : SerializerLogrotate<T> {

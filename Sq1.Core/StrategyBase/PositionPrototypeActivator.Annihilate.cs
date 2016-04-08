@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 
 using Sq1.Core.Execution;
-using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class PositionPrototypeActivator {

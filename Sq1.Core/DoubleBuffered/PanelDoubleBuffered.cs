@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Diagnostics;
 
 //http://www.codeproject.com/Articles/12870/Don-t-Flicker-Double-Buffer
 namespace Sq1.Core.DoubleBuffered {

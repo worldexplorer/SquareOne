@@ -1,6 +1,4 @@
-﻿using Sq1.Core.Sequencing;
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Sq1.Core.StrategyBase {
 	public class KPIs {

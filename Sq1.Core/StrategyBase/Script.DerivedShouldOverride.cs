@@ -2,7 +2,6 @@ using System;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
-using Sq1.Core.Streaming;
 
 namespace Sq1.Core.StrategyBase {
 	public abstract partial class Script {

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+
 using Sq1.Core.Repositories;
 using Sq1.Core.StrategyBase;
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;

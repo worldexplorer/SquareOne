@@ -42,7 +42,13 @@ namespace Sq1.Core.Livesim {
 		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, OrderProcessor orderProcessor) {
 			base.DataSource		= livesimDataSource;
 			this.DataSnapshot	= new LivesimBrokerDataSnapshot(this.LivesimDataSource);
-			base.InitializeDataSource_inverse(livesimDataSource, this.LivesimDataSource.StreamingAsLivesim_nullUnsafe,  orderProcessor);
+			//v1 base.InitializeDataSource_inverse(livesimDataSource, this.LivesimDataSource.StreamingAsLivesim_nullUnsafe,  orderProcessor);
+			//v2
+			if (this.LivesimDataSource.StreamingAsLivesim_nullUnsafe.StreamingOriginal != null) {
+				base.InitializeDataSource_inverse(this.LivesimDataSource, this.LivesimDataSource.StreamingAsLivesim_nullUnsafe.StreamingOriginal, orderProcessor);
+			} else {
+				base.InitializeDataSource_inverse(this.LivesimDataSource, this.LivesimDataSource.StreamingAsLivesim_nullUnsafe, orderProcessor);
+			}
 		}
 		internal void InitializeMarketsim(ScriptExecutor scriptExecutor) {
 			this.ScriptExecutor = scriptExecutor;
@@ -128,8 +134,9 @@ namespace Sq1.Core.Livesim {
 		void consumeQuoteUnattached_attach_fillPendingAsync(Quote quoteBoundUnattached, AlertList expectingToFill) {
 			Quote quoteBoundAttached = null;
 			if (quoteBoundUnattached.ParentBarStreaming.HasParentBars) {
-				string msg = "QUOTE_BOUND_TO_A_STREAMING_BAR_THAT_IS_ALREADY_ATTACHED_TO_BARS_LIVEMMING__UPSTACK_DIDNT_REALIZE_THIS";
-				Assembler.PopupException(msg, null, false);
+				string msg = "IM_FILLING_PENDING__NOT_SETTING_TO_STREAMING_SNAP__IT_WOULD_THROW"
+					+ " QUOTE_BOUND_TO_A_STREAMING_BAR_THAT_IS_ALREADY_ATTACHED_TO_BARS_LIVEMMING__UPSTACK_DIDNT_REALIZE_THIS";
+				//Assembler.PopupException(msg, null, false);
 				quoteBoundAttached = quoteBoundUnattached;
 			} else {
 				Bar barStreaming = this.ScriptExecutor.Bars.BarStreaming_nullUnsafe;

@@ -4,6 +4,7 @@ using System.IO;
 
 using CsvHelper;
 using CsvHelper.Configuration;
+
 using Sq1.Core.DataTypes;
 using Sq1.Core.Serializers;
 

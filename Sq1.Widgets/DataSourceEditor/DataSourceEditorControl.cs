@@ -270,7 +270,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 				return;
 			}
 			this.dataSourceIamEditing.Name = this.tsiLtbDataSourceName.InputFieldValue;
-			this.dataSourceIamEditing.Symbols = SymbolParser.ParseSymbols(this.tsiLtbSymbols.InputFieldValue);
+			this.dataSourceIamEditing.Symbols = this.ParseSymbols(this.tsiLtbSymbols.InputFieldValue);
 			this.dataSourceIamEditing.ScaleInterval.StringsCachedInvalidate();
 
 			if (this.dataSourceIamEditing.StreamingAdapter	!= null) this.dataSourceIamEditing.StreamingAdapter	.EditorInstance.PushEditedSettingsToStreamingAdapter();
@@ -308,5 +308,15 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 		}
 
+		public List<string> ParseSymbols(string csv, string separators = ", \n\r") {
+			List<string> ret = new List<string>();
+			if (string.IsNullOrEmpty(csv)) return ret;
+			csv = csv.Trim();
+			string[] csvSplitted = csv.Split(separators.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			foreach (string token in csvSplitted) {
+				ret.Add(token);
+			}
+			return ret;
+		}
 	}
 }

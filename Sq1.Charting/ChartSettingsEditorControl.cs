@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Sq1.Core;
-using Sq1.Core.Repositories;
-using Sq1.Core.DataTypes;
-using Sq1.Core.DataFeed;
-using Sq1.Core.Serializers;
 using Sq1.Core.Charting;
 
 namespace Sq1.Charting {

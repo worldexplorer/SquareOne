@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Sq1.Core;
@@ -132,68 +131,26 @@ namespace Sq1.Charting {
 		void bars_symbolInfo_PriceDecimalsChanged(object sender, EventArgs e) {
 			this.InvalidateAllPanels();
 		}
-		void chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline(object sender, BarEventArgs e) {
-			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
-				string msg = "FOR_CHARTLESS_BACKTEST__THIS_CHART_SHOULD_HAVE_NOT_BEEN_SUBSCRIBED_TO__BARS_SIMULATING";
-				Assembler.PopupException(msg, null, false);
-				return;
-			}
 
+		//void chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline(object sender, BarEventArgs e) {
+		public void ExecutorObjectsReady_triggerRepaint__raiseOnBarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp() {
 			// if I was designing events for WinForms, I would switch to GUI thread automatically
 			if (base.InvokeRequired == true) {
-				base.BeginInvoke((MethodInvoker)delegate { this.chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline(sender, e); });
-				return;
+			    //base.BeginInvoke((MethodInvoker)delegate { this.ChartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTrigeringScriptTimeline(); });
+			    base.BeginInvoke(new MethodInvoker(this.ExecutorObjectsReady_triggerRepaint__raiseOnBarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp));
+			    return;
 			}
-
-			// doing same thing from GUI thread at PanelLevel2.renderLevel2() got me even closer to realtime (after pausing a Livesim
-			// and repainting Level2 whole thing was misplaced comparing to PanelPrice spread) but looked really random, not behind and not ahead;
-			// but main reason is ConcurrentLocker was spitting messages (I dont remember what exactly but easy to move back to renderLevel2() and see)
-			StreamingDataSnapshot snap = this.Bars.DataSource.StreamingAdapter.StreamingDataSnapshot;
-			
-			//v1 this.ScriptExecutorObjects.QuoteLast = this.Bars.QuoteLastClone_nullUnsafe;
-			this.ExecutorObjects_frozenForRendering.QuoteLast = snap.GetQuoteCurrent_forSymbol_nullUnsafe(this.Bars.Symbol);
-
-
-#region moved to Level2 => never reverted anymore
-			//LevelTwoHalf asksOriginal = snap.LevelTwoAsks_getForSymbol_nullUnsafe(this.Bars.Symbol);
-			//this.ScriptExecutorObjects.Asks_frozenAsc_forOnePaint = new LevelTwoHalfSortedFrozen(
-			//    BidOrAsk.Ask, "ASKS_FOR_PanelLevel2",
-			//    asksOriginal.SafeCopy(this, "CLONING_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
-			//    new LevelTwoHalfSortedFrozen.ASC());
-
-			//LevelTwoHalf bidsOriginal = snap.LevelTwoBids_getForSymbol_nullUnsafe(this.Bars.Symbol);
-			//this.ScriptExecutorObjects.Bids_frozenDesc_forOnePaint = new LevelTwoHalfSortedFrozen(
-			//    BidOrAsk.Bid, "BIDS_FOR_PanelLevel2",
-			//    bidsOriginal.SafeCopy(this, "CLONING_BIDS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
-			//    new LevelTwoHalfSortedFrozen.DESC());
-
-			//#if DEBUG moved to Level2 => never reverted anymore
-			//if (this.ScriptExecutorObjects.Asks_frozenAsc_forOnePaint.Count > 0 && this.ScriptExecutorObjects.Bids_frozenDesc_forOnePaint.Count > 0) {
-			//    List<double> ask_priceLevels_ASC = new List<double>(this.ScriptExecutorObjects.Asks_frozenAsc_forOnePaint.Keys);
-			//    double askBest_lowest =  ask_priceLevels_ASC[0];
-			//    List<double> bids_priceLevels_DESC = new List<double>(this.ScriptExecutorObjects.Bids_frozenDesc_forOnePaint.Keys);
-			//    double bidBest_highest =  bids_priceLevels_DESC[bids_priceLevels_DESC.Count-1];
-			//    if (askBest_lowest < bidBest_highest) {
-			//        string msg = "YOUR_MOUSTACHES_GOT_REVERTED";
-			//        Assembler.PopupException(msg, null, false);
-			//    }
-			//}
-			//#endif
-#endregion
-
-			this.ExecutorObjects_frozenForRendering.LevelTwo_frozen_forOnePaint =
-				snap.GetLevelTwoFrozenSorted_forSymbol_nullUnsafe(this.Bars.Symbol,
-					"CLONING_BIDS_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2",
-					"PanelLevel2");
 	
-			if (this.VisibleBarRight != this.Bars.Count - 1) {
-				string msg = "I_WILL_MOVE_SLIDER_IF_ONLY_LAST_BAR_IS_VISIBLE";
-				//I_WILL_MOVE_ANYWAYS__WE_ARE_HERE_WHEN_PAUSED_LIVESIM_WAS_HSCROLLED_BACKWARDS return;
-			}
-			string msg1 = "IM_MOVING_SLIDER_TO_THE_RIGHTMOST_BAR_KOZ_WE_ARE_ON_LAST_BAR";
-			this.SyncHorizontalScrollToBarsCount();
+			//if (this.VisibleBarRight != this.Bars.Count - 1) {
+			//    string msg = "I_WILL_MOVE_SLIDER_IF_ONLY_LAST_BAR_IS_VISIBLE";
+			//    //I_WILL_MOVE_ANYWAYS__WE_ARE_HERE_WHEN_PAUSED_LIVESIM_WAS_HSCROLLED_BACKWARDS return;
+			//}
+			//string msg1 = "IM_MOVING_SLIDER_TO_THE_RIGHTMOST_BAR_KOZ_WE_ARE_ON_LAST_BAR";
+			
+			//PAS_BESION??? this.SyncHorizontal_scrollToBarsCount();
 			this.InvalidateAllPanels();
-			// UPDATED_VIA_ PrintQuoteTimestampOnStrategyTriggeringButtonBeforeExecution() updating 00:00:00.000 on ChartForm.btnStreamingTriggersScript
+			// UPDATED_VIA_ PrintQuoteTimestamp_onStrategyTriggeringButton_beforeExecution_switchToGuiThread() updating 00:00:00.000 on ChartForm.btnStreamingTriggersScript
+			base.RaiseOnBarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp(new BarEventArgs(base.Bars.BarStreaming_nullUnsafeCloneReadonly));
 
 			if (this.splitContainerChartVsRange.Panel2Collapsed == true) {
 				string msg = "YES_splitContainerChartVsRange.Panel2Collapsed_WAS_THE_ONE WAS_THAT_THE_RIGHT_VISIBILITY_CRITERION???";

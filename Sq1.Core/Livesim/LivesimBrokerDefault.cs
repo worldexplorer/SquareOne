@@ -1,8 +1,6 @@
 ﻿using System;
 
 using Sq1.Core.Support;
-using Sq1.Core.DataFeed;
-using Sq1.Core.Streaming;
 using Sq1.Core.Broker;
 
 namespace Sq1.Core.Livesim {

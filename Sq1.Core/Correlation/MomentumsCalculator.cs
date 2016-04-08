@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Sq1.Core.Sequencing;
 
 namespace Sq1.Core.Correlation {

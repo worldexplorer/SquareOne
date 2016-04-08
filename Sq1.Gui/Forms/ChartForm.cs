@@ -78,7 +78,7 @@ namespace Sq1.Gui.Forms {
 
 			this.waitForChartFormIsLoaded = new ManualResetEvent(false);
 
-			this.ChartControl.OnBarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged);
+			this.ChartControl.OnBarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp += new EventHandler<BarEventArgs>(this.chartControl_BarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp);
 		}
 		//programmer's constructor
 		public ChartForm(ChartFormManager chartFormManager) : this() {

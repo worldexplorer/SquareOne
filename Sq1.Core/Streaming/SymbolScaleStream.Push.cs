@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
-using Sq1.Core.Backtesting;
-using Sq1.Core.Livesim;
-using Sq1.Core.Charting;
 
 namespace Sq1.Core.Streaming {
 	public partial class SymbolScaleStream<STREAMING_CONSUMER_CHILD> {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 using Newtonsoft.Json;
-using Sq1.Core.Execution;
+
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 

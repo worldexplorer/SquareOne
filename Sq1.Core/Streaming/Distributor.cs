@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
-using Sq1.Core.Charting;
-using Sq1.Core.Backtesting;
-using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
 	public partial class Distributor<STREAMING_CONSUMER_CHILD> where STREAMING_CONSUMER_CHILD : StreamingConsumer {
@@ -58,6 +55,18 @@ namespace Sq1.Core.Streaming {
 			//this.RaiseOnQuoteAsyncPushedToAllDistributionChannels(quote);
 		}
 
+
+		//public virtual void Push_levelTwoFrozen_toChannel(string symbol, LevelTwoFrozen l2frozen) {
+		//    SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.GetChannelFor_nullMeansWasntSubscribed(symbol);
+		//    if (channel == null) {
+		//        string msg = "I_REFUSE_TO_PUSH_QUOTE_FOR_UNSUBSCRIBED_SYMBOL quoteUnboundUnattached.Symbol[" + quoteUnboundUnattached.Symbol + "]"
+		//            + " DO_YOU_PUSH_QUOTE_TO_DISTRIB_SOLIDIFIERS_THAT_IS_EMPTY_DURING_LIVESIM???";
+		//        Assembler.PopupException(msg, null, false);
+		//        return;
+		//    }
+		//    // NO_THIS_IS_TOO_MUCH channel.Push_level2_viaPumpOrQueue(l2frozen);
+		//    channel.PushQuote_viaPumpOrQueue(quoteUnboundUnattached);
+		//}
 
 		public override string ToString() {
 			string ret = this.toStringCommon(false);

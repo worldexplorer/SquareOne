@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 
 using Sq1.Core.Execution;
-using Sq1.Core.Backtesting;
 using Sq1.Core.Broker;
 
 namespace Sq1.Core.Livesim {

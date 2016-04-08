@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-using Sq1.Core.DataTypes;
-
 namespace Sq1.Core.Streaming {
 	// REASON_TO_EXIST: allows to store temporarily incoming streaming quotes to backtest while streaming is on;
 	// steps to reproduce 1) I have quotes being generated, 2) Executor.IsStreaming+IsStreamingTriggeringScript,
@@ -312,6 +310,8 @@ namespace Sq1.Core.Streaming {
 				return;
 			}
 
+			this.IsDisposed = true;		// do it first so that all threads accessing handles return get FALSE
+
 			if (this.IsPushingThreadStarted) {
 				try {
 					this.PushingThreadStop_waitConfirmed();
@@ -337,8 +337,6 @@ namespace Sq1.Core.Streaming {
 			//this.hasQuoteToPush_nonBlocking = true;		// fake gateway open (forgetting to close it results in 100%CPU/pump), just to let the thread process disposed=true; 
 			//this.signalledTo_pauseUnpauseAbort = true;
 			this.signalTo_pauseUnpauseAbort();
-
-			this.IsDisposed = true;
 		}
 
 		public override void PusherPause_waitUntilPaused(int waitUntilPaused_millis = -1) {

@@ -1,4 +1,5 @@
 using System;
+
 using Newtonsoft.Json;
 
 using Sq1.Core.Sequencing;

@@ -24,7 +24,7 @@ namespace Sq1.Core.Livesim {
 			base.ReasonToExist = "Livesim[" + base.Symbol_nullReported + "]";
 			if (this.Strategy_nullReported != null) this.ReasonToExist += "[" + this.Strategy_nullReported.Name + "]";
 		}
-		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLastBeforeStop) {
+		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteCurrent_beforeStop) {
 		}
 		public override void Consume_quoteOfStreamingBar(Quote quoteClone_boundAttached) {
 			bool guiHasTime = this.livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
@@ -33,16 +33,13 @@ namespace Sq1.Core.Livesim {
 			using (pokeUnit_nullUnsafe_dontForgetToDispose) {
 				if (	pokeUnit_nullUnsafe_dontForgetToDispose != null
 					 && pokeUnit_nullUnsafe_dontForgetToDispose.PositionsOpenNow.Count > 0) {
-					executor.PerformanceAfterBacktest.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(executor.ExecutionDataSnapshot.PositionsOpenNow);
+					executor.PerformanceAfterBacktest.BuildIncremental_openPositionsUpdated_afterChartConsumedNewQuote_step2of3(executor.ExecutionDataSnapshot.PositionsOpenNow);
 					if (guiHasTime) {
-						executor.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnit_nullUnsafe_dontForgetToDispose);
+						executor.EventGenerator.RaiseOpenPositionsUpdated_afterChartConsumedNewQuote_reportersOnly_step2of3(pokeUnit_nullUnsafe_dontForgetToDispose);
 					}
 				}
 				if (guiHasTime) {
-					// ALREADY_HANDLED_BY chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline
-					//executor.ChartShadow.Invalidate();
-					//executor.ChartShadow.InvalidateAllPanels();
-					//executor.ChartShadow.RefreshAllPanelsWaitFinishedSoLivesimCouldGenerateNewQuote(0);
+					this.Executor.ChartShadow.PushQuote_LevelTwoFrozen_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll();
 				}
 			}
 		}

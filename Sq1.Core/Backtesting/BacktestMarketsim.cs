@@ -98,7 +98,7 @@ namespace Sq1.Core.Backtesting {
 									+ "], signalName[" + entryAlert.PositionAffected.EntrySignal + "]) "
 									+ "entryPrice[" + entryPriceOut + "] > := quoteToReach.Ask["
 									+ barIndexTested + "]=[" + quote.Ask + "]"
-									+ " while basisPrice=[" + entryAlert.PositionAffected.QuoteLast_forMarketOrStopLimit_implicitPrice + "]";
+									+ " while basisPrice=[" + entryAlert.PositionAffected.QuoteCurrent_forMarketOrStopLimit_implicitPrice + "]";
 							}
 							//entrySlippageOutNotUsed = slippageNonLimit;
 							//priceScriptAligned += entrySlippageOutNotUsed;
@@ -110,7 +110,7 @@ namespace Sq1.Core.Backtesting {
 									+ "], signalName[" + entryAlert.PositionAffected.EntrySignal + "]) "
 									+ "entryPrice[" + entryPriceOut + "] < := quoteToReach.Bid["
 									+ barIndexTested + "]=[" + quote.Bid + "]"
-									+ " while basisPrice=[" + entryAlert.PositionAffected.QuoteLast_forMarketOrStopLimit_implicitPrice + "]";
+									+ " while basisPrice=[" + entryAlert.PositionAffected.QuoteCurrent_forMarketOrStopLimit_implicitPrice + "]";
 							}
 							//entrySlippageOutNotUsed = -slippageNonLimit;
 							//priceScriptAligned += entrySlippageOutNotUsed;

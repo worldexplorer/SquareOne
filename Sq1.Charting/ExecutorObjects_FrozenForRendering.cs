@@ -7,7 +7,6 @@ using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
-using Sq1.Core.Streaming;
 using Sq1.Core.Charting.OnChart;
 using Sq1.Core.Support;
 
@@ -29,7 +28,7 @@ namespace Sq1.Charting {
 		public Dictionary<string, OnChartLabel>		OnChartLabelsById		{ get; private set; }
 		public Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
 
-		public Quote								QuoteLast;
+		public Quote								QuoteCurrent;
 		public LevelTwoFrozen						LevelTwo_frozen_forOnePaint;
 
 		// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS

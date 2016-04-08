@@ -37,8 +37,8 @@ namespace Sq1.Core.Streaming {
 
 		public override void UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirstAfterStart) {
 		}
-		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLastBeforeStop) {
-			this.barsSaveToFile_replaceStreamingBar(quoteLastBeforeStop, true);
+		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteCurrent_beforeStop) {
+			this.barsSaveToFile_replaceStreamingBar(quoteCurrent_beforeStop, true);
 		}
 		public override void Consume_quoteOfStreamingBar(Quote quoteWith_pseudoExpanded) {
 			this.barsSaveToFile_replaceStreamingBar(quoteWith_pseudoExpanded);

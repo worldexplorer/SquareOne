@@ -2,9 +2,6 @@ using System;
 using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
-using Sq1.Core.Backtesting;
-using Sq1.Core.Livesim;
-using Sq1.Core.Charting;
 
 namespace Sq1.Core.Streaming {
 	public abstract partial class SymbolScaleStream<STREAMING_CONSUMER_CHILD>
@@ -46,15 +43,15 @@ namespace Sq1.Core.Streaming {
 			foreach (STREAMING_CONSUMER_CHILD quoteConsumer	in this.ConsumersQuote)	quoteConsumer.UpstreamSubscribed_toSymbol_streamNotifiedMe(null);
 			foreach (STREAMING_CONSUMER_CHILD barConsumer	in this.ConsumersBar)	  barConsumer.UpstreamSubscribed_toSymbol_streamNotifiedMe(null);
 		}
-		internal void UpstreamUnSubscribedFromSymbolPokeConsumers(string symbol, Quote quoteLastReceived) {
+		internal void UpstreamUnSubscribedFromSymbolPokeConsumers(string symbol, Quote quoteCurrent) {
 			foreach (STREAMING_CONSUMER_CHILD quoteConsumer in this.ConsumersQuote) {
-				quoteConsumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteLastReceived);
+				quoteConsumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteCurrent);
 			}
 			foreach (STREAMING_CONSUMER_CHILD barConsumer in this.ConsumersBar) {
 				if (barConsumer is StreamingConsumerSolidifier == false) {
-					quoteLastReceived.StreamingBar_Replace(barConsumer.ConsumerBars_toAppendInto.BarStreaming_nullUnsafe);
+					quoteCurrent.StreamingBar_Replace(barConsumer.ConsumerBars_toAppendInto.BarStreaming_nullUnsafe);
 				}
-				barConsumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteLastReceived);
+				barConsumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteCurrent);
 			}
 		}
 

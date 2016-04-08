@@ -137,11 +137,11 @@ namespace Sq1.Core.Execution {
 		}
 
 		[JsonProperty]	public	Quote				QuoteCreatedThisAlert_deserializable;
-		[JsonProperty]	public	Quote				QuoteLastWhenThisAlertFilled_deserializable;
+		[JsonProperty]	public	Quote				QuoteCurrent_whenThisAlertFilled_deserializable;
 
 		[JsonIgnore]	public	Quote				QuoteCreatedThisAlert;
 		[JsonIgnore]	public	Quote				QuoteFilledThisAlertDuringBacktestNotLive;
-		[JsonIgnore]	public	Quote				QuoteLastWhenThisAlertFilled;
+		[JsonIgnore]	public	Quote				QuoteCurrent_whenThisAlertFilled;
 
 		[JsonIgnore]	public	Position			PositionAffected;
 		[JsonIgnore]	public	DateTime			PositionEntryDateTimeBarAligned				{ get {

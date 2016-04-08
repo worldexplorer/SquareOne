@@ -2,12 +2,13 @@ using System;
 using System.Text;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.DataTypes {
 	public class Quote {
 		[JsonIgnore]	public	const string	GENERATED_TO_FILL_ALERT = "GENERATED_TO_FILL_ALERT";
-		[JsonIgnore]	public	const int		IntraBarSernoShiftForGeneratedTowardsPendingFill = 100000;
+		[JsonIgnore]	public	const int		IntraBarSernoShift_forGenerated_towardsPendingFill = 100000;
 
 		[JsonProperty]	public	string		Symbol;
 		[JsonProperty]	public	string		SymbolClass;
@@ -21,7 +22,7 @@ namespace Sq1.Core.DataTypes {
 		
 		[JsonIgnore]	public	int			IntraBarSerno;
 		[JsonIgnore]	public	bool		IamInjectedToFillPendingAlerts {
-			get { return this.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill; } }
+			get { return this.IntraBarSerno >= Quote.IntraBarSernoShift_forGenerated_towardsPendingFill; } }
 		[JsonProperty]	public	long		AbsnoPerSymbol;
 
 		[JsonIgnore]	public	Bar			ParentBarStreaming		{ get; protected set; }
@@ -95,10 +96,10 @@ namespace Sq1.Core.DataTypes {
 			return sb.ToString();
 		} }
 
-		[JsonIgnore]	public	bool		IsGenerated { get {
-			bool ret = //quote.IntraBarSerno >= 99999 && 
-				this.Source.Contains(Quote.GENERATED_TO_FILL_ALERT) &&
-				this is QuoteGenerated;
+		[JsonIgnore]	public	bool		HasGeneratedSource { get {
+			bool ret = this.Source.Contains(Quote.GENERATED_TO_FILL_ALERT)
+				//&& this.IntraBarSerno >= Quote.IntraBarSernoShift_forGenerated_towardsPendingFill
+				&& this is QuoteGenerated;
 			return ret;
 		} }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -8,7 +7,6 @@ using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
-using Sq1.Core.Streaming;
 using Sq1.Core.Charting;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Livesim;
@@ -142,7 +140,7 @@ namespace Sq1.Charting {
 
 			base.Initialize(barsNotNull, strategySavedInChartSettings, removeChartShadowFromOldSymbolAndAddToLoadingBars, invalidateAllPanels);
 			this.barEventsAttach();
-			this.SyncHorizontalScrollToBarsCount();
+			this.SyncHorizontal_scrollToBarsCount();
 			//this.hScrollBar.ValueCurrent = this.hScrollBar.Maximum;	// I just sync'ed this.hScrollBar.Maximum = this.Bars.Count - 1
 			// after I reduced BarRange{500bars => 100bars} in MainForm, don't set this.hScrollBar.Value here, I'll invoke ScrollToLastBarRight() upstack
 			//v1 if (this.ChartSettings.ScrollPositionAtBarIndex >= this.hScrollBar.Minimum && this.ChartSettings.ScrollPositionAtBarIndex <= this.hScrollBar.Maximum) {
@@ -189,7 +187,11 @@ namespace Sq1.Charting {
 			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			this.InvalidateAllPanels();
 		}
-		public void SyncHorizontalScrollToBarsCount() {
+		public void SyncHorizontal_scrollToBarsCount() {
+			//if (base.InvokeRequired == true) {
+			//    base.BeginInvoke(new MethodInvoker(this.SyncHorizontal_scrollToBarsCount));
+			//    return;
+			//}
 			// this.HorizontalScroll represents the scrolling window for the content, useful in UserControl.Autoscroll when an innerPanel is wider or has Top|Left < 0 
 			// this.hScrollBar represents a sensor which accepts user clicks on a visual surface
 			// I'm not using Panel.HorizontalScroll because I'll never have anything "inner" larger; I'm painting the sliding bar window on Graphics
@@ -207,8 +209,8 @@ namespace Sq1.Charting {
 		//}
 		public override void InvalidateAllPanels() {
 			if (base.InvokeRequired) {
-				base.BeginInvoke(new MethodInvoker(this.InvalidateAllPanels));
-				return;
+			    base.BeginInvoke(new MethodInvoker(this.InvalidateAllPanels));
+			    return;
 			}
 			//LIVESIM_PAUSED_SHOULD_H_SCROLL__THIS_WAS_AN_OBSTACLE_NON_REPAINTING if (base.IsBacktestingNow) return;
 			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;

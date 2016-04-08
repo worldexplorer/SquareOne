@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
 
+using Sq1.Core.Indicators;
 using Sq1.Core.Charting;
 using Sq1.Core.Charting.OnChart;
-using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {	// the following wrappers only make sense for Sequencing, when Executor.ChartShadow=null

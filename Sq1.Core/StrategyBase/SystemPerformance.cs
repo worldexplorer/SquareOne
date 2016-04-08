@@ -172,7 +172,7 @@ namespace Sq1.Core.StrategyBase {
 			int absorbedOpenBoth		= this.SlicesShortAndLong	.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
 			int absorbedOpenBH			= this.SliceBuyHold			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
 		}
-		public void BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(PositionList positions) {
+		public void BuildIncremental_openPositionsUpdated_afterChartConsumedNewQuote_step2of3(PositionList positions) {
 			int absorbedUpdatedLong		= this.SliceLong			.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(positions);
 			int absorbedUpdatedShort	= this.SliceShort			.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(positions);
 			int absorbedUpdatedBoth		= this.SlicesShortAndLong	.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(positions);

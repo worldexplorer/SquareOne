@@ -7,6 +7,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 using Sq1.Charting.OnChart;
+using Sq1.Core.Charting;
 
 namespace Sq1.Charting {
 	public partial class PanelPrice {
@@ -384,28 +385,57 @@ namespace Sq1.Charting {
 			}
 		}
 		void renderBidAsk(Graphics g) {
-			Quote quoteLast = base.ChartControl.ExecutorObjects_frozenForRendering.QuoteLast;
-			if (quoteLast == null) return;
+			Quote quoteCurrent = base.ChartControl.ExecutorObjects_frozenForRendering.QuoteCurrent;
+			if (quoteCurrent == null) return;
+			double spread = quoteCurrent.Spread;
+			if (double.IsNaN(spread) == true) return;
+
+			ChartSettings settings = base.ChartControl.ChartSettings;
+
 			int chartWidth = base.ChartControl.ChartWidthMinusGutterRightPrice;
+			//	chartWidth = base.ChartControl.Width;
+				chartWidth = base.Width;
+			
+			string spreadFormatted = spread.ToString(base.PriceFormat);
+			string labelSpread = "spread[" + spreadFormatted + "]";
+			SizeF labelSpread_measured = g.MeasureString(labelSpread, settings.SpreadLabelFont);
+			int labelSpread_measuredWidth	= (int)labelSpread_measured.Width;
+			int labelSpread_measuredHeight	= (int)labelSpread_measured.Height;
+			int padding = 4;
+	
+			int spreadLinesWidth = chartWidth - labelSpread_measuredWidth - padding * 3;
+			if (spreadLinesWidth < 10) spreadLinesWidth = 10;			// im not testing g.DrawString() if it accepts negative values; just want it to draw
+			bool showLabels_onRightEdge = false;
+
+			int xLinesSpread = showLabels_onRightEdge
+				? 0
+				: labelSpread_measuredWidth + padding * 2;
+
+			double bid = quoteCurrent.Bid;
+			double ask = quoteCurrent.Ask;
 			int yBid = 0;
-			double bid = quoteLast.Bid;
-			double ask = quoteLast.Ask;
+			int yAsk = 0;
 			if (double.IsNaN(bid) == false) {
 				yBid = base.ValueToYinverted(bid);
-				g.DrawLine(base.ChartControl.ChartSettings.PenSpreadBid, 0, yBid, chartWidth, yBid);
+				g.DrawLine(settings.PenSpreadBid, xLinesSpread, yBid, spreadLinesWidth, yBid);
 			}
 			if (double.IsNaN(ask) == false) {
-				int yAsk = base.ValueToYinverted(ask);
-				g.DrawLine(base.ChartControl.ChartSettings.PenSpreadAsk, 0, yAsk, chartWidth, yAsk);
+				yAsk = base.ValueToYinverted(ask);
+				g.DrawLine(settings.PenSpreadAsk, xLinesSpread, yAsk, spreadLinesWidth, yAsk);
 			}
 
-			double spread = quoteLast.Spread;
-			if (double.IsNaN(spread) == false && base.ChartControl.ChartSettings.SpreadLabelColor != Color.Empty) {
-				string spreadFormatted = spread.ToString(this.PriceFormat);
-				g.DrawString("spread[" + spreadFormatted + "]",
-					base.ChartControl.ChartSettings.SpreadLabelFont,
-					base.ChartControl.ChartSettings.BrushSpreadLabel, 5, yBid + 3);
-			}
+			int xLabelSpread = showLabels_onRightEdge
+				? base.Width - labelSpread_measuredWidth - padding * 2
+				: 5;
+			if (xLabelSpread < 5) xLabelSpread = 5;		// im not testing g.DrawString() if it accepts negative values; just want it to draw
+			int yLabelSpread = (int) ((yBid + yAsk) / 2 - labelSpread_measuredHeight / 2);	// in the middle between spread lines
+			if (yLabelSpread > base.Height) yLabelSpread = base.Height - labelSpread_measuredHeight;
+			if (yLabelSpread < 0) yLabelSpread = 0;
+
+			if (yLabelSpread < 5) yLabelSpread = 5;		// im not testing g.DrawString() if it accepts negative values; just want it to draw
+
+			g.DrawString(labelSpread, settings.SpreadLabelFont, settings.BrushSpreadLabel, xLabelSpread, yLabelSpread);
+
 		}
 	}
 }

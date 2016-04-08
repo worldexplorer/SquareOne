@@ -14,8 +14,6 @@ using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.DataFeed;
-using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Charting {
 	public partial class ChartShadow : 
@@ -82,9 +80,9 @@ namespace Sq1.Core.Charting {
 			// ChartForm wants to update last received quote datetime; FOR_NON_CORE_CONSUMERS_ONLY CORE_DEFINED_CONSUMERS_IMPLEMENT_IStreamingConsumer.ConsumeQuoteOfStreamingBar()
 			//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.Bars.OnBarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(this.bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm);
 		}
-		void bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm(object sender, BarEventArgs e) {
-			this.raiseOnBarStreamingUpdatedMerged(e);
-		}
+		//void bars_OnBarStreamingUpdatedMerged_invokedOnlyWhenUserSubscribedChart_tunneledToChartForm(object sender, BarEventArgs e) {
+		//    this.RaiseOnBarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp(e);
+		//}
 		
 		public virtual bool SelectPosition(Position position) {
 			string msg = "ChartShadow::SelectPosition() TODO: implement HIGHLIGHTING for a position[" + position + "]; chart[" + this + "]";
@@ -185,6 +183,7 @@ namespace Sq1.Core.Charting {
 		// RELEASE_DOESNT_REPAINT_CHART_LIVESIM_DELAYED ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
 		public virtual void InvalidateAllPanels() { }
 		//public virtual void RefreshAllPanelsNonBlockingRefreshNotYetStarted() { }
+		public virtual void PushQuote_LevelTwoFrozen_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll() { }
 		#endregion
 
 
@@ -232,7 +231,8 @@ namespace Sq1.Core.Charting {
 				return;
 			}
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker) delegate { this.PumpPaused_notification_switchLivesimmingThreadToGui(); } );
+				//base.BeginInvoke((MethodInvoker) delegate { this.PumpPaused_notification_switchLivesimmingThreadToGui(); } );
+				base.BeginInvoke(new MethodInvoker(this.PumpPaused_notification_switchLivesimmingThreadToGui));
 				return;
 			}
 			if (base.ParentForm.Text.Contains("PAUSED")) {

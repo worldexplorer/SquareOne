@@ -1,7 +1,8 @@
 using System;
-using Sq1.Core;
 using System.Windows.Forms;
 using System.Drawing;
+
+using Sq1.Core;
 
 namespace Sq1.Charting {
 	public partial class PanelBase {
@@ -81,7 +82,7 @@ namespace Sq1.Charting {
 				//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 				e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
 			
-				this.ChartControl.SyncHorizontalScrollToBarsCount();
+				this.ChartControl.SyncHorizontal_scrollToBarsCount();
 
 				//if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
 				//	string msg = "MUST_BE_POSITIVE#2_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "] panel[" + this.ToString() + "]";
@@ -192,7 +193,7 @@ namespace Sq1.Charting {
 			try {
 				this.ChartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
 				//if (this.ChartControl.BarsNotEmpty) {}
-				this.ChartControl.SyncHorizontalScrollToBarsCount();
+				this.ChartControl.SyncHorizontal_scrollToBarsCount();
 			
 				e.Graphics.Clear(this.ChartControl.ChartSettings.ChartColorBackground);
 				

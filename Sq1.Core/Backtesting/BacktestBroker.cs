@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
@@ -7,7 +8,6 @@ using Sq1.Core.Broker;
 using Sq1.Core.Support;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
-using System.Collections.Generic;
 
 namespace Sq1.Core.Backtesting {
 	[SkipInstantiationAt(Startup = true)]

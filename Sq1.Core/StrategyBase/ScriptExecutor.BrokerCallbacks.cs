@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Diagnostics;
 using System.Collections.Generic;
 
@@ -176,8 +175,8 @@ namespace Sq1.Core.StrategyBase {
 				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive.ItriggeredFillAtBidOrAsk = alertFilled.BidOrAskWillFillMe;
 			} else {
 				//LIVEISM
-				alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(alertFilled.Symbol);
-				alertFilled.QuoteLastWhenThisAlertFilled_deserializable = alertFilled.QuoteLastWhenThisAlertFilled.Clone_asCoreQuote();
+				alertFilled.QuoteCurrent_whenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(alertFilled.Symbol);
+				alertFilled.QuoteCurrent_whenThisAlertFilled_deserializable = alertFilled.QuoteCurrent_whenThisAlertFilled.Clone_asCoreQuote();
 			}
 
 			try {
@@ -285,7 +284,7 @@ namespace Sq1.Core.StrategyBase {
 					if (this.IsStrategyEmittingOrders) {
 						Quote quoteHackForLive = quoteFilledThisAlertNullForLive;
 						if (quoteHackForLive == null) {
-							quoteHackForLive = alertFilled.QuoteLastWhenThisAlertFilled;	// unconditionally filled 130 lines above
+							quoteHackForLive = alertFilled.QuoteCurrent_whenThisAlertFilled;	// unconditionally filled 130 lines above
 						}
 						this.EnrichAlerts_withQuoteCreated(alertsNewAfterExecSafeCopy, quoteHackForLive);
 						this.OrderProcessor.Emit_createOrders_forScriptGeneratedAlerts_eachInNewThread(alertsNewAfterExecSafeCopy, setStatusSubmitting, true);

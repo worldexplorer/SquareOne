@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
+
 using Sq1.Core;
 using Sq1.Core.Charting;
 using Sq1.Core.Execution;
@@ -157,7 +158,7 @@ namespace Sq1.Reporters {
 			this.olvPositions.InsertObjects(0, safeCopy);
 		}
 		public override void BuildIncremental_onPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
-			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsClosed.SafeCopy(this, "BuildIncrementalOnPositionsOpenedClosed_step3of3(WAIT)");
+			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsClosed.SafeCopy(this, "BuildIncremental_onPositionsOpenedClosed_step3of3(WAIT)");
 
 			//v1 NO_NEED_TO_UPDATE_STASHED_POSITION_COUNTER_IT_DIDNT_CHANGE_ON_step2of3
 			//this.StashWindowTextSuffixInBaseTabText();
@@ -170,7 +171,7 @@ namespace Sq1.Reporters {
 			this.olvPositions.RefreshObjects(positionsUpdatedDueToStreamingNewQuote);
 		}
 		public override void BuildIncremental_updateOpenPositions_dueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
-			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsOpenNow.SafeCopy(this, "BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(WAIT)");
+			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsOpenNow.SafeCopy(this, "BuildIncremental_updateOpenPositions_dueToStreamingNewQuote_step2of3(WAIT)");
 
 			//v1 NO_NEED_TO_UPDATE_STASHED_POSITION_COUNTER_IT_DIDNT_CHANGE_ON_step2of3
 			//this.StashWindowTextSuffixInBaseTabText();

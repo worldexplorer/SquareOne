@@ -139,7 +139,6 @@
     <Compile Include="DataFeed\DataSource.RepositoryExposed.cs">
       <DependentUpon>DataSource.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataFeed\SymbolChannelChart.cs" />
     <Compile Include="DataTypes\SymbolInfo.EventGenerator.cs">
       <DependentUpon>SymbolInfo.cs</DependentUpon>
     </Compile>
@@ -386,6 +385,9 @@
     <Compile Include="Streaming\StreamingAdapter.OverrideMe.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
+    <Compile Include="Streaming\StreamingAdapter.Push.cs">
+      <DependentUpon>StreamingAdapter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Streaming\StreamingAdapter.ReplaceDistributorsForLivesim.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
@@ -394,11 +396,11 @@
     <Compile Include="Streaming\StreamingAdapter.EventDistributor.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
+    <Compile Include="Streaming\StreamingAdapter.Subscribe.cs">
+      <DependentUpon>StreamingAdapter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Streaming\SymbolScaleStreamChart.cs" />
     <Compile Include="Streaming\SymbolScaleStreamChart.Push.cs">
-      <DependentUpon>SymbolScaleStreamChart.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Streaming\SymbolScaleStreamChart.Subscribe.cs">
       <DependentUpon>SymbolScaleStreamChart.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\SymbolScaleStreamSolidifier.cs" />
@@ -498,7 +500,6 @@
     <Compile Include="Streaming\SymbolScaleStream.cs" />
     <Compile Include="Streaming\StreamingAdapter.cs" />
     <Compile Include="StrategyBase\StrategyEventArgs.cs" />
-    <Compile Include="Support\SymbolParser.cs" />
     <Compile Include="Support\TimeredBlock.cs" />
     <Compile Include="Support\TimeredBlockTask.cs" />
     <Compile Include="Support\UserControlInner.cs">
@@ -518,10 +519,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Support\UserControlTitled.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Support\UserControlTitled.Customizer.cs">
-      <DependentUpon>UserControlTitled.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Support\UserControlTitled.Designer.cs">

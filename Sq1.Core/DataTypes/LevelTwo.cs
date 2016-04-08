@@ -23,7 +23,7 @@ namespace Sq1.Core.DataTypes {
 			this.bids = new LevelTwoHalf("LevelTwoBids[" + this.symbol + "] " + reasonToExist);
 		}
 
-		public Quote Clear_QuoteLastPrev() {
+		public Quote QuoteCurrentPrev_clear() {
 			Quote ret = this.QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno;
 			this.QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno = null;
 			this.QuotePrev_unbound_notCloned = null;
@@ -64,7 +64,7 @@ namespace Sq1.Core.DataTypes {
 		}
 
 		public Dictionary<double, double> Bids_safeCopy(object lockOwner, string lockPurpose) {
-			return this.asks.SafeCopy(lockOwner, lockPurpose);
+			return this.bids.SafeCopy(lockOwner, lockPurpose);
 		}
 		#endregion
 
@@ -93,53 +93,9 @@ namespace Sq1.Core.DataTypes {
 			List<LevelTwoEachLine> ret = new List<LevelTwoEachLine>();
 			if (this.symbolInfo == null) return ret;	// just for cleaning DomControl after manual user-dde-stop; nothing is gonna be outputted
 
-			#region moved to LevelTwoFrozen()
-			//Dictionary<double, double> asksSafeCopy_orEmpty = this.Asks != null
-			//    ? this.Asks.SafeCopy(this, "FREEZING_PROXIED_asks_TO_PUSH_TO_LevelTwoUserControl_titledResizeableUserControl")
-			//    : new Dictionary<double, double>();
-
-			//LevelTwoHalfSortedFrozen AsksFrozen_sortedAsc = new LevelTwoHalfSortedFrozen(
-			//    BidOrAsk.Ask, "asks_FOR_LevelTwoUserControl_titledResizeableUserControl",
-			//    asksSafeCopy_orEmpty,
-			//    new LevelTwoHalfSortedFrozen.ASC());
-
-
-			//Dictionary<double, double> bidsafeCopy_orEmpty = this.Bids != null
-			//    ? this.Bids.SafeCopy(this, "FREEZING_PROXIED_bids_TO_PUSH_TO_LevelTwoUserControl_titledResizeableUserControl")
-			//    : new Dictionary<double, double>();
-
-			//LevelTwoHalfSortedFrozen bidsFrozen_desc = new LevelTwoHalfSortedFrozen(
-			//    BidOrAsk.Bid, "bids_FOR_LevelTwoUserControl_titledResizeableUserControl",
-			//    bidsafeCopy_orEmpty,
-			//    new LevelTwoHalfSortedFrozen.DESC());
-
-			//#if DEBUG
-			//if (AsksFrozen_sortedAsc.Count > 0 && bidsFrozen_desc.Count > 0) {
-			//    List<double> ask_priceLevels_ASC = new List<double>(AsksFrozen_sortedAsc.Keys);
-			//    double askBest_lowest =  ask_priceLevels_ASC[0];
-			//    List<double> bid_priceLevels_DESC = new List<double>(bidsFrozen_desc.Keys);
-			//    double bidBest_highest =  bid_priceLevels_DESC[bid_priceLevels_DESC.Count-1];
-			//    if (askBest_lowest < bidBest_highest) {
-			//        string msg = "YOUR_MOUSTACHES_GOT_REVERTED";
-			//        Assembler.PopupException(msg, null, false);
-			//    }
-			//}
-			//#endif
-			#endregion
-
 			LevelTwoFrozen levelTwoFrozen = new LevelTwoFrozen(this,
 				"FREEZING_PROXIED_bids/asks_TO_PUSH_TO_LevelTwoUserControl_titledResizeableUserControl",
 				"LevelTwoUserControl_titledResizeableUserControl");
-
-			
-			//v1
-			//if (this.symbolInfo.Level2PriceLevels < bidsFrozen.Count) {
-			//    bidsFrozen = bidsFrozen.Clone_noDeeperThan(this.symbolInfo.Level2PriceLevels);
-			//}
-			//if (this.symbolInfo.Level2PriceLevels < asksFrozen.Count) {
-			//    asksFrozen = asksFrozen.Clone_noDeeperThan(this.symbolInfo.Level2PriceLevels, true);
-			//}
-			//v2 don't cut anything but just display from spread up and down
 
 			double priceStep = this.symbolInfo.PriceStep;
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.DataFeed;
 using Sq1.Core.StrategyBase;
 

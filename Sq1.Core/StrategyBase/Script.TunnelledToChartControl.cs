@@ -4,6 +4,7 @@ using System.Drawing;
 using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators;
+
 using Sq1.Core.Charting.OnChart;
 
 namespace Sq1.Core.StrategyBase {

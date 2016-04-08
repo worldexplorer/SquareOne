@@ -132,7 +132,8 @@ namespace Sq1.Widgets.Correlation {
 		} }
 		void flushCalculationsToGui() {
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.flushCalculationsToGui(); });
+				//base.BeginInvoke((MethodInvoker)delegate { this.flushCalculationsToGui(); });
+				base.BeginInvoke(new MethodInvoker(this.flushCalculationsToGui));
 				return;
 			}
 			this.flowLayoutPanel1.Controls.Clear();

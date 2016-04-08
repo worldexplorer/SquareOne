@@ -17,7 +17,7 @@ namespace Sq1.Core.Execution {
 		public Bars					Bars					{ get; protected set; }
 		public string				Symbol					{ get { return this.Bars.Symbol; } }
 		public double				Shares					{ get; protected set; }
-		public double				QuoteLast_forMarketOrStopLimit_implicitPrice;// { get; protected set; }
+		public double				QuoteCurrent_forMarketOrStopLimit_implicitPrice;// { get; protected set; }
 
 		public PositionPrototype	Prototype;
 
@@ -209,7 +209,7 @@ namespace Sq1.Core.Execution {
 			this.Bars = bars;
 			this.PositionLongShort = positionLongShort;
 			this.StrategyID = strategyID;
-			this.QuoteLast_forMarketOrStopLimit_implicitPrice = basisPrice;
+			this.QuoteCurrent_forMarketOrStopLimit_implicitPrice = basisPrice;
 			this.Shares = shares;
 		}
 		public Position(Alert alertEntry, double basisPrice) : this(alertEntry.Bars
@@ -437,9 +437,9 @@ namespace Sq1.Core.Execution {
 				msg.Append("EXIT_BAR-1");
 			}
 			msg.Append("]");
-			if (this.QuoteLast_forMarketOrStopLimit_implicitPrice != 0) {
+			if (this.QuoteCurrent_forMarketOrStopLimit_implicitPrice != 0) {
 				msg.Append(" BasisPrice[");
-				msg.Append(this.QuoteLast_forMarketOrStopLimit_implicitPrice);
+				msg.Append(this.QuoteCurrent_forMarketOrStopLimit_implicitPrice);
 				msg.Append("]");
 			}
 			if (this.Prototype != null) {

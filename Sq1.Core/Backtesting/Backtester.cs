@@ -491,6 +491,7 @@ namespace Sq1.Core.Backtesting {
 		public void SetQuoteGeneratorAndConditionallyRebacktest_invokedInGuiThread(BacktestQuotesGenerator clone) {
 			this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar = clone.BacktestStrokesPerBar;
 			this.Executor.Strategy.Serialize();
+			this.Create_quoteGenerator_eachBacktesterSimulation();	// activate right now (while Livesim is running)
 			if (this.Executor.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false) return;
 			this.Executor.BacktesterRun_trampoline(null, true);
 		}

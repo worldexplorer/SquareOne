@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 
-using Sq1.Core.Support;
-
 namespace Sq1.Core.Repositories {
 	public class RepositoryFoldersNoJson {
 		public	string			RootPath		{ get; protected set; }

@@ -6,7 +6,6 @@ using System.Reflection;
 
 using Newtonsoft.Json;
 
-using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Charting;
 
@@ -629,6 +628,15 @@ namespace Sq1.Core.Charting {
 			} }
 
 		[Browsable(false)]
+		[JsonIgnore]	Brush brushSpreadBid;
+		[Browsable(false)]
+		[JsonIgnore]	public Brush BrushSpreadBid { get {
+				if (this.brushSpreadBid == null) this.brushSpreadBid = new SolidBrush(this.SpreadBidLineColor);
+				return this.brushSpreadBid;
+			} }
+
+
+		[Browsable(false)]
 		[JsonIgnore]	Pen penSpreadAsk;
 		[Browsable(false)]
 		[JsonIgnore]	public Pen PenSpreadAsk { get {
@@ -636,6 +644,15 @@ namespace Sq1.Core.Charting {
 					new Pen(Color.FromArgb(this.SpreadAskLineColorAlpha, this.SpreadAskLineColor), this.SpreadAskLineWidth);
 				return this.penSpreadAsk;
 			} }
+
+		[Browsable(false)]
+		[JsonIgnore]	Brush brushSpreadAsk;
+		[Browsable(false)]
+		[JsonIgnore]	public Brush BrushSpreadAsk { get {
+				if (this.brushSpreadAsk == null) this.brushSpreadAsk = new SolidBrush(this.SpreadAskLineColor);
+				return this.brushSpreadAsk;
+			} }
+
 
 		[Browsable(false)]
 		[JsonIgnore]	Brush brushSpreadLabel;
@@ -847,7 +864,9 @@ namespace Sq1.Core.Charting {
 			if (this.penPriceBarDown							!= null) { this.penPriceBarDown							.Dispose(); this.penPriceBarDown							= null; }
 			if (this.penPriceBarUp								!= null) { this.penPriceBarUp							.Dispose(); this.penPriceBarUp								= null; }
 			if (this.penSpreadAsk								!= null) { this.penSpreadAsk							.Dispose(); this.penSpreadAsk								= null; }
+			if (this.brushSpreadAsk								!= null) { this.brushSpreadAsk							.Dispose(); this.brushSpreadAsk								= null; }
 			if (this.penSpreadBid								!= null) { this.penSpreadBid							.Dispose(); this.penSpreadBid								= null; }
+			if (this.brushSpreadBid								!= null) { this.brushSpreadBid							.Dispose(); this.brushSpreadBid								= null; }
 			if (this.brushGutterBottomBackground				!= null) { this.brushGutterBottomBackground				.Dispose(); this.brushGutterBottomBackground				= null; }
 			if (this.brushGutterBottomForeground				!= null) { this.brushGutterBottomForeground				.Dispose(); this.brushGutterBottomForeground				= null; }
 			if (this.brushGutterBottomNewDateForeground			!= null) { this.brushGutterBottomNewDateForeground		.Dispose(); this.brushGutterBottomNewDateForeground			= null; }

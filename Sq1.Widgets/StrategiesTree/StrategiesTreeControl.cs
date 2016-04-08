@@ -42,7 +42,8 @@ namespace Sq1.Widgets.StrategiesTree {
 		}
 		void populateDataSnapshotDeserialized() {
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.populateDataSnapshotDeserialized(); });
+				//base.BeginInvoke((MethodInvoker)delegate { this.populateDataSnapshotDeserialized(); });
+				base.BeginInvoke(new MethodInvoker(this.populateDataSnapshotDeserialized));
 				return;
 			}
 			try {

@@ -9,6 +9,7 @@ using Sq1.Core;
 using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DoubleBuffered;
+
 using Sq1.Charting.MultiSplit;
 
 namespace Sq1.Charting {

@@ -1,8 +1,5 @@
 ﻿using System;
 
-using Sq1.Core;
-using Sq1.Core.Sequencing;
-
 namespace Sq1.Core.Correlation {
 	public partial class Correlator {
 

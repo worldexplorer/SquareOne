@@ -7,6 +7,7 @@ using System.ComponentModel;
 using Sq1.Core;
 using Sq1.Core.Streaming;
 using Sq1.Core.DataTypes;
+using Sq1.Core.Charting;
 
 namespace Sq1.Charting {
 	public class PanelLevel2 : PanelBase {
@@ -137,10 +138,10 @@ namespace Sq1.Charting {
 				base.DrawError(g, "CHART_CONTROL_HAS_NO_BARS");
 				this.errorDetected = true;
 			}
-			Quote quoteLast = null;
+			Quote quoteCurrent = null;
 			if (this.errorDetected == false) {
-				quoteLast = this.StreamingDataSnapshot_nullUnsafe.GetQuoteCurrent_forSymbol_nullUnsafe(base.ChartControl.Bars.Symbol);
-				if (quoteLast == null) {
+				quoteCurrent = this.StreamingDataSnapshot_nullUnsafe.GetQuoteCurrent_forSymbol_nullUnsafe(base.ChartControl.Bars.Symbol);
+				if (quoteCurrent == null) {
 					base.DrawError(g, "CONNECT_STREAMING__OR__CHART>BARS>SUBSCRIBE");
 					this.errorDetected = true;
 				}
@@ -156,7 +157,7 @@ namespace Sq1.Charting {
 			}
 
 			try {
-				this.renderLevel2(pe.Graphics, quoteLast);
+				this.renderLevel2(pe.Graphics, quoteCurrent);
 				this.renderBidAsk(pe.Graphics);
 			} catch (Exception ex) {
 				base.DrawError(pe.Graphics, ex.ToString());
@@ -287,6 +288,10 @@ namespace Sq1.Charting {
 				if (stripeHeightWillContainMeasuredText) {
 					// using panelPrice.PixelsPerPriceStep5pxLeast_cached as minimal step (making price level wider on PanelLevel2 than price level displayed on PanelPrice for visual convenience)
 					double diffFromQuoteAsk = ask - quoteAsk;
+					if (diffFromQuoteAsk < 0) {
+						string msg = "next ask must have greater price";
+						Assembler.PopupException(msg);
+					}
 					int diffFromQuoteAskAsPriceStepsAway = (int)Math.Ceiling(diffFromQuoteAsk / priceStep);
 					int diffFromQuoteAskY = diffFromQuoteAskAsPriceStepsAway * pxPerPriceStep_Height;
 					yAsk = quoteAskYoffsetted - diffFromQuoteAskY;
@@ -374,6 +379,10 @@ namespace Sq1.Charting {
 				if (stripeHeightWillContainMeasuredText) {
 					// using panelPrice.PixelsPerPriceStep5pxLeast_cached as minimal step (making price level wider on PanelLevel2 than price level displayed on PanelPrice for visual convenience)
 					double diffFromQuoteBid = quoteBid - bid;
+					if (diffFromQuoteBid < 0) {
+						string msg = "next bid must have lesser price";
+						Assembler.PopupException(msg);
+					}
 					int diffFromQuoteBidAsPriceStepsAway = (int)Math.Ceiling(diffFromQuoteBid / priceStep);
 					int diffFromQuoteBidY = diffFromQuoteBidAsPriceStepsAway * pxPerPriceStep_Height;
 					yBid = quoteBidYofsetted + diffFromQuoteBidY;
@@ -437,10 +446,8 @@ namespace Sq1.Charting {
 
 		}
 		void renderBidAsk(Graphics g) {
-			if (base.ChartControl.ChartSettings.SpreadLabelColor == Color.Empty) return;
-
-			Quote quoteLast = base.ChartControl.ExecutorObjects_frozenForRendering.QuoteLast;
-			if (quoteLast == null) return;
+			Quote quoteCurrent = base.ChartControl.ExecutorObjects_frozenForRendering.QuoteCurrent;
+			if (quoteCurrent == null) return;
 
 			//Quote quoteLastFromDictionary = this.StreamingDataSnapshot_nullUnsafe.LastQuoteCloneGetForSymbol(base.ChartControl.Bars.Symbol);
 			//if (quoteLast.SameBidAsk(quoteLastFromDictionary) == false) {
@@ -449,33 +456,63 @@ namespace Sq1.Charting {
 			//	//return;
 			//}
 
-			double spread = quoteLast.Spread;
+			double spread = quoteCurrent.Spread;
 			if (double.IsNaN(spread) == true) return;
 
-			PanelPrice panelPrice = base.ChartControl.PanelPrice;
-			int		pxPricePanelVertialOffset	= panelPrice.ParentMultiSplitMyLocationAmongSiblingsPanels.Y;
+			ChartSettings settings = base.ChartControl.ChartSettings;
 
-			int yBid = 0;
-			double bid = quoteLast.Bid;
-			double ask = quoteLast.Ask;
-			if (double.IsNaN(bid) == false) {
-				yBid = panelPrice.ValueToYinverted(bid) + pxPricePanelVertialOffset;
-				g.DrawLine(base.ChartControl.ChartSettings.PenSpreadBid, 0, yBid, base.Width, yBid);
-			}
-			if (double.IsNaN(ask) == false) {
-				int yAsk = panelPrice.ValueToYinverted(ask) + pxPricePanelVertialOffset;
-				g.DrawLine(base.ChartControl.ChartSettings.PenSpreadAsk, 0, yAsk, base.Width, yAsk);
-			}
+			PanelPrice panelPrice = base.ChartControl.PanelPrice;
+			int		pxPricePanel_vertialOffset	= panelPrice.ParentMultiSplitMyLocationAmongSiblingsPanels.Y;
 
 			string spreadFormatted = spread.ToString(base.PriceFormat);
-			string label = "spread[" + spreadFormatted + "]";
-			int labelWidthMeasured = (int)g.MeasureString(label, base.ChartControl.ChartSettings.SpreadLabelFont).Width;
-			int xLabel = base.ParentMultiSplitIamLast
-				? base.Width - labelWidthMeasured - 5
-				: 5;
-			g.DrawString(label,
-				base.ChartControl.ChartSettings.SpreadLabelFont,
-				base.ChartControl.ChartSettings.BrushSpreadLabel, xLabel, yBid + 3);
+			string labelSpread = "spread[" + spreadFormatted + "]";
+			SizeF labelSpread_measured = g.MeasureString(labelSpread, settings.SpreadLabelFont);
+			int labelSpread_measuredWidth	= (int)labelSpread_measured.Width;
+			int labelSpread_measuredHeight	= (int)labelSpread_measured.Height;
+			int padding = 4;
+	
+			int spreadLinesWidth = base.Width - labelSpread_measuredWidth - padding * 3;
+			if (spreadLinesWidth < 10) spreadLinesWidth = 10;			// im not testing g.DrawString() if it accepts negative values; just want it to draw
+			bool showLabels_onRightEdge = base.ParentMultiSplitIamLast;
+
+			int xLinesSpread = showLabels_onRightEdge
+				? 0
+				: labelSpread_measuredWidth + padding * 2;
+
+			double bid = quoteCurrent.Bid;
+			double ask = quoteCurrent.Ask;
+			int yBid = 0;
+			int yAsk = 0;
+			if (double.IsNaN(bid) == false) {
+				yBid = panelPrice.ValueToYinverted(bid) + pxPricePanel_vertialOffset;
+				g.DrawLine(settings.PenSpreadBid, xLinesSpread, yBid, spreadLinesWidth, yBid);
+			}
+			if (double.IsNaN(ask) == false) {
+				yAsk = panelPrice.ValueToYinverted(ask) + pxPricePanel_vertialOffset;
+				g.DrawLine(settings.PenSpreadAsk, xLinesSpread, yAsk, spreadLinesWidth, yAsk);
+			}
+
+			int xLabelSpread = showLabels_onRightEdge
+				? base.Width - labelSpread_measuredWidth - padding * 2
+				: padding;
+			if (xLabelSpread < padding) xLabelSpread = padding;		// im not testing g.DrawString() if it accepts negative values; just want it to draw
+			int yLabelSpread = (int) ((yBid + yAsk) / 2 - labelSpread_measuredHeight / 2);	// in the middle between spread lines
+			if (yLabelSpread > base.Height) yLabelSpread = base.Height - labelSpread_measuredHeight;
+			if (yLabelSpread < 0) yLabelSpread = 0;
+
+			if (yLabelSpread < padding) yLabelSpread = padding;		// im not testing g.DrawString() if it accepts negative values; just want it to draw
+
+			g.DrawString(labelSpread, settings.SpreadLabelFont, settings.BrushSpreadLabel, xLabelSpread, yLabelSpread);
+
+			string labelBidsDown = "bids/buy";
+			int ylabelBidsDown = yLabelSpread + labelSpread_measuredHeight;		// + padding * 2;
+			if (ylabelBidsDown > base.Height) ylabelBidsDown = yLabelSpread;
+			g.DrawString(labelBidsDown, settings.SpreadLabelFont, settings.BrushSpreadBid, xLabelSpread, ylabelBidsDown);
+
+			string labelAsksUp = "asks/sell";
+			int ylabelAsksUp = yLabelSpread - labelSpread_measuredHeight;		// - padding * 2;
+			if (ylabelAsksUp <= 0) ylabelAsksUp = yLabelSpread;
+			g.DrawString(labelAsksUp, settings.SpreadLabelFont, settings.BrushSpreadAsk, xLabelSpread, ylabelAsksUp);
 		}
 	}
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
+using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
-using Sq1.Core;
 
 namespace Sq1.Charting {
 	public partial class PanelBase {

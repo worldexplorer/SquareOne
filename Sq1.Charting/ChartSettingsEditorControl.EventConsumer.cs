@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 using Sq1.Core;
-using Sq1.Core.DataTypes;
-using Sq1.Widgets.LabeledTextBox;
 using Sq1.Core.Charting;
-using System.Collections.Generic;
+
+using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Charting {
 	public partial class ChartSettingsEditorControl {

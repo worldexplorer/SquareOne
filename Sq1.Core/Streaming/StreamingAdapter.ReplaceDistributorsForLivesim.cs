@@ -3,16 +3,14 @@ using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
-using Sq1.Core.DataFeed;
 using Sq1.Core.Livesim;
-using Sq1.Core.DataTypes;
 using Sq1.Core.Charting;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Streaming {
 	public partial class StreamingAdapter {
-		[JsonIgnore]	DistributorCharts			dataDistributorCharts_preLivesimForSymbolLivesimming;
-		[JsonIgnore]	DistributorSolidifier		dataDistributorSolidifier_preLivesimForSymbolLivesimming;
+		[JsonIgnore]	DistributorCharts		dataDistributorCharts_preLivesimForSymbolLivesimming;
+		[JsonIgnore]	DistributorSolidifier	dataDistributorSolidifier_preLivesimForSymbolLivesimming;
 		[JsonIgnore]	LivesimStreaming		livesimStreaming_forWhomDistributors_areReplaced;
 
 		[JsonIgnore]	public bool			DistributorsAreReplacedByLivesim_ifYesDontPauseNeighborsOnBacktestContextInitRestore {
@@ -86,7 +84,7 @@ namespace Sq1.Core.Streaming {
 			this.DistributorCharts_substitutedDuringLivesim				= this.dataDistributorCharts_preLivesimForSymbolLivesimming;
 			this.DistributorSolidifiers_substitutedDuringLivesim	= this.dataDistributorSolidifier_preLivesimForSymbolLivesimming;
 
-			if (this.DistributorSolidifiers_substitutedDuringLivesim.ChannelsBySymbol.Count > 1) {
+			if (this.DistributorSolidifiers_substitutedDuringLivesim.ChannelsBySymbol.Count > 0) {
 				this.DistributorSolidifiers_substitutedDuringLivesim.PumpUnpause_forSymbolLivesimming(symbolLivesimming, reasonForStoppingReplacedDistributor);
 			} else {
 				if (this is LivesimStreamingDefault) {

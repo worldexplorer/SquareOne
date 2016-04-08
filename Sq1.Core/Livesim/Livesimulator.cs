@@ -305,8 +305,6 @@ namespace Sq1.Core.Livesim {
 			}
 		}
 
-
-		//v1 public void Start_inGuiThread(Button btnStartStop, Button btnPauseResume, ChartShadow chartShadow) {
 		public void Start_invokedFromGuiThread(ToolStripButton btnStartStopPassed, ToolStripButton btnPauseResumePassed, ChartShadow chartShadow) {
 			this.btnStartStop = btnStartStopPassed;
 			this.btnPauseResume = btnPauseResumePassed;

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-using Sq1.Core.Backtesting;
 using Sq1.Core.Execution;
-using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Livesim {

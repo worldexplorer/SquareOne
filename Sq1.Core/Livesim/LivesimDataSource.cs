@@ -3,7 +3,6 @@
 using Sq1.Core.Backtesting;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.DataTypes;
-using Sq1.Core.Broker;
 
 namespace Sq1.Core.Livesim {
 	public class LivesimDataSource : BacktestDataSource, IDisposable {
@@ -91,7 +90,16 @@ namespace Sq1.Core.Livesim {
 		public bool IsDisposed { get; private set; }
 
 		internal void InitializeLivesim_tunnelToBacktest(string executorImServing, Bars bars, BacktestSpreadModeler spreadModeler) {
-			base.InitializeBacktest(executorImServing, bars, spreadModeler);
+			//v1 base.InitializeBacktest(executorImServing, bars, spreadModeler);
+			//v2 not tunnelling to BacktestDataSource anymore
+			base.Name += " FOR_LIVESIM:" + executorImServing;
+			base.MarketInfo = bars.MarketInfo;
+			base.ScaleInterval = bars.ScaleInterval;
+			base.Symbols.Clear();
+			base.Symbols.Add(bars.Symbol);
+			base.StreamingAdapter.InitializeFromDataSource(this);
+			this.StreamingAsBacktest_nullUnsafe.SpreadModeler = spreadModeler;
+			// livesimulator.PreBarsSubstitute will invoke LivesimBroker.InitializedLivesim - there I will invoke InitializseDataSource_inverse()
 		}
 
 	}

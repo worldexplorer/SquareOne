@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Sq1.Core.DataTypes {
 	public class LevelTwoEachLine {

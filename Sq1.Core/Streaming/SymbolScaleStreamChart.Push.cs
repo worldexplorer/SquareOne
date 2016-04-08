@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
@@ -97,7 +96,9 @@ namespace Sq1.Core.Streaming {
 			Bars consumerBars = quoteConsumer.ConsumerBars_toAppendInto;
 
 			bool justCreated_dontMerge = false;
-			if (quoteConsumer.ConsumerBars_toAppendInto.Count == 0) {
+			bool firstEverQuote_ofNewSymbol = quoteConsumer.ConsumerBars_toAppendInto.Count == 0;
+			bool barsWereNeverStreamed = consumerBars.BarStreaming_nullUnsafe == null;
+			if (firstEverQuote_ofNewSymbol || barsWereNeverStreamed) {
 				this.intraBarSerno = 0;
 				Bar newBar_prototype = new Bar(consumerBars.Symbol, consumerBars.ScaleInterval, quoteClone_unbound.ServerTime,
 										quoteClone_unbound.TradedPrice, quoteClone_unbound.Size, consumerBars.SymbolInfo);
@@ -130,7 +131,7 @@ namespace Sq1.Core.Streaming {
 			if (quoteClone_unbound.IntraBarSerno == -1) {
 				quoteClone_unbound.IntraBarSerno = this.intraBarSerno;
 			} else {
-				if (quoteClone_unbound.IsGenerated) {
+				if (quoteClone_unbound.HasGeneratedSource) {
 				} else {
 					string msg = "DONT_SET_quote.IntraBarSerno_UPSTACK__I_WILL_DO_IT_HERE";
 					Assembler.PopupException(msg);

@@ -11,7 +11,6 @@ using Sq1.Core.Sequencing;
 using Sq1.Core.Broker;
 using Sq1.Core.Charting;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.Indicators;
 using Sq1.Core.Livesim;
 using Sq1.Core.Support;
 using Sq1.Core.Correlation;

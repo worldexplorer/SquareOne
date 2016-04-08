@@ -7,15 +7,15 @@ namespace Sq1.Core.Charting {
 		public event EventHandler<EventArgs>	OnChartSettingsChanged_containerShouldSerialize;
 		public event EventHandler<EventArgs>	OnContextScriptChanged_containerShouldSerialize;
 
-		public event EventHandler<BarEventArgs>	OnBarStreamingUpdatedMerged;
+		public event EventHandler<BarEventArgs>	OnBarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp;
 
 		public event EventHandler<EventArgs>	OnPumpPaused;
 		public event EventHandler<EventArgs>	OnPumpUnPaused;
 
-		void raiseOnBarStreamingUpdatedMerged(BarEventArgs e) {
-			if (this.OnBarStreamingUpdatedMerged == null) return;
+		protected void RaiseOnBarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp(BarEventArgs e) {
+			if (this.OnBarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp == null) return;
 			try {
-				this.OnBarStreamingUpdatedMerged(this, e);
+				this.OnBarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp(this, e);
 			} catch (Exception ex) {
 				string msg = "RaiseBarStreamingUpdatedMerged(bar[" + e.Bar + "])";
 				Assembler.PopupException(msg, ex, false);

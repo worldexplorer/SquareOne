@@ -172,9 +172,11 @@ namespace Sq1.Charting.MultiSplit {
 
 		Dictionary<string, MultiSplitterProperties> distributeColumns() {
 			int panelsWidthOriginal= 0;
+			//int panelsClientRectangleWidthOriginal_sameAsBaseWidth= 0;
 			for (int i=0; i<this.splitters.Count; i++) {
 				PANEL_BASE panel = this.panels[i];
 				panelsWidthOriginal += panel.Width;		// mapanelsWidthOriginalgo beoynd base.Width but I will handle that on SetProperties()
+				//panelsClientRectangleWidthOriginal_sameAsBaseWidth += panel.ClientRectangle.Width;		// panel.Width resulted in right vertical panel being SplitterHeight narrower
 			}
 
 			int baseWidth = base.Width;
@@ -182,7 +184,9 @@ namespace Sq1.Charting.MultiSplit {
 			int totalFixedWidth = this.SplitterHeight * this.splitters.Count;
 			int panelsWidthEffective = baseWidth - totalFixedWidth;
 			//panelsWidthEffective -= this.splitters.Count * 2;	// panel start NEXT pixel after splitter's boundary => each panel has 1px less space
-			double stretchVerticalK = (double) panelsWidthEffective / (double) panelsWidthOriginal;
+
+			double stretchVerticalK = (double) panelsWidthEffective / (double) panelsWidthOriginal;		// panel.Width resulted in right vertical panel being SplitterHeight narrower
+			//double stretchVerticalK = (double) panelsWidthEffective / (double) panelsClientRectangleWidthOriginal_sameAsBaseWidth;
 			
 			int x = 0;
 			int stealFromNextPanel = 0;

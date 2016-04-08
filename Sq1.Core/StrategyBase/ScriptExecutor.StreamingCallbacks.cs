@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Drawing;
-using System.Diagnostics;
 using System.Collections.Generic;
 
 using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators;
 using Sq1.Core.Livesim;
-using Sq1.Core.Streaming;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {

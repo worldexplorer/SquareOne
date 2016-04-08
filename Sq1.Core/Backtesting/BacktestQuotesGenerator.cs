@@ -4,6 +4,8 @@ using System.Diagnostics;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.Streaming;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Backtesting {
 	public abstract class BacktestQuotesGenerator {
@@ -45,13 +47,8 @@ namespace Sq1.Core.Backtesting {
 
 			QuoteGenerated ret = new QuoteGenerated(serverTime, symbol, ++this.AbsnoPerSymbol,
 													double.NaN, double.NaN, volume);
-			//ret.ServerTime = serverTime;
-			//FILLED_LATER_DONT_CONFUSE_STREAMING_ADAPDER ret.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;
-			//FILLED_LATER_DONT_CONFUSE_STREAMING_ADAPDER ret.IntraBarSerno = intraBarSerno;
 			ret.Source = this.WhoGeneratedQuote;
-			//ret.Symbol = symbol;
 			ret.SymbolClass = this.backtester.BarsOriginal.SymbolInfo.SymbolClass;
-			//ret.Size = volume;
 			ret.ParentBarSimulated = barSimulated;
 			//v1 ret.PriceLastDeal = price;
 
@@ -206,26 +203,26 @@ namespace Sq1.Core.Backtesting {
 			//    this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.StreamingDataSnapshot
 			//        .GetQuoteCurrent_forSymbol_nullUnsafe(quoteToReach.Symbol);
 			//v2
-			Sq1.Core.Streaming.StreamingAdapter streaming = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe;
-			Sq1.Core.Streaming.StreamingDataSnapshot snap = streaming.StreamingDataSnapshot;
-			Livesim.LivesimStreaming livesimStreaming = streaming as Livesim.LivesimStreaming;
+			StreamingAdapter streaming = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe;
+			StreamingDataSnapshot snap = streaming.StreamingDataSnapshot;
+			LivesimStreaming livesimStreaming = streaming as LivesimStreaming;
 			if (this.backtester.ImRunningLivesim && livesimStreaming != null) {
 				snap = livesimStreaming.StreamingOriginal.StreamingDataSnapshot;
 			}
 
-			Quote quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde = snap.GetQuoteCurrent_forSymbol_nullUnsafe(quoteToReach.Symbol);
+			Quote quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde = snap.GetQuoteCurrent_forSymbol_nullUnsafe(quoteToReach.Symbol);
 
-			if (quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde == null) {
+			if (quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde == null) {
 				string msg = "I_CANNOT_CONTINUE_LIVESIM_FIXME__1";
 				Assembler.PopupException(msg + msig, null, false);
 				return null;
 			}
 
-			QuoteGenerated quotePrev = quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
+			QuoteGenerated quotePrev = quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
 			if (quotePrev == null) {
 				string msg = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"
-					+ " Source[" + quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde.Source + "]";
-				quotePrev = new QuoteGenerated(quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde, bar2simulate);
+					+ " Source[" + quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde.Source + "]";
+				quotePrev = new QuoteGenerated(quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde, bar2simulate);
 				if (quotePrev == null) {
 					string msg1 = "I_CANNOT_CONTINUE_LIVESIM_FIXME__2";
 					Assembler.PopupException(msg1 + msig);
@@ -234,7 +231,7 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			#region PARANOID_CHECKS_HERE THANK_YOU_LED_TO_10_LINES_ABOVE
-			QuoteGenerated quotePrevAsDde = quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
+			QuoteGenerated quotePrevAsDde = quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
 			if (quotePrev == null) {
 				string msg = "PARANOINDAL_CHECK_IF_PREV_QUOTE_IS_QUOTE_TO_REACH copypaste";
 				Assembler.PopupException(msg);
@@ -375,15 +372,10 @@ namespace Sq1.Core.Backtesting {
 			string msig = " //modelQuote_thatCouldFillAlert(alert[" + alert+ "] bar2simulate[" +bar2simulate+ "])";
 			errOut = "NO_ERROR__QUOTE_MODELLED_MUST_BE_NON_NULL";
 
-			//QuoteGenerated ret = new QuoteGenerated(localDateTimeBasedOnServerForBacktest);
-
 			QuoteGenerated ret = new QuoteGenerated(quoteServerTime,
 													alert.Symbol, -1,
 													double.NaN, double.NaN, alert.Qty);
-
-			//ret.Source = "GENERATED_TO_FILL_" + alert.ToString();			// PROFILER_SAID_TOO_SLOW + alert.ToString();
 			ret.Source = Quote.GENERATED_TO_FILL_ALERT + "@bar#" + alert.PlacedBarIndex;
-			ret.Size = alert.Qty;
 			//v1
 			ret.ParentBarSimulated = bar2simulate;
 			//v2 ret.ParentBarSimulated = alert.PlacedBar;	// most likely O=H=L=C
@@ -406,15 +398,14 @@ namespace Sq1.Core.Backtesting {
 			//        .GetQuoteCurrent_forSymbol_nullUnsafe(alert.Symbol);
 
 			//v3
-			Sq1.Core.Streaming.StreamingAdapter streaming = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe;
-			Sq1.Core.Streaming.StreamingDataSnapshot snap = streaming.StreamingDataSnapshot;
-			Livesim.LivesimStreaming livesimStreaming = streaming as Livesim.LivesimStreaming;
+			StreamingAdapter streaming = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe;
+			StreamingDataSnapshot snap = streaming.StreamingDataSnapshot;
+			LivesimStreaming livesimStreaming = streaming as LivesimStreaming;
 			if (this.backtester.ImRunningLivesim && livesimStreaming != null) {
 				snap = livesimStreaming.StreamingOriginal.StreamingDataSnapshot;
 			}
 
 			Quote quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde = snap.GetQuoteCurrent_forSymbol_nullUnsafe(alert.Symbol);
-
 
 			QuoteGenerated quotePrev = quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde as QuoteGenerated;
 			if (quotePrev == null) {

@@ -46,7 +46,7 @@ namespace Sq1.Core.Streaming {
 					this.level2_lastPrevQuotesUnbound_bySymbol.Add(symbol, new LevelTwo(symbol, streamingAdapterInitialized_asString), this, msig);
 				}
 				LevelTwo level2 = this.level2_lastPrevQuotesUnbound_bySymbol.GetAtKey(symbol, this, msig);
-				Quote quoteBeforeNullification_WHY = level2.Clear_QuoteLastPrev();
+				Quote quoteBeforeNullification_WHY = level2.QuoteCurrentPrev_clear();
 				level2.Clear_LevelTwo(this, "livesimEnded");
 				if (this.SymbolsSubscribedAndReceiving.Contains(symbol) == false) {
 					if (this.SymbolsSubscribedAndReceiving != "") this.SymbolsSubscribedAndReceiving += ",";
@@ -57,43 +57,43 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		public void SetQuoteCurrent_forSymbol_shiftOldToQuotePrev(Quote quote) {
-			string msig = " //StreamingDataSnapshot.SetQuoteCurrent_forSymbol_shiftOldToQuotePrev(" + quote.ToString() + ")";
+		public void SetQuoteCurrent_forSymbol_shiftOldToQuotePrev(Quote quoteUnboundUnattached) {
+			string msig = " //StreamingDataSnapshot.SetQuoteCurrent_forSymbol_shiftOldToQuotePrev(" + quoteUnboundUnattached.ToString() + ")";
 
-			if (quote == null) {
+			if (quoteUnboundUnattached == null) {
 				string msg = "USE_LastQuoteInitialize_INSTEAD_OF_PASSING_NULL_TO_LastQuoteCloneSetForSymbol";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
 			try {
 				this.level2_lastPrevQuotesUnbound_bySymbol.WaitAndLockFor(this, msig);
-				if (this.level2_lastPrevQuotesUnbound_bySymbol.ContainsKey(quote.Symbol, this, msig) == false) {
+				if (this.level2_lastPrevQuotesUnbound_bySymbol.ContainsKey(quoteUnboundUnattached.Symbol, this, msig) == false) {
 					//this.level2_quoteCurrentUnbound_bySymbol.Add(quote.Symbol, new LevelTwo(quote.Symbol), this, msig);
-					this.Initialize_levelTwo_lastPrevQuotes_forSymbol(quote.Symbol);
+					this.Initialize_levelTwo_lastPrevQuotes_forSymbol(quoteUnboundUnattached.Symbol);
 					string msg = "SUBSCRIBER_SHOULD_HAVE_INVOKED_Initialize_levelTwo_forAllSymbolsInDataSource()__FOLLOW_THIS_LIFECYCLE__ITS_A_RELIGION_NOT_OPEN_FOR_DISCUSSION";
 					Assembler.PopupException(msg + msig, null, false);
 				}
 
-				LevelTwo level2 = this.level2_lastPrevQuotesUnbound_bySymbol.GetAtKey(quote.Symbol, this, msig);
+				LevelTwo level2 = this.level2_lastPrevQuotesUnbound_bySymbol.GetAtKey(quoteUnboundUnattached.Symbol, this, msig);
 				Quote quoteCurrent = level2.QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno;
 				if (quoteCurrent == null) {
-					string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR#2 symbol[" + quote.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
-					Assembler.PopupException(msg + msig, null, false);
-					level2.QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno = quote;
+					string msg = "ALREADY_REPORTED RECEIVED_FIRST_QUOTE_EVER_FOR#2 symbol[" + quoteUnboundUnattached.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
+					//Assembler.PopupException(msg + msig, null, false);
+					level2.QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno = quoteUnboundUnattached;
 					return;
 				}
-				if (quoteCurrent == quote) {
+				if (quoteCurrent == quoteUnboundUnattached) {
 					string msg = "DONT_PUT_SAME_QUOTE_TWICE";
 					Assembler.PopupException(msg + msig);
 					return;
 				}
-				if (quoteCurrent.AbsnoPerSymbol >= quote.AbsnoPerSymbol) {
+				if (quoteCurrent.AbsnoPerSymbol >= quoteUnboundUnattached.AbsnoPerSymbol) {
 					string msg = "DONT_FEED_ME_WITH_OLD_QUOTES (????QuoteQuik #-1/0 AUTOGEN)";
-					Assembler.PopupException(msg + msig);
-					return;
+					Assembler.PopupException(msg + msig, null, false);
+					//return;
 				}
 				level2.QuotePrev_unbound_notCloned = quoteCurrent;
-				level2.QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno = quote;
+				level2.QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno = quoteUnboundUnattached;
 			} finally {
 				this.level2_lastPrevQuotesUnbound_bySymbol.UnLockFor(this, msig);
 			}
@@ -106,13 +106,12 @@ namespace Sq1.Core.Streaming {
 				if (this.level2_lastPrevQuotesUnbound_bySymbol.ContainsKey(symbol, this, msig) == false) return null;
 				LevelTwo level2 = this.level2_lastPrevQuotesUnbound_bySymbol.GetAtKey(symbol, this, msig);
 				if (level2 == null) return null;
-				Quote attached_toOriginalBars_insteadOfRegeneratedGrowingCopy_forBacktest = level2.QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno;
-				if (attached_toOriginalBars_insteadOfRegeneratedGrowingCopy_forBacktest == null) {
-					string msg = "NULL_IS_OK_FOR_APP_RESTART MUST_NOT_BE_NULL_FOR_LIVESIM_TOO levelTwoAndLastQuote.QuoteLast_unbound_notCloned";
-				//} else {
-				//	string msg = "RENAME_ME QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno";
+				Quote ret = level2.QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno;
+				if (ret != null && ret.ParentBarStreaming != null) {
+					string msg = "NULL_IS_OK_FOR_APP_RESTART MUST_NOT_BE_NULL_FOR_LIVESIM_TOO levelTwoAndLastQuote.QuoteLast_unbound_notCloned attached_toOriginalBars_insteadOfRegeneratedGrowingCopy_forBacktest";
+					Assembler.PopupException(msg + msig);
 				}
-				return attached_toOriginalBars_insteadOfRegeneratedGrowingCopy_forBacktest;
+				return ret;
 			} finally {
 				this.level2_lastPrevQuotesUnbound_bySymbol.UnLockFor(this, msig);
 				//this.level2_quoteCurrentUnbound_bySymbol.UnLockFor(this, this.lockReason_getLastQuoteForSymbol);
@@ -126,11 +125,12 @@ namespace Sq1.Core.Streaming {
 				if (this.level2_lastPrevQuotesUnbound_bySymbol.ContainsKey(symbol, this, msig) == false) return null;
 				LevelTwo level2 = this.level2_lastPrevQuotesUnbound_bySymbol.GetAtKey(symbol, this, msig);
 				if (level2 == null) return null;
-				Quote weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy = level2.QuotePrev_unbound_notCloned;
-				if (weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy == null) {
-					string msg = "MUST_NOT_BE_NULL_FOR_LIVESIM_TOO levelTwoAndLastQuote.QuotePrev_unbound_notCloned";
+				Quote ret = level2.QuotePrev_unbound_notCloned;
+				if (ret != null && ret.ParentBarStreaming != null) {
+					string msg = "MUST_NOT_BE_NULL_FOR_LIVESIM_TOO levelTwoAndLastQuote.QuotePrev_unbound_notCloned weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy";
+					Assembler.PopupException(msg + msig);
 				}
-				return weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy;
+				return ret;
 			} finally {
 				this.level2_lastPrevQuotesUnbound_bySymbol.UnLockFor(this, msig);
 				//this.level2_quoteCurrentUnbound_bySymbol.UnLockFor(this, this.lockReason_getLastQuoteForSymbol);

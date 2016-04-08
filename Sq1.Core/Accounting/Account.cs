@@ -1,6 +1,7 @@
 using System;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.Broker;
 
 namespace Sq1.Core.Accounting {

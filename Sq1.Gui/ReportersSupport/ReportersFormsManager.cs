@@ -50,7 +50,7 @@ namespace Sq1.Gui.ReportersSupport {
 			this.ChartFormsManager.Executor.EventGenerator.OnBrokerFilledAlertsOpeningForPositions_step1of3 += new EventHandler<ReporterPokeUnitEventArgs>(
 				this.eventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3);
 
-			this.ChartFormsManager.Executor.EventGenerator.OnOpenPositionsUpdatedDueToStreamingNewQuote_step2of3 += new EventHandler<ReporterPokeUnitEventArgs>(
+			this.ChartFormsManager.Executor.EventGenerator.OnOpenPositionsUpdated_afterChartConsumedNewQuote_reportersOnly_step2of3 += new EventHandler<ReporterPokeUnitEventArgs>(
 				this.eventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3);
 
 			this.ChartFormsManager.Executor.EventGenerator.OnBrokerFilledAlertsClosingForPositions_step3of3 += new EventHandler<ReporterPokeUnitEventArgs>(
@@ -96,7 +96,8 @@ namespace Sq1.Gui.ReportersSupport {
 					}
 				//}
 
-				this.ChartFormsManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.ClearAllReportsSincePerformanceGotCleared_step0of3(); });
+				//this.ChartFormsManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.ClearAllReportsSincePerformanceGotCleared_step0of3(); });
+				this.ChartFormsManager.ChartForm.BeginInvoke(new MethodInvoker(this.ClearAllReportsSincePerformanceGotCleared_step0of3));
 				return;
 			}
 

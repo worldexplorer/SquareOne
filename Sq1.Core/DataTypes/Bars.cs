@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.DataFeed;
-using System.Collections.Generic;
 
 namespace Sq1.Core.DataTypes {
 	//v1 public partial class Bars : BarsUnscaledSortedList {

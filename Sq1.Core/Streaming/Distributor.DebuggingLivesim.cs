@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Sq1.Core.DataTypes;
-using Sq1.Core.Charting;
-using Sq1.Core.Backtesting;
-using Sq1.Core.Livesim;
-
 namespace Sq1.Core.Streaming {
 	public partial class Distributor<STREAMING_CONSUMER_CHILD> {
 				static	int																		AllDistributorsEverCreated_total;

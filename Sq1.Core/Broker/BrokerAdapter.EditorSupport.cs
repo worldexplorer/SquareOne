@@ -1,6 +1,7 @@
 using System;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Broker {

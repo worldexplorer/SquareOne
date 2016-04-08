@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Newtonsoft.Json;
+
 using Sq1.Core;
 using Sq1.Core.Sequencing;
 using Sq1.Core.StrategyBase;

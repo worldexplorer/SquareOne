@@ -2,7 +2,6 @@
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
-using Sq1.Core.Streaming;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Charting;
 
@@ -30,7 +29,7 @@ namespace Sq1.Core.Backtesting {
 		public override void UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirstAfterStart) {
 			base.ReasonToExist = "Backtest[" + base.Symbol_nullReported + "]";
 		}
-		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLastBeforeStop) {
+		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteCurrentBeforeStop) {
 		}
 		public override void Consume_quoteOfStreamingBar(Quote quoteClone_boundAttached) {
 			//Bar barLastFormed = quoteToReach.ParentStreamingBar;

@@ -4,9 +4,6 @@ using Sq1.Core.Streaming;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Execution;
-using Sq1.Core.Livesim;
-using Sq1.Core.Backtesting;
-using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Charting {
 	public class StreamingConsumerChart : StreamingConsumer {
@@ -319,8 +316,8 @@ namespace Sq1.Core.Charting {
 				using(pokeUnit_dontForgetToDispose) {
 					// FROM_ChartStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
 					if (pokeUnit_dontForgetToDispose.PositionsOpenNow.Count > 0) {
-						executorSafe.PerformanceAfterBacktest.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(executorSafe.ExecutionDataSnapshot.PositionsOpenNow);
-						executorSafe.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnit_dontForgetToDispose);
+						executorSafe.PerformanceAfterBacktest.BuildIncremental_openPositionsUpdated_afterChartConsumedNewQuote_step2of3(executorSafe.ExecutionDataSnapshot.PositionsOpenNow);
+						executorSafe.EventGenerator.RaiseOpenPositionsUpdated_afterChartConsumedNewQuote_reportersOnly_step2of3(pokeUnit_dontForgetToDispose);
 					}
 				}
 			}
@@ -328,7 +325,9 @@ namespace Sq1.Core.Charting {
 			// #3/4 trigger ChartControl to repaint candles with new positions and bid/ask lines
 			//DOESNT_WORK_WHEN_LIVESIMMING_OWN_IMPLEMETATION_THER ALREADY_HANDLED_BY_chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline
 			//if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming) {
-				base.ChartShadow_nullReported.InvalidateAllPanels();
+
+			base.ChartShadow_nullReported.PushQuote_LevelTwoFrozen_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll();
+			
 			//}
 
 			// MOVED_TO_ScriptExecutor_USING_RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
@@ -363,9 +362,14 @@ namespace Sq1.Core.Charting {
 			}
 			#endif
 
-			if (this.ContextCurrentChartOrStrategy_nullReported.DownstreamSubscribed) {
-				base.ChartShadow_nullReported.InvalidateAllPanels();
+			if (this.ContextCurrentChartOrStrategy_nullReported.DownstreamSubscribed == false) {
+				string msg = "IM_NOT_PUSHING_LEVEL_TWO_FOR_BACKTESTS.... OR_HOW_AM_I_NOT_SUBSCRIBED_WHEN_I_RECEIVED_IT?...";
+				Assembler.PopupException(msg);
+				return;
 			}
+
+			base.ChartShadow_nullReported.PushQuote_LevelTwoFrozen_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll();
+			base.ChartShadow_nullReported.InvalidateAllPanels();
 		}
 		#endregion
 

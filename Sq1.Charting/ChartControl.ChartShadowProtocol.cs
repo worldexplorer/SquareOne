@@ -10,6 +10,7 @@ using Sq1.Core.Charting.OnChart;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
+using Sq1.Core.Streaming;
 
 using Sq1.Charting.OnChart;
 
@@ -292,6 +293,27 @@ namespace Sq1.Charting {
 				panelFolding.InitializeWithNonEmptyBars(this);
 				panelFolding.Invalidate();
 			}
+		}
+		public override void PushQuote_LevelTwoFrozen_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll() {
+			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+				string msg = "FOR_CHARTLESS_BACKTEST__THIS_CHART_SHOULD_HAVE_NOT_BEEN_SUBSCRIBED_TO__BARS_SIMULATING";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+
+			// doing same thing from GUI thread at PanelLevel2.renderLevel2() got me even closer to realtime (after pausing a Livesim
+			// and repainting Level2 whole thing was misplaced comparing to PanelPrice spread) but looked really random, not behind and not ahead;
+			// but main reason is ConcurrentLocker was spitting messages (I dont remember what exactly but easy to move back to renderLevel2() and see)
+			StreamingDataSnapshot snap = base.Bars.DataSource.StreamingAdapter.StreamingDataSnapshot;
+
+			//v1 this.ScriptExecutorObjects.QuoteCurrent = this.Bars.QuoteLastClone_nullUnsafe;
+			this.ExecutorObjects_frozenForRendering.QuoteCurrent = snap.GetQuoteCurrent_forSymbol_nullUnsafe(this.Bars.Symbol);
+			this.ExecutorObjects_frozenForRendering.LevelTwo_frozen_forOnePaint =
+				snap.GetLevelTwoFrozenSorted_forSymbol_nullUnsafe(this.Bars.Symbol,
+					"CLONING_BIDS_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2",
+					"PanelLevel2");
+
+			this.ExecutorObjectsReady_triggerRepaint__raiseOnBarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp();
 		}
 	}
 }

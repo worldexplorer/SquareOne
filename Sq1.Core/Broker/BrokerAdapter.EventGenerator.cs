@@ -1,6 +1,6 @@
 using System;
 
-using Sq1.Core.DataFeed;
+using Newtonsoft.Json;
 
 namespace Sq1.Core.Broker {
 	public partial class BrokerAdapter {

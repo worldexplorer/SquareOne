@@ -90,7 +90,8 @@ namespace Sq1.Core.Support {
 			if (this.guiInvoker.InvokeRequired) {
 				if (this.Scheduled) return;
 				this.Scheduled = true;		// ignore too frequent without waiting for GUI thread to kick in
-				this.guiInvoker.BeginInvoke((MethodInvoker)this.reschedule);
+				//this.guiInvoker.BeginInvoke((MethodInvoker)this.reschedule);
+				this.guiInvoker.BeginInvoke(new MethodInvoker(this.reschedule));
 				return;
 			}
 

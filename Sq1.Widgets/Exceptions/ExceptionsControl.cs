@@ -185,7 +185,8 @@ namespace Sq1.Widgets.Exceptions {
 				this.exceptionLastDate_notFlushedYet = DateTime.Now;
 
 				if (base.InvokeRequired) {	// waiting for WindowHandle to be created
-					base.BeginInvoke((MethodInvoker)delegate() { this.populateWindowsTitle(); });
+					//base.BeginInvoke((MethodInvoker)delegate() { this.populateWindowsTitle(); });
+					base.BeginInvoke(new MethodInvoker(this.populateWindowsTitle));
 				}
 
 				return;
