@@ -44,8 +44,30 @@ namespace Sq1.Gui.Forms {
 				return ret;
 			} }
 		
-		//[JsonIgnore]	// not saved/restored during severe storms in ChartSettings' structure (avoiding Json deserialization exceptions by JsonIgnoring it)
-		public ChartSettings ChartSettings;
+
+		[JsonIgnore]			ChartSettings chartSettings;		// not saved/restored during severe storms in ChartSettings' structure (avoiding Json deserialization exceptions by JsonIgnoring it)
+		[JsonIgnore]	public	ChartSettings ChartSettings {
+			get {
+				if (this.chartSettings == null) {
+					if (string.IsNullOrEmpty(this.ChartSettingsName)) this.ChartSettingsName = ChartSettings.NAME_DEFAULT;
+					this.chartSettings = Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.ChartSettingsFind_nullUnsafe(this.ChartSettingsName);
+					if (this.chartSettings == null) this.chartSettings = new ChartSettings(ChartSettings.NAME_DEFAULT);
+				}
+				return this.chartSettings;
+			}
+		}
+		[JsonProperty]			string chartSettingsName;
+		[JsonIgnore]	public	string ChartSettingsName {
+			get {
+				if (string.IsNullOrEmpty(this.chartSettingsName)) this.chartSettingsName = ChartSettings.NAME_DEFAULT;
+				return this.chartSettingsName;
+			}
+			set {
+				if (this.chartSettingsName == value) return;
+				this.chartSettingsName = value;
+				this.chartSettings = null;	// trigger reload
+			}
+		}
 
 		public ChartFormDataSnapshot() {
 			this.chartSerno = -1;

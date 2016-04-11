@@ -387,7 +387,7 @@ namespace Sq1.Gui {
 					}
 				}
 
-				cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
+				cfmgr.ChartForm.ChartControl.Propagate_splitterManorderDistance_ifFullyDeserialized();
 
 				// ATTEMPT#2_AFTER_DOCK_FULLY_UNSERIALIZED this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
 				//if (cfmgr.DataSnapshot.ChartSerno == this.GuiDataSnapshot.ChartSernoLastKnownHadFocus) {
@@ -424,7 +424,7 @@ namespace Sq1.Gui {
 				Assembler.PopupException("WorkspaceLoad#2()", ex);
 			}
 
-			foreach (DataSource eachDataSource in Assembler.InstanceInitialized.RepositoryJsonDataSources.ItemsAsList) {
+			foreach (DataSource eachDataSource in Assembler.InstanceInitialized.RepositoryJsonDataSources.ItemsCachedAsList) {
 				StreamingAdapter streamingAdapter = eachDataSource.StreamingAdapter;
 				if (streamingAdapter == null) continue;
 				if (streamingAdapter is LivesimStreaming) continue;

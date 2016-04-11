@@ -112,7 +112,7 @@ namespace Sq1.Core.Repositories {
 		public DataSource DataSourceFind_nullUnsafe(string name) {
 			DataSource ret = null;
 			string nameUpper = name.ToUpper();
-			foreach (DataSource current in base.ItemsAsList) {
+			foreach (DataSource current in base.ItemsCachedAsList) {
 				if (nameUpper != current.Name.ToUpper()) continue;
 				ret = current;
 			}
@@ -120,7 +120,7 @@ namespace Sq1.Core.Repositories {
 		}
 		public int SameMarketInfoInHowManyDataSources(MarketInfo marketInfo) {
 			int ret = 0;
-			foreach (DataSource ds in base.ItemsAsList) {
+			foreach (DataSource ds in base.ItemsCachedAsList) {
 				if (ds.MarketInfo == marketInfo) ret++;
 			}
 			return ret;
@@ -139,7 +139,7 @@ namespace Sq1.Core.Repositories {
 		}
 		public List<DataSource> SameSymbolInHowManyDataSources(string symbol) {
 			List<DataSource> ret = new List<DataSource>();
-			foreach (DataSource ds in base.ItemsAsList) {
+			foreach (DataSource ds in base.ItemsCachedAsList) {
 				if (ds.Symbols.Contains(symbol)) ret.Add(ds);
 			}
 			return ret;

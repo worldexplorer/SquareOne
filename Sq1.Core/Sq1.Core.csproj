@@ -142,8 +142,8 @@
     <Compile Include="DataTypes\SymbolInfo.EventGenerator.cs">
       <DependentUpon>SymbolInfo.cs</DependentUpon>
     </Compile>
-    <Compile Include="Livesim\LivesimBroker.BrokerAdapterProtocol.cs">
-      <DependentUpon>LivesimBroker.cs</DependentUpon>
+    <Compile Include="Livesim\LivesimBrokerDefault.BrokerAdapterProtocol.cs">
+      <DependentUpon>LivesimBrokerDefault.cs</DependentUpon>
     </Compile>
     <Compile Include="Livesim\LivesimBrokerDefault.cs" />
     <Compile Include="DataFeed\SymbolOfDataSource.cs" />
@@ -152,9 +152,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Livesim\LivesimBrokerSpoiler.cs" />
-    <Compile Include="Livesim\LivesimStreamingConsumer.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Livesim\LivesimStreamingDefault.cs" />
     <Compile Include="Livesim\LivesimStreamingEditorEmpty.cs">
       <SubType>UserControl</SubType>

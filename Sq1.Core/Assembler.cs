@@ -239,18 +239,6 @@ namespace Sq1.Core {
 			}
 			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
 			
-			//v1-SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD 
-//			#if DEBUG
-//			if (debuggingBreak) {
-//				Debugger.Break();
-//				// SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD
-//				// break here and add to ExceptionControl.ExceptionsList later; if you let it go then
-//				// MainForm might switch to GUI thread and you'll loose your callstack in VS/SharpDevelop
-//				debuggingBreak = false;
-//				//return;		// FIXED_IN_MAIN_FORM tmp hack for SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD
-//			}
-//			#endif
-
 			try {
 				// this is gonna throw from a non-GUI thread, right?!... (moved to MainForm.PopupException() with base.BeginInvoke() as first step)
 				// if I PopupException from a BrokerAdapter thread, exceptionsForm.Visible and others should throw

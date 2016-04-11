@@ -120,7 +120,7 @@ namespace Sq1.Charting {
 
 					if (position.IsEntryFilled) {
 						int entryFilledOnY = base.ValueToYinverted(position.EntryFilled_price);
-						Rectangle entryFilledRect = new Rectangle(entryPlannedX - 2, entryFilledOnY - 2, ellipseFilledDiameter, ellipseFilledDiameter);
+						Rectangle entryFilledRect = new Rectangle(entryPlannedX - ellipseFilledRadius, entryFilledOnY - ellipseFilledRadius, ellipseFilledDiameter, ellipseFilledDiameter);
 						g.FillEllipse(base.ChartControl.ChartSettings.BrushPositionFilledDot, entryFilledRect);
 					}
 				} else {

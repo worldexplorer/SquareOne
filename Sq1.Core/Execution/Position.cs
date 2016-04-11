@@ -222,14 +222,14 @@ namespace Sq1.Core.Execution {
 		}
 		public void ExitAlertAttach(Alert alertExit) {
 			if (this.Prototype == null) {
-				if (this.ExitAlert != null) {
+				if (this.ExitAlert != null && this.ExitAlert.IsKilled == false) {
 					string msg = "POSITION_WAS_ALREADY_ATTCHED_TO_EXIT_ALERT ExitAlert[" + this.ExitAlert + "] ";
 					#if DEBUG
 					Debugger.Break();
 					#endif
 					throw new Exception(msg);
 				}
-				if (this.ExitMarketLimitStop != MarketLimitStop.Unknown) {
+				if (this.ExitMarketLimitStop != MarketLimitStop.Unknown && this.ExitAlert.IsKilled == false) {
 					string msg = "POSITION_WAS_ALREADY_SYNCHED_WITH_FILLED_ALERT_ON_ALERT_FILLED_CALLBACK: ExitPriceScript["
 						+ this.ExitEmitted_price + "]";
 					#if DEBUG

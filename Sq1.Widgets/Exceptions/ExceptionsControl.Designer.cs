@@ -144,7 +144,7 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			this.mniRecentAlwaysSelected.CheckOnClick = true;
 			this.mniRecentAlwaysSelected.Name = "mniRecentAlwaysSelected";
-			this.mniRecentAlwaysSelected.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.R)));
+			this.mniRecentAlwaysSelected.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
 			this.mniRecentAlwaysSelected.Size = new System.Drawing.Size(265, 22);
 			this.mniRecentAlwaysSelected.Text = "Recent Always Selected";
 			this.mniRecentAlwaysSelected.Click += new System.EventHandler(this.mniRecentAlwaysSelected_Click);
@@ -195,7 +195,7 @@ namespace Sq1.Widgets.Exceptions {
 			// mniRefresh
 			// 
 			this.mniRefresh.Name = "mniRefresh";
-			this.mniRefresh.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+			this.mniRefresh.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.R)));
 			this.mniRefresh.Size = new System.Drawing.Size(265, 22);
 			this.mniRefresh.Text = "Refresh";
 			this.mniRefresh.Click += new System.EventHandler(this.mniRefresh_Click);

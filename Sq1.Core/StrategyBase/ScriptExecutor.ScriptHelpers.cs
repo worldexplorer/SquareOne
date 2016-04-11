@@ -81,7 +81,7 @@ namespace Sq1.Core.StrategyBase {
 					return position.ExitAlert;
 				}
 			} else {
-				if (position.ExitAlert != null) {
+				if (position.ExitAlert != null && position.ExitAlert.IsKilled == false) {
 					string msg = "POSITION_ALREADY_HAS_AN_EXIT_ALERT_REPLACE_INSTEAD_OF_ADDING_SECOND_SellOrCoverAlertCreateRegister();"
 						+ " Strategy[" + this.Strategy.ToString() + "] position.Prototype=null position[" + position + "]";
 					this.PopupException(msg);

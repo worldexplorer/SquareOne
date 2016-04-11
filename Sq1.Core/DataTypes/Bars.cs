@@ -21,7 +21,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public	BarScaleInterval	ScaleInterval				{ get; private set; }
 
 		[JsonIgnore]	public	MarketInfo			MarketInfo;
-		[JsonIgnore]	public	DataSource			DataSource;
+		[JsonIgnore]	public	DataSource			DataSource					{ get; internal set; }
 
 		[JsonIgnore]	public	bool				IsIntraday					{ get { return this.ScaleInterval.IsIntraday; } }
 		[JsonIgnore]	public	string				SymbolIntervalScale			{ get { return "[" + this.Symbol + " " + this.ScaleInterval.ToString() + "]"; } }
@@ -97,7 +97,7 @@ namespace Sq1.Core.DataTypes {
 			//this.BarStreaming = new Bar(this.Symbol, this.ScaleInterval, DateTime.MinValue);
 		}
 		public Bars CloneBars_firstBarInside_avoidingLastBarNull(string reasonToExist = null, BarScaleInterval scaleIntervalConvertingTo = null) {
-			Bars ret = this.CloneBars_zeroBarsInside(reasonToExist, scaleIntervalConvertingTo);
+			Bars ret = this.CloneBars_zeroBarsInside_sameDataSource(reasonToExist, scaleIntervalConvertingTo);
 			if (this.Count == 0) {
 				string msg = "I_REFUSE_TO_ADD_FIRST_BAR CLONE_EMPTY_BARS__WITH_CloneBars_zeroBarsInside()_INSTEAD";
 				Assembler.PopupException(msg);
@@ -107,7 +107,7 @@ namespace Sq1.Core.DataTypes {
 			ret.BarStatic_appendAttach(firstBar_noParentBackRef);
 			return ret;
 		}
-		public Bars CloneBars_zeroBarsInside(string reasonToExist = null, BarScaleInterval scaleIntervalConvertingTo = null, bool exposedInnerBars_forEditor = false) {
+		public Bars CloneBars_zeroBarsInside_sameDataSource(string reasonToExist = null, BarScaleInterval scaleIntervalConvertingTo = null, bool exposedInnerBars_forEditor = false) {
 			if (scaleIntervalConvertingTo == null) scaleIntervalConvertingTo = this.ScaleInterval;
 			if (string.IsNullOrEmpty(reasonToExist)) reasonToExist = "InitializedFrom(" + this.ReasonToExist + ")";
 			reasonToExist += this.InstanceScaleCount;
@@ -299,7 +299,7 @@ namespace Sq1.Core.DataTypes {
 
 			//v1 string reasonForClone = this.ReasonToExist + " [" + dataRangeRq.ToString() + "]";
 			string reasonForCloning = "RANGE_SELECTED[" + dataRangeRq.ToString() + "]";
-			Bars clone = this.CloneBars_zeroBarsInside(reasonForCloning, this.ScaleInterval, exposeInnerBars_forEditor);
+			Bars clone = this.CloneBars_zeroBarsInside_sameDataSource(reasonForCloning, this.ScaleInterval, exposeInnerBars_forEditor);
 			int recentIndexStart = 0;
 			if (dataRangeRq.RecentBars > 0) recentIndexStart = this.Count - dataRangeRq.RecentBars;  
 			for (int i=0; i<this.Count; i++) {
@@ -333,7 +333,7 @@ namespace Sq1.Core.DataTypes {
 
 			//v1 string reasonForClone = this.ReasonToExist + "=>[" + scaleIntervalTo + "]";
 			string reasonForClone = "COMPRESSED_CLONE_OF_" + this.IntervalScaleCount + "=>[" + scaleIntervalTo + "]";
-			Bars barsConverted = this.CloneBars_zeroBarsInside(reasonForClone, scaleIntervalTo);
+			Bars barsConverted = this.CloneBars_zeroBarsInside_sameDataSource(reasonForClone, scaleIntervalTo);
 			if (this.Count == 0) return barsConverted;
 			
 			Bar barFromFirst = this[0];
@@ -363,6 +363,10 @@ namespace Sq1.Core.DataTypes {
 			}
 			this.DataSource.BarsSave(this, out millisElapsed);
 			return millisElapsed;
+		}
+
+		public void SubstituteDataSource_forBarsSimulating(DataSource dataSource_livesim) {
+			this.DataSource = dataSource_livesim;
 		}
 	}
 }

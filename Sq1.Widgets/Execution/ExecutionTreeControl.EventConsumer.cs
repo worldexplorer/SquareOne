@@ -17,7 +17,10 @@ namespace Sq1.Widgets.Execution {
 			try {
 				this.DataSnapshot.FirstRowShouldStaySelected = (this.OlvOrdersTree.SelectedIndex == 0) ? true : false;
 				int selectedIndex = this.OlvOrdersTree.SelectedIndex;
-				if (selectedIndex == -1) return;		// when selection changes, old selected is unselected; we got here twice on every click
+				if (selectedIndex == -1) {
+					// PRESSING_DEL_KEY_DOESNT_TREAT_LOST_SELECTION_AS_CHANGED??? this.olvMessages.Clear();
+					return;		// when selection changes, old selected is unselected; we got here twice on every click
+				}
 				
 				//this.OrdersTreeOLV.RedrawItems(selectedIndex, selectedIndex, true);
 				this.OlvOrdersTree.RefreshSelectedObjects();

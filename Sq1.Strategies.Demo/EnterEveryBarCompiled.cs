@@ -124,7 +124,7 @@ namespace Sq1.Strategies.Demo {
 					//Debugger.Break();
 				}
 
-				if (lastPos.ExitAlert != null) {
+				if (lastPos.ExitAlert != null && lastPos.ExitAlert.IsKilled == false) {
 					string msg1 = "you want to avoid POSITION_ALREADY_HAS_AN_EXIT_ALERT_REPLACE_INSTEAD_OF_ADDING_SECOND"
 						+ " ExitAtMarket by throwing [can't have two closing alerts for one positionExit] Strategy[" + this.Strategy.ToString() + "]";
 					#if DEBUG

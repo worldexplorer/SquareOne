@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Indicators;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
@@ -37,6 +38,7 @@ namespace Sq1.Core.StrategyBase {
 					throw new Exception(msg);
 				}
 			}
+
 			this.EventGenerator.RaiseOnBacktesterSimulationContextInitialized_step2of4();
 		}
 		internal void BacktestContext_restore() {

@@ -27,7 +27,7 @@ namespace Sq1.Charting {
 		// all cached variables must be calculated once per frame (once per ChartControl.PaintBackgroundWholeSurfaceBarsNotEmpty)
 	 	public int GutterRightWidth_cached = -1;
 		public int GutterBottomHeight_cached = -1;
-		public ChartSettings ChartSettings;
+		public ChartSettings ChartSettings;	//		{ get; private set; }
 		public ExecutorObjects_FrozenForRendering ExecutorObjects_frozenForRendering;
 
 		public int HeightMinusBottomHscrollbar { get { return base.Height - this.hScrollBar.Height; } }
@@ -515,7 +515,7 @@ namespace Sq1.Charting {
 			return wasInvalidated;
 		}
 		
-		public void PropagateSplitterManorderDistanceIfFullyDeserialized() {
+		public void Propagate_splitterManorderDistance_ifFullyDeserialized() {
 			//v1 WHATT?? BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE
 			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
 				string msg = "YOU_INVOKED_ME_WITH_ZERO_EFFECT__SET_FullyDeserializedLayoutComplete=true_FIRST //PropagateSplitterManorderDistanceIfFullyDeserialized()";

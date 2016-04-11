@@ -112,7 +112,18 @@ namespace Sq1.Core.Broker {
 		    }
 		    return ret;
 		} }
-		[JsonIgnore]	public LivesimBroker			LivesimBroker_ownImplementation			{ get; protected set; }
+
+		[JsonIgnore]	public LivesimBroker	LivesimBroker_ownImplementation				{ get; protected set; }
+		[JsonIgnore]	public	bool			ImBeingTested_byOwnLivesimImplementation	{ get; private set; }
+		[JsonIgnore]	public	string			ImBeingTested_PREFIX						{ get { return this.ImBeingTested_byOwnLivesimImplementation ? "TESTING_BY_OWN_LIVESIM :: " : ""; } }
+		public void ImBeingTested_byOwnLivesimImplementation_set(bool setIn_SimulationPreBarsSubstitute) {
+			if (this is LivesimBroker) {
+				string msg = "I_REFUSE_TO_SET_ImBeingTested_BECAUSE_I_AM_A_TESTER(MASTER)_AND_YOU_MUST_ADDRESS_BROKER_ORIGINAL_FROM_DATASOURCE";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.ImBeingTested_byOwnLivesimImplementation = setIn_SimulationPreBarsSubstitute;
+		}
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public BrokerAdapter() {
@@ -157,9 +168,9 @@ namespace Sq1.Core.Broker {
 			Assembler.PopupException(msg);
 			ordersFromAlerts[0].appendMessage(msg);
 			Thread.Sleep(millis);
-			this.SubmitOrders_backtest_liveFromProcessor_OPPunlockedSequence_threadEntry(ordersFromAlerts);
+			this.SubmitOrders_backtestAndLiveFromProcessor_OPPunlockedSequence_threadEntry(ordersFromAlerts);
 		}
-		public virtual void SubmitOrders_backtest_liveFromProcessor_OPPunlockedSequence_threadEntry(List<Order> ordersFromAlerts) {
+		public virtual void SubmitOrders_backtestAndLiveFromProcessor_OPPunlockedSequence_threadEntry(List<Order> ordersFromAlerts) {
 			try {
 				if (ordersFromAlerts.Count == 0) {
 					Assembler.PopupException("SubmitOrdersThreadEntry should get at least one order to place! List<Order>; got ordersFromAlerts.Count=0; returning");
@@ -167,13 +178,13 @@ namespace Sq1.Core.Broker {
 				}
 				Order firstOrder = ordersFromAlerts[0];
 				Assembler.SetThreadName(firstOrder.ToString(), "can not set Thread.CurrentThread.Name=[" + firstOrder + "]");
-				this.SubmitOrders(ordersFromAlerts);
+				this.SubmitOrders_ownOneThread_forAllNewAlerts(ordersFromAlerts);
 			} catch (Exception e) {
 				string msg = "SubmitOrdersThreadEntry default Exception Handler";
 				Assembler.PopupException(msg, e);
 			}
 		}
-		public virtual void SubmitOrders(IList<Order> orders) { lock (this.lockSubmitOrders) {
+		public virtual void SubmitOrders_ownOneThread_forAllNewAlerts(List<Order> orders) { lock (this.lockSubmitOrders) {
 			string msig = " //" + this.Name + "::SubmitOrders()";
 			List<Order> ordersToExecute = new List<Order>();
 			foreach (Order order in orders) {
@@ -216,7 +227,7 @@ namespace Sq1.Core.Broker {
 					continue;
 				}
 				//this.OrderProcessor.DataSnapshot.SwitchLanes_forOrder_postStatusUpdate(order);
-				this.Order_submit(order);
+				this.Order_submit_oneThread_forAllNewAlerts(order);
 			}
 		} }
 
@@ -226,7 +237,6 @@ namespace Sq1.Core.Broker {
 					string msg = "Backtesting orders should not be routed to MockBrokerAdapters, but simulated using MarketSim; victimOrder=[" + victimOrder + "]";
 					throw new Exception(msg);
 				}
-				//this.Order_kill_dispatcher(victimOrder);
 				this.Order_killPending_usingKiller(victimOrder);
 			}
 		}

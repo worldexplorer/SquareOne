@@ -39,7 +39,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 
 		public List<ToolStripMenuItem> DataSourcesAsMniList { get {
 			List<ToolStripMenuItem> ret = new List<ToolStripMenuItem>();
-			foreach (DataSource ds in Assembler.InstanceInitialized.RepositoryJsonDataSources.ItemsAsList) {
+			foreach (DataSource ds in Assembler.InstanceInitialized.RepositoryJsonDataSources.ItemsCachedAsList) {
 				ToolStripMenuItem mni = new ToolStripMenuItem();
 				mni.Text = ds.Name;
 				mni.Tag = ds;
@@ -109,7 +109,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			}
 		}
 		public void PopulateDataSourcesIntoTreeListView() {
-			List<DataSource> dataSources = dataSourceRepository.ItemsAsList;
+			List<DataSource> dataSources = dataSourceRepository.ItemsCachedAsList;
 			this.imageList.Images.Clear();
 			foreach (DataSource ds in dataSources) {
 				StreamingAdapter provider = ds.StreamingAdapter;

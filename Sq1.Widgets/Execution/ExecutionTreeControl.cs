@@ -255,6 +255,7 @@ namespace Sq1.Widgets.Execution {
 			string msig = " populateMessagesFor(" + order_nullMeansClearMessages + ")";
 			if (order_nullMeansClearMessages == null) {
 				this.olvMessages.Clear();
+				//CLICKED_ORDERS_STOPPED_TO_POPULATE??? AFTER_I_CLICK_DELETE_I_WANNA_KEEP_IT_CLEAR
 				this.olvMessages.RebuildColumns();	// after appRestart, olv header is missing
 				return;
 			}

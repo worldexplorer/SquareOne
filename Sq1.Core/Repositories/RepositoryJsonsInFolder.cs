@@ -26,15 +26,15 @@ namespace Sq1.Core.Repositories {
 		public string	MaskAbs						{ get { return Path.Combine(this.AbsPath, Mask); } }
 		public string	Extension					{ get { return Path.GetExtension(this.Mask); } }
 		
-		protected Dictionary<string, DATASOURCE>	ItemsByName;
-		public List<DATASOURCE>						ItemsAsList		{ get {
-				return new List<DATASOURCE>(this.ItemsByName.Values);
+		protected Dictionary<string, DATASOURCE>	ItemsCachedByName;
+		public List<DATASOURCE>						ItemsCachedAsList		{ get {
+				return new List<DATASOURCE>(this.ItemsCachedByName.Values);
 			} }
 	
 		public Func<string, DATASOURCE, bool>		CheckIfValidAndShouldBeAddedAfterDeserialized;
 
 		public RepositoryJsonsInFolder() {
-			ItemsByName 	= new Dictionary<string, DATASOURCE>();			
+			ItemsCachedByName 	= new Dictionary<string, DATASOURCE>();			
 		}
 		public virtual void Initialize(string rootPath,
 					string subfolder = "DataSources",
@@ -78,9 +78,14 @@ namespace Sq1.Core.Repositories {
    			this.CheckIfValidAndShouldBeAddedAfterDeserialized = checkIfValidAndShouldBeAddedAfterDeserialized;
 		}
 		
-		public void DeserializeJsonsInFolder() {
+		public void DeserializeJsonsInFolder(bool forceClearCache_andReload = false) {
 			string msig = " DeserializeJsonsInFolder() path[" + this.AbsPath + "]";
-			this.ItemsByName.Clear();
+			if (this.ItemsCachedByName.Count > 0) {
+				if (forceClearCache_andReload == false) return;
+				string msg = "!!!DANGER___YOU_LOSE_POINTERS_TO_EXISTING_CACHED_OBJECTS!!!";
+				Assembler.PopupException(msg);
+				this.ItemsCachedByName.Clear();
+			}
 			if (Directory.Exists(this.AbsPath) == false) {
 				string msg = "doesn't exist, no {" + this.MaskRel + "}s deserialized; returning";
 				Assembler.PopupException(msg + msig);
@@ -129,7 +134,7 @@ namespace Sq1.Core.Repositories {
 			bool shouldRenameAndSave =
 				string.IsNullOrEmpty(	  itemStored.NameImStoredUnder_asUniqueKeyForRename) == false
 					&& itemStored.Name != itemStored.NameImStoredUnder_asUniqueKeyForRename
-					&& this.ItemsAsList.Contains(itemStored);
+					&& this.ItemsCachedAsList.Contains(itemStored);
 
 			if (shouldRenameAndSave) {
 				string newName = itemStored.Name;
@@ -147,7 +152,7 @@ namespace Sq1.Core.Repositories {
 					});
 				File.WriteAllText(jsonAbsname, json);
 				// NO__USE_DeserializeJsonsInFolder()_MANUALLY_UPSTACK__AFTER_EACH_SerializeSingle();
-				if (this.ItemsByName.ContainsKey(itemStored.Name) == false) {
+				if (this.ItemsCachedByName.ContainsKey(itemStored.Name) == false) {
 					this.ItemAdd(itemStored, this, false);
 				}
 			} catch (Exception ex) {
@@ -158,7 +163,7 @@ namespace Sq1.Core.Repositories {
 			}
 		}
 		public void SerializeAll() {
-			foreach (DATASOURCE current in this.ItemsByName.Values) {
+			foreach (DATASOURCE current in this.ItemsCachedByName.Values) {
 				this.SerializeSingle(current);
 			}
 		}
@@ -173,11 +178,11 @@ namespace Sq1.Core.Repositories {
 			if (sender == null) sender = this;
 			string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::ItemAdd(" + itemCandidate.Name + "): ";
 			try {
-				if (this.ItemsByName.ContainsKey(itemCandidate.Name)) {
+				if (this.ItemsCachedByName.ContainsKey(itemCandidate.Name)) {
 					throw new Exception("ALREADY_EXISTS[" + itemCandidate.Name + "]");
 				}
 				//this.ItemAddCascade(itemCandidate, sender);
-				this.ItemsByName.Add(itemCandidate.Name, itemCandidate);
+				this.ItemsCachedByName.Add(itemCandidate.Name, itemCandidate);
 				if (serialize) this.SerializeSingle(itemCandidate);
 				this.RaiseOnItemAdded(sender, itemCandidate);
 			} catch (Exception ex) {
@@ -190,7 +195,7 @@ namespace Sq1.Core.Repositories {
 			if (sender == null) sender = this;
 			string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::ItemDelete(" + itemStored.Name + "): ";
 			try {
-				if (this.ItemsByName.ContainsKey(itemStored.Name) == false) {
+				if (this.ItemsCachedByName.ContainsKey(itemStored.Name) == false) {
 					throw new Exception("ALREADY_DELETED[" + itemStored.Name + "]");
 				}
 				var args = this.ItemCanBeDeleted(itemStored, sender);
@@ -199,7 +204,7 @@ namespace Sq1.Core.Repositories {
 					throw new Exception(msg);
 				}
 				this.ItemDeleteCascade(itemStored, sender);
-				this.ItemsByName.Remove(itemStored.Name);
+				this.ItemsCachedByName.Remove(itemStored.Name);
 				this.JsonDeleteItem(itemStored);
 				this.RaiseOnItemRemovedDone(sender, args);
 			} catch (Exception ex) {
@@ -222,12 +227,12 @@ namespace Sq1.Core.Repositories {
 			if (sender == null) sender = this;
 			string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::ItemRename(" + itemStored.Name + ", " + newName + "): ";
 			try {
-				if (this.ItemsByName.ContainsKey(itemStored.Name) == false) {
+				if (this.ItemsCachedByName.ContainsKey(itemStored.Name) == false) {
 					string msg = "ALREADY_DELETED[" + itemStored.Name + "]";
 					// throw new Exception(msg);
 					Assembler.PopupException(msg + msig);
 				}
-				if (this.ItemsByName.ContainsKey(newName)) {
+				if (this.ItemsCachedByName.ContainsKey(newName)) {
 					string msg = "ALREADY_EXISTS[" + itemStored.Name + "]";
 					// throw new Exception(msg);
 					Assembler.PopupException(msg + msig);
@@ -235,10 +240,10 @@ namespace Sq1.Core.Repositories {
 				bool dataSourceFolderRenamed = this.ItemRenameCascade(itemStored, newName, sender);
 
 				if (dataSourceFolderRenamed) {
-					var items = new List<DATASOURCE>(this.ItemsByName.Values);
-					this.ItemsByName.Clear();
+					var items = new List<DATASOURCE>(this.ItemsCachedByName.Values);
+					this.ItemsCachedByName.Clear();
 					foreach (var item in items) {
-						this.ItemsByName.Add(item.Name, item);
+						this.ItemsCachedByName.Add(item.Name, item);
 					}
 
 					//string jsonRelnameToDeleteBeforeRename = this.jsonRelnameForItem(itemStored);
@@ -319,8 +324,8 @@ namespace Sq1.Core.Repositories {
 			if (File.Exists(jsonAbsname)) File.Delete(jsonAbsname);
 		}
 		public DATASOURCE ItemFind(string dataSourceName) {
-			if (this.ItemsByName.ContainsKey(dataSourceName) == false) return null;
-			return ItemsByName[dataSourceName];
+			if (this.ItemsCachedByName.ContainsKey(dataSourceName) == false) return null;
+			return ItemsCachedByName[dataSourceName];
 		}
 	}
 }

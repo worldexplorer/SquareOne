@@ -33,19 +33,9 @@ namespace Sq1.Core.Backtesting {
 		public override void OrderMoveExisting_takeProfit_overrideable(PositionPrototype proto, double newTakeProfit_positiveOffset) {
 			this.BacktestMarketsim.TakeProfit_simulateMoved(proto.TakeProfitAlert_forMoveAndAnnihilation);
 		}
-
-
-		//public override void Order_kill_dispatcher(Order victimOrder) {
-		//    throw new Exception("please override BrokerAdapter::Order_kill() for BrokerAdapter.Name=[" + Name + "]");
-		//}
-		//public override void Order_killPending_withoutKiller(Order victimOrder) {
-		//    throw new Exception("please override BrokerAdapter::Order_killPending_withoutKiller() for BrokerAdapter.Name=[" + Name + "]");
-		//}
 		public override void Order_killPending_usingKiller(Order killerOrder) {
 		    throw new Exception("please override BrokerAdapter::Order_killPending_usingKiller() for BrokerAdapter.Name=[" + Name + "]");
 		}
-
-
 		public override bool AlertCounterparty_annihilate(Alert alertCounterparty_toAnnihilate) {
 			return this.BacktestMarketsim.AlertCounterparty_annihilate(alertCounterparty_toAnnihilate);
 		}

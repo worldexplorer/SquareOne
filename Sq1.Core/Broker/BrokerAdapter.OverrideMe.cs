@@ -31,7 +31,7 @@ namespace Sq1.Core.Broker {
 		public virtual string Order_modifyType_accordingToMarketOrder_asBrokerSpecificInjection(Order order) {
 			return "";
 		}
-		public virtual void Order_submit(Order order) {
+		public virtual void Order_submit_oneThread_forAllNewAlerts(Order order) {
 			throw new Exception("please override BrokerAdapter::Submit() for BrokerAdapter.Name=[" + Name + "]");
 		}
 		public virtual void Order_killPending_replaceWithNew(Order order, Order newOrder) {
@@ -39,19 +39,6 @@ namespace Sq1.Core.Broker {
 			//this.OrderProcessor.Emit_oderPending_replace(order, newOrder);
 		}
 
-		//v1
-		//public virtual void Order_kill(Order victimOrder) {
-		//    throw new Exception("please override BrokerAdapter::Order_kill() for BrokerAdapter.Name=[" + Name + "]");
-		//}
-		//public virtual void Order_killPending_withoutKiller(Order victimOrder) {
-		//    throw new Exception("please override BrokerAdapter::Order_killPending_withoutKiller() for BrokerAdapter.Name=[" + Name + "]");
-		//}
-		//public virtual void Order_killPending_usingKiller(Order killerOrder) {
-		//    throw new Exception("please override BrokerAdapter::Order_killPending_usingKiller() for BrokerAdapter.Name=[" + Name + "]");
-		//}
-		//v2
-		//public abstract void Order_kill_dispatcher(Order killerOrder_withRefToVictim);
-		//public abstract void Order_killPending_withoutKiller(Order killerOrder_withRefToVictim);
 		public abstract void Order_killPending_usingKiller(Order killerOrder_withRefToVictim);
 
 		public virtual void Order_enrichAlert_brokerSpecificInjection(Order order) {

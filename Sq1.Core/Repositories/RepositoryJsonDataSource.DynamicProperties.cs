@@ -10,7 +10,7 @@ namespace Sq1.Core.Repositories {
 	public partial class RepositoryJsonDataSources {
 		public List<Account> AccountsFromUnderlyingBrokerAdapters { get {
 				List<Account> ret = new List<Account>();
-				foreach (DataSource ds in base.ItemsAsList) {
+				foreach (DataSource ds in base.ItemsCachedAsList) {
 					if (ds.BrokerAdapter == null) continue;
 					if (ds.BrokerAdapter.AccountAutoPropagate == null) continue;
 					if (ret.Contains(ds.BrokerAdapter.AccountAutoPropagate)) continue;

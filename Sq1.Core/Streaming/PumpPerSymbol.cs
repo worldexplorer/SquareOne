@@ -44,6 +44,7 @@ namespace Sq1.Core.Streaming {
 		bool hasQuoteToPush_nonBlocking {
 			get { return this.IsDisposed ? false : this.hasQuoteToPush.WaitOne(0); }
 			set {
+				if (this.IsDisposed) return;
 				if (value == hasQuoteToPush_nonBlocking) {
 					string msg = "DONT_INVOKE_ME_TWICE__I_DONT_WANNA_SIGNAL_AGAIN_THOSE_WHO_ARE_WAITING__YOU_HAVE_TO_FIX_IT";
 					Assembler.PopupException(msg);

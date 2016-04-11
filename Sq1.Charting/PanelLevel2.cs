@@ -290,7 +290,7 @@ namespace Sq1.Charting {
 					double diffFromQuoteAsk = ask - quoteAsk;
 					if (diffFromQuoteAsk < 0) {
 						string msg = "next ask must have greater price";
-						Assembler.PopupException(msg);
+						Assembler.PopupException(msg, null, false);
 					}
 					int diffFromQuoteAskAsPriceStepsAway = (int)Math.Ceiling(diffFromQuoteAsk / priceStep);
 					int diffFromQuoteAskY = diffFromQuoteAskAsPriceStepsAway * pxPerPriceStep_Height;
@@ -381,7 +381,7 @@ namespace Sq1.Charting {
 					double diffFromQuoteBid = quoteBid - bid;
 					if (diffFromQuoteBid < 0) {
 						string msg = "next bid must have lesser price";
-						Assembler.PopupException(msg);
+						Assembler.PopupException(msg, null, false);
 					}
 					int diffFromQuoteBidAsPriceStepsAway = (int)Math.Ceiling(diffFromQuoteBid / priceStep);
 					int diffFromQuoteBidY = diffFromQuoteBidAsPriceStepsAway * pxPerPriceStep_Height;

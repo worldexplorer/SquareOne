@@ -84,7 +84,6 @@ namespace Sq1.Core.Streaming {
 				Bar barStaticLast = barConsumer.ConsumerBars_toAppendInto.BarStaticLast_nullUnsafe;
 				bool isLive				= barConsumer			is StreamingConsumerChart;
 				bool isBacktest			= barConsumer			is BacktestStreamingConsumer;
-				bool isLivesim			= barConsumer			is LivesimStreamingConsumer;
 				bool isLivesimDefault	= this.StreamingAdapter is LivesimStreamingDefault;
 				if (barStaticLast == null) {
 					if (isLivesimDefault == false) {	// isBacktest,isLivesim are magically fine; where did you notice the problem?

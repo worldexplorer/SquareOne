@@ -20,7 +20,9 @@ namespace Sq1.Core.StrategyBase {
 				//v1 return LastPosition.Active;
 				Position pos = this.LastPosition;
 				if (null == pos) return false;
-				return (pos.ExitMarketLimitStop == MarketLimitStop.Unknown);
+				//v1 return pos.ExitMarketLimitStop == MarketLimitStop.Unknown;
+				bool closed = pos.ExitBar != null;
+				return !closed;
 			} }
 		public		Position		LastPositionOpenNow					{ get {
 				return this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Last_nullUnsafe(this, "//LastPositionOpenNowWAIT");

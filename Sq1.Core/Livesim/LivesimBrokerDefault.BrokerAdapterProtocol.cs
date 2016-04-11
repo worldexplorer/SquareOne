@@ -5,11 +5,11 @@ using Sq1.Core.Execution;
 using Sq1.Core.Broker;
 
 namespace Sq1.Core.Livesim {
-	public partial class LivesimBroker : BrokerAdapter {
-		public override void Order_submit(Order order) {
-			string msig = " //LivesimBroker.Order_submit()";
+	public sealed partial class LivesimBrokerDefault {
+		public override void Order_submit_oneThread_forAllNewAlerts(Order order) {
+			string msig = " //LivesimBrokerDefault.Order_submit()";
 
-			this.OrdersSubmittedForOneLivesimBacktest.Add(order);
+			this.OrdersSubmitted_forOneLivesimBacktest.Add(order);
 //			string msg = "IS_ASYNC_CALLBACK_NEEDED? THREAD_ID " + Thread.CurrentThread.ManagedThreadId;
 //			base.OrderProcessor.BrokerCallback_orderStateUpdate_byGuid_ifDifferent_dontPostProcess_appendPropagateMessage(order.GUID, OrderState.Submitted, msg);
 
@@ -21,7 +21,7 @@ namespace Sq1.Core.Livesim {
 		}
 
 		public override void Order_killPending_usingKiller(Order orderKiller) {
-			string msig = " //LivesimBroker.Order_killPending_usingKiller(WAIT)";
+			string msig = " //LivesimBrokerDefault.Order_killPending_usingKiller(WAIT)";
 
 			int delayBeforeKill = this.LivesimBrokerSpoiler.DelayBeforeKill_calculate();
 			if (delayBeforeKill == 0) {
@@ -155,16 +155,5 @@ namespace Sq1.Core.Livesim {
 		//    }, TaskContinuationOptions.OnlyOnFaulted);
 		//    t.Start();		// WHO_DOES t.Dispose() ?
 		//}
-
-		public override void Broker_connect() {
-			string msig = " //UpstreamConnect(" + this.ToString() + ")";
-			string msg = "LIVESIM_CHILDREN_SHOULD_NEVER_RECEIVE_UpstreamConnect()";
-			Assembler.PopupException(msg + msig, null, false);
-		}
-		public override void Broker_disconnect() {
-			string msig = " //UpstreamDisconnect(" + this.ToString() + ")";
-			string msg = "LIVESIM_CHILDREN_SHOULD_NEVER_RECEIVE_UpstreamDisonnect()";
-			Assembler.PopupException(msg + msig, null, false);
-		}
 	}
 }

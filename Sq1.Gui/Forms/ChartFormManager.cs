@@ -275,6 +275,30 @@ namespace Sq1.Gui.Forms {
 			ret.OnBarsEditorClicked += new EventHandler<DataSourceSymbolEventArgs>(this.MainForm.MainFormEventManager.ChartForm_OnBarsEditorClicked);
 
 			ret.AppendReportersMenuItems(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
+
+			try {
+				Sq1.Core.Charting.ChartSettings settingsDefault = ret.ChartControl.ChartSettings;
+				//if (this.DataSnapshot.ChartSettings == null) {
+				//    string msg = "WILL_LOAD_FROM_REPO[" + settingsDefault.Name + "] SORRY_WHEN_EXACTLY_THIS_MAKES_SENSE?...";
+				//    // delete "ChartSettings": {} from JSON to reset to ChartControl>Design>ChartSettings>Properties
+				//    this.DataSnapshot.ChartSettingsName = settingsDefault.Name;	// opening from Datasource => save
+				//    this.DataSnapshotSerializer.Serialize();
+				//    return ret;
+				//}
+				if (settingsDefault.Name != this.DataSnapshot.ChartSettingsName) {
+					ret.ChartControl.ChartSettings = this.DataSnapshot.ChartSettings;
+					string msg = "JustDeserialized=>propagate ChartSettings[" + settingsDefault.Name + "]=>[" + this.DataSnapshot.ChartSettingsName + "] IM_AT_InitializeStrategyAfterDeserialization";
+					//Assembler.PopupException(msg, null, false);
+				} else {
+					string msg = "IM_LOADING_ANOTHER_STRATEGY_INTO_EXISTING_CHART";
+					Assembler.PopupException(msg, null, false);
+				}
+				ret.ChartControl.Propagate_splitterManorderDistance_ifFullyDeserialized();
+			} catch (Exception ex) {
+				string msg = "EXPERIMENTAL_MERGE_THREW_UP";
+				Assembler.PopupException(msg);
+			}
+
 			return ret;
 		}
 		public void InitializeWithoutStrategy(ContextChart contextChart, bool saveStrategyOrCtx = false) {
@@ -295,20 +319,11 @@ namespace Sq1.Gui.Forms {
 			this.DataSnapshot.StrategyAbsPathJsonCheck	= "NO_STRATEGY_CHART_ONLY";
 
 			if (this.ChartForm == null) this.ChartForm = this.chartFormFactory();
-			#region TODO move to chartFormFactory()
-			if (this.DataSnapshot.ChartSettings == null) {
-				// delete "ChartSettings": {} from JSON to reset to ChartControl>Design>ChartSettings>Properties
-				this.DataSnapshot.ChartSettings = this.ChartForm.ChartControl.ChartSettings;	// opening from Datasource => save
-			} else {
-				this.ChartForm.ChartControl.ChartSettings = this.DataSnapshot.ChartSettings;	// otherwize JustDeserialized => propagate
-				this.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
-			}
 			if (contextChart != null) {
 				// contextChart != null when opening from Datasource; contextChart == null when JustDeserialized
 				this.DataSnapshot.ContextChart = contextChart;
 			}
 			this.DataSnapshotSerializer.Serialize();
-			#endregion
 			this.ChartForm.Initialize();
 
 			//without this, renaming the symbol (loaded into the chartWithoutStrategy) will throw in ChartShadow.barDataSource_OnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull()
@@ -353,20 +368,6 @@ namespace Sq1.Gui.Forms {
 			}
 			
 			if (this.ChartForm == null) this.ChartForm = this.chartFormFactory();
-			#region TODO merge this region from InitializeWithStrategy() and InitializeChartNoStrategy() into chartFormFactory()
-			if (this.DataSnapshot.ChartSettings == null) {
-				string msg = "SORRY_WHEN_EXACTLY_THIS_MAKES_SENSE?...";
-				this.DataSnapshot.ChartSettings = this.ChartForm.ChartControl.ChartSettings;	// opening from Datasource => save
-			} else {
-				if (this.ChartForm.ChartControl.ChartSettings != this.DataSnapshot.ChartSettings) {
-					string msg = "IM_HERE_AT_InitializeStrategyAfterDeserialization,...";
-					this.ChartForm.ChartControl.ChartSettings = this.DataSnapshot.ChartSettings;	// otherwize JustDeserialized => propagate
-				} else {
-					string msg = "IM_LOADING_ANOTHER_STRATEGY_INTO_EXISTING_CHART";
-				}
-			}
-			this.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
-			#endregion
 			this.ChartForm.Initialize(this.Strategy);
 
 			this.Executor.Initialize(this.Strategy, this.ChartForm.ChartControl, false);

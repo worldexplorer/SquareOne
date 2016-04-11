@@ -227,8 +227,8 @@ namespace Sq1.Core.Backtesting {
 
 				#region candidate for this.BacktestDataSourceBuildFromUserSelection()
 				this.BarsOriginal = this.Executor.Bars;
-				this.BarsSimulating = this.Executor.Bars.CloneBars_zeroBarsInside(BARS_BACKTEST_CLONE_PREFIX);	// + this.BarsOriginal
-				this.Executor.EventGenerator.RaiseOnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4();
+				this.BarsSimulating = this.Executor.Bars.CloneBars_zeroBarsInside_sameDataSource(BARS_BACKTEST_CLONE_PREFIX);	// + this.BarsOriginal
+				this.Executor.EventGenerator.RaiseOnBackteste_barsIdenticalButEmpty_substitutedToGrow_step1of4();
 				
 				BacktestSpreadModeler spreadModeler;
 				// kept it on the surface and didn't pass ScriptContextCurrent.SpreadModelerPercent to "new BacktestDataSource()" because later BacktestDataSource:
@@ -258,7 +258,7 @@ namespace Sq1.Core.Backtesting {
 				Assembler.SetThreadName(threadName, "LIVESIM_FAILED_TO_SET_THREAD_NAME OR_NPE");
 
 				this.BacktestDataSource.InitializeBacktest(this.Executor.ToString() , this.BarsSimulating, spreadModeler);
-				this.BarsSimulating.DataSource = this.BacktestDataSource;
+				this.BarsSimulating.SubstituteDataSource_forBarsSimulating(BacktestDataSource);
 
 				StreamingAdapter streaming = this.BacktestDataSource.StreamingAdapter;
 				DistributorCharts distr = streaming.DistributorCharts_substitutedDuringLivesim;

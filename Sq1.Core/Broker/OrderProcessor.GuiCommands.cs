@@ -23,7 +23,7 @@ namespace Sq1.Core.Broker {
 			}
 			if (ordersEatable.Count > 0) {
 				BrokerAdapter broker = extractSameBrokerAdapter_throwIfDifferent(ordersEatable, "SubmitEatableOrders(): ");
-				broker.SubmitOrders(ordersEatable);
+				broker.SubmitOrders_ownOneThread_forAllNewAlerts(ordersEatable);
 			}
 			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
 		}

@@ -15,16 +15,21 @@ namespace Sq1.Core.Livesim {
 				// will always InvokeRequied since we RaiseOnBacktesterSimulationContextInitialized_step2of4
 				// from a just started thread with a new Backtest BacktesterRunSimulation_threadEntry_exceptionCatcher() SEE_CALL_STACK_NOW
 				// too late to do it in GUI thread; switch takes a tons of time; do gui-unrelated preparations NOW
-				List<Order> ordersStale = this.DataSourceAsLivesim_nullUnsafe.BrokerAsLivesim_nullUnsafe.OrdersSubmittedForOneLivesimBacktest;
-				if (ordersStale.Count > 0) {
-					int beforeCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll.Count;
-					this.Executor.OrderProcessor.DataSnapshot.OrdersRemove(ordersStale);
-					int afterCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll.Count;
-					if (beforeCleanup > 0 && beforeCleanup <= afterCleanup)  {
-						string msg = "STALE_ORDER_CLEANUP_DOESNT_WORK__LIVESIM";
-						Assembler.PopupException(msg);
+				if (this.DataSourceAsLivesim_generator_nullUnsafe.BrokerAsLivesim_nullUnsafe != null) {
+					List<Order> ordersStale = this.DataSourceAsLivesim_generator_nullUnsafe.BrokerAsLivesim_nullUnsafe.OrdersSubmitted_forOneLivesimBacktest;
+					if (ordersStale.Count > 0) {
+						int beforeCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll.Count;
+						this.Executor.OrderProcessor.DataSnapshot.OrdersRemove(ordersStale);
+						int afterCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll.Count;
+						if (beforeCleanup > 0 && beforeCleanup <= afterCleanup)  {
+							string msg = "STALE_ORDER_CLEANUP_DOESNT_WORK__LIVESIM";
+							Assembler.PopupException(msg);
+						}
+						ordersStale.Clear();
 					}
-					ordersStale.Clear();
+				} else {
+					string msg = "WHAT_10_LINES_UP_ALL_MEAN??? LIVESIMULATOR_GENERATING_HAS_NO_BROKER__BUT_THE_BarsSimulating.DataSource.BrokerAdapter_IS_NOW_OWN_IMPLMENTATION";
+					Assembler.PopupException(msg, null, false);
 				}
 				//base.Stopwatch.Restart();
 				var alreadyStartedUpstack = base.Stopwatch;
@@ -34,13 +39,13 @@ namespace Sq1.Core.Livesim {
 			}
 
 			if (this.chartShadow.Bars != null) {
-				this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange -= new EventHandler<QuoteEventArgs>(streamingAsLivesim_nullUnsafe_OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange);
+				this.DataSourceAsLivesim_generator_nullUnsafe.StreamingAsLivesim_nullUnsafe.OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange -= new EventHandler<QuoteEventArgs>(streamingAsLivesim_nullUnsafe_OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange);
 			}
 
 
 			this.chartShadow.Initialize(base.Executor.Bars, base.Executor.StrategyName, false, true);
 
-			this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange += new EventHandler<QuoteEventArgs>(streamingAsLivesim_nullUnsafe_OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange);
+			this.DataSourceAsLivesim_generator_nullUnsafe.StreamingAsLivesim_nullUnsafe.OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange += new EventHandler<QuoteEventArgs>(streamingAsLivesim_nullUnsafe_OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange);
 
 			barsAreSetInGuiThread.Set();		// SOLVES__BAR_STATIC_LAST_IS_NULL__DURING_SECOND_LIVESIM release the thread that waits to start livesim (second livesim throws LastBar_nullUnsafe == null)
 			Thread.Sleep(10);					// will the executor get signalled then??

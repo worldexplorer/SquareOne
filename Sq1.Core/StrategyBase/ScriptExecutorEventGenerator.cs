@@ -29,7 +29,7 @@ namespace Sq1.Core.StrategyBase {
 			this.scriptExecutor = scriptExecutor;
 		}
 
-		public void RaiseOnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4() {
+		public void RaiseOnBackteste_barsIdenticalButEmpty_substitutedToGrow_step1of4() {
 			if (this.OnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4 == null) return;
 			this.OnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4(this, null);
 		}

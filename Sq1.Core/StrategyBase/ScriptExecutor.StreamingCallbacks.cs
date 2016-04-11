@@ -62,7 +62,7 @@ namespace Sq1.Core.StrategyBase {
 			if (onNewQuoteTrue_onNewBarFalse == true) {
 				scriptInvocationError = this.invokeScript_onNewQuote(quote_fromStreaming);
 				if (this.ExecutionDataSnapshot.AlertsPending.Count > 0) {
-					this.fillPendings_onEachQuote_skipIfNonLivesimBroker(quote_fromStreaming);
+					this.fillPendings_onEachQuote_onlyForLivesimBrokerDefault(quote_fromStreaming);
 				}
 			} else {
 				scriptInvocationError = this.invokeScript_onNewBar(quote_fromStreaming);
@@ -71,7 +71,10 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(scriptInvocationError + msig);
 				return ret;		//null here ReporterPokeUnit
 			}
-			ret = scriptInvoke_Post_dealWithNewAlerts_fillPendings_killDoomed_emitOrders_both_onNewQuote_onNewBar(quote_fromStreaming);
+
+			// for backtest and LivesimDefault, AlertsNew will be empty by now because of this.fillPendings_onEachQuote_onlyForLivesimBrokerDefault(quote_fromStreaming)
+			// for Live and ownLivesimImplementation, we will go through OrderProcessor to submit via BrokerAdapter.OverrideMe
+			ret = this.scriptInvoke_Post_dealWithNewAlerts_fillPendings_killDoomed_emitOrders_both_onNewQuote_onNewBar(quote_fromStreaming);
 			return ret;
 		}
 
@@ -222,8 +225,8 @@ namespace Sq1.Core.StrategyBase {
 			return ret;
 		}
 
-		void fillPendings_onEachQuote_skipIfNonLivesimBroker(Quote quoteForAlertsCreated) {
-			LivesimBroker defaultOrderFiller = this.DataSource_fromBars.BrokerAdapter as LivesimBroker;
+		void fillPendings_onEachQuote_onlyForLivesimBrokerDefault(Quote quoteForAlertsCreated) {
+			LivesimBrokerDefault defaultOrderFiller = this.DataSource_fromBars.BrokerAdapter as LivesimBrokerDefault;
 			if (defaultOrderFiller == null) return;
 
 			if (defaultOrderFiller.DataSnapshot == null) {
@@ -243,7 +246,7 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 			if (quoteForAlertsCreated.ParentBarStreaming != null) {
-				string msg = "I_MUST_HAVE_IT_UNATTACHED_HERE";
+				string msg = "CLONED_ATTACHED_SORRY!!! I_MUST_HAVE_IT_UNATTACHED_HERE";
 				//Assembler.PopupException(msg);
 			}
 			defaultOrderFiller.ConsumeQuoteBoundUnattached_toFillPending(quoteForAlertsCreated, willBeFilled);

@@ -143,7 +143,7 @@ namespace Sq1.Core.Broker {
 			}
 			// !!!THERE_MUST_BE_NO_DIFFERENCE_BETWEEN_LIVEISIMBROKER_AND_LIVEBROKER!!!
 			Task taskEmittingOrders = new Task(delegate {
-				broker.SubmitOrders_backtest_liveFromProcessor_OPPunlockedSequence_threadEntry(orders);
+				broker.SubmitOrders_backtestAndLiveFromProcessor_OPPunlockedSequence_threadEntry(orders);
 			});
 			taskEmittingOrders.Start();
 		}

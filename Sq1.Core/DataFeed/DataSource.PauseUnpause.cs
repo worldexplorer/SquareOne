@@ -156,64 +156,79 @@ namespace Sq1.Core.DataFeed {
 			return someoneGotUnPaused;
 		}
 
-		public int LivesimStreamingDefault_PumpPause_freezeOtherConsumers_forSameSymbolScale(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
-			string msig = " //LivesimStreamingDefault_PumpPause_freezeOtherConsumers_forSameSymbolScale(" + executorImLivesimming + ")";
-			int channelsPaused = 0;
-			//List<SymbolScaleStream> channels = this.StreamingAdapter.Distributor_replacedForLivesim
-			//    .GetStreams_allScaleIntervals_forSymbol(executorImLivesimming.Bars.Symbol);
-			//foreach (SymbolScaleStream channel in channels) {
-			SymbolChannel<StreamingConsumerChart> channel_nullUnsafe = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
-			if (channel_nullUnsafe == null) return channelsPaused;		// no charts (including the livesimming one) were subscribed
+		#region v1 BROKER_IN_TEST_MODE_WILL_NOT_SEND_ORDERS_FOR_NON_LIVESIMMING_SYMBOLS
+		public int LivesimStreaming_PumpPause_forSameSymbolScale_freezeNonSimmingConsumers_whenBrokerOriginalIsLivesimDefault(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
+		    string msig = " //LivesimStreaming_PumpPause_forSameSymbolScale_freezeNonSimmingConsumers_whenBrokerOriginalIsLivesimDefault(" + executorImLivesimming + ")";
+		    int channelsPaused = 0;
+		    //List<SymbolScaleStream> channels = this.StreamingAdapter.Distributor_replacedForLivesim
+		    //    .GetStreams_allScaleIntervals_forSymbol(executorImLivesimming.Bars.Symbol);
+		    //foreach (SymbolScaleStream channel in channels) {
+		    SymbolChannel<StreamingConsumerChart> channel_nullUnsafe = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
+		    if (channel_nullUnsafe == null) return channelsPaused;		// no charts (including the livesimming one) were subscribed
 
-			if (channel_nullUnsafe.ImQueueNotPump_trueOnlyForBacktest == true ||
-				channel_nullUnsafe.QueueWhenBacktesting_PumpForLiveAndLivesim.HasSeparatePushingThread == false) {
-				if (wrongUsagePopup == true) {
-					string msg = "WILL_PAUSE DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
-					Assembler.PopupException(msg + msig);
-				}
-				return channelsPaused;
-			}
-			if (channel_nullUnsafe.QuotePump_nullUnsafe.Paused == true) {
-				string msg = "PUMP_ALREADY_PAUSED_BY_ANOTHER_LIVESIM";
-				Assembler.PopupException(msg, null, false);
-				return channelsPaused;
-			}
-			channel_nullUnsafe.QuotePump_nullUnsafe.PusherPause_waitUntilPaused();
-			channelsPaused++;
-			return channelsPaused;
+		    if (channel_nullUnsafe.ImQueueNotPump_trueOnlyForBacktest == true ||
+		        channel_nullUnsafe.QueueWhenBacktesting_PumpForLiveAndLivesim.HasSeparatePushingThread == false) {
+		        if (wrongUsagePopup == true) {
+		            string msg = "WILL_PAUSE DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
+		            Assembler.PopupException(msg + msig);
+		        }
+		        return channelsPaused;
+		    }
+		    if (channel_nullUnsafe.QuotePump_nullUnsafe.Paused == true) {
+		        string msg = "PUMP_ALREADY_PAUSED_BY_ANOTHER_LIVESIM";
+		        Assembler.PopupException(msg, null, false);
+		        return channelsPaused;
+		    }
+		    channel_nullUnsafe.QuotePump_nullUnsafe.PusherPause_waitUntilPaused();
+		    channelsPaused++;
+		    return channelsPaused;
 		}
-		public int LivesimStreamingDefault_PumpResume_unfreezeOtherConsumers_forSameSymbolScale(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
-			string msig = " //LivesimStreamingDefault_PumpResume_unfreezeOtherConsumers_forSameSymbolScale(" + executorImLivesimming + ")";
-			int channelsPaused = 0;
-			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
-				string msg = "I_REFUSE_TO_RESUME_PUMP_BECAUSE_IT_LEADS_TO_DEADLOCK IM_CLOSING_MAINFORM_WHILE_LIVESIM_IS_RUNNING";
-				Assembler.PopupException(msg + msig, null, false);
-				return channelsPaused;
-			}
+		public int LivesimStreaming_PumpResume_forSameSymbolScale_unfreezeOtherConsumers_whenBrokerOriginalIsLivesimDefault(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
+		    string msig = " //LivesimStreaming_PumpResume_forSameSymbolScale_unfreezeOtherConsumers_whenBrokerOriginalIsLivesimDefault(" + executorImLivesimming + ")";
+		    int channelsPaused = 0;
+		    if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
+		        string msg = "I_REFUSE_TO_RESUME_PUMP_BECAUSE_IT_LEADS_TO_DEADLOCK IM_CLOSING_MAINFORM_WHILE_LIVESIM_IS_RUNNING";
+		        Assembler.PopupException(msg + msig, null, false);
+		        return channelsPaused;
+		    }
 
-			//List<SymbolScaleStream> channels = this.StreamingAdapter.Distributor_replacedForLivesim
-			//    .GetStreams_allScaleIntervals_forSymbol(executorImLivesimming.Bars.Symbol);
-			//foreach (SymbolScaleStream channel in channels) {
-			SymbolChannel<StreamingConsumerChart> channel_nullUnsafe = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
-			if (channel_nullUnsafe == null) return channelsPaused;		// no charts (including the livesimming one) were subscribed
+		    //List<SymbolScaleStream> channels = this.StreamingAdapter.Distributor_replacedForLivesim
+		    //    .GetStreams_allScaleIntervals_forSymbol(executorImLivesimming.Bars.Symbol);
+		    //foreach (SymbolScaleStream channel in channels) {
+		    SymbolChannel<StreamingConsumerChart> channel_nullUnsafe = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(executorImLivesimming.Bars.Symbol);
+		    if (channel_nullUnsafe == null) return channelsPaused;		// no charts (including the livesimming one) were subscribed
 
-			if (channel_nullUnsafe.ImQueueNotPump_trueOnlyForBacktest == true ||
-				channel_nullUnsafe.QueueWhenBacktesting_PumpForLiveAndLivesim.HasSeparatePushingThread == false) {
-				if (wrongUsagePopup == true) {
-					string msg = "WILL_UNPAUSE DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
-					Assembler.PopupException(msg + msig, null, false);
-				}
-				return channelsPaused;
-			}
-			if (channel_nullUnsafe.QuotePump_nullUnsafe.Paused == false) {
-				string msg = "PUMP_ALREADY_UNPAUSED_BY_ANOTHER_LIVESIM";
-				Assembler.PopupException(msg, null, false);
-				return channelsPaused;
-			}
-			channel_nullUnsafe.QuotePump_nullUnsafe.PusherUnpause_waitUntilUnpaused();
-			channelsPaused++;
-			return channelsPaused;
+		    if (channel_nullUnsafe.ImQueueNotPump_trueOnlyForBacktest == true ||
+		        channel_nullUnsafe.QueueWhenBacktesting_PumpForLiveAndLivesim.HasSeparatePushingThread == false) {
+		        if (wrongUsagePopup == true) {
+		            string msg = "WILL_UNPAUSE DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
+		            Assembler.PopupException(msg + msig, null, false);
+		        }
+		        return channelsPaused;
+		    }
+		    if (channel_nullUnsafe.QuotePump_nullUnsafe.Paused == false) {
+		        string msg = "PUMP_ALREADY_UNPAUSED_BY_ANOTHER_LIVESIM";
+		        Assembler.PopupException(msg, null, false);
+		        return channelsPaused;
+		    }
+		    channel_nullUnsafe.QuotePump_nullUnsafe.PusherUnpause_waitUntilUnpaused();
+		    channelsPaused++;
+		    return channelsPaused;
 		}
+		#endregion
 
+		//v2
+		public int LivesimStreaming_PumpsAllPause_forAllSymbolsScales_freezeAllConsumers_whenBrokerOriginalIsReal(ScriptExecutor executorImLivesimming) {
+			string msig = " //LivesimStreaming_PumpsAllPause_forAllSymbolsScales_freezeAllConsumers_whenBrokerOriginalIsReal(" + executorImLivesimming + ")";
+			DistributorCharts distributorCharts = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim;
+			int pumpsPaused = distributorCharts.AllPumpsPause_forAllSymbol_duringLivesimmingOne(msig);
+			return pumpsPaused;
+		}
+		public int LivesimStreaming_PumpsAllResume_forAllSymbolsScales_unfreezeAllConsumers_whenBrokerOriginalIsReal(ScriptExecutor executorImLivesimming) {
+			string msig = " //LivesimStreaming_PumpsAllResume_forAllSymbolsScales_unfreezeAllConsumers_whenBrokerOriginalIsReal(" + executorImLivesimming + ")";
+			DistributorCharts distributorCharts = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim;
+			int pumpsUnpaused = distributorCharts.AllPumpsUnpause_forAllSymbol_afterLivesimmingOne(msig);
+			return pumpsUnpaused;
+		}
 	}
 }
