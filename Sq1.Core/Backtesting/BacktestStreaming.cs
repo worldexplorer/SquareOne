@@ -29,14 +29,59 @@ namespace Sq1.Core.Backtesting {
 			base.DistributorSolidifiers_substitutedDuringLivesim = null;
 		}
 
-		public virtual void PushQuoteGenerated(QuoteGenerated quote) {
+		public virtual void PushQuoteGenerated(QuoteGenerated quoteBoundAttached) {
+			string msig = " //BacktestStreaming.PushQuoteGenerated()" + this.ToString();
+
 			if (this.SpreadModeler == null) {
 				string msg = "Don't leave quoteToReach.Bid and quoteToReach.Ask uninitialized!!!";
 				throw new Exception(msg);
 			}
 			//ALREADY_FILLED_BY_GENERATOR this.SpreadModeler.GeneratedQuoteFillBidAsk(quote, bar2simulate, priceForSymmetricFillAtOpenOrClose);
-			base.PushQuoteReceived(quote);
-			quote.WentThroughStreamingToScript = true;
+			//TOO_MANY_WORKAROUNDS_REQUIRED base.PushQuoteReceived(quote);
+
+			Quote quotePrev = this.StreamingDataSnapshot.GetQuotePrev_forSymbol_nullUnsafe(quoteBoundAttached.Symbol);
+			if (quotePrev == null) {
+				string msg = "QUIK_JUST_CONNECTED_AND_SENDS_NONSENSE[" + quoteBoundAttached + "]";
+				Assembler.PopupException(msg + msig, null, false);
+				this.StreamingDataSnapshot.SetQuoteCurrent_forSymbol_shiftOldToQuotePrev(quoteBoundAttached);
+				return;
+			}
+
+			//v1 HAS_NO_MILLISECONDS_FROM_QUIK if (quote.ServerTime > lastQuote.ServerTime) {
+			//v2 TOO_SENSITIVE_PRINTED_SAME_MILLISECONDS_BUT_STILL_DIFFERENT if (quote.ServerTime.Ticks > lastQuote.ServerTime.Ticks) {
+			string quoteMillis		= quoteBoundAttached.ServerTime.ToString("HH:mm:ss.fff");
+			string quotePrevMillis  = quotePrev.ServerTime.ToString("HH:mm:ss.fff");
+			if (quoteMillis == quotePrevMillis) {
+				string msg = quoteBoundAttached.Symbol + " SERVER_TIMESTAMP_MUST_INCREASE_EACH_NEXT_INCOMING_QUOTE QUIK_OR_BACKTESTER_FORGOT_TO_INCREASE"
+					+ " quoteMillis[" + quoteMillis + "] <="
+					+ " quoteLastMillis[" + quotePrevMillis + "]"
+					+ ": DDE lagged somewhere?..."
+					;
+				Assembler.PopupException(msg + msig, null, false);
+				return;
+			}
+
+
+			string reasonMarketIsClosedNow  = this.DataSource.MarketInfo.GetReason_ifMarket_closedOrSuspended_at(quoteBoundAttached.ServerTime);
+			if (string.IsNullOrEmpty(reasonMarketIsClosedNow) == false) {
+				string msg = "[" + this.DataSource.MarketInfo.Name + "]NOT_PUSHING_QUOTE " + reasonMarketIsClosedNow + " quote=[" + quoteBoundAttached + "]";
+				Assembler.PopupException(msg + msig, null, false);
+				Assembler.DisplayStatus(msg + msig);
+				return;
+			}
+
+			if (quoteBoundAttached.Size > 0) {
+				this.StreamingDataSnapshot.SetQuoteCurrent_forSymbol_shiftOldToQuotePrev(quoteBoundAttached);
+			}
+
+			try {
+				this.DistributorCharts_substitutedDuringLivesim.Push_quoteUnboundUnattached_toChannel(quoteBoundAttached);
+			} catch (Exception ex) {
+				string msg = "CHART_OR_STRATEGY__FAILED_INSIDE Distributor.PushQuoteToDistributionChannels(" + quoteBoundAttached + ")";
+				Assembler.PopupException(msg + msig, ex);
+			}
+			
+			quoteBoundAttached.WentThroughStreamingToScript = true;
 		}
 
 		public override void UpstreamSubscribe(string symbol) {

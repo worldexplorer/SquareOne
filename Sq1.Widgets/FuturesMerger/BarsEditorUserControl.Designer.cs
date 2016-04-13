@@ -38,8 +38,10 @@
 			this.rangeBar = new Sq1.Widgets.RangeBar.RangeBarDateTime();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.btnSave = new System.Windows.Forms.ToolStripButton();
-			this.btnShowRange = new System.Windows.Forms.ToolStripButton();
-			this.btnShowDatasources = new System.Windows.Forms.ToolStripButton();
+			this.cbxShowRange = new System.Windows.Forms.ToolStripButton();
+			this.cbxShowDatasources = new System.Windows.Forms.ToolStripButton();
+			this.btnReload = new System.Windows.Forms.ToolStripButton();
+			this.cbxRevert = new System.Windows.Forms.ToolStripButton();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -172,35 +174,35 @@
 			this.olvcOpen.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcOpen.Text = "Open";
 			this.olvcOpen.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcOpen.Width = 55;
+			this.olvcOpen.Width = 65;
 			// 
 			// olvcHigh
 			// 
 			this.olvcHigh.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcHigh.Text = "High";
 			this.olvcHigh.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcHigh.Width = 55;
+			this.olvcHigh.Width = 65;
 			// 
 			// olvcLow
 			// 
 			this.olvcLow.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcLow.Text = "Low";
 			this.olvcLow.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcLow.Width = 55;
+			this.olvcLow.Width = 65;
 			// 
 			// olvcClose
 			// 
 			this.olvcClose.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcClose.Text = "Close";
 			this.olvcClose.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcClose.Width = 55;
+			this.olvcClose.Width = 65;
 			// 
 			// olvcVolume
 			// 
 			this.olvcVolume.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcVolume.Text = "Volume";
 			this.olvcVolume.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcVolume.Width = 55;
+			this.olvcVolume.Width = 65;
 			// 
 			// rangeBar
 			// 
@@ -229,8 +231,10 @@
 			this.statusStrip1.BackColor = System.Drawing.SystemColors.Control;
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnSave,
-            this.btnShowRange,
-            this.btnShowDatasources});
+            this.cbxShowRange,
+            this.cbxShowDatasources,
+            this.btnReload,
+            this.cbxRevert});
 			this.statusStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
 			this.statusStrip1.Location = new System.Drawing.Point(0, 198);
 			this.statusStrip1.Name = "statusStrip1";
@@ -242,35 +246,57 @@
 			// 
 			// btnSave
 			// 
+			this.btnSave.Enabled = false;
 			this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.btnSave.Name = "btnSave";
 			this.btnSave.Size = new System.Drawing.Size(35, 20);
 			this.btnSave.Text = "Save";
 			this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
 			// 
-			// btnShowRange
+			// cbxShowRange
 			// 
-			this.btnShowRange.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.btnShowRange.Checked = true;
-			this.btnShowRange.CheckOnClick = true;
-			this.btnShowRange.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.btnShowRange.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.btnShowRange.Name = "btnShowRange";
-			this.btnShowRange.Size = new System.Drawing.Size(52, 20);
-			this.btnShowRange.Text = "Preview";
-			this.btnShowRange.Click += new System.EventHandler(this.btnShowRange_Click);
+			this.cbxShowRange.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.cbxShowRange.Checked = true;
+			this.cbxShowRange.CheckOnClick = true;
+			this.cbxShowRange.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbxShowRange.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.cbxShowRange.Name = "cbxShowRange";
+			this.cbxShowRange.Size = new System.Drawing.Size(52, 20);
+			this.cbxShowRange.Text = "Preview";
+			this.cbxShowRange.Click += new System.EventHandler(this.cbxShowRange_Click);
 			// 
-			// btnShowDatasources
+			// cbxShowDatasources
 			// 
-			this.btnShowDatasources.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.btnShowDatasources.Checked = true;
-			this.btnShowDatasources.CheckOnClick = true;
-			this.btnShowDatasources.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.btnShowDatasources.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.btnShowDatasources.Name = "btnShowDatasources";
-			this.btnShowDatasources.Size = new System.Drawing.Size(76, 20);
-			this.btnShowDatasources.Text = "DataSources";
-			this.btnShowDatasources.Click += new System.EventHandler(this.btnShowDatasources_Click);
+			this.cbxShowDatasources.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.cbxShowDatasources.Checked = true;
+			this.cbxShowDatasources.CheckOnClick = true;
+			this.cbxShowDatasources.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbxShowDatasources.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.cbxShowDatasources.Name = "cbxShowDatasources";
+			this.cbxShowDatasources.Size = new System.Drawing.Size(76, 20);
+			this.cbxShowDatasources.Text = "DataSources";
+			this.cbxShowDatasources.Click += new System.EventHandler(this.cbxShowDatasources_Click);
+			// 
+			// btnReload
+			// 
+			this.btnReload.Enabled = false;
+			this.btnReload.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.btnReload.Name = "btnReload";
+			this.btnReload.Size = new System.Drawing.Size(47, 20);
+			this.btnReload.Text = "Reload";
+			this.btnReload.Click += new System.EventHandler(this.btnReload_Click);
+			// 
+			// cbxRevert
+			// 
+			this.cbxRevert.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.cbxRevert.Checked = true;
+			this.cbxRevert.CheckOnClick = true;
+			this.cbxRevert.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbxRevert.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.cbxRevert.Name = "cbxRevert";
+			this.cbxRevert.Size = new System.Drawing.Size(44, 20);
+			this.cbxRevert.Text = "Revert";
+			this.cbxRevert.Click += new System.EventHandler(this.cbxRevert_Click);
 			// 
 			// BarsEditorUserControl
 			// 
@@ -312,9 +338,11 @@
 		private RangeBar.RangeBarDateTime rangeBar;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		public System.Windows.Forms.ToolStripButton btnSave;
-		public System.Windows.Forms.ToolStripButton btnShowDatasources;
-		public System.Windows.Forms.ToolStripButton btnShowRange;
+		public System.Windows.Forms.ToolStripButton cbxShowDatasources;
+		public System.Windows.Forms.ToolStripButton cbxShowRange;
 		private BrightIdeasSoftware.OLVColumn olvcSerno;
 		private BrightIdeasSoftware.OLVColumn olvcFirstUnalignable;
+		public System.Windows.Forms.ToolStripButton btnReload;
+		public System.Windows.Forms.ToolStripButton cbxRevert;
 	}
 }

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Sq1.Core.Serializers {
 	// http://stackoverflow.com/questions/1727346/what-is-the-use-of-default-keyword-in-c
 	public class Serializer<T> where T : new() {
-		public	string			OfWhat			{ get { return typeof(T).Name; } }
+		public	string			OfWhat			{ get; private set; }
 		
 		public	string			RootPath		{ get; protected set; }
 		public	string			Subfolder		{ get; protected set; }
@@ -32,6 +32,7 @@ namespace Sq1.Core.Serializers {
 
 		public Serializer() {
 			this.EntityDeserialized = new T();
+			OfWhat = typeof(T).Name;
 		}
 		public bool Initialize(string rootPath, string relFname,
 					string subfolder = "Workspaces", string workspaceName = "Default",

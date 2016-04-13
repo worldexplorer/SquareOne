@@ -154,7 +154,7 @@ namespace Sq1.Core.Execution {
 		[JsonIgnore]	public	string				IsAlertCreatedOnPreviousBar		{ get {
 				string ret = "";
 				DateTime serverTimeNow = this.Bars.MarketInfo.ServerTimeNow;
-				DateTime nextBarOpen = this.PlacedBar.DateTimeNextBarOpenUnconditional;
+				DateTime nextBarOpen = this.PlacedBar.DateTime_nextBarOpen_unconditional;
 				bool alertIsNotForCurrentBar = (serverTimeNow >= nextBarOpen);
 				if (alertIsNotForCurrentBar) {
 					ret = "serverTimeNow[" + serverTimeNow + "] >= nextBarOpen[" + nextBarOpen + "]";

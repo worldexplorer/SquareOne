@@ -13,11 +13,19 @@ namespace Sq1.Widgets.FuturesMerger {
 			this.barsCloned.Save();
 		}
 
-		void btnShowDatasources_Click(object sender, System.EventArgs e) {
-			 this.dataSourcesTreeCollapsed = !this.btnShowDatasources.Checked;
+		void btnReload_Click(object sender, EventArgs e) {
+			this.reload();
 		}
-		void btnShowRange_Click(object sender, System.EventArgs e) {
-			 this.barsRangeCollapsed = !this.btnShowRange.Checked;
+
+		void cbxRevert_Click(object sender, EventArgs e) {
+			this.barsDescending = this.cbxRevert.Checked;
+			this.reload();
+		}
+		void cbxShowDatasources_Click(object sender, System.EventArgs e) {
+			 this.dataSourcesTreeCollapsed = !this.cbxShowDatasources.Checked;
+		}
+		void cbxShowRange_Click(object sender, System.EventArgs e) {
+			 this.barsRangeCollapsed = !this.cbxShowRange.Checked;
 		}
 		void dataSourcesTreeControl_OnSymbolSelected(object sender, DataSourceSymbolEventArgs e) {
 			this.LoadBars(e.DataSource.Name, e.Symbol);

@@ -99,7 +99,7 @@ namespace Sq1.Core.Repositories {
 			string msig = " barAppendStatic(" + barLastFormed + ")=>[" + this.Abspath + "]";
 
 			try {
-				barLastFormed.CheckOHLCVthrow();	//	catching the exception will display stacktrace in ExceptionsForm
+				barLastFormed.CheckThrow_valuesOkay();	//	catching the exception will display stacktrace in ExceptionsForm
 			} catch (Exception ex) {
 				string msg = "NOT_APPENDING_TO_FILE_THIS_BAR__FIX_WHO_GENERATED_IT_UPSTACK barAllZeroes barLastFormed[" + barLastFormed + "]";
 				Assembler.PopupException(msg + msig, ex, false);

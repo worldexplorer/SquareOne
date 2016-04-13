@@ -308,17 +308,37 @@ namespace Sq1.Widgets.CsvImporter {
 			return ret;
 		}
 
-		List<CsvBar> csvParsedByFormat;
-		Bars barsParsed;
-		Bars barsParsed_rangeSelectedForImport;
-		string symbolDetectedInCsv;
-		BarScaleInterval scaleIntervalDetectedInCsv;
-		BarScaleInterval scaleIntervalMinimalScanned;
+
+		List<CsvBar>		csvParsedByFormat;
+		Bars				barsParsed;
+		Bars				barsParsed_rangeSelectedForImport;
+		string				symbolDetectedInCsv;
+		BarScaleInterval	scaleIntervalDetectedInCsv;
+		BarScaleInterval	scaleIntervalMinimalScanned;
+
 		void step4createBarsDisplayChart() {
+			string msig = " //CsvImporterControl.btnImport_Click()";
+			int			barsRead_total = 0;
+			List<int>	barsIndexes_failedOHLCVcheck = new List<int>();
+			string		msg_barsFailed = "";
+
 			this.barsParsed = new Bars(this.symbolDetectedInCsv, this.scaleIntervalDetectedInCsv, this.csvDataSnapshot.FileSelectedAbsname);
 			//BarsUnscaled barsParsed = new BarsUnscaled(symbol, this.dataSnapshot.FileSelectedAbsname);
 			foreach (CsvBar csvBar in this.csvParsedByFormat) {
-				this.barsParsed.BarStatic_createAppendAttach(csvBar.DateTime, csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume);
+				barsRead_total++;
+				try {
+					Bar barAdded = this.barsParsed.BarStatic_createAppendAttach(csvBar.DateTime,
+						csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume, true);
+				} catch (Exception exception_DateOHLCV_NaNs__orZeroes) {
+					barsIndexes_failedOHLCVcheck.Add(barsRead_total-1);
+				}
+			}
+
+			if (barsIndexes_failedOHLCVcheck.Count > 0) {
+				string barsIndexes_failedOHLCVcheck_asString = string.Join(",", barsIndexes_failedOHLCVcheck);
+				msg_barsFailed = "CSV_PARTIALLY_UNPARSEABLE BARS_NANs_OR_ZEROes"
+					+ " indexes[" + barsIndexes_failedOHLCVcheck_asString + "] of barsReadTotal[" + barsRead_total + "]";
+				Assembler.PopupException(msg_barsFailed + msig, null, false);
 			}
 
 			this.bars_selectRange_flushToGui(new BarDataRange());

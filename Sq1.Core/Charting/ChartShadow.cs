@@ -183,7 +183,8 @@ namespace Sq1.Core.Charting {
 		// RELEASE_DOESNT_REPAINT_CHART_LIVESIM_DELAYED ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
 		public virtual void InvalidateAllPanels() { }
 		//public virtual void RefreshAllPanelsNonBlockingRefreshNotYetStarted() { }
-		public virtual void PushQuote_LevelTwoFrozen_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll() { }
+		public virtual void PushQuote_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll() { }
+		public virtual void PushLevelTwoFrozen_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll(LevelTwoFrozen levelTwoFrozen) { }
 		#endregion
 
 
@@ -236,8 +237,11 @@ namespace Sq1.Core.Charting {
 				return;
 			}
 			if (base.ParentForm.Text.Contains("PAUSED")) {
-				string msg = "1) DID_UNDUPLICATION_WORK? 2) DONT_NOTIFY_CHART_IM_LIVESIMMING_YOU_PAUSED_REPLACED_DISTRIBUTOR";
-				Assembler.PopupException(msg);
+				string msg = "I_PAUSE_TWICE__KOZ_EACH_CHART_HAS_PUMPQUOTE_AND_PUMPLEVEL2"
+					//+ " 1) DID_UNDUPLICATION_WORK? 2) DONT_NOTIFY_CHART_IM_LIVESIMMING_YOU_PAUSED_REPLACED_DISTRIBUTOR"
+					;
+				//Assembler.PopupException(msg);
+				return;
 			}
 			this.prePauseWindowsTitle = base.ParentForm.Text;
 			base.ParentForm.Text = "PAUSED " + this.prePauseWindowsTitle;

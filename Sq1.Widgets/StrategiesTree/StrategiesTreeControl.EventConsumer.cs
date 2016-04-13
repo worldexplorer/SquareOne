@@ -187,7 +187,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			string stringUserTyped = e.StringUserTyped;
 			if (this.FolderSelected == stringUserTyped) return;
 			try {
-				stringUserTyped = this.strategyRepository.FolderRenameModifyNameTillNoException(this.FolderSelected, stringUserTyped);
+				stringUserTyped = this.strategyRepository.FolderRename_modifyName_tillNoException(this.FolderSelected, stringUserTyped);
 				this.strategyRepository.FolderRename(this.FolderSelected, stringUserTyped);
 				this.FolderSelected = stringUserTyped;
 				this.tree.SetObjects(this.strategyRepository.AllFoldersAvailable);
@@ -234,7 +234,7 @@ namespace Sq1.Widgets.StrategiesTree {
 				// used just edited folder name
 				if (this.FolderSelected == e.NewValue.ToString()) return;
 				try {
-					e.NewValue = this.strategyRepository.FolderRenameModifyNameTillNoException(this.FolderSelected, e.NewValue.ToString());
+					e.NewValue = this.strategyRepository.FolderRename_modifyName_tillNoException(this.FolderSelected, e.NewValue.ToString());
 					this.strategyRepository.FolderRename(this.FolderSelected, e.NewValue.ToString());
 					this.FolderSelected = e.NewValue.ToString();
 					this.tree.SetObjects(this.strategyRepository.AllFoldersAvailable);

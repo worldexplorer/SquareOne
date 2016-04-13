@@ -43,7 +43,7 @@ namespace Sq1.Core.Repositories {
 			itemCandidate.Initialize(base.AbsPath, this.OrderProcessor);
 			//v1 WILL_DELETES_BAR_FILE_IF_RENAME_FAILS itemCandidate.CreateDeleteBarFilesToSymbolsDeserialized();
 			//v2 
-			itemCandidate.SymbolsRebuildReadDataSourceSubFolderAfterDeserialization();
+			itemCandidate.SymbolsRebuild_readDataSourceSubFolder_afterDeserialization();
 		}
 		public override void ItemDeleteCascade(DataSource itemStored, object sender = null) {
 			itemStored.DataSourceFolderDeleteWithSymbols();
@@ -54,36 +54,26 @@ namespace Sq1.Core.Repositories {
 			return itemToRename.DataSourceFolderRename(newName);
 		}
 
+		public void SymbolAdd(DataSource dataSource, string symbolToAdd, object sender = null, bool skipSerialize_invokerWillSerialize_atTheEndOfBactchUpdate = false) {
+			if (sender == null) sender = this;
+			string msig = " RepositoryJsonDataSource.SymbolAdd(" + dataSource + ", " + symbolToAdd + "): ";
+			try {
+				dataSource.SymbolAdd(symbolToAdd);
+				if (skipSerialize_invokerWillSerialize_atTheEndOfBactchUpdate == false) {
+					base.SerializeSingle(dataSource);
+				}
+				this.RaiseOnSymbolAdded(sender, dataSource, symbolToAdd);
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			}
+		}
 		public DataSourceSymbolEventArgs SymbolCanBeDeleted(DataSource dataSource, string symbolToDelete, object sender = null) {
 			if (sender == null) sender = this;
 			var args = new DataSourceSymbolEventArgs(dataSource, symbolToDelete);
 			this.RaiseOnSymbolCanBeDeleted(sender, args);
 			return args;
 		}
-		public void SymbolAdd(DataSource dataSource, string symbolToAdd, object sender = null) {
-			if (sender == null) sender = this;
-			string msig = " RepositoryJsonDataSource.SymbolAdd(" + dataSource + ", " + symbolToAdd + "): ";
-			try {
-				dataSource.SymbolAdd(symbolToAdd);
-				base.SerializeSingle(dataSource);
-				this.RaiseOnSymbolAdded(sender, dataSource, symbolToAdd);
-			} catch (Exception ex) {
-				Assembler.PopupException(msig, ex);
-			}
-		}
-		public void SymbolRename(DataSource dataSource, string oldSymbolName, string newSymbolName, object sender = null) {
-			if (sender == null) sender = this;
-			string msig = " RepositoryJsonDataSource.SymbolRename(" + dataSource + ", " + oldSymbolName + "): ";
-			try {
-				dataSource.SymbolRename(oldSymbolName, newSymbolName);
-				base.SerializeSingle(dataSource);
-				// invoking the callback for DataSourcesTreeControl to repaint successfully renamed symbol
-				this.RaiseOnSymbolRenamed(sender, dataSource, newSymbolName, oldSymbolName);
-			} catch (Exception ex) {
-				Assembler.PopupException(msig, ex);
-			}
-		}
-		public void SymbolRemove(DataSource dataSource, string symbolToDelete, object sender = null) {
+		public void SymbolRemove(DataSource dataSource, string symbolToDelete, object sender = null, bool skipSerialize_invokerWillSerialize_atTheEndOfBactchUpdate = false) {
 			if (sender == null) sender = this;
 			string msig = " RepositoryJsonDataSource.SymbolRemove(" + symbolToDelete + "): ";
 			DataSourceSymbolEventArgs args = null;
@@ -99,12 +89,26 @@ namespace Sq1.Core.Repositories {
 			}
 			// sorry for the mess
 			try {
-				base.SerializeSingle(dataSource);
+				if (skipSerialize_invokerWillSerialize_atTheEndOfBactchUpdate == false) {
+					base.SerializeSingle(dataSource);
+				}
 				if (args != null) {
 					// since you answered DataSourceEventArgs.DoNotDeleteThisDataSourceBecauseItsUsedElsewhere=false,
 					// you were aware that OnItemRemovedDone is invoked on a detached object
 					this.RaiseOnSymbolRemovedDone(sender, args);
 				}
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			}
+		}
+		public void SymbolRename(DataSource dataSource, string oldSymbolName, string newSymbolName, object sender = null) {
+			if (sender == null) sender = this;
+			string msig = " RepositoryJsonDataSource.SymbolRename(" + dataSource + ", " + oldSymbolName + "): ";
+			try {
+				dataSource.SymbolRename(oldSymbolName, newSymbolName);
+				base.SerializeSingle(dataSource);
+				// invoking the callback for DataSourcesTreeControl to repaint successfully renamed symbol
+				this.RaiseOnSymbolRenamed(sender, dataSource, newSymbolName, oldSymbolName);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			}

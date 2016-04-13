@@ -19,6 +19,7 @@ namespace Sq1.Core.DataTypes {
 
 		public LevelTwo(string symbolPassed, string reasonToExist) : base(reasonToExist) {
 			this.symbol = symbolPassed;
+			this.symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(this.symbol);
 			this.asks = new LevelTwoHalf("LevelTwoAsks[" + this.symbol + "] " + reasonToExist);
 			this.bids = new LevelTwoHalf("LevelTwoBids[" + this.symbol + "] " + reasonToExist);
 		}
@@ -76,18 +77,18 @@ namespace Sq1.Core.DataTypes {
 
 								SymbolInfo		symbolInfo;
 
-		public LevelTwo(LevelTwoHalf levelTwoBids, LevelTwoHalf levelTwoAsks, SymbolInfo symbolInfoPassed, string reasonToExist) : base(reasonToExist) {
-			if (levelTwoBids == null || levelTwoAsks == null || symbolInfoPassed == null) {
-				string msg = ""
-					+ " ref:DdeTableDepth_MANUALLY_RAISED_EVENT_WITH_EMPTY_LIST_TO_CLEAR_EVERYTHING_IN_DDE_MONITOR_(QUOTES/LEVEL2/TRADES)_RIGHT_AFTER_USER_STOPPED_DDE_FEED";
-				Assembler.PopupException(msg);
-				throw new Exception(msg);
-			}
-			this.bids = levelTwoBids;
-			this.asks = levelTwoAsks;
-			//if (symbolInfoPassed == null) symbolInfoPassed = new SymbolInfo();	// just for cleaning DomControl after manual user-dde-stop; nothing is gonna be outputted so I don't care; avoiding NPE
-			this.symbolInfo = symbolInfoPassed;
-		}
+		//public LevelTwo(LevelTwoHalf levelTwoBids, LevelTwoHalf levelTwoAsks, SymbolInfo symbolInfoPassed, string reasonToExist) : this(symbolInfoPassed, reasonToExist) {
+		//    if (levelTwoBids == null || levelTwoAsks == null || symbolInfoPassed == null) {
+		//        string msg = ""
+		//            + " ref:DdeTableDepth_MANUALLY_RAISED_EVENT_WITH_EMPTY_LIST_TO_CLEAR_EVERYTHING_IN_DDE_MONITOR_(QUOTES/LEVEL2/TRADES)_RIGHT_AFTER_USER_STOPPED_DDE_FEED";
+		//        Assembler.PopupException(msg);
+		//        throw new Exception(msg);
+		//    }
+		//    this.bids = levelTwoBids;
+		//    this.asks = levelTwoAsks;
+		//    //if (symbolInfoPassed == null) symbolInfoPassed = new SymbolInfo();	// just for cleaning DomControl after manual user-dde-stop; nothing is gonna be outputted so I don't care; avoiding NPE
+		//    this.symbolInfo = symbolInfoPassed;
+		//}
 
 		public List<LevelTwoEachLine> FrozenSortedFlattened_priceLevelsInserted_forOlv { get {
 			List<LevelTwoEachLine> ret = new List<LevelTwoEachLine>();

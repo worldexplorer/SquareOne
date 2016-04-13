@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;		// Process.Start(target);
+using System.Collections.Generic;
 
 using BrightIdeasSoftware;
 
@@ -127,6 +128,7 @@ namespace Sq1.Widgets.CsvImporter {
 			this.step3safe();
 		}
 		void btnImport_Click(object sender, EventArgs e) {
+			string msig = " //CsvImporterControl.btnImport_Click()";
 			Cursor.Current = Cursors.WaitCursor;
 			try {
 				if (this.targetDataSource == null) {
@@ -149,9 +151,26 @@ namespace Sq1.Widgets.CsvImporter {
 				}
 
 				if (this.targetSymbolClicked != this.barsParsed.Symbol) {
+					int			barsRead_total = 0;
+					List<int>	barsIndexes_failedOHLCVcheck = new List<int>();
+					string		msg_barsFailed = "";
+
 					this.barsParsed = new Bars(symbolClickedThenDetected, this.barsParsed.ScaleInterval, this.barsParsed.ReasonToExist);
 					foreach (CsvBar csvBar in this.csvParsedByFormat) {
-						this.barsParsed.BarStatic_createAppendAttach(csvBar.DateTime, csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume);
+						barsRead_total++;
+						try {
+							Bar barAdded = this.barsParsed.BarStatic_createAppendAttach(csvBar.DateTime,
+								csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume, true);
+						} catch (Exception exception_DateOHLCV_NaNs__orZeroes) {
+							barsIndexes_failedOHLCVcheck.Add(barsRead_total-1);
+						}
+					}
+
+					if (barsIndexes_failedOHLCVcheck.Count > 0) {
+						string barsIndexes_failedOHLCVcheck_asString = string.Join(",", barsIndexes_failedOHLCVcheck);
+						msg_barsFailed = "CSV_PARTIALLY_UNPARSEABLE BARS_NANs_OR_ZEROes"
+							+ " indexes[" + barsIndexes_failedOHLCVcheck_asString + "] of barsReadTotal[" + barsRead_total + "]";
+						Assembler.PopupException(msg_barsFailed + msig, null, false);
 					}
 				}
 				bool overwrote = true;

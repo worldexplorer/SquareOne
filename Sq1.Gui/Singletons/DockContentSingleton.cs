@@ -50,12 +50,6 @@ namespace Sq1.Gui.Singletons {
 				}
 				return DockContentSingleton<T>.instance;
 			} }
-//		public string OfWhat { get {
-//				string ret = "UNKNOWN";
-//				var args = this.GetType().GetGenericArguments();
-//				if (args.Length > 0) ret = args[0].Name;
-//				return ret;
-//			} }
 		public string OfWhat { get { return typeof(T).Name; } }
 		
 		public DockContentSingleton() : base() {

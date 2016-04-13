@@ -9,11 +9,16 @@ using Sq1.Core.Livesim;
 namespace Sq1.Core.Streaming {
 	public class QueuePerSymbol<QUOTE, STREAMING_CONSUMER_CHILD>
 								 where STREAMING_CONSUMER_CHILD : StreamingConsumer {
-		const string THREAD_PREFIX = "QUEUE_";	//SINGLE_THREADED_FOR_
 
-		//v1 BEFORE_STREAM_WENT_GENERIC
+		static		string THREAD_PREFIX_QUEUE	= "QUEUE";	//SINGLE_THREADED_FOR_
+		protected	string ScaleInterval_DSN	= "UNKNOWN_ScaleInterval_DSN";
+		protected	string ReasonChannelExists	= "UNKNOWN_ReasonChannelExists";
+
+		public		string OfWhat		{ get; private set; }
+		public		string ConsumerType	{ get; private set; }
+
 		protected	SymbolChannel<STREAMING_CONSUMER_CHILD>				SymbolChannel;
-		protected	ConcurrentQueue<QUOTE>		QQ;
+		protected	ConcurrentQueue<QUOTE>		ConQ;
 					Stopwatch					waitedForBacktestToFinish;
 
 		public			bool					UpdateThreadNameAfterMaxConsumersSubscribed;
@@ -26,55 +31,88 @@ namespace Sq1.Core.Streaming {
 				#endif
 				throw new Exception(msg); } }
 
-		//v1 BEFORE_STREAM_WENT_GENERIC
 		public QueuePerSymbol(SymbolChannel<STREAMING_CONSUMER_CHILD> channel) {
-		//public QueuePerSymbol() {
-			QQ							= new ConcurrentQueue<QUOTE>();
+			ConQ						= new ConcurrentQueue<QUOTE>();
 			waitedForBacktestToFinish	= new Stopwatch();
-			//UpdateThreadNameAfterMaxConsumersSubscribed = true;
-			//v1 BEFORE_STREAM_WENT_GENERIC 
-			SymbolChannel				= channel;
-		}
-		public virtual int Push_straightOrBuffered(QUOTE quote_singleInstance_tillStreamBindsAll) {
-			if (this.QQ.Count != 0) {
-				string msg = "MUST_BE_EMPTY__NOW_HAS_[" + this.QQ.Count + "] QUEUE_IS_NOT_FULLY_USED_IN_SINGLE_THREADED";
+
+			OfWhat						= typeof(QUOTE).Name;
+			ConsumerType				= typeof(STREAMING_CONSUMER_CHILD).Name.Replace("StreamingConsumer", "");
+			if (typeof(QUOTE) == typeof(LevelTwoFrozen) && typeof(STREAMING_CONSUMER_CHILD) == typeof(StreamingConsumerSolidifier)) {
+				string msg = "DONT_SUBSCRIBE_SOLIDIFIERS_TO_LEVEL_TWO";
 				Assembler.PopupException(msg);
 			}
-			this.SymbolChannel.PushQuote_toStreams(quote_singleInstance_tillStreamBindsAll as Quote);
+
+			SymbolChannel				= channel;
+			if (	this.SymbolChannel != null &&
+					this.SymbolChannel.Distributor != null &&
+					this.SymbolChannel.Distributor.StreamingAdapter != null &&
+					this.SymbolChannel.Distributor.StreamingAdapter.DataSource != null) {
+				this.ScaleInterval_DSN = this.SymbolChannel.Distributor.StreamingAdapter.DataSource.ScaleInterval_DSN;
+				this.ScaleInterval_DSN = "(" + this.SymbolChannel.Symbol + ":" + this.ScaleInterval_DSN + ")";
+				this.ReasonChannelExists = this.SymbolChannel.ReasonIwasCreated_propagatedFromDistributor;
+			}
+		}
+		public virtual int Push_straightOrBuffered_QuotesOrLevels2(QUOTE quote_singleInstance_tillStreamBindsAll__orLevelTwoFrozen) {
+			string msig = " //Push_straightOrBuffered_QuotesOrLevels2" + this.ToString();
+
+			if (this.ConQ.Count != 0) {
+				string msg = "MUST_BE_EMPTY__NOW_HAS_[" + this.ConQ.Count + "] QUEUE_IS_NOT_FULLY_USED_IN_SINGLE_THREADED";
+				Assembler.PopupException(msg);
+			}
+
+			// any better solution? (enough of abstract/overridden)
+			if (this.OfWhat == typeof(Quote).Name) {
+				this.SymbolChannel.PushQuote_toStreams(quote_singleInstance_tillStreamBindsAll__orLevelTwoFrozen as Quote);
+			} else if (this.OfWhat == typeof(LevelTwoFrozen).Name) {
+				this.SymbolChannel.PushLevelTwoFrozen_toStreams(quote_singleInstance_tillStreamBindsAll__orLevelTwoFrozen as LevelTwoFrozen);
+			} else {
+				string msg = "I_REFUSE_TO_PUSH_TO_STREAMS__NO_HANDLER_FOR this.OfWhat[" + this.OfWhat + "]";
+				Assembler.PopupException(msg + msig);
+			}
 			return 1;
 		}
-		protected int FlushQuotesQueued() {
-			string msig = this.ToString();
+		protected int FlushQueued_QuotesOrLevels2() {
+			string msig = " //FlushQueued_QuotesOrLevels2" + this.ToString();
 
-			int quotesCollected = this.QQ.Count;
-			if (quotesCollected == 0) return -1;
+			int itemsCollected = this.ConQ.Count;
+			if (itemsCollected == 0) return -1;
 
-			if (quotesCollected > 1) {
+			if (itemsCollected > 1) {
 				this.waitedForBacktestToFinish.Restart();
 			}
-			int quotesProcessed = 0;
+			int itemsProcessed = 0;
 			int customerCalls = 0;
-			QUOTE quoteDequeued_singleInstance_tillStreamBindsAll;
-			while (this.QQ.TryDequeue(out quoteDequeued_singleInstance_tillStreamBindsAll)) {
+			QUOTE quoteDequeued_singleInstance_tillStreamBindsAll__orLevel2;
+			while (this.ConQ.TryDequeue(out quoteDequeued_singleInstance_tillStreamBindsAll__orLevel2)) {
 				try {
-					this.SymbolChannel.PushQuote_toStreams(quoteDequeued_singleInstance_tillStreamBindsAll as Quote);
-					quotesProcessed++;
+
+					// any better solution? (enough of abstract/overridden)
+					if (this.OfWhat == typeof(Quote).Name) {
+						this.SymbolChannel.PushQuote_toStreams(quoteDequeued_singleInstance_tillStreamBindsAll__orLevel2 as Quote);
+					} else if (this.OfWhat == typeof(LevelTwoFrozen).Name) {
+						this.SymbolChannel.PushLevelTwoFrozen_toStreams(quoteDequeued_singleInstance_tillStreamBindsAll__orLevel2 as LevelTwoFrozen);
+					} else {
+						string msg = "I_REFUSE_TO_PUSH_TO_STREAMS__NO_HANDLER_FOR this.OfWhat[" + this.OfWhat + "]";
+						Assembler.PopupException(msg + msig);
+					}
+
+					itemsProcessed++;
 					customerCalls += this.SymbolChannel.ConsumersBarCount + this.SymbolChannel.ConsumersQuoteCount;
 				} catch (Exception ex) {
-					string msg2 = "CONSUMER_FAILED_TO_DIGEST_QUOTE recipient[" + this.SymbolChannel.ToString()
-						+ "] quoteDequeued_clonedUboundUnattached[" + quoteDequeued_singleInstance_tillStreamBindsAll.ToString() + "]";
+					string msg2 = "CONSUMER_FAILED_TO_DIGEST_QUOTE SymbolChannel[" + this.SymbolChannel.ToString()
+						+ "] quoteDequeued_singleInstance_tillStreamBindsAll__orLevel2[" + quoteDequeued_singleInstance_tillStreamBindsAll__orLevel2.ToString() + "]";
 					Assembler.PopupException(msg2 + msig, ex, true);
 					continue;
 				}
 			}
-			if (quotesCollected > 1) {
+			if (itemsCollected > 1) {
 				this.waitedForBacktestToFinish.Stop();
-				string msg = "QUOTES_BACKLOG_DRAINED [" + this.waitedForBacktestToFinish.ElapsedMilliseconds + "]ms"
+				string msg = "BACKLOG_DRAINED [" + this.waitedForBacktestToFinish.ElapsedMilliseconds + "]ms"
 					+ " customerCalls[" + customerCalls + "]"
-					+ " qCollected[" + quotesCollected + "] qProcessed[" + quotesProcessed + "]";
+					+ " itemsCollected[" + itemsCollected + "] itemsCollected[" + itemsCollected + "]";
 				Assembler.PopupException(msg + msig, null, false);
 			}
-			return quotesProcessed;
+			return itemsProcessed;
 		}
 
 		public virtual void PusherPause_waitUntilPaused(int waitUntilPaused_millis = -1) {
@@ -117,19 +155,31 @@ namespace Sq1.Core.Streaming {
 			//if (Thread.CurrentThread.Name == msig) return;
 			if (msig.Contains("UNKNOWN")) return;
 
-			if (this.SymbolChannel.ConsumersBarCount == 0) {
-				string msg = "INVOKE_ME_LATER_SO_THAT_THREAD_NAME_WILL_CONTAIN_CONSUMER_NAMES_AS_WELL ";
-				//Assembler.PopupException(msg + msig, null, false);
-				return;
-			} else {
-				string msg = "YEAH_NOW_IS_BETTER_TIME_TO_SET_THREAD_NAME__WILL_CONTAIN_CONSUMER_NAMES_AS_WELL ";
-				//Assembler.PopupException(msg + msig, null, false);
-			}
+			// Pump doesn't contain name of the consumers anymore
+			//if (this.SymbolChannel.ConsumersBarCount == 0) {
+			//    string msg = "INVOKE_ME_LATER_SO_THAT_THREAD_NAME_WILL_CONTAIN_CONSUMER_NAMES_AS_WELL ";
+			//    //Assembler.PopupException(msg + msig, null, false);
+			//    return;
+			//} else {
+			//    string msg = "YEAH_NOW_IS_BETTER_TIME_TO_SET_THREAD_NAME__WILL_CONTAIN_CONSUMER_NAMES_AS_WELL ";
+			//    //Assembler.PopupException(msg + msig, null, false);
+			//}
 
 			Assembler.SetThreadName(msig, "SUBSCRIBERS_ADDED_BUT_Thread.CurrentThread.Name_WAS_ALREADY_SET__REMOVE_THE_FIRST_INVOCATION", false);
 
 			return;
 		}
-		public override string ToString() { return THREAD_PREFIX + this.SymbolChannel.ConsumerNames; }
+
+		protected string AsString_cached;
+		public override string ToString() {
+			if (string.IsNullOrEmpty(this.AsString_cached) == false) return this.AsString_cached;
+
+			string ret = QueuePerSymbol<QUOTE, STREAMING_CONSUMER_CHILD>.THREAD_PREFIX_QUEUE;
+			ret += "<" + this.OfWhat + "," + this.ConsumerType  + ">";
+			ret += " " + this.ScaleInterval_DSN;
+			ret += " //" + this.ReasonChannelExists;
+			this.AsString_cached = ret;
+			return this.AsString_cached;
+		}
 	}
 }

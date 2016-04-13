@@ -6,8 +6,6 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.Serializers {
 	public class SerializerLogrotate<T> : Serializer<List<T>> {
-		public string OfWhat { get { return typeof(T).Name; } }
-		
 		long logRotateSizeLimit;
 		string logRotateDateFormat;
 
@@ -35,7 +33,7 @@ namespace Sq1.Core.Serializers {
 					base.Deserialize();
 				}
 			} catch (Exception e) {
-				string msig = " LogrotateSerializer<" + OfWhat + ">::Deserialize(): ";
+				string msig = " LogrotateSerializer<" + base.OfWhat + ">::Deserialize(): ";
 				string msg = "FAILED_DeserializeLogrotate_WITH_base.JsonAbsFile[" + base.JsonAbsFile + "]";
 				throw new Exception(msg + msig, e);
 			}
@@ -63,7 +61,7 @@ namespace Sq1.Core.Serializers {
 					}
 				}
 			} catch (Exception ex) {
-				string msig = " LogrotateSerializer<" + OfWhat + ">::Serialize(): ";
+				string msig = " LogrotateSerializer<" + base.OfWhat + ">::Serialize(): ";
 				string msg = "FAILED_SerializeLogrotate_WITH_this.JsonAbsFile[" + base.JsonAbsFile + "]";
 				Assembler.PopupException(msg + msig, ex);
 			} finally {
@@ -75,7 +73,7 @@ namespace Sq1.Core.Serializers {
 			File.WriteAllText(fileAbspath, json);
 		}
 		void safeLogRotate(string fileAbspath) {
-			string msig = " LogrotateSerializer<" + OfWhat + ">::safeLogRotate(fileAbspath=[" + fileAbspath + "]): ";
+			string msig = " LogrotateSerializer<" + base.OfWhat + ">::safeLogRotate(fileAbspath=[" + fileAbspath + "]): ";
 			string relpath = Path.GetDirectoryName(fileAbspath);
 			if (Directory.Exists(relpath) == false) {
 				try {

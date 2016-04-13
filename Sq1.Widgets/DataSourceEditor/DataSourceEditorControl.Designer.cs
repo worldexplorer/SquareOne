@@ -44,8 +44,8 @@
 			this.tsiBtnSave = new System.Windows.Forms.ToolStripButton();
 			this.tsiLtbDataSourceName = new Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox();
 			this.tsiNudInterval = new Sq1.Widgets.ToolStripImproved.ToolStripItemNumericUpDownWithMouseEvents();
-			this.tsiLtbSymbols = new Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox();
 			this.tsiCbxScale = new Sq1.Widgets.ToolStripImproved.ToolStripItemComboBox();
+			this.tsiLtbSymbols = new Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
 			this.splitContainer3.Panel1.SuspendLayout();
 			this.splitContainer3.Panel2.SuspendLayout();
@@ -69,9 +69,9 @@
 			// 
 			// splitContainer3
 			// 
-			this.splitContainer3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.splitContainer3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.splitContainer3.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.splitContainer3.Location = new System.Drawing.Point(0, 0);
 			this.splitContainer3.Name = "splitContainer3";
@@ -143,9 +143,9 @@
 			// 
 			// lvStreamingAdapters
 			// 
-			this.lvStreamingAdapters.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.lvStreamingAdapters.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.lvStreamingAdapters.HideSelection = false;
 			this.lvStreamingAdapters.Location = new System.Drawing.Point(3, 21);
 			this.lvStreamingAdapters.MultiSelect = false;
@@ -165,9 +165,9 @@
 			// 
 			// grpStreaming
 			// 
-			this.grpStreaming.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.grpStreaming.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.grpStreaming.Controls.Add(this.pnlStreamingEditor);
 			this.grpStreaming.Location = new System.Drawing.Point(3, 3);
 			this.grpStreaming.Name = "grpStreaming";
@@ -219,9 +219,9 @@
 			// 
 			// lvBrokerAdapters
 			// 
-			this.lvBrokerAdapters.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.lvBrokerAdapters.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.lvBrokerAdapters.HideSelection = false;
 			this.lvBrokerAdapters.Location = new System.Drawing.Point(3, 21);
 			this.lvBrokerAdapters.MultiSelect = false;
@@ -241,9 +241,9 @@
 			// 
 			// grpBroker
 			// 
-			this.grpBroker.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.grpBroker.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.grpBroker.Controls.Add(this.pnlBrokerEditor);
 			this.grpBroker.Location = new System.Drawing.Point(3, 3);
 			this.grpBroker.Name = "grpBroker";
@@ -327,29 +327,6 @@
 			this.tsiNudInterval.DomainUpDownArrowUpStepAdd += new System.EventHandler(this.tsiNudInterval_ValueChanged);
 			this.tsiNudInterval.DomainUpDownArrowDownStepSubstract += new System.EventHandler(this.tsiNudInterval_ValueChanged);
 			// 
-			// tsiLtbSymbols
-			// 
-			this.tsiLtbSymbols.BackColor = System.Drawing.Color.Transparent;
-			this.tsiLtbSymbols.InputFieldAlignedRight = false;
-			this.tsiLtbSymbols.InputFieldBackColor = System.Drawing.SystemColors.Window;
-			this.tsiLtbSymbols.InputFieldEditable = true;
-			this.tsiLtbSymbols.InputFieldMultiline = false;
-			this.tsiLtbSymbols.InputFieldOffsetX = 60;
-			this.tsiLtbSymbols.InputFieldValue = "LKOH,RIM3,autogen";
-			this.tsiLtbSymbols.InputFieldWidth = 90;
-			this.tsiLtbSymbols.Margin = new System.Windows.Forms.Padding(5, 2, 0, 0);
-			this.tsiLtbSymbols.Name = "tsiLtbSymbols";
-			this.tsiLtbSymbols.OffsetTop = 1;
-			this.tsiLtbSymbols.Size = new System.Drawing.Size(160, 23);
-			this.tsiLtbSymbols.Text = "tsmniSymbols";
-			this.tsiLtbSymbols.TextLeft = "Symbols:";
-			this.tsiLtbSymbols.TextLeftOffsetX = 0;
-			this.tsiLtbSymbols.TextLeftWidth = 57;
-			this.tsiLtbSymbols.TextRed = false;
-			this.tsiLtbSymbols.TextRight = "";
-			this.tsiLtbSymbols.TextRightOffsetX = 153;
-			this.tsiLtbSymbols.TextRightWidth = 4;
-			// 
 			// tsiCbxScale
 			// 
 			this.tsiCbxScale.ComboBoxDropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -371,6 +348,29 @@
 			this.tsiCbxScale.Name = "tsiCbxScale";
 			this.tsiCbxScale.Size = new System.Drawing.Size(70, 23);
 			this.tsiCbxScale.ComboBoxSelectedIndexChanged += new System.EventHandler<System.EventArgs>(this.tsiCmbScale_SelectedIndexChanged);
+			// 
+			// tsiLtbSymbols
+			// 
+			this.tsiLtbSymbols.BackColor = System.Drawing.Color.Transparent;
+			this.tsiLtbSymbols.InputFieldAlignedRight = false;
+			this.tsiLtbSymbols.InputFieldBackColor = System.Drawing.SystemColors.Window;
+			this.tsiLtbSymbols.InputFieldEditable = true;
+			this.tsiLtbSymbols.InputFieldMultiline = false;
+			this.tsiLtbSymbols.InputFieldOffsetX = 60;
+			this.tsiLtbSymbols.InputFieldValue = "LKOH,RIM3,autogen";
+			this.tsiLtbSymbols.InputFieldWidth = 190;
+			this.tsiLtbSymbols.Margin = new System.Windows.Forms.Padding(5, 2, 0, 0);
+			this.tsiLtbSymbols.Name = "tsiLtbSymbols";
+			this.tsiLtbSymbols.OffsetTop = 1;
+			this.tsiLtbSymbols.Size = new System.Drawing.Size(260, 23);
+			this.tsiLtbSymbols.Text = "tsmniSymbols";
+			this.tsiLtbSymbols.TextLeft = "Symbols:";
+			this.tsiLtbSymbols.TextLeftOffsetX = 0;
+			this.tsiLtbSymbols.TextLeftWidth = 57;
+			this.tsiLtbSymbols.TextRed = false;
+			this.tsiLtbSymbols.TextRight = "";
+			this.tsiLtbSymbols.TextRightOffsetX = 253;
+			this.tsiLtbSymbols.TextRightWidth = 4;
 			// 
 			// DataSourceEditorControl
 			// 

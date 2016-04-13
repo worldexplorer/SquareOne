@@ -192,7 +192,7 @@ namespace Sq1.Core.Indicators {
 		}
 		public void Initialize(HostPanelForIndicator panelNamedFolding) {
 			if (this.HostPanelForIndicator == panelNamedFolding) {
-				string msg = "INDICATOR_ALREADY_INITIALIZE_WITH_SAME_HOST_PANEL [" + this + "] this.HostPanelForIndicator[" + this.HostPanelForIndicator + "]";
+				string msg = "INDICATOR_ALREADY_INITIALIZED_WITH_SAME_HOST_PANEL [" + this + "] this.HostPanelForIndicator[" + this.HostPanelForIndicator + "]";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
@@ -282,7 +282,7 @@ namespace Sq1.Core.Indicators {
 			if (this.Executor == null) {
 				if (popupException) {
 					string msg = "NO_EXECUTOR_FOR_INDICATOR this.Executor=null" + this.ToString();
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
 				}
 				return ret;
 			}

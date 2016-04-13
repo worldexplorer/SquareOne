@@ -6,11 +6,11 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
 	public partial class Bar {
-		[JsonProperty]	public	string		Symbol				{ get; internal set; }		// protected=>internal so that BarsUnscaled can rename each bar
-		[JsonProperty]	public	BarScaleInterval ScaleInterval	{ get; protected set; }
-		[JsonProperty]	public	DateTime	DateTimeOpen		{ get; protected set; }
-		[JsonProperty]	public	DateTime	DateTimeNextBarOpenUnconditional		{ get; protected set; }
-		[JsonProperty]	public	DateTime	DateTimePreviousBarOpenUnconditional	{ get; protected set; }
+		[JsonProperty]	public	string				Symbol									{ get; internal set; }		// protected=>internal so that BarsUnscaled can rename each bar
+		[JsonProperty]	public	BarScaleInterval	ScaleInterval							{ get; protected set; }
+		[JsonProperty]	public	DateTime			DateTimeOpen							{ get; protected set; }
+		[JsonProperty]	public	DateTime			DateTime_nextBarOpen_unconditional		{ get; protected set; }
+		[JsonProperty]	public	DateTime			DateTime_previousBarOpen_unconditional	{ get; protected set; }
 		
 		[JsonProperty]	public	double	Open;
 		[JsonProperty]	public	double	High;
@@ -44,22 +44,23 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public bool		IsWhiteCandle		{ get { return this.Close > this.Open; } }
 
 
-		public Bar() {
+		Bar() {
 			// ChartRenderer would update its max/min if NaN
 			this.ParentBarsIndex = -1;
-			this.Open = Double.NaN;
-			this.High = Double.NaN;
-			this.Low = Double.NaN;
-			this.Close = Double.NaN;
-			this.Volume = Double.NaN;
+			this.DateTimeOpen = DateTime.MinValue;
+			this.Open	= Double.NaN;
+			this.High	= Double.NaN;
+			this.Low	= Double.NaN;
+			this.Close	= Double.NaN;
+			this.Volume	= Double.NaN;
 		}
 		public Bar(string symbol, BarScaleInterval scaleInterval, DateTime dateTimeOpen) : this() {
 			this.Symbol = symbol;
 			this.ScaleInterval = scaleInterval;
 			if (dateTimeOpen == DateTime.MinValue) {
 				this.DateTimeOpen = DateTime.MinValue;
-				this.DateTimeNextBarOpenUnconditional = DateTime.MinValue;
-				this.DateTimePreviousBarOpenUnconditional = DateTime.MinValue;
+				this.DateTime_nextBarOpen_unconditional = DateTime.MinValue;
+				this.DateTime_previousBarOpen_unconditional = DateTime.MinValue;
 			} else {
 				this.RoundDateDownInitTwoAuxDates(dateTimeOpen);
 			}
@@ -111,7 +112,7 @@ namespace Sq1.Core.DataTypes {
 			}
 			this.SetOHLCValigned(bar.Open, bar.High, bar.Low, bar.Close, bar.Volume, symbolInfo);
 		}
-		public void SetParentForBackwardUpdate(Bars parentBars, int parentBarsIndex) {
+		public void SetParent_forBackwardUpdate(Bars parentBars, int parentBarsIndex) {
 			if (this.ParentBars == parentBars) {
 				string msg = "TYRING_AVOID_BUGS: same ParentBars as I have already;"
 					+ "  this.ParentBars==parentBars[" + parentBars + "]";
@@ -169,30 +170,43 @@ namespace Sq1.Core.DataTypes {
 			string thisAsString = this.ToString();
 			return (barAsString == thisAsString);
 		}
-		public string CheckOHLCVthrow(bool throwNewException = true) {
+		public string CheckThrow_DateOHLCV_validForSaving(bool throwError = false) {
 			string msg = "";
-			
-			if (this.Open <= 0)			msg += "Open[" + this.Open + "]<=0 ";
-			if (this.High <= 0)			msg += "High[" + this.High + "]<=0 ";
-			if (this.Low <= 0)			msg += "Low[" + this.Low + "]<=0 ";
-			if (this.Close <= 0)		msg += "Close[" + this.Close + "]<=0 ";
-			//if (this.Volume <= 0)		msg += "Volume[" + this.Volume + "]<=0 ";
-			
-			if (this.High < this.Low)	msg += "High[" + this.High + "]<Low[" + this.High + "] ";
-			if (this.Low <= 0)			msg += "Low[" + this.Low + "]<=0 ";
-			
-			if (this.Close > this.High)	msg += "Close[" + this.Close + "]>High[" + this.High + "] ";
-			if (this.Close < this.Low)	msg += "Close[" + this.Close + "]<Low[" + this.High + "] ";
-			
-			if (this.Open > this.High)	msg += "Open[" + this.Open + "]>High[" + this.High + "] ";
-			if (this.Open < this.Low)	msg += "Open[" + this.Open + "]<Low[" + this.High + "] ";
+
+			if (this.DateTimeOpen == DateTime.MinValue) msg += "MINVALUE_DateTimeOpen ";
+			if (double.IsNaN(this.Open))				msg += "ISNAN_Open ";
+			if (double.IsNaN(this.High))				msg += "ISNAN_High ";
+			if (double.IsNaN(this.Low))					msg += "ISNAN_Low ";
+			if (double.IsNaN(this.Close))				msg += "ISNAN_Close ";
+			if (double.IsNaN(this.Volume))				msg += "ISNAN_Volume ";
 
 			if (string.IsNullOrEmpty(msg)) return msg;
+			if (throwError) throw new Exception(msg);
+			return msg;
+		}
+		public string CheckThrow_valuesOkay(bool throwError = true) {
+			string msg = "";
 
-			//Debugger.Break();
-			if (throwNewException) {
-				throw new Exception(msg);
+			msg = this.CheckThrow_DateOHLCV_validForSaving(throwError);
+
+			if (string.IsNullOrEmpty(msg) == false) {
+				if (this.Open <= 0)			msg += "Open[" + this.Open + "]<=0 ";
+				if (this.High <= 0)			msg += "High[" + this.High + "]<=0 ";
+				if (this.Low <= 0)			msg += "Low[" + this.Low + "]<=0 ";
+				if (this.Close <= 0)		msg += "Close[" + this.Close + "]<=0 ";
+				//if (this.Volume <= 0)		msg += "Volume[" + this.Volume + "]<=0 ";
+			
+				if (this.High < this.Low)	msg += "High[" + this.High + "]<Low[" + this.High + "] ";
+				if (this.Low <= 0)			msg += "Low[" + this.Low + "]<=0 ";
+			
+				if (this.Close > this.High)	msg += "Close[" + this.Close + "]>High[" + this.High + "] ";
+				if (this.Close < this.Low)	msg += "Close[" + this.Close + "]<Low[" + this.High + "] ";
+			
+				if (this.Open > this.High)	msg += "Open[" + this.Open + "]>High[" + this.High + "] ";
+				if (this.Open < this.Low)	msg += "Open[" + this.Open + "]<Low[" + this.High + "] ";
 			}
+			if (string.IsNullOrEmpty(msg)) return msg;
+			if (throwError) throw new Exception(msg);
 			return msg;
 		}
 		public bool HasSameDOHLCVas(Bar bar, string barIdent, string thisIdent, ref string errRef) {
@@ -295,8 +309,8 @@ namespace Sq1.Core.DataTypes {
 			///if (this.DateTimeOpen.CompareTo(dateTimeOpen) == 0) {
 			//	int a = 1;
 			//}
-			this.DateTimeNextBarOpenUnconditional = this.addIntervalsToDate(this.DateTimeOpen, 1);
-			this.DateTimePreviousBarOpenUnconditional = this.addIntervalsToDate(this.DateTimeOpen, -1);
+			this.DateTime_nextBarOpen_unconditional = this.addIntervalsToDate(this.DateTimeOpen, 1);
+			this.DateTime_previousBarOpen_unconditional = this.addIntervalsToDate(this.DateTimeOpen, -1);
 		}
 		// DataSeriesTimeBased contains this method, too
 		DateTime addIntervalsToDate(DateTime dateTimeToAddIntervalsTo, int intervalMultiplier) {
@@ -378,7 +392,7 @@ namespace Sq1.Core.DataTypes {
 			return dateTime;
 		}
 		#endregion
-		public void MergeExpandHLCV_whileCompressingManyBarsToOne(Bar bar, bool addVolumeWeAreCompressingStaticBarsToLargerScaleInterval = true) {
+		public void MergeExpandHLCV_whileCompressing_manyBarsToOne(Bar bar, bool addVolumeWeAreCompressingStaticBarsToLargerScaleInterval = true) {
 			if (bar.High > this.High) this.High = bar.High;
 			if (bar.Low < this.Low) this.Low = bar.Low;
 			this.Close = bar.Close;

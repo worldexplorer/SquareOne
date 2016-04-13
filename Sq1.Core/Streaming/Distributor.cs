@@ -12,23 +12,23 @@ namespace Sq1.Core.Streaming {
 
 					Type				ofWhatAmI;
 					object				lockConsumersBySymbol;
-		public		StreamingAdapter	StreamingAdapter 	{ get; protected set; }
-		public		string				ReasonIwasCreated 	{ get; protected set; }
-		public		int					InstanceSerno	 	{ get; protected set; }
+		public		StreamingAdapter	StreamingAdapter 		{ get; protected set; }
+		public		string				ReasonIwasCreated 		{ get; protected set; }
+		public		int					InstanceSerno	 		{ get; protected set; }
 
 		Distributor(string reasonIwasCreated) {
 			//DistributionChannels	= new Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>>();
 			ChannelsBySymbol		= new Dictionary<string, SymbolChannel<STREAMING_CONSUMER_CHILD>>();
 			lockConsumersBySymbol	= new object();
 			ofWhatAmI				= typeof(STREAMING_CONSUMER_CHILD);
-			ReasonIwasCreated		= "<" + ofWhatAmI.Name + "> " + reasonIwasCreated;
+			ReasonIwasCreated		= reasonIwasCreated;
 		}
 		public Distributor(StreamingAdapter streamingAdapter, string reasonIwasCreated) : this(reasonIwasCreated) {
 			this.StreamingAdapter = streamingAdapter;
 			//this.ReasonIwasCreated = this.StreamingAdapter + ":" + this.ReasonIwasCreated;
 			this.storeAllInstancesEverCreated(streamingAdapter);
-			var keepNecessaryOnly = Distributor<STREAMING_CONSUMER_CHILD>.AllDistributorsEverCreated;
-			InstanceSerno = Distributor<STREAMING_CONSUMER_CHILD>.AllDistributorsEverCreated_total;
+			var keepNecessaryOnly	= Distributor<STREAMING_CONSUMER_CHILD>.AllDistributorsEverCreated;
+			InstanceSerno			= Distributor<STREAMING_CONSUMER_CHILD>.AllDistributorsEverCreated_total;
 		}
 
 
@@ -56,17 +56,16 @@ namespace Sq1.Core.Streaming {
 		}
 
 
-		//public virtual void Push_levelTwoFrozen_toChannel(string symbol, LevelTwoFrozen l2frozen) {
-		//    SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.GetChannelFor_nullMeansWasntSubscribed(symbol);
-		//    if (channel == null) {
-		//        string msg = "I_REFUSE_TO_PUSH_QUOTE_FOR_UNSUBSCRIBED_SYMBOL quoteUnboundUnattached.Symbol[" + quoteUnboundUnattached.Symbol + "]"
-		//            + " DO_YOU_PUSH_QUOTE_TO_DISTRIB_SOLIDIFIERS_THAT_IS_EMPTY_DURING_LIVESIM???";
-		//        Assembler.PopupException(msg, null, false);
-		//        return;
-		//    }
-		//    // NO_THIS_IS_TOO_MUCH channel.Push_level2_viaPumpOrQueue(l2frozen);
-		//    channel.PushQuote_viaPumpOrQueue(quoteUnboundUnattached);
-		//}
+		public virtual void Push_levelTwoFrozen_toChannel(string symbol, LevelTwoFrozen l2frozen) {
+		    SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.GetChannelFor_nullMeansWasntSubscribed(symbol);
+		    if (channel == null) {
+		        string msg = "I_REFUSE_TO_PUSH_QUOTE_FOR_UNSUBSCRIBED_SYMBOL symbol[" + symbol + "]"
+		            + " DO_YOU_PUSH_QUOTE_TO_DISTRIB_SOLIDIFIERS_THAT_IS_EMPTY_DURING_LIVESIM???";
+		        Assembler.PopupException(msg, null, false);
+		        return;
+		    }
+			channel.PushLevelTwoFrozen_viaPump(l2frozen);
+		}
 
 		public override string ToString() {
 			string ret = this.toStringCommon(false);

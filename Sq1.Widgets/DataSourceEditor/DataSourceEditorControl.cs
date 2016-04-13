@@ -270,7 +270,10 @@ namespace Sq1.Widgets.DataSourceEditor {
 				return;
 			}
 			this.dataSourceIamEditing.Name = this.tsiLtbDataSourceName.InputFieldValue;
-			this.dataSourceIamEditing.Symbols = this.ParseSymbols(this.tsiLtbSymbols.InputFieldValue);
+
+			List<string> symbols_possiblyChanged = this.ParseSymbols(this.tsiLtbSymbols.InputFieldValue);
+			this.dataSourceIamEditing.Symbols_syncWithBarFiles(symbols_possiblyChanged);
+
 			this.dataSourceIamEditing.ScaleInterval.StringsCachedInvalidate();
 
 			if (this.dataSourceIamEditing.StreamingAdapter	!= null) this.dataSourceIamEditing.StreamingAdapter	.EditorInstance.PushEditedSettingsToStreamingAdapter();

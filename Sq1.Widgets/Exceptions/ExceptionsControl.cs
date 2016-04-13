@@ -134,17 +134,33 @@ namespace Sq1.Widgets.Exceptions {
 				return;
 			}
 
-			if (this.timedTask_flushingToGui.Scheduled) {
-				this.exceptions_notFlushedYet.AppendUnique(exception, this, "insertTo_exceptionsNotFlushedYet_willReportIfBlocking");
+			bool avoidingConcurrentAccess = this.timedTask_flushingToGui.Scheduled;
+			//if (avoidingConcurrentAccess) {
+			bool freeToAdd = this.exceptions_notFlushedYet.IsUnlocked;
+			if (freeToAdd == false) {
 				return;
 			}
-			if (this.Exceptions.Count == 0) {
-				string msg = "SHOULD_HAPPEN_ONCE_PER_APP_LIFETIME";
-				//Debugger.Break();
+			string lockPurpose = "insertTo_exceptionsNotFlushedYet_willReportIfBlocking";
+			bool iLockedIt = false;
+			try {
+			// GUI freezes after another thread was paused for too long in debugger
+				iLockedIt = this.exceptions_notFlushedYet.WaitAndLockFor(exception, lockPurpose, 500);
+				//this.exceptions_notFlushedYet.UnLockFor(exception, lockPurpose);
+				//iLockedIt = this.exceptions_notFlushedYet.WaitAndLockFor(exception, lockPurpose, 500);
+				if (iLockedIt == false) {
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					return;
+				}
+				this.exceptions_notFlushedYet.AppendUnique(exception, this, lockPurpose);
+				this.exceptionTimes.Add(exception, DateTime.Now, this, "InsertExceptionBlocking");
+			} catch (Exception ex) {
+				throw ex;
+			} finally {
+				if (iLockedIt) this.exceptions_notFlushedYet.UnLockFor(exception, lockPurpose);
 			}
-
-			this.exceptionTimes.Add(exception, DateTime.Now, this, "InsertExceptionBlocking");
-			this.Exceptions.InsertUnique(0, exception, this, "InsertExceptionBlocking");
+			return;
 		}
 		void selectMostRecentException() {
 			if (this.olvTreeExceptions.GetItemCount() == 0) return;

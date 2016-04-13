@@ -38,7 +38,7 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public StreamingAdapter(string reasonToExist) : this() {
-			ReasonToExist									= reasonToExist;
+			ReasonToExist	= reasonToExist;
 			this.CreateDistributors_onlyWhenNecessary(reasonToExist);
 		}
 

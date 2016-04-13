@@ -7,7 +7,7 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core.Repositories {
 	abstract partial class DllScanner<T> {
-		public		string OfWhat { get { return typeof(T).Name; } }
+		public		string OfWhat { get; private set; }
 		
 		public		List<Type>						TypesFound_inScannedDLLs;
 		public		Dictionary<string, T>			TypesByClassName;
@@ -46,6 +46,7 @@ namespace Sq1.Core.Repositories {
 			this.ExceptionsWhileScanning = new List<Exception>();
 			this.Subfolder = "";
 			this.PathMask = "*.dll";
+			this.OfWhat = typeof(T).Name;
 		}
 		public DllScanner(string rootPath, bool denyDuplicateShortNames = true) : this() {
 			this.RootPath = rootPath;
@@ -106,7 +107,7 @@ namespace Sq1.Core.Repositories {
 				Type[] typesFoundInDll;
 				string dllAbsPath = Path.Combine(rootFolder.FullName, fileInfo.Name);
 				Assembly assembly;
-				string msig = " Assembly.LoadFile(" + dllAbsPath + ") << RepositoryDllScanner<" + typeof(T) + ">.ScanDlls()";
+				string msig = " Assembly.LoadFile(" + dllAbsPath + ") << RepositoryDllScanner<" + typeof(T) + ">.ScanListPrepared()";
 				try {
 					assembly = Assembly.LoadFile(dllAbsPath);
 					if (assembly == null) continue;
@@ -132,7 +133,7 @@ namespace Sq1.Core.Repositories {
 				}
 				this.NonEmptyDllsScanned.Add(dllAbsPath);
 				foreach (Type typeFound in typesFoundInDll) {
-					msig = " Activator.CreateInstance(" + typeFound + ") << RepositoryDllScanner<" + typeof(T) + ">.ScanDlls("
+					msig = " Activator.CreateInstance(" + typeFound + ") << RepositoryDllScanner<" + typeof(T) + ">.ScanListPrepared("
 						+ this.DenyDuplicateShortNames + ", [" + dllAbsPath + "])";
 
 					string typeFoundName = typeFound.FullName;
@@ -216,13 +217,14 @@ namespace Sq1.Core.Repositories {
 		}
 
 		bool check_shortNameAlreadyFound(string typeNameShort, string dllName_beingScanned) {
+			string msig = " //DllScanner<" + this.OfWhat + ">(typeNameShort[" + typeNameShort + "], dllName_beingScanned[" + dllName_beingScanned + "])";
 			List<Type> alreadyFound = this.typesInstantiable_byShortName(typeNameShort);
 			if (alreadyFound.Count == 0) return false;
 			string dllNamesAlreadyHasType = this.dllNamesForTypes(alreadyFound);
 			string msg = "DUPLICATE_TYPE_FOUND_IN_ANOTHER_DLL typeNameShort[" + typeNameShort + "] "
 				+ " dllNamesAlreadyHasType[" + dllNamesAlreadyHasType + "]";
 			//this.ExceptionsWhileScanning.Add(new Exception(msg));
-			Assembler.PopupException(msg, null, false);
+			Assembler.PopupException(msg + msig, null, false);
 			return true;
 		}
 		string dllNamesForTypes(List<Type> types) {

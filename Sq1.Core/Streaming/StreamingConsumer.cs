@@ -10,6 +10,8 @@ namespace Sq1.Core.Streaming {
 	public abstract class StreamingConsumer {
 		protected 		string				MsigForNpExceptions			= "Failed to StreamingSubscribe(): ";
 		public			string				ReasonToExist				{ get; protected set; }
+		public			string				SymbolIntervalScaleDSN_imConsuming		{ get; protected set; }
+
 
 		public virtual	Bars				ConsumerBars_toAppendInto	{ get { return this.Bars_nullReported; } }
 		public virtual	BarScaleInterval	ScaleInterval				{ get { return this.ConsumerBars_toAppendInto.ScaleInterval; } }
@@ -19,39 +21,41 @@ namespace Sq1.Core.Streaming {
 		public abstract	void	UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteCurrent_beforeStop);
 		public abstract	void	Consume_quoteOfStreamingBar(Quote quote);
 		public abstract	void	Consume_barLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated);
-		public abstract	void	Consume_levelTwoChanged_noNewQuote(LevelTwoFrozen levelTwoFrozen);
+		public abstract	void	Consume_levelTwoChanged(LevelTwoFrozen levelTwoFrozen);
 
 
 
 		public abstract	ScriptExecutor	Executor			{ get; }
 		
 		#region CASCADED_INITIALIZATION_ALL_CHECKING_CONSISTENCY_FROM_ONE_METHOD begin
-		protected 		ScriptExecutor Executor_nullReported { get {
+		protected 		ScriptExecutor				Executor_nullReported			{ get {
 				var ret = this.Executor;
 				this.ActionForNullPointer(ret, "this.Executor=null");
 				return ret;
 			} }
-		protected 		Strategy Strategy_nullReported { get {
+		protected 		Strategy					Strategy_nullReported			{ get {
 				var ret = this.Executor_nullReported.Strategy;
 				this.ActionForNullPointer(ret, "this.Executor.Strategy=null");
 				return ret;
 			} }
-		protected 		ContextChart ContextCurrentChartOrStrategy_nullReported { get {
+		protected 		ContextChart				ContextCurrentChartOrStrategy_nullReported { get {
 				string msg = "";
 				Strategy strategy = this.Executor.Strategy;
 				if (strategy != null) {
+					if (string.IsNullOrEmpty(this.SymbolIntervalScaleDSN_imConsuming) && this.Executor.Bars != null) this.SymbolIntervalScaleDSN_imConsuming = this.Executor.Bars.SymbolIntervalScaleDSN;
 					return strategy.ScriptContextCurrent;
 				}
 				msg += "NOT_STRATEGY";
 				ChartShadow chartShadow_nullUnsafe = this.ChartShadow_nullReported;
 				if (chartShadow_nullUnsafe != null) {
+					if (string.IsNullOrEmpty(this.SymbolIntervalScaleDSN_imConsuming) && chartShadow_nullUnsafe.Bars != null) this.SymbolIntervalScaleDSN_imConsuming = chartShadow_nullUnsafe.Bars.SymbolIntervalScaleDSN;
 					return chartShadow_nullUnsafe.CtxChart;
 				}
 				msg += " AND_ChartShadow.CtxChart_WAS_NOT_INITIALIZED_YET";
 				Assembler.PopupException(msg);
 				return null;
 			} }
-		protected 		string Symbol_nullReported { get {
+		protected 		string						Symbol_nullReported				{ get {
 				ScriptExecutor executor_nullUnsafe = this.Executor_nullReported;
 				string symbol = (executor_nullUnsafe.Strategy == null) ? executor_nullUnsafe.Bars.Symbol : this.ContextCurrentChartOrStrategy_nullReported.Symbol;
 				if (String.IsNullOrEmpty(symbol)) {
@@ -59,13 +63,13 @@ namespace Sq1.Core.Streaming {
 				}
 				return symbol;
 			} }
-		protected 		BarScaleInterval ScaleInterval_nullReported { get {
+		protected 		BarScaleInterval			ScaleInterval_nullReported		{ get {
 				ScriptExecutor executor_nullUnsafe = this.Executor_nullReported;
 				var ret = (executor_nullUnsafe.Strategy == null) ? executor_nullUnsafe.Bars.ScaleInterval : this.ContextCurrentChartOrStrategy_nullReported.ScaleInterval;
 				this.ActionForNullPointer(ret, "this.Executor.Strategy.ScriptContextCurrent.ScaleInterval=null");
 				return ret;
 			} }
-		protected 		BarScale Scale_nullReported { get {
+		protected 		BarScale					Scale_nullReported				{ get {
 				var ret = this.ScaleInterval_nullReported.Scale;
 				this.ActionForNullPointer(ret, "this.Executor.Strategy.ScriptContextCurrent.ScaleInterval.Scale=null");
 				if (ret == BarScale.Unknown) {
@@ -73,22 +77,17 @@ namespace Sq1.Core.Streaming {
 				}
 				return ret;
 			} }
-//		BarDataRange DataRange { get {
-//				var ret = this.ScriptContextCurrent.DataRange;
-//				this.actionForNullPointer(ret, "this.Executor.Strategy.ScriptContextCurrent.DataRange=null");
-//				return ret;
-//			} }
-		protected 		DataSource DataSource_nullReported { get {
+		protected 		DataSource					DataSource_nullReported			{ get {
 				var ret = this.Executor_nullReported.DataSource_fromBars;
 				this.ActionForNullPointer(ret, "this.Executor.DataSource=null");
 				return ret;
 			} }
-		protected 		StreamingAdapter StreamingAdapter_nullReported { get {
+		protected 		StreamingAdapter			StreamingAdapter_nullReported	{ get {
 				StreamingAdapter ret = this.DataSource_nullReported.StreamingAdapter;
 				this.ActionForNullPointer(ret, "STREAMING_ADAPDER_NOT_ASSIGNED_IN_DATASOURCE this.Executor.DataSource[" + this.DataSource_nullReported + "].StreamingAdapter=null");
 				return ret;
 			} }
-		protected 		StreamingConsumerSolidifier StreamingSolidifierDeep { get {
+		protected 		StreamingConsumerSolidifier	StreamingSolidifierDeep			{ get {
 				if (this.StreamingAdapter_nullReported is LivesimStreamingDefault) {
 					return null;
 				}
@@ -96,31 +95,19 @@ namespace Sq1.Core.Streaming {
 				this.ActionForNullPointer(ret, "SOLIDIFIER_NULL_IN_STREAMING this.Executor.DataSource[" + this.DataSource_nullReported.Name + "].StreamingAdapter[" + this.DataSource_nullReported.StreamingAdapterName + "].StreamingSolidifier=null");
 				return ret;
 			} }
-
-		protected 		ChartShadow ChartShadow_nullReported { get {
+		protected 		ChartShadow					ChartShadow_nullReported		{ get {
 				StreamingConsumerChart thisAsChartConsumer = this as StreamingConsumerChart;
 				if (thisAsChartConsumer != null) return thisAsChartConsumer.ChartShadow;
 				var ret = this.Executor_nullReported.ChartShadow;
 				this.ActionForNullPointer(ret, "this.Executor.ChartShadow=null");
 				return ret;
 			} }
-		protected 		Bars Bars_nullReported { get {
+		protected 		Bars						Bars_nullReported				{ get {
 				var ret = this.Executor_nullReported.Bars;
 				this.ActionForNullPointer(ret, "this.Executor.Bars=null");
 				return ret;
 			} }
-		protected 		Bar StreamingBarSafeClone_nullReported { get {
-				var ret = this.Bars_nullReported.BarStreaming_nullUnsafeCloneReadonly;
-				//this.actionForNullPointer(ret, "this.Executor.Bars.StreamingBarSafeClone=null");
-				if (ret == null) ret = new Bar();
-				return ret;
-			} }
-		protected 		Bar LastStaticBar_nullReported { get {
-				var ret = this.Bars_nullReported.BarStaticLast_nullUnsafe;
-				this.ActionForNullPointer(ret, "this.Executor.Bars.LastStaticBar=null");
-				return ret;
-			} }
-		public bool DownstreamSubscribed { get {
+		public			bool						DownstreamSubscribed			{ get {
 				if (this.NPEs_handled() == false) return false;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
 
 				var streamingSafe		= this.StreamingAdapter_nullReported;
@@ -136,9 +123,7 @@ namespace Sq1.Core.Streaming {
 				bool ret = quote & bar;
 				return ret;
 			}}
-
-	
-		protected bool NPEs_handled() {
+		protected		bool						NPEs_handled() {
 			try {
 				var symbolSafe		= this.Symbol_nullReported;
 				var scaleSafe		= this.Scale_nullReported;

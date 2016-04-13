@@ -116,6 +116,11 @@ namespace Sq1.Widgets.Level2 {
 			}
 
 			List<LevelTwoEachLine> level2rows = level2fromDde_freezeSortFlatten_insertPriceLevels_pushToOLV_nullToClearDom.FrozenSortedFlattened_priceLevelsInserted_forOlv;
+			if (level2rows.Count == 0) {
+				string msg = "NO_LEVEL2_ROWS_TO_DISPLAY";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
 			this.OlvLevelTwo.SetObjects(level2rows, true);
 		}
 	}

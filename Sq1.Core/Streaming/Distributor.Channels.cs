@@ -74,6 +74,16 @@ namespace Sq1.Core.Streaming {
 		public virtual bool ConsumerBarIsSubscribed(STREAMING_CONSUMER_CHILD barConsumer) {
 		    return this.ConsumerBarIsSubscribed_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer);
 		}
+
+		public virtual bool ConsumerLevelTwoFrozenSubscribe(STREAMING_CONSUMER_CHILD barConsumer, bool barPumpSeparatePushingThreadEnabled) {
+		    return this.ConsumerLevelTwoFrozenSubscribe_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer, barPumpSeparatePushingThreadEnabled);
+		}
+		public virtual bool ConsumerLevelTwoFrozenUnsubscribe(STREAMING_CONSUMER_CHILD barConsumer) {
+		    return this.ConsumerLevelTwoFrozenUnsubscribe_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer);
+		}
+		public virtual bool ConsumerLevelTwoFrozenIsSubscribed(STREAMING_CONSUMER_CHILD barConsumer) {
+		    return this.ConsumerLevelTwoFrozenIsSubscribed_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer);
+		}
 		#endregion
 
 		public virtual bool ConsumerBarSubscribe_solidifiers(string symbol, BarScaleInterval scaleInterval,
@@ -138,6 +148,68 @@ namespace Sq1.Core.Streaming {
 			return subscribed;
 		}
 
+
+		public virtual bool ConsumerLevelTwoFrozenSubscribe_solidifiers(string symbol, BarScaleInterval scaleInterval,
+							STREAMING_CONSUMER_CHILD levelTwoFrozenConsumer, bool quotePumpSeparatePushingThreadEnabled) { lock (this.lockConsumersBySymbol) {
+			if (levelTwoFrozenConsumer is StreamingConsumerSolidifier) {
+				string msg = "StreamingSolidifier_DOESNT_SUPPORT_ConsumerLevelTwoFrozensToAppendInto";
+			} else {
+				Bar barStaticLast = levelTwoFrozenConsumer.ConsumerBars_toAppendInto.BarStaticLast_nullUnsafe;
+				bool isLive				= levelTwoFrozenConsumer			is StreamingConsumerChart;
+				bool isBacktest			= levelTwoFrozenConsumer			is BacktestStreamingConsumer;
+				bool isLivesimDefault	= this.StreamingAdapter is LivesimStreamingDefault;
+				if (barStaticLast == null) {
+					if (isLivesimDefault == false) {	// isBacktest,isLivesim are magically fine; where did you notice the problem?
+						string msg = "YOUR_BAR_CONSUMER_SHOULD_HAVE_LevelTwoFrozenStaticLast_NON_NULL"
+							+ " MOST_LIKELY_YOU_WILL_GET_MESSAGE__THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
+						Assembler.PopupException(msg, null, false);
+					}
+				}
+			}
+			if (this.ChannelsBySymbol.ContainsKey(symbol) == false) {
+				SymbolChannel<STREAMING_CONSUMER_CHILD> newChannel = new SymbolChannel<STREAMING_CONSUMER_CHILD>(this, symbol, quotePumpSeparatePushingThreadEnabled, this.ReasonIwasCreated);
+				this.ChannelsBySymbol.Add(symbol, newChannel);
+			}
+			SymbolChannel<STREAMING_CONSUMER_CHILD> symbolChannel = this.ChannelsBySymbol[symbol];
+			// first-deserialized: Strategy on RIM3_5-minutes => Pump/Thread should be started as well
+			if (symbolChannel.PumpLevelTwo != null && symbolChannel.PumpLevelTwo.Paused) symbolChannel.PumpLevelTwo.PusherUnpause_waitUntilUnpaused();
+			if (this.StreamingAdapter.UpstreamIsSubscribed(symbol) == false) {
+				this.StreamingAdapter.UpstreamSubscribe(symbol);
+			}
+			return symbolChannel.ConsumerLevelTwoFrozenAdd(scaleInterval, levelTwoFrozenConsumer);
+		} }
+		public virtual bool ConsumerLevelTwoFrozenUnsubscribe_solidifiers(string symbol, BarScaleInterval scaleInterval,
+										STREAMING_CONSUMER_CHILD levelTwoFrozenConsumer) { lock (this.lockConsumersBySymbol) {
+			if (this.ChannelsBySymbol.ContainsKey(symbol) == false) {
+				string msg = "I_REFUSE_TO_REMOVE_UNSUBSCRIBED_SYMBOL symbol[" + symbol + "] levelTwoFrozenConsumer[" + levelTwoFrozenConsumer + "]";
+				Assembler.PopupException(msg);
+				return false;
+			}
+			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbol];
+			bool removed = channel.ConsumerLevelTwoFrozenRemove(scaleInterval, levelTwoFrozenConsumer);
+			if (channel.ConsumersLevelTwoFrozenCount == 0 && channel.ConsumersQuoteCount == 0) {
+				//Assembler.PopupException("LevelTwoFrozenConsumer [" + consumer + "] was the last one using [" + symbol + "]; removing QuoteLevelTwoFrozenDistributor[" + distributor + "]");
+				if (channel.PumpLevelTwo != null) channel.PumpLevelTwo.PushingThreadStop_waitConfirmed();
+				//Assembler.PopupException("LevelTwoFrozenConsumer [" + scaleInterval + "] was the last one listening for [" + symbol + "]");
+				//Assembler.PopupException("...removing[" + symbol + "] from this.ChannelsBySymbol[" + this.ChannelsBySymbol + "]");
+				this.ChannelsBySymbol.Remove(symbol);
+				//Assembler.PopupException("...UpstreamUnSubscribing [" + symbol + "]");
+				this.StreamingAdapter.UpstreamUnSubscribe(symbol);
+				return true;
+			}
+			return false;
+		} }
+		public virtual bool ConsumerLevelTwoFrozenIsSubscribed_solidifiers(string symbol, BarScaleInterval scaleInterval,
+										STREAMING_CONSUMER_CHILD levelTwoFrozenConsumer) {
+			if (this.ChannelsBySymbol.ContainsKey(symbol) == false) {
+				//string msg = "I_REFUSE_TO_CHECK_UNSUBSCRIBED_SYMBOL symbol[" + symbol + "] for levelTwoFrozenConsumer[" + levelTwoFrozenConsumer + "]";
+				//Assembler.PopupException(msg);
+				return false;
+			}
+			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbol];
+			bool subscribed = channel.ConsumerLevelTwoFrozenIsSubscribed(scaleInterval, levelTwoFrozenConsumer);
+			return subscribed;
+		}
 
 		public SymbolChannel<STREAMING_CONSUMER_CHILD> GetChannelFor_nullMeansWasntSubscribed(string symbol) {
 			if (this.ChannelsBySymbol.ContainsKey(symbol) == false) {

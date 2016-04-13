@@ -9,7 +9,7 @@ using Sq1.Core.DataFeed;
 namespace Sq1.Core.Repositories {
 	public class RepositoryJsonsInFolderSimple<SYSTEM_PERFORMANCE_RESTORE_ABLE>
 		/* hack for ItemRename() */ where SYSTEM_PERFORMANCE_RESTORE_ABLE : NamedObjectJsonSerializable, new() {
-		public string	OfWhat						{ get { return typeof(SYSTEM_PERFORMANCE_RESTORE_ABLE).Name; } }
+		public string	OfWhat						{ get; private set; }
 
 		public string	RootPath					{ get; protected set; }
 		public string	Subfolder					{ get; protected set; }
@@ -31,6 +31,7 @@ namespace Sq1.Core.Repositories {
 
 		public RepositoryJsonsInFolderSimple() {
 			ItemsFound = new List<FnameDateSizeColorPFavg>();
+			OfWhat = typeof(SYSTEM_PERFORMANCE_RESTORE_ABLE).Name;
 		}
 
 		public void Initialize(string rootPath,

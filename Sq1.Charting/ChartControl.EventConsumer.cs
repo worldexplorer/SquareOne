@@ -192,23 +192,21 @@ namespace Sq1.Charting {
 		}
 
 		void repositoryJsonDataSources_OnSymbolRemoved_clearChart(object sender, DataSourceSymbolEventArgs e) {
-			string msig = " //repositoryJsonDataSource_OnSymbolRemoved_clearChart(" + e.Symbol + ") chart[" + this.ToString() + "]";
+			string msig = " //ChartControl.repositoryJsonDataSource_OnSymbolRemoved_clearChart(" + e.Symbol + ") chart[" + this.ToString() + "]";
 			if (this.Bars.DataSource != e.DataSource) {
-				string msg = "IGNORING_DELETION_OTHER_DATASOURCE_NOT_IM_ACTUALLY_DISPLAYING"
+				string msg1 = "IGNORING_DELETION_OTHER_DATASOURCE_NOT_IM_ACTUALLY_DISPLAYING"
 					+ " this.Bars.DataSource[" + this.Bars.DataSource + "] != e.DataSource[" + e.DataSource + "]";
-				#if DEBUG
-				Assembler.PopupException(msg + msig, null, false);
-				#endif
+				//I_REALLY_DONT_CARE__WHY_SHOULD_I_KNOW?? Assembler.PopupException(msg1 + msig, null, false);
 				return;
 			}
 			if (this.Bars.Symbol != e.Symbol) {
-				string msg = "IGNORING_DELETION_OTHER_SYMBOL_NOT_IM_ACTUALLY_DISPLAYING"
+				string msg1 = "IGNORING_DELETION_OTHER_SYMBOL_NOT_IM_ACTUALLY_DISPLAYING"
 					+ " this.Bars.Symbol[" + this.Bars.Symbol + "] != e.Symbol[" + e.Symbol + "]";
-				#if DEBUG
-				Assembler.PopupException(msg + msig);
-				#endif
+				//I_REALLY_DONT_CARE__WHY_SHOULD_I_KNOW?? Assembler.PopupException(msg1 + msig, null, false);
 				return;
 			}
+			string msg = "MY_SYMBOL_DELETED__INITIALIZING_WITH_BARS_NULL_TO_RESET";
+			Assembler.PopupException(msg + msig, null, false);
 			this.Initialize(null, this.ChartSettings.StrategyName);
 		}
 

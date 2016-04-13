@@ -7,8 +7,6 @@ using Sq1.Core.Serializers;
 
 namespace Sq1.Core.Serializers {
 	public class SerializerLogrotatePeriodic<T> : SerializerLogrotate<T> {
-		public string OfWhat { get { return typeof(T).Name; } }
-
 				Timer		timer;
 		public	int			PeriodMillis;
 		public	List<T>		Orders { get { return base.EntityDeserialized; } }
@@ -31,7 +29,7 @@ namespace Sq1.Core.Serializers {
 			try {
 				base.Serialize();
 			} catch (Exception ex) {
-				string msig = " SerializerLogrotatePeriodic<" + this.OfWhat + ">::serializerThreadEntry() ";
+				string msig = " SerializerLogrotatePeriodic<" + base.OfWhat + ">::serializerThreadEntry() ";
 				string msg = "JSON serialization problems?";
 				Assembler.PopupException(msg + msig, ex);
 			} finally {

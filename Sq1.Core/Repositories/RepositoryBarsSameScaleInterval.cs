@@ -93,8 +93,9 @@ namespace Sq1.Core.Repositories {
 			this.createNonExistingSubfolder = createNonExistingSubfolder;
 		}
 		public bool DataFileExistsForSymbol(string symbol) {
-			string symbolAbspath = this.AbspathForSymbol(symbol, false);
-			return File.Exists(symbolAbspath);
+			string symbolAbspath = this.AbspathForSymbol(symbol, false, false);
+			bool exists = File.Exists(symbolAbspath);
+			return exists;
 		}
 		public string AbspathForSymbol(string symbol, bool throwIfDoesntExist = false, bool createIfDoesntExist = false) {
 			if (String.IsNullOrEmpty(symbol)) throw new ArgumentException("Symbol must not be blank");
@@ -116,7 +117,7 @@ namespace Sq1.Core.Repositories {
 			return symbol + "_" + this.SubfolderScaleInterval + "." + this.Extension;
 		}
 		public void SymbolDataFileAdd(string symbolToAdd, bool silentlyOverwriteExisting_dontThrow = false) {
-			string abspath = this.AbspathForSymbol(symbolToAdd, false, true);
+			string abspath = this.AbspathForSymbol(symbolToAdd, false, false);
 			if (File.Exists(abspath) && silentlyOverwriteExisting_dontThrow == false) {
 				throw new Exception("ADD__FILE_ALREADY_EXISTS[" + abspath + "]" + " SymbolDataFileAdd(" + symbolToAdd + ")");
 			}

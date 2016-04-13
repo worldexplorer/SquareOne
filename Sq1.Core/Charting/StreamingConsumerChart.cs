@@ -77,7 +77,7 @@ namespace Sq1.Core.Charting {
 		}
 		public void StreamingSubscribe(string reason = "NO_REASON_FOR_STREAMING_SUBSCRIBE") {
 			base.ReasonToExist = "Chart";
-			this.ReasonToExist += (this.Executor.Strategy != null) ? "[" + this.Executor.ToString() + "]" : "[" + base.Symbol_nullReported + "]";
+			base.ReasonToExist += (this.Executor.Strategy != null) ? "[" + this.Executor.ToString() + "]" : "[" + base.Symbol_nullReported + "]";
 
 			if (this.NPEs_handled() == false) return;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
 			base.MsigForNpExceptions = " //ChartStreamingConsumer.StreamingSubscribe(" + this.ToString() + ")";
@@ -326,7 +326,7 @@ namespace Sq1.Core.Charting {
 			//DOESNT_WORK_WHEN_LIVESIMMING_OWN_IMPLEMETATION_THER ALREADY_HANDLED_BY_chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline
 			//if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming) {
 
-			base.ChartShadow_nullReported.PushQuote_LevelTwoFrozen_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll();
+			base.ChartShadow_nullReported.PushQuote_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll();
 			
 			//}
 
@@ -336,7 +336,7 @@ namespace Sq1.Core.Charting {
 			//	this.ChartFormManager.ReportersFormsManager.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(positionsOpenNowSafeCopy);
 			//}
 		}
-		public override void Consume_levelTwoChanged_noNewQuote(LevelTwoFrozen levelTwoFrozen) {
+		public override void Consume_levelTwoChanged(LevelTwoFrozen levelTwoFrozen) {
 			if (base.Executor_nullReported.Strategy != null && base.Executor_nullReported.IsStreamingTriggeringScript) {
 				try {
 					//bool thereWereNeighbours = base.DataSource_nullReported
@@ -368,8 +368,7 @@ namespace Sq1.Core.Charting {
 				return;
 			}
 
-			base.ChartShadow_nullReported.PushQuote_LevelTwoFrozen_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll();
-			base.ChartShadow_nullReported.InvalidateAllPanels();
+			base.ChartShadow_nullReported.PushLevelTwoFrozen_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll(levelTwoFrozen);
 		}
 		#endregion
 

@@ -10,7 +10,8 @@ namespace Sq1.Core.DataTypes {
 		// two parallel structures with same Bars inside:
 		protected	List<Bar>					BarsList;	// List<Bar> for fast this[int]
 		//public		IList<Bar>					Values		{ get { lock (this.BarsLock) { return this.BarsList; } } }
-		public		int							Count		{ get { lock (this.BarsLock) { return this.BarsList.Count; } } }
+		public		int							Count			{ get { lock (this.BarsLock) { return this.BarsList.Count; } } }
+		public		bool						ImSortedReverse	{ get; private set; }
 		
 		//protected List<DateTime> DateTimeList;				// List<DateTime> for DataSeriesProxyBars.DateTimes
 		protected	SortedList<DateTime, Bar>	BarsByDateTime;	// SortedList for slow this[DateTime] and checks
@@ -32,6 +33,11 @@ namespace Sq1.Core.DataTypes {
 		
 		#region THATS_ALL_I_NEED_FROM_BARS_UNSCALED COULD_BE_AN_INTERFACE_BUT_IM_LAZY
 		public void Add(Bar barAdding) { lock (this.BarsLock) {
+				if (this.ImSortedReverse) {
+					string msg = "NYI__ADDING_BARS_IN_BarsEditorControl_HAS_UNKNOWN_IMPLICATIONS";
+					Assembler.PopupException(msg);
+					return;
+				}
 				if (this.BarsList.Count == 0) this.DateTimeFirst = barAdding.DateTimeOpen; 
 				this.BarsList.Add(barAdding);
 				//this.DateTimeList.Add(barAdding.DateTimeOpen);
@@ -45,17 +51,22 @@ namespace Sq1.Core.DataTypes {
 				Bar bar = this.BarsList[indexRequested];
 				
 				string msg = "";
-				if (bar.ParentBarsIndex != indexRequested) {
+				if (this.ImSortedReverse == false && bar.ParentBarsIndex != indexRequested) {
 					msg = "bar.ParentBarsIndex[" + bar.ParentBarsIndex + "] != indexRequested[" + indexRequested + "]"
 						+ "; Please modify bar.ParentBarsIndex only inside NOT_YET_IMPLEMENTED Bars.Add()/Bars.Remove()"
 						+ "; you will be upset if I return here the bar with the bar's own index you didn't request";
 					throw new Exception(msg);
 				}
-				if (double.IsNaN(bar.Open)) msg += "bar.Open[NaN] ";
-				if (double.IsNaN(bar.Low)) msg += "bar.Low[NaN] ";
-				if (double.IsNaN(bar.High)) msg += "bar.High[NaN] ";
-				if (double.IsNaN(bar.Close)) msg += "bar.Close[NaN] ";
-				if (double.IsNaN(bar.Volume)) msg += "bar.Volume[NaN] ";
+
+				//v1
+				//if (double.IsNaN(bar.Open)) msg += "bar.Open[NaN] ";
+				//if (double.IsNaN(bar.Low)) msg += "bar.Low[NaN] ";
+				//if (double.IsNaN(bar.High)) msg += "bar.High[NaN] ";
+				//if (double.IsNaN(bar.Close)) msg += "bar.Close[NaN] ";
+				//if (double.IsNaN(bar.Volume)) msg += "bar.Volume[NaN] ";
+				//v2
+				msg = bar.CheckThrow_DateOHLCV_validForSaving(false);
+
 				if (string.IsNullOrEmpty(msg) == false) {
 					#if DEBUG
 					Debugger.Break();
@@ -96,5 +107,10 @@ namespace Sq1.Core.DataTypes {
 			} }
 		#endregion
 
+
+		public void Reverse() {
+			this.ImSortedReverse = !this.ImSortedReverse;
+			this.BarsList.Reverse();
+		}
 	}
 }

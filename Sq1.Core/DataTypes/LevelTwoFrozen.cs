@@ -7,6 +7,39 @@ namespace Sq1.Core.DataTypes {
 		public	LevelTwoHalfSortedFrozen	Asks_sortedAsc		{ get; private set; }
 		public	LevelTwoHalfSortedFrozen	Bids_sortedDesc		{ get; private set; }
 
+				List<double>	ask_priceLevels_ASC_cached;
+		public	List<double>	Ask_priceLevels_ASC		{ get {
+			if (this.Asks_sortedAsc.ImFrozen == false) this.ask_priceLevels_ASC_cached = null;
+			if (this.ask_priceLevels_ASC_cached == null) this.ask_priceLevels_ASC_cached = new List<double>(this.Asks_sortedAsc.Keys);
+			return this.ask_priceLevels_ASC_cached;
+		} }
+
+				List<double>	bid_priceLevels_DESC_cached;
+		public	List<double>	Bid_priceLevels_DESC	{ get {
+			if (this.Asks_sortedAsc.ImFrozen == false) this.bid_priceLevels_DESC_cached = null;
+			if (this.bid_priceLevels_DESC_cached == null) this.bid_priceLevels_DESC_cached = new List<double>(this.Bids_sortedDesc.Keys);
+			return this.bid_priceLevels_DESC_cached;
+		} }
+
+		public	double	AskBest_lowest { get {
+				double ret = double.NaN;
+				if (this.Asks_sortedAsc.Count == 0) return ret;
+				ret =  this.Ask_priceLevels_ASC[0];
+				return ret;
+			} }
+		public	double	BidBest_highest { get {
+				double ret = double.NaN;
+				if (this.Bids_sortedDesc.Count == 0) return ret;
+				ret =  this.Bid_priceLevels_DESC[this.Bid_priceLevels_DESC.Count-1];
+				return ret;
+			} }
+
+		public bool MarketIsDead_reliablyKozSorted { get {
+			if (double.IsNaN(this.AskBest_lowest))	return false;
+			if (double.IsNaN(this.BidBest_highest))	return false;
+			return this.AskBest_lowest <= this.BidBest_highest;
+		} }
+
 		public LevelTwoFrozen(LevelTwo levelTwo_toFreeze, string whoFrozeMe, string recipient) {
 			ReasonToExist = whoFrozeMe;
 
@@ -32,15 +65,9 @@ namespace Sq1.Core.DataTypes {
 			levelTwo_toFreeze.UnLockFor(this, whoFrozeMe);
 
 			#if DEBUG
-			if (this.Asks_sortedAsc.Count > 0 && this.Bids_sortedDesc.Count > 0) {
-				List<double> ask_priceLevels_ASC = new List<double>(this.Asks_sortedAsc.Keys);
-				double askBest_lowest =  ask_priceLevels_ASC[0];
-				List<double> bid_priceLevels_DESC = new List<double>(this.Bids_sortedDesc.Keys);
-				double bidBest_highest =  bid_priceLevels_DESC[bid_priceLevels_DESC.Count-1];
-				if (askBest_lowest < bidBest_highest) {
-					string msg = "YOUR_MOUSTACHES_GOT_REVERTED";
-					Assembler.PopupException(msg, null, false);
-				}
+			if (this.MarketIsDead_reliablyKozSorted) {
+				string msg = "YOUR_MOUSTACHES_GOT_REVERTED_OR MarketIsDead_reliablyKozSorted";
+				Assembler.PopupException(msg, null, false);
 			}
 			#endif
 

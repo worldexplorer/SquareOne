@@ -70,7 +70,13 @@ namespace Sq1.Core.Support {
 				return false;
 			}
 
-			string msig = " //WaitAndLockFor(owner[" + lockOwner + "] lockPurpose[" + lockPurpose + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
+			string lockOwner_asString = "THREW_DURING_lockOwner_asString";
+			try {
+				lockOwner_asString = lockOwner.ToString();
+			} catch (Exception ex) {
+				string msg = "I_WAS_TRYING_TO_AVOID_STACK_OVERFLOW_IN__UnLockFor()__WaitAndLockFor()_WAS_NOT_SUFFERING";
+			}
+			string msig = " //WaitAndLockFor(owner[" + lockOwner_asString + "] lockPurpose[" + lockPurpose + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
 			//string msig = "LOCK_REQUESTED_BY[" + owner.ToString() + "]_FOR[" + lockPurpose + "] ";
 			if (this.IsDisposed) {
 				string msg = "DISPOSED_WAS_AREADY_INVOKED#1 ";
@@ -139,7 +145,13 @@ namespace Sq1.Core.Support {
 					return false;
 				} // if no stacked locks from the same owner - unlock it! 6 last lines
 			}
-			string msig = " //UnLockFor(owner[" + lockOwner + "] releasingAfter[" + releasingAfter + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
+			string lockOwner_asString = "THREW_DURING_lockOwner_asString";
+			try {
+				lockOwner_asString = lockOwner.ToString();
+			} catch (Exception ex) {
+				string msg = "I_WAS_TRYING_TO_AVOID_STACK_OVERFLOW_IN__UnLockFor()";
+			}
+			string msig = " //UnLockFor(owner[" + lockOwner_asString + "] releasingAfter[" + releasingAfter + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
 			if (this.IsDisposed) {
 				string msg = "DISPOSED_WAS_AREADY_INVOKED#1 ";
 				Assembler.PopupException(msg + msig);
@@ -165,7 +177,7 @@ namespace Sq1.Core.Support {
 					// DONT_WORRY__BE_HAPPY throw new Exception(msg + msig);
 				} else {
 					if (this.lockedClass != lockOwner) {
-						msg = "YOU_MUST_BE_THE_SAME_OBJECT_WHO_LOCKED this.lockOwner[" + this.lockedClass + "] != owner[" + lockOwner + "]";
+						msg = "YOU_MUST_BE_THE_SAME_OBJECT_WHO_LOCKED this.lockOwner[" + this.lockedClass + "] != owner[" + lockOwner_asString + "]";
 						throw new Exception(msg + msig);
 					}
 					if (this.lockedPurposeFirstInTheStack != releasingAfter) {

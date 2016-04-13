@@ -174,16 +174,26 @@ namespace Sq1.Core.DataFeed {
 		        }
 		        return channelsPaused;
 		    }
+
 		    if (channel_nullUnsafe.QuotePump_nullUnsafe.Paused == true) {
-		        string msg = "PUMP_ALREADY_PAUSED_BY_ANOTHER_LIVESIM";
+		        string msg = "PUMP_QUOTE_ALREADY_PAUSED_BY_ANOTHER_LIVESIM";
 		        Assembler.PopupException(msg, null, false);
 		        return channelsPaused;
 		    }
 		    channel_nullUnsafe.QuotePump_nullUnsafe.PusherPause_waitUntilPaused();
 		    channelsPaused++;
+
+		    if (channel_nullUnsafe.PumpLevelTwo.Paused == true) {
+		        string msg = "PUMP_LEVEL_TWO_ALREADY_PAUSED_BY_ANOTHER_LIVESIM";
+		        Assembler.PopupException(msg, null, false);
+		        return channelsPaused;
+		    }
+		    channel_nullUnsafe.PumpLevelTwo.PusherPause_waitUntilPaused();
+		    channelsPaused++;
+
 		    return channelsPaused;
 		}
-		public int LivesimStreaming_PumpResume_forSameSymbolScale_unfreezeOtherConsumers_whenBrokerOriginalIsLivesimDefault(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
+		public int LivesimStreaming_TwoPumpsResume_forSameSymbolScale_unfreezeOtherConsumers_whenBrokerOriginalIsLivesimDefault(ScriptExecutor executorImLivesimming, bool wrongUsagePopup = true) {
 		    string msig = " //LivesimStreaming_PumpResume_forSameSymbolScale_unfreezeOtherConsumers_whenBrokerOriginalIsLivesimDefault(" + executorImLivesimming + ")";
 		    int channelsPaused = 0;
 		    if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
@@ -206,14 +216,24 @@ namespace Sq1.Core.DataFeed {
 		        }
 		        return channelsPaused;
 		    }
+
 		    if (channel_nullUnsafe.QuotePump_nullUnsafe.Paused == false) {
-		        string msg = "PUMP_ALREADY_UNPAUSED_BY_ANOTHER_LIVESIM";
+		        string msg = "PUMP_QUOTE_ALREADY_UNPAUSED_BY_ANOTHER_LIVESIM";
 		        Assembler.PopupException(msg, null, false);
 		        return channelsPaused;
 		    }
 		    channel_nullUnsafe.QuotePump_nullUnsafe.PusherUnpause_waitUntilUnpaused();
 		    channelsPaused++;
-		    return channelsPaused;
+
+		    if (channel_nullUnsafe.PumpLevelTwo.Paused == false) {
+		        string msg = "PUMP_LEVEL2_ALREADY_UNPAUSED_BY_ANOTHER_LIVESIM";
+		        Assembler.PopupException(msg, null, false);
+		        return channelsPaused;
+		    }
+		    channel_nullUnsafe.PumpLevelTwo.PusherUnpause_waitUntilUnpaused();
+		    channelsPaused++;
+
+			return channelsPaused;
 		}
 		#endregion
 
@@ -221,13 +241,13 @@ namespace Sq1.Core.DataFeed {
 		public int LivesimStreaming_PumpsAllPause_forAllSymbolsScales_freezeAllConsumers_whenBrokerOriginalIsReal(ScriptExecutor executorImLivesimming) {
 			string msig = " //LivesimStreaming_PumpsAllPause_forAllSymbolsScales_freezeAllConsumers_whenBrokerOriginalIsReal(" + executorImLivesimming + ")";
 			DistributorCharts distributorCharts = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim;
-			int pumpsPaused = distributorCharts.AllPumpsPause_forAllSymbol_duringLivesimmingOne(msig);
+			int pumpsPaused = distributorCharts.TwoPushingPumpsPerSymbol_Pause_forAllSymbol_duringLivesimmingOne(msig);
 			return pumpsPaused;
 		}
 		public int LivesimStreaming_PumpsAllResume_forAllSymbolsScales_unfreezeAllConsumers_whenBrokerOriginalIsReal(ScriptExecutor executorImLivesimming) {
 			string msig = " //LivesimStreaming_PumpsAllResume_forAllSymbolsScales_unfreezeAllConsumers_whenBrokerOriginalIsReal(" + executorImLivesimming + ")";
 			DistributorCharts distributorCharts = this.StreamingAdapter.DistributorCharts_substitutedDuringLivesim;
-			int pumpsUnpaused = distributorCharts.AllPumpsUnpause_forAllSymbol_afterLivesimmingOne(msig);
+			int pumpsUnpaused = distributorCharts.TwoPushingPumpsPerSymbol_Unpause_forAllSymbol_afterLivesimmingOne(msig);
 			return pumpsUnpaused;
 		}
 	}

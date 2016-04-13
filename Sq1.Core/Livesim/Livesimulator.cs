@@ -251,16 +251,15 @@ namespace Sq1.Core.Livesim {
 				livesimStreaming.UpstreamDisconnect_LivesimTerminatedOrAborted();
 				livesimStreaming.Original_SubstituteDistributor_forSymbolLivesimming_restoreOriginalDistributor();
 
-				base.BarsOriginal.DataSource.BrokerAdapter.ImBeingTested_byOwnLivesimImplementation_set(false);
-
 				#region MOVED_BACK_DOWNSTACK NEVER_COMMENT_OUT__I_SPENT_TWO_DAYS_TO_DEBUG_IT
 				//string reasonToUnPauseSymbol = "SYMBOL_UNPAUSED_LIVESIMMING-" + this.Executor.ToString();
 				int pumpsUnpaused;
 				if (base.BarsOriginal.DataSource.BrokerAdapter is LivesimBrokerDefault) {
 					//v1 BROKER_IN_TEST_MODE_WILL_NOT_SEND_ORDERS_FOR_NON_LIVESIMMING_SYMBOLS
-					pumpsUnpaused = this.Executor.DataSource_fromBars.LivesimStreaming_PumpResume_forSameSymbolScale_unfreezeOtherConsumers_whenBrokerOriginalIsLivesimDefault(this.Executor);
+					pumpsUnpaused = this.Executor.DataSource_fromBars.LivesimStreaming_TwoPumpsResume_forSameSymbolScale_unfreezeOtherConsumers_whenBrokerOriginalIsLivesimDefault(this.Executor);
 				} else {
 					pumpsUnpaused = this.Executor.DataSource_fromBars.LivesimStreaming_PumpsAllResume_forAllSymbolsScales_unfreezeAllConsumers_whenBrokerOriginalIsReal(this.Executor);
+					base.BarsOriginal.DataSource.BrokerAdapter.ImBeingTested_byOwnLivesimImplementation_set(false);
 				}
 				if (pumpsUnpaused == 0) {
 					string msg = "BARS_UNSUBSCRIBED OR_DONT_YOU_HAVE_CHARTS_OPEN_FOR_STRATEGY_LIVESIMMING?";

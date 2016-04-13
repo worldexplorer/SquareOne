@@ -91,7 +91,7 @@ namespace Sq1.Core.Streaming {
 		
 		public void CreateDistributors_onlyWhenNecessary(string reasonToExist) {
 			if (this.DistributorCharts_substitutedDuringLivesim == null) {
-				this.DistributorCharts_substitutedDuringLivesim			= new DistributorCharts(this, reasonToExist);
+				this.DistributorCharts_substitutedDuringLivesim		= new DistributorCharts(this, reasonToExist);
 			} else {
 				//this.Distributor_replacedForLivesim.ForceUnsubscribeLeftovers_mustBeEmptyAlready(reasonToExist);
 			}
@@ -204,7 +204,7 @@ namespace Sq1.Core.Streaming {
 			List<SymbolScaleStream<StreamingConsumerChart>> channels = this.DistributorCharts_substitutedDuringLivesim.GetStreams_allScaleIntervals_forSymbol(symbol);
 			Quote lastQuoteReceived = this.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(symbol);
 			foreach (var channel in channels) {
-				channel.UpstreamUnSubscribedFromSymbolPokeConsumers(symbol, lastQuoteReceived);
+				channel.UpstreamUnSubscribedFromSymbol_pokeConsumers(symbol, lastQuoteReceived);
 			}
 		}
 
@@ -226,6 +226,13 @@ namespace Sq1.Core.Streaming {
 				//Assembler.PopupException("Subscribing BarsConsumer [" + this + "] to " + this.ToString() + " (wasn't registered)");
 				this.DistributorCharts_substitutedDuringLivesim.ConsumerBarSubscribe(chartStreamingConsumer, true);
 			}
+
+			if (this.DistributorCharts_substitutedDuringLivesim.ConsumerLevelTwoFrozenIsSubscribed(chartStreamingConsumer) == true) {
+				Assembler.PopupException("CHART_STREAMING_ALREADY_SUBSCRIBED_CONSUMER_LEVEL_TWO_FROZEN" + msigForNpExceptions);
+			} else {
+				//Assembler.PopupException("Subscribing LevelTwoFrozensConsumer [" + this + "] to " + this.ToString() + " (wasn't registered)");
+				this.DistributorCharts_substitutedDuringLivesim.ConsumerLevelTwoFrozenSubscribe(chartStreamingConsumer, true);
+			}
 		}
 		internal void ChartStreamingConsumer_Unsubscribe(StreamingConsumerChart chartStreamingConsumer, string msigForNpExceptions) {
 			if (this.DistributorCharts_substitutedDuringLivesim.ConsumerQuoteIsSubscribed(chartStreamingConsumer) == false) {
@@ -242,6 +249,14 @@ namespace Sq1.Core.Streaming {
 			} else {
 				//Assembler.PopupException("UnSubscribing BarsConsumer [" + this + "] to " + this.ToString() + " (was subscribed)");
 				this.DistributorCharts_substitutedDuringLivesim.ConsumerBarUnsubscribe(chartStreamingConsumer);
+			}
+
+			if (this.DistributorCharts_substitutedDuringLivesim.ConsumerLevelTwoFrozenIsSubscribed(chartStreamingConsumer) == false) {
+				string msg = "CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_LEVEL_TWO_FROZEN";
+				Assembler.PopupException(msg + msigForNpExceptions, null, true);
+			} else {
+				//Assembler.PopupException("UnSubscribing LevelTwoFrozensConsumer [" + this + "] to " + this.ToString() + " (was subscribed)");
+				this.DistributorCharts_substitutedDuringLivesim.ConsumerLevelTwoFrozenUnsubscribe(chartStreamingConsumer);
 			}
 		}
 

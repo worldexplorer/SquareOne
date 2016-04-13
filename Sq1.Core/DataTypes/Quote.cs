@@ -8,6 +8,7 @@ using Sq1.Core.Backtesting;
 namespace Sq1.Core.DataTypes {
 	public class Quote {
 		[JsonIgnore]	public	const string	GENERATED_TO_FILL_ALERT = "GENERATED_TO_FILL_ALERT";
+		[JsonIgnore]	public	const string	LEVEL2_SPREAD_CHANGED__SIZE_ZERO = "LEVEL2_SPREAD_CHANGED__SIZE_ZERO";
 		[JsonIgnore]	public	const int		IntraBarSernoShift_forGenerated_towardsPendingFill = 100000;
 
 		[JsonProperty]	public	string		Symbol;
@@ -82,15 +83,15 @@ namespace Sq1.Core.DataTypes {
 				sb.Append(this.LocalTime.ToString("HH:mm:ss.fff"));
 			}
 			if (this.HasParentBarStreaming) {
-				TimeSpan timeLeft = (this.ParentBarStreaming.DateTimeNextBarOpenUnconditional > this.ServerTime)
-				    ? this.ParentBarStreaming.DateTimeNextBarOpenUnconditional.Subtract(this.ServerTime)
-				    : this.ServerTime.Subtract(this.ParentBarStreaming.DateTimeNextBarOpenUnconditional);
+				TimeSpan timeLeft = (this.ParentBarStreaming.DateTime_nextBarOpen_unconditional > this.ServerTime)
+				    ? this.ParentBarStreaming.DateTime_nextBarOpen_unconditional.Subtract(this.ServerTime)
+				    : this.ServerTime.Subtract(this.ParentBarStreaming.DateTime_nextBarOpen_unconditional);
 				string format = "mm:ss";
 				if (timeLeft.Minutes > 0) format = "mm:ss";
 				if (timeLeft.Hours > 0) format = "HH:mm:ss";
 				sb.Append(" ");
 				string timeLeftFormatted = new DateTime(timeLeft.Ticks).ToString(format);
-				if (this.ParentBarStreaming.DateTimeNextBarOpenUnconditional < this.ServerTime) timeLeftFormatted = "-" + timeLeftFormatted;
+				if (this.ParentBarStreaming.DateTime_nextBarOpen_unconditional < this.ServerTime) timeLeftFormatted = "-" + timeLeftFormatted;
 				sb.Append(timeLeftFormatted);
 			}
 			return sb.ToString();
@@ -102,6 +103,14 @@ namespace Sq1.Core.DataTypes {
 				&& this is QuoteGenerated;
 			return ret;
 		} }
+
+		[JsonIgnore]	public	bool		FakeQuote_toDeliverSpread_makeLevel2Repaint { get {
+			bool ret = this.Source.Contains(Quote.LEVEL2_SPREAD_CHANGED__SIZE_ZERO)
+				|| this.Size == 0;
+			return ret;
+		} }
+
+		
 
 		Quote() {
 			IntraBarSerno = -1;		// filled in lateBinder
@@ -126,8 +135,12 @@ namespace Sq1.Core.DataTypes {
 			if (streamingParentBar == null) {
 				string msg = "NULL_BAR_NOT_ATTACHED_TO_THIS_QUOTE";
 			} else if (streamingParentBar.ParentBars == null) {
-				string msg = "UNATTACHED_BAR_ASSIGNED_INTO_THIS_QUOTE";
-				Assembler.PopupException(msg + msig, null, false);
+				if (streamingParentBars_mustBeNullforSolidifier) {
+					string msg = "SOLIDIFIERS_WILL_ATTACH_BAR_EMULATED__UNATTACHED_BARS";
+				} else {
+					string msg = "UNATTACHED_BAR_ASSIGNED_INTO_THIS_QUOTE";
+					Assembler.PopupException(msg + msig, null, false);
+				}
 			} else {
 				string msg = "ATTACHED_BAR_ASSIGNED_INTO_THIS_QUOTE";
 			}

@@ -51,8 +51,9 @@ namespace Sq1.Core.Streaming {
 			string msg = millisTook_updateLast + " barLastFormed[" + barStaticLast_justFormed_byBarsEmulator + "] into DataSource[" + this.dataSource.Name + "]";
 			Assembler.PopupException(msg, null, false);
 		}
-		public override void Consume_levelTwoChanged_noNewQuote(LevelTwoFrozen levelTwoFrozen) {
-			string msg = "SOLIDIFIER_DOESNT_SAVE_LEVELS_TWO____HOW_DO_YOU_WANT_YOUR_COFFEE?...";
+		public override void Consume_levelTwoChanged(LevelTwoFrozen levelTwoFrozen) {
+			string msg = "REMOVE_THIS_INVOCATION_UPSTACK__SOLIDIFIER_DOESNT_SAVE_LEVELS_TWO";
+			Assembler.PopupException(msg);
 		}
 		#endregion
 

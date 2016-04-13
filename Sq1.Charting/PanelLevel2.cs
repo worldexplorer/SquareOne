@@ -216,8 +216,8 @@ namespace Sq1.Charting {
 
 
 			//v1 bool allowUnproportional = true;
-			bool stripeHeightWillContainMeasuredText = base.ChartControl.ChartSettings.LevelTwoStripesHeightWrapsVolumeLabel;
-			if (stripeHeightWillContainMeasuredText) {
+			bool stripeHeight_willContainMeasuredText = base.ChartControl.ChartSettings.LevelTwoStripesHeightWrapsVolumeLabel;
+			if (stripeHeight_willContainMeasuredText) {
 				int howManyAskPriceLevelsWillFit = (int) Math.Round(quoteAskYoffsetted / (double)pxPerPriceStep_Height);
 				int howManyBidPriceLevelsWillFit = (int) Math.Round((base.ClientRectangle.Height - quoteBidYofsetted) / (double)pxPerPriceStep_Height);
 				// they are not equal because of the height of the DomControl; spread is not accounted so I leave some space for the spread by trimming a longer moustache
@@ -277,7 +277,7 @@ namespace Sq1.Charting {
 #if DEBUG
 				if (lotCumulativePrev != 0) {
 					if (lotCumulativePrev >= lotCumulative) {
-						string msg = "ASKS_MUST_INCREASE_AND_LOTS_CUMULATIVE_MUST_GROW";
+						string msg = "ASKS_LOTS_CUMULATIVE_MUST_GROW";
 						Assembler.PopupException(msg);
 					}
 				}
@@ -285,12 +285,12 @@ namespace Sq1.Charting {
 #endif
 
 				int yAsk = -1;
-				if (stripeHeightWillContainMeasuredText) {
+				if (stripeHeight_willContainMeasuredText) {
 					// using panelPrice.PixelsPerPriceStep5pxLeast_cached as minimal step (making price level wider on PanelLevel2 than price level displayed on PanelPrice for visual convenience)
 					double diffFromQuoteAsk = ask - quoteAsk;
 					if (diffFromQuoteAsk < 0) {
-						string msg = "next ask must have greater price";
-						Assembler.PopupException(msg, null, false);
+						string msg = "ASK_IN_L2_IS_LOWER_THAN_ASK_OF_LAST_TRADED_QUOTE";
+						//Assembler.PopupException(msg, null, false);
 					}
 					int diffFromQuoteAskAsPriceStepsAway = (int)Math.Ceiling(diffFromQuoteAsk / priceStep);
 					int diffFromQuoteAskY = diffFromQuoteAskAsPriceStepsAway * pxPerPriceStep_Height;
@@ -368,20 +368,20 @@ namespace Sq1.Charting {
 #if DEBUG
 				if (lotCumulativePrev != 0) {
 					if (lotCumulativePrev >= lotCumulative) {
-						string msg = "BIDS_MUST_DECREAS_BUT_LOTS_CUMULATIVE_MUST_GROW";
-						Assembler.PopupException(msg);
+						string msg = "BIDS_LOTS_CUMULATIVE_MUST_GROW";
+						Assembler.PopupException(msg, null, false);
 					}
 				}
 				lotCumulativePrev = lotCumulative;
 #endif
 
 				int yBid = -1;
-				if (stripeHeightWillContainMeasuredText) {
+				if (stripeHeight_willContainMeasuredText) {
 					// using panelPrice.PixelsPerPriceStep5pxLeast_cached as minimal step (making price level wider on PanelLevel2 than price level displayed on PanelPrice for visual convenience)
 					double diffFromQuoteBid = quoteBid - bid;
 					if (diffFromQuoteBid < 0) {
-						string msg = "next bid must have lesser price";
-						Assembler.PopupException(msg, null, false);
+						string msg = "BID_IN_L2_HAS_HIGHER_PRICE_THAN_ASK_OF_LAST_TRADED_QUOTE";
+						//Assembler.PopupException(msg, null, false);
 					}
 					int diffFromQuoteBidAsPriceStepsAway = (int)Math.Ceiling(diffFromQuoteBid / priceStep);
 					int diffFromQuoteBidY = diffFromQuoteBidAsPriceStepsAway * pxPerPriceStep_Height;

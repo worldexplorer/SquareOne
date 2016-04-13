@@ -37,6 +37,18 @@ namespace Sq1.Core.Repositories {
 			{ 2.0d, 48 },	// got 48 in Debugger from this.oneBarSize while reading saved v3 file
 			{ 3.0d, 48 }	// got 48 in Debugger from this.oneBarSize while reading saved v3 file
 		};
+
+		string dataSourceName { get {
+			string ret = "DATASOURCE_UNKNOWN";
+			if (this.barsRepository == null) return ret;
+			if (string.IsNullOrEmpty(this.barsRepository.DataSourceAbspath)) return ret;
+			ret = Path.GetFileName(this.barsRepository.DataSourceAbspath);
+			return ret;
+		} }
+		public string SymbolIntervalScale_DSN { get {
+			string ret = "(" + this.Symbol + ":" + this.barsRepository.ScaleInterval + "/" + this.dataSourceName + ")";
+			return ret;
+		} }
 		
 		public RepositoryBarsFile(RepositoryBarsSameScaleInterval barsFolder, string symbol, bool throwIfDoesntExist = true, bool createIfDoesntExist = false) {
 			fileReadWriteSequentialLock = new object();
@@ -60,15 +72,17 @@ namespace Sq1.Core.Repositories {
 			return bars;
 		}
 		Bars barsLoadAll_nullUnsafe(bool resaveBarsIfThereWasFailedCheckOHLCV = true) {
-			string msig = " BarsLoadAll(this.Abspath=[" + this.Abspath + "]): ";
-			int barsReadTotal = 0;
-			int barsFailedCheckOHLCV = 0;
-			bool resaveRequiredByVersionMismatch = false;
+			string msig = " //barsLoadAll_nullUnsafe(this.Abspath=[" + this.Abspath + "]) ";
+
+			int				barsRead_total = 0;
+			int				barsFailed_OHLCVcheck_total = 0;
+			List<int>		barsIndexes_failedOHLCVcheck = new List<int>();
+			bool			resaveRequiredByVersionMismatch = false;
 			
-			Bars bars = null;
-			DateTime dateTime = DateTime.Now;
-			FileStream fileStream = null;
-			BinaryReader binaryReader = null;
+			Bars			bars = null;
+			DateTime		dateTime = DateTime.Now;
+			FileStream		fileStream = null;
+			BinaryReader	binaryReader = null;
 			try {
 				fileStream = File.Open(this.Abspath, FileMode.Open, FileAccess.Read, FileShare.Read);
 				binaryReader = new BinaryReader(fileStream);
@@ -143,19 +157,24 @@ namespace Sq1.Core.Repositories {
 					double low		= binaryReader.ReadDouble();
 					double close	= binaryReader.ReadDouble();
 					double volume	= binaryReader.ReadDouble();
-					barsReadTotal++;
+					barsRead_total++;
 					if (this.oneBarSize == 0) {
 						// I want to print out the size of header and bar, but I don't want to extract save-able members from Bars and Bar to use Marshal.SizeOf(<T>)
 						this.oneBarSize = binaryReader.BaseStream.Position - this.headerSize;	// BARS_LOAD_TELEMETRY
 					}
+
 					try {
 						Bar barAdded = bars.BarStatic_createAppendAttach(dateTimeOpen, open, high, low, close, volume, true);
-					} catch (Exception ex) {
-						barsFailedCheckOHLCV++;
-						// already reported exception in CheckOHLCVthrow
-						string msg2 = " barsFailedCheckOHLCV[" + barsFailedCheckOHLCV + "]  barsReadTotal[" + barsReadTotal + "] bars.Count[" + bars.Count + "]"
-							+ " binaryReader.BaseStream.Position[" + binaryReader.BaseStream.Position + "]/[" + binaryReader.BaseStream.Length + "]";
-						Assembler.PopupException(msg2 + msig, ex, false);
+					} catch (Exception exception_DateOHLCV_NaNs__orZeroes) {
+						barsIndexes_failedOHLCVcheck.Add(barsRead_total-1);
+						barsFailed_OHLCVcheck_total++;
+						#if VERBOSE_STRINGS_SLOW
+						// WILL_REPORT_ANYWAY_IN_msg_resaving
+						string msg2 = "barFailed[" + barsFailed_OHLCVcheck_total + "]"
+							//+ "=barsReadTotal[" + barsReadTotal + "]-bars.Count[" + bars.Count + "]"
+							+ " @binaryReader.BaseStream.Position[" + binaryReader.BaseStream.Position + "]/[" + binaryReader.BaseStream.Length + "]Length";
+						Assembler.PopupException(msg2 + msig, exception_DateOHLCV_NaNs__orZeroes, false);
+						#endif
 						continue;	//just in case if you add code below :)
 					}
 				}
@@ -199,19 +218,26 @@ namespace Sq1.Core.Repositories {
 				}
 			}
 
-			
-			bool resaveRequired = resaveRequiredByVersionMismatch;
-			if (barsFailedCheckOHLCV > 0) {
-				string msg = "SOME_BARS_SKIPPED_WHILE_SAVING barsFailedCheckOHLCV[" + barsFailedCheckOHLCV + "] barsReadTotal[" + barsReadTotal + "] bars.Count[" + bars.Count + "]";
-				Assembler.PopupException(msg, null, false);
-				if (resaveBarsIfThereWasFailedCheckOHLCV) {
-					resaveRequired = true;
+			string msg_resaving = "";
+			try {
+				bool resaveRequired = resaveRequiredByVersionMismatch;
+				if (barsIndexes_failedOHLCVcheck.Count > 0) {
+					string barsIndexes_failedOHLCVcheck_asString = string.Join(",", barsIndexes_failedOHLCVcheck);
+					msg_resaving = "FIX_SOLIDIFIERS! BARS_NANs_OR_ZEROes"
+						+ " indexes[" + barsIndexes_failedOHLCVcheck_asString + "] of barsRead_total[" + barsRead_total + "]";
+					if (resaveBarsIfThereWasFailedCheckOHLCV) {
+						resaveRequired = true;
+					}
 				}
+				if (resaveRequired) {
+					int reSaved = this.BarsSave_threadSafe(bars);
+					msg_resaving = this.SymbolIntervalScale_DSN + " reSaved[" + reSaved + "] " + msg_resaving;
+				}
+			} catch (Exception ex) {
+				Assembler.PopupException("THREW_WHILE_RESAVING", ex, true);
 			}
-			if (resaveRequired) {
-				int reSaved = this.BarsSave_threadSafe(bars);
-				string msg2 = "RE-SAVED_TO_REMOVE_BARS_ALL_ZEROES reSaved[" + reSaved + "]";
-				Assembler.PopupException(msg2, null, false);
+			if (string.IsNullOrEmpty(msg_resaving) == false) {
+				Assembler.PopupException(msg_resaving + msig, null, false);
 			}
 
 			return bars;
@@ -221,8 +247,8 @@ namespace Sq1.Core.Repositories {
 			int barsSaved = -1;
 			lock (this.fileReadWriteSequentialLock) {
 				barsSaved = this.barsSave(bars);
-				string msg = "barsSaved[" + barsSaved + "] " + this.Symbol + ":" + this.barsRepository.ScaleInterval;
-				Assembler.PopupException(msg, null, false);
+				string msg = "barsSaved[" + barsSaved + "] " + this.SymbolIntervalScale_DSN;
+				//Assembler.PopupException(msg, null, false);
 			}
 			return barsSaved;
 		}
@@ -272,7 +298,7 @@ namespace Sq1.Core.Repositories {
 				for (int i = 0; i < bars.Count; i++) {
 					Bar bar = bars[i];
 					try {
-						bar.CheckOHLCVthrow();	//	catching the exception will display stacktrace in ExceptionsForm
+						bar.CheckThrow_valuesOkay();	//	catching the exception will display stacktrace in ExceptionsForm
 					} catch (Exception ex) {
 						barsFailedCheckOHLCV++;
 						string msg = "NOT_SAVING_TO_FILE_THIS_BAR__TOO_LATE_TO_FIND_WHO_GENERATED_IT barAllZeroes bar[" + bar + "]";
@@ -324,7 +350,7 @@ namespace Sq1.Core.Repositories {
 			string msig = " barAppendStaticOrReplaceStreaming(" + barLastFormedStatic_orCurrentStreaming + ")=>[" + this.Abspath + "]";
 
 			try {
-				barLastFormedStatic_orCurrentStreaming.CheckOHLCVthrow();	//	catching the exception will display stacktrace in ExceptionsForm
+				barLastFormedStatic_orCurrentStreaming.CheckThrow_valuesOkay();	//	catching the exception will display stacktrace in ExceptionsForm
 			} catch (Exception ex) {
 				string msg = "NOT_APPENDING_TO_FILE_THIS_BAR__FIX_WHO_GENERATED_IT_UPSTACK barAllZeroes barLastFormed[" + barLastFormedStatic_orCurrentStreaming + "]";
 				Assembler.PopupException(msg + msig, ex, false);
@@ -405,9 +431,9 @@ namespace Sq1.Core.Repositories {
 								+ " barBeingOverwritten[" + barBeingOverwritten + "] => barLastFormedStatic_orCurrentStreaming[" + barLastFormedStatic_orCurrentStreaming + "]"
 								+ " fileStreamPositionAfterSeekToLastBar[" + fileStreamPositionAfterSeekToLastBar + "] fileStreamLength[" + fileStreamLength + "]"
 								;
-							//#if DEBUG_VERBOSE
+							#if DEBUG_VERBOSE
 							Assembler.PopupException(msg, null, false);
-							//#endif
+							#endif
 						} catch (Exception ex) {
 							string msg = "3/4_FILESTREAM_SEEK_ONE_BAR_FROM_END_THROWN barSize[" + barSize + "]";
 							Assembler.PopupException(msg + msig, ex);

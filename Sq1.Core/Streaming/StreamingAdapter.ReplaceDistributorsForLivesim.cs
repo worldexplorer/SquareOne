@@ -25,7 +25,7 @@ namespace Sq1.Core.Streaming {
 				+ " " + this.livesimStreaming_forWhomDistributors_areReplaced.Name
 				+ "/" + executor.StrategyName
 				// NO_IT_DOES_CONTAIN_GARBAGE!!! + "@" + executor.Bars.ToString()	// should not contain Static/Streaming bars since Count=0
-				+ executor.Bars.SymbolIntervalScale
+				+ " " + executor.Bars.SymbolIntervalScaleDSN
 				;
 
 			if (this.DistributorCharts_substitutedDuringLivesim.ChannelsBySymbol.Count == 0 && chartBarsSubscribeSelected) {
@@ -43,13 +43,14 @@ namespace Sq1.Core.Streaming {
 				StreamingConsumerChart streamingConsumer_chartShadow	= this.livesimStreaming_forWhomDistributors_areReplaced.Livesimulator.Executor.ChartShadow.ChartStreamingConsumer;
 
 				bool willPushUsingPumpInSeparateThread = true;	// I wanna know which thread is going to be used; if DDE-client then cool; YES_IT_WAS_DDE_THREAD
-				this.DistributorCharts_substitutedDuringLivesim.ConsumerQuoteSubscribe(streamingConsumer_chartShadow, willPushUsingPumpInSeparateThread);
-				this.DistributorCharts_substitutedDuringLivesim.ConsumerBarSubscribe(streamingConsumer_chartShadow, willPushUsingPumpInSeparateThread);
+				this.DistributorCharts_substitutedDuringLivesim.		  ConsumerQuoteSubscribe(streamingConsumer_chartShadow, willPushUsingPumpInSeparateThread);
+				this.DistributorCharts_substitutedDuringLivesim.			ConsumerBarSubscribe(streamingConsumer_chartShadow, willPushUsingPumpInSeparateThread);
+				this.DistributorCharts_substitutedDuringLivesim. ConsumerLevelTwoFrozenSubscribe(streamingConsumer_chartShadow, willPushUsingPumpInSeparateThread);
 				this.DistributorCharts_substitutedDuringLivesim.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(symbolLivesimming);
 			}
 
 			if (this.DistributorSolidifiers_substitutedDuringLivesim.ChannelsBySymbol.Count > 0) {
-				this.DistributorSolidifiers_substitutedDuringLivesim.PumpPause_forSymbolLivesimming(symbolLivesimming, reasonForNewDistributor);
+				this.DistributorSolidifiers_substitutedDuringLivesim.TwoLiveRealPumps_Pause_whileSymbolLivesimming(symbolLivesimming, reasonForNewDistributor);
 			} else {
 				if (this is LivesimStreamingDefault) {
 					string msg4 = "DEFAULT_LIVESIM_HAS_NO_SOLIDIFIERS";
@@ -79,13 +80,13 @@ namespace Sq1.Core.Streaming {
 			string reasonForStoppingReplacedDistributor = this.livesimStreaming_forWhomDistributors_areReplaced.Name
 				+ "==RESTORING_AFTER_LIVESIM" + executor.StrategyName + "@" + executor.Bars.ToString();	// should not contain Static/Streaming bars since Count=0
 
-			this.DistributorCharts_substitutedDuringLivesim.PumpStop_forSymbolLivesimming(symbolLivesimming, reasonForStoppingReplacedDistributor);
+			this.DistributorCharts_substitutedDuringLivesim.TwoLiveRealPumps_Stop_forSymbolLivesimTerminatedAborted(symbolLivesimming, reasonForStoppingReplacedDistributor);
 
 			this.DistributorCharts_substitutedDuringLivesim				= this.dataDistributorCharts_preLivesimForSymbolLivesimming;
 			this.DistributorSolidifiers_substitutedDuringLivesim	= this.dataDistributorSolidifier_preLivesimForSymbolLivesimming;
 
 			if (this.DistributorSolidifiers_substitutedDuringLivesim.ChannelsBySymbol.Count > 0) {
-				this.DistributorSolidifiers_substitutedDuringLivesim.PumpUnpause_forSymbolLivesimming(symbolLivesimming, reasonForStoppingReplacedDistributor);
+				this.DistributorSolidifiers_substitutedDuringLivesim.TwoLiveRealPumps_Unpause_afterSymbolLivesimmed(symbolLivesimming, reasonForStoppingReplacedDistributor);
 			} else {
 				if (this is LivesimStreamingDefault) {
 					string msg4 = "DEFAULT_LIVESIM_HAS_NO_SOLIDIFIERS";

@@ -22,6 +22,7 @@ namespace Sq1.Widgets.FuturesMerger {
 				RepositoryJsonDataSources	repositoryJsonDataSources;
 				Bars						barsCloned;
 				Bars						barsCloned_rangeIamEditing;
+				Bars						barsClonedReversed;
 
 		public	string						DataSourceName					{ get {
 			return this.barsCloned == null ? "BARS_NOT_LOADED_INVOKE_LoadBars()" : this.barsCloned.DataSource.Name;
@@ -52,6 +53,8 @@ namespace Sq1.Widgets.FuturesMerger {
 			}
 		}
 
+		bool barsDescending;
+
 		bool dataSourcesTreeCollapsed {
 			get { return this.splitContainer1.Panel1Collapsed; }
 			set { this.splitContainer1.Panel1Collapsed = value; }
@@ -71,15 +74,27 @@ namespace Sq1.Widgets.FuturesMerger {
 		}
 
 		public void PopulateGuiState(bool showDataSourceTree, bool showRangeBar) {
-			this.btnShowDatasources.Checked = showDataSourceTree;
+			this.cbxShowDatasources.Checked = showDataSourceTree;
 			this.dataSourcesTreeCollapsed = !showDataSourceTree;
 
-			this.btnShowRange.Checked = showRangeBar;
+			this.cbxShowRange.Checked = showRangeBar;
 			this.barsRangeCollapsed = !showRangeBar;
+
+			this.cbxRevert.Checked = barsDescending;
+		}
+
+
+		void reload() {
+			if (this.barsCloned == null) {
+				string msg = "YOU_SHOULD_HAVE_LOADED_BARS_FIRST__AND_THEN_RELOAD";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			this.loadBars(this.DataSourceName, this.Symbol);
 		}
 
 		void loadBars(string dataSourceName, string symbol, int lastBarsToShow_otherwizeTooSlow = 1000) {
-			string msig = " //BarsEditorUserControl.LoadBars(dataSourceName[" + dataSourceName + "], symbol[" + symbol + "])";
+			string msig = " //BarsEditorUserControl.loadBars(dataSourceName[" + dataSourceName + "], symbol[" + symbol + "])";
 			try {
 				DataSource dataSource_nullUnsafe = this.repositoryJsonDataSources.DataSourceFind_nullUnsafe(dataSourceName);
 				if (dataSource_nullUnsafe == null) {
@@ -95,7 +110,7 @@ namespace Sq1.Widgets.FuturesMerger {
 					return;
 				}
 
-				this.barsCloned = barsOriginal.SafeCopy_oneCopyForEachDisposableExecutors("CLONED_FOR_BARS_EDITOR", true);
+				this.barsCloned			= barsOriginal.SafeCopy_oneCopyForEachDisposableExecutors("CLONED_FOR_BARS_EDITOR", true);
 
 				this.bars_selectRange_flushToGui(new BarDataRange(lastBarsToShow_otherwizeTooSlow), millisElapsed);
 			} catch (Exception ex) {
@@ -109,7 +124,13 @@ namespace Sq1.Widgets.FuturesMerger {
 			string windowTitle = "Bars Editor :: " + this.ToString();
 			if (string.IsNullOrEmpty(millisElapsed)) windowTitle += " [" + millisElapsed + "]ms";
 			this.ParentWindowTitle = windowTitle;
-			this.olvBarsEditor.SetObjects(this.barsCloned_rangeIamEditing.InnerBars_exposedOnlyForEditor);
+
+			//v1 this.olvBarsEditor.SetObjects(this.barsCloned_rangeIamEditing.InnerBars_exposedOnlyForEditor);
+			//v2
+			this.barsClonedReversed	= this.barsCloned_rangeIamEditing.SafeCopy_oneCopyForEachDisposableExecutors("RANGE_CLONED_FOR_BARS_EDITOR", true, this.barsDescending);
+			this.olvBarsEditor.SetObjects(this.barsClonedReversed.InnerBars_exposedOnlyForEditor);
+
+			this.btnReload.Enabled = true;
 			//this.btnSave.Enabled = true;
 		}
 

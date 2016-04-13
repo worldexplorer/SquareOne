@@ -155,6 +155,10 @@ namespace Sq1.Core.Streaming {
 				if (this.level2_lastPrevQuotesUnbound_bySymbol.ContainsKey(symbol, this, msig) == false) return null;
 				LevelTwo level2 = this.level2_lastPrevQuotesUnbound_bySymbol.GetAtKey(symbol, this, msig);
 				LevelTwoFrozen levelTwoFrozen = new LevelTwoFrozen(level2, whoFrozeMe, recipient);
+				if (levelTwoFrozen.MarketIsDead_reliablyKozSorted) {
+					string msg = "MarketIsDead_reliablyKozSorted";
+					Assembler.PopupException(msg);
+				}
 				return levelTwoFrozen;
 			} finally {
 				this.level2_lastPrevQuotesUnbound_bySymbol.UnLockFor(this, msig);

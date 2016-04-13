@@ -19,6 +19,25 @@ namespace Sq1.Core.DataFeed {
 			//NOPE_POSTPONED_AS_ATOMIC_KEY+FIRST_CONTENT this.ChartsOpenForSymbol.Add(symbolToAdd, new List<ChartShadow>());
 			// RepositoryJsonDataSource.RaiseOnSymbolAdded()_WILL_NOTIFY_DATASOURCE_TREE_UPSTACK this.DataSourceEdited_treeShouldRebuild(this);
 		}
+		// internal => use only RepositoryJsonDataSource.SymbolRemove() which will notify subscribers about remove operation
+		internal void SymbolRemove(string symbolToDelete) {
+			if (this.Symbols.Contains(symbolToDelete) == false) {
+				throw new Exception("ALREADY_DELETED[" + symbolToDelete + "] in [" + this.Name + "]");
+			}
+			this.Symbols.Remove(symbolToDelete);
+			this.BarsRepository.SymbolDataFileDelete(symbolToDelete);
+
+			List<ChartShadow> chartsForOldSymbol = this.ChartsOpenForSymbol.FindContentsForSimilarKey__nullUnsafe(new SymbolOfDataSource(symbolToDelete, this));
+			if (chartsForOldSymbol != null) {
+				string msg = "SHOULD_I_CLOSE_THE_CHARTS_OPEN_WITH_SYMBOL? symbolToDelete[" + symbolToDelete + "]";
+				Assembler.PopupException(msg);
+			} else {
+				//this.ChartsOpenForSymbol.Remove(symbolToDelete);
+				this.ChartsOpenForSymbol.UnRegisterSimilar(new SymbolOfDataSource(symbolToDelete, this));
+				// RepositoryJsonDataSource.RaiseOnSymbolRemovedDone()_WILL_NOTIFY_DATASOURCE_TREE_UPSTACK this.DataSourceEdited_treeShouldRebuild(this);
+			}
+		}
+
 		internal void SymbolCopyOrCompressFrom(DataSource dataSourceFrom, string symbolToCopy, DataSource dataSourceTo) {
 			string msig = " // DataSource[" + this.Name + "].SymbolCopyOrCompressFrom(" + dataSourceFrom.Name + ", " + symbolToCopy + ") ";
 			if (this.Symbols.Contains(symbolToCopy)) {
@@ -73,28 +92,9 @@ namespace Sq1.Core.DataFeed {
 			// outside the try{} block to keep UI with latest changes
 			this.Symbols = this.BarsRepository.SymbolsInScaleIntervalSubFolder;
 		}
-		public void SymbolsRebuildReadDataSourceSubFolderAfterDeserialization() {
+		public void SymbolsRebuild_readDataSourceSubFolder_afterDeserialization() {
 			this.Symbols = this.BarsRepository.SymbolsInScaleIntervalSubFolder;
 		}
-		// internal => use only RepositoryJsonDataSource.SymbolRemove() which will notify subscribers about remove operation
-		internal void SymbolRemove(string symbolToDelete) {
-			if (this.Symbols.Contains(symbolToDelete) == false) {
-				throw new Exception("ALREADY_DELETED[" + symbolToDelete + "] in [" + this.Name + "]");
-			}
-			this.Symbols.Remove(symbolToDelete);
-			this.BarsRepository.SymbolDataFileDelete(symbolToDelete);
-
-			List<ChartShadow> chartsForOldSymbol = this.ChartsOpenForSymbol.FindContentsForSimilarKey__nullUnsafe(new SymbolOfDataSource(symbolToDelete, this));
-			if (chartsForOldSymbol != null) {
-				string msg = "SHOULD_I_CLOSE_THE_CHARTS_OPEN_WITH_SYMBOL? symbolToDelete[" + symbolToDelete + "]";
-				Assembler.PopupException(msg);
-			} else {
-				//this.ChartsOpenForSymbol.Remove(symbolToDelete);
-				this.ChartsOpenForSymbol.UnRegisterSimilar(new SymbolOfDataSource(symbolToDelete, this));
-				// RepositoryJsonDataSource.RaiseOnSymbolRemovedDone()_WILL_NOTIFY_DATASOURCE_TREE_UPSTACK this.DataSourceEdited_treeShouldRebuild(this);
-			}
-		}
-
 
 		// Initialize() creates the folder, now create empty files for non-file-existing-symbols
 		internal int CreateDeleteBarFilesToSymbolsDeserialized() {

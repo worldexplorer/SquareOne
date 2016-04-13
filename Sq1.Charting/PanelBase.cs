@@ -231,7 +231,7 @@ namespace Sq1.Charting {
 		}
 		public virtual void InitializeWithNonEmptyBars(ChartControl chartControl) {
 			string barsIdent = chartControl.Bars.ToString();
-			barsIdent = chartControl.Bars.SymbolIntervalScale;
+			barsIdent = chartControl.Bars.SymbolIntervalScaleDSN;
 			this.Initialize(chartControl, barsIdent);
 		}
 		public void DrawError(Graphics g, string msg) {

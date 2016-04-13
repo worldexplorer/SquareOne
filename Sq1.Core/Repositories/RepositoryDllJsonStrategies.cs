@@ -101,9 +101,9 @@ namespace Sq1.Core.Repositories {
 			
 			if (Directory.Exists(this.AbsPath) == false) Directory.CreateDirectory(this.AbsPath);
 			this.StrategiesInFolders = this.StrategiesScanFolders();
-			Dictionary<Assembly, List<Script>> strategiesScanDllsInitDeserializedFromRootPath = StrategiesScanDllsInitDeserialized(this.RootPath);
+			Dictionary<Assembly, List<Script>> strategiesScanDllsInitDeserializedFromRootPath = this.StrategiesScanDlls_initDeserialized(this.RootPath);
 			this.storeInScriptsInDlls(strategiesScanDllsInitDeserializedFromRootPath);
-			Dictionary<Assembly, List<Script>> strategiesScanDllsInitDeserializedFromAppStartupPath = StrategiesScanDllsInitDeserialized(this.AppStartupPath);
+			Dictionary<Assembly, List<Script>> strategiesScanDllsInitDeserializedFromAppStartupPath = StrategiesScanDlls_initDeserialized(this.AppStartupPath);
 			this.storeInScriptsInDlls(strategiesScanDllsInitDeserializedFromAppStartupPath);
 		}
 		void storeInScriptsInDlls(Dictionary<Assembly, List<Script>> strategiesInitedFromScannedDll) {
@@ -131,7 +131,7 @@ namespace Sq1.Core.Repositories {
 				string[] jsonFiles = Directory.GetFiles(subfolderAbsPath, "*.json");
 				foreach (string strategyJsonAbsFile in jsonFiles) {
 					try {
-						Strategy strategy = this.StrategyDeserializeFromJsonFile(strategyJsonAbsFile);
+						Strategy strategy = this.StrategyDeserialize_fromJsonFile(strategyJsonAbsFile);
 						strategy.StoredInJsonAbspath = strategyJsonAbsFile;
 						ret[subfolderOnly].Add(strategy);
 					} catch (Exception ex) {
@@ -152,7 +152,7 @@ namespace Sq1.Core.Repositories {
 			}
 			return ret;
 		}
-		protected Dictionary<Assembly, List<Script>> StrategiesScanDllsInitDeserialized(string dataOrStartupPath) {
+		protected Dictionary<Assembly, List<Script>> StrategiesScanDlls_initDeserialized(string dataOrStartupPath) {
 			RepositoryDllScripts repo = new RepositoryDllScripts(dataOrStartupPath);
 			repo.ScanDlls();
 			Dictionary<Assembly, List<Script>> ret = repo.TypesByAssemblies;
@@ -186,7 +186,7 @@ namespace Sq1.Core.Repositories {
 			}
 			return ret;
 		}
-		Strategy StrategyDeserializeFromJsonFile(string strategyJsonAbsFile) {
+		Strategy StrategyDeserialize_fromJsonFile(string strategyJsonAbsFile) {
 			Strategy ret = null;
 			if (File.Exists(strategyJsonAbsFile) == false) return null;
 			string json = File.ReadAllText(strategyJsonAbsFile);
@@ -194,7 +194,7 @@ namespace Sq1.Core.Repositories {
 				TypeNameHandling = TypeNameHandling.Objects});
 			return ret;
 		}
-		public void StrategySerializeToJsonFile(Strategy strategy, string strategyJsonAbsFile) {
+		public void StrategySerialize_toJsonFile(Strategy strategy, string strategyJsonAbsFile) {
 			string json = JsonConvert.SerializeObject(strategy, Formatting.Indented, new JsonSerializerSettings {
 				TypeNameHandling = TypeNameHandling.Objects});
 			File.WriteAllText(strategyJsonAbsFile, json);
@@ -237,7 +237,7 @@ namespace Sq1.Core.Repositories {
 			//if (lastModIsNow) strategy.LastModified = DateTime.Now;
 			string strategyJsonAbsFile = this.StrategyJsonAbsNameFor(strategy);
 			try {
-				this.StrategySerializeToJsonFile(strategy, strategy.StoredInJsonAbspath);
+				this.StrategySerialize_toJsonFile(strategy, strategy.StoredInJsonAbspath);
 			} catch (Exception e) {
 				string msg = "STRATEGY_SERIALIZE_JSON_FAILED: StrategySerializeToJsonFile(" + strategyJsonAbsFile + ")";
 				throw new Exception(msg, e);
@@ -264,8 +264,8 @@ namespace Sq1.Core.Repositories {
 			}
 			this.StrategiesInFolders.Add(folderName, new List<Strategy>());
 		}
-		public string FolderRenameModifyNameTillNoException(string folderNameFrom, string folderNameTo, bool creating = false) {
-			if (this.FolderRenameIsLikelyToSucceed(folderNameFrom, folderNameTo, creating) == true) {
+		public string FolderRename_modifyName_tillNoException(string folderNameFrom, string folderNameTo, bool creating = false) {
+			if (this.FolderRename_isLikelyToSucceed(folderNameFrom, folderNameTo, creating) == true) {
 				return folderNameTo;
 			}
 			int limit = 10;
@@ -274,7 +274,7 @@ namespace Sq1.Core.Repositories {
 				string ret2 = folderNameTo + i;
 				//if (FolderRenameIsLikelyToSucceed(folderNameFrom, folderNameTo) == true) return ret2;
 				try {
-					this.FolderRenameCheckThrow(folderNameFrom, ret2, creating);
+					this.FolderRename_checkThrow(folderNameFrom, ret2, creating);
 				} catch (Exception e) {
 					lastException = e;
 					continue;
@@ -285,15 +285,15 @@ namespace Sq1.Core.Repositories {
 			//throw new Exception(msg, lastException);
 			throw lastException;
 		}
-		public bool FolderRenameIsLikelyToSucceed(string folderNameFrom, string folderNameTo, bool creating = false) {
+		public bool FolderRename_isLikelyToSucceed(string folderNameFrom, string folderNameTo, bool creating = false) {
 			try {
-				this.FolderRenameCheckThrow(folderNameFrom, folderNameTo, creating);
+				this.FolderRename_checkThrow(folderNameFrom, folderNameTo, creating);
 			} catch (Exception e) {
 				return false;
 			}
 			return true;
 		}
-		public void FolderRenameCheckThrow(string folderNameFrom, string folderNameTo, bool creating = false) {
+		public void FolderRename_checkThrow(string folderNameFrom, string folderNameTo, bool creating = false) {
 			string folderAbsPathFrom = this.AbsPath + folderNameFrom;
 			string folderAbsPathTo = this.AbsPath + folderNameTo;
 			string msig = "StrategyRepository.FolderRenameCheckThrow([" + folderNameFrom + "]=>[" + folderAbsPathTo + "]): ";
@@ -326,7 +326,7 @@ namespace Sq1.Core.Repositories {
 			string folderAbsPathFrom = this.AbsPath + folderNameFrom;
 			string folderAbsPathTo = this.AbsPath + folderNameTo;
 			string msig = "StrategyRepository.FolderRename([" + folderNameFrom + "]=>[" + folderAbsPathTo + "]): ";
-			this.FolderRenameCheckThrow(folderNameFrom, folderNameTo);
+			this.FolderRename_checkThrow(folderNameFrom, folderNameTo);
 			try {
 				DirectoryInfo directoryInfo = new DirectoryInfo(folderAbsPathFrom);
 				directoryInfo.MoveTo(folderAbsPathTo);
@@ -583,7 +583,7 @@ namespace Sq1.Core.Repositories {
 
 		public string GenerateFolderName() {
 			string ret = "NewFolder";
-			return this.FolderRenameModifyNameTillNoException("DUMMY_FOLDER_NAME_TO_RENAME", ret, true);
+			return this.FolderRename_modifyName_tillNoException("DUMMY_FOLDER_NAME_TO_RENAME", ret, true);
 		}
 
 		public Strategy StrategyDuplicate(Strategy strategy, string strategyNameUserTyped = "") {
@@ -594,7 +594,7 @@ namespace Sq1.Core.Repositories {
 			if (string.IsNullOrEmpty(strategyNameUserTyped)) strategyNameUserTyped = strategy.Name;
 			strategyShallowCopy.Name = this.StrategyRenameModifyNameTillNoException(strategyShallowCopy, strategyNameUserTyped);
 			this.StrategySave(strategyShallowCopy, true, true);
-			Strategy strategyDeepCopy = this.StrategyDeserializeFromJsonFile(strategyShallowCopy.StoredInJsonAbspath);
+			Strategy strategyDeepCopy = this.StrategyDeserialize_fromJsonFile(strategyShallowCopy.StoredInJsonAbspath);
 			this.StrategyAdd(strategyDeepCopy, strategyDeepCopy.StoredInFolderRelName);
 			//strategy.Name = nameToRestore;
 			return strategyDeepCopy;

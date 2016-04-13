@@ -25,12 +25,13 @@ namespace Sq1.Core.Streaming {
 			intraBarSerno	= 0;
 		}
 		public virtual Quote Quote_cloneBind_toUnattachedPseudoStreamingBar_enrichWithIntrabarSerno_updateStreamingBar_createNewBar(Quote quote2bCloned) {
-			//if (quote2bCloned.TradedAt == BidOrAsk.UNKNOWN) {
-			if (quote2bCloned.TradedPrice == double.NaN || quote2bCloned.TradedPrice <= 0) {
+			bool imNotForming_NaNbar = double.IsNaN(quote2bCloned.TradedPrice)	//SAME_BUT_NAN_IS_CLEARER || quote2bCloned.TradedAt == BidOrAsk.UNKNOWN
+				|| quote2bCloned.TradedPrice <= 0;
+			if (imNotForming_NaNbar) {
 				string msg = "CANT_FILL_STREAMING_CLOSE_FROM_BID_OR_ASK_UNKNOWN quote.PriceLastDeal[" + quote2bCloned.TradedPrice + "];"
 					+ "what kind of quote is that?... (" + quote2bCloned + ")";
 				Assembler.PopupException(msg, null, false);
-				//return null;
+				return null;
 			}
 
 			if (this.PseudoBarStreaming_unattached.Symbol != quote2bCloned.Symbol) {
@@ -44,16 +45,16 @@ namespace Sq1.Core.Streaming {
 			Quote quoteClone_unbound = quote2bCloned.Clone_asCoreQuote();
 			quoteClone_unbound.Source = source + " QCLONE_FOR_" + this.scaleInterval;
 
-			if (quoteClone_unbound.ServerTime >= this.PseudoBarStreaming_unattached.DateTimeNextBarOpenUnconditional) {
+			if (quoteClone_unbound.ServerTime >= this.PseudoBarStreaming_unattached.DateTime_nextBarOpen_unconditional) {
 				if (this.BarLastFormedUnattached_nullUnsafe != null && this.BarLastFormedUnattached_nullUnsafe.DateTimeOpen == DateTime.MinValue) {
 					string msg = "beware! on the very first quote LastBarFormed.DateTimeOpen == DateTime.MinValue";
 				}
 				this.BarLastFormedUnattached_nullUnsafe = this.PseudoBarStreaming_unattached.Clone();
 
-				this.PseudoBarStreaming_unattached		= new Bar(this.symbol, this.scaleInterval, quoteClone_unbound.ServerTime);
-				this.PseudoBarStreaming_unattached.Open	= quoteClone_unbound.TradedPrice;
-				this.PseudoBarStreaming_unattached.High	= quoteClone_unbound.TradedPrice;
-				this.PseudoBarStreaming_unattached.Low	= quoteClone_unbound.TradedPrice;
+				this.PseudoBarStreaming_unattached			= new Bar(this.symbol, this.scaleInterval, quoteClone_unbound.ServerTime);
+				this.PseudoBarStreaming_unattached.Open		= quoteClone_unbound.TradedPrice;
+				this.PseudoBarStreaming_unattached.High		= quoteClone_unbound.TradedPrice;
+				this.PseudoBarStreaming_unattached.Low		= quoteClone_unbound.TradedPrice;
 				this.PseudoBarStreaming_unattached.Close	= quoteClone_unbound.TradedPrice;
 				this.PseudoBarStreaming_unattached.Volume	= quoteClone_unbound.Size;
 				this.intraBarSerno = 0;

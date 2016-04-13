@@ -28,6 +28,7 @@ namespace Sq1.Core.DataFeed {
 				return stringBuilder.ToString();
 			} }
 		[JsonProperty]	public BarScaleInterval		ScaleInterval;
+		[JsonIgnore]	public string				ScaleInterval_DSN				{ get { return this.ScaleInterval + "/" + this.Name; } }
 
 		[JsonProperty]	public StreamingAdapter		StreamingAdapter;
 		[JsonIgnore]	public BacktestStreaming	StreamingAsBacktest_nullUnsafe	{ get { return this.StreamingAdapter as BacktestStreaming; } }
@@ -103,7 +104,10 @@ namespace Sq1.Core.DataFeed {
 				//this.ChartsOpenForSymbol.Add(symbol, new List<ChartShadow>());
 				this.ChartsOpenForSymbol.Register(new SymbolOfDataSource(symbol, this));
 
-				if (this.BarsRepository.DataFileExistsForSymbol(symbol)) continue;
+				if (this.BarsRepository.DataFileExistsForSymbol(symbol)) {
+					string msg = "NO_NEED_TO_CREATE__BAR_DATA_FILE_FOR_SYMBOL [" + symbol + "] in DataSource[" + this.Name + "]";
+					continue;
+				}
 				Bars barsEmpty = new Bars(symbol, this.ScaleInterval, "DISCOVERED_NON_EXISTING");
 				// FAILED_FIXING_IN_Distributor BarStaticLast_nullUnsafe=null for freshly added Symbol
 				//barsEmpty.BarAppendBindStatic(new Bar(symbol, this.ScaleInterval, DateTime.Now));
@@ -151,7 +155,7 @@ namespace Sq1.Core.DataFeed {
 			if (this.Symbols.Contains(barLastFormed.Symbol) == false) return ret;
 			if (this.BarsRepository == null) return ret;
 			try {
-				barLastFormed.CheckOHLCVthrow();
+				barLastFormed.CheckThrow_valuesOkay();
 			} catch (Exception ex) {
 				Assembler.PopupException("WONT_ADD_TO_BAR_FILE DataSource.BarAppend(" + barLastFormed + ")", ex, false);
 				return ret;
@@ -247,6 +251,25 @@ namespace Sq1.Core.DataFeed {
 			millisElapsed = "BarsLoad_nullUnsafe[" + ret.Symbol + ":" + ret.ScaleInterval + "]["
 				+ ret.Count + "]bars[" + readAllTimer.ElapsedMilliseconds + "]msRead";
 			return ret;
+		}
+
+		public void Symbols_syncWithBarFiles(List<string> symbols_possiblyChanged) {
+			List<string> symbolsToAdd;
+			List<string> symbolsToRemove;
+			Sq1.Core.Support.GenericsUtil.SyncToEthalon<string>(symbols_possiblyChanged, this.Symbols, out symbolsToAdd, out symbolsToRemove);
+
+			RepositoryJsonDataSources repo = Assembler.InstanceInitialized.RepositoryJsonDataSources;
+			foreach (string symbolToAdd in symbolsToAdd) {
+				//v1 WILL_CREATE_BARS_FILE_BUT_DataSourceTree_IS_MORE_CONVENIENT_BE_HOOKED_UP_TO_A_SINGLETON_FOR_TreeRebuild_events this.SymbolAdd(symbolToAdd);
+				//v2 will invoke my own this.SymbolAdd() AND the RaiseOnSymbolAdded()
+				repo.SymbolAdd(this, symbolToAdd, this, true);
+			}
+			foreach (string symbolToRemove in symbolsToRemove) {
+				//v1 WILL_DELETE_BARS_FILE_BUT_DataSourceTree_IS_MORE_CONVENIENT_BE_HOOKED_UP_TO_A_SINGLETON_FOR_TreeRebuild_events this.SymbolRemove(symbolToAdd);
+				//v2 will invoke my own and this.SymbolRemove() and RaiseOnSymbolRemovedDone() for 
+				repo.SymbolRemove(this, symbolToRemove, this, true);
+			}
+			repo.SerializeSingle(this);
 		}
 	}
 }

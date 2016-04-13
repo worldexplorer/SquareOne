@@ -23,6 +23,7 @@ namespace Sq1.Core.Livesim {
 				+ "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_STREAMING_ADAPTERS_FOUND"
 				+ " example:QuikLivesimBroker()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
 			base.Name = "LivesimBrokerDefault-child_ACTIVATOR_DLL-SCANNED";
+			this.threadEntryLockToHaveQuoteSentToThread	= new object();
 		}
 
 		public LivesimBrokerDefault(string reasonToExist) : base(reasonToExist) {
@@ -100,7 +101,7 @@ namespace Sq1.Core.Livesim {
 			//Thread.Sleep(10);
 			bool iCanContinue = quotePointerCaptured.WaitOne(1000);
 			quotePointerCaptured.Dispose();
-			t.Dispose();
+			//"CAN_BE_DISPOSED_ONLY_IF_RAN_TILL_COMPLETION...." t.Dispose();
 			quotePointerCaptured = null;
 			if (iCanContinue == false) {
 				string msg = "HAPPENS_WHEN_ANOTHER_THREAD_HITS_BREAKPOINT_IN_VS DELAYED_FILL_THREAD_DIDNT_SIGNAL_THAT_QUOTE_POINTER_WAS_COPIED_DURING_1SECOND";

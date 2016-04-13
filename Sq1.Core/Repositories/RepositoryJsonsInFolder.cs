@@ -8,7 +8,7 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Repositories {
 	public partial class RepositoryJsonsInFolder<DATASOURCE>  /* hack for ItemRename() */ where DATASOURCE : NamedObjectJsonSerializable {
-		public string	OfWhat						{ get { return typeof(DATASOURCE).Name; } }
+		public string	OfWhat						{ get; private set; }
 
 		public string	RootPath					{ get; protected set; }
 		public string	Subfolder					{ get; protected set; }
@@ -34,7 +34,8 @@ namespace Sq1.Core.Repositories {
 		public Func<string, DATASOURCE, bool>		CheckIfValidAndShouldBeAddedAfterDeserialized;
 
 		public RepositoryJsonsInFolder() {
-			ItemsCachedByName 	= new Dictionary<string, DATASOURCE>();			
+			ItemsCachedByName 	= new Dictionary<string, DATASOURCE>();		
+			OfWhat = typeof(DATASOURCE).Name;
 		}
 		public virtual void Initialize(string rootPath,
 					string subfolder = "DataSources",

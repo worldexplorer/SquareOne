@@ -24,8 +24,12 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public	DataSource			DataSource					{ get; internal set; }
 
 		[JsonIgnore]	public	bool				IsIntraday					{ get { return this.ScaleInterval.IsIntraday; } }
-		[JsonIgnore]	public	string				SymbolIntervalScale			{ get { return "[" + this.Symbol + " " + this.ScaleInterval.ToString() + "]"; } }
-		[JsonIgnore]	public	string				SymbolIntervalScaleCount	{ get { return this.SymbolIntervalScale + " [" + base.Count + "]bars"; } }
+		[JsonIgnore]	public	string				SymbolIntervalScaleDSN		{ get {
+			string ret = this.Symbol + ":" + this.ScaleInterval.ToString();
+			if (this.DataSource != null) ret += "/" + this.DataSource.Name;
+			return "(" + ret + ")";
+		} }
+		[JsonIgnore]	public	string				SymbolIntervalScaleCount	{ get { return this.SymbolIntervalScaleDSN + " [" + base.Count + "]bars"; } }
 		[JsonIgnore]	public	string				IntervalScaleCount			{ get { return "[" + this.ScaleInterval + "][" + base.Count + "]bars"; } }
 		[JsonIgnore]	public	string				SymbolIntervalScaleCount_dataSourceName { get { return SymbolIntervalScaleCount + " :: " + this.DataSource.Name; } }
 
@@ -68,7 +72,8 @@ namespace Sq1.Core.DataTypes {
 
 		[JsonIgnore]	public	List<Bar>			InnerBars_exposedOnlyForEditor		{ get; private set; }
 
-		public Bars SafeCopy_oneCopyForEachDisposableExecutors(string reasonToExist, bool exposeInnerBars_forEditor = false) { lock (base.BarsLock) {
+		public Bars SafeCopy_oneCopyForEachDisposableExecutors(string reasonToExist, bool exposeInnerBars_forEditor = false, bool reverseInnerBars_forEditor = false) { lock (base.BarsLock) {
+			if (reverseInnerBars_forEditor) reasonToExist = "REVERTED " + reasonToExist;
 			//Bars ret = new Bars(this.Symbol, this.ScaleInterval, "SafeCopy_oneCopyForEachDisposableExecutors");
 			Bars clone = new Bars(this.Symbol, this.ScaleInterval, reasonToExist);
 			foreach (Bar each in this.BarsList) {
@@ -80,6 +85,9 @@ namespace Sq1.Core.DataTypes {
 			//base.ReasonToExist = reasonToExist + "_CLONED_FROM_" + base.ReasonToExist;
 			if (exposeInnerBars_forEditor) {
 				clone.InnerBars_exposedOnlyForEditor = clone.BarsList;
+				if (reverseInnerBars_forEditor) {
+					clone.Reverse();
+				}
 			}
 			return clone;
 		} }
@@ -120,7 +128,8 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		}
 		public Bar BarStreaming_createNewAttach_orAbsorb(Bar barToMerge_intoStreaming) { lock (base.BarsLock) {
-			bool shouldAppend = this.BarLast == null || barToMerge_intoStreaming.DateTimeOpen >= this.BarLast.DateTimeNextBarOpenUnconditional;
+			bool shouldAppend = this.BarLast == null || barToMerge_intoStreaming.DateTimeOpen >= this.BarLast.DateTime_nextBarOpen_unconditional;
+			barToMerge_intoStreaming.CheckThrow_valuesOkay();
 			if (shouldAppend) {	// if this.BarStreaming == null I'll have just one bar in Bars which will be streaming and no static 
 				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, barToMerge_intoStreaming.DateTimeOpen);
 				barAdding.SetOHLCValigned(barToMerge_intoStreaming.Open, barToMerge_intoStreaming.High,
@@ -133,37 +142,29 @@ namespace Sq1.Core.DataTypes {
 					this.BarStreaming_nullUnsafe = this.BarLast;
 				}
 				//base.BarAbsorbAppend(this.StreamingBar, open, high, low, close, volume);
-				this.BarStreaming_nullUnsafe.MergeExpandHLCV_whileCompressingManyBarsToOne(barToMerge_intoStreaming, false);	// duplicated volume for just added bar; moved up
+				this.BarStreaming_nullUnsafe.MergeExpandHLCV_whileCompressing_manyBarsToOne(barToMerge_intoStreaming, false);	// duplicated volume for just added bar; moved up
 				//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.raiseOnBarStreamingUpdated(barToMerge_intoStreaming);
 			}
 			return this.BarStreaming_nullUnsafe;
 		} }
-		public Bar BarStatic_createAppendAttach(DateTime dateTime,
-				double open, double high, double low, double close, double volume,
-				bool exceptionPullUpstack = false) { lock (base.BarsLock) {
+		public Bar BarStatic_createAppendAttach(DateTime dateTime, double open, double high, double low, double close, double volume, bool throwError = false) { lock (base.BarsLock) {
 			Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, dateTime);
 			barAdding.SetOHLCValigned(open, high, low, close, volume, this.SymbolInfo);
-			this.BarStatic_appendAttach(barAdding, true);
+			this.BarStatic_appendAttach(barAdding, throwError);
 			return barAdding;
 		} }
-		public void BarStatic_appendAttach(Bar barAdding, bool exceptionPullUpstack = false) { lock (base.BarsLock) {
-			try {
-				barAdding.CheckOHLCVthrow();
-			} catch (Exception ex) {
-				string msg = "NOT_APPENDING_ZERO_BAR BarAppendBindStatic(" + barAdding + ")";
-				if (exceptionPullUpstack) throw new Exception(msg, ex);
-				Assembler.PopupException(msg, ex, false);
-			}
+		public void BarStatic_appendAttach(Bar barAdding, bool throwError = false) { lock (base.BarsLock) {
+			barAdding.CheckThrow_valuesOkay(throwError);
 			this.BarStreaming_nullUnsafe = null;
 			this.BarAppendAttach(barAdding);
 			//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.raiseOnBarStaticAdded(barAdding);
 		} }
-		protected override void CheckThrowDateIsNotLessThanScaleDictates(DateTime dateAdding) {
+		protected override void CheckThrow_dateIsNotLess_thanScaleDictates(DateTime dateAdding) {
 			if (this.Count == 0) return;
-			if (dateAdding >= this.BarLast.DateTimeNextBarOpenUnconditional) return;
+			if (dateAdding >= this.BarLast.DateTime_nextBarOpen_unconditional) return;
 			throw new Exception("DATE_ADDING_IS_CLOSER_THAN_SCALEINTERVAL_DICTATES"
 				+ ": dateAdding[" + dateAdding + "]<this.BarStaticLast.DateTimeNextBarOpenUnconditional["
-				+ this.BarLast.DateTimeNextBarOpenUnconditional + "]");
+				+ this.BarLast.DateTime_nextBarOpen_unconditional + "]");
 		}
 		protected void BarAppendAttach(Bar barAdding) { lock (base.BarsLock) {
 			try {
@@ -174,7 +175,7 @@ namespace Sq1.Core.DataTypes {
 				return;
 			}
 			try {
-				barAdding.SetParentForBackwardUpdate(this, base.Count - 1);
+				barAdding.SetParent_forBackwardUpdate(this, base.Count - 1);
 			} catch (Exception e) {
 				string msg = "BACKWARD_UPDATE_FAILED adding bar[" + barAdding + "] to " + this;
 				Assembler.PopupException(msg, e);
@@ -342,12 +343,12 @@ namespace Sq1.Core.DataTypes {
 
 			for (int i = 1; i < this.Count; i++) {
 				Bar barEach = this[i];
-				if (barEach.DateTimeOpen >= barCompressing.DateTimeNextBarOpenUnconditional) {
+				if (barEach.DateTimeOpen >= barCompressing.DateTime_nextBarOpen_unconditional) {
 					barsConverted.BarStatic_appendAttach(barCompressing);
 					barCompressing = new Bar(this.Symbol, scaleIntervalTo, barEach.DateTimeOpen);
 					barCompressing.AbsorbOHLCVfrom(barEach);
 				} else {
-					barCompressing.MergeExpandHLCV_whileCompressingManyBarsToOne(barEach, true);
+					barCompressing.MergeExpandHLCV_whileCompressing_manyBarsToOne(barEach, true);
 				}
 			}
 			return barsConverted;

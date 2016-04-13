@@ -39,11 +39,11 @@ namespace Sq1.Core.DataTypes {
 
 		protected virtual void BarAppend(Bar barAdding) {
 			lock (this.BarsLock) {
-				this.CheckThrowDateNotNullNotMinValue(barAdding);
-				this.CheckThrowDateAlreadyAdded(barAdding.DateTimeOpen);
-				this.CheckThrowDatePriorToLast(barAdding.DateTimeOpen);
-				this.CheckThrowDateIsNotLessThanScaleDictates(barAdding.DateTimeOpen);
-				this.CheckThrowDOHLCVasLast(barAdding);
+				this.CheckThrow_dateNotNull_notMinValue(barAdding);
+				this.CheckThrow_dateAlreadyAdded(barAdding.DateTimeOpen);
+				this.CheckThrow_datePriorToLast(barAdding.DateTimeOpen);
+				this.CheckThrow_dateIsNotLess_thanScaleDictates(barAdding.DateTimeOpen);
+				this.CheckThrow_DOHLCVasLast(barAdding);
 				try {
 					base.Add(barAdding);
 					//barAdding.SetParentForBackwardUpdate(this, base.Count - 1);
@@ -54,17 +54,17 @@ namespace Sq1.Core.DataTypes {
 			}
 		}
 		
-		protected virtual void CheckThrowDateIsNotLessThanScaleDictates(DateTime dateTimeOpen) {
+		protected virtual void CheckThrow_dateIsNotLess_thanScaleDictates(DateTime dateTimeOpen) {
 			return;
 		}
-		public void CheckThrowDateAlreadyAdded(DateTime appending) {
+		public void CheckThrow_dateAlreadyAdded(DateTime appending) {
 			if (base.ContainsDate(appending) == false) return;
 			Bar alreadyAdded = base[appending];
 			string msg = "Can not add time[" + appending + "]: already added as ["
 				+ alreadyAdded + "]: " + this.ToString();
 			throw new Exception(msg);
 		}
-		public void CheckThrowDOHLCVasLast(Bar barAdding) {
+		public void CheckThrow_DOHLCVasLast(Bar barAdding) {
 			Bar lastBar = this.BarLast;
 			if (lastBar == null) return;
 			string msg = "BARS_IDENTICAL";
@@ -74,7 +74,7 @@ namespace Sq1.Core.DataTypes {
 			string wonder = "WHO_ADDED? LastBar.DOHLCV[" + lastBar + "] = barAdding.DOHLCV[" + barAdding + "]; " + msg;
 			throw new Exception(msg);
 		}
-		public void CheckThrowDatePriorToLast(DateTime appending) {
+		public void CheckThrow_datePriorToLast(DateTime appending) {
 			if (this.Count == 0) return;
 			DateTime lastDateTime = this.BarLast.DateTimeOpen;
 			if (lastDateTime.Ticks < appending.Ticks) return;
@@ -83,7 +83,7 @@ namespace Sq1.Core.DataTypes {
 				+ (this.Count - 1) + "].DateTimeOpen=[" + lastDateTime + "]: " + this;
 			throw new Exception(msg);
 		}
-		public void CheckThrowDateNotNullNotMinValue(Bar barAdding) {
+		public void CheckThrow_dateNotNull_notMinValue(Bar barAdding) {
 			if (barAdding == null) {
 				throw new Exception("Can't Bars.Add() barAdding=null");
 			}
@@ -104,45 +104,7 @@ namespace Sq1.Core.DataTypes {
 			if (this.BarsRenamed_SEEMS_EXCESSIVE == null) return;
 			this.BarsRenamed_SEEMS_EXCESSIVE(this, new BarsUnscaledEventArgs(this));
 		}
-//		public Bar FindBarWithDateEqualOrLaterThan(DateTime dateTime) {
-//			Bar barFound = null;
-//			int indexFound = this.FindBarIndexWithDateEqualOrLaterThan(dateTime);
-//			if (indexFound >= 0)  barFound = this[indexFound];
-//			return barFound;
-//		}
-//		public int FindBarIndexWithDateEqualOrLaterThan(DateTime target) {
-//			int ret = -1;
-//			if (this.Count < 1) return -1;  
-//			if (target < this.BarFirst.DateTimeOpen) return -2;  
-//			if (target > this.BarLast.DateTimeOpen) return -3;
-//			if (target == this.BarFirst.DateTimeOpen) return 0;  
-//			if (target == this.BarLast.DateTimeOpen) return this.Count - 1;
-//		
-//			//v1
-//			DateTime dateTimeFound = this.DateTimes.Find(delegate(DateTime eachBarDateTime) { return eachBarDateTime >= target; });
-//			if (dateTimeFound != DateTime.MinValue) ret = this.DateTimes.IndexOf(dateTimeFound);
-//			//v2
-////			int left = 0;
-////			int right = this.Count - 1;
-////			int middle = (right - left) / 2;
-////			DateTime middleDate = this[middle].DateTimeOpen;
-////			bool directionAscending = false;
-////			for (int nodesChecked = 0; nodesChecked < this.Count; nodesChecked++) {
-////				if (target > middleDate) {
-////					ret = middle;
-////					left = middle;
-////					directionAscending = true;
-////				} else {
-////					right = middle;
-////					directionAscending = false;
-////				}
-////				ret = middle;
-////				if (++nodesChecked >= this.Count) return -1;
-////			}
-////			Array.Fi
-//			
-//			return ret;
-//		}
+
 		public string FormatValue(double value) {
 			return value.ToString(this.SymbolInfo.PriceFormat);
 		}

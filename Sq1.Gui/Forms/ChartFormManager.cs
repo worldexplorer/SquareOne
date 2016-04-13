@@ -290,8 +290,8 @@ namespace Sq1.Gui.Forms {
 					string msg = "JustDeserialized=>propagate ChartSettings[" + settingsDefault.Name + "]=>[" + this.DataSnapshot.ChartSettingsName + "] IM_AT_InitializeStrategyAfterDeserialization";
 					//Assembler.PopupException(msg, null, false);
 				} else {
-					string msg = "IM_LOADING_ANOTHER_STRATEGY_INTO_EXISTING_CHART";
-					Assembler.PopupException(msg, null, false);
+					string msg = "NOT_CHANGING_ChartSettings IM_LOADING_ANOTHER_STRATEGY_INTO_EXISTING_CHART";
+					//Assembler.PopupException(msg, null, false);
 				}
 				ret.ChartControl.Propagate_splitterManorderDistance_ifFullyDeserialized();
 			} catch (Exception ex) {

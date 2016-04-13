@@ -7,7 +7,7 @@ namespace Sq1.Core.Streaming {
 		BarsEmulator_forSolidifier	barsEmulator_forSolidifier;	//	{ get; protected set; }
 
 		string mustBeStrictly_oneSolidifierSubscribed_bothToQuotesAndBars__probablySame_forAllSymbolsOfDatasource_lazyToLockDuringWrites() {
-			int consumersAllCount = base.ConsumersAll.Count;
+			int consumersAllCount = base.Consumers_QuoteAndBar_GroupedInvocation.Count;
 			if (consumersAllCount != 1) {
 				return " consumersAllCount[" + consumersAllCount + "]";
 			}
@@ -48,9 +48,9 @@ namespace Sq1.Core.Streaming {
 				Bar pseudoStreamingBar1 = this.barsEmulator_forSolidifier.PseudoBarStreaming_unattached;
 				if (quoteDequeued_singleInstance.ServerTime <= pseudoStreamingBar1.DateTimeOpen) {
 					string msg = "skipping old quote for quote.ServerTime[" + quoteDequeued_singleInstance.ServerTime + "], can only accept for current"
-						+ " pseudoStreamingBar(" + pseudoStreamingBar1.DateTimeOpen + " .. " + pseudoStreamingBar1.DateTimeNextBarOpenUnconditional + "];"
+						+ " pseudoStreamingBar(" + pseudoStreamingBar1.DateTimeOpen + " .. " + pseudoStreamingBar1.DateTime_nextBarOpen_unconditional + "];"
 						+ " quote=[" + quoteDequeued_singleInstance + "]";
-					Assembler.PopupException(msg, null, false);
+					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}
 			}
@@ -64,16 +64,21 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig, ex);
 				return;
 			}
+			if (quote_clonedBoundUnattached_withPseudoExpanded == null) {
+				string msg = "BAR_SIMULATOR_RETURNED_NULL";
+				Assembler.PopupException(msg + msig, null, false);
+				return;
+			}
 
 			Bar pseudoStreamingBar = quote_clonedBoundUnattached_withPseudoExpanded.ParentBarStreaming;
 			if (pseudoStreamingBar == null) {		// equivalent to quote_clonedBoundUnattached_withPseudoExpanded.HasParentBarStreaming == false
 				string msg = "I_REFUSE_TO_SAVE_EXPANDED_PSEUDO_BAR__BARS_SIMULATOR_DIDNT_ATTACH_PSEUDO_BAR";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			if (pseudoStreamingBar.ParentBars != null) {
 				string msg = "BARS_SIMULATOR_SHOULD_PRODUCE_A_BAR_HANGING_WITHOUT_PARENTS__AND_THATS_WHAT_RepositoryBarsFile_WILL_SAVE";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg + msig);
 			}
 
 			Quote quote_clonedBoundAttached = quote_clonedBoundUnattached_withPseudoExpanded;
@@ -108,5 +113,11 @@ namespace Sq1.Core.Streaming {
 				}
 			}
 		} //}
+
+		public override void PushLevelTwoFrozen_toConsumers(LevelTwoFrozen levelTwo_frozenSorted_peeledOffStreamingSnap_singleInstance_sameForAllChartsTimeframes) {
+			string msig = " //SymbolScaleStreamSolidifier.PushLevelTwo_frozenSorted_immutableNoWatchdog_toConsumers() " + this.ToString();
+			string msg = "REMOVE_THIS_INVOCATION_UPSTACK";
+			throw new Exception(msg + msig);
+		}
 	}
 }

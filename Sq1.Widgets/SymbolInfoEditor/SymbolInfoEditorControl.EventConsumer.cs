@@ -92,11 +92,13 @@ namespace Sq1.Widgets.SymbolEditor {
 		void repositoryJsonDataSource_OnSymbolRemoved_clean(object sender, DataSourceSymbolEventArgs e) {
 			string msig = " //repositoryJsonDataSource_OnSymbolRemoved_clean(" + e.Symbol + ")";
 			if (this.symbolInfoSelected_nullUnsafe.Symbol != e.Symbol) {
-				string msg = "IGNORING_DELETION_OTHER_SYMBOL_NOT_IM_ACTUALLY_DISPLAYING"
+				string msg1 = "IGNORING_DELETION_OTHER_SYMBOL_NOT_IM_ACTUALLY_DISPLAYING"
 					+ " this.symbolInfoSelected_nullUnsafe.Symbol[" + this.symbolInfoSelected_nullUnsafe.Symbol + "] != e.Symbol[" + e.Symbol + "]";
-				Assembler.PopupException(msg + msig);
+				//I_REALLY_DONT_CARE__WHY_SHOULD_I_KNOW?? Assembler.PopupException(msg1 + msig, null, false);
 				return;
 			}
+			string msg = "MY_SYMBOL_DELETED_CLEARING this.symbolInfoSelected_nullUnsafe.Symbol[" + this.symbolInfoSelected_nullUnsafe.Symbol + "]";
+			Assembler.PopupException(msg + msig, null, false);
 			this.CleanPropertyEditor();
 		}
 	}

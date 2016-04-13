@@ -522,7 +522,7 @@ namespace Sq1.Core.Backtesting {
 				volumeOneQuarterOfBar = 1;
 			}
 
-			DateTime barOpenNext = barSimulated.DateTimeNextBarOpenUnconditional;
+			DateTime barOpenNext = barSimulated.DateTime_nextBarOpen_unconditional;
 			
 			DateTime barOpenOrResume = barSimulated.DateTimeOpen;
 			MarketInfo marketInfo = barSimulated.ParentBars.MarketInfo;

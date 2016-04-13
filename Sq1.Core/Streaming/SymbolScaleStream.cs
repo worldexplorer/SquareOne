@@ -16,15 +16,13 @@ namespace Sq1.Core.Streaming {
 
 		SymbolScaleStream() {
 			ofWhatAmI			= typeof(STREAMING_CONSUMER_CHILD);
-			LockConsumersQuote	= new object();
-			LockConsumersBar	= new object();
-			ConsumersQuote		= new List<STREAMING_CONSUMER_CHILD>();
-			ConsumersBar		= new List<STREAMING_CONSUMER_CHILD>();
-			//QuotePump = new QuotePump(this);
-			// avoiding YOU_FORGOT_TO_INVOKE_INDICATOR.INITIALIZE()_OR_WAIT_UNTIL_ITLLBE_INVOKED_LATER
-			// Assembler instantiates StreamingAdapters early enough so these horses 
-			// NOPE_ON_APP_RESTART_BACKTESTER_COMPLAINS_ITS_ALREADY_PAUSED
-			// moved BacktesterRunningAdd() to QuotePump.PushConsumersPaused = true;
+
+			LockConsumersQuote			= new object();
+			LockConsumersBar			= new object();
+			LockConsumersLevelTwoFrozen	= new object();
+			ConsumersQuote				= new List<STREAMING_CONSUMER_CHILD>();
+			ConsumersBar				= new List<STREAMING_CONSUMER_CHILD>();
+			ConsumersLevelTwoFrozen		= new List<STREAMING_CONSUMER_CHILD>();
 		}
 		public SymbolScaleStream(SymbolChannel<STREAMING_CONSUMER_CHILD> symbolChannel,
 								string symbol, BarScaleInterval scaleInterval, string reasonIwasCreated = "REASON_UNKNOWN") : this() {
@@ -40,18 +38,27 @@ namespace Sq1.Core.Streaming {
 		public string ToStringNames { get { return this.SymbolScaleInterval + ":Quotes[" + this.ConsumersQuoteNames + "],Bars[" + this.ConsumersBarNames + "]"; } }
 
 		internal void UpstreamSubscribedToSymbol_pokeConsumers(string symbol) {
-			foreach (STREAMING_CONSUMER_CHILD quoteConsumer	in this.ConsumersQuote)	quoteConsumer.UpstreamSubscribed_toSymbol_streamNotifiedMe(null);
-			foreach (STREAMING_CONSUMER_CHILD barConsumer	in this.ConsumersBar)	  barConsumer.UpstreamSubscribed_toSymbol_streamNotifiedMe(null);
+			foreach (STREAMING_CONSUMER_CHILD quoteConsumer		in this.ConsumersAll_avoidTriplication)	 quoteConsumer.UpstreamSubscribed_toSymbol_streamNotifiedMe(null);
 		}
-		internal void UpstreamUnSubscribedFromSymbolPokeConsumers(string symbol, Quote quoteCurrent) {
-			foreach (STREAMING_CONSUMER_CHILD quoteConsumer in this.ConsumersQuote) {
-				quoteConsumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteCurrent);
-			}
+		internal void UpstreamUnSubscribedFromSymbol_pokeConsumers(string symbol, Quote quoteCurrent) {
+			List<STREAMING_CONSUMER_CHILD> alreadyNotified_avoidInvokingThreeTimes = new List<STREAMING_CONSUMER_CHILD>();
 			foreach (STREAMING_CONSUMER_CHILD barConsumer in this.ConsumersBar) {
 				if (barConsumer is StreamingConsumerSolidifier == false) {
+					// this is the only reason for this crazy alreadyNotified_avoidInvokingThreeTimes (simplicity ethalon is in this.UpstreamSubscribedToSymbol_pokeConsumers())
 					quoteCurrent.StreamingBar_Replace(barConsumer.ConsumerBars_toAppendInto.BarStreaming_nullUnsafe);
 				}
 				barConsumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteCurrent);
+				alreadyNotified_avoidInvokingThreeTimes.Add(barConsumer);
+			}
+			foreach (STREAMING_CONSUMER_CHILD quoteConsumer in this.ConsumersQuote) {
+				if (alreadyNotified_avoidInvokingThreeTimes.Contains(quoteConsumer)) continue;
+				quoteConsumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteCurrent);
+				alreadyNotified_avoidInvokingThreeTimes.Add(quoteConsumer);
+			}
+			foreach (STREAMING_CONSUMER_CHILD level2Consumer in this.ConsumersLevelTwoFrozen) {
+				if (alreadyNotified_avoidInvokingThreeTimes.Contains(level2Consumer)) continue;
+				level2Consumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteCurrent);
+				alreadyNotified_avoidInvokingThreeTimes.Add(level2Consumer);
 			}
 		}
 
@@ -63,6 +70,7 @@ namespace Sq1.Core.Streaming {
 			//ret.UnattachedStreamingBar_factoryPerSymbolScale			= this.UnattachedStreamingBar_factoryPerSymbolScale;
 			ret.ConsumersQuote							= new List<STREAMING_CONSUMER_CHILD>(this.ConsumersQuote);
 			ret.ConsumersBar							= new List<STREAMING_CONSUMER_CHILD>(this.ConsumersBar);
+			ret.ConsumersLevelTwoFrozen					= new List<STREAMING_CONSUMER_CHILD>(this.ConsumersLevelTwoFrozen);
 			//ret.backtestersRunning_causingPumpingPause	= new List<Backtester>(this.backtestersRunning_causingPumpingPause);
 			//ret.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim								= this.QuoteQueue_onlyWhenBacktesting_quotePumpForLiveAndSim;
 			return ret;
