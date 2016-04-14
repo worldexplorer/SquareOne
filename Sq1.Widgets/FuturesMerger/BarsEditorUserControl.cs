@@ -53,34 +53,43 @@ namespace Sq1.Widgets.FuturesMerger {
 			}
 		}
 
-		bool barsDescending;
+		bool barsDescending = true;		// move to JSON
+		bool showDataSourceTree = false;
+		bool showRangeBar = true;
+		int lastBarsToShow = 500;
 
 		bool dataSourcesTreeCollapsed {
 			get { return this.splitContainer1.Panel1Collapsed; }
-			set { this.splitContainer1.Panel1Collapsed = value; }
+			set {
+				this.splitContainer1.Panel1Collapsed = value;
+				this.showDataSourceTree = !value;
+			}
 		}
 		bool barsRangeCollapsed {
 			get { return this.splitContainer2.Panel2Collapsed; }
-			set { this.splitContainer2.Panel2Collapsed = value; }
+			set {
+				this.splitContainer2.Panel2Collapsed = value;
+				this.showRangeBar = !value;
+			}
 		}
 
 		public void Initialize(RepositoryJsonDataSources repositoryJsonDataSources) {
 			this.repositoryJsonDataSources = repositoryJsonDataSources;
 			this.dataSourcesTreeControl.Initialize(repositoryJsonDataSources, false);
 		}
-		public void LoadBars(string dataSourceName, string symbol, bool showDataSourceTree = false, bool showRangeBar = true, int lastBarsToShow = 500) {
-			this.loadBars(dataSourceName, symbol, lastBarsToShow);
-			this.PopulateGuiState(showDataSourceTree, showRangeBar);
+		public void LoadBars(string dataSourceName, string symbol) {
+			this.loadBars(dataSourceName, symbol, this.lastBarsToShow);
+			this.PopulateGuiState();
 		}
 
-		public void PopulateGuiState(bool showDataSourceTree, bool showRangeBar) {
-			this.cbxShowDatasources.Checked = showDataSourceTree;
-			this.dataSourcesTreeCollapsed = !showDataSourceTree;
+		public void PopulateGuiState() {
+			this.cbxShowDatasources.Checked = this.showDataSourceTree;
+			this.dataSourcesTreeCollapsed	= !this.showDataSourceTree;
 
-			this.cbxShowRange.Checked = showRangeBar;
-			this.barsRangeCollapsed = !showRangeBar;
+			this.cbxShowRange.Checked	= this.showRangeBar;
+			this.barsRangeCollapsed		= !this.showRangeBar;
 
-			this.cbxRevert.Checked = barsDescending;
+			this.cbxRevert.Checked		= this.barsDescending;
 		}
 
 

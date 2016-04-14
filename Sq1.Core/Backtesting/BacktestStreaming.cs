@@ -39,18 +39,25 @@ namespace Sq1.Core.Backtesting {
 			//ALREADY_FILLED_BY_GENERATOR this.SpreadModeler.GeneratedQuoteFillBidAsk(quote, bar2simulate, priceForSymmetricFillAtOpenOrClose);
 			//TOO_MANY_WORKAROUNDS_REQUIRED base.PushQuoteReceived(quote);
 
-			Quote quotePrev = this.StreamingDataSnapshot.GetQuotePrev_forSymbol_nullUnsafe(quoteBoundAttached.Symbol);
-			if (quotePrev == null) {
+			if (quoteBoundAttached.Size <= 0) {
+				string msg = "SETTING_TO_1 QUOTES_GENERATED_FOR_BACKTEST_MUST_DEFINITELY_HAVE_SIZE"
+					+ " Math.Roung(Bar.Volume[1] / FourStrokes) == 0???";
+				Assembler.PopupException(msg, null, false);
+				quoteBoundAttached.Size = 1;
+			}
+
+			Quote quoteCurrent = this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(quoteBoundAttached.Symbol);
+			if (quoteCurrent == null) {
 				string msg = "QUIK_JUST_CONNECTED_AND_SENDS_NONSENSE[" + quoteBoundAttached + "]";
 				Assembler.PopupException(msg + msig, null, false);
-				this.StreamingDataSnapshot.SetQuoteCurrent_forSymbol_shiftOldToQuotePrev(quoteBoundAttached);
+				this.StreamingDataSnapshot.SetQuoteLast_forSymbol(quoteBoundAttached);
 				return;
 			}
 
 			//v1 HAS_NO_MILLISECONDS_FROM_QUIK if (quote.ServerTime > lastQuote.ServerTime) {
 			//v2 TOO_SENSITIVE_PRINTED_SAME_MILLISECONDS_BUT_STILL_DIFFERENT if (quote.ServerTime.Ticks > lastQuote.ServerTime.Ticks) {
 			string quoteMillis		= quoteBoundAttached.ServerTime.ToString("HH:mm:ss.fff");
-			string quotePrevMillis  = quotePrev.ServerTime.ToString("HH:mm:ss.fff");
+			string quotePrevMillis  = quoteCurrent.ServerTime.ToString("HH:mm:ss.fff");
 			if (quoteMillis == quotePrevMillis) {
 				string msg = quoteBoundAttached.Symbol + " SERVER_TIMESTAMP_MUST_INCREASE_EACH_NEXT_INCOMING_QUOTE QUIK_OR_BACKTESTER_FORGOT_TO_INCREASE"
 					+ " quoteMillis[" + quoteMillis + "] <="
@@ -70,9 +77,7 @@ namespace Sq1.Core.Backtesting {
 				return;
 			}
 
-			if (quoteBoundAttached.Size > 0) {
-				this.StreamingDataSnapshot.SetQuoteCurrent_forSymbol_shiftOldToQuotePrev(quoteBoundAttached);
-			}
+			this.StreamingDataSnapshot.SetQuoteLast_forSymbol(quoteBoundAttached);
 
 			try {
 				this.DistributorCharts_substitutedDuringLivesim.Push_quoteUnboundUnattached_toChannel(quoteBoundAttached);

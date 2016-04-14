@@ -97,7 +97,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			this.tsiLtbSymbols.InputFieldValue = e.DataSource.SymbolsCSV;
+			if (this.tsiLtbSymbols.InputFieldValue == e.DataSource.SymbolsCSV) return;
+				this.tsiLtbSymbols.InputFieldValue = e.DataSource.SymbolsCSV;
 		}
 	}
 }

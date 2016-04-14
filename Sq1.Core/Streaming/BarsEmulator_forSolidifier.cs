@@ -1,6 +1,7 @@
 using System;
 
 using Sq1.Core.DataTypes;
+using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Streaming {
 	public class BarsEmulator_forSolidifier {
@@ -41,6 +42,12 @@ namespace Sq1.Core.Streaming {
 				return null;
 			}
 
+			if (quote2bCloned is QuoteGenerated) {
+				string msg = "IM_NOT_SERVING_BACKTESTS_AND_LIVEIMS_WITHOUT_OWN_IMPLEMENTATION";
+				Assembler.PopupException(msg);
+				return null;
+			}
+
 			string source = quote2bCloned.Source;
 			Quote quoteClone_unbound = quote2bCloned.Clone_asCoreQuote();
 			quoteClone_unbound.Source = source + " QCLONE_FOR_" + this.scaleInterval;
@@ -59,19 +66,6 @@ namespace Sq1.Core.Streaming {
 				this.PseudoBarStreaming_unattached.Volume	= quoteClone_unbound.Size;
 				this.intraBarSerno = 0;
 
-				// quoteClone.IntraBarSerno doesn't feel new Bar; can contain 100004 for generatedQuotes;
-				// I only want to reset to 0 when it's attributed to a new Bar; it's unlikely to face a new bar here for generatedQuotes;
-				if (quoteClone_unbound.IntraBarSerno != 0) {
-					if (quoteClone_unbound.IamInjectedToFillPendingAlerts) {
-						string msg = "NEVER_HAPPENED_SO_FAR GENERATED_QUOTES_ARENT_SUPPOSED_TO_GO_TO_NEXT_BAR";
-						Assembler.PopupException(msg);
-					}
-					// moved down as a final result of "Enriching": quoteClone.IntraBarSerno = this.IntraBarSerno;
-				}
-				if (this.intraBarSerno >= Quote.IntraBarSernoShift_forGenerated_towardsPendingFill) {
-					string msg = "NEVER_HAPPENED_SO_FAR BAR_FACTORY_INTRABAR_SERNO_NEVER_GOES_TO_SYNTHETIC_ZONE";
-					Assembler.PopupException(msg);
-				}
 			} else {
 				if (double.IsNaN(this.PseudoBarStreaming_unattached.Open) || this.PseudoBarStreaming_unattached.Open == 0.0) {
 					string msg = "we should've had StreamingBar already initialized with first quote of a bar"
@@ -81,13 +75,13 @@ namespace Sq1.Core.Streaming {
 					}
 					Assembler.PopupException(msg, null, false);
 					this.PseudoBarStreaming_unattached.Open = quoteClone_unbound.TradedPrice;
-					//this.StreamingBarUnattached.High = quoteClone.LastDealPrice;
-					//this.StreamingBarUnattached.Low = quoteClone.LastDealPrice;
 				}
-				if (quoteClone_unbound.Size > 0) {
-					// spread can be anywhere outside the bar; but a bar freezes only traded spreads inside (Quotes DDE table from Quik, not Level2-generated with Size=0)
-					bool barExpanded = this.PseudoBarStreaming_unattached.MergeExpandHLCV_forStreamingBarUnattached(quoteClone_unbound);
+				if (quoteClone_unbound.Size <= 0) {
+					string msg = "QUOTE_WITHOUT_SIZE_SHOULD_NOT_GO_TO_BAR";
+					Assembler.PopupException(msg);
 				}
+				// spread can be anywhere outside the bar; but a bar freezes only traded spreads inside (Quotes DDE table from Quik, not Level2-generated with Size=0)
+				bool barExpanded = this.PseudoBarStreaming_unattached.MergeExpandHLCV_forStreamingBarUnattached(quoteClone_unbound);
 				this.intraBarSerno++;
 			}
 

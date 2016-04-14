@@ -71,7 +71,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		}
 
 		void raiseOnDataSourceDeleteClicked() {
-			this.dataSourceRepository.ItemDelete(this.DataSourceSelected, this);
+			this.dataSourceRepository.ItemDelete_jsonFileErase(this.DataSourceSelected, this);
 			//if (this.OnDataSourceDeleteClicked == null) {
 			//	string msg = "DataSourcesTree.mniDeleteDS_Click(): event OnDataSourceDeleted: no subscribers";
 			//	Assembler.PopupException(msg);

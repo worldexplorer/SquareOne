@@ -37,7 +37,7 @@ namespace Sq1.Gui {
 					strategy.ContextSwitchCurrentToNamedAndSerialize(e.scriptContextName);
 				}
 			}
-			this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
+			this.chartCreateShow_populateSelectorsSliders_fromStrategy(strategy);
 		}
 		internal void StrategiesTree_OnStrategyOpenDefaultClicked_NewChart(object sender, StrategyEventArgs e) {
 			//v1
@@ -55,7 +55,7 @@ namespace Sq1.Gui {
 			Strategy strategy = e.Strategy;
 			ChartForm active = this.mainForm.ChartFormActive_nullUnsafe;
 			if (active == null) {
-				ChartFormManager msg = this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
+				ChartFormManager msg = this.chartCreateShow_populateSelectorsSliders_fromStrategy(strategy);
 				active = msg.ChartForm;
 			}
 			active.ChartFormManager.InitializeWithStrategy(strategy, false, true);
@@ -78,25 +78,25 @@ namespace Sq1.Gui {
 				}
 			}
 		}
-		ChartFormManager chartCreateShowPopulateSelectorsSlidersFromStrategy(Strategy strategy) {
+		ChartFormManager chartCreateShow_populateSelectorsSliders_fromStrategy(Strategy strategy) {
 			ChartFormManager chartFormManager = new ChartFormManager(this.mainForm);
 			chartFormManager.InitializeWithStrategy(strategy, false, true);
 			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
 
-			this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Add(chartFormManager.ChartForm.ChartControl.ChartSettings, chartFormManager.ChartForm.ChartControl);
-			ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
+			this.mainForm.GuiDataSnapshot.ChartControls_AllCurrentlyOpen.Add(chartFormManager.ChartForm.ChartControl);
+			ChartSettingsEditorForm.Instance.RebuildChartsDropDown_dueToChartFormAddedOrRemoved();
 
 			chartFormManager.ChartFormShow();
 			chartFormManager.StrategyCompileActivatePopulateSlidersShow();
 			return chartFormManager;
 		}
-		void chartCreateShowPopulateSelectorsSlidersNoStrategy(ContextChart contextChart) {
+		void chartCreateShow_populateSelectorsSliders_noStrategy(ContextChart contextChart) {
 			ChartFormManager chartFormManager = new ChartFormManager(this.mainForm);
 			chartFormManager.InitializeWithoutStrategy(contextChart, true);
 			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
 
-			this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Add(chartFormManager.ChartForm.ChartControl.ChartSettings, chartFormManager.ChartForm.ChartControl);
-			ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
+			this.mainForm.GuiDataSnapshot.ChartControls_AllCurrentlyOpen.Add(chartFormManager.ChartForm.ChartControl);
+			ChartSettingsEditorForm.Instance.RebuildChartsDropDown_dueToChartFormAddedOrRemoved();
 
 			chartFormManager.ChartFormShow();
 		}
@@ -130,8 +130,8 @@ namespace Sq1.Gui {
 					Assembler.PopupException("CHART_FORMS_MANAGER_MUST_HAVE_BEEN_ADDED " + msg);
 				} else {
 					this.mainForm.GuiDataSnapshot.ChartFormManagers.Remove(chartFormManager.DataSnapshot.ChartSerno);
-					this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Remove(chartFormClosed.ChartControl.ChartSettings);
-					ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
+					this.mainForm.GuiDataSnapshot.ChartControls_AllCurrentlyOpen.Remove(chartFormClosed.ChartControl);
+					ChartSettingsEditorForm.Instance.RebuildChartsDropDown_dueToChartFormAddedOrRemoved();
 				}
 
 				chartFormManager.Dispose_workspaceReloading();
@@ -158,7 +158,7 @@ namespace Sq1.Gui {
 			} else {
 				BarsEditorForm.Instance.ShowStackedHinted(this.mainForm.DockPanel);
 			}
-			BarsEditorForm.Instance.BarsEditorUserControl.LoadBars(e.DataSource.Name, e.Symbol, false, true);
+			BarsEditorForm.Instance.BarsEditorUserControl.LoadBars(e.DataSource.Name, e.Symbol);
 		}
 		#endregion
 		//v1
@@ -209,7 +209,7 @@ namespace Sq1.Gui {
 				chartFormClicked.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
 				//chartFormClicked.Activate();	// IT_IS_ALREADY_ACTIVE
 				chartFormClicked.Focus();		// FLOATING_FORM_CANT_BE_RESIZED_WITHOUT_FOCUS FOCUS_WAS_PROBABLY_STOLEN_BY_SOME_OTHER_FORM(MAIN?)_LAZY_TO_DEBUG
-				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(chartFormClicked.ChartControl.ChartSettings);
+				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(chartFormClicked.ChartControl);
 				if (chartFormClicked.ChartFormManager.Executor.Bars != null) {
 					SymbolInfoEditorForm.Instance.SymbolEditorControl.PopulateWithSymbolInfo(chartFormClicked.ChartFormManager.Executor.Bars.SymbolInfo);
 				}
@@ -249,7 +249,7 @@ namespace Sq1.Gui {
 				string msig = " DockPanel_ActiveContentChanged() is looking for mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus["
 					+ this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus + "]";
 				int lastKnownHadFocus = this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus;
-				ChartFormManager lastKnownChartFormManager = this.mainForm.GuiDataSnapshot.FindChartFormsManagerBySerno(lastKnownHadFocus, msig, false);
+				ChartFormManager lastKnownChartFormManager = this.mainForm.GuiDataSnapshot.FindChartFormsManager_bySerno(lastKnownHadFocus, msig, false);
 				if (lastKnownChartFormManager == null) {
 					string msg = "DOCK_ACTIVE_CONTENT_CHANGED_BUT_CANT_FIND_LAST_CHART lastKnownChartSerno[" + lastKnownHadFocus + "]";
 					// INFINITE_LOOP_HANGAR_NINE_DOOMED_TO_COLLAPSE Assembler.PopupException(msg + msig);
@@ -283,7 +283,7 @@ namespace Sq1.Gui {
 			} else {
 				BarsEditorForm.Instance.ShowStackedHinted(this.mainForm.DockPanel);
 			}
-			BarsEditorForm.Instance.BarsEditorUserControl.LoadBars(e.DataSource.Name, e.Symbol, false, true);
+			BarsEditorForm.Instance.BarsEditorUserControl.LoadBars(e.DataSource.Name, e.Symbol);
 		}
 		internal void DataSourcesTree_OnSymbolInfoEditorClicked(object sender, DataSourceSymbolEventArgs e) {
 			string msig = " //DataSourcesTree_OnSymbolInfoEditorClicked()";
@@ -330,7 +330,7 @@ namespace Sq1.Gui {
 			contextChart.Symbol = e.Symbol;
 			contextChart.ScaleInterval = e.DataSource.ScaleInterval;
 			//this.chartCreateShowPopulateSelectorsSliders(contextChart);
-			this.chartCreateShowPopulateSelectorsSlidersNoStrategy(contextChart);
+			this.chartCreateShow_populateSelectorsSliders_noStrategy(contextChart);
 		}
 		internal void DataSourcesTree_OnOpenStrategyForSymbolClicked(object sender, DataSourceSymbolEventArgs e) {
 		}

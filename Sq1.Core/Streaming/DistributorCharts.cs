@@ -28,7 +28,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg2 + msig, null, false);
 			}
 
-			base.StreamingAdapter.StreamingDataSnapshot.Initialize_levelTwo_lastPrevQuotes_forSymbol(chartConsumer.Symbol);
+			base.StreamingAdapter.StreamingDataSnapshot.Initialize_levelTwo_quoteLast_forSymbol(chartConsumer.Symbol);
 			return ret;
 		}
 		public override bool ConsumerQuoteUnsubscribe(StreamingConsumerChart chartConsumer) {
@@ -40,7 +40,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg2 + msig, null, false);
 			}
 
-			base.StreamingAdapter.StreamingDataSnapshot.Initialize_levelTwo_lastPrevQuotes_forSymbol(chartConsumer.Symbol);
+			base.StreamingAdapter.StreamingDataSnapshot.Initialize_levelTwo_quoteLast_forSymbol(chartConsumer.Symbol);
 
 			return ret;
 		}

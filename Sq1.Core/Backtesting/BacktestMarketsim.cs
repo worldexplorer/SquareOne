@@ -88,7 +88,7 @@ namespace Sq1.Core.Backtesting {
 					break;
 				case MarketLimitStop.Market:
 					Sq1.Core.Streaming.StreamingDataSnapshot snap = this.scriptExecutor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot;
-					entryPriceOut = snap.GetBidOrAsk_forDirection_fromQuoteCurrent(entryAlert.Symbol, entryAlert.PositionLongShortFromDirection);
+					entryPriceOut = snap.GetBidOrAsk_forDirection_fromQuoteLast(entryAlert.Symbol, entryAlert.PositionLongShortFromDirection);
 
 					switch (entryAlert.Direction) {
 						case Direction.Buy:
@@ -312,7 +312,7 @@ namespace Sq1.Core.Backtesting {
 				case MarketLimitStop.Market:
 					// WHY (IsBacktestingNow == true): market orders during LIVE could be filled at virtually ANY price
 					Sq1.Core.Streaming.StreamingDataSnapshot snap = this.scriptExecutor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot;
-					exitPriceOut = snap.GetBidOrAsk_forDirection_fromQuoteCurrent(exitAlert.Symbol, exitAlert.PositionLongShortFromDirection);
+					exitPriceOut = snap.GetBidOrAsk_forDirection_fromQuoteLast(exitAlert.Symbol, exitAlert.PositionLongShortFromDirection);
 					if (quote.PriceBetweenBidAsk(exitPriceOut) == false && this.scriptExecutor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == true) {
 						string msg = "exitPriceOut[" + exitPriceOut + "] must be inside the bar; we'll need to generate one more quote onTheWayTo exitPriceOut";
 						Assembler.PopupException(msg);
@@ -537,7 +537,11 @@ namespace Sq1.Core.Backtesting {
 			}
 			// making a derived quoteToReach look like "dedicated" specifically to the filled alertToBeKilled
 			if (quote.IamInjectedToFillPendingAlerts) {
-				quote.Size = alert.Qty;
+				if (quote.Size != alert.Qty) {
+					string msg = "REALLY???...... quote.Size!=alert.Qty";
+					Assembler.PopupException(msg);
+					quote.Size  = alert.Qty;
+				}
 			}
 			double entryCommission = this.scriptExecutor.OrderCommissionCalculate(alert.Direction,
 				alert.MarketLimitStop, priceFill, alert.Qty, alert.Bars);

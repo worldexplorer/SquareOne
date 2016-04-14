@@ -41,7 +41,7 @@ namespace Sq1.Core.Streaming {
 			if (channel == null) {
 				string msg = "I_REFUSE_TO_PUSH_QUOTE_FOR_UNSUBSCRIBED_SYMBOL quoteUnboundUnattached.Symbol[" + quoteUnboundUnattached.Symbol + "]"
 					+ " DO_YOU_PUSH_QUOTE_TO_DISTRIB_SOLIDIFIERS_THAT_IS_EMPTY_DURING_LIVESIM???";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 				return;
 			}
 			// don't clone quote here!! IntraBarSerno++ for each StreamingCosumer() in each channel happens downstack
@@ -61,7 +61,7 @@ namespace Sq1.Core.Streaming {
 		    if (channel == null) {
 		        string msg = "I_REFUSE_TO_PUSH_QUOTE_FOR_UNSUBSCRIBED_SYMBOL symbol[" + symbol + "]"
 		            + " DO_YOU_PUSH_QUOTE_TO_DISTRIB_SOLIDIFIERS_THAT_IS_EMPTY_DURING_LIVESIM???";
-		        Assembler.PopupException(msg, null, false);
+		        //Assembler.PopupException(msg, null, false);
 		        return;
 		    }
 			channel.PushLevelTwoFrozen_viaPump(l2frozen);

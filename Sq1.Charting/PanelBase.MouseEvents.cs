@@ -92,7 +92,7 @@ namespace Sq1.Charting {
 			if (this.ChartControl == null) return;
 			if (e.Button != MouseButtons.Left) return;
 			if (this.scrollingHorizontally || this.squeezingHorizontally || this.squeezingVertically) {
-				this.ChartControl.RaiseOnChartSettingsChanged_containerShouldSerialize();
+				this.ChartControl.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();
 			}
 			this.dragButtonPressed = false;
 			this.scrollingHorizontally = false;

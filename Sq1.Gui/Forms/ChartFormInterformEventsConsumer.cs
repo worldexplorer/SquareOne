@@ -113,7 +113,7 @@ namespace Sq1.Gui.Forms {
 
 				//copypaste from MainFormEventManager.DockPanel_ActiveDocumentChanged()
 				ChartForm chartFormCurrentlyOpen = this.chartFormManager.ChartForm;
-				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(chartFormCurrentlyOpen.ChartControl.ChartSettings);
+				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(chartFormCurrentlyOpen.ChartControl);
 				if (chartFormCurrentlyOpen.ChartFormManager.Executor.Bars != null) {
 					SymbolInfoEditorForm.Instance.SymbolEditorControl.PopulateWithSymbolInfo(chartFormCurrentlyOpen.ChartFormManager.Executor.Bars.SymbolInfo);
 				}

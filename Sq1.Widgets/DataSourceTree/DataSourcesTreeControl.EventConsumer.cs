@@ -123,7 +123,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.dataSourceRepository.ItemDelete(this.DataSourceSelected, this);
+			this.dataSourceRepository.ItemDelete_jsonFileErase(this.DataSourceSelected, this);
 		}
 		void mniRemoveSymbol_Click(object sender, EventArgs e) {
 			if (this.DataSourceSelected == null) {
@@ -316,7 +316,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// literally: create, add, make it visible, emulate a click on the newborn, popup editor 
 			var dataSourceNewborn = new DataSource(newDataSourceName);
 			dataSourceNewborn.Initialize(this.dataSourceRepository.AbsPath, Assembler.InstanceInitialized.OrderProcessor);
-			this.dataSourceRepository.ItemAdd(dataSourceNewborn, this);
+			this.dataSourceRepository.ItemAdd_serialize(dataSourceNewborn, this);
 			// all the rest was already done in dataSourceRepository.ItemAdd() => dataSourceRepository_OnDataSourceAdded(),
 //			this.populateDataSourcesIntoTreeListView();
 //			this.tree.EnsureModelVisible(foundWithSameName);
@@ -351,11 +351,13 @@ namespace Sq1.Widgets.DataSourcesTree {
 			e.DoNotDeleteItsUsedElsewhere = false;
 		}
 		void dataSourceRepository_OnSymbolRemovedDone(object sender, DataSourceSymbolEventArgs e) {
+			string symbolAlreadyDeletedFromRepoAndDisk = e.Symbol;
 			if (sender == this) {
 				this.OlvTree.RebuildAll(true);
 				this.OlvTree.Expand(this.DataSourceSelected);
 				this.SelectSymbol(this.DataSourceSelected.Name, null);
 			} else {
+				this.PopulateDataSourcesIntoTreeListView();
 				this.OlvTree.RebuildAll(true);	//roots not changed, no need to call this.populateDataSourcesIntoTreeListView();
 				this.OlvTree.Expand(e.DataSource);
 				this.SelectSymbol(e.DataSource.Name, null);

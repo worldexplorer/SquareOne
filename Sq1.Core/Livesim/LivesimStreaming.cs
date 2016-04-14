@@ -63,7 +63,7 @@ namespace Sq1.Core.Livesim {
 			//}
 			//levelTwoGeneratorLivesim.InitializeLevelTwo(symbol_iAmLivesimming);
 			//v2
-			base.StreamingDataSnapshot.Initialize_levelTwo_lastPrevQuotes_forSymbol(symbol_iAmLivesimming);
+			base.StreamingDataSnapshot.Initialize_levelTwo_quoteLast_forSymbol(symbol_iAmLivesimming);
 			LevelTwo sureItExists = base.StreamingDataSnapshot.GetLevelTwo_forSymbol_nullUnsafe(symbol_iAmLivesimming);
 			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(symbol_iAmLivesimming);
 			this.LevelTwoGenerator.Initialize(sureItExists, symbolInfo, symbolInfo.Level2PriceLevels, this.ToString());

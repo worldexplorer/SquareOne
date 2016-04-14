@@ -376,7 +376,7 @@ namespace Sq1.Core.Livesim {
 					string msg = "LOOKS_LIKE_YOU_DIDNT_RESTORE_CONTEXT_AFTER_BACKTEST_ABORTED WHEN_QUIK_LIVESIM_FAILED_TO_CONNECT_TO_ITS_OWN_SERVER";
 					Assembler.PopupException(msg);
 				} else {
-					this.chartShadow.Initialize(base.Executor.Bars, base.Executor.StrategyName, false, true);
+					this.chartShadow.Initialize(base.Executor.Bars, false, true);
 				}
 
 				float seconds = (float)Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 2);

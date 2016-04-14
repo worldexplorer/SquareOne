@@ -27,6 +27,7 @@ using Sq1.Gui.Forms;
 using Sq1.Gui.FormFactories;
 using Sq1.Gui.ReportersSupport;
 using Sq1.Gui.Singletons;
+using Sq1.Core.Charting;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormManager {
@@ -277,7 +278,7 @@ namespace Sq1.Gui.Forms {
 			ret.AppendReportersMenuItems(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
 
 			try {
-				Sq1.Core.Charting.ChartSettings settingsDefault = ret.ChartControl.ChartSettings;
+				ChartSettings settingsDefault = ret.ChartControl.ChartSettings;
 				//if (this.DataSnapshot.ChartSettings == null) {
 				//    string msg = "WILL_LOAD_FROM_REPO[" + settingsDefault.Name + "] SORRY_WHEN_EXACTLY_THIS_MAKES_SENSE?...";
 				//    // delete "ChartSettings": {} from JSON to reset to ChartControl>Design>ChartSettings>Properties
@@ -498,8 +499,7 @@ namespace Sq1.Gui.Forms {
 				//v1 I_LOADED_NEW_BARS__SHOULD_INVALIDATE_ALL_OTHERWIZE_REPAINTED_ONLY_AFTER_MOUSEOVER__WONT_BACKTEST_DOESNT_MATTER bool invalidateAllPanels = wontBacktest;
 				bool invalidateAllPanels = true;
 
-				string strategyName = this.Strategy == null ? "CHART_ONLY" : this.Strategy.Name;
-				this.ChartForm.ChartControl.Initialize(barsClicked, strategyName, loadNewBars, invalidateAllPanels);
+				this.ChartForm.ChartControl.Initialize(barsClicked, loadNewBars, invalidateAllPanels);
 				//SCROLL_TO_SNAPSHOTTED_BAR this.ChartForm.ChartControl.ScrollToLastBarRight();
 				//this.ChartForm.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 			}

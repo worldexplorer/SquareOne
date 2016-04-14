@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using Sq1.Core;
 using Sq1.Core.Charting;
+using Sq1.Core.Repositories;
 
 using Sq1.Widgets.LabeledTextBox;
 
@@ -14,20 +15,20 @@ namespace Sq1.Charting {
 			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			if (this.rebuildingDropdown) return;
 
-			if (sender as ComboBox != this.cbxSettings.ComboBox) {
+			if (sender as ComboBox != this.cbxChartsCurrentlyOpen.ComboBox) {
 				string msg = "WHATT???? sender as ComboBox != this.toolStripItemComboBox1.ComboBox //toolStripItemComboBox1_SelectedIndexChanged()";
 				Assembler.PopupException(msg, null, false);
 
 			}
 
-			ChartSettings selected = this.chartSettingsSelected_nullUnsafe;
-			if (selected == null) {
+			ChartControl chartSelected = this.chartControlSelected_nullUnsafe;
+			if (chartSelected == null) {
 				string msg = "YOU_MUST_ComboBox.SelectValue(CURRENT_CHART_CONTROL.ChartSettings)__USE_PopulateWithChartSettings()"
 					+ "; now this.toolStripItemComboBox1.ComboBox.SelectedItem as ChartSettings=null";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			this.PopulateWithChartSettings(selected);
+			this.PopulatePropertyGrid_withChartsSettings_selectCurrentChart(chartSelected);
 
 			// I want to keep dropdown open to save the user from monkey-clicking; when I initialize() at startup, this.rebuildingDropdown=true and I don't reach to here;
 			// the only time I'm kicked in is when I switch charts => ChartSettingsEditorControl syncs to the current chart's settings;
@@ -36,206 +37,246 @@ namespace Sq1.Charting {
 				this.openDropDownAfterSelected = true;
 				return;
 			}
-			this.cbxSettings.ComboBox.DroppedDown = true;
+			this.cbxChartsCurrentlyOpen.ComboBox.DroppedDown = true;
 		}
 		void propertyGrid1_PropertyValueChanged(object sender, PropertyValueChangedEventArgs e) {
-			ChartSettings selected = this.chartSettingsSelected_nullUnsafe;
-			if (selected == null) {
-				string msg = "YOU_DELETED_CHART_SETTINGS_BEFORE_PROPERTY_GRID_COULD_SAVE_A_CHANGED_PROPERTY???";
+			ChartControl chartSelected = this.chartControlSelected_nullUnsafe;
+			if (chartSelected == null) {
+				string msg = "YOU_SHOULD_HAVE_NOTIFIED_ChartSettingsEditor_THAT_YOU_CLOSED_THE_CHART";
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.chartSettings.ContainsKey(selected) == false) {
-				string msg = "I_CAN_NOT_SERIALIZE_CHART_SETTINGS_AFTER_PROPERTY_CHANGE chartSettings.ContainsKey(" + selected.StrategyName + ")=false";
+			ChartSettings edited = this.settingsCurrent_nullUnsafe;
+			if (edited == null) {
+				string msg = "I_CAN_NOT_SERIALIZE_CHART_SETTINGS_AFTER_PROPERTY_CHANGE this.mniSettingsForCurrentChart.Tag==null";
 				Assembler.PopupException(msg);
-			} else {
-				ChartControl canSerialize = this.chartSettings[selected];
-				canSerialize.ChartSettings.PensAndBrushesCached_DisposeAndNullify();
-				canSerialize.RaiseOnChartSettingsChanged_containerShouldSerialize();
-				canSerialize.InvalidateAllPanels();
+				return;
 			}
-			this.openDropDownAfterSelected = false;
-			this.PopulateWithChartSettings(selected, true);
+
+			this.settingsRepo.SerializeSingle(edited);
+			edited.PensAndBrushesCached_DisposeAndNullify();
+
+			foreach (ChartControl eachChart in this.allChartControls_currentlyOpen) {
+				if (eachChart.ChartSettings != edited) continue;
+				eachChart.InvalidateAllPanels();
+			}
 		}
-		void mniAbsorbFromChart_Click(object sender, EventArgs e) {
-			this.Cursor = Cursors.WaitCursor;
-			this.PopulateWithChartSettings();
-			//RO this.mniAbsorbFromChart.Pressed = false;
-			this.Cursor = Cursors.Default;
+
+		void mniSettingsImEditing_Click(object sender, EventArgs e) {
+			return;
+			//this.Cursor = Cursors.WaitCursor;
+			//this.PopulatePropertyGrid_withChartSettings_selectCurrentChart();
+			////RO this.mniAbsorbFromChart.Pressed = false;
+			//this.Cursor = Cursors.Default;
 		}
 
 
 
 
 
-		void ctxTemplates_Opening(object sender, CancelEventArgs e) {
-			this.ctxTemplates.Items.Clear();
+		void ctxAllSettingsAvailable_Opening(object sender, CancelEventArgs e) {
+			this.ctxAllSettingsAvailable.Items.Clear();
 			List<ToolStripMenuItem> ret = new List<ToolStripMenuItem>();
-			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder();
-			foreach (ChartSettings tpl in Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.ItemsCachedAsList) {
+
+			foreach (ChartSettings settingsCachedInstance in this.settingsRepo.ItemsCachedAsList) {
 				ToolStripMenuItem mni = new ToolStripMenuItem();
-				mni.Text = tpl.Name;
-				mni.Name = "chartSettingsTemplate_" + tpl.Name;
-				mni.Tag = tpl;
-				if (this.chartSettingsSelected_nullUnsafe != null && this.chartSettingsSelected_nullUnsafe.Name == tpl.Name) mni.Checked = true;
-				mni.DropDownOpening += new EventHandler(tsi_DropDownOpening);
-				mni.Click += new EventHandler(tsi_Click);
+				mni.Text = settingsCachedInstance.Name;
+				mni.Name = "ChartSettingsRepoCachedInstance_" + settingsCachedInstance.Name;
+				mni.Tag = settingsCachedInstance;
+
+				if (	this.chartControlSelected_nullUnsafe != null &&
+						this.chartControlSelected_nullUnsafe.ChartSettings != null &&
+						this.chartControlSelected_nullUnsafe.ChartSettings.Name == settingsCachedInstance.Name) {
+					mni.Checked = true;
+					//ALREADY_SET_IN_PopulatePropertyGrid() this.mniSettingsImEditing.Text = mni.Text;
+				}
+				mni.DropDownOpening += new EventHandler(mniEachSettings_DropDownOpening_showLoadSaveRenameDuplicateAddDelete);
+				mni.Click += new EventHandler(mniEachSettings_Click);
 				ret.Add(mni);
 			}
-			this.ctxTemplates.Items.AddRange(ret.ToArray());
+			this.ctxAllSettingsAvailable.Items.AddRange(ret.ToArray());
 		}
-		void tsi_Click(object sender, EventArgs e) {
+		void mniEachSettings_Click(object sender, EventArgs e) {
 			ToolStripMenuItem mni = sender as ToolStripMenuItem;
 			if (mni == null) {
 				string msg = "I_REFUSE_TO_LOAD sender as ToolStripMenuItem = null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			ChartSettings tpl = mni.Tag as ChartSettings;
-			if (tpl == null) {
+			ChartSettings settingsRepoCachedInstance = mni.Tag as ChartSettings;
+			if (settingsRepoCachedInstance == null) {
 				string msg = "I_REFUSE_TO_LOAD_NON_CHART_SETTINGS__FOUND_IN_MNI.TAG[" + mni.Tag + "]";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.populateTemplate(tpl);
+			this.newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(settingsRepoCachedInstance);
 		}
-		void populateTemplate(ChartSettings tpl) {
-			ChartSettings selected = this.chartSettingsSelected_nullUnsafe;
-			if (selected == null) {
+		void newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(ChartSettings settingsCachedInstance, bool keepCtxOpen_level1 = true) {
+			ChartControl chartSelected = this.chartControlSelected_nullUnsafe;
+			if (chartSelected == null) {
 				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelected_nullUnsafe=null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			selected.AbsorbFrom(tpl);
-			if (this.chartSettings.ContainsKey(selected) == false) {
-				string msg = "I_CAN_NOT_SERIALIZE_CHART_SETTINGS_AFTER_PROPERTY_CHANGE chartSettings.ContainsKey(" + selected.StrategyName + ")=false";
+			//controlSelected.AbsorbFrom(settingsCachedInstance);
+			chartSelected.ChartSettings = settingsCachedInstance;
+			//controlSelected.ChartSettings.PensAndBrushesCached_DisposeAndNullify();
+			chartSelected.InvalidateAllPanels();
+
+			if (this.allChartControls_currentlyOpen.Contains(chartSelected) == false) {
+				string msg = "I_CAN_NOT_SERIALIZE_CHART_SETTINGS_AFTER_PROPERTY_CHANGE chartSettings.ContainsKey(" + chartSelected.Name + ")=false";
 				Assembler.PopupException(msg);
 			} else {
-				ChartControl canSerialize = this.chartSettings[selected];
-				canSerialize.ChartSettings.PensAndBrushesCached_DisposeAndNullify();
-				canSerialize.RaiseOnChartSettingsChanged_containerShouldSerialize();
-				canSerialize.InvalidateAllPanels();
-				foreach (var each in this.ctxTemplates.Items) {
+				chartSelected.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();
+				foreach (var each in this.ctxAllSettingsAvailable.Items) {
 					ToolStripMenuItem eachAsMni = each as ToolStripMenuItem;
 					if (eachAsMni == null) {
 						string msg = "I_REFUSE_TO_CHANGE_CHECKED_AFTER_ABSORBED {this.ctxTemplates.Item[" + each + "] as ToolStripMenuItem = null}";
 						continue;
 					}
-					eachAsMni.Checked = eachAsMni.Text == tpl.Name;
+					eachAsMni.Checked = eachAsMni.Text == settingsCachedInstance.Name;
 				}
 			}
 			this.openDropDownAfterSelected = false;
-			this.PopulateWithChartSettings(selected, true);
-			this.ctxTemplates.Show();
+			this.PopulatePropertyGrid_withChartsSettings_selectCurrentChart(chartSelected, true);
+			if (keepCtxOpen_level1) this.ctxAllSettingsAvailable.Show();
 		}
 
-		void tsi_DropDownOpening(object sender, EventArgs e) {
-			ToolStripMenuItem mni = sender as ToolStripMenuItem;
-			if (mni == null) {
+		void mniEachSettings_DropDownOpening_showLoadSaveRenameDuplicateAddDelete(object sender, EventArgs e) {
+			ToolStripMenuItem mniSettings_mouseOvered = sender as ToolStripMenuItem;
+			if (mniSettings_mouseOvered == null) {
 				string msg = "I_REFUSE_TO_LOAD sender as ToolStripMenuItem = null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			mni.DropDown = this.ctxTemplateActions;
+			mniSettings_mouseOvered.DropDown = this.ctxActions_forOneSettings;
 
-			ChartSettings settingsMouseOver = mni.Tag as ChartSettings;
-			if (settingsMouseOver == null) {
-				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelected_nullUnsafe=null";
+			ChartSettings settingsMouseOvered = mniSettings_mouseOvered.Tag as ChartSettings;
+			if (settingsMouseOvered == null) {
+				string msg = "NO_SETTINGS_ATTACHED mniSettings_mouseOvered.Tag=null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			string strategyName = settingsMouseOver.StrategyName;
-			this.mniltbDuplicate.InputFieldValue = strategyName;
-			this.mniltbRenameTo.InputFieldValue = strategyName;
-			this.mniAddNew.InputFieldValue = strategyName;
-			this.mniltbSaveCurrentAs.InputFieldValue = mni.Text;
+			string settingsInstanceName = settingsMouseOvered.Name;
 
-			this.mniDelete.Text = "Delete [" + mni.Text + "]";
-			this.mniDelete.Tag = settingsMouseOver;
+			this.mniSettingsMouseOvered_AssignToCurrentChart.Text = "Load into chart [" + this.chartControlSelected_nullUnsafe + "]";
 
-			this.ctxTemplateActions.Tag = settingsMouseOver;
+			this.mniltbSettingsMouseOvered_Duplicate.InputFieldValue = settingsInstanceName;
+			this.mniltbSettingsMouseOvered_RenameTo	.InputFieldValue = settingsInstanceName;
+			this.mniSettings_AddNew		.InputFieldValue = settingsInstanceName;
+			this.mniltbSettingsMouseOvered_SaveAs.InputFieldValue = mniSettings_mouseOvered.Text;
 
-			if (mni.Text == ChartSettings.NAME_DEFAULT) {
-				this.mniltbRenameTo.Enabled = false;
-				this.mniDelete.Text = "Delete [DEFAULT_MUST_STAY]";
-				this.mniDelete.Enabled = false;
-				this.mniltbSaveCurrentAs.Text = "[DEFAULT_IS_IMMUTABLE]";
-				this.mniltbSaveCurrentAs.Enabled = false;
+			this.mniSettingsMouseOvered_Delete.Text = "Delete [" + mniSettings_mouseOvered.Text + "]";
+			this.mniSettingsMouseOvered_Delete.Tag = settingsMouseOvered;
+
+			this.ctxActions_forOneSettings.Tag = settingsMouseOvered;
+
+			if (mniSettings_mouseOvered.Text == ChartSettings.NAME_DEFAULT) {
+				this.mniltbSettingsMouseOvered_RenameTo.Enabled = false;
+				this.mniSettingsMouseOvered_Delete.Text = "Delete [DEFAULT_MUST_STAY]";
+				this.mniSettingsMouseOvered_Delete.Enabled = false;
+				this.mniltbSettingsMouseOvered_SaveAs.Text = "[DEFAULT_IS_IMMUTABLE]";
+				this.mniltbSettingsMouseOvered_SaveAs.Enabled = false;
 			} else {
-				this.mniltbRenameTo.Enabled = true;
-				this.mniDelete.Enabled = true;
-				this.mniltbSaveCurrentAs.Enabled = true;
+				this.mniltbSettingsMouseOvered_RenameTo.Enabled = true;
+				this.mniSettingsMouseOvered_Delete.Enabled = true;
+				this.mniltbSettingsMouseOvered_SaveAs.Enabled = true;
 			}
 		}
 
-		void mniltbDuplicate_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
-			ChartSettings selected = this.ctxTemplateActions.Tag as ChartSettings;
-			if (selected == null) {
-				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelected_nullUnsafe=null";
-				Assembler.PopupException(msg);
+		void mniltbSettingsMouseOvered_Duplicate_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			string msig = " //mniltbSettingsMouseOvered_Duplicate_UserTyped()";
+			ChartSettings settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettings;
+			if (settingsImDoingActionFor == null) {
+				string msg = "NO_SETTINGS_ATTACHED_TO this.ctxActions_forOneSettings.Tag";
+				Assembler.PopupException(msg + msig);
 				return;
 			}
-			ChartSettings clone = selected.Clone();
-			clone.Name = e.StringUserTyped;
-			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.SerializeSingle(clone);
-			//RENAMES_INSTEAD_OF_SAVING_CLONE Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.ItemAdd(clone);
-			//Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder();
-			this.populateTemplate(clone);
+			try {
+				ChartSettings clone = settingsImDoingActionFor.Clone();
+				clone.Name = e.StringUserTyped;
+				this.settingsRepo.SerializeSingle(clone);
+				//RENAMES_INSTEAD_OF_SAVING_CLONE this.settingsRepoTemplates.ItemAdd(clone);
+				//this.settingsRepoTemplates.DeserializeJsonsInFolder();
+				this.newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(clone);
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex, false);
+			}
 		}
-		void mniltbRenameTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
-			ChartSettings selected = this.ctxTemplateActions.Tag as ChartSettings;
-			if (selected == null) {
-				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelected_nullUnsafe=null";
-				Assembler.PopupException(msg);
+		void mniltbSettingsMouseOvered_RenameTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			string msig = " //mniltbSettingsMouseOvered_RenameTo_UserTyped()";
+			ChartSettings settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettings;
+			if (settingsImDoingActionFor == null) {
+				string msg = "NO_SETTINGS_ATTACHED_TO this.ctxActions_forOneSettings.Tag";
+				Assembler.PopupException(msg + msig);
 				return;
 			}
-			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.ItemRename(selected, e.StringUserTyped);
-			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder();
-			if (this.chartSettingsSelected_nullUnsafe.Name == selected.Name) {
-				this.populateTemplate(selected);
+			try {
+				this.settingsRepo.ItemRename(settingsImDoingActionFor, e.StringUserTyped);
+				this.newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(settingsImDoingActionFor);
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex, false);
 			}
 		}
-		void mniAddNew_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
-			ChartSettings selected = new ChartSettings(e.StringUserTyped);
-			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.ItemAdd(selected);
-			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder();
+		void mniSettings_AddNew_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			string msig = " //mniSettings_AddNew_UserTyped()";
+			try {
+				ChartSettings settings_newDefault = new ChartSettings(e.StringUserTyped);
+				this.settingsRepo.ItemAdd_serialize(settings_newDefault);
+				this.newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(settings_newDefault);
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex, false);
+			}
 		}
-		void mniDelete_Click(object sender, EventArgs e) {
-			ChartSettings selected = this.ctxTemplateActions.Tag as ChartSettings;
-			if (selected == null) {
-				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelected_nullUnsafe=null";
-				Assembler.PopupException(msg);
+		void mniSettingsMouseOvered_Delete_Click(object sender, EventArgs e) {
+			string msig = " //mniltbSettingsMouseOvered_Duplicate_UserTyped()";
+			ChartSettings settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettings;
+			if (settingsImDoingActionFor == null) {
+				string msg = "NO_SETTINGS_ATTACHED_TO this.ctxActions_forOneSettings.Tag";
+				Assembler.PopupException(msg + msig);
 				return;
 			}
-			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.ItemDelete(selected);
-			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder();
-			if (this.chartSettingsSelected_nullUnsafe.Name == selected.Name) {
-				// get next
-				//this.populateTemplate(clone);
+			try {
+				this.settingsRepo.ItemDelete_jsonFileErase(settingsImDoingActionFor);
+				if (this.settingsCurrent_nullUnsafe.Name == settingsImDoingActionFor.Name) {
+					// get next
+					//this.populateTemplate(clone);
+				}
+				this.ctxActions_forOneSettings.Close();
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex, false);
 			}
-			this.ctxTemplateActions.Close();
 		}
-		void mniLoad_Click(object sender, EventArgs e) {
-			ChartSettings selected = this.ctxTemplateActions.Tag as ChartSettings;
-			if (selected == null) {
-				string msg = "I_REFUSE_TO_LOAD_NON_CHART_SETTINGS__FOUND_IN_MNI.TAG[" + this.ctxTemplateActions.Tag + "]";
-				Assembler.PopupException(msg);
+		void mniSettingsMouseOvered_AssignToCurrentChart_Click(object sender, EventArgs e) {
+			string msig = " //mniltbSettingsMouseOvered_Duplicate_UserTyped()";
+			ChartSettings settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettings;
+			if (settingsImDoingActionFor == null) {
+				string msg = "I_REFUSE_TO_LOAD_NON_CHART_SETTINGS__FOUND_IN_MNI.TAG[" + this.ctxActions_forOneSettings.Tag + "]";
+				Assembler.PopupException(msg + msig);
 				return;
 			}
-			this.populateTemplate(selected);
+			try {
+				this.newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(settingsImDoingActionFor);
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex, false);
+			}
 		}
-		void mniltbSaveCurrentAs_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
-			ChartSettings selected = this.chartSettingsSelected_nullUnsafe;
-			if (selected == null) {
-				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelected_nullUnsafe=null";
-				Assembler.PopupException(msg);
+		void mniltbSettingsMouseOvered_SaveAs_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			string msig = " //mniltbSettingsMouseOvered_SaveAs_UserTyped()";
+			ChartSettings settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettings;
+			if (settingsImDoingActionFor == null) {
+				string msg = "NO_SETTINGS_ATTACHED_TO this.ctxActions_forOneSettings.Tag";
+				Assembler.PopupException(msg + msig);
 				return;
 			}
-			ChartSettings clone = selected.Clone();
-			clone.Name = e.StringUserTyped;
-			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.SerializeSingle(clone);
-			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder();
-			this.populateTemplate(clone);
+			try {
+				ChartSettings clone = settingsImDoingActionFor.Clone();
+				clone.Name = e.StringUserTyped;
+				this.settingsRepo.SerializeSingle(clone);
+				this.newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(clone);
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex, false);
+			}
 		}
 	}
 }

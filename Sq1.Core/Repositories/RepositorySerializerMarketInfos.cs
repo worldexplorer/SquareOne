@@ -10,10 +10,10 @@ using Sq1.Core.Serializers;
 
 namespace Sq1.Core.Repositories {
 	public class RepositorySerializerMarketInfos : Serializer<Dictionary<string, MarketInfo>> {
-		public static string MarketDefaultName = "FORTS";
-		const string fnameTimeZonesCsv = "MicrosoftTimeZones.csv";
-		public string AbsFilenameTimeZonesCsv { get { return base.RootPath + Path.DirectorySeparatorChar + fnameTimeZonesCsv; } }
-		public Dictionary<string, string> TimeZonesWithUTC { get; protected set; }
+		public	static string				MarketDefaultName = "FORTS";
+		const	string						fnameTimeZonesCsv = "MicrosoftTimeZones.csv";
+		public	string						AbsFilenameTimeZonesCsv	{ get { return Path.Combine(base.RootPath, fnameTimeZonesCsv); } }
+		public	Dictionary<string, string>	TimeZonesWithUTC		{ get; protected set; }
 
 		public	Dictionary<string, MarketInfo>	MarketsByName { get { return base.EntityDeserialized; } }
 
@@ -22,7 +22,7 @@ namespace Sq1.Core.Repositories {
 					string subfolder = "Workspaces", string workspaceName = "Default",
 					bool createNonExistingPath = true, bool createNonExistingFile = true) {
 			bool createdNewFile = base.Initialize(rootPath, relFname, subfolder, workspaceName, createNonExistingPath, createNonExistingFile);
-			this.TimeZonesWithUTC = parseCsv(this.AbsFilenameTimeZonesCsv, ",");
+			this.TimeZonesWithUTC = this.parseCsv_MicrosoftTimeZones(this.AbsFilenameTimeZonesCsv, ",");
 			return createdNewFile;
 		}
 		public new void Serialize() {
@@ -196,7 +196,8 @@ namespace Sq1.Core.Repositories {
 			}
 			return ret;
 		}
-		public Dictionary<string, string> parseCsv(string filename, string delimeters, int skipFirstLines = 0) {
+		public Dictionary<string, string> parseCsv_MicrosoftTimeZones(string filename, string delimeters, int skipFirstLines = 0) {
+			string msig = " //parseCsv_MicrosoftTimeZones(" + filename + ")";
 			Dictionary<string, string> ret = new Dictionary<string, string>();
 
 			// #http://msdn.microsoft.com/en-us/library/ms912391(v=winembedded.11).aspx
@@ -204,7 +205,9 @@ namespace Sq1.Core.Repositories {
 			// 0,Dateline Standard Time,(GMT-12:00) International Date Line West
 			// 1,Samoa Standard Time,"(GMT-11:00) Midway Island, Samoa"
 			
-			using (StreamReader textReader = new StreamReader(filename)) {
+			StreamReader textReader = null;
+			try {
+				textReader = new StreamReader(filename);
 				CsvConfiguration cfg = new CsvConfiguration();
 				cfg.Delimiter = delimeters;
 				cfg.AllowComments = true;
@@ -220,6 +223,11 @@ namespace Sq1.Core.Repositories {
 					if (ret.ContainsKey(timeZoneGmtCity)) continue;
 					ret.Add(timeZoneGmtCity, timeZoneWindowsName);
 				}
+			} catch (Exception ex) {
+				string msg = "FILE_PERMISSION__OR_CsvHelper_ERROR";
+				Assembler.PopupException(msg + msig, ex, false);
+			} finally {
+				if (textReader != null) textReader.Dispose();
 			}
 
 			return ret;

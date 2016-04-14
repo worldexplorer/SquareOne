@@ -49,13 +49,12 @@ namespace Sq1.Core.Backtesting {
 			this.SymbolClass			= quote.SymbolClass;
 			this.Source					= "DERIVED_FROM_" + quote.ToStringShort() + " " + quote.Source;
 			this.ItriggeredFillAtBidOrAsk = quote.ItriggeredFillAtBidOrAsk;
-			this.IntraBarSerno			= quote.IntraBarSerno + Quote.IntraBarSernoShift_forGenerated_towardsPendingFill;
 			this.ParentBarSimulated		= parentBarSimulated;	// was there before I noticed "injected quotes don't seem to have ParentBarSimulated"
 			this.ParentBarStreaming		= quote.ParentBarStreaming;	// this may fix it injected quotes don't seem to have ParentBarSimulated
 		}
 
 		#region SORRY_FOR_THE_MESS__I_NEED_TO_DERIVE_IDENTICAL_ONLY_FOR_GENERATED__IF_YOU_NEED_IT_IN_BASE_QUOTE_MOVE_IT_THERE
-		public QuoteGenerated DeriveIdenticalButFresh() {
+		public QuoteGenerated DeriveIdenticalButFresh_toFillPendingAlert() {
 			//QuoteGenerated identicalButFresh = new QuoteGenerated(this.ServerTime);
 			QuoteGenerated identicalButFresh = (QuoteGenerated) this.MemberwiseClone();
 			//identicalButFresh.Symbol				= this.Symbol;
@@ -68,7 +67,7 @@ namespace Sq1.Core.Backtesting {
 			//identicalButFresh.Bid					= this.Bid;
 			//identicalButFresh.Ask					= this.Ask;
 			//identicalButFresh.Size					= this.Size;
-			identicalButFresh.IntraBarSerno			= this.IntraBarSerno + Quote.IntraBarSernoShift_forGenerated_towardsPendingFill;
+			identicalButFresh.IntraBarSerno			= this.IntraBarSerno + 1;
 			identicalButFresh.AbsnoPerSymbol		= this.AbsnoPerSymbol + 1;		// HACK_TO_ALLOW_LIVESIM_BROKER_TO_FILL_PENDING_ALERTS
 			//identicalButFresh.ParentBarSimulated = this.ParentBarSimulated;	// was there before I noticed "injected quotes don't seem to have ParentBarSimulated"
 			//identicalButFresh.ParentBarStreaming	= this.ParentBarStreaming;	// this may fix it injected quotes don't seem to have ParentBarSimulated

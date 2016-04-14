@@ -125,7 +125,7 @@ namespace Sq1.Charting {
 			// single-click input (arrows, direct position) or EndScroll after ThumbPosition
 			if (this.ChartSettings.ScrollPositionAtBarIndex != this.hScrollBar.Value) {
 				this.ChartSettings.ScrollPositionAtBarIndex  = this.hScrollBar.Value;
-				this.RaiseOnChartSettingsChanged_containerShouldSerialize();	//scrollbar should have OnDragCompleteMouseReleased event!!!
+				this.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();	//scrollbar should have OnDragCompleteMouseReleased event!!!
 			}
 		}
 		void bars_symbolInfo_PriceDecimalsChanged(object sender, EventArgs e) {
@@ -179,8 +179,8 @@ namespace Sq1.Charting {
 			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 			//	return;
 			//}
-			this.ChartSettings.MultiSplitterRowsPropertiesByPanelName		= this.multiSplitRowsVolumePrice		.SplitterPropertiesByPanelNameGet();
-			this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName	= this.multiSplitColumns_Level2_PriceVolumeMultisplit	.SplitterPropertiesByPanelNameGet();
+			this.ChartSettings.MultiSplitterRowsPropertiesByPanelName_tunnelled		= this.multiSplitRowsVolumePrice						.SplitterPropertiesByPanelNameGet();
+			this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName_tunnelled	= this.multiSplitColumns_Level2_PriceVolumeMultisplit	.SplitterPropertiesByPanelNameGet();
 			// that will show that 10s delay actually makes better sense than relying on MainFormDockFormsFullyDeserializedLayoutComplete in ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized()
 			//try {
 			//	int justCurious = this.ChartSettings.MultiSplitterPropertiesByPanelName[this.panelVolume.PanelName].Distance;
@@ -188,7 +188,7 @@ namespace Sq1.Charting {
 			//} catch (Exception ex) {
 			//	Assembler.PopupException(null, ex);
 			//}
-			this.RaiseOnChartSettingsChanged_containerShouldSerialize();
+			this.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();
 		}
 
 		void repositoryJsonDataSources_OnSymbolRemoved_clearChart(object sender, DataSourceSymbolEventArgs e) {
@@ -207,7 +207,7 @@ namespace Sq1.Charting {
 			}
 			string msg = "MY_SYMBOL_DELETED__INITIALIZING_WITH_BARS_NULL_TO_RESET";
 			Assembler.PopupException(msg + msig, null, false);
-			this.Initialize(null, this.ChartSettings.StrategyName);
+			this.Initialize(null);
 		}
 
 		protected override void OnLayout(System.Windows.Forms.LayoutEventArgs levent) {

@@ -175,7 +175,7 @@ namespace Sq1.Core.StrategyBase {
 				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive.ItriggeredFillAtBidOrAsk = alertFilled.BidOrAskWillFillMe;
 			} else {
 				//LIVEISM
-				alertFilled.QuoteCurrent_whenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(alertFilled.Symbol);
+				alertFilled.QuoteCurrent_whenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(alertFilled.Symbol);
 				alertFilled.QuoteCurrent_whenThisAlertFilled_deserializable = alertFilled.QuoteCurrent_whenThisAlertFilled.Clone_asCoreQuote();
 			}
 

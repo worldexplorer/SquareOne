@@ -105,7 +105,7 @@ namespace Sq1.Gui {
 					bool existsGuid = persistedParsedToHash.TryGetValue("StrategyGuid", out strategyGuid);
 					if (string.IsNullOrEmpty(strategyGuid)) {
 						chartFormsManagerDeserialized.InitializeChartNoStrategyAfterDeserialization();
-						this.GuiDataSnapshot.AddChartFormsManagerJustDeserialized(chartFormsManagerDeserialized);
+						this.GuiDataSnapshot.AddChartFormsManager_justDeserialized(chartFormsManagerDeserialized);
 					} else {
 						string strategyName;
 						bool existsName = persistedParsedToHash.TryGetValue("StrategyName", out strategyName);
@@ -119,7 +119,7 @@ namespace Sq1.Gui {
 						if (chartFormsManagerDeserialized.StrategyFoundDuringDeserialization == false) {
 							chartFormsManagerDeserialized.InitializeChartNoStrategyAfterDeserialization();
 						}
-						this.GuiDataSnapshot.AddChartFormsManagerJustDeserialized(chartFormsManagerDeserialized);
+						this.GuiDataSnapshot.AddChartFormsManager_justDeserialized(chartFormsManagerDeserialized);
 					}
 					chartFormsManagerDeserialized.PopulateWindowTitlesFromChartContextOrStrategy();
 					ret = chartFormsManagerDeserialized.ChartForm;
@@ -127,7 +127,7 @@ namespace Sq1.Gui {
 
 				case ("ReporterWrapped"):
 					// "Reporter:" + this.reporter.GetType().FullName + ",ChartSerno:" + this.reportersFormsManager.ChartFormsManager.ChartSerno;
-					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
+					parentChart = this.GuiDataSnapshot.FindChartFormsManager_bySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
 					string typeFullName = persistedParsedToHash["ReporterWrapped"];
 					ret = parentChart.ReportersFormsManager.ReporterActivateShowRegisterMniTick(typeFullName);
@@ -135,28 +135,28 @@ namespace Sq1.Gui {
 
 				case ("ScriptEditor"):
 					//return "ScriptEditor:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
-					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
+					parentChart = this.GuiDataSnapshot.FindChartFormsManager_bySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
 					ret = parentChart.ScriptEditorFormConditionalInstance;
 					break;
 
 				case ("Sequencer"):
 					//return "Sequencer:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
-					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
+					parentChart = this.GuiDataSnapshot.FindChartFormsManager_bySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
 					ret = parentChart.SequencerFormConditionalInstance;
 					break;
 
 				case ("LiveSim"):
 					//return "Livesim:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
-					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
+					parentChart = this.GuiDataSnapshot.FindChartFormsManager_bySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
 					ret = parentChart.LivesimFormConditionalInstance;
 					break;
 
 				case ("Correlator"):
 					//return "Livesim:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
-					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
+					parentChart = this.GuiDataSnapshot.FindChartFormsManager_bySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
 					ret = parentChart.CorrelatorFormConditionalInstance;
 					break;
@@ -311,13 +311,13 @@ namespace Sq1.Gui {
 				}
 				//v2 END
 			}
-			ChartSettingsEditorForm.Instance.Initialize(this.GuiDataSnapshot.ChartSettingsForChartSettingsEditor);
+			ChartSettingsEditorForm.Instance.ChartSettingsEditorControl.Initialize(this.GuiDataSnapshot.ChartControls_AllCurrentlyOpen);
 			if (this.ChartFormActive_nullUnsafe == null) {
 				string msg = "APPRESTART_DATASOURCE_EDITOR_ACTIVE?__I_REFUSE_TO_PopulateWithChartSettings() this.ChartFormActive_nullUnsafe=null //initializeMainFromDeserializedDataSnapshot()";
 				//Assembler.PopupException(msg);
 				return;
 			}
-			ChartSettingsEditorForm.Instance.PopulateWithChartSettings(this.ChartFormActive_nullUnsafe.ChartControl.ChartSettings);
+			ChartSettingsEditorForm.Instance.PopulateWithChartSettings(this.ChartFormActive_nullUnsafe.ChartControl);
 		}
 	}
 }

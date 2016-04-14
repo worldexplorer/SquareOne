@@ -123,7 +123,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			string msg = "";
-			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteCurrent(proto.Symbol, proto.LongShort);
+			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteLast(proto.Symbol, proto.LongShort);
 			double newStopLossPrice = proto.OffsetToPrice(newStopLoss_negativeOffset);
 			//switch (proto.StopLossAlertForAnnihilation.MarketLimitStop) {
 			switch (marketLimitStopPlanned) {
@@ -174,7 +174,7 @@ namespace Sq1.Core.StrategyBase {
 							}
 							break;
 						case Direction.Cover:
-							double bid = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBestBid_notAligned_forMarketOrder_fromQuoteCurrent(proto.Symbol);
+							double bid = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBestBid_notAligned_forMarketOrder_fromQuoteLast(proto.Symbol);
 							if (newStopLossPrice < bid) {
 								msg = "NEW_STOP_PRICE_ABOVE_BID_WILL_BE_REJECTED_BY_MARKET"
 									+ " newStopLossPrice[" + newStopLossPrice + "] > Bid[" + bid + "] " + ident2
@@ -212,8 +212,8 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg1 + msig);
 				throw new Exception(msg1 + msig);
 			}
-			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(proto.Symbol);
-			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteCurrent(proto.Symbol, proto.LongShort);
+			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(proto.Symbol);
+			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteLast(proto.Symbol, proto.LongShort);
 			double newTakeProfitPrice = proto.OffsetToPrice(newTakeProfit_positiveOffset);
 			bool willBeExecutedImmediately = false;
 			string ident = "TakeProfit{old[" + proto.PriceTakeProfit + "]:new[" + newTakeProfitPrice + "]}";

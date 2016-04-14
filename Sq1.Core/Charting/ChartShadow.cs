@@ -58,9 +58,9 @@ namespace Sq1.Core.Charting {
 		public virtual void SetExecutor(ScriptExecutor executor) {
 			this.Executor = executor;
 		}
-		public virtual void Initialize(Bars barsNotNull, string strategySavedInChartSettings, bool removeChartShadowFromOldSymbolAndAddToLoadingBars = false, bool invalidateAllPanels = true) {
+		public virtual void Initialize(Bars barsNotNull, bool removeChartShadowFromOldSymbolAndAddToLoadingBars = false, bool invalidateAllPanels = true) {
 			if (barsNotNull == null) {
-				string msg = "AVOIDING_NPE LIVESIM_ABORTED_WITH_NO_BARS_TO_RESTORE //ChartShadow.Initialize(null, strategySavedInChartSettings[" + strategySavedInChartSettings + "])";
+				string msg = "AVOIDING_NPE LIVESIM_ABORTED_WITH_NO_BARS_TO_RESTORE //ChartShadow.Initialize(null)";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}

@@ -151,7 +151,7 @@ namespace Sq1.Core.Broker {
 				this.OPPsequencer.ReplaceLockingCloseOrder(rejectedOrderToReplace, replacement);
 
 				double priceScript = replacement.Alert.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot
-					.GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteCurrent(
+					.GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteLast(
 					replacement.Alert.Bars.Symbol, replacement.Alert.Direction, out replacement.SpreadSide, true);
 				replacement.Alert.PositionAffected.ExitEmitted_price = priceScript;
 

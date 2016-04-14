@@ -51,8 +51,8 @@ namespace Sq1.Charting.MultiSplit {
 				string panelName = panel.Name;
 				if (splitterPropertiesByPanelName.ContainsKey(panelName) == false) {
 					string msg = "CRITICAL YOU_ADDED_RENAMED_A_PANEL_AFTER_BUILDING_PROPERTIES or DESERIALIZED_DICTIONARY_CONTAINS_OLD_CONTENT_OR_NAMES_OF_PANELS";
-					Assembler.PopupException(msg);
-					return;
+					Assembler.PopupException(msg, null, false);
+					continue;
 				}
 
 				MultiSplitterProperties props = splitterPropertiesByPanelName[panelName];
@@ -82,6 +82,11 @@ namespace Sq1.Charting.MultiSplit {
 				MultiSplitter splitter = this.splitters[i];
 
 				string panelName = panel.Name;
+				if (splitterPropertiesByPanelName.ContainsKey(panelName) == false) {
+					string msg = "DOESNT_CONTAIN splitterPropertiesByPanelName.ContainsKey(" + panelName + ")";
+					Assembler.PopupException(msg + msig, null, false);
+					continue;
+				}
 				MultiSplitterProperties props = splitterPropertiesByPanelName[panelName];
 
 				if (splitter.Width != this.SplitterHeight) {
@@ -117,8 +122,8 @@ namespace Sq1.Charting.MultiSplit {
 				}
 				if (widthChanged) thingsIchanged++;
 				if (panel.Width != newWidth) {
-					string msg = "TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Width[" + panel.Width + "] != newWidth[" + newWidth + "]";
-					Assembler.PopupException(msg + msig);
+					string msg = "I_DID_IT_DIDNT_HELP... TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Width[" + panel.Width + "] != newWidth[" + newWidth + "]";
+					Assembler.PopupException(msg + msig, null, false);
 				}
 
 
@@ -148,8 +153,8 @@ namespace Sq1.Charting.MultiSplit {
 				}
 				if (heightChanged) thingsIchanged++;
 				if (panel.Width != newWidth) {
-					string msg = "TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Width[" + panel.Width + "] != newWidth[" + newWidth + "]";
-					Assembler.PopupException(msg + msig);
+					string msg = "I_DID_IT_DIDNT_HELP... TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Width[" + panel.Width + "] != newWidth[" + newWidth + "]";
+					Assembler.PopupException(msg + msig, null, false);
 				}
 				#endregion
 
@@ -188,6 +193,11 @@ namespace Sq1.Charting.MultiSplit {
 				MultiSplitter splitter = this.splitters[i];
 
 				string panelName = panel.Name;
+				if (splitterPropertiesByPanelName.ContainsKey(panelName) == false) {
+					string msg = "DOESNT_CONTAIN splitterPropertiesByPanelName.ContainsKey(" + panelName + ")";
+					Assembler.PopupException(msg + msig, null, false);
+					continue;
+				}
 				MultiSplitterProperties props = splitterPropertiesByPanelName[panelName];
 
 				if (splitter.Height != this.SplitterHeight) {
@@ -224,8 +234,8 @@ namespace Sq1.Charting.MultiSplit {
 				}
 				if (heightChanged) thingsIchanged++;
 				if (panel.Height != newHeight) {
-					string msg = "TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Height[" + panel.Height + "] != newHeight[" + newHeight+ "]";
-					Assembler.PopupException(msg + msig);
+					string msg = "I_DID_IT_DIDNT_HELP... TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Height[" + panel.Height + "] != newHeight[" + newHeight+ "]";
+					Assembler.PopupException(msg + msig, null, false);
 				}
 
 

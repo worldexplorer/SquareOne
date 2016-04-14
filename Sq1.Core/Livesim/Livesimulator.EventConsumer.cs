@@ -43,7 +43,7 @@ namespace Sq1.Core.Livesim {
 			}
 
 
-			this.chartShadow.Initialize(base.Executor.Bars, base.Executor.StrategyName, false, true);
+			this.chartShadow.Initialize(base.Executor.Bars, false, true);
 
 			this.DataSourceAsLivesim_generator_nullUnsafe.StreamingAsLivesim_nullUnsafe.OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange += new EventHandler<QuoteEventArgs>(streamingAsLivesim_nullUnsafe_OnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange);
 

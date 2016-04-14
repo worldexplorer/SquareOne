@@ -262,7 +262,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Livesim\LivesimBrokerDataSnapshot.cs" />
-    <Compile Include="Repositories\RepositoryJsonChartSettingsTemplates.cs" />
+    <Compile Include="Repositories\RepositoryJsonChartSettings.cs" />
     <Compile Include="Repositories\RepositoryJsonsInFolderSimpleDictionary.cs" />
     <Compile Include="Repositories\RepositoryJsonsInFolderSimpleDictionarySorted.cs" />
     <Compile Include="Repositories\RepositoryJsonsInFolderSimpleDictionaryCorrelator.cs" />

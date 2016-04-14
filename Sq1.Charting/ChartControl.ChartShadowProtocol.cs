@@ -307,7 +307,7 @@ namespace Sq1.Charting {
 			StreamingDataSnapshot snap = base.Bars.DataSource.StreamingAdapter.StreamingDataSnapshot;
 
 			//v1 this.ScriptExecutorObjects.QuoteCurrent = this.Bars.QuoteLastClone_nullUnsafe;
-			this.ExecutorObjects_frozenForRendering.QuoteCurrent = snap.GetQuoteCurrent_forSymbol_nullUnsafe(this.Bars.Symbol);
+			this.ExecutorObjects_frozenForRendering.QuoteCurrent = snap.GetQuoteLast_forSymbol_nullUnsafe(this.Bars.Symbol);
 			this.ExecutorObjectsReady_triggerRepaint__raiseOnBarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp();
 		}
 		public override void PushLevelTwoFrozen_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll(LevelTwoFrozen levelTwoFrozen) {

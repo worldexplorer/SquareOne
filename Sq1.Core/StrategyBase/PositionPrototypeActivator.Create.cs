@@ -163,9 +163,9 @@ namespace Sq1.Core.StrategyBase {
 		//    }
 		//}
 		string reasonWhy_placingProto_doesntMakeSense(PositionPrototype proto, bool internalCallee = false) {
-			double lastPrice = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetPriceForMarketOrder_notAligned_fromQuoteCurrent(proto.Symbol);
-			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(proto.Symbol);
-			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteCurrent(proto.Symbol, proto.LongShort);
+			double lastPrice = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetPriceForMarketOrder_notAligned_fromQuoteLast(proto.Symbol);
+			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(proto.Symbol);
+			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteLast(proto.Symbol, proto.LongShort);
 			bool willBeExecutedImmediately = false;
 			MarketLimitStop planningEntryUsing = MarketConverter.EntryMarketLimitStopFromDirection(
 				this.executor.Bars.BarStreaming_nullUnsafeCloneReadonly.Close, proto.PriceEntry, proto.LongShort);

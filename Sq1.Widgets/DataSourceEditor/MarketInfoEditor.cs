@@ -112,17 +112,22 @@ namespace Sq1.Widgets.DataSourceEditor {
 		void populateTimeZonesSelector() {
 			this.ignoreSelectionEventDuringPopulate = true;
 			this.cbxMarketTimeZone.Items.Clear();
-			Dictionary<string, string> TimeZonesWithUTC = this.marketInfoRepository.TimeZonesWithUTC;
-			var sortedTimeZones = TimeZonesWithUTC.Keys.ToList();	//using System.Linq;
+			Dictionary<string, string> tzReadableNames_withUTC = this.marketInfoRepository.TimeZonesWithUTC;
+			var sortedTimeZones = tzReadableNames_withUTC.Keys.ToList();	//using System.Linq;
 			sortedTimeZones.Sort();
+
+			string tzName_inDataSource = "UNKNOWN___THIS_WILL_NEVER_MATCH";
 			if (this.dataSource.MarketInfo != null && this.dataSource.MarketInfo.TimeZoneName != null) {
-				foreach (string key in sortedTimeZones) {
-					int index = this.cbxMarketTimeZone.Items.Add(key);
-					if (this.dataSource.MarketInfo.TimeZoneName == TimeZonesWithUTC[key]) {
-						this.cbxMarketTimeZone.SelectedIndex = index;
-						break;
-					}
-				}
+				tzName_inDataSource = this.dataSource.MarketInfo.TimeZoneName;
+			}
+
+			foreach (string key in sortedTimeZones) {
+				int index = this.cbxMarketTimeZone.Items.Add(key);
+
+				string tzName_each = tzReadableNames_withUTC[key];
+				if (tzName_each != tzName_inDataSource) continue;
+
+				this.cbxMarketTimeZone.SelectedIndex = index;
 			}
 			this.ignoreSelectionEventDuringPopulate = false;
 		}

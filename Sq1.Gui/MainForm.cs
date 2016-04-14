@@ -387,7 +387,10 @@ namespace Sq1.Gui {
 					}
 				}
 
-				cfmgr.ChartForm.ChartControl.Propagate_splitterManorderDistance_ifFullyDeserialized();
+				
+				cfmgr.ChartForm.ChartControl.Propagate_splitterManorderDistance_ifFullyDeserialized(
+					cfmgr.DataSnapshot.MultiSplitterColumnsPropertiesByPanelName,
+					cfmgr.DataSnapshot.MultiSplitterRowsPropertiesByPanelName);
 
 				// ATTEMPT#2_AFTER_DOCK_FULLY_UNSERIALIZED this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
 				//if (cfmgr.DataSnapshot.ChartSerno == this.GuiDataSnapshot.ChartSernoLastKnownHadFocus) {

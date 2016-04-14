@@ -321,7 +321,7 @@ namespace Sq1.Core.Broker {
 			order.AbsorbCurrentBidAsk_fromStreamingSnapshot(this.StreamingAdapter.StreamingDataSnapshot);
 
 			Alert alert = order.Alert;
-			double priceBestBidAsk = this.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteCurrent(
+			double priceBestBidAsk = this.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteLast(
 				alert.Symbol, alert.PositionLongShortFromDirection);
 				
 			SymbolInfo symbolInfo = alert.Bars.SymbolInfo;

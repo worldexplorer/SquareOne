@@ -8,8 +8,6 @@ using Sq1.Core.Backtesting;
 namespace Sq1.Core.DataTypes {
 	public class Quote {
 		[JsonIgnore]	public	const string	GENERATED_TO_FILL_ALERT = "GENERATED_TO_FILL_ALERT";
-		[JsonIgnore]	public	const string	LEVEL2_SPREAD_CHANGED__SIZE_ZERO = "LEVEL2_SPREAD_CHANGED__SIZE_ZERO";
-		[JsonIgnore]	public	const int		IntraBarSernoShift_forGenerated_towardsPendingFill = 100000;
 
 		[JsonProperty]	public	string		Symbol;
 		[JsonProperty]	public	string		SymbolClass;
@@ -22,8 +20,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	double		Size;
 		
 		[JsonIgnore]	public	int			IntraBarSerno;
-		[JsonIgnore]	public	bool		IamInjectedToFillPendingAlerts {
-			get { return this.IntraBarSerno >= Quote.IntraBarSernoShift_forGenerated_towardsPendingFill; } }
+		[JsonIgnore]	public	bool		IamInjectedToFillPendingAlerts;	//		{ get; protected set; }
 		[JsonProperty]	public	long		AbsnoPerSymbol;
 
 		[JsonIgnore]	public	Bar			ParentBarStreaming		{ get; protected set; }
@@ -101,12 +98,6 @@ namespace Sq1.Core.DataTypes {
 			bool ret = this.Source.Contains(Quote.GENERATED_TO_FILL_ALERT)
 				//&& this.IntraBarSerno >= Quote.IntraBarSernoShift_forGenerated_towardsPendingFill
 				&& this is QuoteGenerated;
-			return ret;
-		} }
-
-		[JsonIgnore]	public	bool		FakeQuote_toDeliverSpread_makeLevel2Repaint { get {
-			bool ret = this.Source.Contains(Quote.LEVEL2_SPREAD_CHANGED__SIZE_ZERO)
-				|| this.Size == 0;
 			return ret;
 		} }
 

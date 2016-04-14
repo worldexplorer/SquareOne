@@ -63,7 +63,7 @@ namespace Sq1.Core.Charting {
 				} else {
 					//string msg = "RAISE_EVENT_SO_THAT_MAIN_FORM_SAVES_CHART_CONTEXT_WITHOUT_STRATEGY";
 					//Assembler.PopupException(msg, null, false);
-					this.ChartShadow.RaiseOnChartSettingsChanged_containerShouldSerialize();
+					this.ChartShadow.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();
 					serialized = true;
 				}
 			}
@@ -135,7 +135,7 @@ namespace Sq1.Core.Charting {
 				} else {
 					//string msg = "RAISE_EVENT_SO_THAT_MAIN_FORM_SAVES_CHART_CONTEXT_WITHOUT_STRATEGY";
 					//Assembler.PopupException(msg, null, false);
-					this.ChartShadow.RaiseOnChartSettingsChanged_containerShouldSerialize();
+					this.ChartShadow.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();
 					serialized = true;
 				}
 			}
@@ -279,6 +279,7 @@ namespace Sq1.Core.Charting {
 				string msg = "CHART_WITHOUT_ANY_STRATEGY__JUST_INVALIDATE_AND_EXIT__NO_SCRIPT_TO_INVOKE";
 				//Assembler.PopupException(msg);
 				base.ChartShadow_nullReported.InvalidateAllPanels();
+				base.ChartShadow_nullReported.PushQuote_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll();
 				return;
 			}
 

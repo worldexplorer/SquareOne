@@ -9,8 +9,8 @@ using Sq1.Core.Support;
 namespace Sq1.Core.DataTypes {
 	public class LevelTwo : ConcurrentWatchdog {
 								string			symbol;
-		[JsonIgnore]	public	Quote			QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno;
-		[JsonIgnore]	public	Quote			QuotePrev_unbound_notCloned;
+		[JsonIgnore]	public	Quote			QuoteLast_unbound_notCloned_validAbsno_invalidIntrabarSerno__mightBeDifferentByTimeScriptGetsInvoked;
+		//[JsonIgnore]	public	Quote			QuotePrev_unbound_notCloned;
 		[JsonIgnore]	private	LevelTwoHalf	asks;		//	{ get; private set; }
 		[JsonIgnore]	private	LevelTwoHalf	bids;		//	{ get; private set; }
 
@@ -24,10 +24,10 @@ namespace Sq1.Core.DataTypes {
 			this.bids = new LevelTwoHalf("LevelTwoBids[" + this.symbol + "] " + reasonToExist);
 		}
 
-		public Quote QuoteCurrentPrev_clear() {
-			Quote ret = this.QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno;
-			this.QuoteCurrent_unbound_notCloned_validAbsno_invalidIntrabarSerno = null;
-			this.QuotePrev_unbound_notCloned = null;
+		public Quote QuoteLast_clear() {
+			Quote ret = this.QuoteLast_unbound_notCloned_validAbsno_invalidIntrabarSerno__mightBeDifferentByTimeScriptGetsInvoked;
+			this.QuoteLast_unbound_notCloned_validAbsno_invalidIntrabarSerno__mightBeDifferentByTimeScriptGetsInvoked = null;
+			//this.QuotePrev_unbound_notCloned = null;
 			return ret;
 		}
 

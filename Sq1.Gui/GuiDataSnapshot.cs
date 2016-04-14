@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-using Sq1.Charting;
-
+using Sq1.Core;
 using Sq1.Core.Charting;
+
+using Sq1.Charting;		//separate DLL, yes
 
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
@@ -20,7 +21,7 @@ namespace Sq1.Gui {
 	//[DataContract]
 	public class GuiDataSnapshot {
 		[JsonIgnore]	public Dictionary<int, ChartFormManager> ChartFormManagers;
-		[JsonIgnore]	public Dictionary<ChartSettings, ChartControl> ChartSettingsForChartSettingsEditor;
+		[JsonIgnore]	public List<ChartControl> ChartControls_AllCurrentlyOpen;
 		[JsonProperty]	public Point MainFormLocation;
 		[JsonProperty]	public Size MainFormSize;
 		[JsonProperty]	public bool MainFormIsFullScreen;
@@ -36,7 +37,7 @@ namespace Sq1.Gui {
 
 		public GuiDataSnapshot() {
 			this.ChartFormManagers = new Dictionary<int, ChartFormManager>();
-			this.ChartSettingsForChartSettingsEditor = new Dictionary<ChartSettings, ChartControl>();
+			this.ChartControls_AllCurrentlyOpen = new List<ChartControl>();
 		}
 
 		//public void RebuildDeserializedChartFormsManagers(MainForm mainForm) {
@@ -50,15 +51,20 @@ namespace Sq1.Gui {
 		//		mgr.RebuildAfterDeserialization(mainForm);
 		//	}
 		//}
-		public void AddChartFormsManagerJustDeserialized(ChartFormManager mgr) {
+		public void AddChartFormsManager_justDeserialized(ChartFormManager mgr) {
 			if (mgr.DataSnapshot.ChartSerno > this.ChartSernoLastUsed) this.ChartSernoLastUsed = mgr.DataSnapshot.ChartSerno;
 
 			this.ChartFormManagers.Add(mgr.DataSnapshot.ChartSerno, mgr);
 			// AddChartFormsManagerJustDeserialized() IS_ONLY_INVOKED_FROM_DESERIALIZER_SKIP_REBUILDING_DROPDOWN ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
 
-			this.ChartSettingsForChartSettingsEditor.Add(mgr.ChartForm.ChartControl.ChartSettings, mgr.ChartForm.ChartControl);
+			if (this.ChartControls_AllCurrentlyOpen.Contains(mgr.ChartForm.ChartControl)) {
+				string msg = "SAME_SETTINGS_ARE_USED_FOR_MULTIPLE_CHARTS__CHANGING_ONE_IN_ChartSettingsEditorControl_WILL_AFFECT_MANY [" + mgr.ChartForm.ChartControl.ChartSettings.Name + "]";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			this.ChartControls_AllCurrentlyOpen.Add(mgr.ChartForm.ChartControl);
 		}
-		public ChartFormManager FindChartFormsManagerBySerno(int chartSerno, string invokerMsig = "CALLER_UNKNOWN", bool throwIfNotFound = true) {
+		public ChartFormManager FindChartFormsManager_bySerno(int chartSerno, string invokerMsig = "CALLER_UNKNOWN", bool throwIfNotFound = true) {
 			ChartFormManager ret = null;
 			if (this.ChartFormManagers.ContainsKey(chartSerno) == false) {
 				if (throwIfNotFound) {

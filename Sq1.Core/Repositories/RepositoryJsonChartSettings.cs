@@ -3,10 +3,10 @@
 using Sq1.Core.Charting;
 
 namespace Sq1.Core.Repositories {
-	public class RepositoryJsonChartSettingsTemplates : RepositoryJsonsInFolder<ChartSettings> {
+	public class RepositoryJsonChartSettings : RepositoryJsonsInFolder<ChartSettings> {
 
 		public void DeserializeJsonsInFolder_IfNoneCreateDefault() {
-			base.DeserializeJsonsInFolder();
+			base.DeserializeJsonsInFolder_ifNotCached();
 			if (base.ItemsCachedByName.Count > 0) return;
 			ChartSettings Default = new ChartSettings();
 			Default.Name = ChartSettings.NAME_DEFAULT;

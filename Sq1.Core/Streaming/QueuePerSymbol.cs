@@ -109,7 +109,7 @@ namespace Sq1.Core.Streaming {
 				this.waitedForBacktestToFinish.Stop();
 				string msg = "BACKLOG_DRAINED [" + this.waitedForBacktestToFinish.ElapsedMilliseconds + "]ms"
 					+ " customerCalls[" + customerCalls + "]"
-					+ " itemsCollected[" + itemsCollected + "] itemsCollected[" + itemsCollected + "]";
+					+ "<" + this.OfWhat + ">s collected[" + itemsCollected + "]";
 				Assembler.PopupException(msg + msig, null, false);
 			}
 			return itemsProcessed;

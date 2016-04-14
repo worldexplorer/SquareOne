@@ -49,7 +49,7 @@ namespace Sq1.Core.Streaming {
 			int barsReplaced = this.dataSource.BarAppend_orReplaceLast(barStaticLast_justFormed_byBarsEmulator	, out millisTook_updateLast);
 			int barsAppended = this.dataSource.BarAppend_orReplaceLast(quoteWithPseudo.ParentBarStreaming		, out millisTook_appendNew);	// will be OHLCV=NaN
 			string msg = millisTook_updateLast + " barLastFormed[" + barStaticLast_justFormed_byBarsEmulator + "] into DataSource[" + this.dataSource.Name + "]";
-			Assembler.PopupException(msg, null, false);
+			//Assembler.PopupException(msg, null, false);
 		}
 		public override void Consume_levelTwoChanged(LevelTwoFrozen levelTwoFrozen) {
 			string msg = "REMOVE_THIS_INVOCATION_UPSTACK__SOLIDIFIER_DOESNT_SAVE_LEVELS_TWO";

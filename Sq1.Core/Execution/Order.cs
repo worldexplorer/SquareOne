@@ -497,7 +497,7 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public void AbsorbCurrentBidAsk_fromStreamingSnapshot(StreamingDataSnapshot snap) {
-			this.CurrentBid = snap.GetBestBid_notAligned_forMarketOrder_fromQuoteCurrent(this.Alert.Symbol);
+			this.CurrentBid = snap.GetBestBid_notAligned_forMarketOrder_fromQuoteLast(this.Alert.Symbol);
 			this.CurrentAsk = snap.GetBestAsk_notAligned_forMarketOrder_fromQuoteCurrent(this.Alert.Symbol);
 		}
 

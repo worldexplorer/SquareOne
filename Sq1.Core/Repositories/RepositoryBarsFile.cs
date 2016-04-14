@@ -398,7 +398,9 @@ namespace Sq1.Core.Repositories {
 					long ticksOpen_lastStored = binaryReader.ReadInt64();
 					DateTime dateTimeOpen_lastStored = new DateTime(ticksOpen_lastStored);
 					if (barLastFormedStatic_orCurrentStreaming.DateTimeOpen < dateTimeOpen_lastStored) {
-						string msg = "I_REFUSE_TO_STORE_BAR_EARLIER_THAN_LAST_STORED barLastFormedStatic_orCurrentStreaming.DateTimeOpen["
+						string msg = "I_REFUSE_TO_STORE_BAR_EARLIER_THAN_LAST_STORED"
+							+ this.SymbolIntervalScale_DSN
+							+ " barLastFormedStatic_orCurrentStreaming.DateTimeOpen["
 							+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] > dateTimeOpen_lastStored[" + dateTimeOpen_lastStored + "]"
 							+ " IMPOSSIBLE_TO_CATCH_UPSTACK_KOZ_SOLIDIFIER_DOESNT_KEEP_BARS";
 						Assembler.PopupException(msg, null, false);
@@ -446,9 +448,9 @@ namespace Sq1.Core.Repositories {
 								+ barLastFormedStatic_orCurrentStreaming.DateTimeOpen + "] > dateTimeOpen_lastStored[" + dateTimeOpen_lastStored + "]"
 								+ " fileStreamPositionAfterSeekToEnd[" + fileStreamPositionAfterSeekToEnd + "] fileStreamLength[" + fileStreamLength + "]"
 								;
-							//#if DEBUG_VERBOSE
+							#if DEBUG_VERBOSE
 							Assembler.PopupException(msg, null, false);
-							//#endif
+							#endif
 						} catch (Exception ex) {
 							string msg = "3/4_FILESTREAM_SEEK_END_THROWN";
 							Assembler.PopupException(msg + msig, ex);

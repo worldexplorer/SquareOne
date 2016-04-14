@@ -6,6 +6,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Charting;
 
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormDataSnapshot {
@@ -50,7 +51,7 @@ namespace Sq1.Gui.Forms {
 			get {
 				if (this.chartSettings == null) {
 					if (string.IsNullOrEmpty(this.ChartSettingsName)) this.ChartSettingsName = ChartSettings.NAME_DEFAULT;
-					this.chartSettings = Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.ChartSettingsFind_nullUnsafe(this.ChartSettingsName);
+					this.chartSettings = Assembler.InstanceInitialized.RepositoryJsonChartSettings.ChartSettingsFind_nullUnsafe(this.ChartSettingsName);
 					if (this.chartSettings == null) this.chartSettings = new ChartSettings(ChartSettings.NAME_DEFAULT);
 				}
 				return this.chartSettings;
@@ -69,12 +70,18 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 
+		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterRowsPropertiesByPanelName;
+		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterColumnsPropertiesByPanelName;
+
 		public ChartFormDataSnapshot() {
 			this.chartSerno = -1;
 			this.StrategyGuidJsonCheck		= "NOT_INITIALIZED ChartFormManager.Initialize()";
 			this.StrategyNameJsonCheck		= "NOT_INITIALIZED ChartFormManager.Initialize()";
 			this.StrategyAbsPathJsonCheck	= "NOT_INITIALIZED ChartFormManager.Initialize()";
 			//this.ContextChart = new ContextChart();	// should be nullified when a strategy is loaded to the chart
+
+			this.MultiSplitterRowsPropertiesByPanelName		= new Dictionary<string, MultiSplitterProperties>();
+			this.MultiSplitterColumnsPropertiesByPanelName	= new Dictionary<string, MultiSplitterProperties>();
 		}
 		
 	}

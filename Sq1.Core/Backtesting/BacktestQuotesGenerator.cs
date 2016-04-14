@@ -210,7 +210,7 @@ namespace Sq1.Core.Backtesting {
 				snap = livesimStreaming.StreamingOriginal.StreamingDataSnapshot;
 			}
 
-			Quote quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde = snap.GetQuoteCurrent_forSymbol_nullUnsafe(quoteToReach.Symbol);
+			Quote quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde = snap.GetQuoteLast_forSymbol_nullUnsafe(quoteToReach.Symbol);
 
 			if (quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde == null) {
 				string msg = "I_CANNOT_CONTINUE_LIVESIM_FIXME__1";
@@ -218,12 +218,12 @@ namespace Sq1.Core.Backtesting {
 				return null;
 			}
 
-			QuoteGenerated quotePrev = quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
-			if (quotePrev == null) {
+			QuoteGenerated quoteGenerated = quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
+			if (quoteGenerated == null) {
 				string msg = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"
 					+ " Source[" + quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde.Source + "]";
-				quotePrev = new QuoteGenerated(quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde, bar2simulate);
-				if (quotePrev == null) {
+				quoteGenerated = new QuoteGenerated(quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde, bar2simulate);
+				if (quoteGenerated == null) {
 					string msg1 = "I_CANNOT_CONTINUE_LIVESIM_FIXME__2";
 					Assembler.PopupException(msg1 + msig);
 					return null;
@@ -232,7 +232,7 @@ namespace Sq1.Core.Backtesting {
 
 			#region PARANOID_CHECKS_HERE THANK_YOU_LED_TO_10_LINES_ABOVE
 			QuoteGenerated quotePrevAsDde = quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
-			if (quotePrev == null) {
+			if (quoteGenerated == null) {
 				string msg = "PARANOINDAL_CHECK_IF_PREV_QUOTE_IS_QUOTE_TO_REACH copypaste";
 				Assembler.PopupException(msg);
 			}
@@ -252,19 +252,21 @@ namespace Sq1.Core.Backtesting {
 
 			// assuming both quotes generated using same SpreadModeler and their spreads are equal
 			//v1 if (quoteToReach.Bid == quotePrev.Bid || quoteToReach.Ask == quotePrev.Ask) {
-			if (quoteToReach.SameBidAsk(quotePrev)) {
+			if (quoteToReach.SameBidAsk(quoteGenerated)) {
 				string msg = "WE_REACHED_QUOTE_TO_REACH_SAME_BIDASK_NOTHING_ELSE_TO_GENERATE";
 				return null;
 			}
-			if (quotePrev.ServerTime >= quoteToReach.ServerTime) {
+			if (quoteGenerated.ServerTime >= quoteToReach.ServerTime) {
 				string msg = "WE_REACHED_QUOTE_TO_REACH_SAME_SERVERTIME_NOTHING_ELSE_TO_GENERATE";
 				return null;
 			}
 			#endregion
 
-			bool scanningDown = quoteToReach.Bid < quotePrev.Bid;
+			bool scanningDown = quoteToReach.Bid < quoteGenerated.Bid;
 			QuoteGenerated quoteClosest = null;
 			List<Alert> alertsSafe = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "generateClosestQuote_forEachPendingAlert_onOurWayTo(WAIT)");
+
+			int addAbsnoPerSymbol_dueToQuotesFilledAlerts = 0;
 			foreach (Alert alert in alertsSafe) {
 				// DONT_EXPECT_THEM_TO_BE_FILLED_YOU_SHOULD_FILL_ALL_RELEVANT_NOW
 				//if (scanningDown) {
@@ -283,10 +285,9 @@ namespace Sq1.Core.Backtesting {
 					Assembler.PopupException(errModelingQuoteThatCouldFill);
 					continue;
 				}
-
 				// trying to keep QuoteGenerated within the original simulated Bar (lazy to attach StreamingBar to QuoteGenerated now)
 				if (scanningDown) {
-					if (quoteThatWillFillAlert.Bid > quotePrev.Bid) {
+					if (quoteThatWillFillAlert.Bid > quoteGenerated.Bid) {
 						string msg = "IGNORING_QUOTE_HIGHER_THAN_PREVIOUS_WHILE_SCANNING_DOWN";
 						continue;
 					}
@@ -300,7 +301,7 @@ namespace Sq1.Core.Backtesting {
 						continue;
 					}
 				} else {
-					if (quoteThatWillFillAlert.Ask < quotePrev.Ask) {
+					if (quoteThatWillFillAlert.Ask < quoteGenerated.Ask) {
 						string msg = "IGNORING_QUOTE_LOWER_THAN_PREVIOUS_WHILE_SCANNING_UP";
 						continue;
 					}
@@ -334,7 +335,7 @@ namespace Sq1.Core.Backtesting {
 			if (quoteClosest == null) return quoteClosest;
 
 			if (scanningDown) {
-				if (quoteClosest.Bid > quotePrev.Bid) {
+				if (quoteClosest.Bid > quoteGenerated.Bid) {
 					string msg = "WHILE_SCANNING_DOWN_RETURNING_QUOTE_HIGHER_THAN_PREVIOUS_IS_WRONG";
 					Assembler.PopupException(msg);
 				}
@@ -343,7 +344,7 @@ namespace Sq1.Core.Backtesting {
 					Assembler.PopupException(msg);
 				}
 			} else {
-				if (quoteClosest.Ask < quotePrev.Ask) {
+				if (quoteClosest.Ask < quoteGenerated.Ask) {
 					string msg = "WHILE_SCANNING_UP_RETURNING_QUOTE_LOWER_THAN_PREVIOUS_IS_WRONG";
 					Assembler.PopupException(msg);
 				}
@@ -354,12 +355,16 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			//I_WILL_SPOIL_STREAMING_BAR_IF_I_ATTACH_LIKE_THIS QuoteGenerated quoteNextAttached = this.backtester.BacktestDataSource.BacktestStreamingAdapter.(quoteToReach.Clone());
-			QuoteGenerated ret = quotePrev.DeriveIdenticalButFresh();
+			QuoteGenerated ret = quoteGenerated.DeriveIdenticalButFresh_toFillPendingAlert();
 			ret.Bid = quoteClosest.Bid;
 			ret.Ask = quoteClosest.Ask;
 			//FILLED_AT_ALERT_FILL ret.PriceLastDeal = (ret.Ask + ret.Bid) / 2;
 			ret.Size = quoteClosest.Size;
 			ret.Source = quoteClosest.Source;
+			ret.IamInjectedToFillPendingAlerts = true;
+
+			ret.AbsnoPerSymbol = quoteToReach.AbsnoPerSymbol + 1;
+			quoteToReach.AbsnoPerSymbol = ret.AbsnoPerSymbol + 1;
 
 			//LIVESIM_HACK
 			//if (ret.ParentBarStreaming.ParentBars != null) {
@@ -405,13 +410,13 @@ namespace Sq1.Core.Backtesting {
 				snap = livesimStreaming.StreamingOriginal.StreamingDataSnapshot;
 			}
 
-			Quote quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde = snap.GetQuoteCurrent_forSymbol_nullUnsafe(alert.Symbol);
+			Quote quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde = snap.GetQuoteLast_forSymbol_nullUnsafe(alert.Symbol);
 
-			QuoteGenerated quotePrev = quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde as QuoteGenerated;
-			if (quotePrev == null) {
+			QuoteGenerated quoteGenerated = quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde as QuoteGenerated;
+			if (quoteGenerated == null) {
 				string msg = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"
 					+ " Source[" + quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde.Source + "]";
-				quotePrev = new QuoteGenerated(quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde, bar2simulate);
+				quoteGenerated = new QuoteGenerated(quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde, bar2simulate);
 			}
 
 			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.SpreadModeler;
@@ -420,7 +425,7 @@ namespace Sq1.Core.Backtesting {
 					switch (alert.Direction) {
 						case Direction.Buy:
 						case Direction.Cover:
-							if (priceScriptAligned > quotePrev.Ask && checkAgainstPrevReceivedQuote) {
+							if (priceScriptAligned > quoteGenerated.Ask && checkAgainstPrevReceivedQuote) {
 								errOut = "INVALID_PRICESCRIPT_FOR_LIMIT_BUY_MUST_NOT_BE_ABOVE_CURRENT_ASK";
 								return null;
 							}
@@ -430,7 +435,7 @@ namespace Sq1.Core.Backtesting {
 							break;
 						case Direction.Short:
 						case Direction.Sell:
-							if (priceScriptAligned < quotePrev.Bid && checkAgainstPrevReceivedQuote) {
+							if (priceScriptAligned < quoteGenerated.Bid && checkAgainstPrevReceivedQuote) {
 								errOut = "INVALID_PRICESCRIPT_FOR_LIMIT_SELL_MUST_NOT_BE_BELOW_CURRENT_BID";
 								return null;
 							}
@@ -448,7 +453,7 @@ namespace Sq1.Core.Backtesting {
 					switch (alert.Direction) {
 						case Direction.Buy:
 						case Direction.Cover:
-							if (priceScriptAligned < quotePrev.Ask && checkAgainstPrevReceivedQuote) {
+							if (priceScriptAligned < quoteGenerated.Ask && checkAgainstPrevReceivedQuote) {
 								errOut = "INVALID_PRICESCRIPT_FOR_STOP_BUY_MUST_NOT_BE_BELOW_CURRENT_ASK";
 								return null;
 							}
@@ -458,7 +463,7 @@ namespace Sq1.Core.Backtesting {
 							break;
 						case Direction.Short:
 						case Direction.Sell:
-							if (priceScriptAligned > quotePrev.Bid && checkAgainstPrevReceivedQuote) {
+							if (priceScriptAligned > quoteGenerated.Bid && checkAgainstPrevReceivedQuote) {
 								errOut = "INVALID_PRICESCRIPT_FOR_STOP_SELL_MUST_NOT_BE_ABOVE_CURRENT_BID";
 								return null;
 							}
@@ -476,13 +481,13 @@ namespace Sq1.Core.Backtesting {
 					switch (alert.Direction) {
 						case Direction.Buy:
 						case Direction.Cover:
-							ret.Ask = quotePrev.Ask;
+							ret.Ask = quoteGenerated.Ask;
 							ret.TradedAt = BidOrAsk.Ask;
 							modeler.FillBidBasedOnAsk_aligned(ret);
 							break;
 						case Direction.Short:
 						case Direction.Sell:
-							ret.Bid = quotePrev.Bid;
+							ret.Bid = quoteGenerated.Bid;
 							ret.TradedAt = BidOrAsk.Bid;
 							modeler.FillAskBasedOnBid_aligned(ret);
 							break;
@@ -501,7 +506,7 @@ namespace Sq1.Core.Backtesting {
 					throw new Exception("ALERT_TYPE_UNKNOWN MarketLimitStop[" + alert.MarketLimitStop + "] is not Market/Limit/Stop modelQuote_thatCouldFillAlert()");
 			}
 
-			ret.AbsnoPerSymbol = quotePrev.AbsnoPerSymbol + 1;
+			ret.AbsnoPerSymbol = quoteGenerated.AbsnoPerSymbol + 1;
 			return ret;
 		}
 		public virtual List<QuoteGenerated> Generate_quotesFromBar_avoidClearing(Bar barSimulated) {

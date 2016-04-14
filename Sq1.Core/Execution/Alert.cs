@@ -470,7 +470,7 @@ namespace Sq1.Core.Execution {
 				string msg = "NPE_AHEAD?... OR_ONLY_WITH_OWN_LIVEIM_ADAPTERS???...";
 				Assembler.PopupException(msg);
 			}
-			this.CurrentBid = snap.GetBestBid_notAligned_forMarketOrder_fromQuoteCurrent(this.Symbol);
+			this.CurrentBid = snap.GetBestBid_notAligned_forMarketOrder_fromQuoteLast(this.Symbol);
 			this.CurrentAsk = snap.GetBestAsk_notAligned_forMarketOrder_fromQuoteCurrent(this.Symbol);
 
 			
@@ -480,7 +480,7 @@ namespace Sq1.Core.Execution {
 
 			if (this.MarketLimitStop == MarketLimitStop.Market && willGetFromStreaming) {
 				SpreadSide spreadSide = SpreadSide.Unknown;
-				this.PriceEmitted = snap.GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteCurrent(
+				this.PriceEmitted = snap.GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteLast(
 						this.Symbol, this.Direction, out spreadSide, false);
 				this.SlippageApplied = this.GetSlippage_signAware_forLimitAlertsOnly(this.PriceEmitted, 0);
 				this.PriceEmitted += this.SlippageApplied;

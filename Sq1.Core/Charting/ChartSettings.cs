@@ -16,8 +16,8 @@ namespace Sq1.Core.Charting {
 		[Browsable(false)]
 		[JsonIgnore]	public static string NAME_DEFAULT = "Default";
 
-		[Category("1. Essential"), Description("description to be composed"), ReadOnly(true), Browsable(false)]
-		[JsonProperty]	public string	StrategyName											{ get; set; }
+		//[Category("1. Essential"), Description("description to be composed"), ReadOnly(true), Browsable(false)]
+		//[JsonProperty]	public string	StrategyName											{ get; set; }
 
 		[Category("1. Essential"), Description("description to be composed")]
 		[JsonProperty]	public Color	ChartColorBackground									{ get; set; }
@@ -354,11 +354,11 @@ namespace Sq1.Core.Charting {
 
 
 
-		// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
+		//MOVED_TO_ChartFormDataSnapshot SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
 		[Browsable(false)]
-		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterRowsPropertiesByPanelName;
+		[JsonIgnore]	public Dictionary<string, MultiSplitterProperties> MultiSplitterRowsPropertiesByPanelName_tunnelled;
 		[Browsable(false)]
-		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterColumnsPropertiesByPanelName;
+		[JsonIgnore]	public Dictionary<string, MultiSplitterProperties> MultiSplitterColumnsPropertiesByPanelName_tunnelled;
 		
 		// DONE_IN_RenderBarsPrice_KISS cache them all until user edits this.BarTotalWidthPx so they won't be calculated again with the same result for each bar
 		[Browsable(false)]
@@ -803,8 +803,8 @@ namespace Sq1.Core.Charting {
 			OnChartBarAnnotationsVerticalAwayFromPositionArrows = 3;
 
 			// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
-			MultiSplitterRowsPropertiesByPanelName		= new Dictionary<string, MultiSplitterProperties>();
-			MultiSplitterColumnsPropertiesByPanelName	= new Dictionary<string, MultiSplitterProperties>();
+			MultiSplitterRowsPropertiesByPanelName_tunnelled		= new Dictionary<string, MultiSplitterProperties>();
+			MultiSplitterColumnsPropertiesByPanelName_tunnelled	= new Dictionary<string, MultiSplitterProperties>();
 
 			SpreadBidLineColor = Color.Gray;
 			SpreadBidLineColorAlpha = 64;
@@ -889,7 +889,7 @@ namespace Sq1.Core.Charting {
 		}
 
 		public override string ToString() {
-			return this.StrategyName;
+			return this.Name;
 		}
 
 		public virtual ChartSettings Clone() {

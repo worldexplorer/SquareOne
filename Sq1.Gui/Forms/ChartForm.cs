@@ -98,7 +98,7 @@ namespace Sq1.Gui.Forms {
 			this.ChartControl.RangeBar.OnValueMinChanged						+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_OnAnyValueChanged);
 			this.ChartControl.RangeBar.OnValueMaxChanged						+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_OnAnyValueChanged);
 			this.ChartControl.RangeBar.OnValuesMinAndMaxChanged					+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_OnAnyValueChanged);
-			this.ChartControl.OnChartSettingsChanged_containerShouldSerialize	+= new EventHandler<EventArgs>(this.chartControl_OnChartSettingsChanged_containerShouldSerialize);
+			this.ChartControl.OnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot	+= new EventHandler<EventArgs>(this.chartControl_OnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries);
 			this.ChartControl.OnContextScriptChanged_containerShouldSerialize	+= new EventHandler<EventArgs>(this.chartControl_OnContextScriptChanged_containerShouldSerialize);
 			this.ChartControl.OnPumpPaused										+= new EventHandler<EventArgs>(this.chartControl_OnPumpPaused);
 			this.ChartControl.OnPumpUnPaused									+= new EventHandler<EventArgs>(this.chartControl_OnPumpUnPaused);
@@ -108,7 +108,7 @@ namespace Sq1.Gui.Forms {
 			this.ChartControl.RangeBar.OnValueMinChanged						-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_OnAnyValueChanged);
 			this.ChartControl.RangeBar.OnValueMaxChanged						-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_OnAnyValueChanged);
 			this.ChartControl.RangeBar.OnValuesMinAndMaxChanged					-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_OnAnyValueChanged);
-			this.ChartControl.OnChartSettingsChanged_containerShouldSerialize	-= new EventHandler<EventArgs>(this.chartControl_OnChartSettingsChanged_containerShouldSerialize);
+			this.ChartControl.OnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot	-= new EventHandler<EventArgs>(this.chartControl_OnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries);
 			this.ChartControl.OnContextScriptChanged_containerShouldSerialize	-= new EventHandler<EventArgs>(this.chartControl_OnContextScriptChanged_containerShouldSerialize);
 			this.ChartControl.OnPumpPaused										-= new EventHandler<EventArgs>(this.chartControl_OnPumpPaused);
 			this.ChartControl.OnPumpUnPaused									-= new EventHandler<EventArgs>(this.chartControl_OnPumpUnPaused);
@@ -121,12 +121,16 @@ namespace Sq1.Gui.Forms {
 			}
 			this.ChartFormManager.Strategy.Serialize();
 		}
-		void chartControl_OnChartSettingsChanged_containerShouldSerialize(object sender, EventArgs e) {
+		void chartControl_OnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries(object sender, EventArgs e) {
 			if (this.ChartFormManager.ContextCurrentChartOrStrategy.Symbol != this.ChartFormManager.Executor.Bars.Symbol) {
 				string msg = "YOU_ARE_COMING_FROM_SyncBarsIdentDueToSymbolRename__ChartShadow_COULDNT_HANDLE_ITS_OWN_CONTEXT__DO_YOU_NEED/KNOW_HOW_TO_REFACTOR?";
 				this.ChartFormManager.ContextCurrentChartOrStrategy.Symbol  = this.ChartFormManager.Executor.Bars.Symbol;
 			}
 			this.ChartFormManager.DataSnapshot.ChartSettingsName = this.ChartControl.ChartSettings.Name;
+
+			this.ChartFormManager.DataSnapshot.MultiSplitterRowsPropertiesByPanelName = this.ChartControl.ChartSettings.MultiSplitterRowsPropertiesByPanelName_tunnelled;
+			this.ChartFormManager.DataSnapshot.MultiSplitterColumnsPropertiesByPanelName = this.ChartControl.ChartSettings.MultiSplitterColumnsPropertiesByPanelName_tunnelled;
+
 			this.ChartFormManager.DataSnapshotSerializer.Serialize();
 		}
 		// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos
@@ -172,7 +176,7 @@ namespace Sq1.Gui.Forms {
 					Assembler.PopupException(msg);
 					return;
 				}
-				quote = this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteCurrent_forSymbol_nullUnsafe(this.ChartFormManager.Executor.Bars.Symbol);
+				quote = this.ChartFormManager.Executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(this.ChartFormManager.Executor.Bars.Symbol);
 			}
 			if (quote == null) return;
 			this.btnQuoteTimingRealtime.Text = quote.QuoteTiming_localRemoteLeft;

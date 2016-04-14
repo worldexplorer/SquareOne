@@ -34,7 +34,7 @@ namespace Sq1.Core {
 		public	AssemblerDataSnapshot					AssemblerDataSnapshot;
 		public	Serializer<AssemblerDataSnapshot>		AssemblerDataSnapshotSerializer;
 		//public	RepositorySerializerChartSettingsTemplates	RepositorySerializerChartSettingsTemplates;
-		public RepositoryJsonChartSettingsTemplates			RepositoryJsonChartSettingsTemplates;
+		public RepositoryJsonChartSettings				RepositoryJsonChartSettings;
 
 		public	const string							DateTimeFormatIndicatorHasNoValuesFor	= "yyyy-MMM-dd ddd HH:mm";
 		public	const string							DateTimeFormatToDays					= "yyyy-MMM-dd";
@@ -149,7 +149,7 @@ namespace Sq1.Core {
 			AlertsForChart							= new DictionaryManyToOne<ChartShadow, Alert>();
 
 			//RepositorySerializerChartSettingsTemplates = new RepositorySerializerChartSettingsTemplates();
-			RepositoryJsonChartSettingsTemplates	= new RepositoryJsonChartSettingsTemplates();
+			RepositoryJsonChartSettings	= new RepositoryJsonChartSettings();
 		}
 		public Assembler Initialize(IStatusReporter mainForm, bool usedOnlyToPopupExceptions_NPEunsafe = false) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {
@@ -191,14 +191,14 @@ namespace Sq1.Core {
 			//v1 this.RepositoryJsonDataSource	.DataSourcesDeserialize(this.MarketInfoRepository, this.OrderProcessor, this.StatusReporter);
 			
 			this.RepositoryJsonDataSources		.Initialize(this.AppDataPath, "DataSources", this.RepositoryMarketInfos, this.OrderProcessor);
-			this.RepositoryJsonDataSources		.DeserializeJsonsInFolder();
+			this.RepositoryJsonDataSources		.DeserializeJsonsInFolder_ifNotCached();
 			//SNAP_IS_NOT_SERIALIZED_ANYMORE this.RepositoryJsonDataSource		.ReattachDataSnaphotsToOwnersStreamingAdapters();
 
 			//createdNewFile = this.RepositorySerializerChartSettingsTemplates.Initialize(this.AppDataPath, "MarketInfo.json", "", null);
 			//this.RepositoryMarketInfo.Deserialize();
 
-			this.RepositoryJsonChartSettingsTemplates.Initialize(this.AppDataPath, "ChartSettingsTemplates");
-			this.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder_IfNoneCreateDefault();
+			this.RepositoryJsonChartSettings.Initialize(this.AppDataPath, "ChartSettingsTemplates");
+			this.RepositoryJsonChartSettings.DeserializeJsonsInFolder_IfNoneCreateDefault();
 			
 			
 			//v1

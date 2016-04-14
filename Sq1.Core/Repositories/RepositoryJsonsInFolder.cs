@@ -79,7 +79,7 @@ namespace Sq1.Core.Repositories {
    			this.CheckIfValidAndShouldBeAddedAfterDeserialized = checkIfValidAndShouldBeAddedAfterDeserialized;
 		}
 		
-		public void DeserializeJsonsInFolder(bool forceClearCache_andReload = false) {
+		public void DeserializeJsonsInFolder_ifNotCached(bool forceClearCache_andReload = false) {
 			string msig = " DeserializeJsonsInFolder() path[" + this.AbsPath + "]";
 			if (this.ItemsCachedByName.Count > 0) {
 				if (forceClearCache_andReload == false) return;
@@ -105,7 +105,7 @@ namespace Sq1.Core.Repositories {
 				string key = this.ExtractKeyFromJsonAbsname(absFileName);
 				//v1 this.ItemsByName.Add(key, deserialized);
 				//v2
-				this.ItemAdd(deserialized, this, false);
+				this.ItemAdd_serialize(deserialized, this, false);
 			}
 		}
 		public virtual DATASOURCE DeserializeSingle(string jsonAbsfile) {
@@ -154,7 +154,7 @@ namespace Sq1.Core.Repositories {
 				File.WriteAllText(jsonAbsname, json);
 				// NO__USE_DeserializeJsonsInFolder()_MANUALLY_UPSTACK__AFTER_EACH_SerializeSingle();
 				if (this.ItemsCachedByName.ContainsKey(itemStored.Name) == false) {
-					this.ItemAdd(itemStored, this, false);
+					this.ItemAdd_serialize(itemStored, this, false);
 				}
 			} catch (Exception ex) {
 				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::SerializeSingle(): ";
@@ -175,7 +175,7 @@ namespace Sq1.Core.Repositories {
 		public string jsonRelnameForItem(DATASOURCE itemStored) {
 			return itemStored.Name + this.Extension;
 		}
-		public void ItemAdd(DATASOURCE itemCandidate, object sender = null, bool serialize = true) {
+		public void ItemAdd_serialize(DATASOURCE itemCandidate, object sender = null, bool serialize = true) {
 			if (sender == null) sender = this;
 			string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::ItemAdd(" + itemCandidate.Name + "): ";
 			try {
@@ -192,7 +192,7 @@ namespace Sq1.Core.Repositories {
 		}
 		public virtual void ItemAddCascade(DATASOURCE itemCandidate, object sender = null) {
 		}
-		public void ItemDelete(DATASOURCE itemStored, object sender = null) {
+		public void ItemDelete_jsonFileErase(DATASOURCE itemStored, object sender = null) {
 			if (sender == null) sender = this;
 			string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::ItemDelete(" + itemStored.Name + "): ";
 			try {

@@ -41,10 +41,10 @@ namespace Sq1.Core.Streaming {
 
 
 			StreamingDataSnapshot snap =  this.SymbolChannel.Distributor.StreamingAdapter.StreamingDataSnapshot;
-			Quote quotePrev = snap.GetQuotePrev_forSymbol_nullUnsafe(quoteDequeued_singleInstance.Symbol);
+			Quote quoteCurrent = snap.GetQuoteLast_forSymbol_nullUnsafe(quoteDequeued_singleInstance.Symbol);
 
 			// late quote should be within current StreamingBar, otherwize don't deliver for channel
-			if (quotePrev != null && quoteDequeued_singleInstance.ServerTime < quotePrev.ServerTime) {
+			if (quoteCurrent != null && quoteDequeued_singleInstance.ServerTime < quoteCurrent.ServerTime) {
 				Bar pseudoStreamingBar1 = this.barsEmulator_forSolidifier.PseudoBarStreaming_unattached;
 				if (quoteDequeued_singleInstance.ServerTime <= pseudoStreamingBar1.DateTimeOpen) {
 					string msg = "skipping old quote for quote.ServerTime[" + quoteDequeued_singleInstance.ServerTime + "], can only accept for current"
