@@ -19,7 +19,7 @@ namespace Sq1.Charting {
 			}
 			return ret;
 		} }
-		ChartSettings		settingsCurrent_nullUnsafe		{ get { return this.mniSettingsImEditing.Tag as ChartSettings; } }
+		ChartSettingsTemplated		settingsCurrent_nullUnsafe		{ get { return this.mniSettingsImEditing.Tag as ChartSettingsTemplated; } }
 
 		bool				rebuildingDropdown;
 		bool				openDropDownAfterSelected;
@@ -78,13 +78,13 @@ namespace Sq1.Charting {
 				parent.Text = "Chart Editor :: " + chartControl.ToString();
 			}
 
-			this.propertyGrid1.SelectedObject = chartControl.ChartSettings;
+			this.propertyGrid1.SelectedObject = chartControl.ChartSettingsTemplated;
 			if (forceRebuild) this.RebuildChartsDropdown();
 
 			ChartControl selected = this.chartControlSelected_nullUnsafe;
 			if (selected == null) {
 				this.cbxChartsCurrentlyOpen.ComboBox.SelectedItem = chartControl.ToString();		// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelected_nullUnsafe + Initialize()
-				this.mniSettingsImEditing.Text = chartControl.ChartSettings.Name;
+				this.mniSettingsImEditing.Text = chartControl.ChartSettingsTemplated.Name;
 				return;
 			}
 			if (selected.ToString() == chartControl.ToString()) {
@@ -94,7 +94,7 @@ namespace Sq1.Charting {
 				return;
 			}
 			this.cbxChartsCurrentlyOpen.ComboBox.SelectedItem = chartControl.ToString();		// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelected_nullUnsafe + Initialize()
-			this.mniSettingsImEditing.Text = chartControl.ChartSettings.Name;
+			this.mniSettingsImEditing.Text = chartControl.ChartSettingsTemplated.Name;
 			this.openDropDownAfterSelected = false;
 		}
 	}

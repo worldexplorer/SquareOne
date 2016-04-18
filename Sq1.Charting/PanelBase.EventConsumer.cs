@@ -114,13 +114,13 @@ namespace Sq1.Charting {
 					//PanelIndicator should draw PanelName with Indicator.LineColor
 					using (var brush = new SolidBrush(meCasted.Indicator.LineColor)) {
 						// if (base.DesignMode) this.ChartControl will be NULL
-						Font font = (this.ChartControl != null) ? this.ChartControl.ChartSettings.PanelNameAndSymbolFont : this.Font;
+						Font font = (this.ChartControl != null) ? this.ChartControl.ChartSettingsTemplated.PanelNameAndSymbolFont : this.Font;
 						e.Graphics.DrawString(this.PanelNameAndSymbol, font, brush, new Point(2, 2));
 					}
 				} else {
 					using (var brush = new SolidBrush(this.ForeColor)) {
 						// if (base.DesignMode) this.ChartControl will be NULL
-						Font font = (this.ChartControl != null) ? this.ChartControl.ChartSettings.PanelNameAndSymbolFont : this.Font;
+						Font font = (this.ChartControl != null) ? this.ChartControl.ChartSettingsTemplated.PanelNameAndSymbolFont : this.Font;
 						e.Graphics.DrawString(this.PanelNameAndSymbol, font, brush, new Point(2, 2));
 					}
 				}
@@ -191,11 +191,11 @@ namespace Sq1.Charting {
 				return;
 			}
 			try {
-				this.ChartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
+				this.ChartLabelsUpperLeftYincremental = this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftYstartTopmost;
 				//if (this.ChartControl.BarsNotEmpty) {}
 				this.ChartControl.SyncHorizontal_scrollToBarsCount();
 			
-				e.Graphics.Clear(this.ChartControl.ChartSettings.ChartColorBackground);
+				e.Graphics.Clear(this.ChartControl.ChartSettingsTemplated.ChartColorBackground);
 				
 				this.RepaintSernoBackground++;
 				if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
@@ -251,9 +251,9 @@ namespace Sq1.Charting {
 					return;
 				}
 	
-				this.BarWidthIncludingPadding_cached = this.ChartControl.ChartSettings.BarWidthIncludingPadding;
-				this.BarWidthMinusRightPadding_cached = this.ChartControl.ChartSettings.BarWidthMinusRightPadding;
-				this.BarShadowXoffset_cached = this.ChartControl.ChartSettings.BarShadowXoffset;
+				this.BarWidthIncludingPadding_cached	= this.ChartControl.ChartSettingsIndividual.BarWidthIncludingPadding;
+				this.BarWidthMinusRightPadding_cached	= this.ChartControl.ChartSettingsIndividual.BarWidthMinusRightPadding;
+				this.BarShadowXoffset_cached			= this.ChartControl.ChartSettingsIndividual.BarShadowXoffset;
 				
 				this.ensureFontMetricsAreCalculated(e.Graphics);	//MOVED_HERE_FROM_MOVE_UPSTACK_THIS_FONT_HEIGHT_CALCULATION
 //DEBUGGING_FOR_MOVED_HERE_FROM_MOVE_UPSTACK_THIS_FONT_HEIGHT_CALCULATION remove next commit

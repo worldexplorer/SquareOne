@@ -278,7 +278,7 @@ namespace Sq1.Gui.Forms {
 			ret.AppendReportersMenuItems(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
 
 			try {
-				ChartSettings settingsDefault = ret.ChartControl.ChartSettings;
+				ChartSettingsTemplated settingsDefault = ret.ChartControl.ChartSettingsTemplated;
 				//if (this.DataSnapshot.ChartSettings == null) {
 				//    string msg = "WILL_LOAD_FROM_REPO[" + settingsDefault.Name + "] SORRY_WHEN_EXACTLY_THIS_MAKES_SENSE?...";
 				//    // delete "ChartSettings": {} from JSON to reset to ChartControl>Design>ChartSettings>Properties
@@ -287,14 +287,15 @@ namespace Sq1.Gui.Forms {
 				//    return ret;
 				//}
 				if (settingsDefault.Name != this.DataSnapshot.ChartSettingsName) {
-					ret.ChartControl.ChartSettings = this.DataSnapshot.ChartSettings;
+					ret.ChartControl.Set_ChartSettingsTemplated(this.DataSnapshot.ChartSettingsTemplated);
 					string msg = "JustDeserialized=>propagate ChartSettings[" + settingsDefault.Name + "]=>[" + this.DataSnapshot.ChartSettingsName + "] IM_AT_InitializeStrategyAfterDeserialization";
 					//Assembler.PopupException(msg, null, false);
 				} else {
 					string msg = "NOT_CHANGING_ChartSettings IM_LOADING_ANOTHER_STRATEGY_INTO_EXISTING_CHART";
 					//Assembler.PopupException(msg, null, false);
 				}
-				ret.ChartControl.Propagate_splitterManorderDistance_ifFullyDeserialized();
+				ret.ChartControl.Set_ChartSettingsIndividual(this.DataSnapshot.ChartSettingsIndividual);
+				ret.ChartControl.Propagate_multiSplitterManorderDistance_ifFullyDeserialized();
 			} catch (Exception ex) {
 				string msg = "EXPERIMENTAL_MERGE_THREW_UP";
 				Assembler.PopupException(msg);
@@ -390,17 +391,16 @@ namespace Sq1.Gui.Forms {
 				//v1 if (this.Strategy.ScriptContextCurrent.IsStreaming) {
 				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
 				ContextChart ctx = this.ContextCurrentChartOrStrategy;
-				if (ctx.DownstreamSubscribed != this.ChartForm.ChartControl.ChartStreamingConsumer.DownstreamSubscribed) {
-					if (ctx.DownstreamSubscribed) {
-						string reason = "contextChart[" + ctx.ToString() + "].DownstreamSubscribed=true;"
-							+ " OnApprestartBacktest will launch in another thread and I can't postpone subscription until it finishes"
-							+ " so the Pump should set paused now because UpstreamSubscribe should not invoke ChartFormStreamingConsumer"
-							+ " whenever StreamingAdapter is ready, but only after all ScaleSymbol consuming backtesters are complete";
-						this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
-					} else {
-						string reason = "contextChart[" + ctx.ToString() + "].DownstreamSubscribed=false;";
-						this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingUnsubscribe(reason);
-					}
+				if (ctx.DownstreamSubscribed == this.ChartForm.ChartControl.ChartStreamingConsumer.DownstreamSubscribed) return;
+				if (ctx.DownstreamSubscribed) {
+					string reason = "contextChart[" + ctx.ToString() + "].DownstreamSubscribed=true;"
+						+ " OnApprestartBacktest will launch in another thread and I can't postpone subscription until it finishes"
+						+ " so the Pump should set paused now because UpstreamSubscribe should not invoke ChartFormStreamingConsumer"
+						+ " whenever StreamingAdapter is ready, but only after all ScaleSymbol consuming backtesters are complete";
+					this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
+				} else {
+					string reason = "contextChart[" + ctx.ToString() + "].DownstreamSubscribed=false;";
+					this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingUnsubscribe(reason);
 				}
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
@@ -422,7 +422,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.PopulateWindowTitlesFromChartContextOrStrategy();
+			this.PopulateWindowTitles_fromChartContext_orStrategy();
 			msig += (this.Strategy != null) ?
 				" << PopulateCurrentScriptContext(): Strategy[" + this.Strategy.ToString() + "].ScriptContextCurrent[" + context.Name + "]"
 				:	" << PopulateCurrentScriptContext(): this.ChartForm[" + this.ChartForm.Text + "].ChartControl.ContextChart[" + context.Name + "]";
@@ -514,10 +514,9 @@ namespace Sq1.Gui.Forms {
 			// v2 NOPE, during DataSourcesTree_OnSymbolSelected() we're invalidating it here! - uncommented back
 			//this.ChartForm.ChartControl.InvalidateAllPanelsFolding();	// WHEN_I_CHANGE_SMA_PERIOD_I_DONT_WANT_TO_SEE_CLEAR_CHART_BUT_REPAINTED_WITHOUT_2SEC_BLINK
 			
-			if (this.Strategy == null) {
-				if (saveStrategyOrCtx) this.DataSnapshotSerializer.Serialize();
-				return;
-			}
+			if (saveStrategyOrCtx) this.DataSnapshotSerializer.Serialize();
+
+			if (this.Strategy == null) return;
 
 			if (saveStrategyOrCtx) {
 				// StrategySave is here koz I'm invoked for ~10 user-click GUI events; only Deserialization shouldn't save anything
@@ -762,7 +761,7 @@ namespace Sq1.Gui.Forms {
 			}
 
 			if (this.Strategy != null) {
-				this.PopulateWindowTitlesFromChartContextOrStrategy();
+				this.PopulateWindowTitles_fromChartContext_orStrategy();
 				this.EditorFormShow();
 			}
 		}
@@ -916,7 +915,12 @@ namespace Sq1.Gui.Forms {
 			//this.LivesimFormConditionalInstance.SequencerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
 		}
 		
-		internal void PopulateWindowTitlesFromChartContextOrStrategy() {
+		internal void PopulateWindowTitles_fromChartContext_orStrategy() {
+			if (this.ChartForm.ChartControl.ChartSettingsIndividual.Name != this.WhoImServing_moveMeToExecutor) {
+				this.ChartForm.ChartControl.ChartSettingsIndividual.Name  = this.WhoImServing_moveMeToExecutor;
+				this.DataSnapshotSerializer.Serialize();
+			}
+
 			this.ChartForm.Text = this.WhoImServing_moveMeToExecutor;
 			this.ChartForm.IsHidden = false;
 			if (this.ScriptEditorForm != null) {

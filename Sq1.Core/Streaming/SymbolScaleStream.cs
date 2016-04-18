@@ -12,7 +12,7 @@ namespace Sq1.Core.Streaming {
 		public		BarScaleInterval			ScaleInterval	{ get; protected set; }
 
 		public		string										ReasonIwasCreated_propagatedFromDistributor;
-		protected	SymbolChannel<STREAMING_CONSUMER_CHILD>		SymbolChannel;
+		protected	SymbolChannel<STREAMING_CONSUMER_CHILD>		SymbolChannel_parent;
 
 		SymbolScaleStream() {
 			ofWhatAmI			= typeof(STREAMING_CONSUMER_CHILD);
@@ -26,7 +26,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public SymbolScaleStream(SymbolChannel<STREAMING_CONSUMER_CHILD> symbolChannel,
 								string symbol, BarScaleInterval scaleInterval, string reasonIwasCreated = "REASON_UNKNOWN") : this() {
-			this.SymbolChannel = symbolChannel;
+			this.SymbolChannel_parent = symbolChannel;
 			this.Symbol = symbol;
 			this.ScaleInterval = scaleInterval;
 			this.ReasonIwasCreated_propagatedFromDistributor = reasonIwasCreated;

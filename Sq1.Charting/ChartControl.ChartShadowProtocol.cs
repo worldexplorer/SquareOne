@@ -75,7 +75,7 @@ namespace Sq1.Charting {
 			
 			
 			// COPYPASTE_SOURCE=PanelNamedFolding.handleTooltipsPositionAndPrice()_DESTINATION=ChartShadowProtocol.SelectPosition() begin
-			if (this.ChartSettings.TooltipPositionShow == false) return tooltipPositionShown;
+			if (this.ChartSettingsTemplated.TooltipPositionShow == false) return tooltipPositionShown;
 
 			if (barIndex < this.VisibleBarLeft) return tooltipPositionShown;
 			if (barIndex > this.VisibleBarRight) return tooltipPositionShown;	//Debugger.Break();
@@ -117,7 +117,7 @@ namespace Sq1.Charting {
 			int barX = this.PanelPrice.BarToX(barIndex);		// HACK NPE-vulnerable
 			Rectangle rectangleYarrowXbar = new Rectangle();
 			rectangleYarrowXbar.X		= barX;
-			rectangleYarrowXbar.Width	= this.ChartSettings.BarWidthIncludingPadding;		//arrowFoundForMouse.Width;
+			rectangleYarrowXbar.Width	= this.ChartSettingsIndividual.BarWidthIncludingPadding;		//arrowFoundForMouse.Width;
 			rectangleYarrowXbar.Y		= arrowFoundForPosition.Ytransient;
 			rectangleYarrowXbar.Height	= arrowFoundForPosition.Height;
 
@@ -271,7 +271,7 @@ namespace Sq1.Charting {
 			OnChartBarAnnotation barAnnotation = null;
 			try {
 				if (colorBackground != Color.Empty) {
-					colorBackground = Color.FromArgb(this.ChartSettings.BarsBackgroundTransparencyAlpha, colorBackground);
+					colorBackground = Color.FromArgb(this.ChartSettingsTemplated.BarsBackgroundTransparencyAlpha, colorBackground);
 				}
 				barAnnotation = this.ExecutorObjects_frozenForRendering.BarAnnotationAddOrModify(
 					barIndex, barAnnotationId, barAnnotationText,

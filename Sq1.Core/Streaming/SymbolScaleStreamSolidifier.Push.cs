@@ -4,7 +4,7 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Streaming {
 	public partial class SymbolScaleStreamSolidifier {
-		BarsEmulator_forSolidifier	barsEmulator_forSolidifier;	//	{ get; protected set; }
+		PseudoStreamingBarFactory	pseudoStreamingBarFactory;	//	{ get; protected set; }
 
 		string mustBeStrictly_oneSolidifierSubscribed_bothToQuotesAndBars__probablySame_forAllSymbolsOfDatasource_lazyToLockDuringWrites() {
 			int consumersAllCount = base.Consumers_QuoteAndBar_GroupedInvocation.Count;
@@ -40,12 +40,12 @@ namespace Sq1.Core.Streaming {
 			}
 
 
-			StreamingDataSnapshot snap =  this.SymbolChannel.Distributor.StreamingAdapter.StreamingDataSnapshot;
+			StreamingDataSnapshot snap =  this.SymbolChannel_parent.Distributor.StreamingAdapter.StreamingDataSnapshot;
 			Quote quoteCurrent = snap.GetQuoteLast_forSymbol_nullUnsafe(quoteDequeued_singleInstance.Symbol);
 
 			// late quote should be within current StreamingBar, otherwize don't deliver for channel
 			if (quoteCurrent != null && quoteDequeued_singleInstance.ServerTime < quoteCurrent.ServerTime) {
-				Bar pseudoStreamingBar1 = this.barsEmulator_forSolidifier.PseudoBarStreaming_unattached;
+				Bar pseudoStreamingBar1 = this.pseudoStreamingBarFactory.PseudoStreamingBar_unattached;
 				if (quoteDequeued_singleInstance.ServerTime <= pseudoStreamingBar1.DateTimeOpen) {
 					string msg = "skipping old quote for quote.ServerTime[" + quoteDequeued_singleInstance.ServerTime + "], can only accept for current"
 						+ " pseudoStreamingBar(" + pseudoStreamingBar1.DateTimeOpen + " .. " + pseudoStreamingBar1.DateTime_nextBarOpen_unconditional + "];"
@@ -58,7 +58,8 @@ namespace Sq1.Core.Streaming {
 
 			Quote quote_clonedBoundUnattached_withPseudoExpanded = null;
 			try {
-				quote_clonedBoundUnattached_withPseudoExpanded = this.barsEmulator_forSolidifier.Quote_cloneBind_toUnattachedPseudoStreamingBar_enrichWithIntrabarSerno_updateStreamingBar_createNewBar(quoteDequeued_singleInstance);
+				quote_clonedBoundUnattached_withPseudoExpanded = this.pseudoStreamingBarFactory
+					.Quote_cloneBind_toUnattachedPseudoStreamingBar_enrichWithIntrabarSerno_updateStreamingBar_createNewBar(quoteDequeued_singleInstance);
 			} catch (Exception ex) {
 				string msg = "REPLACE_EXPANDED_BAR_FAILED quoteDequeued_singleInstance[" + quoteDequeued_singleInstance + "]";
 				Assembler.PopupException(msg + msig, ex);
@@ -90,7 +91,7 @@ namespace Sq1.Core.Streaming {
 					//lock (this.lockConsumersBar) {
 					//consumerBars.BarStreaming_overrideDOHLCVwith(quote.ParentBarStreaming);
 					//quote.Replace_myStreamingBar_withConsumersStreamingBar(consumerBars.BarStreaming_nullUnsafe);
-					Bar barStaticLast = barsEmulator_forSolidifier.BarLastFormedUnattached_nullUnsafe;
+					Bar barStaticLast = pseudoStreamingBarFactory.BarLastFormedUnattached_nullUnsafe;
 					willUpdateLastStatic_andAppendNewFromPseudo.Consume_barLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(
 						barStaticLast, quote_clonedBoundAttached);
 					string msg1 = "BAR_CONSUMER_FINISHED " + barStaticLast.ToString() + " => " + willUpdateLastStatic_andAppendNewFromPseudo.ToString();

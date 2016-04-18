@@ -14,7 +14,7 @@ namespace Sq1.Charting {
 		static	Color	colorBackgroundRed_barsSubscribed_scriptNotTriggering		= Color.FromArgb(255, 230, 230);
 		static	Color	colorBackgroundGreen_barsSubscribed_scriptIsTriggering		= Color.FromArgb(230, 255, 230);
 
-		TimeredBlock timerUnblink;
+		TimeredBlock	timerUnblink;
 		Task			TaskWaitingForTimerExpire_toRevertToWhite;
 		
 		public void OnStrategyExecutedOneQuote_unblinkDataSourceTree(Action refreshDataSourceTree_invokedInGuiThread_afterTimerExpired) {

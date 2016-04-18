@@ -123,9 +123,9 @@ namespace Sq1.Charting {
 				return;
 			}
 			// single-click input (arrows, direct position) or EndScroll after ThumbPosition
-			if (this.ChartSettings.ScrollPositionAtBarIndex != this.hScrollBar.Value) {
-				this.ChartSettings.ScrollPositionAtBarIndex  = this.hScrollBar.Value;
-				this.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();	//scrollbar should have OnDragCompleteMouseReleased event!!!
+			if (this.ChartSettingsIndividual.ScrollPositionAtBarIndex != this.hScrollBar.Value) {
+				this.ChartSettingsIndividual.ScrollPositionAtBarIndex  = this.hScrollBar.Value;
+				this.RaiseOnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot();	//scrollbar should have OnDragCompleteMouseReleased event!!!
 			}
 		}
 		void bars_symbolInfo_PriceDecimalsChanged(object sender, EventArgs e) {
@@ -160,35 +160,13 @@ namespace Sq1.Charting {
 			this.RangeBar.Invalidate();
 		}
 
-		void multiSplitContainerColumns_OnResizing_OnSplitterMoveOrDragEnded(object sender, EventArgs e) {
-			if (base.DesignMode) return;
-			if (this.ChartSettings == null) return;	// MAY_BE_REDUNDANT
-			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
-			//WORKS_WHEN_COMMENTED_SURPRISE if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) return;
-			this.SerializeSplitterDistanceOrPanelName();
-		}
 		// WHERE_IS_RESIZE_ENDED_IN_F_WINDOWS_FORMS?? SAVING_CHART_SETTINGS_ON_EACH_TINY_RESIZE_FOR_ALL_OPEN_CHARTS this.multiSplitContainer.Resize += new EventHandler(multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded);
-		void multiSplitContainerRows_OnResizing_OnSplitterMoveOrDragEnded(object sender, EventArgs e) {		//MultiSplitterEventArgs e
+		void multiSplitContainer_bothRowsAndColumns_OnSplitterMoveOrDragEnded(object sender, EventArgs e) {
 			if (base.DesignMode) return;
-			if (this.ChartSettings == null) return;	// MAY_BE_REDUNDANT
+			if (this.ChartSettingsTemplated == null) return;	// MAY_BE_REDUNDANT
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
 			//WORKS_WHEN_COMMENTED_SURPRISE if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) return;
-			this.SerializeSplitterDistanceOrPanelName();
-		}
-		public void SerializeSplitterDistanceOrPanelName() {
-			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
-			//	return;
-			//}
-			this.ChartSettings.MultiSplitterRowsPropertiesByPanelName_tunnelled		= this.multiSplitRowsVolumePrice						.SplitterPropertiesByPanelNameGet();
-			this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName_tunnelled	= this.multiSplitColumns_Level2_PriceVolumeMultisplit	.SplitterPropertiesByPanelNameGet();
-			// that will show that 10s delay actually makes better sense than relying on MainFormDockFormsFullyDeserializedLayoutComplete in ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized()
-			//try {
-			//	int justCurious = this.ChartSettings.MultiSplitterPropertiesByPanelName[this.panelVolume.PanelName].Distance;
-			//	Debugger.Break();
-			//} catch (Exception ex) {
-			//	Assembler.PopupException(null, ex);
-			//}
-			this.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();
+			this.RaiseOnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot();
 		}
 
 		void repositoryJsonDataSources_OnSymbolRemoved_clearChart(object sender, DataSourceSymbolEventArgs e) {
@@ -232,6 +210,10 @@ namespace Sq1.Charting {
 			Assembler.PopupException(msg2 + msig, null, false);
 			#endif
 			parentForm.PerformLayout();		// did it help to get the Control stretched to fill the surface of the form?
+		}
+
+		void chartControl_OnResizeNotReceivedWithin(object sender, EventArgs e) {
+			throw new NotImplementedException();
 		}
 	}
 }

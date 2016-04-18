@@ -58,7 +58,7 @@ namespace Sq1.Gui {
 			// AddChartFormsManagerJustDeserialized() IS_ONLY_INVOKED_FROM_DESERIALIZER_SKIP_REBUILDING_DROPDOWN ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
 
 			if (this.ChartControls_AllCurrentlyOpen.Contains(mgr.ChartForm.ChartControl)) {
-				string msg = "SAME_SETTINGS_ARE_USED_FOR_MULTIPLE_CHARTS__CHANGING_ONE_IN_ChartSettingsEditorControl_WILL_AFFECT_MANY [" + mgr.ChartForm.ChartControl.ChartSettings.Name + "]";
+				string msg = "SAME_SETTINGS_ARE_USED_FOR_MULTIPLE_CHARTS__CHANGING_ONE_IN_ChartSettingsEditorControl_WILL_AFFECT_MANY [" + mgr.ChartForm.ChartControl.ChartSettingsTemplated.Name + "]";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}

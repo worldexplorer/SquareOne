@@ -73,15 +73,15 @@ namespace Sq1.Charting {
 					arrow.Ytransient = base.ValueToYinverted(arrow.PriceAtBeyondBarRectangle);
 					arrow.XBarMiddle = shadowX;
 
-					int increment = base.ChartControl.ChartSettings.PositionLineHighlightedWidth;
+					int increment = base.ChartControl.ChartSettingsTemplated.PositionLineHighlightedWidth;
 					if (arrow.AboveBar) {
 						positionsAboveBar++;
-						increment += base.ChartControl.ChartSettings.PositionArrowPaddingVertical * positionsAboveBar;
+						increment += base.ChartControl.ChartSettingsTemplated.PositionArrowPaddingVertical * positionsAboveBar;
 						increment += arrow.Height * positionsAboveBar;
 						increment = -increment;
 					} else {
 						positionsBelowBar++;
-						increment += base.ChartControl.ChartSettings.PositionArrowPaddingVertical * positionsBelowBar;
+						increment += base.ChartControl.ChartSettingsTemplated.PositionArrowPaddingVertical * positionsBelowBar;
 						increment += arrow.Height * (positionsBelowBar - 1);
 					}
 					arrow.Ytransient += increment;

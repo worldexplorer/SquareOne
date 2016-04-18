@@ -39,7 +39,15 @@ namespace Sq1.Core.Streaming {
 						string msg = "WILL_BINDER_SET_QUOTE_TO_STREAMING_DATA_SNAPSHOT???";
 						Assembler.PopupException(msg, null, false);
 					} else {
-						quoteUU.ServerTime = quoteCurrent.ParentBarStreaming.ParentBars.MarketInfo.Convert_localTime_toServerTime(DateTime.Now);
+						MarketInfo marketInfo = this.DataSource.MarketInfo;
+						DateTime serverFromLocal = marketInfo.Convert_localTime_toServerTime(DateTime.Now);
+						if (quoteUU.ServerTime != serverFromLocal) {
+							//quoteUU.ServerTime  = serverFromLocal;
+							return -2;
+						} else {
+							string msg = "Nothing helps!!!";
+							quoteUU.ServerTime = quoteUU.ServerTime.AddMilliseconds(1);
+						}
 						changesMade++;
 					}
 				}
@@ -47,32 +55,44 @@ namespace Sq1.Core.Streaming {
 
 			//v1 if (quoteUU.ServerTime == quotePrev.ServerTime) {
 			//v2
-			string quoteMillis		= quoteUU.ServerTime.ToString("HH:mm:ss.fff");
+			string quoteMillis		=	   quoteUU.ServerTime.ToString("HH:mm:ss.fff");
 			string quotePrevMillis  = quoteCurrent.ServerTime.ToString("HH:mm:ss.fff");
-			if (quoteMillis == quotePrevMillis) {
+			//if (quoteMillis == quotePrevMillis) {
+			if (quoteUU.ServerTime <= quoteCurrent.ServerTime) {
 				// increase granularity of QuikQuotes (they will have the same ServerTime within the same second, while must have increasing milliseconds; I can't force QUIK print fractions of seconds via DDE export)
 				TimeSpan diff_inLocalTime = quoteUU.LocalTime.Subtract(quoteCurrent.LocalTime);
 				// diff_localTime.Milliseconds will go to StreamingDataSnapshot with ServerTime fixed, and next diffMillis will be negative for the quote within same second
 				int diffMillis_willBeNegative_forSecondQuote_duringSameSecond = diff_inLocalTime.Milliseconds;
 				int diffMillis = Math.Abs(diffMillis_willBeNegative_forSecondQuote_duringSameSecond);
-				if (diffMillis == 0) {
-					//string msg = "ARE_WE_BACKTESTING_OR_LIVESIMMING_WITHOUT_INCREASING_SERVER_TIME_FOR_QUOTES_GENERATED?...";
-					//Assembler.PopupException(msg, null, false);
-					MarketInfo marketInfo = this.DataSource.MarketInfo;
-					DateTime serverFromLocal = marketInfo.Convert_localTime_toServerTime(DateTime.Now);
-					if (quoteUU.ServerTime != serverFromLocal) {
-						quoteUU.ServerTime  = serverFromLocal;
-					} else {
-						string msg = "Nothing helps!!!";
-						quoteUU.ServerTime = quoteUU.ServerTime.AddMilliseconds(1);
-					}
-					changesMade++;
-				} else {
-					quoteUU.ServerTime = quoteUU.ServerTime.AddMilliseconds(diffMillis);
-					changesMade++;
+				if (diffMillis <= 0) {
+					diffMillis = 1;
+					//bool sameBidAsk = quoteUU.SameBidAsk(quoteCurrent);
+					//bool sameSize = quoteUU.Size == quoteCurrent.Size;
+					//if (sameSize && sameBidAsk) return -1;		// no I should not drop it; same deal for two different buyers
+					string msg = quoteUU.Symbol + " ServerTime++"
+						//+ " sameBidAsk[" + sameBidAsk + "] sameSize[" + sameSize + "]"
+						;
+					Assembler.PopupException(msg, null, false);
+
+					// DONT_DO_Convert_localTime_toServerTime_marketInfo_HAS_TZ=-3_WHILE_QUIK_JUNIOR_SENDS_TZ=-2_LAGS_ONE_MORE_HOUR
+					//MarketInfo marketInfo = this.DataSource.MarketInfo;
+					//DateTime serverFromLocal = marketInfo.Convert_localTime_toServerTime(DateTime.Now);
+					//if (quoteUU.ServerTime != serverFromLocal) {
+					//    //quoteUU.ServerTime  = serverFromLocal;
+					//    return -2;
+					//} else {
+					//	string msg = "Nothing helps!!!";
+					//	quoteUU.ServerTime = quoteCurrent.ServerTime.AddMilliseconds(1);
+					//}
+					//changesMade++;
 				}
+				quoteUU.ServerTime = quoteCurrent.ServerTime.AddMilliseconds(diffMillis);
+				changesMade++;
 			}
 
+			if (quoteUU.ServerTime <= quoteCurrent.ServerTime) {
+				return -1;
+			}
 			
 			if (quoteUU is QuoteGenerated) {
 				string msg = "DONT_INVOKE_StreamingAdapter.PushQuoteReceived!!! BACKTESTER_HAS_ITS_OWN_PushQuoteGenerated()";
@@ -130,17 +150,22 @@ namespace Sq1.Core.Streaming {
 				string msg = "I_REFUSE_TO_PUSH_QUOTE.Size<=0__USE_StreamingAdapter.PushLevelTwoReceived_alreadyInStreamingSnap()_INSTEAD"
 					+ " ONLY_QUOTES_WITH_POSITIVE_SIZE_FORM_BAR_OHLCV QUOTES_WITHOUT_DEAL_MIGHT_APPEAR_AS_FREQUENT_AS_YOU_WANT BUT_MUST_NOT_BE_STORED_IN_BARS"
 					;
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 
 			Quote quoteUU = quoteUnboundUnattached_absnoPerSymbolMinusOne;		// same pointer but AbsnoPerSymbol is fixed now
 			int changesMade = this.Quote_incrementAbsnoPerSymbol_fixServerTime(quoteUnboundUnattached_absnoPerSymbolMinusOne);
-			if (changesMade == 0 || quoteUU.AbsnoPerSymbol == -1) {
-				string msg = "YOU_DIDNT_FIX_Quote.AbsnoPerSymbol[" + quoteUU + "]";
-				Assembler.PopupException(msg + msig);
+			if (changesMade <= -1) {
+				string msg = "skipping_TIME_BACK[" + quoteUU.Symbol + " " + quoteUU.ServerTime + "]";
+				Assembler.PopupException(msg, null, false);
+				return;
 			}
 
+			if (changesMade == 0 || quoteUU.AbsnoPerSymbol == -1) {
+				string msg = "YOU_DIDNT_FIX_Quote.AbsnoPerSymbol[" + quoteUU + "]";
+				Assembler.PopupException(msg + msig, null, false);
+			}
 			if (quoteUU.ServerTime == DateTime.MinValue) {
 				//v1 quote.ServerTime = this.DataSource.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
 				string msg = "IM_NOT_PUSHING_FURTHER SERVER_TIME_HAS_TO_BE_FILLED_BY_STREAMING_DERIVED";
@@ -168,9 +193,9 @@ namespace Sq1.Core.Streaming {
 			string quoteMillis		= quoteUU.ServerTime.ToString("HH:mm:ss.fff");
 			string quotePrevMillis  = quotePrev.ServerTime.ToString("HH:mm:ss.fff");
 			if (quoteMillis == quotePrevMillis) {
-				if (quoteUU.SameBidAsk(quotePrev) == false) {
-					quoteUU.ServerTime = quoteUU.ServerTime.AddMilliseconds(10);
-				} else {
+				//if (quoteUU.SameBidAsk(quotePrev) == false) {
+				//    quoteUU.ServerTime = quotePrev.ServerTime.AddMilliseconds(10);
+				//} else {
 					string msg = quoteUU.Symbol + " SERVER_TIMESTAMP_MUST_INCREASE_EACH_NEXT_INCOMING_QUOTE QUIK_OR_BACKTESTER_FORGOT_TO_INCREASE"
 						+ " quoteMillis[" + quoteMillis + "] <="
 						+ " quoteLastMillis[" + quotePrevMillis + "]"
@@ -178,7 +203,7 @@ namespace Sq1.Core.Streaming {
 						;
 					Assembler.PopupException(msg + msig, null, false);
 					return;
-				}
+				//}
 			}
 
 

@@ -129,7 +129,7 @@ namespace Sq1.Core.Streaming {
 
 			if (iAmServingCharts) {
 				SymbolChannel<StreamingConsumerChart> myself = this as SymbolChannel<StreamingConsumerChart>;
-				SymbolScaleStream<StreamingConsumerChart> concrete = new SymbolScaleStreamChart(myself, Symbol, scaleInterval, this.ReasonIwasCreated_propagatedFromDistributor);
+				SymbolScaleStream<StreamingConsumerChart> concrete = new SymbolScaleStreamCharts(myself, Symbol, scaleInterval, this.ReasonIwasCreated_propagatedFromDistributor);
 				newScaleChannel = concrete as SymbolScaleStream<STREAMING_CONSUMER_CHILD>;
 			} else if (iAmServingSolidifier) {
 				SymbolChannel<StreamingConsumerSolidifier> myself = this as SymbolChannel<StreamingConsumerSolidifier>;

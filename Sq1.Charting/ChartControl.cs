@@ -27,14 +27,16 @@ namespace Sq1.Charting {
 		// all cached variables must be calculated once per frame (once per ChartControl.PaintBackgroundWholeSurfaceBarsNotEmpty)
 	 	public int GutterRightWidth_cached = -1;
 		public int GutterBottomHeight_cached = -1;
-		public ChartSettings ChartSettings;	//		{ get; private set; }
+		public ChartSettingsTemplated	ChartSettingsTemplated			{ get; private set; }
+		public ChartSettingsIndividual	ChartSettingsIndividual			{ get; private set; }
 		public ExecutorObjects_FrozenForRendering ExecutorObjects_frozenForRendering;
 
 		public int HeightMinusBottomHscrollbar { get { return base.Height - this.hScrollBar.Height; } }
 		public int BarIndexMouseIsOverNow;
 
 		public ChartControl() {
-			this.ChartSettings = new ChartSettings(ChartSettings.NAME_DEFAULT);
+			this.ChartSettingsTemplated		= new ChartSettingsTemplated();
+			this.ChartSettingsIndividual	= new ChartSettingsIndividual();
 			this.ExecutorObjects_frozenForRendering = new ExecutorObjects_FrozenForRendering();
 
 			InitializeComponent();
@@ -50,15 +52,17 @@ namespace Sq1.Charting {
 			//this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelPrice);
 
 			// doesn't live well in InitializeComponent(), designer barks 
-			this.multiSplitRowsVolumePrice.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerRows_OnResizing_OnSplitterMoveOrDragEnded);
-			this.multiSplitRowsVolumePrice.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerRows_OnResizing_OnSplitterMoveOrDragEnded);
+			this.multiSplitRowsVolumePrice.OnSplitterMoveEnded						+= new EventHandler<MultiSplitterEventArgs>(this.multiSplitContainer_bothRowsAndColumns_OnSplitterMoveOrDragEnded);
+			this.multiSplitRowsVolumePrice.OnSplitterDragEnded						+= new EventHandler<MultiSplitterEventArgs>(this.multiSplitContainer_bothRowsAndColumns_OnSplitterMoveOrDragEnded);
 
-			this.multiSplitColumns_Level2_PriceVolumeMultisplit.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerColumns_OnResizing_OnSplitterMoveOrDragEnded);
-			this.multiSplitColumns_Level2_PriceVolumeMultisplit.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerColumns_OnResizing_OnSplitterMoveOrDragEnded);
+			this.multiSplitColumns_Level2_PriceVolumeMultisplit.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(this.multiSplitContainer_bothRowsAndColumns_OnSplitterMoveOrDragEnded);
+			this.multiSplitColumns_Level2_PriceVolumeMultisplit.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(this.multiSplitContainer_bothRowsAndColumns_OnSplitterMoveOrDragEnded);
+
+			this.OnResizeNotReceivedWithin += new EventHandler<EventArgs>(chartControl_OnResizeNotReceivedWithin);
 
 			//DEFAULT_FALSE_DONT_DISTURB_OnLayout() this.AutoScroll = false;
 			//this.HScroll = true;
-			this.hScrollBar.SmallChange = this.ChartSettings.ScrollNBarsPerOneKeyPress;
+			this.hScrollBar.SmallChange = this.ChartSettingsTemplated.ScrollNBarsPerOneKeyPress;
 
 			panelsForInvalidateAll_dontForgetIndicators = new List<ScrollableControl>();
 			panelsForInvalidateAll_dontForgetIndicators.Add(this.PanelPrice);
@@ -120,10 +124,11 @@ namespace Sq1.Charting {
 			Bars generated = new Bars(Bars.RANDOM_GENERATED_BARS + ":" + barsToGenerate, chartShouldntCare, "test-ChartControl-DesignMode");
 			generated.GenerateAppend(barsToGenerate);
 			generated.SymbolInfo.PriceDecimals = 0;
-			this.ChartSettings.ScrollPositionAtBarIndex = barsToGenerate;
+			this.ChartSettingsIndividual.ScrollPositionAtBarIndex = barsToGenerate;
 			this.Initialize(generated, false, true);
 			#endregion
 		}
+
 		public override void Initialize(Bars barsNotNull, bool removeChartShadowFromOldSymbolAndAddToLoadingBars = false, bool invalidateAllPanels = true) {
 			this.barEventsDetach();
 
@@ -150,30 +155,31 @@ namespace Sq1.Charting {
 			//}
 			//v1 STREAMING_GROWS_BARS.COUNT_AND_YOU_SAVE_IT_AS_520__ON_RESTART_YOU_GO_BEYOND_BARS_LOADED_500
 			//v2
-			if (this.ChartSettings.ScrollPositionAtBarIndex < 0) {
+			if (this.ChartSettingsIndividual.ScrollPositionAtBarIndex < 0) {
 				string msg = "CATCH_AND_FIX_WHEN_YOU_ASSIGN_ChartSettings.ScrollPositionAtBarIndex_TO_NEGATIVE_VALUE";
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.ChartSettings.ScrollPositionAtBarIndex > this.hScrollBar.Maximum) {
+			if (this.ChartSettingsIndividual.ScrollPositionAtBarIndex > this.hScrollBar.Maximum) {
 				if (this.hScrollBar.Maximum == -1) {
 					string msg = "USER_CLICKED_LIVESIM_START_I_WONT_RESET_THE_SERIALIZED_POSITION_TO_TEMPORARY";
 				} else {
-					this.ChartSettings.ScrollPositionAtBarIndex = this.hScrollBar.Maximum;
+					this.ChartSettingsIndividual.ScrollPositionAtBarIndex = this.hScrollBar.Maximum;
 				}
 			}
 			// I'm here 1) at ChartControl startup; 2) after I changed BarRange in MainForm
 			bool noExceptionsExpected = true;
-			if (this.ChartSettings.ScrollPositionAtBarIndex == -1) {
+			if (this.ChartSettingsIndividual.ScrollPositionAtBarIndex == -1) {
 				string msg = "WHY_LIVESIM_HAS_IT_-1???";
 				noExceptionsExpected = false;
 			}
-			if (this.ChartSettings.ScrollPositionAtBarIndex < this.hScrollBar.Minimum || this.ChartSettings.ScrollPositionAtBarIndex > this.hScrollBar.Maximum) {
+			if (	this.ChartSettingsIndividual.ScrollPositionAtBarIndex < this.hScrollBar.Minimum ||
+					this.ChartSettingsIndividual.ScrollPositionAtBarIndex > this.hScrollBar.Maximum) {
 				string msg = "WHY_LIVESIM_HAS_IT_0_WHILE_MIN_IS_GREATER_THAN_0???";
 				noExceptionsExpected = false;
 			}
-			if (this.hScrollBar.Value != this.ChartSettings.ScrollPositionAtBarIndex && noExceptionsExpected) {
-				this.hScrollBar.Value  = this.ChartSettings.ScrollPositionAtBarIndex;
+			if (this.hScrollBar.Value != this.ChartSettingsIndividual.ScrollPositionAtBarIndex && noExceptionsExpected) {
+				this.hScrollBar.Value  = this.ChartSettingsIndividual.ScrollPositionAtBarIndex;
 			}
 			foreach (PanelBase panel in this.panelsForInvalidateAll_dontForgetIndicators) {	// at least PanelPrice and PanelVolume
 				panel.InitializeWithNonEmptyBars(this);
@@ -254,22 +260,22 @@ namespace Sq1.Charting {
 		void scrollToBarSafely(int bar) {
 			if (bar > this.hScrollBar.Maximum) bar = this.hScrollBar.Maximum;
 			if (bar < this.hScrollBar.Minimum) bar = this.hScrollBar.Minimum;
-			this.ChartSettings.ScrollPositionAtBarIndex = bar;
-			this.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();
+			this.ChartSettingsIndividual.ScrollPositionAtBarIndex = bar;
+			this.RaiseOnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot();
 			this.hScrollBar.Value = bar;
 			this.InvalidateAllPanels();
 		}
 		public void ScrollOneBarLeftAtKeyPressRate() {
-			this.scrollToBarSafely(this.hScrollBar.Value - this.ChartSettings.ScrollNBarsPerOneKeyPress);
+			this.scrollToBarSafely(this.hScrollBar.Value - this.ChartSettingsTemplated.ScrollNBarsPerOneKeyPress);
 		}
 		public void ScrollOneBarRightAtKeyPressRate() {
-			this.scrollToBarSafely(this.hScrollBar.Value + this.ChartSettings.ScrollNBarsPerOneKeyPress);
+			this.scrollToBarSafely(this.hScrollBar.Value + this.ChartSettingsTemplated.ScrollNBarsPerOneKeyPress);
 		}
 		public void DragNBarsLeft() {
-			this.scrollToBarSafely(this.hScrollBar.Value - this.ChartSettings.ScrollNBarsPerOneDragMouseEvent);
+			this.scrollToBarSafely(this.hScrollBar.Value - this.ChartSettingsTemplated.ScrollNBarsPerOneDragMouseEvent);
 		}
 		public void DragNBarsRight() {
-			this.scrollToBarSafely(this.hScrollBar.Value + this.ChartSettings.ScrollNBarsPerOneDragMouseEvent);
+			this.scrollToBarSafely(this.hScrollBar.Value + this.ChartSettingsTemplated.ScrollNBarsPerOneDragMouseEvent);
 		}
 		public void ScrollOnePageLeft() {
 			this.scrollToBarSafely(this.hScrollBar.Value - this.hScrollBar.LargeChange);
@@ -314,19 +320,19 @@ namespace Sq1.Charting {
 			//this.Bars.BarStaticAdded					-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
 		}
 		public void BarWidthIncrementAtKeyPressRate() {
-			if (this.ChartSettings.BarWidthIncludingPadding >= this.ChartSettings.BarWidthIncludingPaddingMax) return; 
-			this.ChartSettings.BarWidthIncludingPadding += this.ChartSettings.SqueezeHorizontalKeyOnePressReceivedToOneStep;
+			if (this.ChartSettingsIndividual.BarWidthIncludingPadding >= this.ChartSettingsTemplated.BarWidthIncludingPaddingMax) return; 
+			this.ChartSettingsIndividual.BarWidthIncludingPadding += this.ChartSettingsTemplated.SqueezeHorizontalKeyOnePressReceivedToOneStep;
 			this.InvalidateAllPanels();
-			base.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();
+			base.RaiseOnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot();
 		}
 		public void BarWidthDecrementAtKeyPressRate() {
-			if (this.ChartSettings.BarWidthIncludingPadding <= this.ChartSettings.SqueezeHorizontalKeyOnePressReceivedToOneStep) return;	// <= since BarWidth mustn't be zero (ZeroDivException)
-			this.ChartSettings.BarWidthIncludingPadding -= this.ChartSettings.SqueezeHorizontalKeyOnePressReceivedToOneStep;
+			if (this.ChartSettingsIndividual.BarWidthIncludingPadding <= this.ChartSettingsTemplated.SqueezeHorizontalKeyOnePressReceivedToOneStep) return;	// <= since BarWidth mustn't be zero (ZeroDivException)
+			this.ChartSettingsIndividual.BarWidthIncludingPadding -= this.ChartSettingsTemplated.SqueezeHorizontalKeyOnePressReceivedToOneStep;
 			this.InvalidateAllPanels();
-			base.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();
+			base.RaiseOnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot();
 		}
 		public void DragDownSqueeze() {
-			this.ChartSettings.SqueezeVerticalPaddingPx += this.ChartSettings.SqueezeVerticalPaddingStep;
+			this.ChartSettingsIndividual.SqueezeVerticalPaddingPx += this.ChartSettingsTemplated.SqueezeVerticalPaddingStep;
 //			if (this.ChartSettings.BarWidthIncludingPadding >= this.ChartSettings.SqueezeHorizontalStep) {
 //				this.BarWidthDecrement();
 //				return;
@@ -335,8 +341,8 @@ namespace Sq1.Charting {
 			//base.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 		public void DragUpUnsqueeze() {
-			if (this.ChartSettings.SqueezeVerticalPaddingPx < this.ChartSettings.SqueezeVerticalPaddingStep) return;
-			this.ChartSettings.SqueezeVerticalPaddingPx -= this.ChartSettings.SqueezeVerticalPaddingStep;
+			if (this.ChartSettingsIndividual.SqueezeVerticalPaddingPx < this.ChartSettingsTemplated.SqueezeVerticalPaddingStep) return;
+			this.ChartSettingsIndividual.SqueezeVerticalPaddingPx -= this.ChartSettingsTemplated.SqueezeVerticalPaddingStep;
 //			this.BarWidthIncrement();
 			this.PanelPrice.Invalidate();
 			//base.RaiseChartSettingsChangedContainerShouldSerialize();
@@ -391,9 +397,9 @@ namespace Sq1.Charting {
 		}
 
 		public void TooltipPriceShowAlone(Bar barToPopulate, Rectangle barWithShadowsRectangle) {
-			if (this.ChartSettings.TooltipPriceShow == false) return;
+			if (this.ChartSettingsTemplated.TooltipPriceShow == false) return;
 			// MouseX will never go over tooltip => PanelNamedFolding.OnMouseLeave() never invoked
-			int awayFromBarXpx = this.ChartSettings.TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave;
+			int awayFromBarXpx = this.ChartSettingsTemplated.TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave;
 			int x = barWithShadowsRectangle.Left - this.tooltipPrice.Width - awayFromBarXpx;
 			if (x < 0) x = barWithShadowsRectangle.Right + awayFromBarXpx;
 
@@ -405,20 +411,20 @@ namespace Sq1.Charting {
 			}
 			x += multiSplitterHorizontalpanelOffset;
 
-			int y = barWithShadowsRectangle.Top - this.ChartSettings.TooltipBordersMarginToKeepBordersVisible;
+			int y = barWithShadowsRectangle.Top - this.ChartSettingsTemplated.TooltipBordersMarginToKeepBordersVisible;
 			if (y < 0) y = 0;
 
 			if (y + this.tooltipPrice.Height > this.HeightMinusBottomHscrollbar) {
-				y = this.HeightMinusBottomHscrollbar - this.tooltipPrice.Height - this.ChartSettings.TooltipBordersMarginToKeepBordersVisible;
+				y = this.HeightMinusBottomHscrollbar - this.tooltipPrice.Height - this.ChartSettingsTemplated.TooltipBordersMarginToKeepBordersVisible;
 			}
 			y += panelPriceOffset.Y;
 
 			this.tooltipPriceShowXY(barToPopulate, x, y);
 		}
 		public void TooltipPositionAndPriceShow(AlertArrow alertArrow, Bar barToPopulate, Rectangle rectangleYarrowXbar) {
-			if (this.ChartSettings.TooltipPriceShow == false) return;
+			if (this.ChartSettingsTemplated.TooltipPriceShow == false) return;
 			// MouseX will never go over tooltip => PanelNamedFolding.OnMouseLeave() never invoked ???
-			int awayFromBarXpx = this.ChartSettings.TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave;
+			int awayFromBarXpx = this.ChartSettingsTemplated.TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave;
 			int xPosition	= -1;
 			int xPrice		= -1;
 
@@ -450,11 +456,11 @@ namespace Sq1.Charting {
 			xPosition	+= multiSplitterHorizontalpanelOffset;
 
 			int yPrice = rectangleYarrowXbar.Top - twoTooltipsCombinedHeight / 2;
-			if (yPrice <= 0) yPrice = this.ChartSettings.TooltipBordersMarginToKeepBordersVisible;
+			if (yPrice <= 0) yPrice = this.ChartSettingsTemplated.TooltipBordersMarginToKeepBordersVisible;
 			yPrice += this.PanelPrice.ParentMultiSplitMyLocationAmongSiblingsPanels.Y;
 			if (yPrice + twoTooltipsCombinedHeight > this.HeightMinusBottomHscrollbar) {
-				yPrice = this.HeightMinusBottomHscrollbar - twoTooltipsCombinedHeight - this.ChartSettings.TooltipBordersMarginToKeepBordersVisible;
-				if (yPrice <= 0) yPrice = this.ChartSettings.TooltipBordersMarginToKeepBordersVisible;
+				yPrice = this.HeightMinusBottomHscrollbar - twoTooltipsCombinedHeight - this.ChartSettingsTemplated.TooltipBordersMarginToKeepBordersVisible;
+				if (yPrice <= 0) yPrice = this.ChartSettingsTemplated.TooltipBordersMarginToKeepBordersVisible;
 			}
 
 			int yPosition = yPrice + this.tooltipPrice.Height + twoTooltipsVerticalDistance;
@@ -497,7 +503,7 @@ namespace Sq1.Charting {
 		}
 		public bool TooltipPriceHide() {
 			bool wasInvalidated = false;
-			if (this.ChartSettings.TooltipPriceShow == false) return wasInvalidated;
+			if (this.ChartSettingsTemplated.TooltipPriceShow == false) return wasInvalidated;
 			if (this.tooltipPrice.Visible == false) return wasInvalidated;	// DO_NOT_DELETE__HERE_WE_BREAK_INFINITE_LOOP
 			this.tooltipPrice.Visible = false;
 			wasInvalidated = true;
@@ -506,18 +512,16 @@ namespace Sq1.Charting {
 		}
 		public bool TooltipPositionHide() {
 			bool wasInvalidated = false;
-			if (this.ChartSettings.TooltipPositionShow == false) return wasInvalidated;
+			if (this.ChartSettingsTemplated.TooltipPositionShow == false) return wasInvalidated;
 			if (this.tooltipPosition.Visible == false) return wasInvalidated;	// DO_NOT_DELETE__HERE_WE_BREAK_INFINITE_LOOP
 			this.tooltipPosition.Visible = false;
 			wasInvalidated = true;
 			this.InvalidateAllPanels();
 			return wasInvalidated;
 		}
+
 		
-		public void Propagate_splitterManorderDistance_ifFullyDeserialized(
-					Dictionary<string, MultiSplitterProperties> multiSplitterColumnsPropertiesByPanelName = null,
-					Dictionary<string, MultiSplitterProperties> multiSplitterRowsPropertiesByPanelName = null
-			) {
+		public void Propagate_multiSplitterManorderDistance_ifFullyDeserialized() {
 			//v1 WHATT?? BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE
 			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
 				string msg = "YOU_INVOKED_ME_WITH_ZERO_EFFECT__SET_FullyDeserializedLayoutComplete=true_FIRST //PropagateSplitterManorderDistanceIfFullyDeserialized()";
@@ -542,19 +546,22 @@ namespace Sq1.Charting {
 			this.multiSplitColumns_Level2_PriceVolumeMultisplit.AssignPanelBelowAbove_setMinimalSize_fromPanelsList();
 			this.multiSplitColumns_Level2_PriceVolumeMultisplit.DistributePanelsAndSplitters();	// lower panels hangs out below hscroll
 			
-			if (multiSplitterColumnsPropertiesByPanelName != null) {
-				this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName_tunnelled = multiSplitterColumnsPropertiesByPanelName;
-			}
-			this.multiSplitColumns_Level2_PriceVolumeMultisplit.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName_tunnelled);
+			this.multiSplitColumns_Level2_PriceVolumeMultisplit.SplitterPropertiesByPanelNameSet(
+				this.ChartSettingsIndividual.MultiSplitterColumnsPropertiesByPanelName);
 
 			this.multiSplitRowsVolumePrice.AssignPanelBelowAbove_setMinimalSize_fromPanelsList();
 			//this.multiSplitRowsVolumePrice.DistributePanelsAndSplitters();	// is it legit here??
 
-			if (multiSplitterRowsPropertiesByPanelName != null) {
-				this.ChartSettings.MultiSplitterRowsPropertiesByPanelName_tunnelled = multiSplitterRowsPropertiesByPanelName;
-			}
-			this.multiSplitRowsVolumePrice.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterRowsPropertiesByPanelName_tunnelled);
+			this.multiSplitRowsVolumePrice.SplitterPropertiesByPanelNameSet(
+				this.ChartSettingsIndividual.MultiSplitterRowsPropertiesByPanelName);
 		}
+
+		public Dictionary<string, MultiSplitterProperties> MultiSplitColumns_snapForSerialization { get {
+			return this.multiSplitColumns_Level2_PriceVolumeMultisplit.SplitterPropertiesByPanelNameGet(); } } 
+
+		public Dictionary<string, MultiSplitterProperties> MultiSplitRows_snapForSerialization { get {
+			return this.multiSplitRowsVolumePrice.SplitterPropertiesByPanelNameGet(); } } 
+
 
 		public bool TooltipPriceVisible { get { return this.tooltipPrice.Visible; } }
 
@@ -578,6 +585,24 @@ namespace Sq1.Charting {
 		//	} }
 		public override void RangeBarCollapseToAccelerateLivesim() {
 			this.splitContainerChartVsRange.Panel2Collapsed = true;
+		}
+
+		public void Set_ChartSettingsTemplated(ChartSettingsTemplated chartSettingsTemplated) {
+			if (this.ChartSettingsTemplated == chartSettingsTemplated) {
+				string msg = "REMOVE_THIS_INVOCATION_UPSTACK__DONT_SET_THE_SAME_chartSettingsTemplated[" + chartSettingsTemplated.Name + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.ChartSettingsTemplated = chartSettingsTemplated;
+		}
+
+		public void Set_ChartSettingsIndividual(ChartSettingsIndividual chartSettingsIndividual) {
+			if (this.ChartSettingsIndividual == chartSettingsIndividual) {
+				string msg = "REMOVE_THIS_INVOCATION_UPSTACK__DONT_SET_THE_SAME_ChartSettingsIndividual[" + chartSettingsIndividual.Name + "]";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			this.ChartSettingsIndividual = chartSettingsIndividual;
 		}
 	}
 }

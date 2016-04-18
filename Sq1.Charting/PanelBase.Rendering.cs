@@ -23,7 +23,7 @@ namespace Sq1.Charting {
 				gutterRightRect.Y = 0;
 				gutterRightRect.Height = this.PanelHeightMinusGutterBottomHeight;
 				try {
-					g.FillRectangle(this.ChartControl.ChartSettings.BrushGutterRightBackground, gutterRightRect);
+					g.FillRectangle(this.ChartControl.ChartSettingsTemplated.BrushGutterRightBackground, gutterRightRect);
 				} catch (Exception ex) {
 					Assembler.PopupException(null, ex, false);
 				}
@@ -35,7 +35,7 @@ namespace Sq1.Charting {
 				gutterBottomRect.Y = this.PanelHeightMinusGutterBottomHeight;
 				gutterBottomRect.Height = this.GutterBottomHeight_cached;
 				try {
-					g.FillRectangle(this.ChartControl.ChartSettings.BrushGutterBottomBackground, gutterBottomRect);
+					g.FillRectangle(this.ChartControl.ChartSettingsTemplated.BrushGutterBottomBackground, gutterBottomRect);
 				} catch (Exception ex) {
 					Assembler.PopupException(null, ex, false);
 				}
@@ -69,7 +69,7 @@ namespace Sq1.Charting {
 			}
 			
 			double panelValueForBarMouseOvered = this.PanelValueForBarMouseOveredNaNunsafe;
-			bool mouseTrack = this.ChartControl.ChartSettings.MousePositionTrackOnGutters;
+			bool mouseTrack = this.ChartControl.ChartSettingsTemplated.MousePositionTrackOnGutters;
 			if (mouseTrack) {		// && this.moveHorizontalYprev > -1
 				int mouseY = this.moveHorizontalYprev;
 				if (this.mouseOver == false || this.moveHorizontalYprev == -1) {
@@ -90,7 +90,7 @@ namespace Sq1.Charting {
 					}
 				}
 				try {
-					g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGuttersForeground, 0, mouseY, base.Width, mouseY);
+					g.DrawLine(this.ChartControl.ChartSettingsTemplated.PenMousePositionTrackOnGuttersForeground, 0, mouseY, base.Width, mouseY);
 				} catch (Exception ex) {
 					Assembler.PopupException(null, ex, false);
 				}
@@ -111,8 +111,8 @@ namespace Sq1.Charting {
 				for (double gridPrice = gridStart; gridPrice <= gridEnd; gridPrice += gridStep) {
 					int gridY = this.ValueToYinverted(gridPrice);
 					try {
-						if (this.ChartControl.ChartSettings.GridlinesHorizontalShow) {
-							g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesHorizontal, 0, gridY, this.PanelWidthMinusRightPriceGutter-1, gridY);
+						if (this.ChartControl.ChartSettingsTemplated.GridlinesHorizontalShow) {
+							g.DrawLine(this.ChartControl.ChartSettingsTemplated.PenGridlinesHorizontal, 0, gridY, this.PanelWidthMinusRightPriceGutter-1, gridY);
 						}
 					} catch (Exception ex) {
 						Assembler.PopupException(null, ex, false);
@@ -122,10 +122,10 @@ namespace Sq1.Charting {
 					//v1 string priceFormatted = this.ChartControl.ValueFormattedToSymbolInfoDecimalsOr5(gridPrice, this.ThisPanelIsPricePanel);
 					//v2 can be price, volume or indicator
 					string panelValueFormatted = this.FormatValue(gridPrice);
-					int labelWidth = (int)g.MeasureString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont).Width;
-					int labelXalignedRight = base.Width - this.ChartControl.ChartSettings.GutterRightPadding - labelWidth;
-					g.DrawString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont,
-								 this.ChartControl.ChartSettings.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
+					int labelWidth = (int)g.MeasureString(panelValueFormatted, this.ChartControl.ChartSettingsTemplated.GutterRightFont).Width;
+					int labelXalignedRight = base.Width - this.ChartControl.ChartSettingsTemplated.GutterRightPadding - labelWidth;
+					g.DrawString(panelValueFormatted, this.ChartControl.ChartSettingsTemplated.GutterRightFont,
+								 this.ChartControl.ChartSettingsTemplated.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
 				}
 				
 				if (mouseTrack) {			// && this.moveHorizontalYprev > -1
@@ -153,9 +153,9 @@ namespace Sq1.Charting {
 					//v1 string priceFormatted = this.ChartControl.ValueFormattedToSymbolInfoDecimalsOr5(mousePrice, this.ThisPanelIsPricePanel);
 					//v2 can be price, volume or indicator
 					string panelValueFormatted = this.FormatValue(mousePrice);
-					int labelWidth = (int)g.MeasureString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont).Width;
-					int labelHeight = (int)g.MeasureString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont).Height;
-					int labelXalignedRight = base.Width - this.ChartControl.ChartSettings.GutterRightPadding - labelWidth;
+					int labelWidth = (int)g.MeasureString(panelValueFormatted, this.ChartControl.ChartSettingsTemplated.GutterRightFont).Width;
+					int labelHeight = (int)g.MeasureString(panelValueFormatted, this.ChartControl.ChartSettingsTemplated.GutterRightFont).Height;
+					int labelXalignedRight = base.Width - this.ChartControl.ChartSettingsTemplated.GutterRightPadding - labelWidth;
 
 					int pxBelowBottomBoundary = (labelYadjustedUp + labelHeight) - base.Height;
 					if (pxBelowBottomBoundary > 0) {
@@ -168,13 +168,13 @@ namespace Sq1.Charting {
 							g.FillRectangle(indicatorColorBrush, plate);
 						}
 						using (SolidBrush brushIndicatorInverted = new SolidBrush(base.BackColor)) {
-							g.DrawString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont,
+							g.DrawString(panelValueFormatted, this.ChartControl.ChartSettingsTemplated.GutterRightFont,
 										 brushIndicatorInverted, labelXalignedRight, labelYadjustedUp);
 						}
 					} else {
-						g.FillRectangle(this.ChartControl.ChartSettings.PenMousePositionTrackOnGuttersForeground.Brush, plate);
-						g.DrawString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont,
-									 this.ChartControl.ChartSettings.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
+						g.FillRectangle(this.ChartControl.ChartSettingsTemplated.PenMousePositionTrackOnGuttersForeground.Brush, plate);
+						g.DrawString(panelValueFormatted, this.ChartControl.ChartSettingsTemplated.GutterRightFont,
+									 this.ChartControl.ChartSettingsTemplated.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
 					}
 				}
 			}
@@ -194,7 +194,7 @@ namespace Sq1.Charting {
 				}
 
 				int mouseBarMiddleX = mouseBarX + this.BarShadowOffset;
-				g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGuttersForeground, mouseBarMiddleX, 0, mouseBarMiddleX, base.Height);
+				g.DrawLine(this.ChartControl.ChartSettingsTemplated.PenMousePositionTrackOnGuttersForeground, mouseBarMiddleX, 0, mouseBarMiddleX, base.Height);
 			}
 			
 			if (this.GutterBottomDraw == false && this.ThisPanelIsPricePanel) {
@@ -209,7 +209,7 @@ namespace Sq1.Charting {
 					return;	// not initialized yet
 				}
 				//this.ChartControl.ChartSettings.PenGridlinesVerticalNewDate.Width = 2f;
-				int leftPadding = this.ChartControl.ChartSettings.GutterBottomPadding;
+				int leftPadding = this.ChartControl.ChartSettingsTemplated.GutterBottomPadding;
 				int y = this.PanelHeightMinusGutterBottomHeight_cached + leftPadding;
 				List<Rectangle> barDateLabelsAlreadyDrawn = new List<Rectangle>();
 				
@@ -220,12 +220,12 @@ namespace Sq1.Charting {
 					
 					//if (dayOpenersDrawn == 0) {	//draw in left corner the date anyway (too much eyeballing to find the date I need)
 					Bar barLeftmost = this.ChartControl.Bars[this.visibleBarLeftExisting];
-					string barLeftmostFormatted = barLeftmost.DateTimeOpen.ToString(this.ChartControl.ChartSettings.GutterBottomDateFormatDayOpener);
+					string barLeftmostFormatted = barLeftmost.DateTimeOpen.ToString(this.ChartControl.ChartSettingsTemplated.GutterBottomDateFormatDayOpener);
 					int barLeftmostX = this.BarToX(this.visibleBarLeftExisting);
-					int barLeftmostWidth = (int)g.MeasureString(barLeftmostFormatted, this.ChartControl.ChartSettings.GutterBottomFont).Width;
+					int barLeftmostWidth = (int)g.MeasureString(barLeftmostFormatted, this.ChartControl.ChartSettingsTemplated.GutterBottomFont).Width;
 					barLeftmostX = this.adjustToBoundariesHorizontalGutter(barLeftmostX, barLeftmostWidth);
 					//g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesVerticalNewDate, barLeftmostX, 0, barLeftmostX, this.PanelHeightMinusGutterBottomHeight_cached);
-					g.DrawString(barLeftmostFormatted, this.ChartControl.ChartSettings.GutterBottomFont, this.ChartControl.ChartSettings.BrushGutterBottomNewDateForeground, barLeftmostX, y);
+					g.DrawString(barLeftmostFormatted, this.ChartControl.ChartSettingsTemplated.GutterBottomFont, this.ChartControl.ChartSettingsTemplated.BrushGutterBottomNewDateForeground, barLeftmostX, y);
 					Rectangle rectLeftmost = new Rectangle(leftPadding, y, barLeftmostWidth, this.GutterRightFontHeight_cached);
 					barDateLabelsAlreadyDrawn.Add(rectLeftmost);
 					//}
@@ -235,12 +235,12 @@ namespace Sq1.Charting {
 					for (int i = this.visibleBarRightExisting - 1; i >= this.visibleBarLeftExisting; i--, barPrevX -= this.BarWidthIncludingPadding_cached) {
 						Bar bar = this.ChartControl.Bars[i];
 						if (bar.DateTimeOpen.Day == barOpenerPrevDay.DateTimeOpen.Day) continue;
-						if (this.ChartControl.ChartSettings.GridlinesVerticalShow) {
-							g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesVerticalNewDate, barPrevX, 0, barPrevX, this.PanelHeightMinusGutterBottomHeight_cached - 1);
+						if (this.ChartControl.ChartSettingsTemplated.GridlinesVerticalShow) {
+							g.DrawLine(this.ChartControl.ChartSettingsTemplated.PenGridlinesVerticalNewDate, barPrevX, 0, barPrevX, this.PanelHeightMinusGutterBottomHeight_cached - 1);
 						}
 						
-						string barDayOpener = barOpenerPrevDay.DateTimeOpen.ToString(this.ChartControl.ChartSettings.GutterBottomDateFormatDayOpener);
-						int barDayOpenerWidth = (int)g.MeasureString(barDayOpener, this.ChartControl.ChartSettings.GutterBottomFont).Width;
+						string barDayOpener = barOpenerPrevDay.DateTimeOpen.ToString(this.ChartControl.ChartSettingsTemplated.GutterBottomDateFormatDayOpener);
+						int barDayOpenerWidth = (int)g.MeasureString(barDayOpener, this.ChartControl.ChartSettingsTemplated.GutterBottomFont).Width;
 						int barMiddleOrLeftX = barPrevX;	// - barDayOpenerWidth / 2;
 						barMiddleOrLeftX = this.adjustToBoundariesHorizontalGutter(barMiddleOrLeftX, barDayOpenerWidth);
 						Rectangle rect = new Rectangle(barMiddleOrLeftX, y, barDayOpenerWidth, this.GutterRightFontHeight_cached);
@@ -251,7 +251,7 @@ namespace Sq1.Charting {
 							break;
 						}
 						if (shoulddrawBarOpenerDate) {
-							g.DrawString(barDayOpener, this.ChartControl.ChartSettings.GutterBottomFont, this.ChartControl.ChartSettings.BrushGutterBottomNewDateForeground, rect.Left, rect.Top);
+							g.DrawString(barDayOpener, this.ChartControl.ChartSettingsTemplated.GutterBottomFont, this.ChartControl.ChartSettingsTemplated.BrushGutterBottomNewDateForeground, rect.Left, rect.Top);
 							barDateLabelsAlreadyDrawn.Add(rect);
 							//dayOpenersDrawn++;
 						}
@@ -265,7 +265,7 @@ namespace Sq1.Charting {
 					Bar bar = this.ChartControl.Bars[i];
 					if (isIntraday_cached && bar.DateTimeOpen.Minute > 0) continue;
 					string dateFormatted = bar.DateTimeOpen.ToString(this.formatForBars);
-					int dateFormattedWidth = (int)g.MeasureString(dateFormatted, this.ChartControl.ChartSettings.GutterBottomFont).Width;
+					int dateFormattedWidth = (int)g.MeasureString(dateFormatted, this.ChartControl.ChartSettingsTemplated.GutterBottomFont).Width;
 					int xLabel = barMiddleX - dateFormattedWidth / 2;
 					
 					if (xLabel < 0) xLabel = 0;
@@ -277,10 +277,10 @@ namespace Sq1.Charting {
 						break;
 					}
 					if (tooCrowded) continue;
-					if (this.ChartControl.ChartSettings.GridlinesVerticalShow) {
-						g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesVertical, barMiddleX, 0, barMiddleX, this.PanelHeightMinusGutterBottomHeight_cached - 1);
+					if (this.ChartControl.ChartSettingsTemplated.GridlinesVerticalShow) {
+						g.DrawLine(this.ChartControl.ChartSettingsTemplated.PenGridlinesVertical, barMiddleX, 0, barMiddleX, this.PanelHeightMinusGutterBottomHeight_cached - 1);
 					}
-					g.DrawString(dateFormatted, this.ChartControl.ChartSettings.GutterBottomFont, this.ChartControl.ChartSettings.BrushGutterBottomForeground, xLabel, y);
+					g.DrawString(dateFormatted, this.ChartControl.ChartSettingsTemplated.GutterBottomFont, this.ChartControl.ChartSettingsTemplated.BrushGutterBottomForeground, xLabel, y);
 					barDateLabelsAlreadyDrawn.Add(proposal);
 				}
 
@@ -293,20 +293,20 @@ namespace Sq1.Charting {
 					Bar mouseBar = this.ChartControl.Bars[mouseBarIndex];
 					if (null != mouseBar) {
 						string dateFormatted = mouseBar.DateTimeOpen.ToString(this.formatForBars);
-						int dateFormattedWidth = (int)g.MeasureString(dateFormatted, this.ChartControl.ChartSettings.GutterBottomFont).Width;
+						int dateFormattedWidth = (int)g.MeasureString(dateFormatted, this.ChartControl.ChartSettingsTemplated.GutterBottomFont).Width;
 						int xLabel = (int) Math.Floor(mouseBarMiddleX - dateFormattedWidth / 2f);
 						
 						if (xLabel < 0) xLabel = 0;
 						Rectangle plate = new Rectangle(xLabel, y, dateFormattedWidth + 2, this.GutterRightFontHeight_cached);
-						g.FillRectangle(this.ChartControl.ChartSettings.PenMousePositionTrackOnGuttersForeground.Brush, plate);
-						g.DrawString(dateFormatted, this.ChartControl.ChartSettings.GutterBottomFont, this.ChartControl.ChartSettings.BrushMousePositionTrackOnGuttersInverted, xLabel, y);
+						g.FillRectangle(this.ChartControl.ChartSettingsTemplated.PenMousePositionTrackOnGuttersForeground.Brush, plate);
+						g.DrawString(dateFormatted, this.ChartControl.ChartSettingsTemplated.GutterBottomFont, this.ChartControl.ChartSettingsTemplated.BrushMousePositionTrackOnGuttersInverted, xLabel, y);
 					}
 				}
 			}
 		}
-		int dateMeasuredWidthFormattedByBarScale(Graphics g, DateTime value) {
+		int dateMeasured_widthFormatted_byBarScale(Graphics g, DateTime value) {
 			string valueFormatted = value.ToString(this.formatForBars);
-			int ret = (int)g.MeasureString(valueFormatted, this.ChartControl.ChartSettings.GutterBottomFont).Width;
+			int ret = (int)g.MeasureString(valueFormatted, this.ChartControl.ChartSettingsTemplated.GutterBottomFont).Width;
 			return ret;
 		}
 
@@ -356,8 +356,8 @@ namespace Sq1.Charting {
 			histogramBarInverted.Height = histogramBarHeight;		// height is measured DOWN the screen from candleBodyInverted.Y, not UP
 
 			var brushDown = (fillDownCandleBody)
-				? this.ChartControl.ChartSettings.BrushVolumeBarDown
-				: this.ChartControl.ChartSettings.BrushVolumeBarUp;
+				? this.ChartControl.ChartSettingsTemplated.BrushVolumeBarDown
+				: this.ChartControl.ChartSettingsTemplated.BrushVolumeBarUp;
 			//if (fillDownCandleBody) histogramBarInverted.Width--;	// SYNC_WITH_RenderBarCandle drawing using a pen produces 1px narrower rectangle that drawing using a brush???...
 			//if (this.ForeColor != Color.Empty) {
 			//	using (SolidBrush brushNonVolume = new SolidBrush(this.ForeColor)) {
@@ -396,7 +396,7 @@ namespace Sq1.Charting {
 
 			int shadowX = barX + this.BarShadowXoffset_cached;
 
-			var settings = this.ChartControl.ChartSettings;
+			var settings = this.ChartControl.ChartSettingsTemplated;
 			var brush	= candleUp ? settings.BrushPriceBarUp : settings.BrushPriceBarDown;
 			var pen		= candleUp ? settings.  PenPriceBarUp : settings.  PenPriceBarDown;
 			if (candleUpFillBody) {

@@ -9,7 +9,7 @@ namespace Sq1.Core.Streaming {
 		public SymbolScaleStreamSolidifier(
 			SymbolChannel<StreamingConsumerSolidifier> symbolChannel, string symbol, BarScaleInterval scaleInterval, string reasonIwasCreated = "REASON_UNKNOWN")
 												: base(symbolChannel, symbol, scaleInterval, reasonIwasCreated) {
-			this.barsEmulator_forSolidifier = new BarsEmulator_forSolidifier(symbol, scaleInterval);
+			this.pseudoStreamingBarFactory = new PseudoStreamingBarFactory(symbol, scaleInterval);
 		}
 	}
 }

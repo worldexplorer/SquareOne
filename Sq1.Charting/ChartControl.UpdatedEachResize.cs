@@ -16,7 +16,7 @@ namespace Sq1.Charting {
 				int ret = this.PanelPrice.Width - this.GutterRightWidth_cached;
 				return ret;
 			} }
-		public int BarsCanFitForCurrentWidth { get { return this.ChartWidthMinusGutterRightPrice / this.ChartSettings.BarWidthIncludingPadding; } }
+		public int BarsCanFitForCurrentWidth { get { return this.ChartWidthMinusGutterRightPrice / this.ChartSettingsIndividual.BarWidthIncludingPadding; } }
 		public int ScrollLargeChange { get { return (int)(this.BarsCanFitForCurrentWidth * 0.9f); } }
 		public int VisibleBarRight { get {
 				//v1 return this.hScrollBar.Value;
@@ -123,7 +123,7 @@ namespace Sq1.Charting {
 					continue;
 				}
 				string visibleMaxFormatted = panel.FormatValue(panelMax);
-				int panelValueFormatted = (int)g.MeasureString(visibleMaxFormatted, this.ChartSettings.GutterRightFont).Width;
+				int panelValueFormatted = (int)g.MeasureString(visibleMaxFormatted, this.ChartSettingsTemplated.GutterRightFont).Width;
 				if (panelValueFormatted > base.Width) {
 					string msg = "panelValueFormatted[panelValueFormatted] > base.Width[" + base.Width + "]";
 					Assembler.PopupException(msg);
@@ -133,7 +133,7 @@ namespace Sq1.Charting {
 				if (ret >= panelValueFormatted) continue;
 				ret = panelValueFormatted;
 			}
-			ret += this.ChartSettings.GutterRightPadding * 2;
+			ret += this.ChartSettingsTemplated.GutterRightPadding * 2;
 			return ret;
 		}
 

@@ -30,6 +30,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.displayStackTrace_forSingleSelected();
 		}
 		void mniClear_Click(object sender, EventArgs e) {
+			this.flushExceptionsToOLV_switchToGuiThread();
 			this.Exceptions.Clear(this, "mniClear_Click");
 			this.flushExceptionsToOLV_switchToGuiThread();
 		}

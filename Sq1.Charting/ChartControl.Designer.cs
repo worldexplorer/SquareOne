@@ -12,8 +12,8 @@ namespace Sq1.Charting {
 				}
 				this.barEventsDetach();
 
-				if (this.ChartSettings != null) {
-					this.ChartSettings.PensAndBrushesCached_DisposeAndNullify();
+				if (this.ChartSettingsTemplated != null) {
+					this.ChartSettingsTemplated.PensAndBrushesCached_DisposeAndNullify();
 				} else {
 					string msg = "this.ChartSettings=null //ChartControl.Dispose()";
 					Assembler.PopupException(msg);
@@ -204,10 +204,11 @@ namespace Sq1.Charting {
 			this.ResumeLayout(false);
 
 		}
+
 		private Sq1.Charting.MultiSplit.MultiSplitContainer multiSplitColumns_Level2_PriceVolumeMultisplit;
+		private Sq1.Charting.MultiSplit.MultiSplitContainer multiSplitRowsVolumePrice;
 
 		private System.Windows.Forms.Label lblWinFormDesignerComment;
-		private Sq1.Charting.MultiSplit.MultiSplitContainer multiSplitRowsVolumePrice;
 		private System.Windows.Forms.HScrollBar hScrollBar;
 		private System.Windows.Forms.SplitContainer splitContainerChartVsRange;
 		public  Widgets.RangeBar.RangeBarDateTime RangeBar;

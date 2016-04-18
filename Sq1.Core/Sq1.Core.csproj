@@ -112,7 +112,7 @@
       <DependentUpon>OrderProcessor.cs</DependentUpon>
     </Compile>
     <Compile Include="Broker\OrdersAutoTree.cs" />
-    <Compile Include="Charting\ChartSettings.cs" />
+    <Compile Include="Charting\ChartSettingsTemplated.cs" />
     <Compile Include="Charting\ChartShadow.DataSourceTreeControl.ChartUnderSymbol.cs">
       <DependentUpon>ChartShadow.cs</DependentUpon>
       <SubType>UserControl</SubType>
@@ -125,6 +125,7 @@
     <Compile Include="Charting\ChartShadow.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Charting\ChartSettingsIndividual.cs" />
     <Compile Include="Charting\StreamingConsumerChart.cs" />
     <Compile Include="Charting\DictionaryManyToOne.cs" />
     <Compile Include="Charting\HostPanelForIndicator.cs" />
@@ -193,7 +194,7 @@
     </Compile>
     <Compile Include="DataFeed\DataSourceSymbolRenamedEventArgs.cs" />
     <Compile Include="DataFeed\IDataSourceEditor.cs" />
-    <Compile Include="DataFeed\NamedObjectJsonEventArgs.cs" />
+    <Compile Include="DataTypes\NamedObjectJsonEventArgs.cs" />
     <Compile Include="DataTypes\Bar.DynamicProperties.cs">
       <DependentUpon>Bar.cs</DependentUpon>
     </Compile>
@@ -286,7 +287,7 @@
     <Compile Include="Repositories\RepositoryJsonsInFolderSimpleDictionarySequencer.cs" />
     <Compile Include="Repositories\StrategySelfSaver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DataFeed\NamedObjectJsonSerializable.cs" />
+    <Compile Include="DataTypes\NamedObjectJsonSerializable.cs" />
     <Compile Include="Repositories\RepositoryBarsFile.cs" />
     <Compile Include="Repositories\RepositoryBarsSameScaleInterval.cs" />
     <Compile Include="Repositories\RepositoryJsonDataSource.DynamicProperties.cs">
@@ -396,9 +397,9 @@
     <Compile Include="Streaming\StreamingAdapter.Subscribe.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\SymbolScaleStreamChart.cs" />
-    <Compile Include="Streaming\SymbolScaleStreamChart.Push.cs">
-      <DependentUpon>SymbolScaleStreamChart.cs</DependentUpon>
+    <Compile Include="Streaming\SymbolScaleStreamCharts.cs" />
+    <Compile Include="Streaming\SymbolScaleStreamCharts.Push.cs">
+      <DependentUpon>SymbolScaleStreamCharts.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\SymbolScaleStreamSolidifier.cs" />
     <Compile Include="Streaming\SymbolScaleStreamSolidifier.Push.cs">
@@ -407,7 +408,7 @@
     <Compile Include="Streaming\SymbolScaleStreamSolidifier.Subscribe.cs">
       <DependentUpon>SymbolScaleStreamSolidifier.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\BarsEmulator_forSolidifier.cs" />
+    <Compile Include="Streaming\PseudoStreamingBarFactory.cs" />
     <Compile Include="Streaming\StreamingEditor.EventConsumer.cs">
       <DependentUpon>StreamingEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>

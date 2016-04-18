@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sq1.Core.DataFeed {
+namespace Sq1.Core.DataTypes {
 	public class NamedObjectJsonEventArgs<T> : EventArgs {
 		//public string Name;
 		public bool DoNotDeleteItsUsedElsewhere;

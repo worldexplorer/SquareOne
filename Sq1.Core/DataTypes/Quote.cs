@@ -19,7 +19,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	double		Ask;
 		[JsonProperty]	public	double		Size;
 		
-		[JsonIgnore]	public	int			IntraBarSerno;
+		[JsonIgnore]	public	int			IntraBarSerno			{ get; private set; }
 		[JsonIgnore]	public	bool		IamInjectedToFillPendingAlerts;	//		{ get; protected set; }
 		[JsonProperty]	public	long		AbsnoPerSymbol;
 
@@ -301,6 +301,9 @@ namespace Sq1.Core.DataTypes {
 				//}
 			}
 			return ret;
+		}
+		public void Set_IntraBarSerno__onlyInConsumer(int intraBarSerno) {
+			this.IntraBarSerno = intraBarSerno;
 		}
 	}
 }

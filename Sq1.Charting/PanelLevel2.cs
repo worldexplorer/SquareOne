@@ -37,7 +37,7 @@ namespace Sq1.Charting {
 			base.ChartControl.PanelPrice.MouseMove -= new MouseEventHandler(panelPrice_MouseMove);
 			base.ChartControl.PanelPrice.MouseMove += new MouseEventHandler(panelPrice_MouseMove);
 			//temp reset to measure through Graphics.MeasureString()
-			base.ChartControl.ChartSettings.LevelTwoMinimumPriceLevelThicknessRendered = -1;
+			base.ChartControl.ChartSettingsTemplated.LevelTwoMinimumPriceLevelThicknessRendered = -1;
 		}
 
 		void panelPrice_MouseMove(object sender, MouseEventArgs e) {
@@ -74,12 +74,12 @@ namespace Sq1.Charting {
 				return;
 			}
 #endif
-			this.ChartLabelsUpperLeftYincremental = base.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
+			this.ChartLabelsUpperLeftYincremental = base.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftYstartTopmost;
 			Graphics g = pe.Graphics;
 			g.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
 			
 			try {
-				g.Clear(base.ChartControl.ChartSettings.LevelTwoColorBackground);
+				g.Clear(base.ChartControl.ChartSettingsTemplated.LevelTwoColorBackground);
 				
 				base.RepaintSernoBackground++;
 				if (base.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
@@ -92,13 +92,13 @@ namespace Sq1.Charting {
 				if (this.Cursor != Cursors.Default) this.Cursor = Cursors.Default;
 				
 				//temp pickup to measure through Graphics.MeasureString()
-				if (base.ChartControl.ChartSettings.LevelTwoMinimumPriceLevelThicknessRendered != -1) return;
+				if (base.ChartControl.ChartSettingsTemplated.LevelTwoMinimumPriceLevelThicknessRendered != -1) return;
 	
 				// same as PanelBase.ensureFontMetricsAreCalculated(e.Graphics);
-				SizeF labelMeasurements = pe.Graphics.MeasureString("ABC123`'jg]", base.ChartControl.ChartSettings.LevelTwoLotFont);
+				SizeF labelMeasurements = pe.Graphics.MeasureString("ABC123`'jg]", base.ChartControl.ChartSettingsTemplated.LevelTwoLotFont);
 				//int labelMeasurementsWidth = (int)Math.Round(labelMeasurements.Width);
 				int labelMeasurementsHeight = (int)Math.Round(labelMeasurements.Height);
-				base.ChartControl.ChartSettings.LevelTwoMinimumPriceLevelThicknessRendered = labelMeasurementsHeight;
+				base.ChartControl.ChartSettingsTemplated.LevelTwoMinimumPriceLevelThicknessRendered = labelMeasurementsHeight;
 			} catch (Exception ex) {
 				string msg = "OnPaintBackgroundDoubleBuffered(): caught[" + ex.Message + "]";
 				Assembler.PopupException(msg, ex);
@@ -216,7 +216,7 @@ namespace Sq1.Charting {
 
 
 			//v1 bool allowUnproportional = true;
-			bool stripeHeight_willContainMeasuredText = base.ChartControl.ChartSettings.LevelTwoStripesHeightWrapsVolumeLabel;
+			bool stripeHeight_willContainMeasuredText = base.ChartControl.ChartSettingsTemplated.LevelTwoStripesHeightWrapsVolumeLabel;
 			if (stripeHeight_willContainMeasuredText) {
 				int howManyAskPriceLevelsWillFit = (int) Math.Round(quoteAskYoffsetted / (double)pxPerPriceStep_Height);
 				int howManyBidPriceLevelsWillFit = (int) Math.Round((base.ClientRectangle.Height - quoteBidYofsetted) / (double)pxPerPriceStep_Height);
@@ -315,7 +315,7 @@ namespace Sq1.Charting {
 				//if (base.ClientRectangle.Contains(horizontalBar) == false) continue;
 				if (base.ClientRectangle.IntersectsWith(horizontalBar) == false) continue;
 
-				g.FillRectangle(base.ChartControl.ChartSettings.BrushLevelTwoAskColorBackground, horizontalBar);
+				g.FillRectangle(base.ChartControl.ChartSettingsTemplated.BrushLevelTwoAskColorBackground, horizontalBar);
 
 				Point[] leftUpContour = new Point[3];
 				leftUpContour[0] = base.ParentMultiSplitIamLast
@@ -327,20 +327,20 @@ namespace Sq1.Charting {
 				leftUpContour[2] = base.ParentMultiSplitIamLast
 					? new Point(lotsRelativeWidth, yAsk - pxPerPriceStep_Height)
 					: new Point(base.Width - lotsRelativeWidth, yAsk - pxPerPriceStep_Height);
-				g.DrawLines(base.ChartControl.ChartSettings.PenLevelTwoAskColorContour, leftUpContour);
+				g.DrawLines(base.ChartControl.ChartSettingsTemplated.PenLevelTwoAskColorContour, leftUpContour);
 
 				string lotCumulativeFormatted = lotCumulative.ToString(base.VolumeFormat);
-				SizeF labelMeasurements = g.MeasureString(lotCumulativeFormatted, base.ChartControl.ChartSettings.LevelTwoLotFont);
+				SizeF labelMeasurements = g.MeasureString(lotCumulativeFormatted, base.ChartControl.ChartSettingsTemplated.LevelTwoLotFont);
 				int labelMeasurementsWidth = (int)Math.Round(labelMeasurements.Width);
 				int xLabel = base.ParentMultiSplitIamLast
-					? lotsRelativeWidth - labelMeasurementsWidth - base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal
-					: base.Width - lotsRelativeWidth + base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal;
+					? lotsRelativeWidth - labelMeasurementsWidth - base.ChartControl.ChartSettingsTemplated.LevelTwoLotPaddingHorizontal
+					: base.Width - lotsRelativeWidth + base.ChartControl.ChartSettingsTemplated.LevelTwoLotPaddingHorizontal;
 				if (xLabel > base.Width) xLabel = base.Width;
 				if (base.ParentMultiSplitIamLast) {
 					if (xLabel < 0) xLabel = 0;
 				} else {
-					if (xLabel + labelMeasurementsWidth + base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal > base.Width) {
-						xLabel = base.Width - labelMeasurementsWidth - base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal;
+					if (xLabel + labelMeasurementsWidth + base.ChartControl.ChartSettingsTemplated.LevelTwoLotPaddingHorizontal > base.Width) {
+						xLabel = base.Width - labelMeasurementsWidth - base.ChartControl.ChartSettingsTemplated.LevelTwoLotPaddingHorizontal;
 					}
 				}
 
@@ -349,8 +349,8 @@ namespace Sq1.Charting {
 				int yLabel = yAsk - (int)labelMeasurements.Height;	//Math.Min(middleOfBar, middleOfLabel);	// volume drawn inside the horizontalBar, above actual ask
 				if (yLabel > base.Height) yLabel = base.Height;
 				g.DrawString(lotCumulativeFormatted,
-					base.ChartControl.ChartSettings.SpreadLabelFont,
-					base.ChartControl.ChartSettings.BrushLevelTwoLot, xLabel, yLabel);
+					base.ChartControl.ChartSettingsTemplated.SpreadLabelFont,
+					base.ChartControl.ChartSettingsTemplated.BrushLevelTwoLot, xLabel, yLabel);
 			}
 			#endregion
 
@@ -406,7 +406,7 @@ namespace Sq1.Charting {
 				//if (base.ClientRectangle.Contains(horizontalBar) == false) continue;
 				if (base.ClientRectangle.IntersectsWith(horizontalBar) == false) continue;
 
-				g.FillRectangle(base.ChartControl.ChartSettings.BrushLevelTwoBidColorBackground, horizontalBar);
+				g.FillRectangle(base.ChartControl.ChartSettingsTemplated.BrushLevelTwoBidColorBackground, horizontalBar);
 
 				Point[] leftDownContour = new Point[3];
 				leftDownContour[0] = base.ParentMultiSplitIamLast
@@ -418,19 +418,19 @@ namespace Sq1.Charting {
 				leftDownContour[2] = base.ParentMultiSplitIamLast
 					? new Point(lotsRelativeWidth, yBid + pxPerPriceStep_Height)
 					: new Point(base.Width - lotsRelativeWidth, yBid + pxPerPriceStep_Height);
-				g.DrawLines(base.ChartControl.ChartSettings.PenLevelTwoBidColorContour, leftDownContour);
+				g.DrawLines(base.ChartControl.ChartSettingsTemplated.PenLevelTwoBidColorContour, leftDownContour);
 
 				string lotCumulativeFormatted = lotCumulative.ToString(base.VolumeFormat);
-				SizeF labelMeasurements = g.MeasureString(lotCumulativeFormatted, base.ChartControl.ChartSettings.LevelTwoLotFont);
+				SizeF labelMeasurements = g.MeasureString(lotCumulativeFormatted, base.ChartControl.ChartSettingsTemplated.LevelTwoLotFont);
 				int labelMeasurementsWidth = (int)Math.Round(labelMeasurements.Width);
 				int xLabel = base.ParentMultiSplitIamLast
-					? lotsRelativeWidth - labelMeasurementsWidth - base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal
-					: base.Width - lotsRelativeWidth + base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal;
+					? lotsRelativeWidth - labelMeasurementsWidth - base.ChartControl.ChartSettingsTemplated.LevelTwoLotPaddingHorizontal
+					: base.Width - lotsRelativeWidth + base.ChartControl.ChartSettingsTemplated.LevelTwoLotPaddingHorizontal;
 				if (base.ParentMultiSplitIamLast) {
 					if (xLabel < 0) xLabel = 0;
 				} else {
-					if (xLabel + labelMeasurementsWidth + base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal > base.Width) {
-						xLabel = base.Width - labelMeasurementsWidth - base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal;
+					if (xLabel + labelMeasurementsWidth + base.ChartControl.ChartSettingsTemplated.LevelTwoLotPaddingHorizontal > base.Width) {
+						xLabel = base.Width - labelMeasurementsWidth - base.ChartControl.ChartSettingsTemplated.LevelTwoLotPaddingHorizontal;
 					}
 				}
 
@@ -439,8 +439,8 @@ namespace Sq1.Charting {
 				int yLabel = yBid + 1;	//Math.Min(middleOfBar, middleOfLabel);	// volume drawn inside the horizontalBar, below actual bid
 				if (yLabel < 0) yLabel = 0;
 				g.DrawString(lotCumulativeFormatted,
-					base.ChartControl.ChartSettings.SpreadLabelFont,
-					base.ChartControl.ChartSettings.BrushLevelTwoLot, xLabel, yLabel);
+					base.ChartControl.ChartSettingsTemplated.SpreadLabelFont,
+					base.ChartControl.ChartSettingsTemplated.BrushLevelTwoLot, xLabel, yLabel);
 			}
 			#endregion
 
@@ -459,7 +459,7 @@ namespace Sq1.Charting {
 			double spread = quoteCurrent.Spread;
 			if (double.IsNaN(spread) == true) return;
 
-			ChartSettings settings = base.ChartControl.ChartSettings;
+			ChartSettingsTemplated settings = base.ChartControl.ChartSettingsTemplated;
 
 			PanelPrice panelPrice = base.ChartControl.PanelPrice;
 			int		pxPricePanel_vertialOffset	= panelPrice.ParentMultiSplitMyLocationAmongSiblingsPanels.Y;

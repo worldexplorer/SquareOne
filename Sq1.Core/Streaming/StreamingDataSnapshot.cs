@@ -90,15 +90,17 @@ namespace Sq1.Core.Streaming {
 				}
 
 
-				bool skipCheck_forQuoteGenerated_duringBacktest = false;
-				//	 skipCheck_forQuoteGenerated_duringBacktest = quoteUnboundUnattached is QuoteGenerated;
-
-				if (skipCheck_forQuoteGenerated_duringBacktest == false && quoteLast.AbsnoPerSymbol >= quoteUnboundUnattached.AbsnoPerSymbol) {
+				bool skipCheck_forQuoteGenerated_duringBacktest = quoteUnboundUnattached is QuoteGenerated;
+				if (//skipCheck_forQuoteGenerated_duringBacktest == false &&
+					quoteLast.AbsnoPerSymbol >= quoteUnboundUnattached.AbsnoPerSymbol) {
 					string msg = "DONT_FEED_ME_WITH_OLD_QUOTES";
 					Assembler.PopupException(msg + msig, null, false);
 					//return;
 				}
 				//level2.QuotePrev_unbound_notCloned = quoteCurrent;
+				if (quoteLast.AbsnoPerSymbol == 32) {
+					string msg = "next iteration it will be 31";
+				}
 				level2.QuoteLast_unbound_notCloned_validAbsno_invalidIntrabarSerno__mightBeDifferentByTimeScriptGetsInvoked = quoteUnboundUnattached;
 			} finally {
 				this.level2_quoteLast_unboundUnattached_bySymbol.UnLockFor(this, msig);

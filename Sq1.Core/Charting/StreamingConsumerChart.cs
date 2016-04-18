@@ -63,7 +63,7 @@ namespace Sq1.Core.Charting {
 				} else {
 					//string msg = "RAISE_EVENT_SO_THAT_MAIN_FORM_SAVES_CHART_CONTEXT_WITHOUT_STRATEGY";
 					//Assembler.PopupException(msg, null, false);
-					this.ChartShadow.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();
+					this.ChartShadow.RaiseOnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot();
 					serialized = true;
 				}
 			}
@@ -135,7 +135,7 @@ namespace Sq1.Core.Charting {
 				} else {
 					//string msg = "RAISE_EVENT_SO_THAT_MAIN_FORM_SAVES_CHART_CONTEXT_WITHOUT_STRATEGY";
 					//Assembler.PopupException(msg, null, false);
-					this.ChartShadow.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();
+					this.ChartShadow.RaiseOnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot();
 					serialized = true;
 				}
 			}
@@ -150,10 +150,10 @@ namespace Sq1.Core.Charting {
 		#region StreamingConsumer
 		//CREATES_NPE_WHEN_EXECUTOR_PUSHES_BARS_TO_CHART_SHADOW__BASE_WILL_ROUTE_VIA_EXECUTOR public	override	Bars			ConsumerBars_toAppendInto	{ get { return this.ChartShadow.Bars; } }
 		public	override	ScriptExecutor	Executor			{ get {
-		        var ret = this.ChartShadow.Executor;
-		        base.ActionForNullPointer(ret, "this.chartShadow.Executor=null");
-		        return ret;
-		    } }
+				var ret = this.ChartShadow.Executor;
+				base.ActionForNullPointer(ret, "this.chartShadow.Executor=null");
+				return ret;
+			} }
 
 		public override void UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirstAfterStart) {
 		}
@@ -386,61 +386,67 @@ namespace Sq1.Core.Charting {
 			return "{" + ret + "}";
 		}
 
-		public Quote QuoteBoundToStreamingBar__streamingBarAttach_toConsumerBars(Quote quoteClone_sernoEnriched_unbound) {
-			Quote quote = quoteClone_sernoEnriched_unbound;	// to avoid SCALEINTERVAL_RECEIVED_DOESNT_MATCH_CHARTS
+	
+		int intraBarSerno;
+		public Quote Quote_cloneIncrement_bindToStreamingBar__createStreaming_whenBeyond_barCloseTime__nullWhenFirstBarEver(Quote quoteDequeued_singleInstance) {
+			string msig = " //StreamingConsumerChart.Quote_cloneIncrement_bindToStreamingBar__createStreaming_whenBeyond_barCloseTime__nullWhenFirstBarEver() " + this.ToString();
+			Quote ret = null;
 
-			Bars consumerBars = null;
-			try {
-				consumerBars = this.ConsumerBars_toAppendInto;
-			} catch (Exception ex) {
-				string msg = "CONSUMER_DIDNT_PROVIDE_BARS_TO_APPEND_INTO this.Consumer[" + this + "]";
+			Quote quoteCloneUU = quoteDequeued_singleInstance.Clone_asCoreQuote();	// UU = UnboundUnattached
+
+			bool justCreated_dontMerge = false;
+			bool firstEverQuote_ofNewSymbol = this.ConsumerBars_toAppendInto.Count == 0;
+			bool barsWereNeverStreamed = this.ConsumerBars_toAppendInto.BarStreaming_nullUnsafe == null;
+			if (firstEverQuote_ofNewSymbol || barsWereNeverStreamed) {
+				this.intraBarSerno = 0;
+
+				Bar newBar_prototype = new Bar(
+					this.ConsumerBars_toAppendInto.Symbol,
+					this.ConsumerBars_toAppendInto.ScaleInterval,
+					quoteCloneUU.ServerTime,
+					quoteCloneUU.TradedPrice,
+					quoteCloneUU.Size,
+					this.ConsumerBars_toAppendInto.SymbolInfo);
+
+				this.ConsumerBars_toAppendInto.BarStreaming_createNewAttach_orAbsorb(newBar_prototype);
+				justCreated_dontMerge = true;
+			}
+
+			Bar barStreaming_expandedByQuote = this.ConsumerBars_toAppendInto.BarStreaming_nullUnsafe;
+			if (barStreaming_expandedByQuote == null) {
+				string msg = "I_REFUSE_TO_BIND_QUOTE_TO_NULL_STREAMING_BAR"
+					+ " FIRST_BAR_OF_THE_CHART?... this.ConsumerBars_toAppendInto.Count[" + this.ConsumerBars_toAppendInto.Count + "] == 0?";
 				Assembler.PopupException(msg);
-				return quote;
+				return ret;
 			}
 
-			if (consumerBars == null) {
-				//string msg = "BARS_MUST_NOT_BE_NULL CANT_BIND_QUOTE CHECK_UPSTACK";
-				string msg = "AM_I_ON_FIRST_QUOTE_OF_THE_BAR";
+			if (quoteCloneUU.ServerTime >= barStreaming_expandedByQuote.DateTime_nextBarOpen_unconditional) {
+				this.intraBarSerno = 0;
+				Bar newBar_prototype = new Bar(this.ConsumerBars_toAppendInto.Symbol, this.ConsumerBars_toAppendInto.ScaleInterval, quoteCloneUU.ServerTime,
+										quoteCloneUU.TradedPrice, quoteCloneUU.Size, this.ConsumerBars_toAppendInto.SymbolInfo);
+				this.ConsumerBars_toAppendInto.BarStreaming_createNewAttach_orAbsorb(newBar_prototype);
+				barStreaming_expandedByQuote = this.ConsumerBars_toAppendInto.BarStreaming_nullUnsafe;
+			} else {
+				if (justCreated_dontMerge == false) {
+					// spread can be anywhere outside the bar; but a bar freezes only traded spreads inside (Quotes DDE table from Quik, not Level2-generated with Size=0)
+					barStreaming_expandedByQuote.MergeExpandHLCV_forStreamingBarUnattached(quoteCloneUU);
+				}
+				this.intraBarSerno++;	// single source of increment per each consumer
+			}
+
+
+			if (quoteCloneUU.IntraBarSerno != -1) {
+				string msg = "DONT_SET_quote.IntraBarSerno_UPSTACK__I_WILL_DO_IT_HERE";
 				Assembler.PopupException(msg);
-				return quote;
 			}
 
+			quoteCloneUU.Set_IntraBarSerno__onlyInConsumer(this.intraBarSerno);
 
-			// each consumer has different Bars (LoadedAll or LoadedFromTill);
-			// QuoteBoundToStreamingBar__streamingBarAttach_toConsumerBars() will create new BarStreaming after 1000 of this methods invocation terminate;
-			// right now quote has had ParentStreamingBar assigned to streamingBarFactoryUnattached.BarStreaming on ScaleInterval basis (one factory for many 5-min consumers);
-			// 1) I clone the quote to leave it untouched for other consumers and I attach it to customers' BarStreaming
-			//		(done upstack in SymbolScaleDistributionChannel.bindStreamingBarForQuoteAndPushQuoteToConsumers())
-			// 2) I get the customers' BarStreaming and update its DOHLCV
-			//v1
-			if (consumerBars.BarStreaming_nullUnsafe == null) {
-			    string msg = "INITIALIZING_STREAMING_BAR_TO_NON_NULL_NEW_OR_LAST_STATIC"
-			        + " FIRST_STREAMING_QUOTE_PER_BACKTEST_ON_STREAMINGLESS_BARS_JUST_FORKED_FROM_BARS_ORIGINAL_AT_BACKTEST_INITIALIZATION";
-			    //v1 I_LEFT_QUOTE_UNATTACHED_UPSTACK,ATTACHING_TO_FACTORY_HERE
-			    //v1 this.consumer.ConsumerBarsToAppendInto.BarStreamingCreateNewOrAbsorb(quoteCloneSernoEnrichedFactoryUnattachedStreamingBar.ParentBarStreaming);
-			    //v2 Bar streamingCreatedAttached = consumerBars.BarStreaming_createNewAttach_orAbsorb(this.Factory_ofUnattached_streamingBars.BarStreaming_unattached);
-			    Bar streamingCreatedAttached = consumerBars.BarStreaming_createNewAttach_orAbsorb(this.ChartShadow.Bars.BarStreaming_nullUnsafe);
-			    if (streamingCreatedAttached != consumerBars.BarStreaming_nullUnsafe) {
-			        string msg2 = "MUST_BE_THE_SAME_BAR PARANOID_CHECK";
-			        Assembler.PopupException(msg2);
-			    }
-				quote.StreamingBar_Replace(consumerBars.BarStreaming_nullUnsafe);
-				return quote;
-			}
+			Quote bound = quoteCloneUU;
+			bound.StreamingBar_Replace(barStreaming_expandedByQuote);
+			ret = bound;
 
-			//string msg4 = "ALL_OTHER_QUOTES_EXCEPT_FIRST_STREAMING_QUOTE_PER_BACKTEST";
-			//v1 this.consumer.ConsumerBarsToAppendInto.BarStreamingOverrideDOHLCVwith(quote.ParentBarStreaming);
-			//v2 QUOTE_COMES_UNATTACHED_TAKE_STREAMING_HLCV_FROM_FACTORY
-			//if (quote.IntraBarSerno == 0) {
-			//    string msg2 = "AVOIDING_EXCEPTION NO_NEED_TO_ABSORB_ANYTHING__DESTINATION_HasSameDOHLCV_KOZ_BAR_FACTORY_JUST_STARTED_NEW_STREAMING_BAR";
-			//    //return quote;
-			//}
-			//if (quote.ParentBarStreaming == null) {}
-
-			consumerBars.BarStreaming_overrideDOHLCVwith(quote.ParentBarStreaming);
-			quote.StreamingBar_Replace(consumerBars.BarStreaming_nullUnsafe);
-
-			return quote;
+			return ret;
 		}
 	}
 }

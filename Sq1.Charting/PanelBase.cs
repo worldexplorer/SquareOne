@@ -168,18 +168,18 @@ namespace Sq1.Charting {
 				string ret = "FORMAT_FOR_BARS_UNDEFINED";
 				Bars bars = this.ChartControl.Bars;
 				switch (bars.ScaleInterval.Scale) {
-					case BarScale.Minute: ret = this.ChartControl.ChartSettings.GutterBottomDateFormatIntraday; break;
-					case BarScale.Daily: ret = this.ChartControl.ChartSettings.GutterBottomDateFormatDaily; break;
+					case BarScale.Minute: ret = this.ChartControl.ChartSettingsTemplated.GutterBottomDateFormatIntraday; break;
+					case BarScale.Daily: ret = this.ChartControl.ChartSettingsTemplated.GutterBottomDateFormatDaily; break;
 					case BarScale.Weekly:
 					case BarScale.Monthly:
-					case BarScale.Quarterly: ret = this.ChartControl.ChartSettings.GutterBottomDateFormatDaily; break;
-					case BarScale.Yearly: ret = this.ChartControl.ChartSettings.GutterBottomDateFormatYearly; break;
+					case BarScale.Quarterly: ret = this.ChartControl.ChartSettingsTemplated.GutterBottomDateFormatDaily; break;
+					case BarScale.Yearly: ret = this.ChartControl.ChartSettingsTemplated.GutterBottomDateFormatYearly; break;
 					default: ret = "FORMAT_FOR_BARS_UNDEFINED"; break;
 				}
 				return ret;
 			} }
 
-			[Browsable(false)]	public			int		BarShadowOffset { get { return this.ChartControl.ChartSettings.BarShadowXoffset; } }
+			[Browsable(false)]	public			int		BarShadowOffset { get { return this.ChartControl.ChartSettingsIndividual.BarShadowXoffset; } }
 
 							// only used in PanelLevel2 to grow to the left if PanelLeve2 is on the left of PanelPrice, or grow to the right if PanelLeve2 is on the right of PanelPrice
 							public			MultiSplitContainer ParentMultiSplitContainer_nullUnsafe { get {return base.Parent as MultiSplitContainer; } }
@@ -412,23 +412,23 @@ namespace Sq1.Charting {
 			return y;
 		}
 		int adjustToBoundariesHorizontalGutter(int x, int width) {
-			if (x < this.ChartControl.ChartSettings.GutterBottomPadding) x = this.ChartControl.ChartSettings.GutterBottomPadding;
+			if (x < this.ChartControl.ChartSettingsTemplated.GutterBottomPadding) x = this.ChartControl.ChartSettingsTemplated.GutterBottomPadding;
 			if (x + width > base.Width) x = base.Width - width;
 			return x;
 		}
 		
 	 	void ensureFontMetricsAreCalculated(Graphics g) {
 	 		if (this.GutterRightFontHeight_cached == -1) {
-				this.GutterRightFontHeight_cached = (int)g.MeasureString("ABC123`'jg]", this.ChartControl.ChartSettings.GutterRightFont).Height;
+				this.GutterRightFontHeight_cached = (int)g.MeasureString("ABC123`'jg]", this.ChartControl.ChartSettingsTemplated.GutterRightFont).Height;
 	 		//}
 	 		//if (this.GutterRightFontHeightHalf_cached == -1) {
 	 			this.GutterRightFontHeightHalf_cached = (int)(this.GutterRightFontHeight_cached / 2F);
 	 		//}
 	 		//if (this.GutterBottomFontHeight_cached == -1) {
-				this.GutterBottomFontHeight_cached = (int)g.MeasureString("ABC123`'jg]", this.ChartControl.ChartSettings.GutterBottomFont).Height;
+				this.GutterBottomFontHeight_cached = (int)g.MeasureString("ABC123`'jg]", this.ChartControl.ChartSettingsTemplated.GutterBottomFont).Height;
 	 		//}
 	 		//if (this.GutterBottomHeight_cached == -1) {
-				this.GutterBottomHeight_cached = this.GutterBottomFontHeight_cached + this.ChartControl.ChartSettings.GutterBottomPadding * 2;
+				this.GutterBottomHeight_cached = this.GutterBottomFontHeight_cached + this.ChartControl.ChartSettingsTemplated.GutterBottomPadding * 2;
 	 		}
 		}
 		public override string ToString() {

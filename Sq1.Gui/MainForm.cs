@@ -388,9 +388,9 @@ namespace Sq1.Gui {
 				}
 
 				
-				cfmgr.ChartForm.ChartControl.Propagate_splitterManorderDistance_ifFullyDeserialized(
-					cfmgr.DataSnapshot.MultiSplitterColumnsPropertiesByPanelName,
-					cfmgr.DataSnapshot.MultiSplitterRowsPropertiesByPanelName);
+				//ALREADY_SET_BY_chartFormFactory() cfmgr.ChartForm.ChartControl.Set_ChartSettingsIndividual(cfmgr.DataSnapshot.ChartSettingsIndividual);
+
+				cfmgr.ChartForm.ChartControl.Propagate_multiSplitterManorderDistance_ifFullyDeserialized();
 
 				// ATTEMPT#2_AFTER_DOCK_FULLY_UNSERIALIZED this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
 				//if (cfmgr.DataSnapshot.ChartSerno == this.GuiDataSnapshot.ChartSernoLastKnownHadFocus) {
@@ -401,7 +401,7 @@ namespace Sq1.Gui {
 			}
 			
 			if (this.ChartFormActive_nullUnsafe != null) {
-				//+ainFrom.Deserializer on apprestart, Document.Active (ChartForm) doesn't paint Bars
+				//MainFrom.Deserializer on apprestart, Document.Active (ChartForm) doesn't paint Bars
 				this.ChartFormActive_nullUnsafe.ChartControl.InvalidateAllPanels();
 			}
 			try {

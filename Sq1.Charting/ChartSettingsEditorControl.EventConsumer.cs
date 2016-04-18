@@ -46,7 +46,7 @@ namespace Sq1.Charting {
 				Assembler.PopupException(msg);
 				return;
 			}
-			ChartSettings edited = this.settingsCurrent_nullUnsafe;
+			ChartSettingsTemplated edited = this.settingsCurrent_nullUnsafe;
 			if (edited == null) {
 				string msg = "I_CAN_NOT_SERIALIZE_CHART_SETTINGS_AFTER_PROPERTY_CHANGE this.mniSettingsForCurrentChart.Tag==null";
 				Assembler.PopupException(msg);
@@ -57,7 +57,7 @@ namespace Sq1.Charting {
 			edited.PensAndBrushesCached_DisposeAndNullify();
 
 			foreach (ChartControl eachChart in this.allChartControls_currentlyOpen) {
-				if (eachChart.ChartSettings != edited) continue;
+				if (eachChart.ChartSettingsTemplated != edited) continue;
 				eachChart.InvalidateAllPanels();
 			}
 		}
@@ -78,15 +78,15 @@ namespace Sq1.Charting {
 			this.ctxAllSettingsAvailable.Items.Clear();
 			List<ToolStripMenuItem> ret = new List<ToolStripMenuItem>();
 
-			foreach (ChartSettings settingsCachedInstance in this.settingsRepo.ItemsCachedAsList) {
+			foreach (ChartSettingsTemplated settingsCachedInstance in this.settingsRepo.ItemsCachedAsList) {
 				ToolStripMenuItem mni = new ToolStripMenuItem();
 				mni.Text = settingsCachedInstance.Name;
 				mni.Name = "ChartSettingsRepoCachedInstance_" + settingsCachedInstance.Name;
 				mni.Tag = settingsCachedInstance;
 
 				if (	this.chartControlSelected_nullUnsafe != null &&
-						this.chartControlSelected_nullUnsafe.ChartSettings != null &&
-						this.chartControlSelected_nullUnsafe.ChartSettings.Name == settingsCachedInstance.Name) {
+						this.chartControlSelected_nullUnsafe.ChartSettingsTemplated != null &&
+						this.chartControlSelected_nullUnsafe.ChartSettingsTemplated.Name == settingsCachedInstance.Name) {
 					mni.Checked = true;
 					//ALREADY_SET_IN_PopulatePropertyGrid() this.mniSettingsImEditing.Text = mni.Text;
 				}
@@ -103,15 +103,16 @@ namespace Sq1.Charting {
 				Assembler.PopupException(msg);
 				return;
 			}
-			ChartSettings settingsRepoCachedInstance = mni.Tag as ChartSettings;
+			ChartSettingsTemplated settingsRepoCachedInstance = mni.Tag as ChartSettingsTemplated;
 			if (settingsRepoCachedInstance == null) {
 				string msg = "I_REFUSE_TO_LOAD_NON_CHART_SETTINGS__FOUND_IN_MNI.TAG[" + mni.Tag + "]";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(settingsRepoCachedInstance);
+			this.onChartSettingsTemplatedSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(settingsRepoCachedInstance);
 		}
-		void newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(ChartSettings settingsCachedInstance, bool keepCtxOpen_level1 = true) {
+		void onChartSettingsTemplatedSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(
+				ChartSettingsTemplated settingsCachedInstance, bool keepCtxOpen_level1 = true) {
 			ChartControl chartSelected = this.chartControlSelected_nullUnsafe;
 			if (chartSelected == null) {
 				string msg = "NO_CHART_ATTACHED__NOWHERE_TO_LOAD__this.chartSettingsSelected_nullUnsafe=null";
@@ -119,7 +120,7 @@ namespace Sq1.Charting {
 				return;
 			}
 			//controlSelected.AbsorbFrom(settingsCachedInstance);
-			chartSelected.ChartSettings = settingsCachedInstance;
+			chartSelected.Set_ChartSettingsTemplated(settingsCachedInstance);
 			//controlSelected.ChartSettings.PensAndBrushesCached_DisposeAndNullify();
 			chartSelected.InvalidateAllPanels();
 
@@ -127,7 +128,7 @@ namespace Sq1.Charting {
 				string msg = "I_CAN_NOT_SERIALIZE_CHART_SETTINGS_AFTER_PROPERTY_CHANGE chartSettings.ContainsKey(" + chartSelected.Name + ")=false";
 				Assembler.PopupException(msg);
 			} else {
-				chartSelected.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();
+				// SettingsTemplated are not kept in ChartFormSnapshot chartSelected.RaiseOnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot();
 				foreach (var each in this.ctxAllSettingsAvailable.Items) {
 					ToolStripMenuItem eachAsMni = each as ToolStripMenuItem;
 					if (eachAsMni == null) {
@@ -151,7 +152,7 @@ namespace Sq1.Charting {
 			}
 			mniSettings_mouseOvered.DropDown = this.ctxActions_forOneSettings;
 
-			ChartSettings settingsMouseOvered = mniSettings_mouseOvered.Tag as ChartSettings;
+			ChartSettingsTemplated settingsMouseOvered = mniSettings_mouseOvered.Tag as ChartSettingsTemplated;
 			if (settingsMouseOvered == null) {
 				string msg = "NO_SETTINGS_ATTACHED mniSettings_mouseOvered.Tag=null";
 				Assembler.PopupException(msg);
@@ -171,7 +172,7 @@ namespace Sq1.Charting {
 
 			this.ctxActions_forOneSettings.Tag = settingsMouseOvered;
 
-			if (mniSettings_mouseOvered.Text == ChartSettings.NAME_DEFAULT) {
+			if (mniSettings_mouseOvered.Text == ChartSettingsTemplated.NAME_DEFAULT) {
 				this.mniltbSettingsMouseOvered_RenameTo.Enabled = false;
 				this.mniSettingsMouseOvered_Delete.Text = "Delete [DEFAULT_MUST_STAY]";
 				this.mniSettingsMouseOvered_Delete.Enabled = false;
@@ -186,26 +187,26 @@ namespace Sq1.Charting {
 
 		void mniltbSettingsMouseOvered_Duplicate_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string msig = " //mniltbSettingsMouseOvered_Duplicate_UserTyped()";
-			ChartSettings settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettings;
+			ChartSettingsTemplated settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettingsTemplated;
 			if (settingsImDoingActionFor == null) {
 				string msg = "NO_SETTINGS_ATTACHED_TO this.ctxActions_forOneSettings.Tag";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
 			try {
-				ChartSettings clone = settingsImDoingActionFor.Clone();
+				ChartSettingsTemplated clone = settingsImDoingActionFor.Clone();
 				clone.Name = e.StringUserTyped;
 				this.settingsRepo.SerializeSingle(clone);
 				//RENAMES_INSTEAD_OF_SAVING_CLONE this.settingsRepoTemplates.ItemAdd(clone);
 				//this.settingsRepoTemplates.DeserializeJsonsInFolder();
-				this.newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(clone);
+				this.onChartSettingsTemplatedSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(clone);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex, false);
 			}
 		}
 		void mniltbSettingsMouseOvered_RenameTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string msig = " //mniltbSettingsMouseOvered_RenameTo_UserTyped()";
-			ChartSettings settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettings;
+			ChartSettingsTemplated settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettingsTemplated;
 			if (settingsImDoingActionFor == null) {
 				string msg = "NO_SETTINGS_ATTACHED_TO this.ctxActions_forOneSettings.Tag";
 				Assembler.PopupException(msg + msig);
@@ -213,7 +214,7 @@ namespace Sq1.Charting {
 			}
 			try {
 				this.settingsRepo.ItemRename(settingsImDoingActionFor, e.StringUserTyped);
-				this.newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(settingsImDoingActionFor);
+				this.onChartSettingsTemplatedSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(settingsImDoingActionFor);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex, false);
 			}
@@ -221,16 +222,16 @@ namespace Sq1.Charting {
 		void mniSettings_AddNew_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string msig = " //mniSettings_AddNew_UserTyped()";
 			try {
-				ChartSettings settings_newDefault = new ChartSettings(e.StringUserTyped);
+				ChartSettingsTemplated settings_newDefault = new ChartSettingsTemplated(e.StringUserTyped);
 				this.settingsRepo.ItemAdd_serialize(settings_newDefault);
-				this.newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(settings_newDefault);
+				this.onChartSettingsTemplatedSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(settings_newDefault);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex, false);
 			}
 		}
 		void mniSettingsMouseOvered_Delete_Click(object sender, EventArgs e) {
 			string msig = " //mniltbSettingsMouseOvered_Duplicate_UserTyped()";
-			ChartSettings settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettings;
+			ChartSettingsTemplated settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettingsTemplated;
 			if (settingsImDoingActionFor == null) {
 				string msg = "NO_SETTINGS_ATTACHED_TO this.ctxActions_forOneSettings.Tag";
 				Assembler.PopupException(msg + msig);
@@ -249,31 +250,31 @@ namespace Sq1.Charting {
 		}
 		void mniSettingsMouseOvered_AssignToCurrentChart_Click(object sender, EventArgs e) {
 			string msig = " //mniltbSettingsMouseOvered_Duplicate_UserTyped()";
-			ChartSettings settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettings;
+			ChartSettingsTemplated settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettingsTemplated;
 			if (settingsImDoingActionFor == null) {
 				string msg = "I_REFUSE_TO_LOAD_NON_CHART_SETTINGS__FOUND_IN_MNI.TAG[" + this.ctxActions_forOneSettings.Tag + "]";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
 			try {
-				this.newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(settingsImDoingActionFor);
+				this.onChartSettingsTemplatedSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(settingsImDoingActionFor);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex, false);
 			}
 		}
 		void mniltbSettingsMouseOvered_SaveAs_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string msig = " //mniltbSettingsMouseOvered_SaveAs_UserTyped()";
-			ChartSettings settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettings;
+			ChartSettingsTemplated settingsImDoingActionFor = this.ctxActions_forOneSettings.Tag as ChartSettingsTemplated;
 			if (settingsImDoingActionFor == null) {
 				string msg = "NO_SETTINGS_ATTACHED_TO this.ctxActions_forOneSettings.Tag";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
 			try {
-				ChartSettings clone = settingsImDoingActionFor.Clone();
+				ChartSettingsTemplated clone = settingsImDoingActionFor.Clone();
 				clone.Name = e.StringUserTyped;
 				this.settingsRepo.SerializeSingle(clone);
-				this.newSettingsSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(clone);
+				this.onChartSettingsTemplatedSelected_pushSettingsCachedInstance_toCurrentChartControl_toPropertyGrid_setTextForCurrentSettings(clone);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex, false);
 			}

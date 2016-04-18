@@ -133,7 +133,7 @@ namespace Sq1.Core.Serializers {
 		}
 
 		public override string ToString() {
-			return "Serializer<" + this.OfWhat + ">";
+			return "Serializer<" + this.OfWhat + "> FnameRelpath[" + this.FnameRelpath + "]";
 		}
 	}
 }

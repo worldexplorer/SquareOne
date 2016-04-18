@@ -4,7 +4,7 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Charting {
 	public partial class ChartShadow {
-		public event EventHandler<EventArgs>	OnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot;
+		public event EventHandler<EventArgs>	OnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot;
 		public event EventHandler<EventArgs>	OnContextScriptChanged_containerShouldSerialize;
 
 		public event EventHandler<BarEventArgs>	OnBarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp;
@@ -22,10 +22,10 @@ namespace Sq1.Core.Charting {
 			}
 		}
 		
-		public void RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries() {
-			if (this.OnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot == null) return;
+		public void RaiseOnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot() {
+			if (this.OnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot == null) return;
 			try {
-				this.OnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot(this, null);
+				this.OnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot(this, null);
 			} catch (Exception ex) {
 				Assembler.PopupException("RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries()", ex);
 			}

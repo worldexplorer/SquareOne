@@ -4,7 +4,7 @@ using System.IO;
 
 using Newtonsoft.Json;
 
-using Sq1.Core.DataFeed;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Repositories {
 	public class RepositoryJsonsInFolderSimple<SYSTEM_PERFORMANCE_RESTORE_ABLE>

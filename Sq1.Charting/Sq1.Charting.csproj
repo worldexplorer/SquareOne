@@ -87,6 +87,10 @@
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="ChartControl.EventGenerator.cs">
+      <DependentUpon>ChartControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="ChartControl.Unblink.cs">
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>

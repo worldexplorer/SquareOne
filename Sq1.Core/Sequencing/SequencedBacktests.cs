@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 using Newtonsoft.Json;
 
-using Sq1.Core.DataFeed;
+using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Sequencing {

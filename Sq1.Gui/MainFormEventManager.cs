@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
 using Sq1.Core;
+using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
@@ -74,7 +75,7 @@ namespace Sq1.Gui {
 				}
 				if (chartFormsManager.ChartForm != null) {
 					//v1 chartFormsManager.ChartForm.Text = e.Strategy.Name;
-					chartFormsManager.PopulateWindowTitlesFromChartContextOrStrategy();
+					chartFormsManager.PopulateWindowTitles_fromChartContext_orStrategy();
 				}
 			}
 		}

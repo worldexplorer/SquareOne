@@ -7,7 +7,7 @@ namespace Sq1.Charting {
 	public partial class PanelBase {
 		void renderBarBackgrounds(Graphics g) {
 			int barX = this.ChartControl.ChartWidthMinusGutterRightPrice;
-			int halfPadding = this.ChartControl.ChartSettings.BarPaddingRight / 2;
+			int halfPadding = this.ChartControl.ChartSettingsIndividual.BarPaddingRight / 2;
 			//halfPadding += 1;		// fixes 1-2px spaces between bars background
 			barX -= halfPadding;	// emulate bar having paddings from left and right
 			for (int barIndex = VisibleBarRight_cached; barIndex > VisibleBarLeft_cached; barIndex--) {
@@ -28,7 +28,7 @@ namespace Sq1.Charting {
 				barFullHeight.Height = this.PanelHeightMinusGutterBottomHeight;
 
 				Color backgroundSetByScript = seo.BarBackgroundsByBar[barIndex];
-				Color backgroundMoreTransparent = Color.FromArgb(this.ChartControl.ChartSettings.BarsBackgroundTransparencyAlpha, backgroundSetByScript);
+				Color backgroundMoreTransparent = Color.FromArgb(this.ChartControl.ChartSettingsTemplated.BarsBackgroundTransparencyAlpha, backgroundSetByScript);
 
 				using (Brush backBrush = new SolidBrush(backgroundMoreTransparent)) {
 					g.FillRectangle(backBrush, barFullHeight);
@@ -39,7 +39,7 @@ namespace Sq1.Charting {
 		public void DrawLabelOnNextLine(Graphics g, string msg, Font font, Color colorForeground, Color colorBackground, bool drawIndicatorSquare = false) {
 			//if (this.DesignMode) return;
 			// if (base.DesignMode) this.ChartControl will be NULL
-			int x = (this.ChartControl != null) ? this.ChartControl.ChartSettings.ChartLabelsUpperLeftX : 5;
+			int x = (this.ChartControl != null) ? this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftX : 5;
 			int y = this.ChartLabelsUpperLeftYincremental;
 
 			SizeF measurements = this.DrawLabel(g, x, y, msg, font, colorForeground, colorBackground, drawIndicatorSquare);
@@ -56,7 +56,7 @@ namespace Sq1.Charting {
 			this.ChartLabelsUpperLeftYincremental += labelHeightMeasured + lineSpacing;
 			if (drawBackgroundRectangle) {
 				// if (base.DesignMode) this.ChartControl will be NULL
-				this.ChartLabelsUpperLeftYincremental += (this.ChartControl != null) ? this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2 : 15;
+				this.ChartLabelsUpperLeftYincremental += (this.ChartControl != null) ? this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftPlatePadding * 2 : 15;
 			}
 		}
 		public SizeF DrawLabel(Graphics g, int x, int y, string msg,
@@ -84,17 +84,17 @@ namespace Sq1.Charting {
 			if (drawBackgroundRectangle) {
 				int makingHpaddingLookLikeVpadding = 2; 
 				Rectangle labelPlate = new Rectangle();
-				labelPlate.X = x - this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding - makingHpaddingLookLikeVpadding;
-				labelPlate.Y = y - this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding;
-				labelPlate.Width = labelMeasuredWidth + this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2 + makingHpaddingLookLikeVpadding * 2;
-				labelPlate.Height = labelMeasuredHeight + this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2;
+				labelPlate.X = x - this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftPlatePadding - makingHpaddingLookLikeVpadding;
+				labelPlate.Y = y - this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftPlatePadding;
+				labelPlate.Width = labelMeasuredWidth + this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftPlatePadding * 2 + makingHpaddingLookLikeVpadding * 2;
+				labelPlate.Height = labelMeasuredHeight + this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftPlatePadding * 2;
 
 				if (labelPlate.X < 0) labelPlate.X = 0;
 				if (labelPlate.Y < 0) labelPlate.Y = 0;
 
 				if (drawIndicatorSquare) {
-					int extendedBySquare = this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquarePadding * 2
-						+ this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquareSize;
+					int extendedBySquare = this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftIndicatorSquarePadding * 2
+						+ this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftIndicatorSquareSize;
 					labelPlate.Width += extendedBySquare;
 				}
 
@@ -107,13 +107,13 @@ namespace Sq1.Charting {
 					//x += this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquarePadding;
 					Rectangle square = new Rectangle();
 					square.X = x;
-					square.Y = this.ChartLabelsUpperLeftYincremental + this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquarePadding;
-					square.Width = this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquareSize;
-					square.Height = this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquareSize;
+					square.Y = this.ChartLabelsUpperLeftYincremental + this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftIndicatorSquarePadding;
+					square.Width = this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftIndicatorSquareSize;
+					square.Height = this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftIndicatorSquareSize;
 					g.FillRectangle(brushLabel, square);
 					
-					int squareAndRightPadding = this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquareSize
-										 	  + this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquarePadding;
+					int squareAndRightPadding = this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftIndicatorSquareSize
+										 	  + this.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftIndicatorSquarePadding;
 					x += squareAndRightPadding;
 				}
 				y += 1;	// moving text label to align middle vertically for Consolas,8 and Arial,8 (Courier New or some other font looked exactly valign=middle but I won't use it) 

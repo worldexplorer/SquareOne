@@ -42,7 +42,7 @@ namespace Sq1.Core.Backtesting {
 		//	return initializedFromMni;
 		//}
 
-		protected QuoteGenerated GenerateNewQuote_childrenHelper(int intraBarSerno, string symbol, DateTime serverTime,
+		protected QuoteGenerated GenerateNewQuote_childrenHelper(string symbol, DateTime serverTime,
 				BidOrAsk bidOrAsk, double priceAligned, double volume, Bar barSimulated) {
 
 			QuoteGenerated ret = new QuoteGenerated(serverTime, symbol, ++this.AbsnoPerSymbol,
@@ -157,7 +157,7 @@ namespace Sq1.Core.Backtesting {
 				}
 				#endif
 
-				closestOnOurWay.IntraBarSerno += injectedPushed.Count;						// first quote has IntraBarSerno=-1, rimemba?
+				//closestOnOurWay.IntraBarSerno += injectedPushed.Count;						// first quote has IntraBarSerno=-1, rimemba?
 
 				//v1 "Received" is for Quik/InteractiveBrokers; "Generated" is for Backtest/Livesim  this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.PushQuoteReceived(closestOnOurWay);
 				//v2 1) LivesimBroker will push it delayed; 2) register closestOnOurWay as Streaming.LastQuoteReceived[Symbol]
@@ -414,8 +414,9 @@ namespace Sq1.Core.Backtesting {
 
 			QuoteGenerated quoteGenerated = quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde as QuoteGenerated;
 			if (quoteGenerated == null) {
-				string msg = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"
+				errOut = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"
 					+ " Source[" + quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde.Source + "]";
+				Assembler.PopupException(errOut);
 				quoteGenerated = new QuoteGenerated(quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde, bar2simulate);
 			}
 
@@ -571,7 +572,7 @@ namespace Sq1.Core.Backtesting {
 					recalcShrunkenIncrementDueToIntrabarClearing = true;
 				}
 				
-				QuoteGenerated quote = this.GenerateNewQuote_childrenHelper(stroke, barSimulated.Symbol,
+				QuoteGenerated quote = this.GenerateNewQuote_childrenHelper(barSimulated.Symbol,
 					timeServerForStroke, BidOrAsk.UNKNOWN, priceAligned, volumeOneQuarterOfBar, barSimulated);
 				this.Quotes_generatedForOneBar_amountDependsOnEngineType.Add(quote);
 

@@ -12,7 +12,7 @@ namespace Sq1.Core.Repositories {
 		public OrderProcessor					OrderProcessor;
 
 		public RepositoryJsonDataSources() : base() {
-			base.CheckIfValidAndShouldBeAddedAfterDeserialized = this.dataSourceDeserializedInitializePriorToAdding;
+			base.CheckIfValid_andShouldBeAdded_afterDeserialization = this.dataSourceDeserializedInitializePriorToAdding;
 		}
 		
 		public void Initialize(string rootPath, string subfolder,

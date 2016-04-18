@@ -46,32 +46,31 @@ namespace Sq1.Gui.Forms {
 			} }
 		
 
-		[JsonIgnore]			ChartSettings chartSettings;		// not saved/restored during severe storms in ChartSettings' structure (avoiding Json deserialization exceptions by JsonIgnoring it)
-		[JsonIgnore]	public	ChartSettings ChartSettings {
+		[JsonIgnore]			ChartSettingsTemplated chartSettingsTemplated;		// not saved/restored during severe storms in ChartSettings' structure (avoiding Json deserialization exceptions by JsonIgnoring it)
+		[JsonIgnore]	public	ChartSettingsTemplated ChartSettingsTemplated {
 			get {
-				if (this.chartSettings == null) {
-					if (string.IsNullOrEmpty(this.ChartSettingsName)) this.ChartSettingsName = ChartSettings.NAME_DEFAULT;
-					this.chartSettings = Assembler.InstanceInitialized.RepositoryJsonChartSettings.ChartSettingsFind_nullUnsafe(this.ChartSettingsName);
-					if (this.chartSettings == null) this.chartSettings = new ChartSettings(ChartSettings.NAME_DEFAULT);
+				if (this.chartSettingsTemplated == null) {
+					if (string.IsNullOrEmpty(this.ChartSettingsName)) this.ChartSettingsName = ChartSettingsTemplated.NAME_DEFAULT;
+					this.chartSettingsTemplated = Assembler.InstanceInitialized.RepositoryJsonChartSettings.ChartSettingsFind_nullUnsafe(this.ChartSettingsName);
+					if (this.chartSettingsTemplated == null) this.chartSettingsTemplated = new ChartSettingsTemplated();
 				}
-				return this.chartSettings;
+				return this.chartSettingsTemplated;
 			}
 		}
 		[JsonProperty]			string chartSettingsName;
 		[JsonIgnore]	public	string ChartSettingsName {
 			get {
-				if (string.IsNullOrEmpty(this.chartSettingsName)) this.chartSettingsName = ChartSettings.NAME_DEFAULT;
+				if (string.IsNullOrEmpty(this.chartSettingsName)) this.chartSettingsName = ChartSettingsTemplated.NAME_DEFAULT;
 				return this.chartSettingsName;
 			}
 			set {
 				if (this.chartSettingsName == value) return;
 				this.chartSettingsName = value;
-				this.chartSettings = null;	// trigger reload
+				this.chartSettingsTemplated = null;	// trigger reload
 			}
 		}
 
-		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterRowsPropertiesByPanelName;
-		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterColumnsPropertiesByPanelName;
+		[JsonProperty]	public	ChartSettingsIndividual ChartSettingsIndividual;
 
 		public ChartFormDataSnapshot() {
 			this.chartSerno = -1;
@@ -80,8 +79,7 @@ namespace Sq1.Gui.Forms {
 			this.StrategyAbsPathJsonCheck	= "NOT_INITIALIZED ChartFormManager.Initialize()";
 			//this.ContextChart = new ContextChart();	// should be nullified when a strategy is loaded to the chart
 
-			this.MultiSplitterRowsPropertiesByPanelName		= new Dictionary<string, MultiSplitterProperties>();
-			this.MultiSplitterColumnsPropertiesByPanelName	= new Dictionary<string, MultiSplitterProperties>();
+			this.ChartSettingsIndividual = new ChartSettingsIndividual();
 		}
 		
 	}

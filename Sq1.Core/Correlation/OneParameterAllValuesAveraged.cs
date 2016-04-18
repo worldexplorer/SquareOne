@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 
 using Sq1.Core.Sequencing;
-using Sq1.Core.DataFeed;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Correlation {
 	public partial class OneParameterAllValuesAveraged : NamedObjectJsonSerializable {

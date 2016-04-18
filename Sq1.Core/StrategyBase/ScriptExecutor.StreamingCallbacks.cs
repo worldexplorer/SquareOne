@@ -262,6 +262,9 @@ namespace Sq1.Core.StrategyBase {
 				return error + msig;
 			}
 			if (this.barStatic_lastExecuted != null) {
+				if (this.barStatic_lastExecuted.ParentBarsIndex == 5) {
+					string aaa = "first hit";
+				}
 				int mustBeOne = barStaticLast.ParentBarsIndex - this.barStatic_lastExecuted.ParentBarsIndex;
 				if (mustBeOne == 0) {
 					error = "DUPE_IN_SCRIPT_INVOCATION__INDICATORS_WILL_COMPLAIN_TOO";

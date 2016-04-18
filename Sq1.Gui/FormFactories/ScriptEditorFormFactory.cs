@@ -28,7 +28,7 @@ namespace Sq1.Gui.FormFactories {
 			try {
 				if (this.chartFormManager.Strategy.ScriptEditedNeedsSaving) return;
 				this.chartFormManager.Strategy.ScriptEditedNeedsSaving = true;
-				this.chartFormManager.PopulateWindowTitlesFromChartContextOrStrategy();
+				this.chartFormManager.PopulateWindowTitles_fromChartContext_orStrategy();
 			} catch (Exception ex) {
 				Assembler.PopupException("ScriptEditorControl_OnTextNotSaved", ex);
 			}
@@ -40,7 +40,7 @@ namespace Sq1.Gui.FormFactories {
 				strategy.Serialize();
 				this.chartFormManager.MainForm.DisplayStatus("Strategy [" + Path.Combine(strategy.StoredInFolderRelName, strategy.StoredInJsonRelName) + "] saved");
 				this.chartFormManager.Strategy.ScriptEditedNeedsSaving = false;
-				this.chartFormManager.PopulateWindowTitlesFromChartContextOrStrategy();
+				this.chartFormManager.PopulateWindowTitles_fromChartContext_orStrategy();
 			} catch (Exception ex) {
 				Assembler.PopupException("ScriptEditorControl_OnSave", ex);
 			}

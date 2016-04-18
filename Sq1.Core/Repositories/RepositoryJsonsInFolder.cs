@@ -4,7 +4,7 @@ using System.IO;
 
 using Newtonsoft.Json;
 
-using Sq1.Core.DataFeed;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Repositories {
 	public partial class RepositoryJsonsInFolder<DATASOURCE>  /* hack for ItemRename() */ where DATASOURCE : NamedObjectJsonSerializable {
@@ -31,7 +31,7 @@ namespace Sq1.Core.Repositories {
 				return new List<DATASOURCE>(this.ItemsCachedByName.Values);
 			} }
 	
-		public Func<string, DATASOURCE, bool>		CheckIfValidAndShouldBeAddedAfterDeserialized;
+		public Func<string, DATASOURCE, bool>		CheckIfValid_andShouldBeAdded_afterDeserialization;
 
 		public RepositoryJsonsInFolder() {
 			ItemsCachedByName 	= new Dictionary<string, DATASOURCE>();		
@@ -76,7 +76,7 @@ namespace Sq1.Core.Repositories {
 					return;
 				}
 			}
-   			this.CheckIfValidAndShouldBeAddedAfterDeserialized = checkIfValidAndShouldBeAddedAfterDeserialized;
+   			this.CheckIfValid_andShouldBeAdded_afterDeserialization = checkIfValidAndShouldBeAddedAfterDeserialized;
 		}
 		
 		public void DeserializeJsonsInFolder_ifNotCached(bool forceClearCache_andReload = false) {
@@ -118,8 +118,8 @@ namespace Sq1.Core.Repositories {
 				//if (ret == null) ret = new T();
 				if (ret == null) return null;
 				ret.NameImStoredUnder_asUniqueKeyForRename = ret.Name;
-				if (this.CheckIfValidAndShouldBeAddedAfterDeserialized != null) {
-					bool valid = this.CheckIfValidAndShouldBeAddedAfterDeserialized(jsonAbsfile, ret);
+				if (this.CheckIfValid_andShouldBeAdded_afterDeserialization != null) {
+					bool valid = this.CheckIfValid_andShouldBeAdded_afterDeserialization(jsonAbsfile, ret);
 					if (!valid) return null;
 				}
 			} catch (Exception ex) {

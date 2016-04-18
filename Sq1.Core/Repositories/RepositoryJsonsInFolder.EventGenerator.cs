@@ -1,6 +1,6 @@
 ﻿using System;
 
-using Sq1.Core.DataFeed;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Repositories {
 	public partial class RepositoryJsonsInFolder<DATASOURCE> {

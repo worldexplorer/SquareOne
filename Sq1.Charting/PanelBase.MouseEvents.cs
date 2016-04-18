@@ -38,7 +38,7 @@ namespace Sq1.Charting {
 			this.squeezingHorizontally = false;
 			this.squeezingVertically = false;
 			this.mouseOver = true;
-			if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) {
+			if (this.ChartControl.ChartSettingsTemplated.MousePositionTrackOnGutters) {
 				//DEBUGGING_HEIGHT_CACHED__REDUCING_NUMBER_OF_EVENTS__IM_OK_WITH_CROSSHAIR_STUCK this.ChartControl.InvalidateAllPanels();
 			}
 		}
@@ -67,7 +67,7 @@ namespace Sq1.Charting {
 			this.moveHorizontalYprev = -1;
 			
 			this.mouseOver = false;
-			if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) {
+			if (this.ChartControl.ChartSettingsTemplated.MousePositionTrackOnGutters) {
 				//DEBUGGING_HEIGHT_CACHED__REDUCING_NUMBER_OF_EVENTS__IM_OK_WITH_CROSSHAIR_STUCK this.ChartControl.InvalidateAllPanels();
 			}
 			
@@ -92,7 +92,7 @@ namespace Sq1.Charting {
 			if (this.ChartControl == null) return;
 			if (e.Button != MouseButtons.Left) return;
 			if (this.scrollingHorizontally || this.squeezingHorizontally || this.squeezingVertically) {
-				this.ChartControl.RaiseOnChartSettingsChanged_containerShouldSerialize_ChartFormDataSnapshot_copyMultiSplitterDictionaries();
+				this.ChartControl.RaiseOnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot();
 			}
 			this.dragButtonPressed = false;
 			this.scrollingHorizontally = false;
@@ -116,8 +116,8 @@ namespace Sq1.Charting {
 				if (this.ChartControl == null) return;		// so that Designer works
 				if (this.ChartControl.BarsEmpty) return;	// finally {} will invoke base.OnMouseMove()
 				
-				BarIndexMouseIsOverNow = this.XToBar(e.X);
-				this.ChartControl.BarIndexMouseIsOverNow = BarIndexMouseIsOverNow; 
+				this.BarIndexMouseIsOverNow = this.XToBar(e.X);
+				this.ChartControl.BarIndexMouseIsOverNow = this.BarIndexMouseIsOverNow; 
 				
 				if (this.dragButtonPressed == true
 						&& this.scrollingHorizontally == false
@@ -147,7 +147,7 @@ namespace Sq1.Charting {
 				if (this.scrollingHorizontally) {
 					// should drag a little for me to consider the user is really dragging anything
 					int draggedPx = Math.Abs(this.scrollHorizontalXstarted - e.X);
-					if (draggedPx <= this.ChartControl.ChartSettings.ScrollSqueezeMouseDragSensitivityPx) return;
+					if (draggedPx <= this.ChartControl.ChartSettingsTemplated.ScrollSqueezeMouseDragSensitivityPx) return;
 					
 					int XnotBeyond0width = e.X;
 					//COMMENTED_OUT_TO_ALLOW_SCROLL_BEYOND_CONTROL/APPLICATION_VISIBLE_SURFACE_AREA
@@ -187,14 +187,14 @@ namespace Sq1.Charting {
 					if (this.ThisPanelIsPricePanel == false) return;
 					// should drag a little for me to consider the user is really dragging anything
 					if (Math.Abs(this.squeezeHorizontalXstarted - e.X) <=
-						this.ChartControl.ChartSettings.ScrollSqueezeMouseDragSensitivityPx) return;
+						this.ChartControl.ChartSettingsTemplated.ScrollSqueezeMouseDragSensitivityPx) return;
 					
 					int XnotBeyond0height = e.X;
 					//COMMENTED_OUT_TO_ALLOW_SCROLL_BEXOND_CONTROL/APPLICATION_VISIBLE_SURFACE_AREA
 					//if (e.X < 0) XnotBeyond0height = 0;
 					//if (e.X > base.Height) XnotBeyond0height = base.Height;
 					if (Math.Abs(this.squeezeHorizontalXprev - XnotBeyond0height) <
-						this.ChartControl.ChartSettings.SqueezeHorizontalMouse1pxDistanceReceivedToOneStep) return;
+						this.ChartControl.ChartSettingsTemplated.SqueezeHorizontalMouse1pxDistanceReceivedToOneStep) return;
 
 					if (this.squeezeHorizontalXprev == XnotBeyond0height) return;		// ignore vertical mouse movements while dragging (and all other 1-sec-frequency garbage events)
 					bool squeezingToTheLeft = (this.squeezeHorizontalXstarted > XnotBeyond0height) ? true : false;
@@ -225,7 +225,7 @@ namespace Sq1.Charting {
 					if (this.ThisPanelIsPricePanel == false) return;
 					// should drag a little for me to consider the user is really dragging anything
 					if (Math.Abs(this.squeezeVerticalYstarted - e.Y) <=
-						this.ChartControl.ChartSettings.ScrollSqueezeMouseDragSensitivityPx) return;
+						this.ChartControl.ChartSettingsTemplated.ScrollSqueezeMouseDragSensitivityPx) return;
 					
 					int YnotBeyond0height = e.Y;
 					//COMMENTED_OUT_TO_ALLOW_SCROLL_BEYOND_CONTROL/APPLICATION_VISIBLE_SURFACE_AREA
@@ -265,7 +265,7 @@ namespace Sq1.Charting {
 				this.moveHorizontalXprev = e.X;
 				this.moveHorizontalYprev = e.Y;
 
-				if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) {
+				if (this.ChartControl.ChartSettingsTemplated.MousePositionTrackOnGutters) {
 					//JONNY_BE_GOOD__DONT_BE_THIS_RUDE base.Refresh();
 					base.Invalidate();
 
@@ -293,7 +293,7 @@ namespace Sq1.Charting {
 		bool handleTooltipsPositionAndPrice(MouseEventArgs e) {
 			// COPYPASTE_SOURCE=PanelNamedFolding.handleTooltipsPositionAndPrice()_DESTINATION=ChartShadowProtocol.SelectPosition() begin 
 			bool tooltipPositionShown = false;
-			if (this.ChartControl.ChartSettings.TooltipPositionShow == false) return tooltipPositionShown;
+			if (this.ChartControl.ChartSettingsTemplated.TooltipPositionShow == false) return tooltipPositionShown;
 
 			int barIndexMouseIsOverNow = this.XToBar(e.X);
 			if (barIndexMouseIsOverNow < this.VisibleBarLeft_cached) return tooltipPositionShown;
@@ -344,7 +344,7 @@ namespace Sq1.Charting {
 			return tooltipPositionShown;
 		}
 		void handleTooltipPrice(MouseEventArgs e) {
-			if (this.ChartControl.ChartSettings.TooltipPriceShow == false) return;
+			if (this.ChartControl.ChartSettingsTemplated.TooltipPriceShow == false) return;
 			//if (this.ThisPanelIsPricePanel == false) return;
 			//if (this.dragButtonPressed == true) return;
 			//if (this.scrollingHorizontally == false || this.squeezingHorizontally == false || this.squeezingVertically == false) return;
@@ -365,7 +365,7 @@ namespace Sq1.Charting {
 			rectangleBarWithShadows.Y = yHigh;
 			rectangleBarWithShadows.Width = this.BarWidthIncludingPadding_cached;
 			rectangleBarWithShadows.Height = yLow - yHigh;	// due to upperLeft=(0:0), inverted yLow > yHigh
-			if (this.ChartControl.ChartSettings.TooltipPriceShowOnlyWhenMouseTouchesCandle) {
+			if (this.ChartControl.ChartSettingsTemplated.TooltipPriceShowOnlyWhenMouseTouchesCandle) {
 // FAILED		hide the priceTooltip when mouse hovers <= chart drag is "blocked", mouse "cross" doesn't update (I want to see the price of current mouse position)  
 // WHY			TooltipPriceClientRectangleOrEmptyIfInvisible.Location is (always) 0:0, I'm lazy to offset TooltipPosition to parent's (ChartControl's) coordinates;
 // ALTERNATIVE	TooltipPrice.Designer.cs: ouseMove += new MouseEventHandler(TooltipPrice_MouseMove);

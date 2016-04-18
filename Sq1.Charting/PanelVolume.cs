@@ -24,8 +24,8 @@ namespace Sq1.Charting {
 			//		base.VisibleMinMinusTopSqueezer_cached, this.VisibleMaxPlusBottomSqueezer_cached, this.VisibleRangeWithTwoSqueezers_cached
 			// 2) paints Right and Bottom gutter foregrounds;
 			base.PaintWholeSurfaceBarsNotEmpty(g);
-			base.ForeColor = base.ChartControl.ChartSettings.VolumeColorBarDown;
-			base.BackColor = base.ChartControl.ChartSettings.VolumeRightGutterColorForeground;
+			base.ForeColor = base.ChartControl.ChartSettingsTemplated.VolumeColorBarDown;
+			base.BackColor = base.ChartControl.ChartSettingsTemplated.VolumeRightGutterColorForeground;
 			this.renderBarsVolume(g);
 		}
 //		protected override void OnPaintBackground(PaintEventArgs pe) {

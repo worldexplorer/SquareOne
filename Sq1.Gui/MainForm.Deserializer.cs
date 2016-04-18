@@ -121,7 +121,7 @@ namespace Sq1.Gui {
 						}
 						this.GuiDataSnapshot.AddChartFormsManager_justDeserialized(chartFormsManagerDeserialized);
 					}
-					chartFormsManagerDeserialized.PopulateWindowTitlesFromChartContextOrStrategy();
+					chartFormsManagerDeserialized.PopulateWindowTitles_fromChartContext_orStrategy();
 					ret = chartFormsManagerDeserialized.ChartForm;
 					break;
 

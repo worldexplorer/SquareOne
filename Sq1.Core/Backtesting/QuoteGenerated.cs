@@ -42,7 +42,7 @@ namespace Sq1.Core.Backtesting {
 		// only for DDE-transformed QuoteGenerated => QuoteQuik, in the livesim to 
 		public QuoteGenerated(Quote quote, Bar parentBarSimulated)
 						: this(quote.ServerTime.AddMilliseconds(911),
-								quote.Symbol, quote.AbsnoPerSymbol + 1,
+								quote.Symbol, quote.AbsnoPerSymbol,	// AVOID_INCREMENTING_TWICE__YOULL_INCREMENT_IT_ANYWAY_UPSTACK + 1,
 								quote.Bid, quote.Ask, quote.Size,
 								quote.TradedAt) {
 			//this.Symbol					= quote.Symbol;
@@ -67,7 +67,7 @@ namespace Sq1.Core.Backtesting {
 			//identicalButFresh.Bid					= this.Bid;
 			//identicalButFresh.Ask					= this.Ask;
 			//identicalButFresh.Size					= this.Size;
-			identicalButFresh.IntraBarSerno			= this.IntraBarSerno + 1;
+			//identicalButFresh.IntraBarSerno			= this.IntraBarSerno + 1;
 			identicalButFresh.AbsnoPerSymbol		= this.AbsnoPerSymbol + 1;		// HACK_TO_ALLOW_LIVESIM_BROKER_TO_FILL_PENDING_ALERTS
 			//identicalButFresh.ParentBarSimulated = this.ParentBarSimulated;	// was there before I noticed "injected quotes don't seem to have ParentBarSimulated"
 			//identicalButFresh.ParentBarStreaming	= this.ParentBarStreaming;	// this may fix it injected quotes don't seem to have ParentBarSimulated

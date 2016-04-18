@@ -6,28 +6,19 @@ using System.Reflection;
 
 using Newtonsoft.Json;
 
-using Sq1.Core.DataFeed;
+using Sq1.Core.DataTypes;
 using Sq1.Core.Charting;
 
 namespace Sq1.Core.Charting {
 	// why ChartSettings inherits Component? F4 on ChartSettings will allow you to edit colors visually
 	// REMOVE ": Component" when you're done with visual editing to stop Designer flooding ChartControl.Designer.cs
-	public class ChartSettings : NamedObjectJsonSerializable {	//: ChartSettingsBase { //: Component {
+	public class ChartSettingsTemplated : NamedObjectJsonSerializable {	//: ChartSettingsBase { //: Component {
 		[Browsable(false)]
 		[JsonIgnore]	public static string NAME_DEFAULT = "Default";
 
-		//[Category("1. Essential"), Description("description to be composed"), ReadOnly(true), Browsable(false)]
-		//[JsonProperty]	public string	StrategyName											{ get; set; }
 
 		[Category("1. Essential"), Description("description to be composed")]
 		[JsonProperty]	public Color	ChartColorBackground									{ get; set; }
-
-
-		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
-		[JsonProperty]	public int		BarWidthIncludingPadding								{ get; set; }
-
-		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
-		[JsonProperty]	public int		BarWidthIncludingPaddingMax								{ get; set; }
 
 		[Category("1. Essential"), Description("description to be composed")]
 		[JsonProperty]	public Font		PanelNameAndSymbolFont									{ get; set; }
@@ -50,6 +41,25 @@ namespace Sq1.Core.Charting {
 
 		[Category("1. Essential"), Description("description to be composed")]
 		[JsonProperty]	public bool		BarUpFillCandleBody										{ get; set; }
+
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public int		BarsBackgroundTransparencyAlpha							{ get; set; }
+
+
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public bool		TooltipPriceShow										{ get; set; }
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public bool		TooltipPriceShowOnlyWhenMouseTouchesCandle				{ get; set; }
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public bool		TooltipPositionShow										{ get; set; }
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public int		TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave	{ get; set; }
+
 
 
 		[Category("2. Grids and Gutters"), Description("description to be composed")]
@@ -109,6 +119,33 @@ namespace Sq1.Core.Charting {
 		[Category("2. Grids and Gutters"), Description("description to be composed")]
 		[JsonProperty]	public bool		GridlinesVerticalShow									{ get; set; }
 
+		
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public bool		MousePositionTrackOnGutters								{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Color	MousePositionTrackOnGuttersColorBackground				{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Color	MousePositionTrackOnGuttersColorForeground				{ get; set; }
+
+
+
+		// MOVED_TO_ChartSettingsIndividual
+		//[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		//[JsonProperty]	public int		BarWidthIncludingPadding								{ get; set; }
+
+		//[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		//[JsonProperty]	public int		SqueezeVerticalPaddingPx								{ get; set; }
+
+		//[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		//[JsonProperty]	public int		ScrollPositionAtBarIndex								{ get; set; }
+
+
+
+		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		[JsonProperty]	public int		BarWidthIncludingPaddingMax								{ get; set; }
 
 
 		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
@@ -119,9 +156,6 @@ namespace Sq1.Core.Charting {
 
 		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
 		[JsonProperty]	public int		ScrollNBarsPerOneKeyPress								{ get; set; }
-
-		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
-		[JsonProperty]	public int		SqueezeVerticalPaddingPx								{ get; set; }
 
 		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
 		[JsonProperty]	public int		SqueezeVerticalPaddingStep								{ get; set; }
@@ -137,25 +171,8 @@ namespace Sq1.Core.Charting {
 
 
 
-		[Category("1. Essential"), Description("description to be composed")]
-		[JsonProperty]	public bool		TooltipPriceShow										{ get; set; }
-
-		[Category("1. Essential"), Description("description to be composed")]
-		[JsonProperty]	public bool		TooltipPriceShowOnlyWhenMouseTouchesCandle				{ get; set; }
-
-		[Category("1. Essential"), Description("description to be composed")]
-		[JsonProperty]	public bool		TooltipPositionShow										{ get; set; }
-
-		[Category("1. Essential"), Description("description to be composed")]
-		[JsonProperty]	public int		TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave	{ get; set; }
-
-
-
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
 		[JsonProperty]	public int		PositionArrowPaddingVertical							{ get; set; }
-
-		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public int		ScrollPositionAtBarIndex								{ get; set; }
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
 		[JsonProperty]	public int		TooltipBordersMarginToKeepBordersVisible				{ get; set; }
@@ -244,20 +261,6 @@ namespace Sq1.Core.Charting {
 		[JsonProperty]	public int		AlertPendingProtoStopLossEllipsePenWidth				{ get; set; }
 
 
-
-
-		[Category("2. Grids and Gutters"), Description("description to be composed")]
-		[JsonProperty]	public bool		MousePositionTrackOnGutters								{ get; set; }
-
-		[Category("2. Grids and Gutters"), Description("description to be composed")]
-		[JsonProperty]	public Color	MousePositionTrackOnGuttersColorBackground				{ get; set; }
-
-		[Category("2. Grids and Gutters"), Description("description to be composed")]
-		[JsonProperty]	public Color	MousePositionTrackOnGuttersColorForeground				{ get; set; }
-
-
-		[Category("1. Essential"), Description("description to be composed")]
-		[JsonProperty]	public int		BarsBackgroundTransparencyAlpha							{ get; set; }
 
 		[Category("5. Annotations and Labels"), Description("description to be composed")]
 		[JsonProperty]	public int		ChartLabelsUpperLeftYstartTopmost						{ get; set; }
@@ -353,30 +356,31 @@ namespace Sq1.Core.Charting {
 		[JsonProperty]	public	bool	LevelTwoStripesHeightWrapsVolumeLabel							{ get; set; }
 
 
-
-		//MOVED_TO_ChartFormDataSnapshot SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
-		[Browsable(false)]
-		[JsonIgnore]	public Dictionary<string, MultiSplitterProperties> MultiSplitterRowsPropertiesByPanelName_tunnelled;
-		[Browsable(false)]
-		[JsonIgnore]	public Dictionary<string, MultiSplitterProperties> MultiSplitterColumnsPropertiesByPanelName_tunnelled;
+		#region MOVED_TO_ChartFormDataSnapshot
+		// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
+		//[Browsable(false)]
+		//[JsonIgnore]	public Dictionary<string, MultiSplitterProperties> MultiSplitterRowsPropertiesByPanelName;
+		//[Browsable(false)]
+		//[JsonIgnore]	public Dictionary<string, MultiSplitterProperties> MultiSplitterColumnsPropertiesByPanelName;
 		
-		// DONE_IN_RenderBarsPrice_KISS cache them all until user edits this.BarTotalWidthPx so they won't be calculated again with the same result for each bar
-		[Browsable(false)]
-		[JsonIgnore]	public int BarPaddingRight { get {
-			if (this.BarWidthIncludingPadding <= 3) return 0;
-			//int nominal = (int) (this.BarWidthIncludingPadding * 0.25F);
-			int nominal = 1;
-			// algo below allows you have this.BarTotalWidthPx both odd and even automatically
-			//int compensated = nominal;
-			//int keepWidthOdd = this.BarWidthIncludingPadding - compensated;
-			//if (keepWidthOdd % 2 == 0) compensated++;	// increase padding to have 1px shadows right in the middle of a bar
-			//return compensated;
-			return nominal;
-		} }
-		[Browsable(false)]
-		[JsonIgnore]	public int BarWidthMinusRightPadding { get { return this.BarWidthIncludingPadding - this.BarPaddingRight; } }
-		[Browsable(false)]
-		[JsonIgnore]	public int BarShadowXoffset { get { return this.BarWidthMinusRightPadding / 2; } }
+		//// DONE_IN_RenderBarsPrice_KISS cache them all until user edits this.BarTotalWidthPx so they won't be calculated again with the same result for each bar
+		//[Browsable(false)]
+		//[JsonIgnore]	public int BarPaddingRight { get {
+		//    if (this.BarWidthIncludingPadding <= 3) return 0;
+		//    //int nominal = (int) (this.BarWidthIncludingPadding * 0.25F);
+		//    int nominal = 1;
+		//    // algo below allows you have this.BarTotalWidthPx both odd and even automatically
+		//    //int compensated = nominal;
+		//    //int keepWidthOdd = this.BarWidthIncludingPadding - compensated;
+		//    //if (keepWidthOdd % 2 == 0) compensated++;	// increase padding to have 1px shadows right in the middle of a bar
+		//    //return compensated;
+		//    return nominal;
+		//} }
+		//[Browsable(false)]
+		//[JsonIgnore]	public int BarWidthMinusRightPadding { get { return this.BarWidthIncludingPadding - this.BarPaddingRight; } }
+		//[Browsable(false)]
+		//[JsonIgnore]	public int BarShadowXoffset { get { return this.BarWidthMinusRightPadding / 2; } }
+		#endregion
 		
 		//[Browsable(false)]
 		//[JsonIgnore]	SolidBrush brushBackground;
@@ -717,9 +721,9 @@ namespace Sq1.Core.Charting {
 			} }
 
 	
-		public ChartSettings() {
+		public ChartSettingsTemplated() {
 			ChartColorBackground = Color.White;
-			BarWidthIncludingPadding = 8;
+			//MOVED_TO_ChartSettingsIndividual BarWidthIncludingPadding = 8;
 			BarWidthIncludingPaddingMax = 100;
 			PanelNameAndSymbolFont = new Font("Microsoft Sans Serif", 8.25f);
 			PriceColorBarUp = Color.RoyalBlue;
@@ -751,7 +755,7 @@ namespace Sq1.Core.Charting {
 			ScrollSqueezeMouseDragSensitivityPx = 1;
 			ScrollNBarsPerOneDragMouseEvent = 3;
 			ScrollNBarsPerOneKeyPress = 1;
-			SqueezeVerticalPaddingPx = 0;
+			//MOVED_TO_ChartSettingsIndividual SqueezeVerticalPaddingPx = 0;
 			SqueezeVerticalPaddingStep = 10;	// in VerticalPixels (later converted using pixelsSqueezedToPriceDistance)
 			SqueezeHorizontalStep = 2;			// in BarWidthPixels
 			SqueezeHorizontalMouse1pxDistanceReceivedToOneStep = 5;
@@ -802,9 +806,9 @@ namespace Sq1.Core.Charting {
 			ChartLabelsUpperLeftIndicatorSquareSize = 5;
 			OnChartBarAnnotationsVerticalAwayFromPositionArrows = 3;
 
-			// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
-			MultiSplitterRowsPropertiesByPanelName_tunnelled		= new Dictionary<string, MultiSplitterProperties>();
-			MultiSplitterColumnsPropertiesByPanelName_tunnelled	= new Dictionary<string, MultiSplitterProperties>();
+			//MOVED_TO_ChartFormDataSnapshot.ChartSettingsIndividual SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
+			//MultiSplitterRowsPropertiesByPanelName		= new Dictionary<string, MultiSplitterProperties>();
+			//MultiSplitterColumnsPropertiesByPanelName	= new Dictionary<string, MultiSplitterProperties>();
 
 			SpreadBidLineColor = Color.Gray;
 			SpreadBidLineColorAlpha = 64;
@@ -831,10 +835,10 @@ namespace Sq1.Core.Charting {
 			LevelTwoLotPaddingHorizontal = 3;
 			LevelTwoStripesHeightWrapsVolumeLabel = true;
 
-			base.Name = "UNASSIGNED";
+			base.Name = ChartSettingsTemplated.NAME_DEFAULT;
 		}
 
-		public ChartSettings(string name) : this() {
+		public ChartSettingsTemplated(string name) : this() {
 			base.Name = name;
 		}
 
@@ -889,41 +893,11 @@ namespace Sq1.Core.Charting {
 		}
 
 		public override string ToString() {
-			return this.Name;
+			return "ChartSettingsTemplated_NAMED " + this.Name;
 		}
 
-		public virtual ChartSettings Clone() {
-			return (ChartSettings)base.MemberwiseClone();
-		}
-
-		public void AbsorbFrom(ChartSettings tpl) {
-			PropertyInfo[] props = this.GetType().GetProperties();
-			foreach (PropertyInfo prop in props) {
-				bool jsonPropertyFound = false;
-				bool browseable = true;
-				//foreach (Attribute attr in prop.GetCustomAttributes(typeof(JsonPropertyAttribute), true)) {
-				foreach (Attribute attr in ((MemberInfo)prop).GetCustomAttributes(true)) {
-					if (attr == null) continue;
-
-					BrowsableAttribute attrAsBrowsable = attr as BrowsableAttribute;
-					if (attrAsBrowsable != null) {
-						if (attrAsBrowsable.Browsable) continue;
-						browseable = false;
-						continue;
-					}
-
-					JsonPropertyAttribute attrAsJsonProperty = attr as JsonPropertyAttribute;
-					if (attrAsJsonProperty != null) {
-						jsonPropertyFound = true;
-					}
-				}
-				if (jsonPropertyFound == false || browseable == false) continue;
-
-				PropertyInfo  tplProperty =  tpl.GetType().GetProperty(prop.Name);
-				object tplValue = prop.GetValue(tpl, null);
-				prop.SetValue(this, tplValue, null);
-			}
-			this.Name = tpl.Name;
+		public virtual ChartSettingsTemplated Clone() {
+			return (ChartSettingsTemplated)base.MemberwiseClone();
 		}
 	}
 }

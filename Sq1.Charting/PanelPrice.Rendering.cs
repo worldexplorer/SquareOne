@@ -35,7 +35,7 @@ namespace Sq1.Charting {
 				int barYCloseInverted = base.ValueToYinverted(bar.Close);
 				//base.CheckConvertedBarDataIsNotZero(xOffsetFromRightBorder, barYOpen, barYHigh, barYLow, barYClose);
 				bool fillCandleBody = (bar.Open > bar.Close) ? true : false;
-				fillCandleBody |= base.ChartControl.ChartSettings.BarUpFillCandleBody;
+				fillCandleBody |= base.ChartControl.ChartSettingsTemplated.BarUpFillCandleBody;
 				base.RenderBarCandle(g, barX, barYOpenInverted, barYHighInverted, barYLowInverted, barYCloseInverted, fillCandleBody);
 
 				//int shadowX = 0;
@@ -56,10 +56,10 @@ namespace Sq1.Charting {
 			if (alertPendingListByBar.ContainsKey(barIndex) == false) return;
 			List<Alert> alertsPending = alertPendingListByBar[barIndex].SafeCopy(this, "//renderPendingAlertsIfExistForBar(WAIT)");
 
-			Pen penPending	= base.ChartControl.ChartSettings.PenAlertPendingEllipse;
-			Pen penTP		= base.ChartControl.ChartSettings.PenAlertPendingProtoTakeProfitEllipse;
-			Pen penSL		= base.ChartControl.ChartSettings.PenAlertPendingProtoStopLossEllipse;
-			int radius		= base.ChartControl.ChartSettings.AlertPendingEllipseRadius;
+			Pen penPending	= base.ChartControl.ChartSettingsTemplated.PenAlertPendingEllipse;
+			Pen penTP		= base.ChartControl.ChartSettingsTemplated.PenAlertPendingProtoTakeProfitEllipse;
+			Pen penSL		= base.ChartControl.ChartSettingsTemplated.PenAlertPendingProtoStopLossEllipse;
+			int radius		= base.ChartControl.ChartSettingsTemplated.AlertPendingEllipseRadius;
 			int diameter	= radius * 2;
 
 			foreach (Alert pending in alertsPending) {
@@ -107,32 +107,32 @@ namespace Sq1.Charting {
 
 				Position position = arrow.Position;
 
-				int ellipsePlannedDiameter = base.ChartControl.ChartSettings.PositionPlannedEllipseDiameter;	//6
+				int ellipsePlannedDiameter = base.ChartControl.ChartSettingsTemplated.PositionPlannedEllipseDiameter;	//6
 				int ellipsePlannedRadius = (int)(Math.Round(ellipsePlannedDiameter / 2f));
-				int ellipseFilledDiameter = base.ChartControl.ChartSettings.PositionFilledDotDiameter;		//4
+				int ellipseFilledDiameter = base.ChartControl.ChartSettingsTemplated.PositionFilledDotDiameter;		//4
 				int ellipseFilledRadius = (int)(Math.Round(ellipseFilledDiameter / 2f));
 
 				if (arrow.ArrowIsForPositionEntry) {
 					int entryPlannedX = shadowX;
 					int entryPlannedY = base.ValueToYinverted(position.EntryEmitted_price);
 					Rectangle entryPlannedRect = new Rectangle(entryPlannedX - ellipsePlannedRadius, entryPlannedY - ellipsePlannedRadius, ellipsePlannedDiameter, ellipsePlannedDiameter);
-					g.DrawEllipse(base.ChartControl.ChartSettings.PenPositionPlannedEllipse, entryPlannedRect);
+					g.DrawEllipse(base.ChartControl.ChartSettingsTemplated.PenPositionPlannedEllipse, entryPlannedRect);
 
 					if (position.IsEntryFilled) {
 						int entryFilledOnY = base.ValueToYinverted(position.EntryFilled_price);
 						Rectangle entryFilledRect = new Rectangle(entryPlannedX - ellipseFilledRadius, entryFilledOnY - ellipseFilledRadius, ellipseFilledDiameter, ellipseFilledDiameter);
-						g.FillEllipse(base.ChartControl.ChartSettings.BrushPositionFilledDot, entryFilledRect);
+						g.FillEllipse(base.ChartControl.ChartSettingsTemplated.BrushPositionFilledDot, entryFilledRect);
 					}
 				} else {
 					int exitPlannedX = base.BarToXshadowBeyondGoInside(position.ExitBar.ParentBarsIndex);
 					int exitPlannedY = base.ValueToYinverted(position.ExitEmitted_price);
 					Rectangle exitPlannedRect = new Rectangle(exitPlannedX - ellipsePlannedRadius, exitPlannedY - ellipsePlannedRadius, ellipsePlannedDiameter, ellipsePlannedDiameter);
-					g.DrawEllipse(base.ChartControl.ChartSettings.PenPositionPlannedEllipse, exitPlannedRect);
+					g.DrawEllipse(base.ChartControl.ChartSettingsTemplated.PenPositionPlannedEllipse, exitPlannedRect);
 
 					if (position.IsExitFilled) {
 						int exitFilledOnY = base.ValueToYinverted(position.ExitFilled_price);
 						Rectangle exitFilledRect = new Rectangle(exitPlannedX - ellipseFilledRadius, exitFilledOnY - ellipseFilledRadius, ellipseFilledDiameter, ellipseFilledDiameter);
-						g.FillEllipse(base.ChartControl.ChartSettings.BrushPositionFilledDot, exitFilledRect);
+						g.FillEllipse(base.ChartControl.ChartSettingsTemplated.BrushPositionFilledDot, exitFilledRect);
 					}
 				}
 			}
@@ -172,11 +172,11 @@ namespace Sq1.Charting {
 				oppositeEndY = base.ValueToYinverted(position.EntryFilled_price);
 			}
 
-			Pen penLine = base.ChartControl.ChartSettings.PenPositionLineEntryExitConnectedUnknown;
+			Pen penLine = base.ChartControl.ChartSettingsTemplated.PenPositionLineEntryExitConnectedUnknown;
 			if (double.IsNaN(arrow.Position.NetProfit) == false) {
 				penLine = (arrow.Position.NetProfit > 0)
-					? base.ChartControl.ChartSettings.PenPositionLineEntryExitConnectedProfit
-					: base.ChartControl.ChartSettings.PenPositionLineEntryExitConnectedLoss;
+					? base.ChartControl.ChartSettingsTemplated.PenPositionLineEntryExitConnectedProfit
+					: base.ChartControl.ChartSettingsTemplated.PenPositionLineEntryExitConnectedLoss;
 			}
 
 			if (highlighted == false) {
@@ -184,8 +184,8 @@ namespace Sq1.Charting {
 				return;
 			}
 
-			int alpha = base.ChartControl.ChartSettings.PositionLineHighlightedAlpha;
-			int width = base.ChartControl.ChartSettings.PositionLineHighlightedWidth;
+			int alpha = base.ChartControl.ChartSettingsTemplated.PositionLineHighlightedAlpha;
+			int width = base.ChartControl.ChartSettingsTemplated.PositionLineHighlightedWidth;
 			Color colorLessTransparent = Color.FromArgb(alpha, penLine.Color.R, penLine.Color.G, penLine.Color.B);
 			using (Pen penLineHighlighted = new Pen(colorLessTransparent, width)) {
 				g.DrawLine(penLineHighlighted, mouseEndX, mouseEndY, oppositeEndX, oppositeEndY);
@@ -312,15 +312,15 @@ namespace Sq1.Charting {
 				Bar bar = base.ChartControl.Bars[barIndex];
 				int yForLabelsAbove = base.ValueToYinverted(bar.High);
 				int yForLabelsBelow = base.ValueToYinverted(bar.Low);
-				int paddingFromSettings = base.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding;
+				int paddingFromSettings = base.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftPlatePadding;
 
 				// UNCLUTTER_ADD_POSITIONS_ARROWS_OFFSET begin
 				Dictionary<int, List<AlertArrow>> alertArrowsListByBar = base.ChartControl.ExecutorObjects_frozenForRendering.AlertArrowsListByBar;
 				if (alertArrowsListByBar.ContainsKey(barIndex)) {
 					List<AlertArrow> arrows = alertArrowsListByBar[barIndex];
 					foreach (AlertArrow arrow in arrows) {
-						int arrowHeight = arrow.Height + base.ChartControl.ChartSettings.PositionArrowPaddingVertical;
-						if (arrow.AboveBar) yForLabelsAbove -= arrowHeight + base.ChartControl.ChartSettings.PositionArrowPaddingVertical; 
+						int arrowHeight = arrow.Height + base.ChartControl.ChartSettingsTemplated.PositionArrowPaddingVertical;
+						if (arrow.AboveBar) yForLabelsAbove -= arrowHeight + base.ChartControl.ChartSettingsTemplated.PositionArrowPaddingVertical; 
 						else yForLabelsBelow += arrowHeight; 
 					}
 				}
@@ -390,7 +390,7 @@ namespace Sq1.Charting {
 			double spread = quoteCurrent.Spread;
 			if (double.IsNaN(spread) == true) return;
 
-			ChartSettings settings = base.ChartControl.ChartSettings;
+			ChartSettingsTemplated settings = base.ChartControl.ChartSettingsTemplated;
 
 			int chartWidth = base.ChartControl.ChartWidthMinusGutterRightPrice;
 			//	chartWidth = base.ChartControl.Width;
