@@ -50,9 +50,10 @@ namespace Sq1.Widgets.Exceptions {
 			//	Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
 			//}
 			//v3
-			//NOT_UNDER_WINDOWS if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) return;
+			//NOT_UNDER_WINDOWS
+			if (Assembler.InstanceInitialized.SplitterEventsAllowed_tenSecondsPassed_afterAppLaunch_hopingInitialInnerDockResizingIsFinished == false) return;
 			if (this.dataSnapshot.SplitDistanceVertical == this.splitContainerVertical.SplitterDistance) return;
-			this.dataSnapshot.SplitDistanceVertical = this.splitContainerVertical.SplitterDistance;
+				this.dataSnapshot.SplitDistanceVertical  = this.splitContainerVertical.SplitterDistance;
 			this.dataSnapshotSerializer.Serialize();
 		}
 		
@@ -68,9 +69,10 @@ namespace Sq1.Widgets.Exceptions {
 			//} catch (Exception ex) {
 			//	Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
 			//}
-			//v3 NOT_UNDER_WINDOWS if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) return;
+			//v3 NOT_UNDER_WINDOWS
+			if (Assembler.InstanceInitialized.SplitterEventsAllowed_tenSecondsPassed_afterAppLaunch_hopingInitialInnerDockResizingIsFinished == false) return;
 			if (this.dataSnapshot.SplitDistanceHorizontal == this.splitContainerHorizontal.SplitterDistance) return;
-			this.dataSnapshot.SplitDistanceHorizontal = this.splitContainerHorizontal.SplitterDistance;
+				this.dataSnapshot.SplitDistanceHorizontal =  this.splitContainerHorizontal.SplitterDistance;
 			this.dataSnapshotSerializer.Serialize();
 		}
 		void mniCopyStackPosition_Click(object sender, EventArgs e) {
@@ -79,16 +81,16 @@ namespace Sq1.Widgets.Exceptions {
 		void mniltbDelay_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			MenuItemLabeledTextBox mnilbDelay = sender as MenuItemLabeledTextBox;
 			string typed = e.StringUserTyped;
-			int typedMsec = this.dataSnapshot.TreeRefreshDelayMsec;
+			int typedMsec = this.dataSnapshot.FlushToGuiDelayMsec;
 			bool parsed = Int32.TryParse(typed, out typedMsec);
 			if (parsed == false) {
-				mnilbDelay.InputFieldValue = this.dataSnapshot.TreeRefreshDelayMsec.ToString();
+				mnilbDelay.InputFieldValue = this.dataSnapshot.FlushToGuiDelayMsec.ToString();
 				mnilbDelay.TextRed = true;
 				return;
 			}
-			this.dataSnapshot.TreeRefreshDelayMsec = typedMsec;
+			this.dataSnapshot.FlushToGuiDelayMsec = typedMsec;
 			this.dataSnapshotSerializer.Serialize();
-			this.timedTask_flushingToGui.Delay = this.dataSnapshot.TreeRefreshDelayMsec;
+			this.TimedTask_flushingToGui.Delay = this.dataSnapshot.FlushToGuiDelayMsec;
 			mnilbDelay.TextRed = false;
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
 			this.populateWindowsTitle();
@@ -144,6 +146,17 @@ namespace Sq1.Widgets.Exceptions {
 			////STACK_OVERFLOW_CONGRATS Assembler.PopupException(msg, null, false);
 			//this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(new Exception(msg));
 			this.flushExceptionsToOLV_switchToGuiThread();
+		}
+
+		void exceptionsControl_ResizeStopped(object sender, EventArgs e) {
+			// I ignore 10 seconds after appRestart for setting datasnap => splitter.distance
+			// I postpone all resizes to 2 seconds after the last one
+			// on apprestart I'm populating it here
+			// 10 seconds after appRestart, all splitters will serialize themselves if moved inside, without Resize
+			// any myDockedPane / application resize will invoke both splittersMove and Resize
+			// splittersMove will serialize immediately; Resize will come 2 seconds after last and serialize again
+			this.PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized_invokeMeFromGuiThreadOnly();
+			this.dataSnapshotSerializer.Serialize();
 		}
 	}
 }

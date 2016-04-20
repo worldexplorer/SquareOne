@@ -313,7 +313,7 @@ namespace Sq1.Gui {
 				//NOPE ExecutionForm.Instance.ExecutionTreeControl.MoveStateColumnToLeftmost();
 				if (ExecutionForm.Instance.IsShown) {
 					// MOVED_TO_AFTER_MAINFORM_RESUMELAYOUT ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized();
-					ExecutionForm.Instance.PopulateWindowText();
+					ExecutionForm.Instance.PopulateWindowsTitle();
 				}
 				if (ExceptionsForm.Instance.IsShown) {
 					// MOVED_TO_AFTER_MAINFORM_RESUMELAYOUT ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();

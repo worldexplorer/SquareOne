@@ -40,24 +40,24 @@ namespace Sq1.Core.Streaming {
 		internal void UpstreamSubscribedToSymbol_pokeConsumers(string symbol) {
 			foreach (STREAMING_CONSUMER_CHILD quoteConsumer		in this.ConsumersAll_avoidTriplication)	 quoteConsumer.UpstreamSubscribed_toSymbol_streamNotifiedMe(null);
 		}
-		internal void UpstreamUnSubscribedFromSymbol_pokeConsumers(string symbol, Quote quoteCurrent) {
+		internal void UpstreamUnSubscribedFromSymbol_pokeConsumers(string symbol, Quote quoteLast) {
 			List<STREAMING_CONSUMER_CHILD> alreadyNotified_avoidInvokingThreeTimes = new List<STREAMING_CONSUMER_CHILD>();
 			foreach (STREAMING_CONSUMER_CHILD barConsumer in this.ConsumersBar) {
 				if (barConsumer is StreamingConsumerSolidifier == false) {
 					// this is the only reason for this crazy alreadyNotified_avoidInvokingThreeTimes (simplicity ethalon is in this.UpstreamSubscribedToSymbol_pokeConsumers())
-					quoteCurrent.StreamingBar_Replace(barConsumer.ConsumerBars_toAppendInto.BarStreaming_nullUnsafe);
+					quoteLast.StreamingBar_Replace(barConsumer.ConsumerBars_toAppendInto.BarStreaming_nullUnsafe);
 				}
-				barConsumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteCurrent);
+				barConsumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteLast);
 				alreadyNotified_avoidInvokingThreeTimes.Add(barConsumer);
 			}
 			foreach (STREAMING_CONSUMER_CHILD quoteConsumer in this.ConsumersQuote) {
 				if (alreadyNotified_avoidInvokingThreeTimes.Contains(quoteConsumer)) continue;
-				quoteConsumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteCurrent);
+				quoteConsumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteLast);
 				alreadyNotified_avoidInvokingThreeTimes.Add(quoteConsumer);
 			}
 			foreach (STREAMING_CONSUMER_CHILD level2Consumer in this.ConsumersLevelTwoFrozen) {
 				if (alreadyNotified_avoidInvokingThreeTimes.Contains(level2Consumer)) continue;
-				level2Consumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteCurrent);
+				level2Consumer.UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(quoteLast);
 				alreadyNotified_avoidInvokingThreeTimes.Add(level2Consumer);
 			}
 		}

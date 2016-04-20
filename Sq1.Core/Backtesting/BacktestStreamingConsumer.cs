@@ -26,7 +26,7 @@ namespace Sq1.Core.Backtesting {
 			} }
 
 		public override Bars ConsumerBars_toAppendInto { get { return this.backtester.BarsSimulating; } }
-		public override void UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirstAfterStart) {
+		public override void UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirst_afterStart) {
 			base.ReasonToExist = "Backtest[" + base.Symbol_nullReported + "]";
 		}
 		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteCurrentBeforeStop) {

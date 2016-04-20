@@ -69,7 +69,9 @@ namespace Sq1.Core.Execution {
 			new OrderStatesCollections(new List<OrderState>() {
 				OrderState.Error,
 				OrderState.ErrorOrderInconsistent,
-				OrderState.ErrorSubmittingOrder,
+				OrderState.ErrorSubmittingOrder_classifyMe,
+				OrderState.ErrorSubmittingOrder_unexecutableParameters,
+				OrderState.ErrorSubmittingOrder_wrongAccount,
 				OrderState.ErrorSubmittingNotEatable,
 				OrderState.SubmittedNoFeedback,
 				OrderState.IRefuseToCloseNonStreamingPosition,

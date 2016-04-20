@@ -69,10 +69,10 @@ namespace Sq1.Core.Streaming {
 			try {
 				this.level2_quoteLast_unboundUnattached_bySymbol.WaitAndLockFor(this, msig);
 				if (this.level2_quoteLast_unboundUnattached_bySymbol.ContainsKey(quoteUnboundUnattached.Symbol, this, msig) == false) {
-					//this.level2_quoteCurrentUnbound_bySymbol.Add(quote.Symbol, new LevelTwo(quote.Symbol), this, msig);
+					//this.level2_quoteLastUnbound_bySymbol.Add(quote.Symbol, new LevelTwo(quote.Symbol), this, msig);
 					this.Initialize_levelTwo_quoteLast_forSymbol(quoteUnboundUnattached.Symbol);
 					string msg = "SUBSCRIBER_SHOULD_HAVE_INVOKED_Initialize_levelTwo_forAllSymbolsInDataSource()__FOLLOW_THIS_LIFECYCLE__ITS_A_RELIGION_NOT_OPEN_FOR_DISCUSSION";
-					Assembler.PopupException(msg + msig, null, false);
+					//Assembler.PopupException(msg + msig, null, false);
 				}
 
 				LevelTwo level2 = this.level2_quoteLast_unboundUnattached_bySymbol.GetAtKey(quoteUnboundUnattached.Symbol, this, msig);
@@ -93,11 +93,11 @@ namespace Sq1.Core.Streaming {
 				bool skipCheck_forQuoteGenerated_duringBacktest = quoteUnboundUnattached is QuoteGenerated;
 				if (//skipCheck_forQuoteGenerated_duringBacktest == false &&
 					quoteLast.AbsnoPerSymbol >= quoteUnboundUnattached.AbsnoPerSymbol) {
-					string msg = "DONT_FEED_ME_WITH_OLD_QUOTES";
+					string msg = "DONT_FEED_ME_WITH_OLD_QUOTES__BACKTESTER";
 					Assembler.PopupException(msg + msig, null, false);
 					//return;
 				}
-				//level2.QuotePrev_unbound_notCloned = quoteCurrent;
+				//level2.QuotePrev_unbound_notCloned = quoteLast;
 				if (quoteLast.AbsnoPerSymbol == 32) {
 					string msg = "next iteration it will be 31";
 				}
@@ -122,7 +122,7 @@ namespace Sq1.Core.Streaming {
 				return ret;
 			} finally {
 				this.level2_quoteLast_unboundUnattached_bySymbol.UnLockFor(this, msig);
-				//this.level2_quoteCurrentUnbound_bySymbol.UnLockFor(this, this.lockReason_getLastQuoteForSymbol);
+				//this.level2_quoteLastUnbound_bySymbol.UnLockFor(this, this.lockReason_getLastQuoteForSymbol);
 			}
 		}
 		//Quote GetQuotePrev_forSymbol_nullUnsafe(string symbol) { //HERE_WAS_THE_DEADLOCK lock (this.lockLastQuote) {
@@ -141,7 +141,7 @@ namespace Sq1.Core.Streaming {
 		//        return ret;
 		//    } finally {
 		//        this.level2_lastPrevQuotesUnbound_bySymbol.UnLockFor(this, msig);
-		//        //this.level2_quoteCurrentUnbound_bySymbol.UnLockFor(this, this.lockReason_getLastQuoteForSymbol);
+		//        //this.level2_quoteLastUnbound_bySymbol.UnLockFor(this, this.lockReason_getLastQuoteForSymbol);
 		//    }
 		//}
 
@@ -174,36 +174,36 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public double GetPriceForMarketOrder_notAligned_fromQuoteLast(string symbol) {
-			Quote quoteCurrent = this.GetQuoteLast_forSymbol_nullUnsafe(symbol);
-			if (quoteCurrent == null) return 0;
-			if (quoteCurrent.TradedAt == BidOrAsk.UNKNOWN) {
-				string msg = "NEVER_HAPPENED_SO_FAR LAST_QUOTE_MUST_BE_BID_OR_ASK quoteCurrent.TradeOccuredAt[" + quoteCurrent.TradedAt + "]=BidOrAsk.UNKNOWN";
+			Quote quoteLast = this.GetQuoteLast_forSymbol_nullUnsafe(symbol);
+			if (quoteLast == null) return 0;
+			if (quoteLast.TradedAt == BidOrAsk.UNKNOWN) {
+				string msg = "NEVER_HAPPENED_SO_FAR LAST_QUOTE_MUST_BE_BID_OR_ASK quoteLast.TradeOccuredAt[" + quoteLast.TradedAt + "]=BidOrAsk.UNKNOWN";
 				Assembler.PopupException(msg, null, false);
 				return 0;
 			}
-			return quoteCurrent.TradedPrice;
+			return quoteLast.TradedPrice;
 		}
 
 		public double GetBestBid_notAligned_forMarketOrder_fromQuoteLast(string symbol) {
 			double ret = -1;
-			Quote quoteCurrent = this.GetQuoteLast_forSymbol_nullUnsafe(symbol);
-			if (quoteCurrent == null) {
+			Quote quoteLast = this.GetQuoteLast_forSymbol_nullUnsafe(symbol);
+			if (quoteLast == null) {
 				string msg = "LAST_TIME_I_HAD_IT_WHEN_Livesimulator_STORED_QUOTES_IN_QuikLivesimStreaming_WHILE_MarketLive_ASKED_QuikStreaming_TO_FILL_ALERT";
 				Assembler.PopupException(msg);
 				return ret;
 			}
-			ret = quoteCurrent.Bid;
+			ret = quoteLast.Bid;
 			return ret;
 		} 
 		public double GetBestAsk_notAligned_forMarketOrder_fromQuoteCurrent(string symbol) {
 			double ret = -1;
-			Quote quoteCurrent = this.GetQuoteLast_forSymbol_nullUnsafe(symbol);
-			if (quoteCurrent == null) {
+			Quote quoteLast = this.GetQuoteLast_forSymbol_nullUnsafe(symbol);
+			if (quoteLast == null) {
 				string msg = "LAST_TIME_I_HAD_IT_WHEN_Livesimulator_STORED_QUOTES_IN_QuikLivesimStreaming_WHILE_MarketLive_ASKED_QuikStreaming_TO_FILL_ALERT";
 				Assembler.PopupException(msg);
 				return ret;
 			}
-			ret = quoteCurrent.Ask;
+			ret = quoteLast.Ask;
 			return ret;
 		}
 

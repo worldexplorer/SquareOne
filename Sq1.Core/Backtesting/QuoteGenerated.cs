@@ -68,7 +68,7 @@ namespace Sq1.Core.Backtesting {
 			//identicalButFresh.Ask					= this.Ask;
 			//identicalButFresh.Size					= this.Size;
 			//identicalButFresh.IntraBarSerno			= this.IntraBarSerno + 1;
-			identicalButFresh.AbsnoPerSymbol		= this.AbsnoPerSymbol + 1;		// HACK_TO_ALLOW_LIVESIM_BROKER_TO_FILL_PENDING_ALERTS
+			//identicalButFresh.AbsnoPerSymbol		= this.AbsnoPerSymbol + 1;		// HACK_TO_ALLOW_LIVESIM_BROKER_TO_FILL_PENDING_ALERTS
 			//identicalButFresh.ParentBarSimulated = this.ParentBarSimulated;	// was there before I noticed "injected quotes don't seem to have ParentBarSimulated"
 			//identicalButFresh.ParentBarStreaming	= this.ParentBarStreaming;	// this may fix it injected quotes don't seem to have ParentBarSimulated
 			return identicalButFresh;

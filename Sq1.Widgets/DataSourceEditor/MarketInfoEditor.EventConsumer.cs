@@ -61,7 +61,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.ignoreSelectionEventDuringPopulate = false;
 			if (string.IsNullOrEmpty(errormsg) == false) {
 				string msg = errormsg + headerText;
-				Assembler.PopupException(msg + " /dgMarketName_CellValueChanged");
+				Assembler.PopupException(msg + " /dgMarketName_CellValueChanged", null, false);
 				return;
 			}
 			this.marketInfoRepository.Serialize();
@@ -127,7 +127,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 			this.ignoreSelectionEventDuringPopulate = false;
 			if (string.IsNullOrEmpty(errormsg) == false) {
-				Assembler.PopupException(errormsg);
+				Assembler.PopupException(errormsg, null, false);
 			}
 			this.marketInfoRepository.Serialize();
 		}

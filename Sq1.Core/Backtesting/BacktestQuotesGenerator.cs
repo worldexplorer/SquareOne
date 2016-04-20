@@ -210,19 +210,19 @@ namespace Sq1.Core.Backtesting {
 				snap = livesimStreaming.StreamingOriginal.StreamingDataSnapshot;
 			}
 
-			Quote quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde = snap.GetQuoteLast_forSymbol_nullUnsafe(quoteToReach.Symbol);
+			Quote quoteLast_QuoteGenerated_orQuoteQuikIrretraceableAfterDde = snap.GetQuoteLast_forSymbol_nullUnsafe(quoteToReach.Symbol);
 
-			if (quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde == null) {
+			if (quoteLast_QuoteGenerated_orQuoteQuikIrretraceableAfterDde == null) {
 				string msg = "I_CANNOT_CONTINUE_LIVESIM_FIXME__1";
 				Assembler.PopupException(msg + msig, null, false);
 				return null;
 			}
 
-			QuoteGenerated quoteGenerated = quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
+			QuoteGenerated quoteGenerated = quoteLast_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
 			if (quoteGenerated == null) {
 				string msg = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"
-					+ " Source[" + quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde.Source + "]";
-				quoteGenerated = new QuoteGenerated(quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde, bar2simulate);
+					+ " Source[" + quoteLast_QuoteGenerated_orQuoteQuikIrretraceableAfterDde.Source + "]";
+				quoteGenerated = new QuoteGenerated(quoteLast_QuoteGenerated_orQuoteQuikIrretraceableAfterDde, bar2simulate);
 				if (quoteGenerated == null) {
 					string msg1 = "I_CANNOT_CONTINUE_LIVESIM_FIXME__2";
 					Assembler.PopupException(msg1 + msig);
@@ -231,7 +231,7 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			#region PARANOID_CHECKS_HERE THANK_YOU_LED_TO_10_LINES_ABOVE
-			QuoteGenerated quotePrevAsDde = quoteCurrent_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
+			QuoteGenerated quoteCurrent_asQuoteGen = quoteLast_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
 			if (quoteGenerated == null) {
 				string msg = "PARANOINDAL_CHECK_IF_PREV_QUOTE_IS_QUOTE_TO_REACH copypaste";
 				Assembler.PopupException(msg);
@@ -364,7 +364,7 @@ namespace Sq1.Core.Backtesting {
 			ret.IamInjectedToFillPendingAlerts = true;
 
 			ret.AbsnoPerSymbol = quoteToReach.AbsnoPerSymbol + 1;
-			quoteToReach.AbsnoPerSymbol = ret.AbsnoPerSymbol + 1;
+			//quoteToReach.AbsnoPerSymbol = ret.AbsnoPerSymbol;// + 1;
 
 			//LIVESIM_HACK
 			//if (ret.ParentBarStreaming.ParentBars != null) {
@@ -410,14 +410,14 @@ namespace Sq1.Core.Backtesting {
 				snap = livesimStreaming.StreamingOriginal.StreamingDataSnapshot;
 			}
 
-			Quote quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde = snap.GetQuoteLast_forSymbol_nullUnsafe(alert.Symbol);
+			Quote quoteLast_QuoteGenerated_orQuoteQuik_irretraceableAfterDde = snap.GetQuoteLast_forSymbol_nullUnsafe(alert.Symbol);
 
-			QuoteGenerated quoteGenerated = quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde as QuoteGenerated;
+			QuoteGenerated quoteGenerated = quoteLast_QuoteGenerated_orQuoteQuik_irretraceableAfterDde as QuoteGenerated;
 			if (quoteGenerated == null) {
 				errOut = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"
-					+ " Source[" + quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde.Source + "]";
+					+ " Source[" + quoteLast_QuoteGenerated_orQuoteQuik_irretraceableAfterDde.Source + "]";
 				Assembler.PopupException(errOut);
-				quoteGenerated = new QuoteGenerated(quoteCurrent_QuoteGenerated_orQuoteQuik_irretraceableAfterDde, bar2simulate);
+				quoteGenerated = new QuoteGenerated(quoteLast_QuoteGenerated_orQuoteQuik_irretraceableAfterDde, bar2simulate);
 			}
 
 			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.SpreadModeler;

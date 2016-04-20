@@ -2,8 +2,10 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 
+using Sq1.Core.Support;
+
 namespace Sq1.Widgets.Execution {
-	public partial class ExecutionTreeControl : UserControl {
+	public partial class ExecutionTreeControl {
 		private IContainer components;
 		protected override void Dispose(bool disposing) {
 			if (disposing && this.components != null) {
@@ -37,6 +39,7 @@ namespace Sq1.Widgets.Execution {
 			this.olvcPriceDeposited_DollarForPoint = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcQtyRequested = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcQtyFilled = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcCommission = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcSernoSession = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcSernoExchange = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcStrategyName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -87,7 +90,7 @@ namespace Sq1.Widgets.Execution {
 			this.olvcMessageState = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMessageText = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.splitContainerMessagePane = new System.Windows.Forms.SplitContainer();
-			this.olvcCommission = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.mniltbDelay = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			((System.ComponentModel.ISupportInitialize)(this.OlvOrdersTree)).BeginInit();
 			this.ctxOrder.SuspendLayout();
 			this.ctxColumnsGrouped.SuspendLayout();
@@ -333,6 +336,12 @@ namespace Sq1.Widgets.Execution {
 			this.olvcQtyFilled.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcQtyFilled.Width = 25;
 			// 
+			// olvcCommission
+			// 
+			this.olvcCommission.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcCommission.Text = "Commission";
+			this.olvcCommission.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			// 
 			// olvcSernoSession
 			// 
 			this.olvcSernoSession.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -393,9 +402,10 @@ namespace Sq1.Widgets.Execution {
             this.mniExpandAll,
             this.mniCollapseAll,
             this.mniRebuildAll,
-            this.mniltbSerializationInterval});
+            this.mniltbSerializationInterval,
+            this.mniltbDelay});
 			this.ctxOrder.Name = "popupOrders";
-			this.ctxOrder.Size = new System.Drawing.Size(387, 339);
+			this.ctxOrder.Size = new System.Drawing.Size(387, 382);
 			// 
 			// mniKillPendingSelected
 			// 
@@ -583,7 +593,6 @@ namespace Sq1.Widgets.Execution {
             this.mniToggleMessagesPaneSplitHorizontally,
             this.mniToggleSyncWithChart});
 			this.ctxToggles.Name = "ctxToggles";
-			this.ctxToggles.OwnerItem = this.mniToggles;
 			this.ctxToggles.Size = new System.Drawing.Size(254, 114);
 			// 
 			// mniToggleBrokerTime
@@ -681,17 +690,17 @@ namespace Sq1.Widgets.Execution {
 			this.mniltbSerializationInterval.InputFieldMultiline = true;
 			this.mniltbSerializationInterval.InputFieldOffsetX = 145;
 			this.mniltbSerializationInterval.InputFieldValue = "3000";
-			this.mniltbSerializationInterval.InputFieldWidth = 38;
+			this.mniltbSerializationInterval.InputFieldWidth = 40;
 			this.mniltbSerializationInterval.Name = "mniltbSerializationInterval";
 			this.mniltbSerializationInterval.OffsetTop = 0;
-			this.mniltbSerializationInterval.Size = new System.Drawing.Size(220, 22);
+			this.mniltbSerializationInterval.Size = new System.Drawing.Size(227, 22);
 			this.mniltbSerializationInterval.Text = "mniltbDelaySerializationSync";
 			this.mniltbSerializationInterval.TextLeft = "(Logrotate) Serialize every";
 			this.mniltbSerializationInterval.TextLeftOffsetX = 0;
 			this.mniltbSerializationInterval.TextLeftWidth = 144;
 			this.mniltbSerializationInterval.TextRed = false;
 			this.mniltbSerializationInterval.TextRight = "millis";
-			this.mniltbSerializationInterval.TextRightOffsetX = 185;
+			this.mniltbSerializationInterval.TextRightOffsetX = 188;
 			this.mniltbSerializationInterval.TextRightWidth = 39;
 			this.mniltbSerializationInterval.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDelaySerializationSync_UserTyped);
 			// 
@@ -774,11 +783,27 @@ namespace Sq1.Widgets.Execution {
 			this.splitContainerMessagePane.SplitterDistance = 146;
 			this.splitContainerMessagePane.TabIndex = 22;
 			// 
-			// olvcCommission
+			// mniltbDelay
 			// 
-			this.olvcCommission.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcCommission.Text = "Commission";
-			this.olvcCommission.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.mniltbDelay.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbDelay.InputFieldAlignedRight = false;
+			this.mniltbDelay.InputFieldBackColor = System.Drawing.SystemColors.Info;
+			this.mniltbDelay.InputFieldEditable = true;
+			this.mniltbDelay.InputFieldMultiline = false;
+			this.mniltbDelay.InputFieldOffsetX = 145;
+			this.mniltbDelay.InputFieldValue = "200";
+			this.mniltbDelay.InputFieldWidth = 40;
+			this.mniltbDelay.Name = "mniltbDelay";
+			this.mniltbDelay.OffsetTop = 0;
+			this.mniltbDelay.Size = new System.Drawing.Size(188, 18);
+			this.mniltbDelay.TextLeft = "Delay for buffering          ";
+			this.mniltbDelay.TextLeftOffsetX = 0;
+			this.mniltbDelay.TextLeftWidth = 138;
+			this.mniltbDelay.TextRed = false;
+			this.mniltbDelay.TextRight = "ms";
+			this.mniltbDelay.TextRightOffsetX = 153;
+			this.mniltbDelay.TextRightWidth = 27;
+			this.mniltbDelay.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDelay_UserTyped);
 			// 
 			// ExecutionTreeControl
 			// 
@@ -873,5 +898,6 @@ namespace Sq1.Widgets.Execution {
 		private BrightIdeasSoftware.OLVColumn olvcPriceCurBidOrAsk;
 		private BrightIdeasSoftware.OLVColumn olvcSlippageFilledMinusApplied;
 		private BrightIdeasSoftware.OLVColumn olvcCommission;
+		private LabeledTextBox.MenuItemLabeledTextBox mniltbDelay;
 	}
 }

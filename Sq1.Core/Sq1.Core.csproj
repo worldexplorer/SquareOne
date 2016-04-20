@@ -432,6 +432,7 @@
     <Compile Include="Support\ConcurrentWatchdog.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Support\TimerSimplified.cs" />
     <Compile Include="Support\ExtensionAttribute.cs" />
     <Compile Include="Support\FontCache.cs" />
     <Compile Include="Support\GenericsUtil.cs" />
@@ -501,7 +502,17 @@
     <Compile Include="StrategyBase\StrategyEventArgs.cs" />
     <Compile Include="Support\TimeredBlock.cs" />
     <Compile Include="Support\TimeredBlockTask.cs" />
+    <Compile Include="Support\UserControlImproved.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Support\UserControlImproved.ResizeStoppedSerialize.cs">
+      <DependentUpon>UserControlImproved.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Support\UserControlInner.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Support\UserControlImprovedFlush.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Support\UserControlInner.Designer.cs">

@@ -316,6 +316,7 @@ namespace Sq1.Core.Streaming {
 
 			if (this.IsPushingThreadStarted) {
 				try {
+					//v1 A task may only be disposed if it is in a completion state (RanToCompletion, Faulted or Canceled). this.bufferPusher.Dispose();
 					this.PushingThreadStop_waitConfirmed();
 				} catch(Exception ex) {
 					Assembler.PopupException(this.ToString() + ".PushingThreadStop()", ex, false);

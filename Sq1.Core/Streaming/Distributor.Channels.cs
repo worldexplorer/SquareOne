@@ -96,7 +96,7 @@ namespace Sq1.Core.Streaming {
 				bool isBacktest			= barConsumer			is BacktestStreamingConsumer;
 				bool isLivesimDefault	= this.StreamingAdapter is LivesimStreamingDefault;
 				if (barStaticLast == null) {
-					if (isLivesimDefault == false) {	// isBacktest,isLivesim are magically fine; where did you notice the problem?
+					if (isLivesimDefault == false && isBacktest == false) {	// isBacktest,isLivesim are magically fine; where did you notice the problem?
 						string msg = "YOUR_BAR_CONSUMER_SHOULD_HAVE_BarStaticLast_NON_NULL"
 							+ " MOST_LIKELY_YOU_WILL_GET_MESSAGE__THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
 						Assembler.PopupException(msg, null, false);
@@ -155,8 +155,8 @@ namespace Sq1.Core.Streaming {
 				string msg = "StreamingSolidifier_DOESNT_SUPPORT_ConsumerLevelTwoFrozensToAppendInto";
 			} else {
 				Bar barStaticLast = levelTwoFrozenConsumer.ConsumerBars_toAppendInto.BarStaticLast_nullUnsafe;
-				bool isLive				= levelTwoFrozenConsumer			is StreamingConsumerChart;
-				bool isBacktest			= levelTwoFrozenConsumer			is BacktestStreamingConsumer;
+				bool isLive				= levelTwoFrozenConsumer	is StreamingConsumerChart;
+				bool isBacktest			= levelTwoFrozenConsumer	is BacktestStreamingConsumer;
 				bool isLivesimDefault	= this.StreamingAdapter is LivesimStreamingDefault;
 				if (barStaticLast == null) {
 					if (isLivesimDefault == false) {	// isBacktest,isLivesim are magically fine; where did you notice the problem?

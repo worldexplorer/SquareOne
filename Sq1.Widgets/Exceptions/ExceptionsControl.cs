@@ -10,17 +10,20 @@ using Sq1.Core.Serializers;
 using Sq1.Core.Support;
 
 namespace Sq1.Widgets.Exceptions {
-	public partial class ExceptionsControl {
+
+#if USE_CONTROL_IMPROVED
+	public partial class ExceptionsControl : UserControlPeriodicFlush {
+#else
+	public partial class ExceptionsControl : UserControl {
+#endif
+
 				ExceptionsControlDataSnapshot				dataSnapshot;
 				Serializer<ExceptionsControlDataSnapshot>	dataSnapshotSerializer;
 				ConcurrentDictionary<Exception, DateTime>	exceptionTimes;
 		public	ConcurrentList<Exception>					Exceptions				{ get; private set; }
 				ConcurrentList<Exception>					exceptions_notFlushedYet;
 
-				Stopwatch			howLongTreeRebuilds;
 				DateTime			exceptionLastDate_notFlushedYet;
-
-				TimeredBlockTask	timedTask_flushingToGui;
 
 				Exception			exceptionSingleSelectedInTree_nullUnsafe		{ get { return this.olvTreeExceptions.SelectedObject as Exception; } }
 				DockContentImproved parentAsDockContentImproved_nullUnsafe			{ get { return base.Parent as DockContentImproved; } }
@@ -30,10 +33,6 @@ namespace Sq1.Widgets.Exceptions {
 			Exceptions					= new ConcurrentList<Exception>("Exceptions_delayedGuiFlush");
 			exceptions_notFlushedYet	= new ConcurrentList<Exception>("exceptions_notFlushedYet");
 			exceptionLastDate_notFlushedYet	= DateTime.MinValue;
-			howLongTreeRebuilds			= new Stopwatch();
-
-			timedTask_flushingToGui = new TimeredBlockTask("FLUSH_EXCEPTIONS_CONTROL__AFTER_HAVING_BUFFERED_FOR_LONG_ENOUGH", this, new Action(delegate {this.flushExceptionsToOLV_switchToGuiThread(); }));
-			timedTask_flushingToGui.Delay = 200;
 
 			this.InitializeComponent();
 			//WindowsFormsUtils.SetDoubleBuffered(this.tree);	//doesn't help, still flickers
@@ -51,7 +50,7 @@ namespace Sq1.Widgets.Exceptions {
 				// hopefully disposing=true will be invoked once/lifetime - I don't care when; I'm lazy to work around NPEs and alreadyDisposed
 				this.exceptionTimes.Dispose();
 				this.Exceptions.Dispose();
-				this.timedTask_flushingToGui.Dispose();
+				base.TimedTask_flushingToGui.Dispose();
 			}
 			base.Dispose(disposing);
 		}
@@ -71,10 +70,10 @@ namespace Sq1.Widgets.Exceptions {
 				this.dataSnapshot.SplitDistanceHorizontal = this.splitContainerHorizontal.SplitterDistance;
 				this.dataSnapshotSerializer.Serialize();
 			}
-			this.timedTask_flushingToGui.Delay = this.dataSnapshot.TreeRefreshDelayMsec;	// may be already started?
 
-			this.timedTask_flushingToGui.Delay = this.dataSnapshot.TreeRefreshDelayMsec;	// may be already started?
-			this.timedTask_flushingToGui.Start();
+			base.Initialize_periodicFlushing("FLUSH_EXCEPTIONS_CONTROL",
+				new Action(this.flushExceptionsToOLV_switchToGuiThread), this.dataSnapshot.FlushToGuiDelayMsec);
+			base.TimedTask_flushingToGui.Start();
 		}
 		public void PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized_invokeMeFromGuiThreadOnly() {
 			string msig = " //PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized()";
@@ -94,14 +93,14 @@ namespace Sq1.Widgets.Exceptions {
 						string msg = "+51_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_VERTICAL";
 						int newVerticalDistance = this.dataSnapshot.SplitDistanceVertical;	//  + 51 + this.splitContainerVertical.SplitterWidth;
 						if (this.splitContainerVertical.SplitterDistance != newVerticalDistance) {
-							this.splitContainerVertical.SplitterDistance =  newVerticalDistance;
+							this.splitContainerVertical.SplitterDistance  = newVerticalDistance;
 						}
 					}
 					if (this.dataSnapshot.SplitDistanceHorizontal > 0) {
 						string msg = "+67_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_HORIZONTAL";
 						int newHorizontalDistance = this.dataSnapshot.SplitDistanceHorizontal;	// + 97 + this.splitContainerHorizontal.SplitterWidth;
 						if (this.splitContainerHorizontal.SplitterDistance != newHorizontalDistance) {
-							this.splitContainerHorizontal.SplitterDistance =  newHorizontalDistance;
+							this.splitContainerHorizontal.SplitterDistance  = newHorizontalDistance;
 						}
 					}
 				} catch (Exception ex) {
@@ -118,7 +117,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.splitContainerHorizontal.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerHorizontal_SplitterMoved);
 
 			this.mniRecentAlwaysSelected.Checked = this.dataSnapshot.RecentAlwaysSelected;
-			this.mniltbDelay.InputFieldValue = this.dataSnapshot.TreeRefreshDelayMsec.ToString();
+			this.mniltbDelay.InputFieldValue = this.dataSnapshot.FlushToGuiDelayMsec.ToString();
 			this.mniShowTimestamps.Checked = this.dataSnapshot.TreeShowTimestamps;
 
 			this.flushExceptionsToOLV_switchToGuiThread();
@@ -134,7 +133,7 @@ namespace Sq1.Widgets.Exceptions {
 				return;
 			}
 
-			bool avoidingConcurrentAccess = this.timedTask_flushingToGui.Scheduled;
+			bool avoidingConcurrentAccess = base.TimedTask_flushingToGui.Scheduled;
 			//if (avoidingConcurrentAccess) {
 			bool freeToAdd = this.exceptions_notFlushedYet.IsUnlocked;
 			if (freeToAdd == false) {
@@ -195,9 +194,9 @@ namespace Sq1.Widgets.Exceptions {
 
 		public void InsertAsyncAutoFlush(Exception ex) {
 			this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(ex);
-			if (this.timedTask_flushingToGui.Scheduled) {
+			if (base.TimedTask_flushingToGui.Scheduled) {
 				// second exception came in while tree was rebuilding (after the first one wasn't finished) => schedule rebuild in 
-				this.timedTask_flushingToGui.ScheduleOnce();	// postpone flushToGui() for another 200ms
+				base.TimedTask_flushingToGui.ScheduleOnce();	// postpone flushToGui() for another 200ms
 				this.exceptionLastDate_notFlushedYet = DateTime.Now;
 
 				if (base.InvokeRequired) {	// waiting for WindowHandle to be created
@@ -211,7 +210,7 @@ namespace Sq1.Widgets.Exceptions {
 			// Always stop/start a System.Windows.Forms.Timer on the UI thread, apparently! –  user145426
 
 			// first exception came in => flush immediately; mark already now that all other fresh exceptions would line up by timer
-			this.timedTask_flushingToGui.ScheduleOnce();
+			base.TimedTask_flushingToGui.ScheduleOnce();
 			this.exceptionLastDate_notFlushedYet = DateTime.Now;
 			this.flushExceptionsToOLV_switchToGuiThread();
 		}
@@ -220,7 +219,7 @@ namespace Sq1.Widgets.Exceptions {
 		//	this.flushExceptionsToOLV_switchToGuiThread();
 		//}
 
-		void flushExceptionsToOLV_switchToGuiThread(object stateForTimerCallback = null) {
+		void flushExceptionsToOLV_switchToGuiThread() {
 			string msig = " //flushExceptionsToOLV_switchToGuiThread_ifDockContentDeserialized()";
 			if (base.DesignMode) return;
 			if (Assembler.IsInitialized == false) return; //I_HATE_LIVESIM_FORM_THROWING_EXCEPTIONS_IN_DESIGN_MODE
@@ -228,13 +227,13 @@ namespace Sq1.Widgets.Exceptions {
 			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 
 			if (this.InvokeRequired) {
-				this.BeginInvoke((MethodInvoker)delegate() { this.flushExceptionsToOLV_switchToGuiThread(); });
+				this.BeginInvoke(new MethodInvoker(this.flushExceptionsToOLV_switchToGuiThread));
 				//string msg = "I_MUST_BE_ALREADY_IN_GUI_THREAD__HOPING_TO_INSERT_IN_SEQUENCE_OF_INVOCATION";
 				//Debugger.Break();
 				return;
 			}
 
-			this.howLongTreeRebuilds.Restart();
+			base.HowLongTreeRebuilds.Restart();
 
 			string msg = "if we are in GUI thread, go on timer immediately (correlator throwing thousands at startup, or chart.OnPaint() doing something wrong)";
 			try {
@@ -243,7 +242,7 @@ namespace Sq1.Widgets.Exceptions {
 					return;
 				}
 
-				if (this.timedTask_flushingToGui.Scheduled == true) {
+				if (base.TimedTask_flushingToGui.Scheduled == true) {
 					string msg1 = "MUST_CONTINUE_FLUSHING__I_INTENTIONALLY_SCHEDULED_BEFORE_FLUSHING_TO_REDIRECT_ALL_NEWCOMERS_TO_BUFFER"
 						//+ " DONT_FLUSH_ME_WHEN_ANOTHER_FLUSH_SCHEDULED"
 						;
@@ -294,7 +293,7 @@ namespace Sq1.Widgets.Exceptions {
 				string msg3 = "NOWHERE_TO_DUMP_EXCEPTION_DURING_FLUSHING";
 				Assembler.PopupException(msg3 + msig);		// any Assembler.PopupException() will go to this.exceptionsNotFlushedYet()
 			} finally {
-				this.howLongTreeRebuilds.Stop();
+				base.HowLongTreeRebuilds.Stop();
 				this.populateWindowsTitle();
 			}
 		}
@@ -315,13 +314,7 @@ namespace Sq1.Widgets.Exceptions {
 			ret += this.Exceptions.Count.ToString("000");
 			//if (this.exceptions_notFlushedYet.Count > 0)
 				ret += "/" + this.exceptions_notFlushedYet.Count.ToString("000") + "buffered";
-			ret += "   flushed:" + howLongTreeRebuilds.ElapsedMilliseconds + "ms"
-				 + "   buffering:" + this.timedTask_flushingToGui.Delay + "ms";
-			if (howLongTreeRebuilds.ElapsedMilliseconds > this.timedTask_flushingToGui.Delay) {
-				string msg = "YOU_MAY_NEED_TO_INCREASE_TIMER.Delay_FOR_FLUSHING " + ret;
-				// STACK_OVERFLOW_AGAIN Assembler.PopupException(msg);
-				//this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(new Exception(msg));
-			}
+			ret += base.FlushingStats;
 			return ret;
 		}
 	}

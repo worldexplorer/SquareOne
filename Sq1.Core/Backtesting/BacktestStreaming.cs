@@ -46,23 +46,40 @@ namespace Sq1.Core.Backtesting {
 				quoteBoundAttached.Size = 1;
 			}
 
-			Quote quoteCurrent = this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(quoteBoundAttached.Symbol);
-			if (quoteCurrent == null) {
-				string msg = "QUIK_JUST_CONNECTED_AND_SENDS_NONSENSE[" + quoteBoundAttached + "]";
+
+			Quote quoteLast = this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(quoteBoundAttached.Symbol);
+			if (quoteLast == null) {
+				string msg = "FIRST_QUOTE_OF_BACKTEST__SETTING_RETURNING[" + quoteBoundAttached + "]";
 				Assembler.PopupException(msg + msig, null, false);
 				this.StreamingDataSnapshot.SetQuoteLast_forSymbol(quoteBoundAttached);
 				return;
 			}
 
+
+			long absnoPerSymbolNext = -1;
+			if (quoteLast.AbsnoPerSymbol == -1) {
+				string msg = "LAST_QUOTE_DIDNT_HAVE_ABSNO_SET_BY_STREAMING_ADAPDER_ON_PREV_ITERATION FORCING_ZERO";
+				Assembler.PopupException(msg + msig, null, false);
+				absnoPerSymbolNext = 0;
+			} else {
+				absnoPerSymbolNext = quoteLast.AbsnoPerSymbol + 1;	// you must see lock(){} upstack
+			}
+
+			//QUOTE_ABSNO_MUST_BE_-1__HERE_NOT_MODIFIED_AFTER_QUOTE.CTOR()
+			string msg1 = "OK_FOR_LIVESIM_VIA_DDE__NOT_FILLING_PENDINGS"
+				+ " QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL__INITIALIZED_HERE_IN_STREAMING_ADAPDER";
+			if (quoteBoundAttached.AbsnoPerSymbol != absnoPerSymbolNext) {
+				quoteBoundAttached.AbsnoPerSymbol  = absnoPerSymbolNext;
+			}
+
 			//v1 HAS_NO_MILLISECONDS_FROM_QUIK if (quote.ServerTime > lastQuote.ServerTime) {
 			//v2 TOO_SENSITIVE_PRINTED_SAME_MILLISECONDS_BUT_STILL_DIFFERENT if (quote.ServerTime.Ticks > lastQuote.ServerTime.Ticks) {
 			string quoteMillis		= quoteBoundAttached.ServerTime.ToString("HH:mm:ss.fff");
-			string quotePrevMillis  = quoteCurrent.ServerTime.ToString("HH:mm:ss.fff");
-			if (quoteMillis == quotePrevMillis) {
+			string quoteLastMillis  = quoteLast.ServerTime.ToString("HH:mm:ss.fff");
+			if (quoteMillis == quoteLastMillis) {
 				string msg = quoteBoundAttached.Symbol + " SERVER_TIMESTAMP_MUST_INCREASE_EACH_NEXT_INCOMING_QUOTE QUIK_OR_BACKTESTER_FORGOT_TO_INCREASE"
 					+ " quoteMillis[" + quoteMillis + "] <="
-					+ " quoteLastMillis[" + quotePrevMillis + "]"
-					+ ": DDE lagged somewhere?..."
+					+ " quoteLastMillis[" + quoteLastMillis + "]"
 					;
 				Assembler.PopupException(msg + msig, null, false);
 				return;

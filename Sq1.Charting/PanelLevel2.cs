@@ -138,10 +138,10 @@ namespace Sq1.Charting {
 				base.DrawError(g, "CHART_CONTROL_HAS_NO_BARS");
 				this.errorDetected = true;
 			}
-			Quote quoteCurrent = null;
+			Quote quoteLast = null;
 			if (this.errorDetected == false) {
-				quoteCurrent = this.StreamingDataSnapshot_nullUnsafe.GetQuoteLast_forSymbol_nullUnsafe(base.ChartControl.Bars.Symbol);
-				if (quoteCurrent == null) {
+				quoteLast = this.StreamingDataSnapshot_nullUnsafe.GetQuoteLast_forSymbol_nullUnsafe(base.ChartControl.Bars.Symbol);
+				if (quoteLast == null) {
 					base.DrawError(g, "CONNECT_STREAMING__OR__CHART>BARS>SUBSCRIBE");
 					this.errorDetected = true;
 				}
@@ -157,7 +157,7 @@ namespace Sq1.Charting {
 			}
 
 			try {
-				this.renderLevel2(pe.Graphics, quoteCurrent);
+				this.renderLevel2(pe.Graphics, quoteLast);
 				this.renderBidAsk(pe.Graphics);
 			} catch (Exception ex) {
 				base.DrawError(pe.Graphics, ex.ToString());
@@ -446,8 +446,8 @@ namespace Sq1.Charting {
 
 		}
 		void renderBidAsk(Graphics g) {
-			Quote quoteCurrent = base.ChartControl.ExecutorObjects_frozenForRendering.QuoteCurrent;
-			if (quoteCurrent == null) return;
+			Quote quoteLast = base.ChartControl.ExecutorObjects_frozenForRendering.QuoteLast;
+			if (quoteLast == null) return;
 
 			//Quote quoteLastFromDictionary = this.StreamingDataSnapshot_nullUnsafe.LastQuoteCloneGetForSymbol(base.ChartControl.Bars.Symbol);
 			//if (quoteLast.SameBidAsk(quoteLastFromDictionary) == false) {
@@ -456,7 +456,7 @@ namespace Sq1.Charting {
 			//	//return;
 			//}
 
-			double spread = quoteCurrent.Spread;
+			double spread = quoteLast.Spread;
 			if (double.IsNaN(spread) == true) return;
 
 			ChartSettingsTemplated settings = base.ChartControl.ChartSettingsTemplated;
@@ -479,8 +479,8 @@ namespace Sq1.Charting {
 				? 0
 				: labelSpread_measuredWidth + padding * 2;
 
-			double bid = quoteCurrent.Bid;
-			double ask = quoteCurrent.Ask;
+			double bid = quoteLast.Bid;
+			double ask = quoteLast.Ask;
 			int yBid = 0;
 			int yAsk = 0;
 			if (double.IsNaN(bid) == false) {

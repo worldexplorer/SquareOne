@@ -16,6 +16,7 @@ namespace Sq1.Widgets.Execution {
 		[JsonProperty]	public int	MessagePaneSplitDistanceHorizontal		= 0;
 		[JsonProperty]	public int	MessagePaneSplitDistanceVertical		= 0;
 		[JsonProperty]	public int	SerializationInterval					= 3000;
+		[JsonProperty]	public int	FlushToGuiDelayMsec						= 200;
 		
 		//v1 prior to using this.OrdersTreeOLV.SaveState();
 		//NOPE_I_HATE_ADDING_IF_MISSED
@@ -44,6 +45,6 @@ namespace Sq1.Widgets.Execution {
 //		[JsonProperty]	public bool ShowColumnLastMessage				= true;
 		
 		//v2
-		[JsonProperty]	public string OrdersTreeOlvStateBase64				= "";
+		[JsonProperty]	public string	OrdersTreeOlvStateBase64		= "";
 	}
 }

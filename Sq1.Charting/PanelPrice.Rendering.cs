@@ -385,9 +385,9 @@ namespace Sq1.Charting {
 			}
 		}
 		void renderBidAsk(Graphics g) {
-			Quote quoteCurrent = base.ChartControl.ExecutorObjects_frozenForRendering.QuoteCurrent;
-			if (quoteCurrent == null) return;
-			double spread = quoteCurrent.Spread;
+			Quote quoteLast = base.ChartControl.ExecutorObjects_frozenForRendering.QuoteLast;
+			if (quoteLast == null) return;
+			double spread = quoteLast.Spread;
 			if (double.IsNaN(spread) == true) return;
 
 			ChartSettingsTemplated settings = base.ChartControl.ChartSettingsTemplated;
@@ -411,8 +411,8 @@ namespace Sq1.Charting {
 				? 0
 				: labelSpread_measuredWidth + padding * 2;
 
-			double bid = quoteCurrent.Bid;
-			double ask = quoteCurrent.Ask;
+			double bid = quoteLast.Bid;
+			double ask = quoteLast.Ask;
 			int yBid = 0;
 			int yAsk = 0;
 			if (double.IsNaN(bid) == false) {

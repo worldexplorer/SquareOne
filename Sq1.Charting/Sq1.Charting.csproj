@@ -87,7 +87,7 @@
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ChartControl.EventGenerator.cs">
+    <Compile Include="ChartControl.ResizeStoppedSerialize.cs">
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>

@@ -60,7 +60,7 @@ namespace Sq1.Core.DataTypes {
 		} }
 		[JsonIgnore]	protected	string		VolumeFormat	{ get {
 			SymbolInfo symbolInfo = this.symbolInfo_nullUnsafe;
-			return symbolInfo != null ? symbolInfo.PriceFormat : "N0";
+			return symbolInfo != null ? symbolInfo.VolumeFormat : "N0";
 		} }
 		#endregion
 

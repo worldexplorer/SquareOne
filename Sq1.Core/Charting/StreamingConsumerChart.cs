@@ -155,9 +155,9 @@ namespace Sq1.Core.Charting {
 				return ret;
 			} }
 
-		public override void UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirstAfterStart) {
+		public override void UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirst_afterStart) {
 		}
-		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLastBeforeStop) {
+		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLast_beforeStop) {
 		}
 		public override void Consume_barLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
 			if (barLastFormed == null) {

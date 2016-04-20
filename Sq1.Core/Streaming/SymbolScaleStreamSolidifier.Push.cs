@@ -41,10 +41,10 @@ namespace Sq1.Core.Streaming {
 
 
 			StreamingDataSnapshot snap =  this.SymbolChannel_parent.Distributor.StreamingAdapter.StreamingDataSnapshot;
-			Quote quoteCurrent = snap.GetQuoteLast_forSymbol_nullUnsafe(quoteDequeued_singleInstance.Symbol);
+			Quote quoteLast = snap.GetQuoteLast_forSymbol_nullUnsafe(quoteDequeued_singleInstance.Symbol);
 
 			// late quote should be within current StreamingBar, otherwize don't deliver for channel
-			if (quoteCurrent != null && quoteDequeued_singleInstance.ServerTime < quoteCurrent.ServerTime) {
+			if (quoteLast != null && quoteDequeued_singleInstance.ServerTime < quoteLast.ServerTime) {
 				Bar pseudoStreamingBar1 = this.pseudoStreamingBarFactory.PseudoStreamingBar_unattached;
 				if (quoteDequeued_singleInstance.ServerTime <= pseudoStreamingBar1.DateTimeOpen) {
 					string msg = "skipping old quote for quote.ServerTime[" + quoteDequeued_singleInstance.ServerTime + "], can only accept for current"
@@ -92,6 +92,10 @@ namespace Sq1.Core.Streaming {
 					//consumerBars.BarStreaming_overrideDOHLCVwith(quote.ParentBarStreaming);
 					//quote.Replace_myStreamingBar_withConsumersStreamingBar(consumerBars.BarStreaming_nullUnsafe);
 					Bar barStaticLast = pseudoStreamingBarFactory.BarLastFormedUnattached_nullUnsafe;
+
+					string hasNaNs = barStaticLast.CheckThrow_DateOHLCV_validForSaving(false);
+					if (string.IsNullOrEmpty(hasNaNs) == false) return;
+
 					willUpdateLastStatic_andAppendNewFromPseudo.Consume_barLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(
 						barStaticLast, quote_clonedBoundAttached);
 					string msg1 = "BAR_CONSUMER_FINISHED " + barStaticLast.ToString() + " => " + willUpdateLastStatic_andAppendNewFromPseudo.ToString();

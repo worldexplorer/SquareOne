@@ -17,8 +17,8 @@ namespace Sq1.Core.Streaming {
 		public virtual	BarScaleInterval	ScaleInterval				{ get { return this.ConsumerBars_toAppendInto.ScaleInterval; } }
 		public virtual	string				Symbol						{ get { return this.ConsumerBars_toAppendInto.Symbol; } }
 
-		public abstract	void	UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirstAfterStart);
-		public abstract	void	UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteCurrent_beforeStop);
+		public abstract	void	UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirst_afterStart);
+		public abstract	void	UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLast_beforeStop);
 		public abstract	void	Consume_quoteOfStreamingBar(Quote quote);
 		public abstract	void	Consume_barLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated);
 		public abstract	void	Consume_levelTwoChanged(LevelTwoFrozen levelTwoFrozen);

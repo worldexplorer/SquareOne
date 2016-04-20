@@ -13,15 +13,15 @@ namespace Sq1.Core.Streaming {
 			int changesMade = 0;
 			string msig = " //StreamingAdapter.Quote_fixServerTime_absnoPerSymbol(" + quoteUU + ")" + this.ToString();
 
-			Quote quoteCurrent	= this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(quoteUU.Symbol);
-			if (quoteCurrent == null) {
+			Quote quoteLast	= this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(quoteUU.Symbol);
+			if (quoteLast == null) {
 				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR#1 symbol[" + quoteUU.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
 				Assembler.PopupException(msg + msig, null, false);
 				quoteUU.AbsnoPerSymbol = 0;
 				changesMade++;
 				return changesMade;
 			}
-			if (quoteUU == quoteCurrent) {
+			if (quoteUU == quoteLast) {
 				string msg = "DONT_FEED_STREAMING_WITH_SAME_QUOTE__NOT_FIXING_ANYTHING";
 				Assembler.PopupException(msg + msig, null, true);
 				return changesMade;
@@ -30,12 +30,12 @@ namespace Sq1.Core.Streaming {
 			//Quote quotePrev		= this.StreamingDataSnapshot.GetQuotePrev_forSymbol_nullUnsafe(quoteUU.Symbol);
 			if (quoteUU.ServerTime == DateTime.MinValue) {		// spreadQuote arrived from DdeTableDepth without serverTime koz serverTime of Level2 changed is not transmitted over DDE
 				if (this.Name.Contains("NOPE_TEST_REAL_QUIK_TOO___StreamingLivesim") == false) {	// QuikStreamingLivesim
-					TimeSpan diff_inLocalTime = quoteUU.LocalTime.Subtract(quoteCurrent.LocalTime);
-					DateTime serverTime_reconstructed_fromLastQuote = quoteCurrent.ServerTime.Add(diff_inLocalTime);
+					TimeSpan diff_inLocalTime = quoteUU.LocalTime.Subtract(quoteLast.LocalTime);
+					DateTime serverTime_reconstructed_fromLastQuote = quoteLast.ServerTime.Add(diff_inLocalTime);
 					quoteUU.ServerTime = serverTime_reconstructed_fromLastQuote;
 					changesMade++;
 				} else {
-					if (quoteCurrent.ParentBarStreaming == null) {
+					if (quoteLast.ParentBarStreaming == null) {
 						string msg = "WILL_BINDER_SET_QUOTE_TO_STREAMING_DATA_SNAPSHOT???";
 						Assembler.PopupException(msg, null, false);
 					} else {
@@ -56,23 +56,23 @@ namespace Sq1.Core.Streaming {
 			//v1 if (quoteUU.ServerTime == quotePrev.ServerTime) {
 			//v2
 			string quoteMillis		=	   quoteUU.ServerTime.ToString("HH:mm:ss.fff");
-			string quotePrevMillis  = quoteCurrent.ServerTime.ToString("HH:mm:ss.fff");
+			string quoteLastMillis  = quoteLast.ServerTime.ToString("HH:mm:ss.fff");
 			//if (quoteMillis == quotePrevMillis) {
-			if (quoteUU.ServerTime <= quoteCurrent.ServerTime) {
+			if (quoteUU.ServerTime <= quoteLast.ServerTime) {
 				// increase granularity of QuikQuotes (they will have the same ServerTime within the same second, while must have increasing milliseconds; I can't force QUIK print fractions of seconds via DDE export)
-				TimeSpan diff_inLocalTime = quoteUU.LocalTime.Subtract(quoteCurrent.LocalTime);
+				TimeSpan diff_inLocalTime = quoteUU.LocalTime.Subtract(quoteLast.LocalTime);
 				// diff_localTime.Milliseconds will go to StreamingDataSnapshot with ServerTime fixed, and next diffMillis will be negative for the quote within same second
 				int diffMillis_willBeNegative_forSecondQuote_duringSameSecond = diff_inLocalTime.Milliseconds;
 				int diffMillis = Math.Abs(diffMillis_willBeNegative_forSecondQuote_duringSameSecond);
 				if (diffMillis <= 0) {
 					diffMillis = 1;
-					//bool sameBidAsk = quoteUU.SameBidAsk(quoteCurrent);
-					//bool sameSize = quoteUU.Size == quoteCurrent.Size;
+					//bool sameBidAsk = quoteUU.SameBidAsk(quoteLast);
+					//bool sameSize = quoteUU.Size == quoteLast.Size;
 					//if (sameSize && sameBidAsk) return -1;		// no I should not drop it; same deal for two different buyers
 					string msg = quoteUU.Symbol + " ServerTime++"
 						//+ " sameBidAsk[" + sameBidAsk + "] sameSize[" + sameSize + "]"
 						;
-					Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg, null, false);
 
 					// DONT_DO_Convert_localTime_toServerTime_marketInfo_HAS_TZ=-3_WHILE_QUIK_JUNIOR_SENDS_TZ=-2_LAGS_ONE_MORE_HOUR
 					//MarketInfo marketInfo = this.DataSource.MarketInfo;
@@ -82,15 +82,15 @@ namespace Sq1.Core.Streaming {
 					//    return -2;
 					//} else {
 					//	string msg = "Nothing helps!!!";
-					//	quoteUU.ServerTime = quoteCurrent.ServerTime.AddMilliseconds(1);
+					//	quoteUU.ServerTime = quoteLast.ServerTime.AddMilliseconds(1);
 					//}
 					//changesMade++;
 				}
-				quoteUU.ServerTime = quoteCurrent.ServerTime.AddMilliseconds(diffMillis);
+				quoteUU.ServerTime = quoteLast.ServerTime.AddMilliseconds(diffMillis);
 				changesMade++;
 			}
 
-			if (quoteUU.ServerTime <= quoteCurrent.ServerTime) {
+			if (quoteUU.ServerTime <= quoteLast.ServerTime) {
 				return -1;
 			}
 			
@@ -107,12 +107,12 @@ namespace Sq1.Core.Streaming {
 			}
 
 			long absnoPerSymbolNext = -1;
-			if (quoteCurrent.AbsnoPerSymbol == -1) {
+			if (quoteLast.AbsnoPerSymbol == -1) {
 				string msg = "LAST_QUOTE_DIDNT_HAVE_ABSNO_SET_BY_STREAMING_ADAPDER_ON_PREV_ITERATION FORCING_ZERO";
 				Assembler.PopupException(msg + msig, null, false);
 				absnoPerSymbolNext = 0;
 			} else {
-				absnoPerSymbolNext = quoteCurrent.AbsnoPerSymbol + 1;	// you must see lock(){} upstack
+				absnoPerSymbolNext = quoteLast.AbsnoPerSymbol + 1;	// you must see lock(){} upstack
 			}
 
 			if (absnoPerSymbolNext == -1) {
@@ -129,7 +129,7 @@ namespace Sq1.Core.Streaming {
 			return changesMade;
 		}
 		public virtual void PushQuoteReceived_positiveSize(Quote quoteUnboundUnattached_absnoPerSymbolMinusOne) {
-			string msig = " //StreamingAdapter.PushQuoteReceived()" + this.ToString();
+			string msig = " //StreamingAdapter.PushQuoteReceived_positiveSize()" + this.ToString();
 
 			if (this.DistributorCharts_substitutedDuringLivesim.ChannelsBySymbol.Count == 0) {
 				this.RaiseOnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange(quoteUnboundUnattached_absnoPerSymbolMinusOne);
@@ -180,8 +180,8 @@ namespace Sq1.Core.Streaming {
 				return;
 			}
 
-			Quote quotePrev = this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(quoteUU.Symbol);
-			if (quotePrev == null) {
+			Quote quoteLast = this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(quoteUU.Symbol);
+			if (quoteLast == null) {
 				string msg = "QUIK_JUST_CONNECTED_AND_SENDS_NONSENSE[" + quoteUU + "]";
 				Assembler.PopupException(msg + msig, null, false);
 				this.StreamingDataSnapshot.SetQuoteLast_forSymbol(quoteUU);
@@ -191,7 +191,7 @@ namespace Sq1.Core.Streaming {
 			//v1 HAS_NO_MILLISECONDS_FROM_QUIK if (quote.ServerTime > lastQuote.ServerTime) {
 			//v2 TOO_SENSITIVE_PRINTED_SAME_MILLISECONDS_BUT_STILL_DIFFERENT if (quote.ServerTime.Ticks > lastQuote.ServerTime.Ticks) {
 			string quoteMillis		= quoteUU.ServerTime.ToString("HH:mm:ss.fff");
-			string quotePrevMillis  = quotePrev.ServerTime.ToString("HH:mm:ss.fff");
+			string quotePrevMillis  = quoteLast.ServerTime.ToString("HH:mm:ss.fff");
 			if (quoteMillis == quotePrevMillis) {
 				//if (quoteUU.SameBidAsk(quotePrev) == false) {
 				//    quoteUU.ServerTime = quotePrev.ServerTime.AddMilliseconds(10);
@@ -277,18 +277,40 @@ namespace Sq1.Core.Streaming {
 		        return;
 		    }
 
-		    Quote quoteCurrent = this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(symbol);
-		    if (quoteCurrent == null) {
+		    Quote quoteLast = this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(symbol);
+		    if (quoteLast == null) {
 		        string msg = "RETURNING_WITHOUT_PUSHING_LEVEL_TWO_TO_CONSUMERS"
 		            + " UNABLE_TO_CHECK_IF_MARKET_IS_CLOSED_SINCE_LEVEL_TWO_HAS_NO_SERVER_TIME_AND_LAST_QUOTE_IS_NULL";
 		        Assembler.PopupException(msg + msig, null, false);
 		        return;
 		    }
 
+			//v1
+			string msg3 = "now it's 8:45local => 17:45server; QuikJunior sends GMT+3 1 hour later;"
+				+ " what if I set TZ to GMT+4 (Baku) before day open?"
+				+ " first problem was in midday (couldn't overwrite BARS and needed Editor to slide back / delete)";
+			Assembler.PopupException(msg3);
 			DateTime nowServerTime = this.DataSource.MarketInfo.Convert_localTime_toServerTime(DateTime.Now);
-		    string reasonMarketIsClosedNow  = this.DataSource.MarketInfo.GetReason_ifMarket_closedOrSuspended_at(nowServerTime);
+			DateTime guessingServerTime_forLevel2 = nowServerTime;
+
+		    //v2
+			Quote lastQuote = this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(symbol);
+			if (lastQuote != null) {
+				DateTime lastQuoteServerTime = lastQuote.ServerTime;
+				TimeSpan diff = guessingServerTime_forLevel2.Subtract(lastQuoteServerTime);
+				if (diff.TotalMinutes > 30) {
+					string msg2 = "lastQuoteServerTime_GOT_PRIORITY_FOR_LEVEL2"
+						+ " PLS_ADJUST_TIMEZONE_PRIOR_TO_MARKET_OPEN_IN_DataSourceEditor.MarketInfo.Timezone"
+						+ " nowServerTime[" + nowServerTime + "] - lastQuote.ServerTime[" + lastQuote.ServerTime + "]"
+						+ " = [" + diff + "].TotalMinutes > 30";
+					Assembler.PopupException(msg2, null, false);
+					guessingServerTime_forLevel2 = lastQuoteServerTime;
+				}
+			}
+
+		    string reasonMarketIsClosedNow  = this.DataSource.MarketInfo.GetReason_ifMarket_closedOrSuspended_at(guessingServerTime_forLevel2);
 		    if (string.IsNullOrEmpty(reasonMarketIsClosedNow) == false) {
-		        string msg = "[" + this.DataSource.MarketInfo.Name + "]NOT_PUSHING_LEVEL_TWO " + reasonMarketIsClosedNow + " quoteCurrent=[" + quoteCurrent + "]";
+		        string msg = "[" + this.DataSource.MarketInfo.Name + "]NOT_PUSHING_LEVEL_TWO " + reasonMarketIsClosedNow + " quoteLast=[" + quoteLast + "]";
 		        Assembler.PopupException(msg + msig, null, false);
 		        Assembler.DisplayStatus(msg);
 		        return;

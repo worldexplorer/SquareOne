@@ -308,7 +308,9 @@ namespace Sq1.Core.Broker {
 
 				case OrderState.Error:
 				case OrderState.ErrorMarketPriceZero:
-				case OrderState.ErrorSubmittingOrder:
+				case OrderState.ErrorSubmittingOrder_classifyMe:
+				case OrderState.ErrorSubmittingOrder_unexecutableParameters:
+				case OrderState.ErrorSubmittingOrder_wrongAccount:
 				case OrderState.ErrorSlippageCalc:
 					Assembler.PopupException("PostProcess(): order.PriceFill=0 " + msig);
 					order.PriceFilled = 0;
@@ -385,15 +387,39 @@ namespace Sq1.Core.Broker {
 				case OrderState.JustConstructed:
 					break;
 
-				case OrderState._TradeStatus:
+				case OrderState._TransactionStatus:	// for Market, Limit, killers
+				case OrderState._TradeStatus:		// for Market
+				case OrderState._OrderStatus:		// for Limit
 					break;
 
 				default:
-					string msg4 = "NO_HANDLER_FOR_ORDER.STATE";
+					string msg4 = "NO_HANDLER_FOR_order.State[" + order.State + "]";
 					Assembler.PopupException(msg4 + msig, null, false);
 					break;
 			}
 		}
+		public override string ToString() {
+			string ret = "";
 
+			//int itemsCnt			= this.ExecutionTreeControl.OlvOrdersTree.Items.Count;
+			int allCnt				= this.DataSnapshot.OrdersAll.Count;
+			int submittingCnt		= this.DataSnapshot.OrdersSubmitting.Count;
+			int pendingCnt			= this.DataSnapshot.OrdersPending.Count;
+			int pendingFailedCnt	= this.DataSnapshot.OrdersPendingFailed.Count;
+			int cemeteryHealtyCnt	= this.DataSnapshot.OrdersCemeteryHealthy.Count;
+			int cemeterySickCnt		= this.DataSnapshot.OrdersCemeterySick.Count;
+			int fugitive			= allCnt - (submittingCnt + pendingCnt + pendingFailedCnt + cemeteryHealtyCnt + cemeterySickCnt);
+
+										ret +=		   cemeteryHealtyCnt + " Filled/Killed/Killers";
+										ret += " | " + pendingCnt + " Pending";
+			if (submittingCnt > 0)		ret += " | " + submittingCnt + " Submitting";
+			if (pendingFailedCnt > 0)	ret += " | " + pendingFailedCnt + " PendingFailed";
+			if (cemeterySickCnt > 0)	ret += " | " + cemeterySickCnt + " DeadFromSickness";
+										ret += " :: "+ allCnt + " Total";
+			//if (itemsCnt != allCnt)		ret += " | " + itemsCnt + " Displayed";
+			if (fugitive > 0)			ret += ", " + fugitive + " DeserializedPrevLaunch";
+
+			return ret;
+		}
 	}
 }

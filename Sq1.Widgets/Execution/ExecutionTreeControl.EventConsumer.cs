@@ -15,7 +15,7 @@ namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
 		void olvOrdersTree_SelectedIndexChanged(object sender, EventArgs e) {
 			try {
-				this.DataSnapshot.FirstRowShouldStaySelected = (this.OlvOrdersTree.SelectedIndex == 0) ? true : false;
+				this.dataSnapshot.FirstRowShouldStaySelected = (this.OlvOrdersTree.SelectedIndex == 0) ? true : false;
 				int selectedIndex = this.OlvOrdersTree.SelectedIndex;
 				if (selectedIndex == -1) {
 					// PRESSING_DEL_KEY_DOESNT_TREAT_LOST_SELECTION_AS_CHANGED??? this.olvMessages.Clear();
@@ -35,7 +35,7 @@ namespace Sq1.Widgets.Execution {
 				}
 				this.mniStopEmergencyClose.Enabled = removeEmergencyLockEnabled;*/
 				
-				if (this.DataSnapshot.SingleClickSyncWithChart) {
+				if (this.dataSnapshot.SingleClickSyncWithChart) {
 					//v1 this.raiseOnOrderDoubleClickedChartFormNotification(this, this.OrdersTree.SelectedObject as Order);
 					this.olvOrdersTree_DoubleClick(this, null);
 				}
@@ -80,7 +80,7 @@ namespace Sq1.Widgets.Execution {
 		void mniToggleBrokerTime_Click(object sender, EventArgs e) {
 			try {
 				// F4.CheckOnClick=True this.mniBrokerTime.Checked = !this.mniBrokerTime.Checked; 
-				this.DataSnapshot.ShowBrokerTime = this.mniToggleBrokerTime.Checked;
+				this.dataSnapshot.ShowBrokerTime = this.mniToggleBrokerTime.Checked;
 				this.DataSnapshotSerializer.Serialize();
 				this.RebuildAllTree_focusOnTopmost();
 			} catch (Exception ex) {
@@ -92,7 +92,7 @@ namespace Sq1.Widgets.Execution {
 		}
 		void mniToggleSyncWithChart_Click(object sender, EventArgs e) {
 			try {
-				this.DataSnapshot.SingleClickSyncWithChart = this.mniToggleSyncWithChart.Checked;
+				this.dataSnapshot.SingleClickSyncWithChart = this.mniToggleSyncWithChart.Checked;
 				this.DataSnapshotSerializer.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleSyncWithChart_Click", ex);
@@ -104,7 +104,7 @@ namespace Sq1.Widgets.Execution {
 		void mniToggleMessagesPane_Click(object sender, EventArgs e) {
 			try {
 				this.splitContainerMessagePane.Panel2Collapsed = !this.mniToggleMessagesPane.Checked;
-				this.DataSnapshot.ShowMessagesPane = this.mniToggleMessagesPane.Checked;
+				this.dataSnapshot.ShowMessagesPane = this.mniToggleMessagesPane.Checked;
 				this.DataSnapshotSerializer.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleMessagesPane_Click", ex);
@@ -117,14 +117,14 @@ namespace Sq1.Widgets.Execution {
 			Orientation newOrientation = this.mniToggleMessagesPaneSplitHorizontally.Checked
 					? Orientation.Horizontal : Orientation.Vertical;
 			this.splitContainerMessagePane.Orientation = newOrientation;
-			this.DataSnapshot.ShowMessagePaneSplittedHorizontally = this.mniToggleMessagesPaneSplitHorizontally.Checked;
+			this.dataSnapshot.ShowMessagePaneSplittedHorizontally = this.mniToggleMessagesPaneSplitHorizontally.Checked;
 			this.DataSnapshotSerializer.Serialize();
 		}		
 		void mniToggleCompletedOrders_Click(object sender, EventArgs e) {
 			try {
 				// do something with filters
 				this.RebuildAllTree_focusOnTopmost();
-				this.DataSnapshot.ShowCompletedOrders = this.mniToggleCompletedOrders.Checked;
+				this.dataSnapshot.ShowCompletedOrders = this.mniToggleCompletedOrders.Checked;
 				this.DataSnapshotSerializer.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleCompletedOrders_Click", ex);
@@ -302,7 +302,7 @@ namespace Sq1.Widgets.Execution {
 		}
 		
 		void splitContainerMessagePane_SplitterMoved(object sender, SplitterEventArgs e) {
-			if (this.DataSnapshot == null) return;	// there is no DataSnapshot deserialized in InitializeComponents()
+			if (this.dataSnapshot == null) return;	// there is no DataSnapshot deserialized in InitializeComponents()
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
 			//v1 WHATT??? BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE
 			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
@@ -320,13 +320,13 @@ namespace Sq1.Widgets.Execution {
 			if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
 				//if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal == e.SplitY) return;
 				//this.DataSnapshot.MessagePaneSplitDistanceHorizontal = e.SplitY;
-				if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal == this.splitContainerMessagePane.SplitterDistance) return;
-					this.DataSnapshot.MessagePaneSplitDistanceHorizontal =  this.splitContainerMessagePane.SplitterDistance;
+				if (this.dataSnapshot.MessagePaneSplitDistanceHorizontal == this.splitContainerMessagePane.SplitterDistance) return;
+					this.dataSnapshot.MessagePaneSplitDistanceHorizontal =  this.splitContainerMessagePane.SplitterDistance;
 			} else {
 				//if (this.DataSnapshot.MessagePaneSplitDistanceVertical == e.SplitX) return;
 				//this.DataSnapshot.MessagePaneSplitDistanceVertical = e.SplitX;
-				if (this.DataSnapshot.MessagePaneSplitDistanceVertical == this.splitContainerMessagePane.SplitterDistance) return;
-					this.DataSnapshot.MessagePaneSplitDistanceVertical =  this.splitContainerMessagePane.SplitterDistance;
+				if (this.dataSnapshot.MessagePaneSplitDistanceVertical == this.splitContainerMessagePane.SplitterDistance) return;
+					this.dataSnapshot.MessagePaneSplitDistanceVertical =  this.splitContainerMessagePane.SplitterDistance;
 			}
 			this.DataSnapshotSerializer.Serialize();
 		}
@@ -335,11 +335,11 @@ namespace Sq1.Widgets.Execution {
 			string msig = " //mniltbDelaySerializationSync_UserTyped";
 			try {
 				int userTyped = e.IntegerUserTyped;		// makes it red if failed to parse; "an event is a passive POCO" concept is broken here
-				this.DataSnapshot.SerializationInterval = userTyped;
+				this.dataSnapshot.SerializationInterval = userTyped;
 				this.DataSnapshotSerializer.Serialize();
 
 				SerializerLogrotatePeriodic<Order> logrotate = Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders;
-				logrotate.PeriodMillis = this.DataSnapshot.SerializationInterval;
+				logrotate.PeriodMillis = this.dataSnapshot.SerializationInterval;
 				string msg = "NEW_INTERVAL_ACTIVATED SAVED_FOR_APPRESTART SerializerLogrotatePeriodic<Order>.SerializationInterval=[" + logrotate.PeriodMillis + "]";
 				Assembler.PopupException(msg, null, false);
 			} catch (Exception ex) {
@@ -347,6 +347,24 @@ namespace Sq1.Widgets.Execution {
 			} finally {
 				this.ctxOrder.Show();
 			}
+		}
+		void mniltbDelay_UserTyped(object sender, LabeledTextBox.LabeledTextBoxUserTypedArgs e) {
+			MenuItemLabeledTextBox mnilbDelay = sender as MenuItemLabeledTextBox;
+			string typed = e.StringUserTyped;
+			int typedMsec = this.dataSnapshot.FlushToGuiDelayMsec;
+			bool parsed = Int32.TryParse(typed, out typedMsec);
+			if (parsed == false) {
+				mnilbDelay.InputFieldValue = this.dataSnapshot.FlushToGuiDelayMsec.ToString();
+				mnilbDelay.TextRed = true;
+				return;
+			}
+			this.dataSnapshot.FlushToGuiDelayMsec = typedMsec;
+			this.DataSnapshotSerializer.Serialize();
+			this.TimedTask_flushingToGui.Delay = this.dataSnapshot.FlushToGuiDelayMsec;
+			mnilbDelay.TextRed = false;
+			e.RootHandlerShouldCloseParentContextMenuStrip = true;
+			this.PopulateWindowsTitle();
+			this.ctxOrder.Visible = true;	// keep it open
 		}
 
 	}

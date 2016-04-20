@@ -316,7 +316,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Newtonsoft.Json-license.txt">
+    <Content Include="Newtonsoft.Json-LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

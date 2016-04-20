@@ -46,18 +46,25 @@ namespace Sq1.Core.Execution {
 		VictimKilled			= 650,		// KillerDone				<=> VictimKilled
 
 
+
 		Error						= 700,
 		ErrorOrderInconsistent		= 701,
-		ErrorSubmittingOrder		= 702,
-		ErrorSubmittingNotEatable	= 703,
+		ErrorSubmittingNotEatable	= 702,
 		ErrorSubmitting_KillerOrder	= 704,
 		ErrorMarketPriceZero		= 705,
 		ErrorSlippageCalc			= 706,
 		ErrorCancelReplace			= 707,
-		SubmittedNoFeedback			= 708,
 
 		ErrorSubmitting_BrokerTerminalDisconnected	= 720,
 		ErrorSubmitting_BrokerDllDisconnected		= 721,
+
+		ErrorSubmittingOrder_classifyMe				= 730,
+		ErrorSubmittingOrder_unexecutableParameters	= 731,
+		ErrorSubmittingOrder_wrongAccount			= 732,
+
+		SubmittedNoFeedback			= 799,
+
+
 
 		IRefuseToCloseNonStreamingPosition	= 800,
 		IRefuseToCloseUnfilledEntry			= 801,

@@ -1,7 +1,7 @@
 {
   "$type": "Sq1.Core.AssemblerDataSnapshot, Sq1.Core",
   "WorkspaceCurrentlyLoaded": "Default",
-  "SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch": 10,
+  "SplitterEvents_shouldBeIgnored_duringFirstTenSeconds_afterAppLaunch": 20,
   "ReferencedNetAssemblyNames_forCompilingScripts_System": [
     "System.dll",
     "System.Windows.Forms.dll",

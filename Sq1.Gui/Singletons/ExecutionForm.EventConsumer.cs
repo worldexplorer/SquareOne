@@ -21,7 +21,7 @@ namespace Sq1.Gui.Singletons {
 			//}
 			if (e.Orders.Count == 0) return;
 			
-			this.PopulateWindowText();
+			this.PopulateWindowsTitle();
 			
 			//v1 when in virtual mode, use model :(
 			foreach (Order o in e.Orders) {
@@ -50,7 +50,7 @@ namespace Sq1.Gui.Singletons {
 			//this.executionTree.OrderInsertMessage(e.OrderStateMessage);
 			//this.executionTree.PopulateMessagesFromSelectedOrder(e.OrderStateMessage.Order);
 
-			this.PopulateWindowText();
+			this.PopulateWindowsTitle();
 
 			//Alert alert = e.OrderStateMessage.Order.Alert;
 			//bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = (alert.IsBacktestingLivesimNow_FalseIfNoBacktester == true && alert.GuiHasTimeRebuildReportersAndExecution == false);
@@ -66,7 +66,7 @@ namespace Sq1.Gui.Singletons {
 			}
 			if (base.IsCoveredOrAutoHidden) return;	// could've been checked before switching to gui thread?...
 
-			this.PopulateWindowText();
+			this.PopulateWindowsTitle();
 
 			//bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = false;
 			//foreach (Order order in e.Orders) {
@@ -86,7 +86,7 @@ namespace Sq1.Gui.Singletons {
 			}
 			if (base.IsCoveredOrAutoHidden) return;
 			this.ExecutionTreeControl.OrderRemoved_alreadyFromBothLists_rebuildOrdersTree_cleanMessagesView(e.Orders);
-			this.PopulateWindowText();
+			this.PopulateWindowsTitle();
 		}
 		void orderProcessor_OnDelaylessLivesimEndedShouldRebuildOLV(object sender, EventArgs e) {
 			if (this.InvokeRequired) {
@@ -94,7 +94,7 @@ namespace Sq1.Gui.Singletons {
 				return;
 			}
 			this.ExecutionTreeControl.RebuildAllTree_focusOnTopmost();
-			this.PopulateWindowText();
+			this.PopulateWindowsTitle();
 		}
 		void executionTree_OnOrderSingleClicked_ChartControlShouldPopupPosition(object sender, OrderEventArgs e) {
 			try {
@@ -115,9 +115,6 @@ namespace Sq1.Gui.Singletons {
 
 			//this.ExecutionTreeControl.OnOrderStatsChangedRecalculateWindowTitleExecutionFormNotification += delegate { this.PopulateWindowText(); };
 			this.ExecutionTreeControl.OnOrderSingleClicked_ChartControlShouldPopupPosition += this.executionTree_OnOrderSingleClicked_ChartControlShouldPopupPosition;
-
-			isHiddenPrevState = base.IsHidden;
-			//BETTER_IN_MainForm.WorkspaceLoad(): this.ExecutionTreeControl.MoveStateColumnToLeftmost();
 		}
 		void executionForm_Closed(object sender, FormClosedEventArgs e) {
 			string msg = "ExecutionForm_Closed(): all self-hiding singletons are closed() on MainForm.Close()?";

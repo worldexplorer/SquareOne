@@ -31,7 +31,7 @@ namespace Sq1.Gui {
 			
 			if (this.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) {
 				if (msg != null) exc = new Exception(msg, exc);
-				Assembler.ExceptionsDuringApplicationShutdown_InsertAndSerialize(exc);
+				Assembler.Exceptions_duringApplicationShutdown_InsertAndSerialize(exc);
 				return;
 			}
 			

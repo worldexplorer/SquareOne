@@ -45,12 +45,14 @@
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;USE_CONTROL_IMPROVED</DefineConstants>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <StartAction>Project</StartAction>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <OutputPath>..\Sq1.Gui\bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;USE_CONTROL_IMPROVED</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -169,9 +171,6 @@
     </Compile>
     <Compile Include="Exceptions\ExceptionsControl.EventConsumer.cs">
       <DependentUpon>ExceptionsControl.cs</DependentUpon>
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Exceptions\UserControlImproved.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Execution\ExecutionTreeControl.cs">

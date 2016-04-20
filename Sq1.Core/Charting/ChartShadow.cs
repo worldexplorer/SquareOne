@@ -255,7 +255,7 @@ namespace Sq1.Core.Charting {
 				return;
 			}
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker) delegate { this.PumpUnPaused_notification_switchLivesimmingThreadToGui(); } );
+				base.BeginInvoke(new MethodInvoker(this.PumpUnPaused_notification_switchLivesimmingThreadToGui));
 				return;
 			}
 			base.ParentForm.Text = this.prePauseWindowsTitle;

@@ -58,7 +58,7 @@ namespace Sq1.Charting {
 			this.multiSplitColumns_Level2_PriceVolumeMultisplit.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(this.multiSplitContainer_bothRowsAndColumns_OnSplitterMoveOrDragEnded);
 			this.multiSplitColumns_Level2_PriceVolumeMultisplit.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(this.multiSplitContainer_bothRowsAndColumns_OnSplitterMoveOrDragEnded);
 
-			this.OnResizeNotReceivedWithin += new EventHandler<EventArgs>(chartControl_OnResizeNotReceivedWithin);
+			this.OnResizeStopped += new EventHandler<EventArgs>(chartControl_OnResizeNotReceivedWithin);
 
 			//DEFAULT_FALSE_DONT_DISTURB_OnLayout() this.AutoScroll = false;
 			//this.HScroll = true;

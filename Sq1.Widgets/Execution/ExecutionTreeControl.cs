@@ -12,11 +12,18 @@ using Sq1.Core.Serializers;
 using Sq1.Core.Support;
 
 namespace Sq1.Widgets.Execution {
-	public partial class ExecutionTreeControl {
-		public	ExecutionTreeDataSnapshot						DataSnapshot;
+
+#if USE_CONTROL_IMPROVED
+	public partial class ExecutionTreeControl : UserControlPeriodicFlush {
+#else
+	public partial class ExecutionTreeControl : UserControl {
+#endif
+
+		public	ExecutionTreeDataSnapshot						dataSnapshot;
 		public	Serializer<ExecutionTreeDataSnapshot>			DataSnapshotSerializer;
 				Dictionary<ToolStripMenuItem, List<OLVColumn>>	columnsByFilter;
 				OrdersAutoTree									ordersTree;
+				OrderProcessor									orderProcessor_forToStringOnly;
 		public	Order											OrderSelected			{ get {
 				if (this.OlvOrdersTree.SelectedObjects.Count != 1) return null;
 				return this.OlvOrdersTree.SelectedObjects[0] as Order;
@@ -54,54 +61,7 @@ namespace Sq1.Widgets.Execution {
 
 			this.fontCache = new FontCache(this.Font);
 		}
-		void buildMniShortcuts_afterInitializeComponent() {
-			columnsByFilter = new Dictionary<ToolStripMenuItem, List<OLVColumn>>();
-			columnsByFilter.Add(this.mniShowWhenWhat, new List<OLVColumn>() {
-				this.olvcBarNum,
-				this.olvcOrderCreated,
-				this.olvcSymbol,
-				this.olvcDirection,
-				this.olvcOrderType
-				});
-			columnsByFilter.Add(this.mniShowKilledReplaced, new List<OLVColumn>() {
-				this.olvcReplacedByGUID,
-				this.olvcKilledByGUID
-				});
-			columnsByFilter.Add(this.mniShowPrice, new List<OLVColumn>() {
-				this.olvcSpreadSide,
-				this.olvcPriceScript,
-				this.olvcPriceCurBidOrAsk,
-				this.olvcSlippageApplied,
-				this.olvcPriceRequested_withSlippageApplied,
-				this.olvcPriceFilled,
-				this.olvcSlippageFilledMinusApplied,
-				this.olvcPriceDeposited_DollarForPoint
-				});
-			columnsByFilter.Add(this.mniShowQty, new List<OLVColumn>() {
-				this.olvcQtyRequested,
-				this.olvcQtyFilled
-				});
-			columnsByFilter.Add(this.mniShowExchange, new List<OLVColumn>() {
-				this.olvcSernoSession,
-				this.olvcSernoExchange,
-				this.olvcGUID,
-				this.olvcReplacedByGUID,
-				this.olvcKilledByGUID
-				});
-			columnsByFilter.Add(this.mniShowOrigin, new List<OLVColumn>() {
-				this.olvcBrokerAdapterName,
-				this.olvcDataSourceName,
-				this.olvcStrategyName,
-				this.olvcSignalName,
-				this.olvcScale
-				});
-			columnsByFilter.Add(this.mniShowPosition, new List<OLVColumn>() { });
-			columnsByFilter.Add(this.mniShowExtra, new List<OLVColumn>() {
-				});
-			columnsByFilter.Add(this.mniShowLastMessage, new List<OLVColumn>() {
-				this.olvcLastMessage
-				});
-		}
+
 		//former public void Initialize(), replaced by InitializeWithShadowTreeRebuilt();
 		public void PopulateDataSnapshot_initializeSplitters_ifDockContentDeserialized() {
 			//IM_INVOKED_AFTER_WORKSPACE_LOAD
@@ -109,8 +69,8 @@ namespace Sq1.Widgets.Execution {
 			
 			try {
 				this.SuspendLayout();
-				this.mniToggleMessagesPaneSplitHorizontally.Checked = this.DataSnapshot.ShowMessagePaneSplittedHorizontally;
-				Orientation newOrientation = this.DataSnapshot.ShowMessagePaneSplittedHorizontally ? Orientation.Horizontal : Orientation.Vertical;			
+				this.mniToggleMessagesPaneSplitHorizontally.Checked = this.dataSnapshot.ShowMessagePaneSplittedHorizontally;
+				Orientation newOrientation = this.dataSnapshot.ShowMessagePaneSplittedHorizontally ? Orientation.Horizontal : Orientation.Vertical;			
 				try {
 					if (this.splitContainerMessagePane.Orientation != newOrientation) {
 						this.splitContainerMessagePane.Orientation =  newOrientation;
@@ -120,7 +80,7 @@ namespace Sq1.Widgets.Execution {
 					Assembler.PopupException(msg, ex);
 				}
 				
-				this.mniToggleMessagesPane.Checked = this.DataSnapshot.ShowMessagesPane;
+				this.mniToggleMessagesPane.Checked = this.dataSnapshot.ShowMessagesPane;
 				this.splitContainerMessagePane.Panel2Collapsed = !this.mniToggleMessagesPane.Checked;
 				if (this.Width == 0) {
 					DockContentImproved executionForm = base.Parent as DockContentImproved;
@@ -135,18 +95,18 @@ namespace Sq1.Widgets.Execution {
 				} else {
 					try {
 						if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
-							if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal > 0) {
+							if (this.dataSnapshot.MessagePaneSplitDistanceHorizontal > 0) {
 								string msg = "+67_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_HORIZONTAL";
-								int newDistance = this.DataSnapshot.MessagePaneSplitDistanceHorizontal;	// + 67 this.splitContainerMessagePane.SplitterWidth;
+								int newDistance = this.dataSnapshot.MessagePaneSplitDistanceHorizontal;	// + 67 this.splitContainerMessagePane.SplitterWidth;
 				//Debugger.Break();
 								if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
 									this.splitContainerMessagePane.SplitterDistance =  newDistance;
 								}
 							}
 						} else {
-							if (this.DataSnapshot.MessagePaneSplitDistanceVertical > 0) {
+							if (this.dataSnapshot.MessagePaneSplitDistanceVertical > 0) {
 								string msg = "+151_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_VERTICAL";
-								int newDistance = this.DataSnapshot.MessagePaneSplitDistanceVertical;		// + 151 this.splitContainerMessagePane.SplitterWidth;
+								int newDistance = this.dataSnapshot.MessagePaneSplitDistanceVertical;		// + 151 this.splitContainerMessagePane.SplitterWidth;
 				//Debugger.Break();
 								if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
 									this.splitContainerMessagePane.SplitterDistance =  newDistance;
@@ -166,24 +126,25 @@ namespace Sq1.Widgets.Execution {
 				this.ResumeLayout(true);
 			}
 			
-			this.mniToggleBrokerTime		.Checked = this.DataSnapshot.ShowBrokerTime;
-			this.mniToggleCompletedOrders	.Checked = this.DataSnapshot.ShowCompletedOrders;
-			this.mniToggleSyncWithChart		.Checked = this.DataSnapshot.SingleClickSyncWithChart;
+			this.mniToggleBrokerTime		.Checked = this.dataSnapshot.ShowBrokerTime;
+			this.mniToggleCompletedOrders	.Checked = this.dataSnapshot.ShowCompletedOrders;
+			this.mniToggleSyncWithChart		.Checked = this.dataSnapshot.SingleClickSyncWithChart;
 			
-			this.DataSnapshot.FirstRowShouldStaySelected = true;
+			this.dataSnapshot.FirstRowShouldStaySelected = true;
 			this.RebuildAllTree_focusOnTopmost();
 		}
-		public void InitializeWith_shadowTreeRebuilt(OrdersAutoTree ordersTree) {
+		public void InitializeWith_shadowTreeRebuilt(OrdersAutoTree ordersTree, OrderProcessor orderProcessor) {
 			this.ordersTree = ordersTree;
+			this.orderProcessor_forToStringOnly = orderProcessor;
 			// NOPE_DOCK_CONTENT_HASNT_BEEN_DESERIALiZED_YET_I_DONT_KNOW_IF_IM_SHOWN_OR_NOT this.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
 
 			this.DataSnapshotSerializer = new Serializer<ExecutionTreeDataSnapshot>();
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 				"Sq1.Widgets.Execution.ExecutionTreeDataSnapshot.json", "Workspaces" ,
 				Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded);
-			this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
+			this.dataSnapshot = this.DataSnapshotSerializer.Deserialize();
 			if (createdNewFile) {
-				this.DataSnapshot.ShowMessagePaneSplittedHorizontally = (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) ? true : false;
+				this.dataSnapshot.ShowMessagePaneSplittedHorizontally = (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) ? true : false;
 				//this.DataSnapshot.MessagePaneSplitDistanceHorizontal = this.splitContainerMessagePane.SplitterDistance;
 				//int newDistance = this.splitContainerMessagePane.SplitterDistance - this.splitContainerMessagePane.SplitterWidth;
 				//this.DataSnapshot.MessagePaneSplitDistanceVertical = newDistance;
@@ -205,14 +166,20 @@ namespace Sq1.Widgets.Execution {
 //				}
 				//v2
 				// http://stackoverflow.com/questions/11743160/how-do-i-encode-and-decode-a-base64-string
-				if (this.DataSnapshot.OrdersTreeOlvStateBase64.Length > 0) {
-					byte[] olvStateBinary = ObjectListViewStateSerializer.Base64Decode(this.DataSnapshot.OrdersTreeOlvStateBase64);
+				if (this.dataSnapshot.OrdersTreeOlvStateBase64.Length > 0) {
+					byte[] olvStateBinary = ObjectListViewStateSerializer.Base64Decode(this.dataSnapshot.OrdersTreeOlvStateBase64);
 					this.OlvOrdersTree.RestoreState(olvStateBinary);
 				}
 
-				this.mniltbSerializationInterval.InputFieldValue = this.DataSnapshot.SerializationInterval.ToString();
-				Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders.PeriodMillis = this.DataSnapshot.SerializationInterval;
+				this.mniltbSerializationInterval.InputFieldValue = this.dataSnapshot.SerializationInterval.ToString();
+				Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders.PeriodMillis = this.dataSnapshot.SerializationInterval;
 			}
+
+			//base.TimedTask_flushingToGui.Delay = this.dataSnapshot.TreeRefreshDelayMsec;	// may be already started?
+
+			base.Initialize_periodicFlushing("FLUSH_EXECUTION_CONTROL",
+				new Action(this.RebuildAllTree_focusOnTopmost), this.dataSnapshot.FlushToGuiDelayMsec);
+			//base.TimedTask_flushingToGui.Start();
 		}
 		public void PopulateMenuAccounts_fromBrokerAdapter(ToolStripMenuItem[] ctxAccountsAllCheckedFromUnderlyingBrokerAdapters) {
 			this.ctxAccounts.SuspendLayout();
@@ -233,7 +200,7 @@ namespace Sq1.Widgets.Execution {
 			//this.lvOrders_SelectedIndexChanged(this.lvOrders, EventArgs.Empty);
 		}
 		public void SelectOrder_populateMessages(Order order_nullMeansClearMessages) {
-			bool firstRowShouldStaySelected = (this.DataSnapshot != null) ? this.DataSnapshot.FirstRowShouldStaySelected : true;
+			bool firstRowShouldStaySelected = (this.dataSnapshot != null) ? this.dataSnapshot.FirstRowShouldStaySelected : true;
 			if (firstRowShouldStaySelected) {
 				//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectObject(orderTopmost, true);
 				//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectedIndex = 0;
@@ -370,18 +337,45 @@ namespace Sq1.Widgets.Execution {
 			var orderTopmost = this.ordersTree.First_nullUnsafe;
 			this.SelectOrder_populateMessages(orderTopmost);
 		}
-//		public void RebuildOneRootNodeChildAdded(Order orderParentToRepaint) {
-//			this.OrdersTreeOLV.RefreshObject(orderParentToRepaint);
-//			// apparently, a node with a child, doesn't require RebuildAdd/Invalidate/Refresh...
-//			//this.OrdersTree.RebuildAll(true);
-//			//this.OrdersTree.Invalidate();
-//			this.OrdersTreeOLV.Expand(orderParentToRepaint);
-//		}
-		public void SplitterDistance_resetToSaved() {
-			this.splitContainerMessagePane.SplitterDistance = 
-				this.splitContainerMessagePane.Orientation == Orientation.Horizontal
-				? this.DataSnapshot.MessagePaneSplitDistanceHorizontal
-				: this.DataSnapshot.MessagePaneSplitDistanceVertical;
+
+		public void PopulateWindowsTitle() {
+			Form parentForm = this.Parent as Form;
+			if (parentForm == null) {
+				string msg = "all that was probably needed for messy LivesimControl having splitContainer3<splitContainer1<LivesimControl - deleted; otherwize no idea why so many nested splitters";
+				Assembler.PopupException(msg);
+				return;
+			}
+			parentForm.Text = "Execution :: " + this.ToString();
+		}		
+		public override string ToString() {
+			string ret = "";
+			// ALWAYS_SCHEDULED_AFTER_ANY_NEWCOMER_BUFFERED_OR_FLUSHED ret += this.timerFlushToGui_noNewcomersWithinDelay.Scheduled ? "BUFFERING " : "";
+			// ALREADY_PRINTED_2_LINES_LATER ret += this.exceptions_notFlushedYet.Count ? "BUFFERING " : "";
+
+			ret += this.orderProcessor_forToStringOnly.ToString();
+
+			int itemsCnt			= this.OlvOrdersTree.Items.Count;
+			ret += "   " + itemsCnt.ToString("000");
+			//if (this.exceptions_notFlushedYet.Count > 0)
+			ret += "/" 
+				+ "000" //+ this.exceptions_notFlushedYet.Count.ToString("000")
+				+ "buffered";
+			ret += base.FlushingStats;
+			return ret;
 		}
+		
+		//public void RebuildOneRootNodeChildAdded(Order orderParentToRepaint) {
+		//    this.OrdersTreeOLV.RefreshObject(orderParentToRepaint);
+		//    // apparently, a node with a child, doesn't require RebuildAdd/Invalidate/Refresh...
+		//    //this.OrdersTree.RebuildAll(true);
+		//    //this.OrdersTree.Invalidate();
+		//    this.OrdersTreeOLV.Expand(orderParentToRepaint);
+		//}
+		//public void SplitterDistance_resetToSaved() {
+		//    this.splitContainerMessagePane.SplitterDistance = 
+		//        this.splitContainerMessagePane.Orientation == Orientation.Horizontal
+		//        ? this.DataSnapshot.MessagePaneSplitDistanceHorizontal
+		//        : this.DataSnapshot.MessagePaneSplitDistanceVertical;
+		//}
 	}
 }

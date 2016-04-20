@@ -35,10 +35,10 @@ namespace Sq1.Core.Streaming {
 			throw new Exception("YOU_SHOULD_NOT_ACCESS_BARS_OF_STREAMING_SOLIDIFIER__THEY_ARE_WRITE_ONLY_THOUGH_SOLIDIFIER_METHODS");
 		} }
 
-		public override void UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirstAfterStart) {
+		public override void UpstreamSubscribed_toSymbol_streamNotifiedMe(Quote quoteFirst_afterStart) {
 		}
-		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteCurrent_beforeStop) {
-			this.barsSaveToFile_replaceStreamingBar(quoteCurrent_beforeStop, true);
+		public override void UpstreamUnsubscribed_fromSymbol_streamNotifiedMe(Quote quoteLast_beforeStop) {
+			this.barsSaveToFile_replaceStreamingBar(quoteLast_beforeStop, true);
 		}
 		public override void Consume_quoteOfStreamingBar(Quote quoteWith_pseudoExpanded) {
 			this.barsSaveToFile_replaceStreamingBar(quoteWith_pseudoExpanded);

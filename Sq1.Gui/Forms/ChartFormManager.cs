@@ -1090,7 +1090,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingUnsubscribe(msig);
-			this.ChartForm.ChartControl.ExecutorObjects_frozenForRendering.QuoteCurrent = null;
+			this.ChartForm.ChartControl.ExecutorObjects_frozenForRendering.QuoteLast = null;
 
 			this.ReportersFormsManager	.Dispose_workspaceReloading();
 			this.ChartForm				.Dispose();

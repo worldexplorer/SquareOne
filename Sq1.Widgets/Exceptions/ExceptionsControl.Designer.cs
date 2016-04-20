@@ -6,17 +6,13 @@ using System.Drawing;
 
 using BrightIdeasSoftware;
 
+using Sq1.Core.Support;
+
 namespace Sq1.Widgets.Exceptions {
 	[ToolboxBitmap(typeof(ExceptionsControl), "ExceptionsControl")]
 	[Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]
 
-#if USE_CONTROL_IMPROVED
-	public partial class ExceptionsControl : UserControlImproved {
-#else
-	public partial class ExceptionsControl : UserControl {
-#endif
-
-
+	public partial class ExceptionsControl {
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ghdfg"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "hdfgh"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "hdfg"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "dfghdfg"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Occured")]
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
@@ -117,7 +113,7 @@ namespace Sq1.Widgets.Exceptions {
             this.mniRefresh,
             this.mniCopy});
 			this.ctxTree.Name = "ctx";
-			this.ctxTree.Size = new System.Drawing.Size(266, 194);
+			this.ctxTree.Size = new System.Drawing.Size(266, 191);
 			// 
 			// mniClear
 			// 
@@ -182,7 +178,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniltbDelay.InputFieldWidth = 40;
 			this.mniltbDelay.Name = "mniltbDelay";
 			this.mniltbDelay.OffsetTop = 0;
-			this.mniltbDelay.Size = new System.Drawing.Size(180, 21);
+			this.mniltbDelay.Size = new System.Drawing.Size(183, 18);
 			this.mniltbDelay.TextLeft = "Delay for buffering";
 			this.mniltbDelay.TextLeftOffsetX = 0;
 			this.mniltbDelay.TextLeftWidth = 108;
@@ -309,13 +305,13 @@ namespace Sq1.Widgets.Exceptions {
 			this.ctxCallStack.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mniCopyStackPosition});
 			this.ctxCallStack.Name = "ctxCallStack";
-			this.ctxCallStack.Size = new System.Drawing.Size(145, 26);
+			this.ctxCallStack.Size = new System.Drawing.Size(153, 48);
 			// 
 			// mniCopyStackPosition
 			// 
 			this.mniCopyStackPosition.Name = "mniCopyStackPosition";
 			this.mniCopyStackPosition.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.mniCopyStackPosition.Size = new System.Drawing.Size(144, 22);
+			this.mniCopyStackPosition.Size = new System.Drawing.Size(152, 22);
 			this.mniCopyStackPosition.Text = "Copy";
 			this.mniCopyStackPosition.Click += new System.EventHandler(this.mniCopyStackPosition_Click);
 			// 
@@ -325,6 +321,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.Controls.Add(this.splitContainerVertical);
 			this.Name = "ExceptionsControl";
 			this.Size = new System.Drawing.Size(509, 361);
+			this.ResizeStopped += new System.EventHandler<System.EventArgs>(this.exceptionsControl_ResizeStopped);
 			this.Load += new System.EventHandler(this.form_OnLoad);
 			this.VisibleChanged += new System.EventHandler(this.exceptionsControl_VisibleChanged);
 			((System.ComponentModel.ISupportInitialize)(this.olvTreeExceptions)).EndInit();

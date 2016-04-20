@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 namespace Sq1.Core {
 	public class AssemblerDataSnapshot {
 		[JsonProperty]	public string		WorkspaceCurrentlyLoaded;
-		[JsonProperty]	public int			SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch;
+		[JsonProperty]	public int			SplitterEvents_shouldBeIgnored_duringFirstTenSeconds_afterAppLaunch;
 
 		[JsonProperty]	public List<string>	ReferencedNetAssemblyNames_forCompilingScripts_System	{ get; private set; }
 		[JsonProperty]	public List<string> ReferencedNetAssemblyNames_forCompilingScripts_Sq1		{ get; private set; }
@@ -28,7 +28,7 @@ namespace Sq1.Core {
 		
 		public AssemblerDataSnapshot() {
 			WorkspaceCurrentlyLoaded = "Default";
-			SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch = 10;	// = 0 on 3.1GHz restores exactly as it was saved; ZERO_HELPS_BUT_MEANS_NO_DELAY: for Charts but not for Exceptions and Execution 
+			SplitterEvents_shouldBeIgnored_duringFirstTenSeconds_afterAppLaunch = 10;	// = 0 on 3.1GHz restores exactly as it was saved; ZERO_HELPS_BUT_MEANS_NO_DELAY: for Charts but not for Exceptions and Execution 
 
 			ReferencedNetAssemblyNames_forCompilingScripts_System = new List<string>() {
 				"System.dll", "System.Windows.Forms.dll", "System.Drawing.dll"

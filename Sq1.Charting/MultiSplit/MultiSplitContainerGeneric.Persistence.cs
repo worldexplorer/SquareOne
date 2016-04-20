@@ -165,7 +165,7 @@ namespace Sq1.Charting.MultiSplit {
 
 			#if DEBUG		// TESTS_EMBEDDED
 			int roundingError = Math.Abs(xCheckDiff - base.Width);
-			if (roundingError != 0) {
+			if (roundingError > 1) {
 				string msg = "USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR roundingError[" + roundingError + "]";
 				Assembler.PopupException(msg + msig, null, false);
 			}
@@ -277,7 +277,7 @@ namespace Sq1.Charting.MultiSplit {
 
 			#if DEBUG		// TESTS_EMBEDDED
 			int roundingError = Math.Abs(yCheckDiff - base.Height);
-			if (roundingError != 0) {
+			if (roundingError > 1) {
 				string msg = "USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR roundingError[" + roundingError + "]";
 				Assembler.PopupException(msg + msig, null, false);
 			}

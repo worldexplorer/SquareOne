@@ -12,17 +12,17 @@ namespace Sq1.Core.Support {
 		Task				taskWaitingForTimerExpire;
 		Action				actionOnTimerExpired;
 
-		public TimeredBlockTask(string reasonToExist_passed, Control guiInvoker_passed, Action invokedInGuiThread_afterTimerExpired_passed) {
+		public TimeredBlockTask(string reasonToExist_passed, Control guiInvoker_passed,
+				Action invokedInGuiThread_afterTimerExpired_passed, int delay = 200) {
 			this.reasonToExist = reasonToExist_passed;
 			this.guiInvoker = guiInvoker_passed;
 			this.actionOnTimerExpired = invokedInGuiThread_afterTimerExpired_passed;
 
-			this.timerUnblink = new TimeredBlock(guiInvoker);
-
 			this.taskWaitingForTimerExpire = new Task(delegate {
 				string msig = " //TaskWaitingForTimerExpire_toRevertToWhite()";
 
-				Assembler.SetThreadName(this.reasonToExist, "SETTING_THREAD_NAME_THREW looks like base.Executor=null");
+				Assembler.SetThreadName(this.reasonToExist + " initDelay[" + this.Delay + "]",
+					"SETTING_THREAD_NAME_THREW looks like base.Executor=null");
 
 				try {
 					while (this.timerUnblink.IsDisposed == false) {
@@ -34,6 +34,8 @@ namespace Sq1.Core.Support {
 					Assembler.PopupException(msg + msig, ex);
 				}
 			});
+			this.timerUnblink = new TimeredBlock(guiInvoker);
+			this.Delay = delay;
 		}
 
 		void switchToGui_executeCodeLinkingTwoUnrelatedDlls(Action refreshDataSourceTree_invokedInGuiThread) {

@@ -202,9 +202,9 @@ namespace Sq1.Core.Streaming {
 		}
 		public void UpstreamUnSubscribedFromSymbolPokeConsumersHelper(string symbol) {
 			List<SymbolScaleStream<StreamingConsumerChart>> channels = this.DistributorCharts_substitutedDuringLivesim.GetStreams_allScaleIntervals_forSymbol(symbol);
-			Quote lastQuoteReceived = this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(symbol);
+			Quote quoteLastReceived = this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(symbol);
 			foreach (var channel in channels) {
-				channel.UpstreamUnSubscribedFromSymbol_pokeConsumers(symbol, lastQuoteReceived);
+				channel.UpstreamUnSubscribedFromSymbol_pokeConsumers(symbol, quoteLastReceived);
 			}
 		}
 

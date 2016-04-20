@@ -430,7 +430,7 @@ namespace Sq1.Gui.Forms {
 					}
 				} else {
 					this.ChartControl.ChartStreamingConsumer.StreamingUnsubscribe(reason);
-					this.ChartControl.ExecutorObjects_frozenForRendering.QuoteCurrent = null;
+					this.ChartControl.ExecutorObjects_frozenForRendering.QuoteLast = null;
 				}
 
 				bool nowStreaming = ctxChart.DownstreamSubscribed;

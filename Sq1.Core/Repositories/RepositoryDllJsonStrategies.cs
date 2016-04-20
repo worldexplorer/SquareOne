@@ -58,17 +58,17 @@ namespace Sq1.Core.Repositories {
 		public string								AbsPath							{ get { return Path.Combine(this.RootPath, Subfolder); } }
 		public List<Exception>						ExceptionsWhileInstantiating	{ get {
 				List<Exception> ret = new List<Exception>();
-				if (this.ScriptRepositoryFoundInFolderDataStrategies != null) {
-					ret.AddRange(this.ScriptRepositoryFoundInFolderDataStrategies.ExceptionsWhileScanning);
-				}
-				if (this.ScriptRepositoryFoundInFolderAppStartup != null) {
-					ret.AddRange(this.ScriptRepositoryFoundInFolderAppStartup.ExceptionsWhileScanning);
-				}
+				//if (this.ScriptRepositoryFoundInFolderDataStrategies != null) {
+				//    ret.AddRange(this.ScriptRepositoryFoundInFolderDataStrategies.ExceptionsWhileScanning);
+				//}
+				//if (this.ScriptRepositoryFoundInFolderAppStartup != null) {
+				//    ret.AddRange(this.ScriptRepositoryFoundInFolderAppStartup.ExceptionsWhileScanning);
+				//}
 				return ret;
 			} }
 
-		public RepositoryDllScripts					ScriptRepositoryFoundInFolderDataStrategies;
-		public RepositoryDllScripts					ScriptRepositoryFoundInFolderAppStartup;
+		//public RepositoryDllScripts					ScriptRepositoryFoundInFolderDataStrategies;
+		//public RepositoryDllScripts					ScriptRepositoryFoundInFolderAppStartup;
 				string								AppStartupPath;
 
 		public RepositoryDllJsonStrategies() {
@@ -101,16 +101,16 @@ namespace Sq1.Core.Repositories {
 			
 			if (Directory.Exists(this.AbsPath) == false) Directory.CreateDirectory(this.AbsPath);
 			this.StrategiesInFolders = this.StrategiesScanFolders();
-			Dictionary<Assembly, List<Script>> strategiesScanDllsInitDeserializedFromRootPath = this.StrategiesScanDlls_initDeserialized(this.RootPath);
-			this.storeInScriptsInDlls(strategiesScanDllsInitDeserializedFromRootPath);
-			Dictionary<Assembly, List<Script>> strategiesScanDllsInitDeserializedFromAppStartupPath = StrategiesScanDlls_initDeserialized(this.AppStartupPath);
-			this.storeInScriptsInDlls(strategiesScanDllsInitDeserializedFromAppStartupPath);
+			Dictionary<Assembly, List<Script>> scripts_scanned_inited_fromRootPath			= this.StrategiesScanDlls_initDeserialized(this.RootPath);
+			this.pushTo_ScriptsInDlls(scripts_scanned_inited_fromRootPath);
+			Dictionary<Assembly, List<Script>> scripts_scanned_inited_fromAppStartupPath	= this.StrategiesScanDlls_initDeserialized(this.AppStartupPath);
+			this.pushTo_ScriptsInDlls(scripts_scanned_inited_fromAppStartupPath);
 		}
-		void storeInScriptsInDlls(Dictionary<Assembly, List<Script>> strategiesInitedFromScannedDll) {
-			foreach (Assembly assembly in strategiesInitedFromScannedDll.Keys) {
+		void pushTo_ScriptsInDlls(Dictionary<Assembly, List<Script>> scriptsInited_perScannedDll) {
+			foreach (Assembly assembly in scriptsInited_perScannedDll.Keys) {
 				AssemblyName name = assembly.GetName();
 				string dllName = name.Name + ".dll";
-				List<Script> scripts = strategiesInitedFromScannedDll[assembly];
+				List<Script> scripts = scriptsInited_perScannedDll[assembly];
 				if (this.ScriptsInDlls.ContainsKey(dllName)) {
 					string msg = "DUPLICATE_DLL_NAME_IN_APPROOT_AND_DATA_FOLDERS_RENAME_RESTART dllName[" + dllName + "]";
 					Assembler.PopupException(msg);
@@ -153,9 +153,11 @@ namespace Sq1.Core.Repositories {
 			return ret;
 		}
 		protected Dictionary<Assembly, List<Script>> StrategiesScanDlls_initDeserialized(string dataOrStartupPath) {
+			string msig = " //RepositoryDllJsonStrategies.StrategiesScanDlls_initDeserialized()";
 			RepositoryDllScripts repo = new RepositoryDllScripts(dataOrStartupPath);
-			repo.ScanDlls();
+			//ALREADY_SCANNED_IN_ctor() repo.ScanDlls();
 			Dictionary<Assembly, List<Script>> ret = repo.TypesByAssemblies;
+			int scriptsFound = 0;
 			foreach (Assembly assembly in ret.Keys) {
 				List<Script> cloneableInstancesForAssembly = ret[assembly];
 				// WONT_BE_EMPTY if (cloneableInstancesForAssembly.Count == 0) continue;
@@ -182,8 +184,11 @@ namespace Sq1.Core.Repositories {
 					strategyFound.Script = script;
 					strategyFound.DllPathIfNoSourceCode = assembly.Location;
 					// NO_POINT_FOR_SAVING_ONLY_StoredInJsonAbspath this.StrategySave(strategyFound);
+					scriptsFound++;
 				}
 			}
+			string msg = "scriptsFound[" + scriptsFound + "] in dataOrStartupPath[" + dataOrStartupPath + "]";
+			//Assembler.PopupException(msg + msig, null, false);
 			return ret;
 		}
 		Strategy StrategyDeserialize_fromJsonFile(string strategyJsonAbsFile) {
