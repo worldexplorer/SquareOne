@@ -90,7 +90,7 @@ namespace Sq1.Widgets.Exceptions {
 			}
 			this.dataSnapshot.FlushToGuiDelayMsec = typedMsec;
 			this.dataSnapshotSerializer.Serialize();
-			this.TimedTask_flushingToGui.Delay = this.dataSnapshot.FlushToGuiDelayMsec;
+			this.Timed_flushingToGui.Delay = this.dataSnapshot.FlushToGuiDelayMsec;
 			mnilbDelay.TextRed = false;
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
 			this.populateWindowsTitle();
@@ -145,7 +145,12 @@ namespace Sq1.Widgets.Exceptions {
 			string msg = "I_WAS_NOT_FLUSHING_TO_GUI_UNLESS_VISIBLE";
 			////STACK_OVERFLOW_CONGRATS Assembler.PopupException(msg, null, false);
 			//this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(new Exception(msg));
-			this.flushExceptionsToOLV_switchToGuiThread();
+
+			//v1 this.flushExceptionsToOLV_switchToGuiThread();
+			//v2
+			if (base.Timed_flushingToGui == null) return;	// .Initialize() will be invoked later, with Delay deserialized
+			base.Timed_flushingToGui.ScheduleOnce_postponeIfAlreadyScheduled();
+			//base.Timed_flushingToGui.ScheduleOnce();
 		}
 
 		void exceptionsControl_ResizeStopped(object sender, EventArgs e) {
@@ -155,7 +160,7 @@ namespace Sq1.Widgets.Exceptions {
 			// 10 seconds after appRestart, all splitters will serialize themselves if moved inside, without Resize
 			// any myDockedPane / application resize will invoke both splittersMove and Resize
 			// splittersMove will serialize immediately; Resize will come 2 seconds after last and serialize again
-			this.PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized_invokeMeFromGuiThreadOnly();
+			this.PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized();
 			this.dataSnapshotSerializer.Serialize();
 		}
 	}

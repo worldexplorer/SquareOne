@@ -70,7 +70,6 @@ namespace Sq1.Core.Streaming {
 			return signalledTrue_expiredFalse;
 		} }
 
-		~PumpPerSymbol() { this.Dispose(); }
 		//v1 BEFORE_STREAM_WENT_GENERIC
 		public PumpPerSymbol(SymbolChannel<STREAMING_CONSUMER_CHILD> channel, int heartbeatTimeout = HEARTBEAT_TIMEOUT_DEFAULT) : base(channel) {
 		//v2public PumpPerSymbol(int heartbeatTimeout = HEARTBEAT_TIMEOUT_DEFAULT) : base() {
@@ -94,24 +93,39 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public void PushingThreadStop_waitConfirmed() {
-			string msig = " //PushingThreadStop isPushingThreadStarted[" + this.IsPushingThreadStarted + "]=>[" + false + "] " + this.ToString();
+			string msig = " //PushingThreadStop isPushingThreadStarted[" + this.IsPushingThreadStarted + "]=>[" + false + "]";
+#if STRINGS_VERBOSE
+				msig += " + this.ToString();
+#endif
 			if (this.IsPushingThreadStarted == false) {
 				// this.simulationPreBarsSubstitute() waits for 10 seconds
 				// you'll be waiting for confirmThreadExited.WaitOne(1000) because there was no running thread to confirm its own exit
 				return;
 			}
+
+			// early signalling to prevent stopping from <GuiThread>.Dispose() when it was already stopped earlier within Pump's threads
+			this.IsPushingThreadStarted = false;
+
 			try {
 				this.confirmThreadExited.Reset();
 				this.exitPushingThreadRequested = true;
 				this.signalTo_pauseUnpauseAbort();
 				bool exitConfirmed = this.confirmThreadExited.WaitOne(this.heartbeatTimeout * 5);
+				//bool exitConfirmed = this.confirmThreadExited.WaitOne(-1);
 				string msg = exitConfirmed ? "THREAD_EXITED__" : "EXITING_THREAD_DIDNT_CONFIRM_ITS_OWN_EXIT__";
 				Assembler.PopupException(msg + msig, null, false);
 			} catch (Exception ex) {
 				string msg = "IMPOSSIBLE_HAPPENED_WHILE_PUSHING_THREAD_STARTING/STOPPING";
 				Assembler.PopupException(msg + msig, ex);
 			}
+
 			this.IsPushingThreadStarted = false;
+			try {
+				this.Dispose();
+			} catch (Exception ex) {
+				string msg = "MAY_BE_YOU_DONT_NEED_IT";
+				Assembler.PopupException(msg + msig, ex);
+			}
 		}
 		void pushingThreadStart_waitConfirmed() {
 			string msig = " //pushingThreadStart isPushingThreadStarted[" + this.IsPushingThreadStarted + "]=>[" + true + "] " + this.ToString();
@@ -147,7 +161,10 @@ namespace Sq1.Core.Streaming {
 			// fake gateway open (forgetting to close it results in 100%CPU/pump), just to let the thread process disposed=true; 
 			// fake gateway open (forgetting to close it results in 100%CPU/pump), just to let the thread process pauseRequested=true
 			// fake gateway open (forgetting to close it results in 100%CPU/pump), just to let the thread process unPauseRequested=true
-			this.hasQuoteToPush_nonBlocking		= true;	
+
+			//v1 this.hasQuoteToPush_nonBlocking = true;		//skip waiting and pause immediately, so that we won't wait next line
+			//v2
+			this.hasQuoteToPush.Set();
 		}
 		void pusherEntryPoint() {
 			string msig = "THREW_PRIOR_TO_INITIALIZATION_pusherEntryPoint()";
@@ -203,7 +220,7 @@ namespace Sq1.Core.Streaming {
 					}
 
 					if (this.exitPushingThreadRequested) {
-						string msg = "ABORTING_PUMP_AFTER_SeparatePushingThreadEnabled=false_OR_ IDisposable.Dispose()";
+						string msg = "ABORTING_PUMP_AFTER_.PushingThreadStop_waitConfirmed()_OR_.Dispose() CurrentThread.Name[" + Thread.CurrentThread.Name + "]";
 						Assembler.PopupException(msg, null, false);
 						break;	// breaks WHILE and exits the thread
 					}
@@ -304,10 +321,13 @@ namespace Sq1.Core.Streaming {
 			return 1;
 		}
 
+		//PUSHING_THREADS_GONE_BUT_GC_FINALIZES_WHATEVER___AND_I_CANT_HANDLE_IT_PROPERLY=>CRASH
+		//~PumpPerSymbol() { this.Dispose(); }
+
 		public	bool IsDisposed { get; private set; }
 		public	void Dispose() {
 			if (this.IsDisposed) {
-				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -335,11 +355,12 @@ namespace Sq1.Core.Streaming {
 			this.confirmPaused			.Dispose();
 			this.confirmUnpaused		.Dispose();
 
-			this.exitPushingThreadRequested = true;
+			//this.exitPushingThreadRequested = true;
 			//v1
 			//this.hasQuoteToPush_nonBlocking = true;		// fake gateway open (forgetting to close it results in 100%CPU/pump), just to let the thread process disposed=true; 
 			//this.signalledTo_pauseUnpauseAbort = true;
-			this.signalTo_pauseUnpauseAbort();
+			//already stopped in if (this.IsPushingThreadStarted) PushingThreadStop_waitConfirmed() 
+			//this.signalTo_pauseUnpauseAbort();
 		}
 
 		public override void PusherPause_waitUntilPaused(int waitUntilPaused_millis = -1) {

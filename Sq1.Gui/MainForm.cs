@@ -409,7 +409,7 @@ namespace Sq1.Gui {
 					ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshot_initializeSplitters_ifDockContentDeserialized();
 				}
 				if (ExceptionsForm.Instance.IsShown) {
-					ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized_invokeMeFromGuiThreadOnly();
+					ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized();
 				}
 				if (DataSourceEditorForm.Instance.IsShown) {
 					// ON_WORKSPACE_LOAD__ActiveDocumentChanged_IS_NOT_INVOKED

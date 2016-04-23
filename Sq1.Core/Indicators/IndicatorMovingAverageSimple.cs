@@ -147,7 +147,7 @@ namespace Sq1.Core.Indicators {
 			}
 			#endregion
 
-			ret = this.smaSeries.CalculateAppendOwnValueForNewStaticBarFormedNanUnsafe(newStaticBar);
+			ret = this.smaSeries.Calculate_appendOwnValue_forNewStaticBarFormed_NanUnsafe(newStaticBar);
 
 			#region DELETEME_AFTER_COMPATIBILITY_TEST
 			#if TEST_COMPATIBILITY

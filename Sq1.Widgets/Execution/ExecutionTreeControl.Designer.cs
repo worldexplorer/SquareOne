@@ -84,13 +84,13 @@ namespace Sq1.Widgets.Execution {
 			this.mniCollapseAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniRebuildAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniltbSerializationInterval = new Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox();
+			this.mniltbDelay = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.imgListOrderDirection = new System.Windows.Forms.ImageList(this.components);
 			this.olvMessages = new BrightIdeasSoftware.ObjectListView();
 			this.olvcMessageDateTime = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMessageState = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMessageText = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.splitContainerMessagePane = new System.Windows.Forms.SplitContainer();
-			this.mniltbDelay = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			((System.ComponentModel.ISupportInitialize)(this.OlvOrdersTree)).BeginInit();
 			this.ctxOrder.SuspendLayout();
 			this.ctxColumnsGrouped.SuspendLayout();
@@ -593,6 +593,7 @@ namespace Sq1.Widgets.Execution {
             this.mniToggleMessagesPaneSplitHorizontally,
             this.mniToggleSyncWithChart});
 			this.ctxToggles.Name = "ctxToggles";
+			this.ctxToggles.OwnerItem = this.mniToggles;
 			this.ctxToggles.Size = new System.Drawing.Size(254, 114);
 			// 
 			// mniToggleBrokerTime
@@ -693,7 +694,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniltbSerializationInterval.InputFieldWidth = 40;
 			this.mniltbSerializationInterval.Name = "mniltbSerializationInterval";
 			this.mniltbSerializationInterval.OffsetTop = 0;
-			this.mniltbSerializationInterval.Size = new System.Drawing.Size(227, 22);
+			this.mniltbSerializationInterval.Size = new System.Drawing.Size(230, 22);
 			this.mniltbSerializationInterval.Text = "mniltbDelaySerializationSync";
 			this.mniltbSerializationInterval.TextLeft = "(Logrotate) Serialize every";
 			this.mniltbSerializationInterval.TextLeftOffsetX = 0;
@@ -703,6 +704,28 @@ namespace Sq1.Widgets.Execution {
 			this.mniltbSerializationInterval.TextRightOffsetX = 188;
 			this.mniltbSerializationInterval.TextRightWidth = 39;
 			this.mniltbSerializationInterval.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDelaySerializationSync_UserTyped);
+			// 
+			// mniltbDelay
+			// 
+			this.mniltbDelay.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbDelay.InputFieldAlignedRight = false;
+			this.mniltbDelay.InputFieldBackColor = System.Drawing.SystemColors.Info;
+			this.mniltbDelay.InputFieldEditable = true;
+			this.mniltbDelay.InputFieldMultiline = false;
+			this.mniltbDelay.InputFieldOffsetX = 145;
+			this.mniltbDelay.InputFieldValue = "200";
+			this.mniltbDelay.InputFieldWidth = 40;
+			this.mniltbDelay.Name = "mniltbDelay";
+			this.mniltbDelay.OffsetTop = 0;
+			this.mniltbDelay.Size = new System.Drawing.Size(218, 18);
+			this.mniltbDelay.TextLeft = "Delay for buffering          ";
+			this.mniltbDelay.TextLeftOffsetX = 0;
+			this.mniltbDelay.TextLeftWidth = 138;
+			this.mniltbDelay.TextRed = false;
+			this.mniltbDelay.TextRight = "ms";
+			this.mniltbDelay.TextRightOffsetX = 188;
+			this.mniltbDelay.TextRightWidth = 27;
+			this.mniltbDelay.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDelay_UserTyped);
 			// 
 			// imgListOrderDirection
 			// 
@@ -782,28 +805,6 @@ namespace Sq1.Widgets.Execution {
 			this.splitContainerMessagePane.Size = new System.Drawing.Size(1033, 249);
 			this.splitContainerMessagePane.SplitterDistance = 146;
 			this.splitContainerMessagePane.TabIndex = 22;
-			// 
-			// mniltbDelay
-			// 
-			this.mniltbDelay.BackColor = System.Drawing.Color.Transparent;
-			this.mniltbDelay.InputFieldAlignedRight = false;
-			this.mniltbDelay.InputFieldBackColor = System.Drawing.SystemColors.Info;
-			this.mniltbDelay.InputFieldEditable = true;
-			this.mniltbDelay.InputFieldMultiline = false;
-			this.mniltbDelay.InputFieldOffsetX = 145;
-			this.mniltbDelay.InputFieldValue = "200";
-			this.mniltbDelay.InputFieldWidth = 40;
-			this.mniltbDelay.Name = "mniltbDelay";
-			this.mniltbDelay.OffsetTop = 0;
-			this.mniltbDelay.Size = new System.Drawing.Size(188, 18);
-			this.mniltbDelay.TextLeft = "Delay for buffering          ";
-			this.mniltbDelay.TextLeftOffsetX = 0;
-			this.mniltbDelay.TextLeftWidth = 138;
-			this.mniltbDelay.TextRed = false;
-			this.mniltbDelay.TextRight = "ms";
-			this.mniltbDelay.TextRightOffsetX = 153;
-			this.mniltbDelay.TextRightWidth = 27;
-			this.mniltbDelay.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDelay_UserTyped);
 			// 
 			// ExecutionTreeControl
 			// 

@@ -212,7 +212,7 @@ namespace Sq1.Core.Charting {
 		}
 		void IDisposable.Dispose() {
 			if (this.ChartShadowResourcesDisposed) {
-				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();
 				Assembler.PopupException(msg);
 				return;
 			}

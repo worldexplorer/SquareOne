@@ -29,7 +29,6 @@ namespace Sq1.Core.Streaming {
 			return new List<SymbolScaleStream<STREAMING_CONSUMER_CHILD>>(this.StreamsByScaleInterval.Values);
 		} } }
 
-		~SymbolChannel() { this.Dispose(); }
 		SymbolChannel() {
 			OfWhat									= typeof(STREAMING_CONSUMER_CHILD).Name;
 			lockStreamsDictionary					= new object();
@@ -487,15 +486,21 @@ namespace Sq1.Core.Streaming {
 
 
 
+		//PUSHING_THREADS_GONE_BUT_GC_FINALIZES_WHATEVER___AND_I_CANT_HANDLE_IT_PROPERLY=>CRASH
+		//~SymbolChannel() { this.Dispose(); }
+
 		public bool IsDisposed { get; private set; }
 		public void Dispose() {
 			if (this.IsDisposed) {
-				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();
 				Assembler.PopupException(msg);
 				return;
 			}
 			if (this.QuotePump_nullUnsafe != null) {
-				this.QuotePump_nullUnsafe.Dispose();
+			    this.QuotePump_nullUnsafe.Dispose();
+			}
+			if (this.PumpLevelTwo != null) {
+				this.PumpLevelTwo.Dispose();
 			}
 			this.IsDisposed = true;
 		}

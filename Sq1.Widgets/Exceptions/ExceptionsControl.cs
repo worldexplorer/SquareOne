@@ -50,7 +50,7 @@ namespace Sq1.Widgets.Exceptions {
 				// hopefully disposing=true will be invoked once/lifetime - I don't care when; I'm lazy to work around NPEs and alreadyDisposed
 				this.exceptionTimes.Dispose();
 				this.Exceptions.Dispose();
-				base.TimedTask_flushingToGui.Dispose();
+				base.Timed_flushingToGui.Dispose();
 			}
 			base.Dispose(disposing);
 		}
@@ -71,15 +71,28 @@ namespace Sq1.Widgets.Exceptions {
 				this.dataSnapshotSerializer.Serialize();
 			}
 
+			if (Thread.CurrentThread.ManagedThreadId != 1) {
+				string msg = "YOU_MUST_CREATE_ME_FROM_GUI_THREAD__HAVING_MAIN_FORM_HANDLE__SEE_SIMILAR_CHECK_IN_MainForm_and_Assembler.Exceptions_duringStartup";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return;
+			}
 			base.Initialize_periodicFlushing("FLUSH_EXCEPTIONS_CONTROL",
 				new Action(this.flushExceptionsToOLV_switchToGuiThread), this.dataSnapshot.FlushToGuiDelayMsec);
-			base.TimedTask_flushingToGui.Start();
+			//base.Timed_flushingToGui.Start();
 		}
-		public void PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized_invokeMeFromGuiThreadOnly() {
+
+		public void PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized() {
 			string msig = " //PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized()";
 			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
 				string msg = "CHOOSE_ANOTHER_INVOCATION_SPOT__AFTER_MAIN_FORM_FULLY_DESERIALIZED";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg + msig, null, false);
+				return;
+			}
+
+			if (base.InvokeRequired) {
+				base.BeginInvoke(new MethodInvoker(this.PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized));
 				return;
 			}
 
@@ -117,10 +130,10 @@ namespace Sq1.Widgets.Exceptions {
 			this.splitContainerHorizontal.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerHorizontal_SplitterMoved);
 
 			this.mniRecentAlwaysSelected.Checked = this.dataSnapshot.RecentAlwaysSelected;
-			this.mniltbDelay.InputFieldValue = this.dataSnapshot.FlushToGuiDelayMsec.ToString();
+			this.mniltbDelay.InputFieldValue = this.dataSnapshot.FlushToGuiDelayMsec.ToString();		// I will be stuck here - if ExceptionsForm.Instance was created from non-GUI thread, by Assembler.PopupException() while MainForm haven't got Window Handle yet
 			this.mniShowTimestamps.Checked = this.dataSnapshot.TreeShowTimestamps;
 
-			this.flushExceptionsToOLV_switchToGuiThread();
+			//this.flushExceptionsToOLV_switchToGuiThread();
 		}
 		void insertTo_exceptionsNotFlushedYet_willReportIfBlocking(Exception exception) {
 			if (exception == null) {
@@ -133,7 +146,7 @@ namespace Sq1.Widgets.Exceptions {
 				return;
 			}
 
-			bool avoidingConcurrentAccess = base.TimedTask_flushingToGui.Scheduled;
+			bool avoidingConcurrentAccess = base.Timed_flushingToGui != null && base.Timed_flushingToGui.Scheduled;
 			//if (avoidingConcurrentAccess) {
 			bool freeToAdd = this.exceptions_notFlushedYet.IsUnlocked;
 			if (freeToAdd == false) {
@@ -193,34 +206,29 @@ namespace Sq1.Widgets.Exceptions {
 		}
 
 		public void InsertAsyncAutoFlush(Exception ex) {
-			this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(ex);
-			if (base.TimedTask_flushingToGui.Scheduled) {
-				// second exception came in while tree was rebuilding (after the first one wasn't finished) => schedule rebuild in 
-				base.TimedTask_flushingToGui.ScheduleOnce();	// postpone flushToGui() for another 200ms
-				this.exceptionLastDate_notFlushedYet = DateTime.Now;
-
-				if (base.InvokeRequired) {	// waiting for WindowHandle to be created
-					//base.BeginInvoke((MethodInvoker)delegate() { this.populateWindowsTitle(); });
-					base.BeginInvoke(new MethodInvoker(this.populateWindowsTitle));
-				}
-
+			if (base.InvokeRequired) {	// waiting for WindowHandle to be created
+				//base.BeginInvoke((MethodInvoker)delegate() { this.populateWindowsTitle(); });
+				//base.BeginInvoke(new MethodInvoker(this.populateWindowsTitle));
+				base.BeginInvoke((MethodInvoker)delegate() { this.InsertAsyncAutoFlush(ex); });
 				return;
 			}
+
+			this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(ex);
+			this.exceptionLastDate_notFlushedYet = DateTime.Now;
+
+			this.populateWindowsTitle();
+			//if (base.Timed_flushingToGui.Scheduled) return;
+
 			// http://stackoverflow.com/questions/2475435/c-sharp-timer-wont-tick
 			// Always stop/start a System.Windows.Forms.Timer on the UI thread, apparently! –  user145426
-
-			// first exception came in => flush immediately; mark already now that all other fresh exceptions would line up by timer
-			base.TimedTask_flushingToGui.ScheduleOnce();
-			this.exceptionLastDate_notFlushedYet = DateTime.Now;
-			this.flushExceptionsToOLV_switchToGuiThread();
+			//v1 this.flushExceptionsToOLV_switchToGuiThread();
+			//v2
+			base.Timed_flushingToGui.ScheduleOnce_postponeIfAlreadyScheduled();
+			//base.Timed_flushingToGui.ScheduleOnce();
 		}
 
-		//public void FlushExceptionsToOLV_switchToGuiThread_atDockContentDeserialized() {
-		//	this.flushExceptionsToOLV_switchToGuiThread();
-		//}
-
 		void flushExceptionsToOLV_switchToGuiThread() {
-			string msig = " //flushExceptionsToOLV_switchToGuiThread_ifDockContentDeserialized()";
+			string msig = " //flushExceptionsToOLV_switchToGuiThread()";
 			if (base.DesignMode) return;
 			if (Assembler.IsInitialized == false) return; //I_HATE_LIVESIM_FORM_THROWING_EXCEPTIONS_IN_DESIGN_MODE
 			// WINDOWS.FORMS.VISIBLE=FALSE_IS_SET_BY_DOCK_CONTENT_LUO ANALYZE_DockContentImproved.IsShown_INSTEAD if (this.Visible == false) return;
@@ -242,7 +250,7 @@ namespace Sq1.Widgets.Exceptions {
 					return;
 				}
 
-				if (base.TimedTask_flushingToGui.Scheduled == true) {
+				if (base.Timed_flushingToGui.Scheduled == true) {
 					string msg1 = "MUST_CONTINUE_FLUSHING__I_INTENTIONALLY_SCHEDULED_BEFORE_FLUSHING_TO_REDIRECT_ALL_NEWCOMERS_TO_BUFFER"
 						//+ " DONT_FLUSH_ME_WHEN_ANOTHER_FLUSH_SCHEDULED"
 						;
@@ -254,8 +262,8 @@ namespace Sq1.Widgets.Exceptions {
 					this.exceptions_notFlushedYet.WaitAndLockFor(this, msig);		// avoiding CollectionModified Exception - I employed WatchDog to tell (and silently resolve by sequencing) me which thread inserts while another thread is enumerating
 					List<Exception> buffered = this.exceptions_notFlushedYet.SafeCopy(this, msig);
 					foreach (Exception ex in buffered) {
-						this.exceptionTimes.Add(ex, DateTime.Now, this, msig);
-						this.Exceptions.InsertUnique(0, ex, this, msig);
+						bool time4exAdded	= this.exceptionTimes	.Add(ex, DateTime.Now	, this, msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, true);
+						bool excInserted	= this.Exceptions		.InsertUnique(0, ex		, this, msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, false);
 					}
 					this.exceptions_notFlushedYet.Clear(this, msig);
 				} catch (Exception ex) {

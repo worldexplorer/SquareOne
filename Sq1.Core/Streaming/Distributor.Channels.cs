@@ -129,6 +129,7 @@ namespace Sq1.Core.Streaming {
 				if (channel.QuotePump_nullUnsafe != null) channel.QuotePump_nullUnsafe.PushingThreadStop_waitConfirmed();
 				//Assembler.PopupException("BarConsumer [" + scaleInterval + "] was the last one listening for [" + symbol + "]");
 				//Assembler.PopupException("...removing[" + symbol + "] from this.ChannelsBySymbol[" + this.ChannelsBySymbol + "]");
+				channel.Dispose();
 				this.ChannelsBySymbol.Remove(symbol);
 				//Assembler.PopupException("...UpstreamUnSubscribing [" + symbol + "]");
 				this.StreamingAdapter.UpstreamUnSubscribe(symbol);
@@ -192,6 +193,7 @@ namespace Sq1.Core.Streaming {
 				if (channel.PumpLevelTwo != null) channel.PumpLevelTwo.PushingThreadStop_waitConfirmed();
 				//Assembler.PopupException("LevelTwoFrozenConsumer [" + scaleInterval + "] was the last one listening for [" + symbol + "]");
 				//Assembler.PopupException("...removing[" + symbol + "] from this.ChannelsBySymbol[" + this.ChannelsBySymbol + "]");
+				channel.Dispose();
 				this.ChannelsBySymbol.Remove(symbol);
 				//Assembler.PopupException("...UpstreamUnSubscribing [" + symbol + "]");
 				this.StreamingAdapter.UpstreamUnSubscribe(symbol);

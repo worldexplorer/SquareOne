@@ -101,24 +101,24 @@ namespace Sq1.Core {
 			} }
 
 		// NOT_UNDER_WINDOWS
-				Stopwatch								stopWatchIfProcessUnsupported;
+		//		Stopwatch								stopWatchIfProcessUnsupported;
 		public	bool									SplitterEventsAllowed_tenSecondsPassed_afterAppLaunch_hopingInitialInnerDockResizingIsFinished { get {
 				bool ret = false;
 				//v1 looks like Process.GetCurrentProcess().StartTime counts the milliseconds elapsed by the processor for the app
 				//(1sec during last 2mins with 1% CPU load), while I need solarTimeNow minus solarTimeAppStarted => switching to Stopwatch
 				double sinceApplicationStartSeconds = -1;
 				try {
-					if (stopWatchIfProcessUnsupported == null) {
-						stopWatchIfProcessUnsupported = new Stopwatch();
-						stopWatchIfProcessUnsupported.Start();
-					}
+		//			if (stopWatchIfProcessUnsupported == null) {
+		//				stopWatchIfProcessUnsupported = new Stopwatch();
+		//				stopWatchIfProcessUnsupported.Start();
+		//			}
 					TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
 					sinceApplicationStartSeconds = sinceApplicationStart.TotalSeconds;
 					//v2
 					//int sinceApplicationStartSeconds2 = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
 				} catch (Exception ex) {
 					Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
-					sinceApplicationStartSeconds = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
+		//			sinceApplicationStartSeconds = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
 				}
 
 				double secondsLeftToIgnore = this.AssemblerDataSnapshot.SplitterEvents_shouldBeIgnored_duringFirstTenSeconds_afterAppLaunch - sinceApplicationStartSeconds;
@@ -128,6 +128,7 @@ namespace Sq1.Core {
 					//Assembler.PopupException(msg, null, false);
 				} else {
 					ret = true;
+		//			stopWatchIfProcessUnsupported.Stop();
 				}
 				return ret;
 			} }
@@ -236,7 +237,8 @@ namespace Sq1.Core {
 			}
 		}
 		
-		public static void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
+		static object sequentialExceptionPopup = new object();
+		public static void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) { lock (Assembler.sequentialExceptionPopup) {
 			if (Assembler.IsInitialized == false) {
 				throw new Exception(msg, ex);
 				//return;
@@ -256,7 +258,7 @@ namespace Sq1.Core {
 				throw new Exception (msg1, ex1);
 				#endif
 			}
-		}
+		} }
 		public static void DisplayStatus(string msg) {
 			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
 			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
@@ -307,6 +309,24 @@ namespace Sq1.Core {
 			this.Exceptions_duringApplicationShutdown_serializer.Serialize();
 			// http://stackoverflow.com/questions/7613576/how-to-open-text-in-notepad-from-net
 			Process.Start("notepad.exe ", this.Exceptions_duringApplicationShutdown_serializer.JsonAbsFile);
+		}
+
+		public List<Exception>		Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle;
+		public bool					ExceptionsFormInstance_safelyCreated;
+		public void Exceptions_duringApplicationStartup_Insert(Exception exc, int indexToInsert = 0) {
+			if (exc == null) return;
+			if (this.MainForm_dockFormsFullyDeserialized_layoutComplete &&
+				this.ExceptionsFormInstance_safelyCreated == true) {
+				string msg = "DONT_USE_ME_ANYMORE__USE__Assembler.PopupException()";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return;
+			}
+			if (this.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle == null) {
+				this.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle = new List<Exception>();
+			}
+			this.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle.Insert(0, exc);
 		}
 		#endregion
 

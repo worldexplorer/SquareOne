@@ -9,7 +9,7 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
-	public abstract partial class StreamingAdapter {
+	public abstract partial class StreamingAdapter : IDisposable {
 		[JsonIgnore]	public		string					Name								{ get; protected set; }
 		[JsonIgnore]	public		string					ReasonToExist						{ get; protected set; }
 		[JsonIgnore]	public		Bitmap					Icon								{ get; protected set; }
@@ -85,6 +85,15 @@ namespace Sq1.Core.Streaming {
 		//    }
 		//    return;
 		//}
+		
 
+		public bool IsDisposed { get; private set; }
+		public virtual void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
+		}
 	}
 } 

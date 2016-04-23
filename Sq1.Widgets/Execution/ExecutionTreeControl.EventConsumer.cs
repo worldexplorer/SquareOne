@@ -360,7 +360,7 @@ namespace Sq1.Widgets.Execution {
 			}
 			this.dataSnapshot.FlushToGuiDelayMsec = typedMsec;
 			this.DataSnapshotSerializer.Serialize();
-			this.TimedTask_flushingToGui.Delay = this.dataSnapshot.FlushToGuiDelayMsec;
+			//this.Timed_flushingToGui.Delay = this.dataSnapshot.FlushToGuiDelayMsec;
 			mnilbDelay.TextRed = false;
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
 			this.PopulateWindowsTitle();

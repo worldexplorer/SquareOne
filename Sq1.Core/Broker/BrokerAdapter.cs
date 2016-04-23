@@ -13,7 +13,7 @@ using Sq1.Core.Livesim;
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Broker {
-	public partial class BrokerAdapter {
+	public partial class BrokerAdapter : IDisposable {
 		[JsonIgnore]				object				lockSubmitOrders;
 		[JsonIgnore]	public		string				Name				{ get; protected set; }
 		[JsonIgnore]	public		string				ReasonToExist		{ get; protected set; }
@@ -537,6 +537,15 @@ namespace Sq1.Core.Broker {
 				+ " (" + this.ReasonToExist + ")"
 				;
 			return ret;
+		}
+		
+		public bool IsDisposed { get; private set; }
+		public virtual void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
 		}
 	}
 }

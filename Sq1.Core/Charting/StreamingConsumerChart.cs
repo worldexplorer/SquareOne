@@ -85,7 +85,7 @@ namespace Sq1.Core.Charting {
 			var executorSafe			= base.Executor_nullReported;
 			var symbolSafe				= base.Symbol_nullReported;
 			var scaleIntervalSafe		= base.ScaleInterval_nullReported;
-			var streaming_nullReported	= this.StreamingAdapter_nullReported;
+			var streaming_nullReported	= base.StreamingAdapter_nullReported;
 
 			bool downstreamBeforeWeStarted_mustBeUnSubscribed = this.DownstreamSubscribed;
 			if (downstreamBeforeWeStarted_mustBeUnSubscribed

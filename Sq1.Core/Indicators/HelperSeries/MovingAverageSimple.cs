@@ -11,7 +11,7 @@ namespace Sq1.Core.Indicators.HelperSeries {
 			AverageFor = averageFor;
 			Period = period;
 		}
-		public double CalculateAppendOwnValueForNewStaticBarFormedNanUnsafe(Bar newStaticBar, bool allowExistingValueSame = false) {
+		public double Calculate_appendOwnValue_forNewStaticBarFormed_NanUnsafe(Bar newStaticBar, bool allowExistingValueSame = false) {
 			double valueCalculated = this.CalculateOwnValue(newStaticBar);
 			if (base.ContainsDate(newStaticBar.DateTimeOpen)) {
 				double valueWeAlreadyHave = base[newStaticBar.DateTimeOpen];
@@ -30,7 +30,7 @@ namespace Sq1.Core.Indicators.HelperSeries {
 			return valueCalculated;
 		}
 
-		public void SubstituteBarsWithoutRecalculation(DataSeriesTimeBased averageFor) {
+		public void SubstituteBars_withoutRecalculation(DataSeriesTimeBased averageFor) {
 			this.AverageFor = averageFor;
 		}
 

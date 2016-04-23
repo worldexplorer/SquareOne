@@ -312,9 +312,16 @@ namespace Sq1.Core.Broker {
 				case OrderState.ErrorSubmittingOrder_unexecutableParameters:
 				case OrderState.ErrorSubmittingOrder_wrongAccount:
 				case OrderState.ErrorSlippageCalc:
-					Assembler.PopupException("PostProcess(): order.PriceFill=0 " + msig);
+					Assembler.PopupException("PostProcess(): order.PriceFill=0 " + msig, null, false);
 					order.PriceFilled = 0;
 					//NEVER order.PricePaid = 0;
+					try {
+						order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptNonReenterably(order.Alert, null,
+							order.PriceFilled, order.QtyFill, order.SlippageFilled, order.CommissionFill);
+					} catch (Exception ex) {
+						string msg3 = "PostProcessOrderState caught from CallbackAlertFilledMoveAroundInvokeScript() ";
+						Assembler.PopupException(msg3 + msig, ex);
+					}
 					break;
 
 				case OrderState.ErrorSubmitting_BrokerTerminalDisconnected:

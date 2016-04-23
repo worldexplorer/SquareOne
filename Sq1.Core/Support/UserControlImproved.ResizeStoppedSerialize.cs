@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 
 using Sq1.Core;
 
@@ -17,7 +18,8 @@ namespace Sq1.Core.Support {
 
 		void onResizeReceived_rescheduleSerializationTimer() {
 		    if (this.timerResizeStopped == null) {
-				this.timerResizeStopped = new TimerSimplified(this, this.ResizeStopped_delayAfterLastResize);	// not started by default
+				string timerReason = "EXCEPTIONS_WILL_BE_FLUSHED EMULATING_ResizeStopped()_WITH_DELAY[" + this.ResizeStopped_delayAfterLastResize + "] for: " + this.ToString();
+				this.timerResizeStopped = new TimerSimplified(timerReason, this, this.ResizeStopped_delayAfterLastResize);	// not started by default
 				this.timerResizeStopped.OnLastScheduleExpired += new EventHandler<EventArgs>(this.timerResizeStopped_OnLastScheduleExpired);
 			}
 		    if (this.timerResizeStopped.Scheduled) return;
@@ -25,6 +27,10 @@ namespace Sq1.Core.Support {
 		}
 
 		void timerResizeStopped_OnLastScheduleExpired(object sender, EventArgs e) {
+			if (Thread.CurrentThread.ManagedThreadId != 1) {
+				string msg = "I_MUST_HAVE_BEEN_INVOKED_IN_GUI_THREAD MAKE_SURE_YOU_USED_System.Windows.Forms.Timer";
+				Assembler.PopupException(msg);
+			}
 			this.RaiseResizeStopped();
 		}
 		

@@ -115,7 +115,7 @@ namespace Sq1.Core.Support {
 		public	bool				IsDisposed	{ get; private set; }
 		public void Dispose() {
 			if (this.IsDisposed) {
-				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();
 				//YES_IT_HAPPENS_AND_CAUSES__DELAYS_ON_SHUTDOWN
 				Assembler.PopupException(msg, null, false);
 				return;

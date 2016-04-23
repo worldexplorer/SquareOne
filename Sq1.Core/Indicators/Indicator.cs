@@ -320,6 +320,9 @@ namespace Sq1.Core.Indicators {
 				return;
 			}
 			double derivedCalculated = this.CalculateOwnValueOnNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(newStaticBar);
+			if (double.IsNaN(derivedCalculated) == false) {
+				string msg22 = "newStaticBar.ParentBarsIndex[" + newStaticBar.ParentBarsIndex + "] FirstValidBarIndex[" + this.FirstValidBarIndex + "]";
+			}
 
 			int barsAheadOfIndicator = newStaticBar.ParentBarsIndex - this.OwnValuesCalculated.LastIndex;
 			msig = " barsAheadOfIndicator[" + barsAheadOfIndicator + "]" + this.indexesAsString + msig;
@@ -383,7 +386,7 @@ namespace Sq1.Core.Indicators {
 					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}
-				if (double.IsNaN(this.OwnValuesCalculated.LastValue) && this.OwnValuesCalculated.LastValue == derivedCalculated) {
+				if (double.IsNaN(this.OwnValuesCalculated.LastValue) && double.IsNaN(derivedCalculated)) {
 					msg = "WONT_UPDATE_NAN " + msg;
 					//Assembler.PopupException(msg + msig, null, false);
 					return;

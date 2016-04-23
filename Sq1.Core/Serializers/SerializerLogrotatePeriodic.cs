@@ -20,6 +20,11 @@ namespace Sq1.Core.Serializers {
 				null, this.PeriodMillis, Timeout.Infinite);
 		}
 		void serializerThreadEntry(object stateWePassNullHere) {
+			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
+				this.timer.Change(Timeout.Infinite, Timeout.Infinite);
+				return;
+			}
+
 			if (string.IsNullOrEmpty(Thread.CurrentThread.Name) &&
 				Thread.CurrentThread.Name != "DataSnapshotSerializer") {
 				//Thread.CurrentThread.Name = "DataSnapshotSerializer";

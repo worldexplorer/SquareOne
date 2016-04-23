@@ -198,14 +198,32 @@ namespace Sq1.Core.StrategyBase {
 			PositionList positionsOpenedAfterAlertFilled = new PositionList("positionsOpenedAfterAlertFilled", this.ExecutionDataSnapshot);
 			PositionList positionsClosedAfterAlertFilled = new PositionList("positionsClosedAfterAlertFilled", this.ExecutionDataSnapshot);
 
-			if (alertFilled.IsEntryAlert) {
-				this.ExecutionDataSnapshot.PositionsMasterOpen_addNew(alertFilled.PositionAffected);
-				positionOpenedAfterAlertFilled = alertFilled.PositionAffected;
-				positionsOpenedAfterAlertFilled.AddOpened_step1of2(positionOpenedAfterAlertFilled, this, msig);
+			bool backtest_orNonRejectedLiveAndSim = true;
+			if (alertFilled.OrderFollowed != null) {
+				string msg = "dealing with Live or LiveSim; it's not a backtest";
+				if (	alertFilled.OrderFollowed.State == OrderState.Filled
+					 || alertFilled.OrderFollowed.State == OrderState.FilledPartially) {
+					backtest_orNonRejectedLiveAndSim = true;
+				} else {
+					string msg1 = "implement OrderStatus=initial for QUIK, hopefully these callbacks will bring fill/error after TCP flow resumed";
+				}
 			} else {
-				this.ExecutionDataSnapshot.MovePositionOpen_toClosed(alertFilled.PositionAffected);
-				positionClosedAfterAlertFilled = alertFilled.PositionAffected;
-				positionsClosedAfterAlertFilled.AddClosed(positionClosedAfterAlertFilled, this, msig);
+				string msg = "backtester always fills full size requested with 100% success rate; when no fill => I'm not invoked here";
+			}
+
+			if (backtest_orNonRejectedLiveAndSim) {
+				if (alertFilled.IsEntryAlert) {
+					this.ExecutionDataSnapshot.PositionsMasterOpen_addNew(alertFilled.PositionAffected);
+					positionOpenedAfterAlertFilled = alertFilled.PositionAffected;
+					positionsOpenedAfterAlertFilled.AddOpened_step1of2(positionOpenedAfterAlertFilled, this, msig);
+				} else {
+					this.ExecutionDataSnapshot.MovePositionOpen_toClosed(alertFilled.PositionAffected);
+					positionClosedAfterAlertFilled = alertFilled.PositionAffected;
+					positionsClosedAfterAlertFilled.AddClosed(positionClosedAfterAlertFilled, this, msig);
+				}
+			} else {
+				string msg = "NOT_OPENING_NOR_CLOSING_KOZ_STATE[" + alertFilled.OrderFollowed.State + "]";
+				Assembler.PopupException(msg, null, false);
 			}
 
 			bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;

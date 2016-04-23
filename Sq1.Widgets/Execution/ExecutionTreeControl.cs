@@ -151,19 +151,19 @@ namespace Sq1.Widgets.Execution {
 				//this.DataSnapshotSerializer.Serialize();
 			} else {
 				//v1 prior to using this.OrdersTreeOLV.SaveState();
-//				// reversing "each cell go find one criminal to imprison" game; columnsByText will avoid full scan each column while setting 6 lines later  
-//				Dictionary<string, OLVColumn> columnsByText = new Dictionary<string, OLVColumn>();
-//				foreach (OLVColumn col in this.OrdersTreeOLV.Columns) {
-//					if (this.DataSnapshot.ColumnsShown.ContainsKey(col.Text) == false) continue;
-//					columnsByText.Add(col.Text, col);
-//				}
-//				// now the game is "the cell knows the criminal" which is an easier task for cell to imprison
-//				foreach (string colText in columnsByText.Keys) {
-//					if (this.DataSnapshot.ColumnsShown.ContainsKey(colText) == false) continue;
-//					bool visible = this.DataSnapshot.ColumnsShown[colText];
-//					OLVColumn col = columnsByText[colText];
-//					col.IsVisible = visible;
-//				}
+				//// reversing "each cell go find one criminal to imprison" game; columnsByText will avoid full scan each column while setting 6 lines later  
+				//Dictionary<string, OLVColumn> columnsByText = new Dictionary<string, OLVColumn>();
+				//foreach (OLVColumn col in this.OrdersTreeOLV.Columns) {
+				//    if (this.DataSnapshot.ColumnsShown.ContainsKey(col.Text) == false) continue;
+				//    columnsByText.Add(col.Text, col);
+				//}
+				//// now the game is "the cell knows the criminal" which is an easier task for cell to imprison
+				//foreach (string colText in columnsByText.Keys) {
+				//    if (this.DataSnapshot.ColumnsShown.ContainsKey(colText) == false) continue;
+				//    bool visible = this.DataSnapshot.ColumnsShown[colText];
+				//    OLVColumn col = columnsByText[colText];
+				//    col.IsVisible = visible;
+				//}
 				//v2
 				// http://stackoverflow.com/questions/11743160/how-do-i-encode-and-decode-a-base64-string
 				if (this.dataSnapshot.OrdersTreeOlvStateBase64.Length > 0) {
@@ -177,9 +177,9 @@ namespace Sq1.Widgets.Execution {
 
 			//base.TimedTask_flushingToGui.Delay = this.dataSnapshot.TreeRefreshDelayMsec;	// may be already started?
 
-			base.Initialize_periodicFlushing("FLUSH_EXECUTION_CONTROL",
-				new Action(this.RebuildAllTree_focusOnTopmost), this.dataSnapshot.FlushToGuiDelayMsec);
-			//base.TimedTask_flushingToGui.Start();
+			//base.Initialize_periodicFlushing("FLUSH_EXECUTION_CONTROL",
+			//	new Action(this.RebuildAllTree_focusOnTopmost), this.dataSnapshot.FlushToGuiDelayMsec);
+			//base.Timed_flushingToGui.Start();
 		}
 		public void PopulateMenuAccounts_fromBrokerAdapter(ToolStripMenuItem[] ctxAccountsAllCheckedFromUnderlyingBrokerAdapters) {
 			this.ctxAccounts.SuspendLayout();
@@ -360,7 +360,7 @@ namespace Sq1.Widgets.Execution {
 			ret += "/" 
 				+ "000" //+ this.exceptions_notFlushedYet.Count.ToString("000")
 				+ "buffered";
-			ret += base.FlushingStats;
+			//ret += base.FlushingStats;
 			return ret;
 		}
 		

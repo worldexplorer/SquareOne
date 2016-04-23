@@ -289,7 +289,7 @@ namespace Sq1.Core.Streaming {
 			string msg3 = "now it's 8:45local => 17:45server; QuikJunior sends GMT+3 1 hour later;"
 				+ " what if I set TZ to GMT+4 (Baku) before day open?"
 				+ " first problem was in midday (couldn't overwrite BARS and needed Editor to slide back / delete)";
-			Assembler.PopupException(msg3);
+			//Assembler.PopupException(msg3);
 			DateTime nowServerTime = this.DataSource.MarketInfo.Convert_localTime_toServerTime(DateTime.Now);
 			DateTime guessingServerTime_forLevel2 = nowServerTime;
 

@@ -168,7 +168,7 @@ namespace Sq1.Core.Execution {
 		
 		public void Dispose() {
 			if (this.IsDisposed) {
-				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();
 				//Assembler.PopupException(msg);
 				return;
 			}
