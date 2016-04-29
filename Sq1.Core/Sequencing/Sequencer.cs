@@ -32,7 +32,7 @@ namespace Sq1.Core.Sequencing {
 		
 		public	int			ScriptParametersTotalNr			{ get {
 				int ret = 0;
-				foreach (ScriptParameter sp in this.Executor.Strategy.Script.ScriptParametersById_ReflectedCached.Values) {
+				foreach (ScriptParameter sp in this.Executor.Strategy.Script.ScriptParametersById_reflectedCached_primary.Values) {
 					if (sp.NumberOfRuns == 0) continue;
 					if (sp.WillBeSequenced == false) continue;
 					if (ret == 0) ret = 1;
@@ -50,7 +50,7 @@ namespace Sq1.Core.Sequencing {
 		public	int			IndicatorParameterTotalNr		{ get {
 				int ret = 0;
 				//foreach (Indicator i in executor.Strategy.Script.indicatorsByName_ReflectedCached.Values) {	//looks empty on Deserialization
-				foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParameters_ReflectedCached.Values) {
+				foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParameters_reflectedCached.Values) {
 					if (ip.NumberOfRuns == 0) continue;
 					if (ip.WillBeSequenced == false) continue;
 					if (ret == 0) ret = 1;
@@ -147,7 +147,7 @@ namespace Sq1.Core.Sequencing {
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.Executor.Strategy.Script.ScriptParametersById_ReflectedCached == null) {
+			if (this.Executor.Strategy.Script.ScriptParametersById_reflectedCached_primary == null) {
 				string msg = "Sequencer.executor.Strategy.Script.ParametersById == null";
 				Assembler.PopupException(msg);
 				return;
@@ -157,12 +157,12 @@ namespace Sq1.Core.Sequencing {
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.Executor.Strategy.Script.IndicatorsByName_ReflectedCached == null) {
+			if (this.Executor.Strategy.Script.IndicatorsByName_reflectedCached_primary == null) {
 				string msg = "Sequencer.executor.Strategy.Script.IndicatorsByName_ReflectedCached == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.Executor.Strategy.Script.ScriptParametersById_ReflectedCached == null) {
+			if (this.Executor.Strategy.Script.ScriptParametersById_reflectedCached_primary == null) {
 				string msg = "Sequencer.executor.Strategy.Script.ScriptParametersById_ReflectedCached == null";
 				Assembler.PopupException(msg);
 				return;

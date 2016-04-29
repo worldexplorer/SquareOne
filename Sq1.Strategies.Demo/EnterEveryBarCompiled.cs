@@ -8,6 +8,8 @@ using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 
+using Sq1.Indicators;
+
 namespace Sq1.Strategies.Demo {
 	public class EnterEveryBarCompiled : Script {
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
@@ -125,10 +127,12 @@ namespace Sq1.Strategies.Demo {
 				}
 
 				if (lastPos.ExitAlert != null && lastPos.ExitAlert.IsKilled == false) {
-					string msg1 = "you want to avoid POSITION_ALREADY_HAS_AN_EXIT_ALERT_REPLACE_INSTEAD_OF_ADDING_SECOND"
-						+ " ExitAtMarket by throwing [can't have two closing alerts for one positionExit] Strategy[" + this.Strategy.ToString() + "]";
+					string msg1 = "YES_IM_LIVESIMMING_WITH_BROKER_SPOILING_EXECUTION_FOR_3000ms"
+						//+ " you want to avoid POSITION_ALREADY_HAS_AN_EXIT_ALERT_REPLACE_INSTEAD_OF_ADDING_SECOND"
+						//+ " ExitAtMarket by throwing [can't have two closing alerts for one positionExit]"
+						+ " Strategy[" + this.Strategy.ToString() + "]";
 					#if DEBUG
-					Debugger.Break();
+					//Debugger.Break();
 					#endif
 					return;
 				}

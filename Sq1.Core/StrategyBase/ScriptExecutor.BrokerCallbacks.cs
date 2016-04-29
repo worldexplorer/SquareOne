@@ -201,14 +201,17 @@ namespace Sq1.Core.StrategyBase {
 			bool backtest_orNonRejectedLiveAndSim = true;
 			if (alertFilled.OrderFollowed != null) {
 				string msg = "dealing with Live or LiveSim; it's not a backtest";
+				Assembler.PopupException(msg, null, false);
 				if (	alertFilled.OrderFollowed.State == OrderState.Filled
 					 || alertFilled.OrderFollowed.State == OrderState.FilledPartially) {
 					backtest_orNonRejectedLiveAndSim = true;
 				} else {
 					string msg1 = "implement OrderStatus=initial for QUIK, hopefully these callbacks will bring fill/error after TCP flow resumed";
+					Assembler.PopupException(msg1, null, false);
 				}
 			} else {
 				string msg = "backtester always fills full size requested with 100% success rate; when no fill => I'm not invoked here";
+				Assembler.PopupException(msg, null, false);
 			}
 
 			if (backtest_orNonRejectedLiveAndSim) {

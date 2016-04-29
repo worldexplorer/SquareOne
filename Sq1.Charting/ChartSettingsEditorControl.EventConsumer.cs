@@ -48,6 +48,9 @@ namespace Sq1.Charting {
 			}
 			ChartSettingsTemplated edited = this.settingsCurrent_nullUnsafe;
 			if (edited == null) {
+				edited = chartSelected.ChartSettingsTemplated;
+			}
+			if (edited == null) {
 				string msg = "I_CAN_NOT_SERIALIZE_CHART_SETTINGS_AFTER_PROPERTY_CHANGE this.mniSettingsForCurrentChart.Tag==null";
 				Assembler.PopupException(msg);
 				return;

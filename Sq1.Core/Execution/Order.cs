@@ -312,7 +312,7 @@ namespace Sq1.Core.Execution {
 				string msg1 = "NYI:KILLING_ORDERS_AFTER_APPRESTART ORDER_DESERIALIZED_IS_NOT_ATTACHED_TO_BAR";
 				Assembler.PopupException(msg1, null, false);
 			} else {
-				this.CreatedBrokerTime		= alert.Bars.MarketInfo.Convert_localTime_toServerTime(DateTime.Now);
+				this.CreatedBrokerTime		= alert.Bars.MarketInfo.ServerTimeNow;
 			}
 
 			this.Alert = alert;
@@ -354,7 +354,7 @@ namespace Sq1.Core.Execution {
 			
 			this.DerivedOrdersAdd(killer);
 			
-			DateTime serverTimeNow = this.Alert.Bars.MarketInfo.Convert_localTime_toServerTime(DateTime.Now);
+			DateTime serverTimeNow = this.Alert.Bars.MarketInfo.ServerTimeNow;
 			killer.CreatedBrokerTime = serverTimeNow;
 
 			return killer;
@@ -372,7 +372,7 @@ namespace Sq1.Core.Execution {
 			
 			this.DerivedOrdersAdd(replacement);
 
-			DateTime serverTimeNow = this.Alert.Bars.MarketInfo.Convert_localTime_toServerTime(DateTime.Now);
+			DateTime serverTimeNow = this.Alert.Bars.MarketInfo.ServerTimeNow;
 			replacement.CreatedBrokerTime = serverTimeNow;
 
 			return replacement;

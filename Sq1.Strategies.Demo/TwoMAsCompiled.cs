@@ -8,6 +8,8 @@ using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Backtesting;
 
+using Sq1.Indicators;
+
 #if QUIK_REFERRED
 using Sq1.Adapters.Quik.Streaming;
 #endif

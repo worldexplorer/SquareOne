@@ -5,7 +5,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
-	public abstract partial class Script {
+	public partial class Script {
 		public Position BuyAtLimit(Bar bar, double limitPrice, string signalName = "BOUGHT_AT_LIMIT") {
 			return this.Executor.BuyOrShort_alertCreateRegister(bar, limitPrice, signalName, Direction.Buy, MarketLimitStop.Limit);
 		}

@@ -417,7 +417,7 @@ namespace Sq1.Widgets.CsvImporter {
 			this.barsParsed_rangeSelectedForImport = this.barsParsed.Clone_selectRange(rangeToShow, true);
 			this.rangeBar.Initialize(this.barsParsed, this.barsParsed_rangeSelectedForImport);
 
-			this.olvParsedByFormat.SetObjects(this.barsParsed_rangeSelectedForImport.InnerBars_exposedOnlyForEditor);
+			this.olvParsedByFormat.SetObjects(this.barsParsed_rangeSelectedForImport.InnerBars_exposedOnlyForEditor_fromSafeCopy);
 			this.rangeBar.Enabled = true;
 
 			this.populateGrpPreviewParsedByFormat(this.barsParsed_rangeSelectedForImport.Count);

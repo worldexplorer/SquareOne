@@ -143,6 +143,12 @@
     <Compile Include="DataTypes\SymbolInfo.EventGenerator.cs">
       <DependentUpon>SymbolInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Indicators\Indicator.OverrideMe.cs">
+      <DependentUpon>Indicator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Indicators\Indicator.Reflection.cs">
+      <DependentUpon>Indicator.cs</DependentUpon>
+    </Compile>
     <Compile Include="Livesim\LivesimBrokerDefault.BrokerAdapterProtocol.cs">
       <DependentUpon>LivesimBrokerDefault.cs</DependentUpon>
     </Compile>
@@ -233,9 +239,6 @@
     <Compile Include="Indicators\Indicator.Rendering.cs">
       <DependentUpon>Indicator.cs</DependentUpon>
     </Compile>
-    <Compile Include="Indicators\IndicatorAverageTrueRange.cs" />
-    <Compile Include="Indicators\IndicatorAtrBand.cs" />
-    <Compile Include="Indicators\IndicatorMovingAverageSimple.cs" />
     <Compile Include="Indicators\IndicatorParameter.cs" />
     <Compile Include="Indicators\IndicatorParameterEventArgs.cs" />
     <Compile Include="Livesim\LivesimBroker.cs" />
@@ -328,6 +331,9 @@
     </Compile>
     <Compile Include="StrategyBase\PositionPrototypeActivator.Update.cs">
       <DependentUpon>PositionPrototypeActivator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategyBase\Script.Reflected.cs">
+      <DependentUpon>Script.cs</DependentUpon>
     </Compile>
     <Compile Include="StrategyBase\Script.ReusableExecutorChecks.cs">
       <DependentUpon>Script.cs</DependentUpon>

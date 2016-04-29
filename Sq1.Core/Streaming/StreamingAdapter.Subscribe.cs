@@ -236,24 +236,24 @@ namespace Sq1.Core.Streaming {
 		}
 		internal void ChartStreamingConsumer_Unsubscribe(StreamingConsumerChart chartStreamingConsumer, string msigForNpExceptions) {
 			if (this.DistributorCharts_substitutedDuringLivesim.ConsumerQuoteIsSubscribed(chartStreamingConsumer) == false) {
-				string msg = "CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_QUOTE";
-				Assembler.PopupException(msg + msigForNpExceptions, null, true);
+				string msg = "CONSUMER_QUOTE__CHART_STREAMING_WASNT_SUBSCRIBED";
+				Assembler.PopupException(msg + msigForNpExceptions, null, false);
 			} else {
 				//Assembler.PopupException("UnSubscribing QuoteConsumer [" + this + "]  to " + plug + "  (was subscribed)");
 				this.DistributorCharts_substitutedDuringLivesim.ConsumerQuoteUnsubscribe(chartStreamingConsumer);
 			}
 
 			if (this.DistributorCharts_substitutedDuringLivesim.ConsumerBarIsSubscribed(chartStreamingConsumer) == false) {
-				string msg = "CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_BAR";
-				Assembler.PopupException(msg + msigForNpExceptions, null, true);
+				string msg = "CONSUMER_BAR__CHART_STREAMING_WASNT_SUBSCRIBED";
+				Assembler.PopupException(msg + msigForNpExceptions, null, false);
 			} else {
 				//Assembler.PopupException("UnSubscribing BarsConsumer [" + this + "] to " + this.ToString() + " (was subscribed)");
 				this.DistributorCharts_substitutedDuringLivesim.ConsumerBarUnsubscribe(chartStreamingConsumer);
 			}
 
 			if (this.DistributorCharts_substitutedDuringLivesim.ConsumerLevelTwoFrozenIsSubscribed(chartStreamingConsumer) == false) {
-				string msg = "CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_LEVEL_TWO_FROZEN";
-				Assembler.PopupException(msg + msigForNpExceptions, null, true);
+				string msg = "CONSUMER_LEVEL_TWO_FROZEN__CHART_STREAMING_WASNT_SUBSCRIBED";
+				Assembler.PopupException(msg + msigForNpExceptions, null, false);
 			} else {
 				//Assembler.PopupException("UnSubscribing LevelTwoFrozensConsumer [" + this + "] to " + this.ToString() + " (was subscribed)");
 				this.DistributorCharts_substitutedDuringLivesim.ConsumerLevelTwoFrozenUnsubscribe(chartStreamingConsumer);

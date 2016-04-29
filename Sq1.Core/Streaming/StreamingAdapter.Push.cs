@@ -9,7 +9,7 @@ using Sq1.Core.Backtesting;
 namespace Sq1.Core.Streaming {
 	public abstract partial class StreamingAdapter {
 
-		protected virtual int Quote_incrementAbsnoPerSymbol_fixServerTime(Quote quoteUU) {
+		protected virtual int Quote_incrementAbsnoPerSymbol_fixServerTime_minusOneQuotePrevNewerThanCurrent_munisTwoWrongTimezone(Quote quoteUU) {
 			int changesMade = 0;
 			string msig = " //StreamingAdapter.Quote_fixServerTime_absnoPerSymbol(" + quoteUU + ")" + this.ToString();
 
@@ -39,11 +39,11 @@ namespace Sq1.Core.Streaming {
 						string msg = "WILL_BINDER_SET_QUOTE_TO_STREAMING_DATA_SNAPSHOT???";
 						Assembler.PopupException(msg, null, false);
 					} else {
-						MarketInfo marketInfo = this.DataSource.MarketInfo;
-						DateTime serverFromLocal = marketInfo.Convert_localTime_toServerTime(DateTime.Now);
-						if (quoteUU.ServerTime != serverFromLocal) {
+						DateTime serverTime_fromLocalViaTimezone = this.DataSource.MarketInfo.ServerTimeNow;
+						if (quoteUU.ServerTime != serverTime_fromLocalViaTimezone) {
 							//quoteUU.ServerTime  = serverFromLocal;
-							return -2;
+							changesMade = -2;
+							return changesMade;
 						} else {
 							string msg = "Nothing helps!!!";
 							quoteUU.ServerTime = quoteUU.ServerTime.AddMilliseconds(1);
@@ -55,7 +55,7 @@ namespace Sq1.Core.Streaming {
 
 			//v1 if (quoteUU.ServerTime == quotePrev.ServerTime) {
 			//v2
-			string quoteMillis		=	   quoteUU.ServerTime.ToString("HH:mm:ss.fff");
+			string quoteMillis		=   quoteUU.ServerTime.ToString("HH:mm:ss.fff");
 			string quoteLastMillis  = quoteLast.ServerTime.ToString("HH:mm:ss.fff");
 			//if (quoteMillis == quotePrevMillis) {
 			if (quoteUU.ServerTime <= quoteLast.ServerTime) {
@@ -76,7 +76,7 @@ namespace Sq1.Core.Streaming {
 
 					// DONT_DO_Convert_localTime_toServerTime_marketInfo_HAS_TZ=-3_WHILE_QUIK_JUNIOR_SENDS_TZ=-2_LAGS_ONE_MORE_HOUR
 					//MarketInfo marketInfo = this.DataSource.MarketInfo;
-					//DateTime serverFromLocal = marketInfo.Convert_localTime_toServerTime(DateTime.Now);
+					//DateTime serverFromLocal = marketInfo.ServerTimeNow;
 					//if (quoteUU.ServerTime != serverFromLocal) {
 					//    //quoteUU.ServerTime  = serverFromLocal;
 					//    return -2;
@@ -155,7 +155,7 @@ namespace Sq1.Core.Streaming {
 			}
 
 			Quote quoteUU = quoteUnboundUnattached_absnoPerSymbolMinusOne;		// same pointer but AbsnoPerSymbol is fixed now
-			int changesMade = this.Quote_incrementAbsnoPerSymbol_fixServerTime(quoteUnboundUnattached_absnoPerSymbolMinusOne);
+			int changesMade = this.Quote_incrementAbsnoPerSymbol_fixServerTime_minusOneQuotePrevNewerThanCurrent_munisTwoWrongTimezone(quoteUnboundUnattached_absnoPerSymbolMinusOne);
 			if (changesMade <= -1) {
 				string msg = "skipping_TIME_BACK[" + quoteUU.Symbol + " " + quoteUU.ServerTime + "]";
 				Assembler.PopupException(msg, null, false);
@@ -286,26 +286,30 @@ namespace Sq1.Core.Streaming {
 		    }
 
 			//v1
-			string msg3 = "now it's 8:45local => 17:45server; QuikJunior sends GMT+3 1 hour later;"
-				+ " what if I set TZ to GMT+4 (Baku) before day open?"
-				+ " first problem was in midday (couldn't overwrite BARS and needed Editor to slide back / delete)";
+			//string msg3 = "now it's 8:45local => 17:45server; QuikJunior sends GMT+3 1 hour later;"
+			//    + " what if I set TZ to GMT+4 (Baku) before day open?"
+			//    + " first problem was in midday (couldn't overwrite BARS and needed Editor to slide back / delete)";
 			//Assembler.PopupException(msg3);
-			DateTime nowServerTime = this.DataSource.MarketInfo.Convert_localTime_toServerTime(DateTime.Now);
-			DateTime guessingServerTime_forLevel2 = nowServerTime;
+			DateTime guessingServerTime_forLevel2 = DateTime.MinValue;
 
 		    //v2
 			Quote lastQuote = this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(symbol);
 			if (lastQuote != null) {
 				DateTime lastQuoteServerTime = lastQuote.ServerTime;
-				TimeSpan diff = guessingServerTime_forLevel2.Subtract(lastQuoteServerTime);
-				if (diff.TotalMinutes > 30) {
-					string msg2 = "lastQuoteServerTime_GOT_PRIORITY_FOR_LEVEL2"
-						+ " PLS_ADJUST_TIMEZONE_PRIOR_TO_MARKET_OPEN_IN_DataSourceEditor.MarketInfo.Timezone"
-						+ " nowServerTime[" + nowServerTime + "] - lastQuote.ServerTime[" + lastQuote.ServerTime + "]"
-						+ " = [" + diff + "].TotalMinutes > 30";
-					Assembler.PopupException(msg2, null, false);
-					guessingServerTime_forLevel2 = lastQuoteServerTime;
-				}
+				//TimeSpan diff = guessingServerTime_forLevel2.Subtract(lastQuoteServerTime);
+				//if (diff.TotalMinutes > 30) {
+				//    string msg2 = "lastQuoteServerTime_GOT_PRIORITY_FOR_LEVEL2"
+				//        + " PLS_ADJUST_TIMEZONE_PRIOR_TO_MARKET_OPEN_IN_DataSourceEditor.MarketInfo.Timezone"
+				//        + " nowServerTime[" + nowServerTime + "] - lastQuote.ServerTime[" + lastQuote.ServerTime + "]"
+				//        + " = [" + diff + "].TotalMinutes > 30";
+				//    Assembler.PopupException(msg2, null, false);
+				//}
+				guessingServerTime_forLevel2 = lastQuoteServerTime;
+			} else {
+				string msg2 = "MUST_NEVER_HAPPEN TAKING_MarketInfo.ServerTimeNow_KOZ_lastQuote==null"
+					+ " WHILE_GUESSING_SERVER_TIME_FOR_LEVEL2";
+				Assembler.PopupException(msg2, null, false);
+				guessingServerTime_forLevel2 = this.DataSource.MarketInfo.ServerTimeNow;
 			}
 
 		    string reasonMarketIsClosedNow  = this.DataSource.MarketInfo.GetReason_ifMarket_closedOrSuspended_at(guessingServerTime_forLevel2);

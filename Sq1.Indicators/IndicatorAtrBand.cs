@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 
+using Sq1.Core;
 using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
+using Sq1.Core.Indicators;
 using Sq1.Core.Indicators.HelperSeries;
 
-namespace Sq1.Core.Indicators {
+namespace Sq1.Indicators {
 	public class IndicatorAtrBand : Indicator {
 		public IndicatorParameter				ParamMultiplier;	// Indicator searches for IndicatorParameter being fields, not properties
 		public DataSeriesTimeBasedColorified	BandLower;
@@ -29,14 +31,14 @@ namespace Sq1.Core.Indicators {
 			this.ParamMultiplier = new IndicatorParameter("Multiplier", 1, 0.1, 10, 0.1);
 		}
 		
-		public override string InitializeBacktestStartingPreCheckErrors() {
+		public override string InitializeBacktest_beforeStarted_checkErrors() {
 			if (this.ParamMultiplier.ValueCurrent <= 0) return "Multiplier[" + this.ParamMultiplier.ValueCurrent + "] MUST BE > 0";
 			this.BandLower = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, "BandLower for " + base.Name, base.LineColor);
 			this.BandUpper = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, "BandLower for " + base.Name, base.LineColor);
 			return null;
 		}
 		
-		public override double CalculateOwnValueOnNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(Bar newStaticBar) {
+		public override double CalculateOwnValue_onNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(Bar newStaticBar) {
 			double atrValue = double.NaN;
 			bool addNan = false;
 			
@@ -117,11 +119,11 @@ namespace Sq1.Core.Indicators {
 		protected override bool DrawValueIndicatorSpecific(Graphics g, Bar bar) {
 			return base.DrawValueBand(g, bar, this.BandLower, this.BandUpper);
 		}
-		public override SortedDictionary<string, string> ValuesForTooltipPrice(Bar bar) {
+		public override SortedDictionary<string, string> OwnValuesForTooltipPrice(Bar bar) {
 			string suffix = atr.Name + "*" + this.ParamMultiplier.ValueCurrent;
 			SortedDictionary<string, string> ret = new SortedDictionary<string, string>();
-			ret.Add("C+" + suffix, this.FormatValueForBar(bar, this.BandUpper));
-			ret.Add("C-" + suffix, this.FormatValueForBar(bar, this.BandLower));
+			ret.Add("C+" + suffix, this.OwnValueForBar_formatted(bar, this.BandUpper));
+			ret.Add("C-" + suffix, this.OwnValueForBar_formatted(bar, this.BandLower));
 			return ret;
 		}
 	}

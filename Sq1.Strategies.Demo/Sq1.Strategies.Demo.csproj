@@ -90,6 +90,10 @@
       <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>
       <Name>Sq1.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Sq1.Indicators\Sq1.Indicators.csproj">
+      <Project>{BFF96F69-31C4-4839-A4F3-3AF53154D2BA}</Project>
+      <Name>Sq1.Indicators</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Sq1.Strategies.Demo-LICENSE.txt">

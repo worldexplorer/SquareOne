@@ -143,7 +143,7 @@ namespace Sq1.Core.Streaming {
 		}
 		void action(string msgIfNull) {
 			Assembler.PopupException(msgIfNull + this.MsigForNpExceptions, null, false);
-			//throw new Exception(msg);
+			throw new Exception(msgIfNull);
 		}
 
 		public virtual void PumpPaused_notification_overrideMe_switchLivesimmingThreadToGui() {

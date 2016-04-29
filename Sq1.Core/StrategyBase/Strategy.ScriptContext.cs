@@ -37,7 +37,7 @@ namespace Sq1.Core.StrategyBase {
 		//	return clone;
 		//}
 		[Obsolete("REDUNDANT_MEANINGLESS_UNCLEAR_COPYING_HERE")]
-		public void ContextSwitchCurrentToNamedAndSerialize(string scriptContextName, bool shouldSave = true) {
+		public void ContextSwitch_currentToNamed_serialize(string scriptContextName, bool shouldSave = true) {
 			lock (this.ScriptContextCurrentName) {	// Monitor shouldn't care whether I change the variable that I use for exclusive access...
 			//v2 lock (this.scriptContextCurrentNameLock) {
 				this.checkThrowContextNameShouldExist(scriptContextName);
@@ -46,7 +46,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.ContextMarkCurrentInListByName(scriptContextName);
 			// if (shouldSave) this.Serialize();
-			this.ScriptAndIndicatorParametersReflected_absorbMergeFromCurrentContext_saveStrategy();
+			this.ScriptAndIndicatorParametersReflected_absorbFromCurrentContext_saveStrategy();
 		}
 		public void ContextMarkCurrentInListByName(string scriptContextName) {
 			this.checkThrowContextNameShouldExist(scriptContextName);
@@ -64,7 +64,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			ContextScript newScriptContext = new ContextScript(newScriptContextName);
 			if (absorbParamsFrom != null) {
-				newScriptContext.AbsorbFrom_duplicatedInSliders_or_importedFromSequencer(absorbParamsFrom, true);
+				newScriptContext.AbsorbFrom_duplicatedInSliders_orImportedFromSequencer(absorbParamsFrom, true);
 			} else {
 				newScriptContext.DataSourceName = this.ScriptContextCurrent.DataSourceName;
 				newScriptContext.Symbol = this.ScriptContextCurrent.Symbol;
@@ -77,7 +77,7 @@ namespace Sq1.Core.StrategyBase {
 			bool dontSaveWeOptimize = newScriptContextName.Contains(Sequencer.ITERATION_PREFIX);
 			bool shouldSave = !dontSaveWeOptimize; 
 			if (setAddedAsCurrent) {
-				this.ContextSwitchCurrentToNamedAndSerialize(newScriptContextName, shouldSave);
+				this.ContextSwitch_currentToNamed_serialize(newScriptContextName, shouldSave);
 			}
 			if (dontSaveWeOptimize) {
 				return;
@@ -86,11 +86,11 @@ namespace Sq1.Core.StrategyBase {
 			string msg2 = "scriptContextName[" + newScriptContextName + "] added for strategy[" + this + "]";
 			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg2);
 		}
-		public void ScriptContextAdd_cloneAndAbsorbCurrentValuesFromSequencer(string newScriptContextName,
+		public void ScriptContextAdd_cloneAndAbsorbCurrentValues_fromSequencer(string newScriptContextName,
 						SystemPerformanceRestoreAble absorbParamsFrom, bool setAddedAsCurrent = false) {
 
 			string msg2 = "scriptContextName[" + newScriptContextName + "] added for strategy[" + this + "]";
-			ContextScript newScriptContext = this.ScriptContextCurrent.CloneAndAbsorbFromSystemPerformanceRestoreAble(absorbParamsFrom, newScriptContextName);
+			ContextScript newScriptContext = this.ScriptContextCurrent.CloneAndAbsorb_fromSystemPerformanceRestoreAble(absorbParamsFrom, newScriptContextName);
 			if (this.ScriptContextsByName.ContainsKey(newScriptContextName)) {
 				//v1
 				//string msg = "CANT_ADD_EXISTING scriptContextName[" + newScriptContextName + "] already exists for strategy[" + this + "]";
@@ -106,7 +106,7 @@ namespace Sq1.Core.StrategyBase {
 			bool dontSaveWeOptimize = newScriptContextName.Contains(Sequencer.ITERATION_PREFIX);
 			bool shouldSave = !dontSaveWeOptimize; 
 			if (setAddedAsCurrent) {
-				this.ContextSwitchCurrentToNamedAndSerialize(newScriptContextName, shouldSave);
+				this.ContextSwitch_currentToNamed_serialize(newScriptContextName, shouldSave);
 			}
 			if (dontSaveWeOptimize) {
 				return;
@@ -134,7 +134,7 @@ namespace Sq1.Core.StrategyBase {
 				if (this.Script != null) {
 					this.Script.SwitchToDefaultContext_byAbsorbingScriptAndIndicatorParameters_fromSelfCloneConstructed();
 				} else {
-					this.ContextSwitchCurrentToNamedAndSerialize(ContextScript.DEFAULT_NAME, false);
+					this.ContextSwitch_currentToNamed_serialize(ContextScript.DEFAULT_NAME, false);
 				}
 				msg2 = "SWITCHED_TO " + this.ScriptContextCurrent.Name + "; " + msg2;
 			}

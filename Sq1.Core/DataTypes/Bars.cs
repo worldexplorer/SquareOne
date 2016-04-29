@@ -70,7 +70,7 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		} }
 
-		[JsonIgnore]	public	List<Bar>			InnerBars_exposedOnlyForEditor		{ get; private set; }
+		[JsonIgnore]	public	List<Bar>			InnerBars_exposedOnlyForEditor_fromSafeCopy		{ get; private set; }
 
 		public Bars SafeCopy_oneCopyForEachDisposableExecutors(string reasonToExist, bool exposeInnerBars_forEditor = false, bool reverseInnerBars_forEditor = false) { lock (base.BarsLock) {
 			if (reverseInnerBars_forEditor) reasonToExist = "REVERTED " + reasonToExist;
@@ -84,7 +84,7 @@ namespace Sq1.Core.DataTypes {
 			clone.MarketInfo = this.MarketInfo;
 			//base.ReasonToExist = reasonToExist + "_CLONED_FROM_" + base.ReasonToExist;
 			if (exposeInnerBars_forEditor) {
-				clone.InnerBars_exposedOnlyForEditor = clone.BarsList;
+				clone.InnerBars_exposedOnlyForEditor_fromSafeCopy = clone.BarsList;
 				if (reverseInnerBars_forEditor) {
 					clone.Reverse();
 				}
@@ -313,7 +313,7 @@ namespace Sq1.Core.DataTypes {
 				clone.BarStatic_appendAttach(barAdding.CloneDetached());
 			}
 			if (exposeInnerBars_forEditor) {
-				clone.InnerBars_exposedOnlyForEditor = clone.BarsList;
+				clone.InnerBars_exposedOnlyForEditor_fromSafeCopy = clone.BarsList;
 			}
 			return clone;
 		}

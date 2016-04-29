@@ -62,7 +62,7 @@ namespace Sq1.Core.Support {
 			SelfReschedule	= false;		// not running by default; start it by SelfReschedule=true (you'll never catch Expired externally) or ScheduleOnce() (you'll catch Expired externally and reschedule again)
 			forever			= -1;
 			immediately		= 0;
-			tooSoon			= 1;
+			tooSoon			= 3;
 			guiInvoker		= guiInvokerPassed;
 			Delay			= delayInitial;
 			timer			= new System.Windows.Forms.Timer();

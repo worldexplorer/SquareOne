@@ -291,9 +291,9 @@ namespace Sq1.Gui {
 					//}
 					//v2
 					#if DEBUG
-					int indicatorsReflectedCount = chartStrategy.Script.IndicatorsByName_ReflectedCached.Count;
+					int indicatorsReflectedCount = chartStrategy.Script.IndicatorsByName_reflectedCached_primary.Count;
 					if (indicatorsReflectedCount > 0) {
-						bool mergedIfAny = chartStrategy.ScriptContextCurrent.IndicatorParametersByName.Count == indicatorsReflectedCount;
+						bool mergedIfAny = chartStrategy.ScriptContextCurrent.IndicatorParametersByIndicatorName.Count == indicatorsReflectedCount;
 						if (mergedIfAny == false) Debugger.Break();
 					}
 					#endif

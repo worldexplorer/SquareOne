@@ -148,7 +148,7 @@ namespace Sq1.Core.Charting {
 		*/
 
 		#region VIRTUAL instead of ABSTRACT will let you open ChartControl in windows forms Designer (remove "abstract" from class declaration as well)
-		public virtual void ClearAllScriptObjectsBeforeBacktest() { }
+		public virtual void Clear_allScriptObjects_beforeBacktest() { }
 
 		public virtual void PositionsBacktestAdd(List<Position> positionsMaster) { }
 		public virtual void PositionsRealtimeAdd(ReporterPokeUnit pokeUnit) { }

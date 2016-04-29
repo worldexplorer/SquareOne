@@ -124,7 +124,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig);
 				return stopped;
 			}
-			channel.QuotePump_nullUnsafe.PushingThreadStop_waitConfirmed();
+			channel.QuotePump_nullUnsafe.PushingThread_StopDispose_waitConfirmed();
 			msg = "PUMP_STOPPED_CONFIRMED_QUOTE";
 			Assembler.PopupException(msg + msig, null, false);
 			stopped++;
@@ -142,7 +142,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig);
 				return stopped;
 			}
-			channel.PumpLevelTwo.PushingThreadStop_waitConfirmed();
+			channel.PumpLevelTwo.PushingThread_StopDispose_waitConfirmed();
 			msg = "PUMP_STOPPED_CONFIRMED_LEVEL_TWO";
 			Assembler.PopupException(msg + msig, null, false);
 			stopped++;

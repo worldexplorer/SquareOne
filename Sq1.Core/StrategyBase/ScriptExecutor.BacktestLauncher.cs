@@ -29,8 +29,15 @@ namespace Sq1.Core.StrategyBase {
 			} else {
 				this.Bars = barsEmptyButWillGrow;
 				bool indicatorsHaveNoErrorsCanStartBacktesting = true;
-				foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
-					indicatorsHaveNoErrorsCanStartBacktesting &= indicator.BacktestStartingConstructOwnValuesValidateParameters(this);
+				foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Values) {
+					if (indicator.Executor != null) {
+						string msg = "already initialized Executor and OwnValues in PreCalculateIndicators_forLoadedBars_backtestWontFollow()" + indicator;
+						Assembler.PopupException(msg, null, false);
+						continue;
+					}
+					
+					indicator.Initialize(this);
+					indicatorsHaveNoErrorsCanStartBacktesting &= indicator.BacktestStarting_validateParameters();
 				}
 				if (indicatorsHaveNoErrorsCanStartBacktesting == false) {
 					string msg = "I_SHOULD_ABORT_BACKTEST_NOW_HERE_BUT_DONT_HAVE_A_MECHANISM indicatorsHaveNoErrorsCanStartBacktesting=false";
@@ -44,13 +51,13 @@ namespace Sq1.Core.StrategyBase {
 		internal void BacktestContext_restore() {
 			this.Bars = this.preBacktestBars;
 			string msig = " //BacktestContextRestore(" + this.Bars + ")";
-			foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
+			foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Values) {
 				if (indicator.OwnValuesCalculated.Count != this.Bars.Count) {
 					string state = "MA.OwnValues.Count=499, MA.BarsEffective.Count=500[0...499], MA.BarsEffective.BarStreaming=null <= that's why indicator has 1 less";
 					string msg = "YOU_ABORTED_LIVESIM_BUT_DIDNT_RECALCULATE_INDICATORS? REMOVE_HOLES_IN_INDICATOR " + indicator;
 					Assembler.PopupException(msg + msig, null, false);
 				}
-				indicator.BacktestContextRestoreSwitchToOriginalBarsContinueToLiveNorecalculate();
+				indicator.BacktestContextRestore_backToOriginalBarsEffectiveProxy_continueToLive_noRecalculate();
 			}
 
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
@@ -74,7 +81,7 @@ namespace Sq1.Core.StrategyBase {
 				this.PerformanceAfterBacktest.Initialize();
 				this.Strategy.Script.InitializeBacktestWrapper();
 
-				if (this.ChartShadow != null) this.ChartShadow.SetIndicators(this.Strategy.Script.IndicatorsByName_ReflectedCached);
+				if (this.ChartShadow != null) this.ChartShadow.SetIndicators(this.Strategy.Script.IndicatorsByName_reflectedCached_primary);
 
 				this.BacktesterOrLivesimulator.Initialize_runSimulation_backtestAndLivesim_step1of2();
 			} catch (Exception exBacktest) {
@@ -150,7 +157,7 @@ namespace Sq1.Core.StrategyBase {
 				this.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted("ALREADY_BACKTESTING_this.Backtester.IsBacktestingNow");
 			}
 
-			if (this.ChartShadow != null) this.ChartShadow.ClearAllScriptObjectsBeforeBacktest();
+			if (this.ChartShadow != null) this.ChartShadow.Clear_allScriptObjects_beforeBacktest();
 
 			//inNewThread = false;
 			if (inNewThread) {

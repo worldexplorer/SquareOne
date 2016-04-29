@@ -82,13 +82,18 @@ namespace Sq1.Core.Execution {
 			if (alert.Strategy.Script == null) {
 				string msg = "TODO NYI alert submitted from mni / onChartTrading";
 			}
-			if (this.AlertsMaster.ContainsIdentical(alert, this, msig)) {
-				string msg = "AlertsMasterContainsIdentical=>won't add NewPending;"
-					+ " 1) broker's order status dupe? 2) are you using CoverAtStop() in your strategy?"
-					+ " //" + alert;
-				Assembler.PopupException(msg);
-				return;
-			}
+			
+			#if DEBUG
+			// NEVER_HAPPENS_AND_TOO_EXPENSIVE Alert.IsIdentical_orderlessPriceless()
+			//if (this.AlertsMaster.ContainsIdentical(alert, this, msig)) {
+			//	string msg = "AlertsMasterContainsIdentical=>won't add NewPending;"
+			//		+ " 1) broker's order status dupe? 2) are you using CoverAtStop() in your strategy?"
+			//		+ " //" + alert;
+			//	Assembler.PopupException(msg);
+			//	return;
+			//}
+			#endif
+			
 			this.AlertsMaster.AddNoDupe(alert, this, "AlertEnrichedRegister(WAIT)");
 			if (registerInNewAfterExec == true) this.AlertsNewAfterExec.AddNoDupe(alert, this, msig);
 			ByBarDumpStatus dumped = this.AlertsPending.AddNoDupe(alert, this, msig);

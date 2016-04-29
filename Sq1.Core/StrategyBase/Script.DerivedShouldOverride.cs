@@ -4,7 +4,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
-	public abstract partial class Script {
+	public partial class Script {
 		// REASON_TO_EXIST: methods to override in derived strategy
 		public virtual void InitializeBacktest() {
 		}

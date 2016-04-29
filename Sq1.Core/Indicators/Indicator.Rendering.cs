@@ -1,17 +1,48 @@
 ﻿using System;
 using System.Drawing;
 
+using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators.HelperSeries;
 
 namespace Sq1.Core.Indicators {
 	public partial class Indicator {
+		public	HostPanelForIndicator HostPanelForIndicator		{ get; protected set; }
+
+				Color lineColor;
+		public	Color LineColor {
+			get { return this.lineColor; }
+			set { this.lineColor = value; this.brushForeground = null; this.penForeground = null; }
+		}
+				int lineWidth;
+		public	int LineWidth {
+			get { return this.lineWidth; }
+			set { this.lineWidth = value; this.brushForeground = null; this.penForeground = null; }
+		}
+
+				Brush brushForeground;
+		public	Brush BrushForeground							{ get {
+				if (this.brushForeground == null) {
+					this.brushForeground = new SolidBrush(this.LineColor);
+				}
+				return this.brushForeground;
+			} }
+				Pen penForeground;
+		public	Pen PenForeground { get {
+				if (this.penForeground == null) {
+					this.penForeground = new Pen(this.LineColor, this.LineWidth);
+				}
+				return this.penForeground;
+			} }
+
+		
 		// DrawValue() isn't in Sq1.Charting.PanelNamedFolding so that one particular indicator may override and draw more than one line with labels;  
 //		public bool DrawValueEntryPoint(Graphics g, Bar bar, Rectangle barPlaceholder) {
 		public bool DrawValueEntryPoint(Graphics g, Bar bar) {
 			bool indicatorLegDrawn = false;
 			// MOVED_UPSTACK if (bar.ParentBarsIndex <= this.FirstValidBarIndex) return indicatorLegDrawn;
-			if (Object.ReferenceEquals(this.OwnValuesCalculated, null)) return indicatorLegDrawn;
+			//if (Object.ReferenceEquals(this.OwnValuesCalculated, null)) return indicatorLegDrawn;
+			if (this.OwnValuesCalculated == null) return indicatorLegDrawn;
 			string msig = " Indicator[" + this.Name + "]{" + this.OwnValuesCalculated.ToString() + "}"
 				+ ".DrawValueEntryPoint(" + bar + ")";
 
@@ -46,23 +77,23 @@ namespace Sq1.Core.Indicators {
 			return this.DrawValueIndicatorSpecific(g, bar);
 		}
 		protected virtual bool DrawValueIndicatorSpecific(Graphics g, Bar bar) {
-			return this.DrawValueSingleLine(g, bar);
+			return this.DrawValueSingleLine(g, bar, double.NaN, double.NaN);
 		}
-		protected bool DrawValueSingleLine(Graphics g, Bar bar, double calculated = double.NaN, double calculatedPrev = double.NaN) {
+		protected bool DrawValueSingleLine(Graphics g, Bar bar, double calculated_forBands = double.NaN, double calculatedPrev_forBands = double.NaN) {
 			string msig = " Indicator[" + this.NameWithParameters + "].DrawValueSingleLine(" + bar + ")";
 			bool indicatorLegDrawn = false;
-			if (double.IsNaN(calculated)) {
-				calculated = this.OwnValuesCalculated[bar.ParentBarsIndex];
+			if (double.IsNaN(calculated_forBands)) {
+				calculated_forBands = this.OwnValuesCalculated[bar.ParentBarsIndex];
 			}
 			// v2-END
-			if (double.IsNaN(calculated)) {
+			if (double.IsNaN(calculated_forBands)) {
 				string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NAN_FOR_BAR bar[" + bar + "]";
 				//INDICATORS_INCUBATION_PERIOD_NO_NEED_TO_REPORT Assembler.PopupException(msg + msig);
 				return indicatorLegDrawn;
 			}
 			this.DotsExistsForCurrentSlidingWindow++;
 			int x = this.HostPanelForIndicator.BarToX(bar.ParentBarsIndex) + this.HostPanelForIndicator.BarShadowOffset;
-			int y = this.HostPanelForIndicator.ValueToYinverted(calculated);
+			int y = this.HostPanelForIndicator.ValueToYinverted(calculated_forBands);
 			if (y == 0)  {
 				string msg = "INDICATOR_VALUE_TOO_BIG_INVERTED SKIPPING_DRAWING_OUTSIDE_HOST_PANEL";
 				//Assembler.PopupException(msg + msig, null, false);
@@ -94,17 +125,17 @@ namespace Sq1.Core.Indicators {
 				return indicatorLegDrawn;
 			}
 			
-			if (double.IsNaN(calculatedPrev)) {
-				calculatedPrev = this.OwnValuesCalculated[barIndexPrev];
+			if (double.IsNaN(calculatedPrev_forBands)) {
+				calculatedPrev_forBands = this.OwnValuesCalculated[barIndexPrev];
 			}
 			
-			if (double.IsNaN(calculatedPrev)) {
+			if (double.IsNaN(calculatedPrev_forBands)) {
 				string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NAN_FOR_PREVBAR barIndexPrev[" + barIndexPrev + "]";
 				//INDICATORS_INCUBATION_PERIOD_NO_NEED_TO_REPORT Assembler.PopupException(msg + msig);
 				return indicatorLegDrawn;
 			}
 				
-			int yPrev = this.HostPanelForIndicator.ValueToYinverted(calculatedPrev);
+			int yPrev = this.HostPanelForIndicator.ValueToYinverted(calculatedPrev_forBands);
 			int xPrev = this.HostPanelForIndicator.BarToX(barIndexPrev) + this.HostPanelForIndicator.BarShadowOffset;
 			Point myDotPrev = new Point(xPrev, yPrev);
 			

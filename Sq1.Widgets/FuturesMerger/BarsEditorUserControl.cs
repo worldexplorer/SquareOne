@@ -137,7 +137,7 @@ namespace Sq1.Widgets.FuturesMerger {
 			//v1 this.olvBarsEditor.SetObjects(this.barsCloned_rangeIamEditing.InnerBars_exposedOnlyForEditor);
 			//v2
 			this.barsClonedReversed	= this.barsCloned_rangeIamEditing.SafeCopy_oneCopyForEachDisposableExecutors("RANGE_CLONED_FOR_BARS_EDITOR", true, this.barsDescending);
-			this.olvBarsEditor.SetObjects(this.barsClonedReversed.InnerBars_exposedOnlyForEditor);
+			this.olvBarsEditor.SetObjects(this.barsClonedReversed.InnerBars_exposedOnlyForEditor_fromSafeCopy);
 
 			this.btnReload.Enabled = true;
 			//this.btnSave.Enabled = true;

@@ -37,7 +37,7 @@ namespace Sq1.Gui.Forms {
 			this.ChartFormManager.Strategy = null;
 			this.ChartFormManager.Executor.Initialize(null, this.ChartControl);
 			this.ChartFormManager.InitializeWithoutStrategy(this.ChartFormManager.ContextCurrentChartOrStrategy, true);
-			this.ChartControl.ClearAllScriptObjectsBeforeBacktest();
+			this.ChartControl.Clear_allScriptObjects_beforeBacktest();
 			
 			if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.ScriptEditorForm) == false) {
 				this.ChartFormManager.ScriptEditorForm.Close();

@@ -14,7 +14,7 @@ namespace Sq1.Core.StrategyBase {
 		
 		[JsonProperty]	public PositionSize										PositionSize;
 		[JsonProperty]	public SortedDictionary<int, ScriptParameter>			ScriptParametersById;
-		[JsonProperty]	public Dictionary<string, List<IndicatorParameter>>		IndicatorParametersByName;
+		[JsonProperty]	public Dictionary<string, List<IndicatorParameter>>		IndicatorParametersByIndicatorName;
 		
 		[JsonProperty]	public bool							IsCurrent;
 		[JsonProperty]	public bool							StrategyEmittingOrders;
@@ -50,8 +50,8 @@ namespace Sq1.Core.StrategyBase {
 				ret.AddRange(this.ScriptParametersById.Values);
 				//v1 foreach (List<IndicatorParameter> iParams in this.IndicatorParametersByName.Values) ret.AddRange(iParams);
 				//v2 fixes OneParameterControl.indicatorParameter_nullUnsafe: ScriptAndIndicatorParametersMergedUnclonedForSequencerByName.ContainsKey(" + this.parameter.ParameterName + ") == false becomes true
-				foreach (string indicatorName in this.IndicatorParametersByName.Keys) {
-					List<IndicatorParameter> iParams = this.IndicatorParametersByName[indicatorName];
+				foreach (string indicatorName in this.IndicatorParametersByIndicatorName.Keys) {
+					List<IndicatorParameter> iParams = this.IndicatorParametersByIndicatorName[indicatorName];
 					foreach (IndicatorParameter iParam in iParams) {
 						if (iParam.IndicatorName == indicatorName) continue;
 						iParam.IndicatorName = indicatorName;
@@ -77,7 +77,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return ret;
 			} }
-		[JsonProperty]	public	string										ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString { get {
+		[JsonProperty]	public string										ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString { get {
 				SortedDictionary<string, IndicatorParameter> merged = this.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName;
 				if (merged.Count == 0) return "(NoParameters)";
 				string ret = "";
@@ -88,13 +88,13 @@ namespace Sq1.Core.StrategyBase {
 				return "(" + ret + ")";
 			} }
 
-		[JsonIgnore]	public bool WillBacktestOnAppRestart { get {
+		[JsonIgnore]	public bool		WillBacktestOnAppRestart { get {
 				return	this.BacktestOnRestart
 					&&	this.DownstreamSubscribed
 					&&	this.StreamingIsTriggeringScript;
 		} }
-		[JsonProperty]	public string						SequenceIterationName;
-		[JsonProperty]	public int							SequenceIterationSerno;
+		[JsonProperty]	public string	SequenceIterationName;
+		[JsonProperty]	public int		SequenceIterationSerno;
 
 		public ContextScript(ContextChart upgradingFromSimpleChart = null, string name = "UNDEFINED") : this(name) {
 			base.AbsorbFrom(upgradingFromSimpleChart);
@@ -106,7 +106,7 @@ namespace Sq1.Core.StrategyBase {
 		ContextScript() : base() {
 			PositionSize							= new PositionSize(PositionSizeMode.SharesConstantEachTrade, 1);
 			ScriptParametersById					= new SortedDictionary<int, ScriptParameter>();
-			IndicatorParametersByName				= new Dictionary<string, List<IndicatorParameter>>();
+			IndicatorParametersByIndicatorName				= new Dictionary<string, List<IndicatorParameter>>();
 			
 			IsCurrent								= false;
 			StrategyEmittingOrders					= false;
@@ -136,23 +136,23 @@ namespace Sq1.Core.StrategyBase {
 			SequenceIterationSerno = -1;	// it was a F5 GUI invoked backtest, not a sequencer-generated run;
 		}
 		
-		public ContextScript CloneAndAbsorbFromSystemPerformanceRestoreAble(SystemPerformanceRestoreAble sysPerfOptimized, string newScriptContextName = null) {
-			Assembler.PopupException("TESTME //CloneAndAbsorbFromSystemPerformanceRestoreAble()", null, false);
+		public ContextScript CloneAndAbsorb_fromSystemPerformanceRestoreAble(SystemPerformanceRestoreAble sysPerfOptimized, string newScriptContextName = null) {
+			Assembler.PopupException("TESTME //CloneAndAbsorb_fromSystemPerformanceRestoreAble()", null, false);
 			ContextScript clone = (ContextScript)base.MemberwiseClone();
 			if (string.IsNullOrEmpty(newScriptContextName) == false) {
 				clone.Name = newScriptContextName;
 			}
-			clone.ScriptParametersById			= sysPerfOptimized.ScriptParametersById_BuiltOnBacktestFinished;
-			clone.IndicatorParametersByName		= sysPerfOptimized.IndicatorParametersByName_BuiltOnBacktestFinished;
-			clone.replaceWithClonesScriptAndIndicatorParameters("NEW_CTX_FROM_OPTIMIZED", false);
+			clone.ScriptParametersById					= sysPerfOptimized.ScriptParametersById_BuiltOnBacktestFinished;
+			clone.IndicatorParametersByIndicatorName	= sysPerfOptimized.IndicatorParametersByName_BuiltOnBacktestFinished;
+			clone.replaceWithCloned_scriptAndIndicatorParameters("NEW_CTX_FROM_OPTIMIZED", false);
 			return clone;
 		}
 		public void AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerOnly(string reasonToClone, ContextScript found) {
 			this.ScriptParametersById			= found.ScriptParametersById;
-			this.IndicatorParametersByName		= found.IndicatorParametersByName;
-			this.replaceWithClonesScriptAndIndicatorParameters("FOR_" + reasonToClone, false);
+			this.IndicatorParametersByIndicatorName		= found.IndicatorParametersByIndicatorName;
+			this.replaceWithCloned_scriptAndIndicatorParameters("FOR_" + reasonToClone, false);
 		}
-		public void AbsorbFrom_duplicatedInSliders_or_importedFromSequencer(ContextScript found, bool absorbScriptAndIndicatorParams = true) {
+		public void AbsorbFrom_duplicatedInSliders_orImportedFromSequencer(ContextScript found, bool absorbScriptAndIndicatorParams = true) {
 			if (found == null) return;
 			//KEEP_CLONE_UNDEFINED this.Name = found.Name;
 			base.AbsorbFrom(found);
@@ -179,15 +179,15 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public ContextScript CloneResetAllToMin_ForSequencer(string reasonToClone) {
 			ContextScript ret = (ContextScript)base.MemberwiseClone();
-			ret.replaceWithClonesScriptAndIndicatorParameters(reasonToClone, true, true);
+			ret.replaceWithCloned_scriptAndIndicatorParameters(reasonToClone, true, true);
 			return ret;
 		}
-		void replaceWithClonesScriptAndIndicatorParameters(string reasonToClone, bool resetAllToMin = true, bool leaveNonSequencedAsCurrent = true) {
+		void replaceWithCloned_scriptAndIndicatorParameters(string reasonToClone, bool resetAllToMin = true, bool leaveNonSequencedAsCurrent = true) {
 			//this.ScriptParametersByIdNonCloned = this.ScriptParametersById;
-			SortedDictionary<int, ScriptParameter> scriptParametersByIdClonedReset = new SortedDictionary<int, ScriptParameter>();
+			SortedDictionary<int, ScriptParameter> scriptParameters_byIdClonedReset = new SortedDictionary<int, ScriptParameter>();
 			foreach (int id in this.ScriptParametersById.Keys) {
 				ScriptParameter sp = this.ScriptParametersById[id];
-				ScriptParameter spClone = sp.CloneAsScriptParameter(reasonToClone);
+				ScriptParameter spClone = sp.Clone_asScriptParameter(reasonToClone, "SWITCHABLE_REUSABLE_CTX[" + this.ToString() + "]");
 				if (resetAllToMin) {
 					if (spClone.WillBeSequenced == false && leaveNonSequencedAsCurrent == true) {
 						// don't reset to min
@@ -195,17 +195,17 @@ namespace Sq1.Core.StrategyBase {
 						spClone.ValueCurrent = spClone.ValueMin;
 					}
 				}
-				scriptParametersByIdClonedReset.Add(id, spClone);
+				scriptParameters_byIdClonedReset.Add(id, spClone);
 			}
-			this.ScriptParametersById = scriptParametersByIdClonedReset;
+			this.ScriptParametersById = scriptParameters_byIdClonedReset;
 
-			Dictionary<string, List<IndicatorParameter>> indicatorParametersByNameClonedReset = new Dictionary<string, List<IndicatorParameter>>();
-			foreach (string indicatorName in this.IndicatorParametersByName.Keys) {
-				List<IndicatorParameter> iParams = this.IndicatorParametersByName[indicatorName];
+			Dictionary<string, List<IndicatorParameter>> indicatorParameters_byNameClonedReset = new Dictionary<string, List<IndicatorParameter>>();
+			foreach (string indicatorName in this.IndicatorParametersByIndicatorName.Keys) {
+				List<IndicatorParameter> iParams = this.IndicatorParametersByIndicatorName[indicatorName];
 				List<IndicatorParameter> iParamsCloned = new List<IndicatorParameter>();
-				indicatorParametersByNameClonedReset.Add(indicatorName, iParamsCloned);
+				indicatorParameters_byNameClonedReset.Add(indicatorName, iParamsCloned);
 				foreach (IndicatorParameter iParam in iParams) {
-					IndicatorParameter ipClone = iParam.CloneAsIndicatorParameter(reasonToClone);
+					IndicatorParameter ipClone = iParam.Clone_asIndicatorParameter(reasonToClone, "SWITCHABLE_REUSABLE_CTX[" + this.ToString() + "]");
 					if (resetAllToMin) {
 						if (ipClone.WillBeSequenced == false && leaveNonSequencedAsCurrent == true) {
 							// don't reset to min
@@ -216,7 +216,7 @@ namespace Sq1.Core.StrategyBase {
 					iParamsCloned.Add(ipClone);
 				}
 			}
-			this.IndicatorParametersByName = indicatorParametersByNameClonedReset;
+			this.IndicatorParametersByIndicatorName = indicatorParameters_byNameClonedReset;
 		}
 		public int AbsorbOnlyScriptAndIndicatorParameterCurrentValues_toDisposableFromSequencer(ContextScript ctxSequencerSequenced) {
 			int ret = 0;
@@ -230,9 +230,9 @@ namespace Sq1.Core.StrategyBase {
 					spMine.ValueCurrent = spOpt.ValueCurrent;
 					ret++;
 				}
-				foreach (string indicatorName in ctxSequencerSequenced.IndicatorParametersByName.Keys) {
-					List<IndicatorParameter> ipsOpt  = ctxSequencerSequenced	.IndicatorParametersByName[indicatorName];
-					List<IndicatorParameter> ipsMine = this						.IndicatorParametersByName[indicatorName];
+				foreach (string indicatorName in ctxSequencerSequenced.IndicatorParametersByIndicatorName.Keys) {
+					List<IndicatorParameter> ipsOpt  = ctxSequencerSequenced	.IndicatorParametersByIndicatorName[indicatorName];
+					List<IndicatorParameter> ipsMine = this						.IndicatorParametersByIndicatorName[indicatorName];
 					foreach (IndicatorParameter ipOpt in ipsOpt) {
 						foreach (IndicatorParameter ipMine in ipsMine) {
 							if (ipMine.FullName != ipOpt.FullName) continue;
@@ -273,7 +273,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				foreach (string indicatorName in sperfParametersToAbsorbIntoDefault.IndicatorParametersByName_BuiltOnBacktestFinished.Keys) {
 					List<IndicatorParameter> ipsOpt  = sperfParametersToAbsorbIntoDefault	.IndicatorParametersByName_BuiltOnBacktestFinished[indicatorName];
-					List<IndicatorParameter> ipsMine = this									.IndicatorParametersByName[indicatorName];
+					List<IndicatorParameter> ipsMine = this									.IndicatorParametersByIndicatorName[indicatorName];
 					foreach (IndicatorParameter ipOpt in ipsOpt) {
 						foreach (IndicatorParameter ipMine in ipsMine) {
 							if (ipMine.FullName != ipOpt.FullName) continue;
@@ -297,73 +297,9 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return this.ReportersSnapshots[reporterName];
 		}
-		public string SymbolScaleIntervalDataRangeForScriptContextNewName { get {
+		public string SymbolScaleInterval_dataRangeForScriptContext_newName { get {
 			string ret = this.Symbol + " " + this.ScaleInterval + " " + this.DataRange;
 			return ret;
 		} }
-
-		internal int ScriptParametersReflectedAbsorbFromCurrentContextReplace(SortedDictionary<int, ScriptParameter> scriptParametersById_ReflectedCached) {
-			string msig = " //ScriptParametersAbsorbFromReflectedReplace()";
-			int ret = 0;
-			if (scriptParametersById_ReflectedCached.Count == 0) return ret;
-			foreach (ScriptParameter spReflected in scriptParametersById_ReflectedCached.Values) {
-				if (this.ScriptParametersById.ContainsKey(spReflected.Id) == false) continue;
-				ScriptParameter spContext = this.ScriptParametersById[spReflected.Id];
-				bool valueCurrentAbsorbed = spReflected.AbsorbCurrentFixBoundariesIfChanged(spContext);
-				if (valueCurrentAbsorbed) ret++;
-			}
-			this.ScriptParametersById = scriptParametersById_ReflectedCached;
-//			bool dontSaveWeSequence = this.Name.Contains(Sequencer.ITERATION_PREFIX);
-//			if (dontSaveWeSequence) {
-//				string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_SEQUENCER_PROVIDED_IN_SCRIPTCONTEXT #1";
-//				Assembler.PopupException(msg + msig, null, true);
-//				//strategySerializeRequired = false;
-//			}
-			if (ret == 0) {
-				string msg = "NO_SCRIPT_PARAMETER_VALUES_ABSORBED_SAME_FOR_Count[" + scriptParametersById_ReflectedCached.Count + "]";
-				//Assembler.PopupException(msg, null, false);
-			}
-			return ret;
-		}
-		internal int PushIndicatorParamsCurrentValuesIntoReflectedIndicators(
-				Dictionary<string, List<IndicatorParameter>> indicatorParametersByIndicator_ReflectedCached) {
-			string msig = " //IndicatorParamsAbsorbFromReflectedReplace()";
-			int ret = 0;
-			if (indicatorParametersByIndicator_ReflectedCached.Count == 0) return ret;
-			foreach (string indicatorName in indicatorParametersByIndicator_ReflectedCached.Keys) {
-				if (this.IndicatorParametersByName.ContainsKey(indicatorName) == false) continue;
-				List<IndicatorParameter> iParamsCtx = this.IndicatorParametersByName[indicatorName];
-				List<IndicatorParameter> iParamsReflected = indicatorParametersByIndicator_ReflectedCached[indicatorName];
-
-				foreach (IndicatorParameter iParamCtx in iParamsCtx) {
-					//DIFFERENT_POINTERS_100%_COMPARING_BY_NAME_IN_LOOP if (iParamsReflected.Contains(iParamInstantiated) == false) continue;
-					foreach (IndicatorParameter iParamReflected in iParamsReflected) {
-						//v1 WILL_ALWAYS_CONTINUE_KOZ_iParamCtx.IndicatorName="NOT_ATTACHED_TO_ANY_INDICATOR"__LAZY_TO_SET_AFTER_DESERIALIZATION_KOZ_WILL_THROW_IT_10_LINES_BELOW_AND_PARAM_NAMES_ARE_UNIQUE_WITHIN_INDICATOR if (iParamReflected.FullName != iParamCtx.FullName) {
-						if (iParamReflected.Name != iParamCtx.Name) {
-							string msg = "iParamReflected[" + iParamReflected	.ToString() + "].Name[" + iParamReflected	.Name + "]"
-								   + " != iParamCtx["		+ iParamCtx			.ToString() + "].Name[" + iParamCtx			.Name + "]";
-							Assembler.PopupException(msg);
-							continue;
-						}
-						bool valueCurrentAbsorbed = iParamReflected.AbsorbCurrentFixBoundariesIfChanged(iParamCtx);
-						if (valueCurrentAbsorbed) ret++;
-						//WOZU?... break;
-					}
-				}
-			}
-			//YOU_JUST_SYNCHED_IN_TWO_INNER_LOOPS__WHY_DO_YOU_OVERWRITE_BRO????v1? this.IndicatorParametersByName = indicatorParametersByIndicator_ReflectedCached;
-
-//			bool dontSaveWeSequence = this.Name.Contains(Sequencer.ITERATION_PREFIX);
-//			if (dontSaveWeSequence) {
-//				string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_SEQUENCER_PROVIDED_IN_SCRIPTCONTEXT #2";
-//				Assembler.PopupException(msg + msig, null, true);
-//				//strategySerializeRequired = false;
-//			}
-			if (ret == 0) {
-				string msg = "NO_INDICATOR_PARAMETER_VALUES_ABSORBED_SAME_FOR_Count[" + indicatorParametersByIndicator_ReflectedCached.Count + "]";
-				//Assembler.PopupException(msg, null, false);
-			}
-			return ret;
-		}
 	}
 }

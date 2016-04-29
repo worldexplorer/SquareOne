@@ -61,7 +61,7 @@ namespace Sq1.Gui.FormFactories {
 			SystemPerformanceRestoreAble ctxAdding = e.SystemPerformanceRestoreAble;
 			string scriptContextNewName = e.ScriptContextNewName;
 			Strategy strategyOnChart = this.chartFormManager.Strategy;
-			strategyOnChart.ScriptContextAdd_cloneAndAbsorbCurrentValuesFromSequencer(scriptContextNewName, ctxAdding, false);
+			strategyOnChart.ScriptContextAdd_cloneAndAbsorbCurrentValues_fromSequencer(scriptContextNewName, ctxAdding, false);
 			SlidersForm.Instance.Show();
 			SlidersForm.Instance.SteppingSlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(e.ScriptContextNewName);
 		}
@@ -96,7 +96,7 @@ namespace Sq1.Gui.FormFactories {
 			strategyOnChart.Serialize();
 
 			if (switchToDefaultAndBacktest) {
-				strategyOnChart.ContextSwitchCurrentToNamedAndSerialize(ContextScript.DEFAULT_NAME, false);
+				strategyOnChart.ContextSwitch_currentToNamed_serialize(ContextScript.DEFAULT_NAME, false);
 				this.chartFormManager.BacktesterRunSimulation();
 			}
 			SlidersForm.Instance.Show();

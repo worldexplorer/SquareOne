@@ -77,13 +77,15 @@ namespace Sq1.Charting {
 			//Assembler.PopupException(msg, null, false);
 
 			this.AlertArrowsListByBar.Clear();
-			//STUPPIDO_DES_NE??? this.Indicators.Clear();
-			foreach (Indicator each in this.Indicators.Values) {
-				if (each.OwnValuesCalculated == null) continue;
-				each.OwnValuesCalculated.Clear();		// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
-				//each.BacktestStartingResetBarsEffectiveProxy();
-				//each.BacktestStartingConstructOwnValuesValidateParameters();
-			}
+			//NE!!! STUPPIDO_DES_NE???
+			this.Indicators.Clear();
+			//v2
+			//foreach (Indicator eachIndicator in this.Indicators.Values) {
+			//    if (eachIndicator.OwnValuesCalculated == null) continue;
+			//    eachIndicator.OwnValuesCalculated.Clear();		// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
+			//    //each.BacktestStartingResetBarsEffectiveProxy();
+			//    //each.BacktestStartingConstructOwnValuesValidateParameters();
+			//}
 			
 			this.AlertsPlacedByBar.Clear();
 			

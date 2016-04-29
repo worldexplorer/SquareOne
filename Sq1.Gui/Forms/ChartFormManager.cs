@@ -379,7 +379,7 @@ namespace Sq1.Gui.Forms {
 			try {
 				// Click on strategy should open new chart,  
 				if (this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == true && this.Strategy.Script == null) {		// && this.Strategy.ActivatedFromDll == false
-					this.StrategyCompileActivatePopulateSlidersShow();
+					this.StrategyCompileActivate_populateSlidersShow();
 				}
 				//I'm here via Persist.Deserialize() (=> Reporters haven't been restored yet => backtest should be postponed); will backtest in InitializeStrategyAfterDeserialization
 				// STRATEGY_CLICK_TO_CHART_DOESNT_BACKTEST this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true);
@@ -524,11 +524,6 @@ namespace Sq1.Gui.Forms {
 				// StrategySave is here koz I'm invoked for ~10 user-click GUI events; only Deserialization shouldn't save anything
 				this.Strategy.Serialize();
 			}
-			//bool wontBacktest = skipBacktest || this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false;
-			if (willBacktest == false) {
-				this.Executor.ChartShadow.ClearAllScriptObjectsBeforeBacktest();
-				return;
-			}
 			if (this.Strategy.Script == null) {
 				// WRONG_PLACE_TO_FIX "EnterEveryBar doesn't draw MAfast" this.StrategyCompileActivatePopulateSlidersShow();
 				string msg = "legitimate ways to get here:"
@@ -537,6 +532,19 @@ namespace Sq1.Gui.Forms {
 					+ " 3) an exisitng strategy.BacktestOnSelectorsChange=true (loaded non-default ScriptContext) failed to compile upstack;"
 					;
 				Assembler.PopupException(msg, null, false);
+				return;
+			}
+
+			//bool wontBacktest = skipBacktest || this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false;
+			if (willBacktest == false) {
+				// WHEN_willBacktest==true__REFLECTED_WILL_BE_ABSORBED_IN_BacktesterRunSimulation()=>StrategyCompileActivate_populateSlidersShow()
+				//ALREADY_ABSORBED?? int currentValuesAbsorbed = this.Executor.Strategy.ScriptAndIndicatorParametersReflected_absorbFromCurrentContext_saveStrategy(true);
+
+				this.Executor.ChartShadow.Clear_allScriptObjects_beforeBacktest();				// WILL_ChartShadow.Indicators.Clear()   WILL_NOT_CLEAR eachIndicator.OwnValuesCalculated.Clear()
+				this.Executor.PreCalculateIndicators_forLoadedBars_backtestWontFollow();		// WILL_CLEAR eachIndicator.OwnValuesCalculated.Clear()
+				this.Executor.Strategy.Script.InitializeIndicatorsReflected_withHostPanel();
+				this.Executor.ChartShadow.SetIndicators(this.Strategy.Script.IndicatorsByName_reflectedCached_primary);
+				this.Executor.ChartShadow.InvalidateAllPanels();
 				return;
 			}
 			this.BacktesterRunSimulation();
@@ -556,10 +564,13 @@ namespace Sq1.Gui.Forms {
 			try {
 				//AVOIDING_"Collection was modified; enumeration operation may not execute."_BY_SETTING___PaintAllowed=false
 				//WILL_CALL_LATER_IN_Backtester.SimulationPreBarsSubstitute() this.Executor.ChartShadow.PaintAllowedDuringLivesimOrAfterBacktestFinished = false;	//WONT_BE_SET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
+
 				if (this.Executor.Strategy.ActivatedFromDll == false) {
-					// ONLY_TO_MAKE_CHARTFORM_BACKTEST_NOW_WORK__FOR_F5_ITS_A_DUPLICATE__LAZY_TO_ENMESS_CHART_FORM_MANAGER_WITH_SCRIPT_EDITOR_FUNCTIONALITY
-					this.StrategyCompileActivatePopulateSlidersShow();
+				    // ONLY_TO_MAKE_CHARTFORM_BACKTEST_NOW_WORK__FOR_F5_ITS_A_DUPLICATE__LAZY_TO_ENMESS_CHART_FORM_MANAGER_WITH_SCRIPT_EDITOR_FUNCTIONALITY
+					// ALREADY_INVOKED_IndicatorParams_absorbMergeFromReflected_InitializeIndicators_withHostPanel()_PRIOR_TO_PreCalculateIndicators_forLoadedBars_backtestWontFollow()
+				    this.StrategyCompileActivate_populateSlidersShow();
 				}
+
 				if (subscribeUpstreamOnWorkspaceRestore == true) {
 					//v1 LOSING_ARROWS_AND_REPORTERS_SINCE_INVOKED_TWICE
 					if (actionLivesim_orBacktest == null) {
@@ -682,7 +693,7 @@ namespace Sq1.Gui.Forms {
 					string msg = "COMPILE_AND_INITIALIZE_SCRIPT_THEN??... this.Strategy.Script=null";
 					Assembler.PopupException(msg, null, false);
 				} else {
-					this.Strategy.ScriptAndIndicatorParametersReflected_absorbMergeFromCurrentContext_saveStrategy();
+					//ALREADY_DONE_20LINES_ABOVE_VIA_this.InitializeWithStrategy(strategyFound, true, false); this.Strategy.ScriptAndIndicatorParametersReflected_absorbMergeFromCurrentContext_saveStrategy();
 				}
 				// candidate to be moved to MainForm.cs:156 into foreach (ChartFormsManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 				//this.SequencerFormShow(true);
@@ -937,7 +948,7 @@ namespace Sq1.Gui.Forms {
 				this.LivesimForm.WindowTitlePullFromStrategy();
 			}
 		}
-		public void StrategyCompileActivateBeforeShow() {
+		public void StrategyCompileActivate_beforeShow() {
 			if (this.Strategy.ActivatedFromDll) {
 				string msg = "WONT_COMPILE_STRATEGY_ACTIVATED_FROM_DLL_SHOULD_HAVE_NO_OPTION_IN_UI_TO_COMPILE_IT " + this.Strategy.ToString();
 				Assembler.PopupException(msg);
@@ -966,16 +977,16 @@ namespace Sq1.Gui.Forms {
 			//SlidersForm.Instance.Initialize(this.Strategy);
 			this.Executor.ChartShadow.HostPanelForIndicatorClear();		//non-DLL-strategy multiple F5s add PanelIndicator endlessly
 		}
-		public void StrategyCompileActivatePopulateSlidersShow() {
+		public void StrategyCompileActivate_populateSlidersShow() {
 			if (this.Strategy.ActivatedFromDll == false) {
-				this.StrategyCompileActivateBeforeShow();
+				this.StrategyCompileActivate_beforeShow();
 			}
 
 			if (this.Strategy.Script == null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
 				string msg = "COMPILE_AND_INITIALIZE_SCRIPT_THEN??... this.Strategy.Script=null";
 				Assembler.PopupException(msg, null, false);
 			} else {
-				this.Strategy.ScriptAndIndicatorParametersReflected_absorbMergeFromCurrentContext_saveStrategy();
+				this.Strategy.ScriptAndIndicatorParametersReflected_absorbFromCurrentContext_saveStrategy();
 			}
 			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
 			this.PopulateSliders();

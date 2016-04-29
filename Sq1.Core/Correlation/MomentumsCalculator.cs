@@ -65,7 +65,7 @@ namespace Sq1.Core.Correlation {
 			#if DEBUG		// inline test
 			if (this.correlator.Parameters.Count <= 0) {
 				string msg = "FOR_THE_CHART_OPENED_CORRELATOR_DOESNT_HAVE_ANY_BACKTESTS " + this.correlator.Executor.ChartShadow;
-				msg += this.correlator.Executor.Strategy.ScriptContextCurrent.SymbolScaleIntervalDataRangeForScriptContextNewName;
+				msg += this.correlator.Executor.Strategy.ScriptContextCurrent.SymbolScaleInterval_dataRangeForScriptContext_newName;
 				Assembler.PopupException(msg, null, false);
 				return;
 			}

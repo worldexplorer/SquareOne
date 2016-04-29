@@ -114,7 +114,7 @@ namespace Sq1.Core.StrategyBase {
 
 				Strategy strategy = this.Executor.Strategy;
 				Script script = strategy.Script;
-				if (script.ScriptParametersById_ReflectedCached == null) {
+				if (script.ScriptParametersById_reflectedCached_primary == null) {
 					string msg = "CANT_GRAB_";
 					Assembler.PopupException(msg);
 					return;
@@ -123,14 +123,15 @@ namespace Sq1.Core.StrategyBase {
 				this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished = new SortedDictionary<string, IndicatorParameter>();
 				this.ScriptParametersById_BuiltOnBacktestFinished = new SortedDictionary<int, ScriptParameter>();
 
+				string cloneOwner = "SystemPerFormance_FOR[" + this.Executor.ToStringWithCurrentParameters() + "]";
 				string pids = script.ScriptParametersAsString;
-				foreach (ScriptParameter sp in script.ScriptParametersById_ReflectedCached.Values) {
+				foreach (ScriptParameter sp in script.ScriptParametersById_reflectedCached_primary.Values) {
 					if (this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(sp.Name)) {
 						string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_ScriptParameter[" + sp.Name + "]: " + pids;
 						Assembler.PopupException(msg);
 						continue;
 					}
-					ScriptParameter clone = sp.CloneAsScriptParameter("FOR_BuildStatsOnBacktestFinished");
+					ScriptParameter clone = sp.Clone_asScriptParameter("FOR_BuildStatsOnBacktestFinished", cloneOwner);
 					this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Add(sp.Name, clone);
 					this.ScriptParametersById_BuiltOnBacktestFinished.Add(sp.Id, clone);
 				}
@@ -138,23 +139,23 @@ namespace Sq1.Core.StrategyBase {
 				//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
 				string iids = script.IndicatorParametersAsString;
 				//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
-				foreach (IndicatorParameter ip in script.IndicatorsParameters_ReflectedCached.Values) {
+				foreach (IndicatorParameter ip in script.IndicatorsParameters_reflectedCached.Values) {
 					if (this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(ip.FullName)) {
 						string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_IndicatorParameter[" + ip.Name + "]: " + iids;
 						Assembler.PopupException(msg);
 						continue;
 					}
-					IndicatorParameter clone = ip.CloneAsIndicatorParameter("FOR_BuildStatsOnBacktestFinished#1");
+					IndicatorParameter clone = ip.Clone_asIndicatorParameter("FOR_BuildStatsOnBacktestFinished#1", cloneOwner);
 					this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Add(ip.FullName, clone);
 				}
 
 				this.IndicatorParametersByName_BuiltOnBacktestFinished = new Dictionary<string, List<IndicatorParameter>>();
 				ContextScript ctx = strategy.ScriptContextCurrent;
-				foreach (string iParamName in ctx.IndicatorParametersByName.Keys) {
-					List<IndicatorParameter> iParams = ctx.IndicatorParametersByName[iParamName];
+				foreach (string iParamName in ctx.IndicatorParametersByIndicatorName.Keys) {
+					List<IndicatorParameter> iParams = ctx.IndicatorParametersByIndicatorName[iParamName];
 					List<IndicatorParameter> iParamsCloned = new List<IndicatorParameter>();
 					foreach (IndicatorParameter ip in iParams) {
-						IndicatorParameter clone = ip.CloneAsIndicatorParameter("FOR_BuildStatsOnBacktestFinished#2");
+						IndicatorParameter clone = ip.Clone_asIndicatorParameter("FOR_BuildStatsOnBacktestFinished#2", cloneOwner);
 						iParamsCloned.Add(clone);
 					}
 					this.IndicatorParametersByName_BuiltOnBacktestFinished.Add(iParamName, iParamsCloned);

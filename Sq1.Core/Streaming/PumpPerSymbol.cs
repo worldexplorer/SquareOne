@@ -83,7 +83,7 @@ namespace Sq1.Core.Streaming {
 			base.UpdateThreadNameAfterMaxConsumersSubscribed = false;
 			//v1 NOPE_ITS_TOO_THICK_FOR_POST_CONSTRUCTOR_TIMES_this.PusherPause();	// ALL_PUMPS_AT_BIRTH_ARE_PAUSED__AVOIDING_INDICATORS_NOT_HAVING_EXECUTOR_AT_APP_RESTART_BACKTEST
 			this.confirmPaused.Set();		// IF_ON_APP_RESTART_WE_HAVE_BACKTESTS_SCHEDULED_SymbolCScaleDistributionChannel.PumpResumeBacktesterFinishedRemove()_WILL_UNPAUSE_AFTER_THEY_FINISH
-			this.pushingThreadStart_waitConfirmed();
+			this.pushingThread_Start_waitConfirmed();
 			if (this.Paused) {
 				string msg = "PUSHER_THREAD_STARTED__DONT_FORGET_UNPAUSE " + this.ToString();
 #if DEBUG_STREAMING
@@ -92,7 +92,7 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		public void PushingThreadStop_waitConfirmed() {
+		public void PushingThread_StopDispose_waitConfirmed() {
 			string msig = " //PushingThreadStop isPushingThreadStarted[" + this.IsPushingThreadStarted + "]=>[" + false + "]";
 #if STRINGS_VERBOSE
 				msig += " + this.ToString();
@@ -127,7 +127,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig, ex);
 			}
 		}
-		void pushingThreadStart_waitConfirmed() {
+		void pushingThread_Start_waitConfirmed() {
 			string msig = " //pushingThreadStart isPushingThreadStarted[" + this.IsPushingThreadStarted + "]=>[" + true + "] " + this.ToString();
 			if (this.IsPushingThreadStarted == true) {
 				// this.simulationPreBarsSubstitute() waits for 10 seconds
@@ -327,8 +327,8 @@ namespace Sq1.Core.Streaming {
 		public	bool IsDisposed { get; private set; }
 		public	void Dispose() {
 			if (this.IsDisposed) {
-				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();
-				Assembler.PopupException(msg);
+				string msg = "PUMP_ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 
@@ -337,7 +337,7 @@ namespace Sq1.Core.Streaming {
 			if (this.IsPushingThreadStarted) {
 				try {
 					//v1 A task may only be disposed if it is in a completion state (RanToCompletion, Faulted or Canceled). this.bufferPusher.Dispose();
-					this.PushingThreadStop_waitConfirmed();
+					this.PushingThread_StopDispose_waitConfirmed();
 				} catch(Exception ex) {
 					Assembler.PopupException(this.ToString() + ".PushingThreadStop()", ex, false);
 				}

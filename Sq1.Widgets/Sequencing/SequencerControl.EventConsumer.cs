@@ -129,7 +129,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.cbxRunCancel.Checked = this.sequencer.IsRunningNow;
 
 			Strategy strategy = this.sequencer.Executor.Strategy;
-			string symbolScaleRange = strategy.ScriptContextCurrent.SymbolScaleIntervalDataRangeForScriptContextNewName;
+			string symbolScaleRange = strategy.ScriptContextCurrent.SymbolScaleInterval_dataRangeForScriptContext_newName;
 			//v1
 			//if (strategy.OptimizationResultsByContextIdent.ContainsKey(symbolScaleRange) == false) {
 			//	strategy.OptimizationResultsByContextIdent.Add(symbolScaleRange, this.backtests);

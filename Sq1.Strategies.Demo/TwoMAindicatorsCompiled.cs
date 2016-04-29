@@ -5,6 +5,8 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 
+using Sq1.Indicators;
+
 namespace Sq1.Strategies.Demo {
 	public partial class TwoMAindicatorsCompiled : Script {
 

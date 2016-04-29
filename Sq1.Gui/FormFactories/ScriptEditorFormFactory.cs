@@ -52,7 +52,7 @@ namespace Sq1.Gui.FormFactories {
 				Assembler.PopupException("SAVING_STRATEGY_SOURCE_CODE_FAILED //ScriptEditorControl_OnSave() << ScriptEditorControl_OnCompile()", ex);
 			}
 			try {
-				this.chartFormManager.StrategyCompileActivatePopulateSlidersShow();
+				this.chartFormManager.StrategyCompileActivate_populateSlidersShow();
 				this.chartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory(true);
 			} catch (Exception ex) {
 				string msg = "COMPILING_STRATEGY_SOURCE_CODE_FAILED //ScriptEditorControl_OnCompile() << StrategyCompileActivatePopulateSlidersShow() has thrown";

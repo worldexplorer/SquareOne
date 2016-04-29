@@ -104,7 +104,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 		void mniAllParamsResetToScriptDefaults_Click(object sender, EventArgs e) {
 			try {
-				this.Strategy.ResetScriptAndIndicatorParametersInCurrentContextToScriptDefaultsAndSave();
+				this.Strategy.ResetScriptAndIndicatorParameters_inCurrentContext_toScriptDefaults_andSave();
 				this.Initialize(this.Strategy);
 			} catch (Exception ex) {
 				Assembler.PopupException("mniAllParamsResetToScriptDefaults_Click()", ex);

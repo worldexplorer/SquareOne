@@ -58,7 +58,7 @@ namespace Sq1.Core.Sequencing {
 				string msg = "NOT_ABSORBED_PROPERLY__SEQUENCER_INITPARAMSxCORE_BUG copyFrom[" + copyFromCtx + "] != copyTo[" + copyToCtx + "]";
 				Assembler.PopupException(msg, null, false);
 			}
-			string copyToScript = base.Strategy.Script.ScriptAndIndicatorParametersMergedUnclonedForReusableExecutorToCheckByName_AsString;
+			string copyToScript = base.Strategy.Script.ScriptAndIndicatorParameters_mergedUncloned_forReusableExecutorToCheckByName_AsString;
 			if (copyFromCtx != copyToScript) {
 				string msg = "NOT_ABSORBED_PROPERLY__SEQUENCER_INITPARAMSxCORE_BUG copyFrom[" + copyFromCtx + "] != copyScript[" + copyToScript + "]";
 				Assembler.PopupException(msg, null, false);

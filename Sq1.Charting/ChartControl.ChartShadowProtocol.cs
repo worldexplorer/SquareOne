@@ -126,7 +126,7 @@ namespace Sq1.Charting {
 			tooltipPositionShown = true;
 			return tooltipPositionShown; 
 		}
-		public override void ClearAllScriptObjectsBeforeBacktest() {
+		public override void Clear_allScriptObjects_beforeBacktest() {
 			this.ExecutorObjects_frozenForRendering.ClearAllBeforeBacktest();
 		}
 		public override void PositionsBacktestAdd(List<Position> positionsMaster) {

@@ -11,16 +11,19 @@ namespace Sq1.Core.Indicators.HelperSeries {
 			AverageFor = averageFor;
 			Period = period;
 		}
-		public double Calculate_appendOwnValue_forNewStaticBarFormed_NanUnsafe(Bar newStaticBar, bool allowExistingValueSame = false) {
+		public double CalculateOwnValue_append_forNewStaticBarFormed_NanUnsafe(Bar newStaticBar, bool allowSameValue_toBePreCalculated_byOnNewQuote = false) {
 			double valueCalculated = this.CalculateOwnValue(newStaticBar);
 			if (base.ContainsDate(newStaticBar.DateTimeOpen)) {
 				double valueWeAlreadyHave = base[newStaticBar.DateTimeOpen];
-				if (valueCalculated == valueWeAlreadyHave && allowExistingValueSame) {
-					return valueCalculated;
+				bool sameValue =
+					(valueCalculated == valueWeAlreadyHave) ||
+					(double.IsNaN(valueCalculated) && double.IsNaN(valueWeAlreadyHave));
+				if (sameValue && allowSameValue_toBePreCalculated_byOnNewQuote == false) {
+					string msg = "OnEachBar()_DOESNT_ALLOW_VALUE_CALCULATED_ON_OnEachQuote [" + newStaticBar.DateTimeOpen + "]"
+						+ " thisBarValue[" + valueCalculated + "]"		//.ToString(base.Format)
+						+ " valueWeAlreadyHave[" + valueWeAlreadyHave + "]";
+					Assembler.PopupException(msg, null, false);
 				}
-				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]"
-					+ " thisBarValue[" + valueCalculated.ToString(base.Format) + "] valueWeAlreadyHave[" + valueWeAlreadyHave + "]";
-				Assembler.PopupException(msg);
 				//v1 return double.NaN;
 				//v2 ALREADY_HAVE_ADDED  STILL_ADD_NAN_TO_KEEP_INDEXES_SYNCED_WITH_OWN_VALUES 
 				//valueCalculated = double.NaN;
@@ -37,18 +40,19 @@ namespace Sq1.Core.Indicators.HelperSeries {
 		public double CalculateOwnValue(Bar newStaticBar) {
 			string msig = " // CalculateOwnValue(" + newStaticBar + ") " + this.ToString();
 			// COPYPASTE_FROM_IndicatorAverageMovingSimple:Indicator BEGIN
-			if (this.Period <= 0) return double.NaN;
-			if (this.AverageFor.Count - 1 < this.Period) return double.NaN;
-			if (newStaticBar.ParentBarsIndex  < this.Period - 1) return double.NaN;
+			if (this.Period <= 0)									return double.NaN;
+			if (this.AverageFor.Count - 1 < this.Period)			return double.NaN;
+			if (newStaticBar.ParentBarsIndex  < this.Period - 1)	return double.NaN;
 			
 			DataSeriesProxyBars barsBehind = this.AverageFor as DataSeriesProxyBars;
 			if (barsBehind != null) {
 				if (barsBehind.BarsBeingProxied != newStaticBar.ParentBars) {
-					string msg = "YOU_FORGOT_TO_RESTORE_ORIGINAL_BARS_BEFORE_UNPAUSING_QUOTE_PUMP";
+					string msg = "NOPE_PreCalculateIndicators()_INTENTIONALLY_USES_SafeCopy YOU_FORGOT_TO_RESTORE_ORIGINAL_BARS_BEFORE_UNPAUSING_QUOTE_PUMP";
 					if (newStaticBar.ParentBarsIndex >= barsBehind.Count) {
 						msg = "AVOIDING_OUT_OF_BOUNDARY_EXCEPTION_FOR_this.AverageFor[i] " + msg;
+						Assembler.PopupException(msg + msig);
 					}
-					Assembler.PopupException(msg + msig);
+					//Assembler.PopupException(msg + msig);
 				}
 			}
 

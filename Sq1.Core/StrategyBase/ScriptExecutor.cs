@@ -14,6 +14,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Livesim;
 using Sq1.Core.Support;
 using Sq1.Core.Correlation;
+using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor : IDisposable {
@@ -224,7 +225,7 @@ namespace Sq1.Core.StrategyBase {
 
 				#region PARANOID
 				#if DEBUG
-				var reflected = this.Strategy.Script.ScriptParametersById_ReflectedCached;
+				var reflected = this.Strategy.Script.ScriptParametersById_reflectedCached_primary;
 				var ctx = this.Strategy.ScriptContextCurrent.ScriptParametersById;
 				if (reflected.Count != ctx.Count) {
 					string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
@@ -581,5 +582,47 @@ namespace Sq1.Core.StrategyBase {
 			this.IsDisposed			= true;
 		}
 		public bool IsDisposed { get; private set; }
+
+		public void PreCalculateIndicators_forLoadedBars_backtestWontFollow() {
+			string msig = " //PreCalculateIndicators_forLoadedBars_backtestWontFollow()";
+			if (this.Strategy == null) {
+				string msg = "WRONG_USAGE_STRATEGY_NULL";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			if (this.Strategy.Script == null) {
+				string msg = "WRONG_USAGE_SCRIPT_NULL__OR_NOT_YET_COMPILED";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			if (this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Count == 0) {
+				string msg = "NO_INDICATORS__SILENT_RETURN";
+				//Assembler.PopupException(msg + msig);
+				return;
+			}
+
+			foreach(Indicator indicator in this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Values) {
+				if (indicator.Executor == null) {
+					indicator.Initialize(this);
+				} else {
+					string msg = "already initialized Executor and OwnValues in BacktestContext_initialize() " + indicator;
+					//Assembler.PopupException(msg, null, false);
+				}
+				//indicator.BacktestStarting_constructOwnValues_validateParameters();
+				indicator.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();	// will create new SMA with Period changed
+			}
+
+			Bars barsSafeCopy = this.Bars.SafeCopy_oneCopyForEachDisposableExecutors(msig, true);
+			foreach(Bar eachBar_likeLastStaticFormed in barsSafeCopy.InnerBars_exposedOnlyForEditor_fromSafeCopy) {
+				foreach(Indicator indicator in this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Values) {
+					try {
+						indicator.OnBarStaticLastFormed_whileStreamingBar_withOneQuote_alreadyAppended(eachBar_likeLastStaticFormed);
+					} catch (Exception ex) {
+						string msg = "INDICATOR_MUST_WORK_WITHOUT_QUOTES_AND_ACCEPT eachBar_likeLastStaticFormed[" + eachBar_likeLastStaticFormed + "] " + indicator;
+						Assembler.PopupException(msg + msig, ex, false);
+					}
+				}
+			}
+		}
 	}
 }

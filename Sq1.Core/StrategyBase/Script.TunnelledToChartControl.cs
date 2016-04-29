@@ -8,7 +8,7 @@ using Sq1.Core.Indicators;
 using Sq1.Core.Charting.OnChart;
 
 namespace Sq1.Core.StrategyBase {
-	public abstract partial class Script {
+	public partial class Script {
 		// REASON_TO_EXIST: tunnelled to ChartShadow through Executor; grouped and separated to share with for python integrators
 		public void ChartConditionalBarAnnotationDrawModify(
 				int barIndex, string barAnnotationId, string barAnnotationText,

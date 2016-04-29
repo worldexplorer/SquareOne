@@ -72,7 +72,7 @@ namespace Sq1.Charting {
 			int expandTooltipHeightBy = 0;
 
 			foreach (Indicator indicator in indicators.Values) {
-				SortedDictionary<string, string> indicatorValuesFormatted = indicator.ValuesForTooltipPrice(barToPopulate);
+				SortedDictionary<string, string> indicatorValuesFormatted = indicator.OwnValuesForTooltipPrice(barToPopulate);
 				foreach (string valueName in indicatorValuesFormatted.Keys) {
 					string valueFormatted = indicatorValuesFormatted[valueName];
 					

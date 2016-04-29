@@ -34,7 +34,7 @@ namespace Sq1.Core.Streaming {
 			bool removed = channel.ConsumerQuoteRemove(scaleInterval, quoteConsumer);
 			if (channel.ConsumersBarCount == 0 && channel.ConsumersQuoteCount == 0) {
 				//Assembler.PopupException("QuoteConsumer [" + consumer + "] was the last one using [" + symbol + "]; removing QuoteBarDistributor[" + channel + "]");
-				if (channel.QuotePump_nullUnsafe != null) channel.QuotePump_nullUnsafe.PushingThreadStop_waitConfirmed();
+				if (channel.QuotePump_nullUnsafe != null) channel.QuotePump_nullUnsafe.PushingThread_StopDispose_waitConfirmed();
 				this.ChannelsBySymbol.Remove(symbol);
 				//Assembler.PopupException("...UpstreamUnSubscribing [" + symbol + "]");
 				this.StreamingAdapter.UpstreamUnSubscribe(symbol);
@@ -126,7 +126,7 @@ namespace Sq1.Core.Streaming {
 			bool removed = channel.ConsumerBarRemove(scaleInterval, barConsumer);
 			if (channel.ConsumersBarCount == 0 && channel.ConsumersQuoteCount == 0) {
 				//Assembler.PopupException("BarConsumer [" + consumer + "] was the last one using [" + symbol + "]; removing QuoteBarDistributor[" + distributor + "]");
-				if (channel.QuotePump_nullUnsafe != null) channel.QuotePump_nullUnsafe.PushingThreadStop_waitConfirmed();
+				if (channel.QuotePump_nullUnsafe != null) channel.QuotePump_nullUnsafe.PushingThread_StopDispose_waitConfirmed();
 				//Assembler.PopupException("BarConsumer [" + scaleInterval + "] was the last one listening for [" + symbol + "]");
 				//Assembler.PopupException("...removing[" + symbol + "] from this.ChannelsBySymbol[" + this.ChannelsBySymbol + "]");
 				channel.Dispose();
@@ -190,7 +190,7 @@ namespace Sq1.Core.Streaming {
 			bool removed = channel.ConsumerLevelTwoFrozenRemove(scaleInterval, levelTwoFrozenConsumer);
 			if (channel.ConsumersLevelTwoFrozenCount == 0 && channel.ConsumersQuoteCount == 0) {
 				//Assembler.PopupException("LevelTwoFrozenConsumer [" + consumer + "] was the last one using [" + symbol + "]; removing QuoteLevelTwoFrozenDistributor[" + distributor + "]");
-				if (channel.PumpLevelTwo != null) channel.PumpLevelTwo.PushingThreadStop_waitConfirmed();
+				if (channel.PumpLevelTwo != null) channel.PumpLevelTwo.PushingThread_StopDispose_waitConfirmed();
 				//Assembler.PopupException("LevelTwoFrozenConsumer [" + scaleInterval + "] was the last one listening for [" + symbol + "]");
 				//Assembler.PopupException("...removing[" + symbol + "] from this.ChannelsBySymbol[" + this.ChannelsBySymbol + "]");
 				channel.Dispose();

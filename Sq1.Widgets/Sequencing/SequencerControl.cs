@@ -171,7 +171,7 @@ namespace Sq1.Widgets.Sequencing {
 
 			if (string.IsNullOrEmpty(symbolScaleRange)) {
 				Strategy strategy = this.sequencer.Executor.Strategy;
-				symbolScaleRange = strategy.ScriptContextCurrent.SymbolScaleIntervalDataRangeForScriptContextNewName;
+				symbolScaleRange = strategy.ScriptContextCurrent.SymbolScaleInterval_dataRangeForScriptContext_newName;
 			}
 
 			this.olvHistory.UseWaitCursor = true;
@@ -320,12 +320,12 @@ namespace Sq1.Widgets.Sequencing {
 				this.olvBacktests.EmptyListMsg = "this.sequencer == null";
 				return;
 			}
-			SortedDictionary<int, ScriptParameter> sparams = this.sequencer.Executor.Strategy.Script.ScriptParametersById_ReflectedCached;
+			SortedDictionary<int, ScriptParameter> sparams = this.sequencer.Executor.Strategy.Script.ScriptParametersById_reflectedCached_primary;
 			if (sparams == null) {
 				this.olvBacktests.EmptyListMsg = "this.sequencer.ExecutorCloneToBeSpawned.Strategy.Script.ScriptParametersById_ReflectedCached == null";
 				return;
 			}
-			Dictionary<string, IndicatorParameter> iparams = this.sequencer.Executor.Strategy.Script.IndicatorsParameters_ReflectedCached;
+			Dictionary<string, IndicatorParameter> iparams = this.sequencer.Executor.Strategy.Script.IndicatorsParameters_reflectedCached;
 			if (iparams == null) {
 				this.olvBacktests.EmptyListMsg = "this.sequencer.ExecutorCloneToBeSpawned.Strategy.Script.IndicatorsByName_ReflectedCached == null";
 				return;
@@ -370,7 +370,7 @@ namespace Sq1.Widgets.Sequencing {
 		int heightCollapsed { get { return this.splitContainer1.Panel1MinSize; } }
 		public void NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize() {
 			Strategy strategy = this.sequencer.Executor.Strategy;
-			string symbolScaleRange = strategy.ScriptContextCurrent.SymbolScaleIntervalDataRangeForScriptContextNewName;
+			string symbolScaleRange = strategy.ScriptContextCurrent.SymbolScaleInterval_dataRangeForScriptContext_newName;
 			FnameDateSizeColorPFavg foundBySymbolScaleRange = this.RepositoryJsonSequencer.ItemsFoundContainsSymbolScaleRange__nullUnsafe(symbolScaleRange);
 			if (foundBySymbolScaleRange == null) return;
 

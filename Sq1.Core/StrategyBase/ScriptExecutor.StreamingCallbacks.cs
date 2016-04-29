@@ -42,6 +42,25 @@ namespace Sq1.Core.StrategyBase {
 		//public ReporterPokeUnit ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(Bar barLastFormed, Quote quote_fromStreaming) { throw new NotImplementedException(); }
 		//public ReporterPokeUnit ConsumeQuoteOfStreamingBar(Quote quote_fromStreaming) { throw new NotImplementedException(); }
 
+		public void InvokeIndicators_onNewBar_onNewQuote(Bar barStaticLastFormed, Quote quote_fromStreaming, bool onNewQuoteTrue_onNewBarFalse) {
+			string msig = "InvokeIndicators_onNewBar_onNewQuote()";
+			foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Values) {
+				if (onNewQuoteTrue_onNewBarFalse) {
+					try {
+						indicator.OnNewQuote(quote_fromStreaming);
+					} catch (Exception ex) {
+						Assembler.PopupException("INDICATOR_ON_NEW_QUOTE " + indicator.ToString(), ex);
+					}
+				} else {
+					try {
+						indicator.OnBarStaticLastFormed_whileStreamingBar_withOneQuote_alreadyAppended(barStaticLastFormed);
+					} catch (Exception ex) {
+						Assembler.PopupException("INDICATOR_ON_NEW_BAR " + indicator.ToString(), ex);
+					}
+				}
+			}
+		}
+
 		public ReporterPokeUnit InvokeScript_onNewBar_onNewQuote(Quote quote_fromStreaming, bool onNewQuoteTrue_onNewBarFalse = true) {
 			string msig = "InvokeScript_onNewBar_onNewQuote(WAIT)";
 			ReporterPokeUnit ret = null;
@@ -60,12 +79,12 @@ namespace Sq1.Core.StrategyBase {
 
 			string scriptInvocationError = "";
 			if (onNewQuoteTrue_onNewBarFalse == true) {
-				scriptInvocationError = this.invokeScript_onNewQuote(quote_fromStreaming);
+				scriptInvocationError = this.invokeScript_onNewQuote_indicatorsAlready(quote_fromStreaming);
 				if (this.ExecutionDataSnapshot.AlertsPending.Count > 0) {
 					this.fillPendings_onEachQuote_onlyForLivesimBrokerDefault(quote_fromStreaming);
 				}
 			} else {
-				scriptInvocationError = this.invokeScript_onNewBar(quote_fromStreaming);
+				scriptInvocationError = this.invokeScript_onNewBar_indicatorsAlready(quote_fromStreaming);
 			}
 			if (string.IsNullOrEmpty(scriptInvocationError) == false) {
 				Assembler.PopupException(scriptInvocationError + msig);
@@ -252,7 +271,7 @@ namespace Sq1.Core.StrategyBase {
 			defaultOrderFiller.ConsumeQuoteBoundUnattached_toFillPending(quoteForAlertsCreated, willBeFilled);
 		}
 
-		string invokeScript_onNewBar(Quote quoteForAlertsCreated) {
+		string invokeScript_onNewBar_indicatorsAlready(Quote quoteForAlertsCreated) {
 			string msig = " //ScriptExecutor.invokeScript_onNewBar(" + quoteForAlertsCreated + ")";
 			string error = "";
 
@@ -265,6 +284,10 @@ namespace Sq1.Core.StrategyBase {
 				if (this.barStatic_lastExecuted.ParentBarsIndex == 5) {
 					string aaa = "first hit";
 				}
+				if (quoteForAlertsCreated.ParentBarStreaming.ParentBars != this.Bars) {
+					error = "QUOTE_ATTACHED_TO_NON_EXECUTOR_BARS";
+					return error + msig;
+				}
 				int mustBeOne = barStaticLast.ParentBarsIndex - this.barStatic_lastExecuted.ParentBarsIndex;
 				if (mustBeOne == 0) {
 					error = "DUPE_IN_SCRIPT_INVOCATION__INDICATORS_WILL_COMPLAIN_TOO";
@@ -274,13 +297,6 @@ namespace Sq1.Core.StrategyBase {
 					int skipped = mustBeOne - 1;
 					error = "HOLE_IN_SCRIPT_INVOCATION INDICATORS_WILL_COMPLAIN_TOO ALERTS_WILL_MISTMATCH_BARS ExecuteOnNewBar()_SKIPPED=[" + skipped + "]";
 					return error + msig;
-				}
-			}
-			foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
-				try {
-					indicator.OnBarStaticLastFormed_whileStreamingBarWithOneQuoteAlreadyAppended(barStaticLast);
-				} catch (Exception ex) {
-					Assembler.PopupException("INDICATOR_ON_NEW_BAR " + indicator.ToString(), ex);
 				}
 			}
 
@@ -309,7 +325,7 @@ namespace Sq1.Core.StrategyBase {
 			return error;
 		}
 
-		string invokeScript_onNewQuote(Quote quoteForAlertsCreated) {
+		string invokeScript_onNewQuote_indicatorsAlready(Quote quoteForAlertsCreated) {
 			string msig = " //ScriptExecutor.invokeScript_onNewQuote(" + quoteForAlertsCreated + ")";
 			string error = "";
 
@@ -327,14 +343,6 @@ namespace Sq1.Core.StrategyBase {
 			} else {
 				if (this.BacktesterOrLivesimulator.ImBacktestingOrLivesimming == false) {
 					string msg4 = "IM_AT_APPRESTART_BACKTEST_PRIOR_TO_LIVE__HERE_I_SHOULD_HAVE_EXECUTED_ON_LASTBAR__DID_SO_AT_BRO_THIS_IS_NONSENSE!!!FINALLY";
-				}
-			}
-			//INDICATOR_ADDING_STREAMING_DOESNT_KNOW_FROM_QUOTE_WHAT_DATE_OPEN_TO_PUT
-			foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
-				try {
-					indicator.OnNewStreamingQuote(quoteForAlertsCreated);
-				} catch (Exception ex) {
-					Assembler.PopupException("INDICATOR_ON_NEW_STREAMING_QUOTE " + indicator.ToString(), ex);
 				}
 			}
 

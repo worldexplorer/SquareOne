@@ -414,9 +414,9 @@ namespace Sq1.Core.Backtesting {
 
 			QuoteGenerated quoteGenerated = quoteLast_QuoteGenerated_orQuoteQuik_irretraceableAfterDde as QuoteGenerated;
 			if (quoteGenerated == null) {
-				errOut = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"
+				errOut = "RECONSTRUCTING_PARENT_BAR QUOTE_WENT_THROUGH_DDE_QuikLivesimStreaming"
 					+ " Source[" + quoteLast_QuoteGenerated_orQuoteQuik_irretraceableAfterDde.Source + "]";
-				Assembler.PopupException(errOut);
+				//Assembler.PopupException(errOut, null, false);
 				quoteGenerated = new QuoteGenerated(quoteLast_QuoteGenerated_orQuoteQuik_irretraceableAfterDde, bar2simulate);
 			}
 

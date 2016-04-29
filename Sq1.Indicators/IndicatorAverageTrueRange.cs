@@ -5,7 +5,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators;
 using Sq1.Core.Indicators.HelperSeries;
 
-namespace Sq1.Core.Indicators {
+namespace Sq1.Indicators {
 	public class IndicatorAverageTrueRange : Indicator {
 		public	IndicatorParameter		ParamPeriod;	// Indicator searches for IndicatorParameter being fields, not properties
 				TrueRangeSeries			trueRangeSeries;
@@ -22,7 +22,7 @@ namespace Sq1.Core.Indicators {
 			ParamPeriod = new IndicatorParameter("Period", 5, 1, 11, 2);
 		}
 		
-		public override string InitializeBacktestStartingPreCheckErrors() {
+		public override string InitializeBacktest_beforeStarted_checkErrors() {
 			if (this.ParamPeriod.ValueCurrent <= 0) return "Period[" + this.ParamPeriod.ValueCurrent + "] MUST BE > 0";
 			// not in ctor because base.BarsEffective should not be null; initialized only now in Indicator.BacktestStarting() upstack
 			this.trueRangeSeries = new TrueRangeSeries(base.OwnValuesCalculated.ScaleInterval);
@@ -31,10 +31,10 @@ namespace Sq1.Core.Indicators {
 			return null;
 		}
 		
-		public override double CalculateOwnValueOnNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(Bar newStaticBar) {
+		public override double CalculateOwnValue_onNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(Bar newStaticBar) {
 			this.trueRangeSeries.CalculateAppendOwnValueForNewStaticBarFormed(newStaticBar);
 			if (this.ParamPeriod.ValueCurrent <= 0) return double.NaN;
-			double ret = this.smaSeries.Calculate_appendOwnValue_forNewStaticBarFormed_NanUnsafe(newStaticBar);
+			double ret = this.smaSeries.CalculateOwnValue_append_forNewStaticBarFormed_NanUnsafe(newStaticBar);
 			return ret;
 		}
 	}

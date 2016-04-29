@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Reflection;
 using System.Text;
 
 using Sq1.Core;
@@ -31,9 +30,11 @@ namespace Sq1.Core.Indicators {
 					this.barsEffective_cached = this.Executor.Bars;
 				}
 				if (this.barsEffective_cached != this.Executor.Bars) {
-					string msg = "INDICATOR_SWITCHED_BARS_BarsEffective (Bars were replaced to Backtesting growing copy and create new Proxy)"
+					string instances = this.barsEffective_cached.MyInstanceAsString + " =>" + this.Executor.Bars.MyInstanceAsString;
+					string msg = "INDICATOR_SWITCHED_BARS_BarsEffective " + instances
+						//+ " (Bars were replaced to Backtester's growing copy and new Proxy)"
 						+ this.barsEffective_cached.ToString() + " => " + this.Executor.Bars.ToString();
-					//Assembler.PopupException(msg, null, false);
+					Assembler.PopupException(msg, null, false);
 					this.barsEffective_cached = this.Executor.Bars;
 				}
 				return this.barsEffective_cached;
@@ -52,104 +53,13 @@ namespace Sq1.Core.Indicators {
 				}
 				return this.closesProxyEffective_cached;
 			} }
+
+		public		string	IndicatorErrorsOnBacktestStarting		{ get; protected set; }
 		
-		public	HostPanelForIndicator HostPanelForIndicator		{ get; protected set; }
+		public		int		DotsDrawnForCurrentSlidingWindow;									// nope I won't use a separate "responsibility" (I told you "SOLID principles are always misused" :)
+		public		int		DotsExistsForCurrentSlidingWindow		{ get; protected set; }		// just because the object itself is the most convenient place to incapsulate it
 
-				Color lineColor;
-		public	Color LineColor {
-			get { return this.lineColor; }
-			set { this.lineColor = value; this.brushForeground = null; this.penForeground = null; }
-		}
-				int lineWidth;
-		public	int LineWidth {
-			get { return this.lineWidth; }
-			set { this.lineWidth = value; this.brushForeground = null; this.penForeground = null; }
-		}
-
-				Brush brushForeground;
-		public	Brush BrushForeground							{ get {
-				if (this.brushForeground == null) {
-					this.brushForeground = new SolidBrush(this.LineColor);
-				}
-				return this.brushForeground;
-			} }
-				Pen penForeground;
-		public	Pen PenForeground { get {
-				if (this.penForeground == null) {
-					this.penForeground = new Pen(this.LineColor, this.LineWidth);
-				}
-				return this.penForeground;
-			} }
-
-				bool parametersByName_ReflectionForced;
-				Dictionary<string, IndicatorParameter> parametersByName;
-		public	Dictionary<string, IndicatorParameter> ParametersByName { get {
-				if (parametersByName_ReflectionForced == false) return parametersByName;
-				parametersByName_ReflectionForced = false;
-				parametersByName.Clear();
-
-				Type myChild = this.GetType();
-				//v1
-				//PropertyInfo[] lookingForIndicatorParameterProperties = myChild.GetProperties();
-				//foreach (PropertyInfo indicatorParameterPropertyInfo in lookingForIndicatorParameterProperties) {
-				//	Type expectingIndicatorParameterType = indicatorParameter.PropertyType;
-				//v2
-				//FieldInfo[] lookingForIndicatorParameterFields = myChild.GetFields();
-				FieldInfo[] lookingForIndicatorParameterFields = myChild.GetFields(
-															  BindingFlags.Public
-															| BindingFlags.NonPublic
-															| BindingFlags.DeclaredOnly
-															| BindingFlags.Instance
-														);
-				foreach (FieldInfo indicatorParameter in lookingForIndicatorParameterFields) {
-					Type expectingIndicatorParameterType = indicatorParameter.FieldType;
-					bool isIndicatorParameterChild = typeof(IndicatorParameter).IsAssignableFrom(expectingIndicatorParameterType);
-					if (isIndicatorParameterChild == false) continue;
-					//object expectingConstructedNonNull = indicatorParameter.GetValue(this, null);
-					object expectingConstructedNonNull = indicatorParameter.GetValue(this);
-					if (expectingConstructedNonNull == null) {
-						string msg = "INDICATOR_DEVELOPER,INITIALIZE_INDICATOR_PARAMETER_IN_INDICATOR_CONSTRUCTOR Indicator[" + this.Name + "].ctor()"
-							+ " { iParamFound = new new IndicatorParameter([" + indicatorParameter.Name + "], cur, min, max, increment); }";
-						Assembler.PopupException(msg);
-						continue;
-					}
-					IndicatorParameter indicatorParameterInstance = expectingConstructedNonNull as IndicatorParameter; 
-					// NOPE_COZ_ATR.ParamPeriod=new IndicatorParameter("Period",..) indicatorParameterInstance.Name = indicatorParameterPropertyInfo.Name;
-					indicatorParameterInstance.IndicatorName = this.Name;
-					indicatorParameterInstance.ValidateSelf();
-					parametersByName.Add(indicatorParameterInstance.FullName, indicatorParameterInstance);
-				}
-				return parametersByName;
-			} }
-		
-		public	string	parametersAsStringShort_cached;
-		public	string	ParametersAsStringShort					{ get {
-				if (parametersAsStringShort_cached == null) {
-					StringBuilder sb = new StringBuilder();
-					foreach (string paramName in this.ParametersByName.Keys) {
-						IndicatorParameter param = this.ParametersByName[paramName];
-						if (sb.Length > 0) sb.Append(",");
-						sb.Append(paramName);
-						sb.Append(":");
-						string shortName = param.ValuesAsString;
-						sb.Append(shortName);
-					}
-					this.parametersAsStringShort_cached = sb.ToString();
-				}
-				return this.parametersAsStringShort_cached;
-			} }
-		
-		public	string	NameWithParameters { get {
-				string parameters = this.ParametersAsStringShort;
-				if (string.IsNullOrEmpty(parameters)) parameters = "NOT_BUILT_YET_ParametersByName_DIDNT_INVOKE_BuildParametersFromAttributes()";
-				string ret = this.Name + " (" + parameters + ")";
-				return ret;
-			} }
-
-		public	string	IndicatorErrorsOnBacktestStarting		{ get; protected set; }
-		
-		public	int		DotsDrawnForCurrentSlidingWindow;									// nope I won't use a separate "responsibility" (I told you "SOLID principles are always misused" :)
-		public	int		DotsExistsForCurrentSlidingWindow		{ get; protected set; }		// just because the object itself is the most convenient place to incapsulate it
+		protected	bool	AllowsOnNewQuote;
 		
 		protected Indicator() {
 			AbsnoInstance = ++AbsnoCurrent;
@@ -162,15 +72,37 @@ namespace Sq1.Core.Indicators {
 			Decimals = 2;
 			parametersByName = new Dictionary<string, IndicatorParameter>();
 			parametersByName_ReflectionForced = true;
+			AllowsOnNewQuote = false;
 		}
 
-		public virtual void BacktestContextRestoreSwitchToOriginalBarsContinueToLiveNorecalculate() {
+		public void SetHostPanel(HostPanelForIndicator panelNamedFolding) {
+			if (this.HostPanelForIndicator == panelNamedFolding) {
+				string msg = "INDICATOR_ALREADY_INITIALIZED_WITH_SAME_HOST_PANEL [" + this + "] this.HostPanelForIndicator[" + this.HostPanelForIndicator + "]";
+				//Assembler.PopupException(msg, null, false);
+				return;
+			}
+			this.HostPanelForIndicator = panelNamedFolding;
 		}
-		public virtual void BacktestStartingResetBarsEffectiveProxy() {
-			this.parametersAsStringShort_cached = null;
-			// muting INDICATOR_SWITCHED_BARS
-			this.barsEffective_cached = this.Executor.Bars;
-			this.closesProxyEffective_cached = new DataSeriesProxyBars(this.BarsEffective, this.DataSeriesProxyFor);
+		public void IndicatorErrorsAppend_OnBacktestStarting(string msg, string separator = "; ") {
+			if (string.IsNullOrEmpty(msg)) return;
+			if (string.IsNullOrEmpty(this.IndicatorErrorsOnBacktestStarting) == false) msg += separator;
+			this.IndicatorErrorsOnBacktestStarting += msg;
+		}
+		public void Initialize(ScriptExecutor executor) {
+			// will need this.Executor already set => next line
+			//if (this.OwnValuesCalculated.ScaleInterval.Scale == BarScale.Unknown) {
+			//    this.OwnValuesCalculated = new DataSeriesTimeBased(this.BarsEffective.ScaleInterval, this.NameWithParameters);
+			//}
+
+			if (this.Executor != executor || this.closesProxyEffective_cached == null) {
+				this.Executor  = executor;	//this.ClosesProxyEffective will be automatically re-created to match
+			}
+
+			this.Decimals = Math.Max(this.BarsEffective.SymbolInfo.PriceDecimals, 1);	// for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
+
+			if (this.closesProxyEffective_cached == null) {
+				this.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();
+			}
 
 			if (this.OwnValuesCalculated.Count == 0) {
 				string msg = "NO_NEED_TO_CLEAR";
@@ -190,221 +122,27 @@ namespace Sq1.Core.Indicators {
 				this.OwnValuesCalculated.Description = this.NameWithParameters;
 			}
 		}
-		public void Initialize(HostPanelForIndicator panelNamedFolding) {
-			if (this.HostPanelForIndicator == panelNamedFolding) {
-				string msg = "INDICATOR_ALREADY_INITIALIZED_WITH_SAME_HOST_PANEL [" + this + "] this.HostPanelForIndicator[" + this.HostPanelForIndicator + "]";
-				Assembler.PopupException(msg, null, false);
-				return;
-			}
-			this.HostPanelForIndicator = panelNamedFolding;
-		}
-		public void IndicatorErrorsOnBacktestStartingAppend(string msg, string separator = "; ") {
-			if (string.IsNullOrEmpty(msg)) return;
-			if (string.IsNullOrEmpty(this.IndicatorErrorsOnBacktestStarting) == false) msg += separator;
-			this.IndicatorErrorsOnBacktestStarting += msg;
-		}
-		public bool BacktestStartingConstructOwnValuesValidateParameters(ScriptExecutor executor) {
+		public bool BacktestStarting_validateParameters() {
 			//string msg = "MADE_SURE_WE_WILL_INVOKE_BacktestStartingConstructOwnValuesValidateParameters()";
 			//Assembler.PopupException(msg, null, false);
 
-			this.Executor = executor;
 			string msig = " Indicator[" + this.NameWithParameters + "].BacktestStarting()";
-
-			this.OwnValuesCalculated = new DataSeriesTimeBased(this.BarsEffective.ScaleInterval, this.NameWithParameters);
-			this.BacktestStartingResetBarsEffectiveProxy();
+			this.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();
 			
-			string paramerersAllValidatedErrors = this.ParametersAllValidate();
-			this.IndicatorErrorsOnBacktestStartingAppend(paramerersAllValidatedErrors);
+			string parametersAllValidatedErrors = this.ParametersAll_validate();
+			this.IndicatorErrorsAppend_OnBacktestStarting(parametersAllValidatedErrors);
 
-			this.Decimals = Math.Max(this.BarsEffective.SymbolInfo.PriceDecimals, 1);	// for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
-
-			string indicatorSelfValidationErrors = this.InitializeBacktestStartingPreCheckErrors();
-			this.IndicatorErrorsOnBacktestStartingAppend(indicatorSelfValidationErrors);
+			string indicatorSelfValidationErrors = this.InitializeBacktest_beforeStarted_checkErrors();
+			this.IndicatorErrorsAppend_OnBacktestStarting(indicatorSelfValidationErrors);
 			
 			if (string.IsNullOrEmpty(this.IndicatorErrorsOnBacktestStarting) == false) {
 				string msig2 = " Indicator[" + this.NameWithParameters + "].BacktestStartingPreCheck()";
 				Assembler.PopupException(this.IndicatorErrorsOnBacktestStarting + msig2);
 			}
 			
-			bool backtestCanStart = string.IsNullOrEmpty(paramerersAllValidatedErrors)
+			bool backtestCanStart = string.IsNullOrEmpty(parametersAllValidatedErrors)
 								 && string.IsNullOrEmpty(indicatorSelfValidationErrors);
 			return backtestCanStart;
-		}
-		
-		public virtual string ParametersAllValidate() {
-			string ret = "";
-			foreach (IndicatorParameter param in this.ParametersByName.Values) {
-				string paramErrors = param.ValidateSelf();
-				if (string.IsNullOrEmpty(paramErrors)) continue; 
-				if (string.IsNullOrEmpty(ret) == false) ret += "; ";
-				ret += paramErrors;
-			}
-
-			if (string.IsNullOrEmpty(ret) == false) {
-				string msig = " Indicator[" + this.NameWithParameters + "].ParametersAllValidate()";
-				Assembler.PopupException(ret + msig);
-			}
-
-			return ret;
-		}
-		public virtual string InitializeBacktestStartingPreCheckErrors() {
-			return null;
-		}
-		public virtual double CalculateOwnValueOnNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(Bar newStaticBar) {
-			if (this.OwnValuesCalculated.ContainsDate(newStaticBar.DateTimeOpen)) {
-				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]";
-				Assembler.PopupException(msg);
-			}
-			return double.NaN;
-		}
-		public virtual double CalculateOwnValueOnNewStreamingQuote_invokedAtEachQuoteNoExceptions_NoPeriodWaiting(Quote newStreamingQuote) {
-			return double.NaN;
-			//PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW return this.CalculateOwnValueOnNewStaticBarFormed(newStreamingQuote.ParentStreamingBar);
-		}
-		//public abstract double CalculateOwnValueOnNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(Bar newStaticBar);
-		//public abstract double CalculateOwnValueOnNewStreamingQuote_invokedAtEachQuoteNoExceptions_NoPeriodWaiting(Quote newStreamingQuote);
-
-
-		bool canRunCalculation(bool popupException = false, Bar newStaticBar = null, Quote quote = null) {
-			bool ret = false;
-			if (this.OwnValuesCalculated == null) {
-				string msg = "HAPPENS_DURING_REBACKTEST_AFTER_ABORTION this.OwnValuesCalculated=null " + this.ToString();
-				Assembler.PopupException(msg);
-				return ret;
-			}
-			if (string.IsNullOrEmpty(this.IndicatorErrorsOnBacktestStarting) == false) {
-				if (popupException) {
-					string msg = "I_REFUSE_TO_CALCULATE_DUE_TO_PREVIOUS_ERRORS Indicator.OnNewStaticBarFormed(" + newStaticBar + ")" + this.ToString();
-					Assembler.PopupException(msg);
-				}
-				return ret;
-			}
-			if (this.Executor == null) {
-				if (popupException) {
-					string msg = "NO_EXECUTOR_FOR_INDICATOR this.Executor=null" + this.ToString();
-					Assembler.PopupException(msg, null, false);
-				}
-				return ret;
-			}
-			if (this.ClosesProxyEffective == null) {
-				if (popupException) {
-					string msg = "NO_BARS_FOR_INDICATOR this.ClosesProxyEffective=null" + this.ToString();
-					Assembler.PopupException(msg);
-				}
-				return ret;
-			}
-			//if (this.ClosesProxyEffective.Count - 1 < this.FirstValidBarIndex) {
-			//	//if (popupException) {
-			//	//	string msg = "DONT_INVOKE_ME__MAKE_THIS_CHECK_UPSTACK"
-			//	//		+ " base.ClosesProxyEffective.Count-1[" + (this.ClosesProxyEffective.Count - 1)
-			//	//		+ "] < this.FirstValidBarIndex[" + this.FirstValidBarIndex + "]"
-			//	//		+ this.ToString();
-			//	//	Assembler.PopupException(msg);
-			//	//}
-			//	//if (newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex) {
-			//	//	int barsWaitToFirstIndicatorValidIndex = this.FirstValidBarIndex - newStaticBar.ParentBarsIndex;
-			//	//	string msg = "barsWaitToFirstIndicatorValidIndex[" + barsWaitToFirstIndicatorValidIndex + "] newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex";
-			//	//	//Assembler.PopupException(msg, null, false);
-			//	//	return;
-			//	//}
-			//	return ret;
-			//}
-			ret = true;
-			return ret;
-		}
-		public virtual void OnBarStaticLastFormed_whileStreamingBarWithOneQuoteAlreadyAppended(Bar newStaticBar) {
-			string msig = " //OnNewStaticBarFormed(" + newStaticBar.ToString() + ")";
-			bool canRunCalculation = this.canRunCalculation(true);
-			if (canRunCalculation == false) {
-				this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, double.NegativeInfinity);
-				return;
-			}
-			double derivedCalculated = this.CalculateOwnValueOnNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(newStaticBar);
-			if (double.IsNaN(derivedCalculated) == false) {
-				string msg22 = "newStaticBar.ParentBarsIndex[" + newStaticBar.ParentBarsIndex + "] FirstValidBarIndex[" + this.FirstValidBarIndex + "]";
-			}
-
-			int barsAheadOfIndicator = newStaticBar.ParentBarsIndex - this.OwnValuesCalculated.LastIndex;
-			msig = " barsAheadOfIndicator[" + barsAheadOfIndicator + "]" + this.indexesAsString + msig;
-
-			string msg;
-			if (barsAheadOfIndicator == 0) {
-				msg = "PREV_QUOTE_ADDED_LAST_VALUE_PREVENTIVELY__I_WILL_REPLACE_STREAMING_VALUE";
-				if (this.OwnValuesCalculated.LastDateAppended != newStaticBar.DateTimeOpen) {
-					msg = "UNSYNC#1_FIX_ME " + msg;
-					Assembler.PopupException(msg + msig, null, false);
-					return;
-				}
-				this.OwnValuesCalculated.LastValue = derivedCalculated;
-			} else if (barsAheadOfIndicator == 1) {
-				msg = "PREV_QUOTE_DIDNT_ADD_STREAMING_OWN_VALUE_PREVENTIVELY_ADDING_NOW";
-				if (this.OwnValuesCalculated.LastDateAppended == newStaticBar.DateTimeOpen) {
-					msg = "UNSYNC#2_FIX_ME " + msg;
-					Assembler.PopupException(msg + msig, null, false);
-					return;
-				}
-				this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, derivedCalculated);
-			} else {
-				msg = "ILL_BE_BACK_ON_QUASI_RENKO_AND_KAUFMAN INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS";
-				//Assembler.PopupException(msg + msig, null, false);
-				return;
-			}
-		}
-		public virtual void OnNewStreamingQuote(Quote newStreamingQuote) {
-			#if VERBOSE_STRINGS_SLOW
-			string msig = " //OnNewStreamingQuote(" + newStreamingQuote.ToString() + ")";
-			#else
-			string msig = " //OnNewStreamingQuote()";
-			#endif
-			
-			bool canRunCalculation = this.canRunCalculation(true);
-			if (canRunCalculation == false) return;
-			double derivedCalculated = this.CalculateOwnValueOnNewStreamingQuote_invokedAtEachQuoteNoExceptions_NoPeriodWaiting(newStreamingQuote);
-
-			if (newStreamingQuote.ParentBarStreaming == null) {
-				if (newStreamingQuote.AbsnoPerSymbol == 0) {
-					string msg4 = "FIRST_QUOTE_OF_LIVESIM_HAS_NO_PARENT_STREAMING";
-				} else {
-					string msg2 = "DONT_FEED_ME_WITH_QUOTE_UNATTACHED";
-					Assembler.PopupException(msg2 + msig, null, false);
-				}
-				return;
-			}
-
-			if (newStreamingQuote.ParentBarStreaming.ParentBars == null) {
-				string msg2 = "DONT_FEED_ME_WITH_BAR_UNATTACHED";
-				Assembler.PopupException(msg2 + msig, null, false);
-				return;
-			}
-
-			int barsAheadOfIndicator = newStreamingQuote.ParentBarStreaming.ParentBarsIndex - this.OwnValuesCalculated.LastIndex;
-			msig = " barsAheadOfIndicator[" + barsAheadOfIndicator + "]" + this.indexesAsString + msig;
-			if (barsAheadOfIndicator == 0) {
-				string msg = "UPDATING_STREAMING_VALUE";
-				if (this.OwnValuesCalculated.LastDateAppended != newStreamingQuote.ParentBarStreaming.DateTimeOpen) {
-					msg = "UNSYNC#1 " + msg;
-					Assembler.PopupException(msg + msig, null, false);
-					return;
-				}
-				if (double.IsNaN(this.OwnValuesCalculated.LastValue) && double.IsNaN(derivedCalculated)) {
-					msg = "WONT_UPDATE_NAN " + msg;
-					//Assembler.PopupException(msg + msig, null, false);
-					return;
-				}
-				this.OwnValuesCalculated.LastValue = derivedCalculated;
-			} else if (barsAheadOfIndicator == 1) {
-				string msg = "PREVENTIVE_ADD";
-				if (this.OwnValuesCalculated.LastDateAppended >= newStreamingQuote.ParentBarStreaming.DateTimeOpen) {
-					msg = "UNSYNC#2_FIX_ME " + msg;
-					Assembler.PopupException(msg + msig, null, false);
-					return;
-				}
-				this.OwnValuesCalculated.Append(newStreamingQuote.ParentBarStreaming.DateTimeOpen, derivedCalculated);
-			} else {
-				string msg = "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS";
-				Assembler.PopupException(msg + msig, null, false);
-				return;
-			}
 		}
 		
 		//v1
@@ -417,42 +155,42 @@ namespace Sq1.Core.Indicators {
 		//	set { this.format = value; }
 		//}
 		//v2 begin
-		public	string	FormatForcedDecimalsIndependent			{ get; protected set; }
+		public	string	FormatForced_DecimalsIndependent		{ get; protected set; }
 		public	int		Decimals								{ get; protected set; }
 		//v2 end
 		public	string	Format									{ get {
-				if (string.IsNullOrEmpty(this.FormatForcedDecimalsIndependent) == false) return this.FormatForcedDecimalsIndependent;
+				if (string.IsNullOrEmpty(this.FormatForced_DecimalsIndependent) == false) return this.FormatForced_DecimalsIndependent;
 				return "N" + this.Decimals;
 			} }
 		public string FormatValue(double value) {
 			return value.ToString(this.Format);
 		}
-		public string FormatValueForBar(Bar bar, DataSeriesTimeBased ownValuesOrOverridenBandSeries = null) {
+		public string OwnValueForBar_formatted(Bar bar, DataSeriesTimeBased ownValues_orOverridenBandSeries = null) {
 			string ret = "";
-			if (ownValuesOrOverridenBandSeries == null) {
-				ownValuesOrOverridenBandSeries = this.OwnValuesCalculated;
+			if (ownValues_orOverridenBandSeries == null) {
+				ownValues_orOverridenBandSeries = this.OwnValuesCalculated;
 			}
 				
 			DateTime barDateTime = bar.DateTimeOpen;
 			int barIndex = bar.ParentBarsIndex;
-			if (ownValuesOrOverridenBandSeries.ContainsDate(barDateTime) == false) {
+			if (ownValues_orOverridenBandSeries.ContainsDate(barDateTime) == false) {
 				ret = "!ex[" + barDateTime.ToString(Assembler.DateTimeFormatIndicatorHasNoValuesFor) + "]";
 				return ret;
 			}
-			double calculated = ownValuesOrOverridenBandSeries[barIndex];
+			double calculated = ownValues_orOverridenBandSeries[barIndex];
 			if (double.IsNaN(calculated)) {
 				ret = "NaN";
 			}
 			ret = this.FormatValue(calculated);
 			return ret;
 		}
-		public virtual SortedDictionary<string, string> ValuesForTooltipPrice(Bar bar) {
+		public virtual SortedDictionary<string, string> OwnValuesForTooltipPrice(Bar bar) {
 			SortedDictionary<string, string> ret = new SortedDictionary<string, string>();
-			ret.Add(this.Name, this.FormatValueForBar(bar));
+			ret.Add(this.Name, this.OwnValueForBar_formatted(bar));
 			return ret;
 		}
 		
-				string	indexesAsString							{ get {
+		string	lastStats_asString							{ get {
 			return 	" LastValue[" + this.OwnValuesCalculated.LastValue.ToString(this.Format) + "]"
 					+ " LastIndex[" + this.OwnValuesCalculated.LastIndex + "]"
 					+ " LastValueAppended[" + this.OwnValuesCalculated.LastValueAppended.ToString(this.Format) + "]"
@@ -460,7 +198,7 @@ namespace Sq1.Core.Indicators {
 					+ " Count[" + this.OwnValuesCalculated.Count + "]";
 		} }
 		public override string ToString() {
-			return "#" + this.AbsnoInstance + " " + this.NameWithParameters;
+			return "#" + this.AbsnoInstance + " " + this.NameWithParameters + " " + this.OwnValuesCalculated.ScaleIntervalCount_asString;
 		}
 	}
 }

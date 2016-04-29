@@ -35,7 +35,7 @@ namespace Sq1.Gui {
 					string msg = "OPENED_FROM_STRATEGIES_TREE strategy.Script.Executor=null";
 					Assembler.PopupException(msg, null, false);
 				} else {
-					strategy.ContextSwitchCurrentToNamedAndSerialize(e.scriptContextName);
+					strategy.ContextSwitch_currentToNamed_serialize(e.scriptContextName);
 				}
 			}
 			this.chartCreateShow_populateSelectorsSliders_fromStrategy(strategy);
@@ -61,7 +61,7 @@ namespace Sq1.Gui {
 			}
 			active.ChartFormManager.InitializeWithStrategy(strategy, false, true);
 			if (strategy.Script != null && strategy.Script.Executor != null) {
-				strategy.ContextSwitchCurrentToNamedAndSerialize(e.scriptContextName);
+				strategy.ContextSwitch_currentToNamed_serialize(e.scriptContextName);
 			} else {
 				string msg = "CANT_SWITCH_CONTEXT_SCRIPT";
 				Assembler.PopupException(msg);
@@ -88,7 +88,7 @@ namespace Sq1.Gui {
 			ChartSettingsEditorForm.Instance.RebuildChartsDropDown_dueToChartFormAddedOrRemoved();
 
 			chartFormManager.ChartFormShow();
-			chartFormManager.StrategyCompileActivatePopulateSlidersShow();
+			chartFormManager.StrategyCompileActivate_populateSlidersShow();
 			return chartFormManager;
 		}
 		void chartCreateShow_populateSelectorsSliders_noStrategy(ContextChart contextChart) {
@@ -352,7 +352,7 @@ namespace Sq1.Gui {
 		#region SlidersForm.Instance.SlidersAutoGrow
 		internal void SlidersAutoGrow_OnScriptContextLoadClicked(object sender, StrategyEventArgs e) {
 			Strategy strategy = e.Strategy;
-			strategy.ContextSwitchCurrentToNamedAndSerialize(e.scriptContextName);
+			strategy.ContextSwitch_currentToNamed_serialize(e.scriptContextName);
 			//v1 SlidersForm.Instance.PopulateFormTitle(strategy);
 			//v2 WILLBEDONE_BY_PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy() SlidersForm.Instance.Initialize(strategy);
 			try {
@@ -391,7 +391,7 @@ namespace Sq1.Gui {
 //			}
 
 			// SAME_OBJECTS_BETWEEN_SLIDER_AND_CURRENT_SCRIPT_CONTEXT_BUT_SCRIPT_HAS_ITS_OWN_ACCESSIBLE_THROUGH_REFLECTED
-			strategyToSaveAndRun.PushChangedScriptParameterValueToScript(indicatorParamChangedArg.IndicatorParameter);
+			strategyToSaveAndRun.PushChanged_scriptParameterValue_toScript(indicatorParamChangedArg.IndicatorParameter);
 
 			chartFormActive.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("SlidersAutoGrow_SliderValueChanged", false);
 

@@ -145,7 +145,7 @@ namespace Sq1.Core.StrategyBase {
 			return ret;
 		}
 
-		public void ResetScriptAndIndicatorParametersInCurrentContextToScriptDefaultsAndSave() {
+		public void ResetScriptAndIndicatorParameters_inCurrentContext_toScriptDefaults_andSave() {
 			if (this.Script == null) {
 				string msg = "SCRIPT_IS_NULL_CAN_NOT_RESET_PARAMETERS_TO_CLONE_CONSTRUCTED";
 				Assembler.PopupException(msg);
@@ -164,30 +164,41 @@ namespace Sq1.Core.StrategyBase {
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategies.StrategySave(this);
 		}
 
-		public int ScriptAndIndicatorParametersReflected_absorbMergeFromCurrentContext_saveStrategy(bool saveStrategyFalseForDisposedExecutorsInSequencer = false) {
-			int currentValuesAbsorbed = this.ScriptContextCurrent.ScriptParametersReflectedAbsorbFromCurrentContextReplace(
-					this.Script.ScriptParametersById_ReflectedCached);
-			if (currentValuesAbsorbed > 0 && saveStrategyFalseForDisposedExecutorsInSequencer == true) this.Serialize();
+		public int ScriptAndIndicatorParametersReflected_absorbFromCurrentContext_saveStrategy(
+					bool saveStrategy_falseForDisposedExecutorsInSequencer = false) {
 
+			int totalAbsorbed = 0;
 			if (this.Script == null) {
 				string msg = "CANT_SWITCH_CTX_FOR_UNCOMPILED_STRATEGY__SCRIPT_NULL";
 				Assembler.PopupException(msg);
-			} else {
-				this.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel(saveStrategyFalseForDisposedExecutorsInSequencer);
+				return totalAbsorbed;
 			}
 
-			return currentValuesAbsorbed;
+			//this.Script.			ScriptParametersById_reflectionForced	= true;
+			//this.Script.				IndicatorsByName_reflectionForced	= true;
+			//this.Script.  IndicatorParametersByIndicator_reflectionForced	= true;
+			//this.Script.			 IndicatorParameters_reflectionForced	= true;
+
+			int scriptValuesAbsorbed = this.Script.ScriptParametersReflected_absorbFromCurrentContext_pushBackToCurrentContext(
+				this.ScriptContextCurrent.ScriptParametersById);
+
+			int indicatorValuesAbsorbed = this.Script.IndicatorParametersReflected_absorbFromCurrentContext_pushBackToCurrentContext(
+				this.ScriptContextCurrent.IndicatorParametersByIndicatorName);
+
+			totalAbsorbed = scriptValuesAbsorbed + indicatorValuesAbsorbed;
+			if (totalAbsorbed > 0 && saveStrategy_falseForDisposedExecutorsInSequencer == true) this.Serialize();
+			return totalAbsorbed;
 		}
 
-		internal int IndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(bool saveStrategy = false) {
-			int currentValuesAbsorbed = this.ScriptContextCurrent.PushIndicatorParamsCurrentValuesIntoReflectedIndicators(
-					this.Script.IndicatorParametersByIndicator_ReflectedCached);
-			if (currentValuesAbsorbed > 0 && saveStrategy == true) this.Serialize();
-			return currentValuesAbsorbed;
+		internal int IndicatorParametersReflected_absorbFromCurrentContext_saveStrategy(bool saveStrategy = false) {
+			int indicatorValuesAbsorbed = this.Script.IndicatorParametersReflected_absorbFromCurrentContext_pushBackToCurrentContext(
+					this.ScriptContextCurrent.IndicatorParametersByIndicatorName);
+			if (indicatorValuesAbsorbed > 0 && saveStrategy == true) this.Serialize();
+			return indicatorValuesAbsorbed;
 		}
 
-		public void PushChangedScriptParameterValueToScript(IndicatorParameter indicatorParameterChangedDueToUserClickInSliders) {
-			string msig = " //Strategy.PushChangedScriptParameterValueToScript(" + indicatorParameterChangedDueToUserClickInSliders + ")";
+		public void PushChanged_scriptParameterValue_toScript(IndicatorParameter indicatorParameterChangedDueToUserClickInSliders) {
+			string msig = " //Strategy.PushChanged_scriptParameterValue_toScript(" + indicatorParameterChangedDueToUserClickInSliders + ")";
 			if (indicatorParameterChangedDueToUserClickInSliders == null) {
 				string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT SLIDERS_AUTOGROW_GENERATED_AN_EVENT_WITH_EMPTY_INDICATOR_PARAMETER_INSIDE";
 				Assembler.PopupException(msg + msig);
@@ -198,7 +209,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			this.Script.PushChangedScriptParameterValueToScript(indicatorParameterChangedDueToUserClickInSliders);
+			this.Script.Push_changedScriptParameterValue_toScript(indicatorParameterChangedDueToUserClickInSliders);
 		}
 	}
 }

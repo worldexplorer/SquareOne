@@ -139,7 +139,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		SteppingSliderComboControl SliderComboFactory(IndicatorParameter indicatorOrScriptParameter, string indicatorNameDotParameterName = null) {
 			//v1 WOULD_BE_TOO_EASY ret = this.templateSliderControl.Clone();
 			//BEGIN merged with SlidersAutoGrow.Designer.cs:InitializeComponent()
-			SteppingSliderComboControl ret = new SteppingSliderComboControl();
+			SteppingSliderComboControl slider = new SteppingSliderComboControl();
 			//SCHEMA1
 			//ret.ColorBgMouseOver = System.Drawing.Color.Gold;
 			//ret.ColorBgValueCurrent = System.Drawing.SystemColors.ActiveCaption;
@@ -164,41 +164,41 @@ namespace Sq1.Widgets.SteppingSlider {
 
 			//ret.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right);
 			//ret.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			ret.Anchor = this.templateSliderControl.Anchor;
-			ret.Padding = this.templateSliderControl.Padding;
-			ret.PaddingPanelSlider = this.templateSliderControl.PaddingPanelSlider;
+			slider.Anchor = this.templateSliderControl.Anchor;
+			slider.Padding = this.templateSliderControl.Padding;
+			slider.PaddingPanelSlider = this.templateSliderControl.PaddingPanelSlider;
 			//END merged
 
 			string nameForScriptDotSeparatedForIndicator = indicatorNameDotParameterName;
 			if (string.IsNullOrEmpty(nameForScriptDotSeparatedForIndicator)) nameForScriptDotSeparatedForIndicator = indicatorOrScriptParameter.FullName; 
-			ret.LabelText = nameForScriptDotSeparatedForIndicator;
-			ret.Name = "parameter_" + nameForScriptDotSeparatedForIndicator;
+			slider.LabelText = nameForScriptDotSeparatedForIndicator;
+			slider.Name = "parameter_" + nameForScriptDotSeparatedForIndicator;
 			
 			//v1 ValueCurrent="200" set initially, impedes setting ValueMax=10
 			//sequence matters! ret.ValueCurrent checks that you didn't set it outside the boundaries AND within the Increment; fix manually designer-generated SliderComboControl.InitializeComponents() as well 
-			ret.ValueIncrement	= new decimal(indicatorOrScriptParameter.ValueIncrement);
-			ret.ValueMin		= new decimal(indicatorOrScriptParameter.ValueMin);
-			ret.ValueMax		= new decimal(indicatorOrScriptParameter.ValueMax);
-			ret.ValueCurrent	= new decimal(indicatorOrScriptParameter.ValueCurrent);
+			slider.ValueIncrement	= new decimal(indicatorOrScriptParameter.ValueIncrement);
+			slider.ValueMin		= new decimal(indicatorOrScriptParameter.ValueMin);
+			slider.ValueMax		= new decimal(indicatorOrScriptParameter.ValueMax);
+			slider.ValueCurrent	= new decimal(indicatorOrScriptParameter.ValueCurrent);
 			//v2
 			//ret.ValidateValuesAndAbsorbFrom(indicatorOrScriptparameter);
 			
 			//DOESNT_WORK?... ret.PanelFillSlider.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			//ret.PaddingPanelSlider = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			ret.Location = new System.Drawing.Point(0, this.PreferredHeight + this.VerticalSpaceBetweenSliders);
-			ret.Size = new System.Drawing.Size(this.Width, ret.Size.Height);
-			ret.Tag = indicatorOrScriptParameter;
-			ret.ParentAutoGrowControl = this;
-			ret.ValueCurrentChanged += slider_ValueCurrentChanged;
+			slider.Location = new System.Drawing.Point(0, this.PreferredHeight + this.VerticalSpaceBetweenSliders);
+			slider.Size = new System.Drawing.Size(this.Width, slider.Size.Height);
+			slider.Tag = indicatorOrScriptParameter;
+			slider.ParentAutoGrowControl = this;
+			slider.ValueCurrentChanged += slider_ValueCurrentChanged;
 			// WILL_ADD_PARENT_MENU_ITEMS_IN_Opening
 			
-			ret.EnableBorder	= indicatorOrScriptParameter.BorderShown;
-			ret.EnableNumeric	= indicatorOrScriptParameter.NumericUpdownShown;
+			slider.EnableBorder	= indicatorOrScriptParameter.BorderShown;
+			slider.EnableNumeric	= indicatorOrScriptParameter.NumericUpdownShown;
 			
-			ret.ShowBorderChanged			+= slider_ShowBorderChanged;
-			ret.ShowNumericUpdownChanged	+= slider_ShowNumericUpdownChanged;
+			slider.ShowBorderChanged			+= slider_ShowBorderChanged;
+			slider.ShowNumericUpdownChanged	+= slider_ShowNumericUpdownChanged;
 			
-			return ret;
+			return slider;
 		}
 		public void PopupScriptContextsToConfirmAddedOptimized(string scriptContextNameToExpand = null) {
 			this.ctxScriptContexts_Opening(this, null);

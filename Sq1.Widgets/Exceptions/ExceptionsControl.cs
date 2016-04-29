@@ -98,7 +98,7 @@ namespace Sq1.Widgets.Exceptions {
 
 			if (base.Width == 0) {
 				string msg = "CANT_SET_SPLITTER_DISTANCE_FOR_UNSHOWN_CONTROL ExceptionsControl.Visible[" + this.Visible + "]; can't set SplitDistanceVertical, SplitDistanceHorizontal";
-				Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig, null, false);
 			} else {
 				try {
 					this.SuspendLayout();

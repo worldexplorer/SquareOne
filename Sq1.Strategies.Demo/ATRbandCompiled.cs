@@ -6,6 +6,8 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 
+using Sq1.Indicators;
+
 namespace Sq1.Strategies.Demo {
 	public class ATRbandCompiled : Script {
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 

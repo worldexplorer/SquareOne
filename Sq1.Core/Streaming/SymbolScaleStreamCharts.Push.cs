@@ -46,22 +46,26 @@ namespace Sq1.Core.Streaming {
 					continue;
 				}
 
-				if (base.ConsumersBar.Contains(consumer)) {
-					try {
-						//lock (this.lockConsumersBar) {
-						Bar barStaticLast = consumer.ConsumerBars_toAppendInto.BarStaticLast_nullUnsafe;
-						consumer.Consume_barLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(
-							barStaticLast, quote_clonedBoundAttached);
-						string msg = "BAR_CONSUMER_FINISHED " + barStaticLast.ToString() + " => " + consumer.ToString();
-						//Assembler.PopupException(msg, null, false);
-						//}
-					} catch (Exception ex) {
-						string msg = "PUSH_FAILED quoteDequeued_singleInstance_tillStreamBindsAll[" + quoteDequeued_singleInstance.ToString() + "]";
-						Assembler.PopupException(msg + msig, ex);
+				if (base.ConsumersBar.Contains(consumer) == false) continue;
+				try {
+					//lock (this.lockConsumersBar) {
+					Bar barStaticLast = consumer.ConsumerBars_toAppendInto.BarStaticLast_nullUnsafe;
+					if (barStaticLast == null) {
+						string msg1 = "Streaming starts generating quotes => first StreamingBar is added; for first four Quotes there's no static barsFormed yet!! Isi";
+						Assembler.PopupException(msg1 + msig);
 						continue;
 					}
-				}
 
+					consumer.Consume_barLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(
+						barStaticLast, quote_clonedBoundAttached);
+					string msg = "BAR_CONSUMER_FINISHED " + barStaticLast.ToString() + " => " + consumer.ToString();
+					//Assembler.PopupException(msg, null, false);
+					//}
+				} catch (Exception ex) {
+					string msg = "PUSH_FAILED quoteDequeued_singleInstance_tillStreamBindsAll[" + quoteDequeued_singleInstance.ToString() + "]";
+					Assembler.PopupException(msg + msig, ex);
+					continue;
+				}
 			}
 			//this.RaiseOnQuoteSyncPushedToAllConsumers(quoteSernoEnrichedWithUnboundStreamingBar);
 		}
@@ -78,8 +82,6 @@ namespace Sq1.Core.Streaming {
 				}
 			}
 		}
-
-
 
 	}
 }

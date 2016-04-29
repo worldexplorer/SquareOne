@@ -115,8 +115,13 @@ namespace Sq1.Core.DataTypes {
 //			valueExisting += value;
 //			this[indexFound] = valueExisting;
 //		}
-		public override string ToString() {
+		public string ScaleIntervalCount_asString { get {
 			string ret = "[" + this.ScaleInterval + "]" + this.Count + "doublesByDate";
+			return ret;
+		} }
+		public override string ToString() {
+			//string ret = "[" + this.ScaleInterval + "]" + this.Count + "doublesByDate";
+			string ret = this.ScaleIntervalCount_asString;
 			ret += " Last[" + this.LastValueAppended.ToString(base.Format) + "]@[" + this.LastDateAppended + "]";
 			ret += base.ToString();
 			return ret;
