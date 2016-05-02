@@ -54,6 +54,7 @@ namespace Sq1.Core.Backtesting {
 					string msg = "pending=[" + pendingCountNow + "], it must be prototype-induced 2 closing TP & SL";
 				}
 			}
+			this.backtester.Executor.InvokeIndicators_onNewBar_onNewQuote(null, quoteClone_boundAttached, true);
 			//v1 this.backtester.Executor.Script.OnNewQuoteCallback(quoteToReach);
 			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.InvokeScript_onNewBar_onNewQuote(quoteClone_boundAttached);
 			//v3 ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.ConsumeQuoteOfStreamingBar(quote);
@@ -71,6 +72,8 @@ namespace Sq1.Core.Backtesting {
 				return;
 			}
 			msig += "(" + barLastFormed.ToString() + ")";
+
+			this.backtester.Executor.InvokeIndicators_onNewBar_onNewQuote(barLastFormed, null, false);
 			//v1 this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
 			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.InvokeScript_onNewBar_onNewQuote(quote, false);
 			//v3 ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = this.backtester.Executor.ConsumeBarLastStatic_justFormed_whileStreamingBarWithOneQuote_alreadyAppended(barLastFormed, quote);

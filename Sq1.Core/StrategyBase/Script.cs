@@ -59,10 +59,10 @@ namespace Sq1.Core.StrategyBase {
 
 			this.Executor = scriptExecutor;
 
-			this.		   ScriptParametersById_reflectionForced = true;
-			this.			   IndicatorsByName_reflectionForced = true;
-			this.			IndicatorParameters_reflectionForced = true;
-			this.IndicatorParametersByIndicator_reflectionForced = true;
+			this.		   ScriptParametersById_reflectionForced_byClearingCache();
+			this.			   IndicatorsByName_reflectionForced_byClearingCache();
+			this.			IndicatorParameters_reflectionForced_byClearingCache();
+			this.IndicatorParametersByIndicator_reflectionForced_byClearingCache();
 
 			this.Strategy.ScriptAndIndicatorParametersReflected_absorbFromCurrentContext_saveStrategy(saveStrategy_falseForSequencer);
 		}
@@ -149,31 +149,47 @@ namespace Sq1.Core.StrategyBase {
 			this.Strategy.IndicatorParametersReflected_absorbFromCurrentContext_saveStrategy(true);
 			this.InitializeIndicatorsReflected_withHostPanel();
 		}
-		internal void Push_changedScriptParameterValue_toScript(IndicatorParameter indicatorParameterChanged_dueToUserClickedInSliders) {
-			string msig = " //Script.Push_changedScriptParameterValue_toScript(" + indicatorParameterChanged_dueToUserClickedInSliders + ")";
-			if (indicatorParameterChanged_dueToUserClickedInSliders == null) {
-				string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT SLIDERS_AUTOGROW_GENERATED_AN_EVENT_WITH_EMPTY_INDICATOR_PARAMETER_INSIDE";
-				Assembler.PopupException(msg + msig);
-				return;
-			}
-			SortedDictionary<string, IndicatorParameter> reflectedAll = this.scriptAndIndicatorParameters_reflectedMergedUncloned_forReusableExecutorToCheckByName;
-			if (reflectedAll.ContainsKey(indicatorParameterChanged_dueToUserClickedInSliders.FullName) == false) {
-				string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT STALE_PARAMETER_CLICKED_WHICH_DOESNT_EXIST_IN_RECOMPILED_SCRIPT";
-				Assembler.PopupException(msg + msig);
-				return;
-			}
-			IndicatorParameter reflected = reflectedAll[indicatorParameterChanged_dueToUserClickedInSliders.FullName];
-			if (reflected == indicatorParameterChanged_dueToUserClickedInSliders) {
-				string msg = "SCRIPT_PARAMETERS_SEEMS_TO_BE_THE_SAME_OBJECTS_WHILE_INDICATOR_PARAMETERS_ARE_DIFFERENT??? CATCH_DECIDE_COPY_OR_SAME";
-				// YES_THEY_ARE_THE_SAME_I_DECIDED!!! Assembler.PopupException(msg);
-				return;
-			}
-			if (reflected.ValueCurrent == indicatorParameterChanged_dueToUserClickedInSliders.ValueCurrent) {
-				string msg = "SCRIPT_PARAMETER_VALUE_ALREADY_SAME_AS_PROPAGATING NAIL_ANOTHER_SYNC/PUSH_MECHANISM";
+		//internal void Push_changedScriptParameterValue_toScript(IndicatorParameter indicatorParameterChanged_userClickedInSliders) {
+		//    string msig = " //Script.Push_changedScriptParameterValue_toScript(" + indicatorParameterChanged_userClickedInSliders + ")";
+		//    if (indicatorParameterChanged_userClickedInSliders == null) {
+		//        string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT SLIDERS_AUTOGROW_GENERATED_AN_EVENT_WITH_EMPTY_INDICATOR_PARAMETER_INSIDE";
+		//        Assembler.PopupException(msg + msig);
+		//        return;
+		//    }
+		//    SortedDictionary<string, IndicatorParameter> reflectedAll = this.scriptAndIndicatorParameters_reflectedMergedUncloned_forReusableExecutorToCheckByName;
+		//    if (reflectedAll.ContainsKey(indicatorParameterChanged_userClickedInSliders.FullName) == false) {
+		//        string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT STALE_PARAMETER_CLICKED_WHICH_DOESNT_EXIST_IN_RECOMPILED_SCRIPT";
+		//        Assembler.PopupException(msg + msig);
+		//        return;
+		//    }
+		//    IndicatorParameter reflected = reflectedAll[indicatorParameterChanged_userClickedInSliders.FullName];
+		//    if (reflected != indicatorParameterChanged_userClickedInSliders) {
+		//        string msg1 = "SINCE_APR28-2016_SCRIPT_PARAMETERS_MUST_BE_THE_SAME_OBJECTS";
+		//        //string msg1 = "YES_THEY_ARE_THE_SAME_I_DECIDED!!! SCRIPT_PARAMETERS_SEEMS_TO_BE_THE_SAME_OBJECTS_WHILE_INDICATOR_PARAMETERS_ARE_DIFFERENT??? CATCH_DECIDE_COPY_OR_SAME";
+		//        Assembler.PopupException(msg1);
+
+		//        if (reflected.ValueCurrent == indicatorParameterChanged_userClickedInSliders.ValueCurrent) {
+		//            string msg = "SCRIPT_PARAMETER_VALUE_ALREADY_SAME_AS_PROPAGATING NAIL_ANOTHER_SYNC/PUSH_MECHANISM";
+		//            Assembler.PopupException(msg);
+		//            return;
+		//        }
+		//        bool absorbed = reflected.AbsorbCurrent_fixBoundaries_from(indicatorParameterChanged_userClickedInSliders);
+		//        if (absorbed) {
+		//            string msg = "SINCE_APR28-2016_NO_NEED_FOR_ABSORBTION__THIS_INDICATOR_IS_REFLECTED_FROM_SCRIPT__RIGHT?";
+		//            Assembler.PopupException(msg);
+		//        }
+		//        return;
+		//    }
+		//}
+		internal void RecalculateIndicator(IndicatorParameter indicatorParameterChanged_userClickedInSliders) {
+			string msig = " //Script.RecalculateIndicator(" + indicatorParameterChanged_userClickedInSliders + ")";
+			if (this.IndicatorsByName_reflectedCached_primary.ContainsKey(indicatorParameterChanged_userClickedInSliders.IndicatorName) == false) {
+				string msg = "YOU_MUST_FORCE_INDICATORS_REFLECTION__AFTER_YOU_RECOMPILE_YOUR_SCRIPT";
 				Assembler.PopupException(msg);
 				return;
 			}
-			reflected.AbsorbCurrent_fixBoundaries_from(indicatorParameterChanged_dueToUserClickedInSliders);
+			Indicator indicatorForChangedParameter = this.IndicatorsByName_reflectedCached_primary[indicatorParameterChanged_userClickedInSliders.IndicatorName];
+			this.Executor.PreCalculateIndicators_forLoadedBars_backtestWontFollow(indicatorForChangedParameter);		// WILL_CLEAR eachIndicator.OwnValuesCalculated.Clear()
 		}
 		public override string ToString() {
 			string ret = "Script[" + this.GetType().Name + "].Strategy";

@@ -15,7 +15,7 @@ using Sq1.Charting.OnChart;
 namespace Sq1.Charting {
 	public class ExecutorObjects_FrozenForRendering {
 		public Dictionary<int, List<AlertArrow>>	AlertArrowsListByBar	{ get; private set; }
-		public Dictionary<string, Indicator>		Indicators				{ get; set; }
+		public Dictionary<string, Indicator>		Indicators_pointerToReflected_neverClearMe				{ get; private set; }
 		public Dictionary<int, AlertList>			AlertsPlacedByBar		{ get; private set; }
 
 		public Dictionary<string, OnChartLine>		LinesById				{ get; private set; }
@@ -34,9 +34,9 @@ namespace Sq1.Charting {
 		// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
 		public bool IndicatorsAllHaveNoOwnValues { get {
 				bool ret = false;
-				if (this.Indicators == null) return ret;
-				if (this.Indicators.Count == 0) return ret;
-				foreach (Indicator indicator in this.Indicators.Values) {
+				if (this.Indicators_pointerToReflected_neverClearMe == null) return ret;
+				if (this.Indicators_pointerToReflected_neverClearMe.Count == 0) return ret;
+				foreach (Indicator indicator in this.Indicators_pointerToReflected_neverClearMe.Values) {
 					if (indicator.OwnValuesCalculated == null) {
 						#if DEBUG
 						Debugger.Break();
@@ -52,7 +52,7 @@ namespace Sq1.Charting {
 		
 		public ExecutorObjects_FrozenForRendering() {
 			AlertArrowsListByBar		= new Dictionary<int, List<AlertArrow>>();
-			Indicators					= new Dictionary<string, Indicator>();
+			//Indicators_pointerToReflected_neverClearMe					= new Dictionary<string, Indicator>();
 			AlertsPlacedByBar			= new Dictionary<int, AlertList>();
 			
 			LinesById					= new Dictionary<string, OnChartLine>();
@@ -77,8 +77,14 @@ namespace Sq1.Charting {
 			//Assembler.PopupException(msg, null, false);
 
 			this.AlertArrowsListByBar.Clear();
-			//NE!!! STUPPIDO_DES_NE???
-			this.Indicators.Clear();
+
+			//STUPPIDO_DES_NE???
+			//if (this.Indicators_pointerToReflected_neverClearMe.Count > 0) {
+			//    this.Indicators_pointerToReflected_neverClearMe.Clear();
+			//} else {
+			//    string msg2 = "WEIRD__MUST_BE_ONE_SMA_INSIDE_ON_RE-BACKTEST";
+			//    Assembler.PopupException(msg2, null, false);
+			//}
 			//v2
 			//foreach (Indicator eachIndicator in this.Indicators.Values) {
 			//    if (eachIndicator.OwnValuesCalculated == null) continue;
@@ -150,9 +156,13 @@ namespace Sq1.Charting {
 //				}
 //			}
 		}
-		public void SetIndicators(Dictionary<string, Indicator> indicators) {
-			this.Indicators = indicators;
-			foreach (Indicator indicator in indicators.Values) {
+		public void SetIndicators_pointerToReflected(Dictionary<string, Indicator> indicatorsReflected) {
+			if (this.Indicators_pointerToReflected_neverClearMe != null && this.Indicators_pointerToReflected_neverClearMe != indicatorsReflected) {
+				string msg = "YOU_MUST_HAVE_RECOMPILED_THE_SCRIPT_FOR_STRATEGY___OR_REPLACED_STRATEGY_FOR_CHART DICTIONARY_REFLECTED_ONLY_CLEARS_WHEN_NEEDED";
+				Assembler.PopupException(msg, null, false);
+			}
+			this.Indicators_pointerToReflected_neverClearMe = indicatorsReflected;
+			foreach (Indicator indicator in indicatorsReflected.Values) {
 				indicator.DotsDrawnForCurrentSlidingWindow = -1;
 			}
 		}

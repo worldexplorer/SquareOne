@@ -382,30 +382,18 @@ namespace Sq1.Gui {
 				return;
 			}
 
-// CHANGING_SLIDERS_ALREADY_AFFECTS_SCRIPT_AND_INDICATOR_PARAMS_KOZ_THERE_ARE_NO_CLONES_ANYMORE
-//			ScriptParameterEventArgs scripParamChanged = e as ScriptParameterEventArgs;
-//			if (scripParamChanged != null) {
-//				strategyToSaveAndRun.PushChangedScriptParameterValueToScriptAndSerialize(scripParamChanged.ScriptParameter);
-//			} else {
-//				strategyToSaveAndRun.PushChangedIndicatorParameterValueToScriptAndSerialize(e.IndicatorParameter);
-//			}
-
+			// CHANGING_SLIDERS_ALREADY_AFFECTS_SCRIPT_AND_INDICATOR_PARAMS_KOZ_THERE_ARE_NO_CLONES_ANYMORE
 			// SAME_OBJECTS_BETWEEN_SLIDER_AND_CURRENT_SCRIPT_CONTEXT_BUT_SCRIPT_HAS_ITS_OWN_ACCESSIBLE_THROUGH_REFLECTED
-			strategyToSaveAndRun.PushChanged_scriptParameterValue_toScript(indicatorParamChangedArg.IndicatorParameter);
+			if (strategyToSaveAndRun.ScriptContextCurrent.BacktestOnSelectorsChange == false) {
+				strategyToSaveAndRun.RecalculateIndicator(indicatorParamChangedArg.IndicatorParameter);
+			}
 
-			chartFormActive.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("SlidersAutoGrow_SliderValueChanged", false);
-
-// NO_FREAKING_IDEA_WHY_THIS_WAS_TYPED_IN_HERE			
-//			ScriptParameterEventArgs demuxScriptParameterEventArgs = e as ScriptParameterEventArgs;   
-//			if (demuxScriptParameterEventArgs == null) {
-//				string msg = "MultiSplitterPropertiesByPanelName[ATR (Period:5[1..11/2]) ] key should be synchronized when user clicks Period 5=>7";
-//				chartFormActive.ChartControl.SerializeSplitterDistanceOrPanelName();
-//			} else {
-//				string msg = "DO_NOTHING_ELSE_INDICATOR_PANEL_SPLITTER_POSITIONS_SHOULDNT_BE_SAVED_HERE";
-//			}
+			chartFormActive.ChartFormManager.
+				PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(
+					"SlidersAutoGrow_SliderValueChanged", false);
 
 			//ScriptContext.Sliders => Sequencer's.Parameters.Current
-			chartFormActive.ChartFormManager.SequencerForm.SequencerControl.OlvParameterPopulate();
+			//WHY??? chartFormActive.ChartFormManager.SequencerForm.SequencerControl.OlvParameterPopulate();
 		}
 		#endregion SlidersForm.Instance.SlidersAutoGrow
 

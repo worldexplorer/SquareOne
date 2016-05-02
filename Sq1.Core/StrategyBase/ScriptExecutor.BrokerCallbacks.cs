@@ -201,7 +201,7 @@ namespace Sq1.Core.StrategyBase {
 			bool backtest_orNonRejectedLiveAndSim = true;
 			if (alertFilled.OrderFollowed != null) {
 				string msg = "dealing with Live or LiveSim; it's not a backtest";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 				if (	alertFilled.OrderFollowed.State == OrderState.Filled
 					 || alertFilled.OrderFollowed.State == OrderState.FilledPartially) {
 					backtest_orNonRejectedLiveAndSim = true;
@@ -210,8 +210,8 @@ namespace Sq1.Core.StrategyBase {
 					Assembler.PopupException(msg1, null, false);
 				}
 			} else {
-				string msg = "backtester always fills full size requested with 100% success rate; when no fill => I'm not invoked here";
-				Assembler.PopupException(msg, null, false);
+				string msg = "NO_PLACE_FOR_ORDER_REJECTION backtester always fills full size requested with 100% success rate; when no fill => I'm not invoked here";
+				//Assembler.PopupException(msg, null, false);
 			}
 
 			if (backtest_orNonRejectedLiveAndSim) {

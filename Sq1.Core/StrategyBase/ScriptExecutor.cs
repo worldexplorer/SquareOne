@@ -583,7 +583,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public bool IsDisposed { get; private set; }
 
-		public void PreCalculateIndicators_forLoadedBars_backtestWontFollow() {
+		public void PreCalculateIndicators_forLoadedBars_backtestWontFollow(Indicator recalculateOnlyOneIndicator_thatUserMovedSliderFor = null) {
 			string msig = " //PreCalculateIndicators_forLoadedBars_backtestWontFollow()";
 			if (this.Strategy == null) {
 				string msg = "WRONG_USAGE_STRATEGY_NULL";
@@ -601,24 +601,27 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 
-			foreach(Indicator indicator in this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Values) {
-				if (indicator.Executor == null) {
-					indicator.Initialize(this);
+			foreach(Indicator indicatorEach in this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Values) {
+				if (indicatorEach.Executor == null) {
+					indicatorEach.Initialize(this);
 				} else {
-					string msg = "already initialized Executor and OwnValues in BacktestContext_initialize() " + indicator;
+					string msg = "already initialized Executor and OwnValues in BacktestContext_initialize() " + indicatorEach;
 					//Assembler.PopupException(msg, null, false);
 				}
+				if (recalculateOnlyOneIndicator_thatUserMovedSliderFor != null && indicatorEach != recalculateOnlyOneIndicator_thatUserMovedSliderFor) continue;
 				//indicator.BacktestStarting_constructOwnValues_validateParameters();
-				indicator.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();	// will create new SMA with Period changed
+				indicatorEach.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();	// will create new SMA with Period changed
 			}
 
 			Bars barsSafeCopy = this.Bars.SafeCopy_oneCopyForEachDisposableExecutors(msig, true);
 			foreach(Bar eachBar_likeLastStaticFormed in barsSafeCopy.InnerBars_exposedOnlyForEditor_fromSafeCopy) {
-				foreach(Indicator indicator in this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Values) {
+				foreach(Indicator indicatorEach in this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Values) {
+					if (recalculateOnlyOneIndicator_thatUserMovedSliderFor != null && indicatorEach != recalculateOnlyOneIndicator_thatUserMovedSliderFor) continue;
+
 					try {
-						indicator.OnBarStaticLastFormed_whileStreamingBar_withOneQuote_alreadyAppended(eachBar_likeLastStaticFormed);
+						indicatorEach.OnBarStaticLastFormed_whileStreamingBar_withOneQuote_alreadyAppended(eachBar_likeLastStaticFormed);
 					} catch (Exception ex) {
-						string msg = "INDICATOR_MUST_WORK_WITHOUT_QUOTES_AND_ACCEPT eachBar_likeLastStaticFormed[" + eachBar_likeLastStaticFormed + "] " + indicator;
+						string msg = "INDICATOR_MUST_WORK_WITHOUT_QUOTES_AND_ACCEPT eachBar_likeLastStaticFormed[" + eachBar_likeLastStaticFormed + "] " + indicatorEach;
 						Assembler.PopupException(msg + msig, ex, false);
 					}
 				}

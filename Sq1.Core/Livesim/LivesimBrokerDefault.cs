@@ -157,6 +157,7 @@ namespace Sq1.Core.Livesim {
 			}
 			//executor.Script.OnNewQuoteCallback(quoteToReach);
 
+			this.ScriptExecutor.InvokeIndicators_onNewBar_onNewQuote(null, quoteBoundAttached, true);
 			ReporterPokeUnit pokeUnit_nullUnsafe_dontForgetToDispose = base.ScriptExecutor.InvokeScript_onNewBar_onNewQuote(quoteBoundAttached);
 			//base.GeneratedQuoteEnrichSymmetricallyAndPush(quote, bar2simulate);
 			if (pokeUnit_nullUnsafe_dontForgetToDispose != null) {

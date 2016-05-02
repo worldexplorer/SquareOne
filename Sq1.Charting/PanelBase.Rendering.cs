@@ -417,7 +417,7 @@ namespace Sq1.Charting {
 				return;
 			}
 			// ALREADY_CHECKED_FOR_NULL_OR_EMPTY
-			Dictionary<string, Indicator> indicators = this.ChartControl.ExecutorObjects_frozenForRendering.Indicators;
+			Dictionary<string, Indicator> indicators = this.ChartControl.ExecutorObjects_frozenForRendering.Indicators_pointerToReflected_neverClearMe;
 			
 			//just increase Y; otherwize first indicator's label will be covered by Symbol
 			this.ChartLabelsUpperLeftYincremental += 13;

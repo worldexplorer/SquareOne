@@ -188,7 +188,7 @@ namespace Sq1.Charting {
 			}
 		}
 		public override void SetIndicators(Dictionary<string, Indicator> indicators) {
-			this.ExecutorObjects_frozenForRendering.SetIndicators(indicators);
+			this.ExecutorObjects_frozenForRendering.SetIndicators_pointerToReflected(indicators);
 		}
 		public override OnChartObjectOperationStatus LineDrawModify (
 					// parameters could be a class, but I didnt introduce class Sq1.Core.Line because:

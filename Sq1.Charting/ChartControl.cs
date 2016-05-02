@@ -495,7 +495,7 @@ namespace Sq1.Charting {
 			//			Dictionary<int, List<Alert>> alertsForBarsFromExecution = this.executor.ExecutionDataSnapshot
 			//				.AlertsPendingHistorySafeCopyForRenderer(mouseBar, mouseBar);
 			//			if (alertsForBarsFromExecution.ContainsKey(mouseBar)) tooltipAlertsForBar = alertsForBarsFromExecution[mouseBar];
-			Dictionary<string, Indicator> indicators = this.ExecutorObjects_frozenForRendering.Indicators;
+			Dictionary<string, Indicator> indicators = this.ExecutorObjects_frozenForRendering.Indicators_pointerToReflected_neverClearMe;
 			this.tooltipPrice.PopulateTooltip(barToPopulate, indicators, tooltipAlertsForBar);
 			//this.tooltipPrice.Capture = false;
 			this.tooltipPrice.Location = newLocation;

@@ -14,7 +14,7 @@ namespace Sq1.Core.StrategyBase {
 		DataSource	preDataSource;
 
 		internal void BacktestContext_initialize(Bars barsEmptyButWillGrow) {
-			string msig = " //BacktestContextInitialize(" + barsEmptyButWillGrow + ")";
+			string msig = " //BacktestContext_initialize(" + barsEmptyButWillGrow + ")";
 
 			DataSource dataSourceFromBars = this.DataSource_fromBars;
 			dataSourceFromBars.QueuePauseIgnorePump_freezeOtherLiveChartsExecutors_toLetMyOrderExecutionCallbacksGoFirst_WRAPPER(this, barsEmptyButWillGrow);
@@ -26,26 +26,32 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Bars == barsEmptyButWillGrow) {
 				string msg = "LIFECYCLE_INCONSISTENT__BARS_ALREADY_INITIALIZED " + this.Bars;
 				Assembler.PopupException(msg);
-			} else {
-				this.Bars = barsEmptyButWillGrow;
-				bool indicatorsHaveNoErrorsCanStartBacktesting = true;
-				foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Values) {
-					if (indicator.Executor != null) {
-						string msg = "already initialized Executor and OwnValues in PreCalculateIndicators_forLoadedBars_backtestWontFollow()" + indicator;
-						Assembler.PopupException(msg, null, false);
-						continue;
-					}
-					
-					indicator.Initialize(this);
-					indicatorsHaveNoErrorsCanStartBacktesting &= indicator.BacktestStarting_validateParameters();
-				}
-				if (indicatorsHaveNoErrorsCanStartBacktesting == false) {
-					string msg = "I_SHOULD_ABORT_BACKTEST_NOW_HERE_BUT_DONT_HAVE_A_MECHANISM indicatorsHaveNoErrorsCanStartBacktesting=false";
-					Assembler.PopupException(msg);
-					throw new Exception(msg);
-				}
+				this.EventGenerator.RaiseOnBacktesterSimulationContextInitialized_step2of4();
+				return;
 			}
 
+			this.Bars = barsEmptyButWillGrow;
+			bool indicatorsHaveNoErrorsCanStartBacktesting = true;
+
+			if (this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Count == 0) {
+				this.Strategy.Script.IndicatorsByName_reflectionForced_byClearingCache();		// otherwize no Indicators are seen inside InvokeIndicators*()
+			}
+
+			foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Values) {
+				if (indicator.Executor != null) {
+					string msg = "already initialized Executor and OwnValues in PreCalculateIndicators_forLoadedBars_backtestWontFollow()" + indicator;
+					//INIT_ANYWAY Assembler.PopupException(msg, null, false);
+					//INIT_ANYWAY continue;
+				}
+					
+				indicator.Initialize(this);
+				indicatorsHaveNoErrorsCanStartBacktesting &= indicator.BacktestStarting_validateParameters();
+			}
+			if (indicatorsHaveNoErrorsCanStartBacktesting == false) {
+				string msg = "I_SHOULD_ABORT_BACKTEST_NOW_HERE_BUT_DONT_HAVE_A_MECHANISM indicatorsHaveNoErrorsCanStartBacktesting=false";
+				Assembler.PopupException(msg);
+				throw new Exception(msg);
+			}
 			this.EventGenerator.RaiseOnBacktesterSimulationContextInitialized_step2of4();
 		}
 		internal void BacktestContext_restore() {
@@ -81,6 +87,7 @@ namespace Sq1.Core.StrategyBase {
 				this.PerformanceAfterBacktest.Initialize();
 				this.Strategy.Script.InitializeBacktestWrapper();
 
+				// better place is BacktestRestore_step2of2 but may be Script will address ChartShadow.Indicators?... who knows
 				if (this.ChartShadow != null) this.ChartShadow.SetIndicators(this.Strategy.Script.IndicatorsByName_reflectedCached_primary);
 
 				this.BacktesterOrLivesimulator.Initialize_runSimulation_backtestAndLivesim_step1of2();

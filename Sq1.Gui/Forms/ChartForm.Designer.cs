@@ -190,7 +190,7 @@ namespace Sq1.Gui.Forms {
 			this.mniBacktestOnSelectorsChange.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mniBacktestOnSelectorsChange.Name = "mniBacktestOnSelectorsChange";
 			this.mniBacktestOnSelectorsChange.Size = new System.Drawing.Size(428, 22);
-			this.mniBacktestOnSelectorsChange.Text = "Re-Backtest On BarsRange/ScriptParameters Changed";
+			this.mniBacktestOnSelectorsChange.Text = "Re-Backtest On Script/IndicatorParameters/BarsRange Changed";
 			this.mniBacktestOnSelectorsChange.Click += new System.EventHandler(this.mniBacktestOnAnyChange_Click);
 			// 
 			// mniBacktestNow

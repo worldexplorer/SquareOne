@@ -100,9 +100,9 @@ namespace Sq1.Core.Indicators {
 
 			this.Decimals = Math.Max(this.BarsEffective.SymbolInfo.PriceDecimals, 1);	// for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
 
-			if (this.closesProxyEffective_cached == null) {
+			//if (this.closesProxyEffective_cached == null) {
 				this.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();
-			}
+			//}
 
 			if (this.OwnValuesCalculated.Count == 0) {
 				string msg = "NO_NEED_TO_CLEAR";
@@ -127,7 +127,7 @@ namespace Sq1.Core.Indicators {
 			//Assembler.PopupException(msg, null, false);
 
 			string msig = " Indicator[" + this.NameWithParameters + "].BacktestStarting()";
-			this.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();
+			//HOPING_Initialize()_WILL_INVOKE this.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();
 			
 			string parametersAllValidatedErrors = this.ParametersAll_validate();
 			this.IndicatorErrorsAppend_OnBacktestStarting(parametersAllValidatedErrors);

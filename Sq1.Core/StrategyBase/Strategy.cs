@@ -197,9 +197,10 @@ namespace Sq1.Core.StrategyBase {
 			return indicatorValuesAbsorbed;
 		}
 
-		public void PushChanged_scriptParameterValue_toScript(IndicatorParameter indicatorParameterChangedDueToUserClickInSliders) {
-			string msig = " //Strategy.PushChanged_scriptParameterValue_toScript(" + indicatorParameterChangedDueToUserClickInSliders + ")";
-			if (indicatorParameterChangedDueToUserClickInSliders == null) {
+		//public void PushChanged_scriptParameterValue_toScript(IndicatorParameter indicatorParameterChanged_userClickedInSliders) {
+		public void RecalculateIndicator(IndicatorParameter indicatorParameterChanged_userClickedInSliders) {
+			string msig = " //Strategy.RecalculateIndicator_PushChanged_scriptParameterValue_toScript(" + indicatorParameterChanged_userClickedInSliders + ")";
+			if (indicatorParameterChanged_userClickedInSliders == null) {
 				string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT SLIDERS_AUTOGROW_GENERATED_AN_EVENT_WITH_EMPTY_INDICATOR_PARAMETER_INSIDE";
 				Assembler.PopupException(msg + msig);
 				return;
@@ -209,7 +210,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			this.Script.Push_changedScriptParameterValue_toScript(indicatorParameterChangedDueToUserClickInSliders);
+			this.Script.RecalculateIndicator(indicatorParameterChanged_userClickedInSliders);
 		}
 	}
 }

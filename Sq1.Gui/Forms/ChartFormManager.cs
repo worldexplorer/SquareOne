@@ -540,8 +540,10 @@ namespace Sq1.Gui.Forms {
 				// WHEN_willBacktest==true__REFLECTED_WILL_BE_ABSORBED_IN_BacktesterRunSimulation()=>StrategyCompileActivate_populateSlidersShow()
 				//ALREADY_ABSORBED?? int currentValuesAbsorbed = this.Executor.Strategy.ScriptAndIndicatorParametersReflected_absorbFromCurrentContext_saveStrategy(true);
 
-				this.Executor.ChartShadow.Clear_allScriptObjects_beforeBacktest();				// WILL_ChartShadow.Indicators.Clear()   WILL_NOT_CLEAR eachIndicator.OwnValuesCalculated.Clear()
-				this.Executor.PreCalculateIndicators_forLoadedBars_backtestWontFollow();		// WILL_CLEAR eachIndicator.OwnValuesCalculated.Clear()
+				//WILL_ERASE_ARROWS_I_JUST_BACKTESTED this.Executor.ChartShadow.Clear_allScriptObjects_beforeBacktest();				// WILL_ChartShadow.Indicators.Clear()   WILL_NOT_CLEAR eachIndicator.OwnValuesCalculated.Clear()
+				if (loadNewBars) {
+					this.Executor.PreCalculateIndicators_forLoadedBars_backtestWontFollow();		// WILL_CLEAR eachIndicator.OwnValuesCalculated.Clear()
+				}
 				this.Executor.Strategy.Script.InitializeIndicatorsReflected_withHostPanel();
 				this.Executor.ChartShadow.SetIndicators(this.Strategy.Script.IndicatorsByName_reflectedCached_primary);
 				this.Executor.ChartShadow.InvalidateAllPanels();

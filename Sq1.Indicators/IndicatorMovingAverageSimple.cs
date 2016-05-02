@@ -19,7 +19,7 @@ namespace Sq1.Indicators {
 			base.Name = "MA //will be replaced by Script.IndicatorsByName_ReflectedCached()";
 			// NOW DEFAULT base.ChartPanelType = ChartPanelType.PanelPrice;
 			this.ParamPeriod = new IndicatorParameter("Period", 55, 11, 99, 11);
-			base.AllowsOnNewQuote = true;
+			//base.AllowsOnNewQuote = true;
 		}
 		void checkPopupOnResetAndSync(string msig) {
 			string msg = "";
@@ -73,7 +73,7 @@ namespace Sq1.Indicators {
 			//v1 this.smaSeries.AverageFor = base.ClosesProxyEffective;
 			this.smaSeries.SubstituteBars_withoutRecalculation(base.ClosesProxyEffective);
 
-			if (this.smaSeries.Count != this.OwnValuesCalculated.Count) {		// - 1) {
+			if (this.smaSeries.Count < this.OwnValuesCalculated.Count - 2) {
 				string msg = "STILL_ADD_NAN_TO_KEEP_INDEXES_SYNCED_WITH_OWN_VALUES";
 				Assembler.PopupException(msg);
 			}

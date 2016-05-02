@@ -21,13 +21,11 @@ namespace Sq1.Core.StrategyBase {
 			return "(" + ret + ")";
 		} }
 
-		public	bool IndicatorParametersByIndicator_reflectionForced;
+		public void  IndicatorParametersByIndicator_reflectionForced_byClearingCache() {
+				this.indicatorParametersByIndicator_reflectedCached = null;
+		}
 				Dictionary<string, List<IndicatorParameter>>	indicatorParametersByIndicator_reflectedCached;
 		public	Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByIndicatorName_reflectedCached { get {
-			if (IndicatorParametersByIndicator_reflectionForced) {
-				this.indicatorParametersByIndicator_reflectedCached = null;
-				this.IndicatorParametersByIndicator_reflectionForced = false;
-			}
 			if (this.indicatorParametersByIndicator_reflectedCached != null) {
 				return this.indicatorParametersByIndicator_reflectedCached;
 			}
@@ -42,13 +40,11 @@ namespace Sq1.Core.StrategyBase {
 			return this.IndicatorParametersByIndicatorName_reflectedCached;
 		} }
 
-		public	bool IndicatorParameters_reflectionForced;
+		public void  IndicatorParameters_reflectionForced_byClearingCache() {
+				this.indicatorsParameters_reflectedCached = null;
+		}
 				Dictionary<string, IndicatorParameter> indicatorsParameters_reflectedCached;
 		public	Dictionary<string, IndicatorParameter> IndicatorsParameters_reflectedCached { get {
-			if (this.IndicatorParameters_reflectionForced) {
-				this.indicatorsParameters_reflectedCached = null;
-				this.IndicatorParameters_reflectionForced = false;
-			}
 			if (this.indicatorsParameters_reflectedCached != null) {
 				return this.indicatorsParameters_reflectedCached;
 			}
@@ -72,14 +68,15 @@ namespace Sq1.Core.StrategyBase {
 			return this.indicatorsParameters_reflectedCached;
 		} }
 
-		public	bool IndicatorsByName_reflectionForced;
+		public void  IndicatorsByName_reflectionForced_byClearingCache() {
+				this.indicatorsByName_reflectedCached = null;
+		}
 				Dictionary<string, Indicator>	indicatorsByName_reflectedCached;
 		public	Dictionary<string, Indicator>	IndicatorsByName_reflectedCached_primary { get {
-			if (this.IndicatorsByName_reflectionForced) {
-				this.indicatorsByName_reflectedCached = null;
-				this.IndicatorsByName_reflectionForced = false;
-			}
 			if (this.indicatorsByName_reflectedCached != null) {
+				if (this.indicatorsByName_reflectedCached.Count == 0) {
+					int a = 1;
+				}
 				return this.indicatorsByName_reflectedCached;
 			}
 
@@ -88,7 +85,7 @@ namespace Sq1.Core.StrategyBase {
 			Type myChild = this.GetType();
 			//PropertyInfo[] lookingForIndicators = myChild.GetProperties();
 			FieldInfo[] lookingForIndicators = myChild.GetFields(
-															BindingFlags.Public
+														  BindingFlags.Public
 														| BindingFlags.NonPublic
 														| BindingFlags.DeclaredOnly
 														| BindingFlags.Instance
@@ -109,16 +106,17 @@ namespace Sq1.Core.StrategyBase {
 				indicatorReflected.Name = indicatorCandidate.Name;		// after Script.ctor() { this.MAfast = new IndicatorMovingAverageSimple(); } I set this.Mafast.Name="Mafast" instead of "MA";
 				this.indicatorsByName_reflectedCached.Add(indicatorReflected.Name, indicatorReflected);
 			}
+			if (this.indicatorsByName_reflectedCached.Count == 0) {
+				int a = 1;
+			}
 			return this.indicatorsByName_reflectedCached;
 		} }
 
-		public	bool ScriptParametersById_reflectionForced;
+		public void  ScriptParametersById_reflectionForced_byClearingCache() {
+				this.scriptParametersById_reflectedCached = null;
+		}
 				SortedDictionary<int, ScriptParameter> scriptParametersById_reflectedCached;
 		public	SortedDictionary<int, ScriptParameter> ScriptParametersById_reflectedCached_primary { get {
-			if (this.ScriptParametersById_reflectionForced) {
-				this.scriptParametersById_reflectedCached = null;
-				this.ScriptParametersById_reflectionForced = false;
-			}
 			if (this.scriptParametersById_reflectedCached != null) {
 				return this.scriptParametersById_reflectedCached;
 			}
@@ -128,7 +126,7 @@ namespace Sq1.Core.StrategyBase {
 			Type myChild = this.GetType();
 			//PropertyInfo[] lookingForScriptParameters = myChild.GetProperties();
 			FieldInfo[] lookingForScriptParameters = myChild.GetFields(
-															BindingFlags.Public
+														  BindingFlags.Public
 														| BindingFlags.NonPublic
 														| BindingFlags.DeclaredOnly
 														| BindingFlags.Instance
