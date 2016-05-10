@@ -7,18 +7,18 @@ namespace Sq1.Core.Indicators.HelperSeries {
 		public TrueRangeSeries(BarScaleInterval scaleInterval) : base(scaleInterval) {
 		}
 		
-		public double CalculateAppendOwnValueForNewStaticBarFormed(Bar newStaticBar) {
+		public double CalculateOwnValue_onNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(Bar newStaticBar) {
 			if (base.ContainsDate(newStaticBar.DateTimeOpen)) {
 				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]";
 				Assembler.PopupException(msg);
 				return double.NaN;
 			}
-			double thisBarValue = this.CalculateOwnValue(newStaticBar);
+			double thisBarValue = this.calculateOwnValue(newStaticBar);
 			base.Append(newStaticBar.DateTimeOpen, thisBarValue);
 			return thisBarValue;
 		}
 
-		public double CalculateOwnValue(Bar newStaticBar) {
+		double calculateOwnValue(Bar newStaticBar) {
 			//https://www.tradingview.com/stock-charts-support/index.php/Average_True_Range_(ATR)
 			//The True Range is the largest of the following:
 			//1) The Current Period High minus (-) Current Period Low

@@ -347,7 +347,7 @@ namespace Sq1.Gui.Forms {
 				//    this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
 				//}
 			} catch (Exception ex) {
-				string msg = "PopulateCurrentChartOrScriptContext(): ";
+				string msg = "PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(): ";
 				Assembler.PopupException(msg + msig, ex);
 			}
 		}
@@ -405,7 +405,7 @@ namespace Sq1.Gui.Forms {
 					this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingUnsubscribe(reason);
 				}
 			} catch (Exception ex) {
-				string msg = "PopulateCurrentChartOrScriptContext(): ";
+				string msg = "PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(): ";
 				Assembler.PopupException(msg + msig, ex);
 			}
 		}
@@ -478,7 +478,7 @@ namespace Sq1.Gui.Forms {
 			bool willBacktest = !wontBacktest;
 			if (loadNewBars) {
 				string millisElapsedLoadCompress;
-				Bars barsAll = dataSource.BarsLoadAndCompress_nullUnsafe(symbol, context.ScaleInterval, out millisElapsedLoadCompress);
+				Bars barsAll = dataSource.BarsLoadAndCompress(symbol, context.ScaleInterval, out millisElapsedLoadCompress);
 				//string stats = millisElapsedLoadCompress + " //dataSource[" + dataSource.ToString()
 				//	+ "].BarsLoadAndCompress(" + symbol + ", " + context.ScaleInterval + ") ";
 				//Assembler.PopupException(stats, null, false);

@@ -53,7 +53,7 @@ namespace Sq1.Core.DataFeed {
 				Assembler.PopupException("BARS_SAVED_UNCOMPRESSED: " + filePickedUp.BarsLoadAll_nullUnsafe_threadSafe().Count + msig, null, false);
 			} else {
 				string millisElapsedLoadCompress;
-				Bars barsCompressed = dataSourceFrom.BarsLoadAndCompress_nullUnsafe(symbolToCopy, dataSourceTo.ScaleInterval, out millisElapsedLoadCompress);
+				Bars barsCompressed = dataSourceFrom.BarsLoadAndCompress(symbolToCopy, dataSourceTo.ScaleInterval, out millisElapsedLoadCompress);
 				this.BarsRepository.SymbolDataFileAdd(symbolToCopy, true);
 				RepositoryBarsFile fileToSaveTo = this.BarsRepository.DataFileForSymbol(symbolToCopy);
 				int barsSaved = fileToSaveTo.BarsSave_threadSafe(barsCompressed);

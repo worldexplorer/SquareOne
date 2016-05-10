@@ -57,47 +57,40 @@ namespace Sq1.Core.Backtesting {
 				case BidOrAsk.Bid:
 					ret.Bid = priceAligned;
 					ret.TradedAt = BidOrAsk.Bid;
-					modeler.FillAskBasedOnBid_aligned(ret);
+					modeler.FillAsk_basedOnBid_aligned(ret);
 					if (ret.Spread == 0) {
 						string msig = " returned by modeler[" + modeler + "] for quote[" + ret + "]";
 						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GenerateFillAskBasedOnBid()";
 						Assembler.PopupException(msg + msig);
-						#if DEBUG
-						Debugger.Break();
-						#endif
 					}
 					break;
 				case BidOrAsk.Ask:
 					ret.Ask = priceAligned;
 					ret.TradedAt = BidOrAsk.Ask;
-					modeler.FillBidBasedOnAsk_aligned(ret);
+					modeler.FillBid_basedOnAsk_aligned(ret);
 					if (ret.Spread == 0) {
 						string msig = " returned by modeler[" + modeler + "] for quote[" + ret + "]";
 						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GenerateFillAskBasedOnBid()";
 						Assembler.PopupException(msg + msig);
-						#if DEBUG
-						Debugger.Break();
-						#endif
 					}
 					break;
 				case BidOrAsk.UNKNOWN:
-					modeler.GeneratedQuoteFillBidAsk(ret, barSimulated, priceAligned);
+					modeler.GeneratedQuote_fillBidAsk(ret, barSimulated, priceAligned);
 					// I_DONT_KNOW_WHAT_TO_PUT_HERE
 					ret.TradedAt = BidOrAsk.Bid;
 					if (ret.Spread == 0) {
 						string msig = " returned by modeler[" + modeler + "] for quote[" + ret + "]";
 						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GeneratedQuoteFillBidAsk()";
 						Assembler.PopupException(msg + msig);
-						#if DEBUG
-						Debugger.Break();
-						#endif
 					}
 					break;
 			}
 
 			//if (barSimulated.HighLowDistance > 0 && barSimulated.HighLowDistance > ret.Spread) {
-				if (barSimulated.ContainsBidAskForQuoteGenerated(ret, true) == false) {
-					Assembler.PopupException("TEST_EMBEDDED GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #0/2", null, false);
+				if (barSimulated.ContainsBidAsk_forQuoteGenerated(ret, true) == false) {
+					string msg1 = "QUOTE_GENERATED_OUT_OF_BAR";
+					Assembler.PopupException(msg1, null, false);
+					throw new Exception(msg1);
 				}
 			//}
 
@@ -135,7 +128,7 @@ namespace Sq1.Core.Backtesting {
 				return injectedPushed;
 			}
 
-			if (bar2simulate.ContainsBidAskForQuoteGenerated(quoteToReach) == false) {
+			if (bar2simulate.ContainsBidAsk_forQuoteGenerated(quoteToReach) == false) {
 				string msg = "KEEP_ME_HERE_DONT_MAKE_LOOP_UPSTACK_COMPLICATED";
 				return injectedPushed;
 			}
@@ -144,7 +137,7 @@ namespace Sq1.Core.Backtesting {
 			while (closestOnOurWay != null) {
 				//v1 if (bar2simulate.ContainsBidAskForQuoteGenerated(closestOnOurWay) == false) {
 				if (bar2simulate.HighLowDistance > 0 && bar2simulate.HighLowDistance > closestOnOurWay.Spread
-						&& bar2simulate.ContainsBidAskForQuoteGenerated(closestOnOurWay) == false) {
+						&& bar2simulate.ContainsBidAsk_forQuoteGenerated(closestOnOurWay) == false) {
 					string msg = "GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #2/2";
 					Assembler.PopupException(msg);
 					continue;
@@ -243,7 +236,7 @@ namespace Sq1.Core.Backtesting {
 				//	Debugger.Break();
 				//}
 				if (bar2simulate.HighLowDistance > quoteToReach.Spread
-					&& bar2simulate.ContainsBidAskForQuoteGenerated(quoteToReach) == false) {
+					&& bar2simulate.ContainsBidAsk_forQuoteGenerated(quoteToReach) == false) {
 				string msg = "SPREAD_IS_SO_HUGE_THAT_QUOTE_WENT_OUT_OF_BAR_HILO";
 				Assembler.PopupException(msg);
 				}
@@ -292,7 +285,7 @@ namespace Sq1.Core.Backtesting {
 						continue;
 					}
 					if (bar2simulate.HighLowDistance > 0 && bar2simulate.HighLowDistance > quoteToReach.Spread
-							&& bar2simulate.ContainsBidAskForQuoteGenerated(quoteThatWillFillAlert, true) == false) {
+							&& bar2simulate.ContainsBidAsk_forQuoteGenerated(quoteThatWillFillAlert, true) == false) {
 						string msg = "IGNORING_QUOTE_BEYOND_BAR_DISTANCE_WHILE_SCANNING_DOWN";
 						continue;
 					}
@@ -306,7 +299,7 @@ namespace Sq1.Core.Backtesting {
 						continue;
 					}
 					if (bar2simulate.HighLowDistance > 0 && bar2simulate.HighLowDistance > quoteToReach.Spread
-							&& bar2simulate.ContainsBidAskForQuoteGenerated(quoteThatWillFillAlert, true) == false) {
+							&& bar2simulate.ContainsBidAsk_forQuoteGenerated(quoteThatWillFillAlert, true) == false) {
 						string msg = "IGNORING_QUOTE_BEYOND_BAR_DISTANCE_WHILE_SCANNING_UP";
 						continue;
 					}
@@ -432,7 +425,7 @@ namespace Sq1.Core.Backtesting {
 							}
 							ret.Ask = priceScriptAligned;
 							ret.TradedAt = BidOrAsk.Ask;
-							modeler.FillBidBasedOnAsk_aligned(ret);
+							modeler.FillBid_basedOnAsk_aligned(ret);
 							break;
 						case Direction.Short:
 						case Direction.Sell:
@@ -442,7 +435,7 @@ namespace Sq1.Core.Backtesting {
 							}
 							ret.Bid = priceScriptAligned;
 							ret.TradedAt = BidOrAsk.Bid;
-							modeler.FillAskBasedOnBid_aligned(ret);
+							modeler.FillAsk_basedOnBid_aligned(ret);
 							break;
 						default:
 							string msg = "ALERT_LIMIT_DIRECTION_UNKNOWN direction[" + alert.Direction
@@ -460,7 +453,7 @@ namespace Sq1.Core.Backtesting {
 							}
 							ret.Ask = priceScriptAligned;
 							ret.TradedAt = BidOrAsk.Ask;
-							modeler.FillBidBasedOnAsk_aligned(ret);
+							modeler.FillBid_basedOnAsk_aligned(ret);
 							break;
 						case Direction.Short:
 						case Direction.Sell:
@@ -470,7 +463,7 @@ namespace Sq1.Core.Backtesting {
 							}
 							ret.Bid = priceScriptAligned;
 							ret.TradedAt = BidOrAsk.Bid;
-							modeler.FillAskBasedOnBid_aligned(ret);
+							modeler.FillAsk_basedOnBid_aligned(ret);
 							break;
 						default:
 							string msg = "ALERT_STOP_DIRECTION_UNKNOWN direction[" + alert.Direction
@@ -484,13 +477,13 @@ namespace Sq1.Core.Backtesting {
 						case Direction.Cover:
 							ret.Ask = quoteGenerated.Ask;
 							ret.TradedAt = BidOrAsk.Ask;
-							modeler.FillBidBasedOnAsk_aligned(ret);
+							modeler.FillBid_basedOnAsk_aligned(ret);
 							break;
 						case Direction.Short:
 						case Direction.Sell:
 							ret.Bid = quoteGenerated.Bid;
 							ret.TradedAt = BidOrAsk.Bid;
-							modeler.FillAskBasedOnBid_aligned(ret);
+							modeler.FillAsk_basedOnBid_aligned(ret);
 							break;
 						default:
 							string msg = "ALERT_MARKET_DIRECTION_UNKNOWN direction[" + alert.Direction
@@ -511,6 +504,7 @@ namespace Sq1.Core.Backtesting {
 			return ret;
 		}
 		public virtual List<QuoteGenerated> Generate_quotesFromBar_avoidClearing(Bar barSimulated) {
+			string msig = " //Generate_quotesFromBar_avoidClearing()";
 			this.Quotes_generatedForOneBar_amountDependsOnEngineType.Clear();
 
 			double volumeOneQuarterOfBar = barSimulated.Volume / this.BacktestStrokesPerBarAsInt;
@@ -554,6 +548,14 @@ namespace Sq1.Core.Backtesting {
 
 				if (priceAligned != price_withGranularStrokes_requiresAlignement) {
 					string msg = "OUT_OF_BAR_CHECK_IS_WAITING_FOR_US_IN_this.GenerateNewQuote_childrenHelper()";
+				}
+
+				barSimulated.CheckThrowFix_valuesOkay(false);
+				if (barSimulated.ContainsPrice(priceAligned) == false) {
+					string msg = "DECREASE_PRICE_STEP_IN_SYMBOL_INFO_EDITOR[" + barSimulated.Symbol + "]"
+						+ " symbolInfo.PriceDecimals[" + symbolInfo.PriceDecimals + "]";
+					Assembler.PopupException(msg + msig, null, false);
+					throw new Exception(msg);
 				}
 
 				DateTime timeServerForStroke = barOpenOrResume + timespanBarBeginningOffsetCumulative;

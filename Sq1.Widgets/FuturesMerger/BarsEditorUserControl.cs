@@ -112,7 +112,7 @@ namespace Sq1.Widgets.FuturesMerger {
 					return;
 				}
 				string millisElapsed = "";
-				Bars barsOriginal = dataSource_nullUnsafe.BarsLoad_nullUnsafe(symbol, out millisElapsed);
+				Bars barsOriginal = dataSource_nullUnsafe.BarsLoad(symbol, out millisElapsed);
 				if (barsOriginal == null) {
 					string msg = "SYMBOL_DOES_NOT_EXIST_IN_DATASOURCE";
 					Assembler.PopupException(msg + msig, null, false);

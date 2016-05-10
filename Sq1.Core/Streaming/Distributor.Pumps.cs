@@ -103,7 +103,7 @@ namespace Sq1.Core.Streaming {
 			return unpaused;
 		}
 		internal int TwoLiveRealPumps_Stop_forSymbolLivesimTerminatedAborted(string symbolLivesimming, string reasonForStoppingReplacedDistributor) {
-			string msig = " //PumpStop_forSymbolLivesimming(" + symbolLivesimming + "," + reasonForStoppingReplacedDistributor + ") DISTRIBUTOR[" + this.ReasonIwasCreated + "]";
+			string msig = " //TwoLiveRealPumps_Stop_forSymbolLivesimTerminatedAborted(" + symbolLivesimming + "," + reasonForStoppingReplacedDistributor + ") DISTRIBUTOR[" + this.ReasonIwasCreated + "]";
 			string msg = "I_REFUSE_TO_STOP_PUMP ";
 			int stopped = 0;
 			if (this.ChannelsBySymbol.ContainsKey(symbolLivesimming) == false) {

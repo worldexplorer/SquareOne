@@ -24,17 +24,62 @@ namespace Sq1.Indicators {
 		public IndicatorAtrBand(Indicator atr) : base() {
 			base.Name = atr.Name + "band";
 			base.ChartPanelType = ChartPanelType.PanelPrice;
+			base.WillBeCalculated_onEachQuote_defaultNo = true;
+			//base.Decimals = 0;	// "156,752.66" is too long for TooltipPrice
+
+			this.atr = atr;
 			base.LineColor = atr.LineColor;
 			base.LineWidth = atr.LineWidth;
-			base.Decimals = 0;	// "156,752.66" is too long for TooltipPrice
-			this.atr = atr;
-			this.ParamMultiplier = new IndicatorParameter("Multiplier", 1, 0.1, 10, 0.1);
+			//this.atr.OnIndicatorPeriodChanged += new EventHandler(this.atr_OnIndicatorPeriodChanged);
+			this.atr.AddDependentIndicator(this);
+
+			this.ParamMultiplier = new IndicatorParameter("Multiplier", 1, 0.1, 3, 0.1);
 		}
+
+		//void atr_OnIndicatorPeriodChanged(object sender, EventArgs e) {
+		//    this.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();
+		//}
 		
+		public override void BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries() {
+			string msig = " //BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries() EMPTY_CLONE_BARS_AT_BACKTEST_START ";
+			base.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();
+
+			//if (base.ClosesProxyEffective.Count != 0) {
+			//    string msg = "AT_BACKTEST_CONTEXT_INITIALIZE_ClosesProxyEffective.Count_MUST_BE_0";
+			//    Assembler.PopupException(msg);
+			//}
+
+			string state = "";
+			if (this.BandLower == null) {
+				state = "FIRST_BACKTEST_AFTER_APP_RESTART";
+				this.BandLower = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, "BandLower for " + base.Name, base.LineColor);
+				this.BandUpper = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, "BandUpper for " + base.Name, base.LineColor);
+				return;
+			}
+
+			state = "SECOND_AND_FOLLOWING__BOTH_DISCONNECTED_OR_LIVE_BACKTESTS_AFTER_APP_RESTART";
+			//if (this.smaSeries.Period != this.ParamPeriod.ValueCurrentAsInteger) {
+			//    this.smaSeries.Period  = this.ParamPeriod.ValueCurrentAsInteger;
+			//}
+			
+			if (this.BandLower.Count > 0) {
+			    string msg1 = "CLEARING_FOR_NEXT_BACKTEST__OTHERWIZE_sma.CalculateOwnValue()_WILL_COMPLAIN_ON_SAME_VALUES_ALREADY_THERE";
+			    //Assembler.PopupException(msg1, null, false);
+			    this.BandLower.Clear();
+			    this.BandUpper.Clear();
+			}
+
+			//v1 this.smaSeries.AverageFor = base.ClosesProxyEffective;
+			//if (this.smaSeries.AverageFor == base.ClosesProxyEffective) {
+			//    string msg = "MISUSE_UPSTACK__NO_POINT_OF_INVOKING_ME MUST_BE_SAME_AND_ARE smaSeries.AverageFor=base.ClosesProxyEffective";
+			//    Assembler.PopupException(msg + msig);
+			//    return;
+			//}
+			//this.smaSeries.SubstituteBars_withoutRecalculation(base.ClosesProxyEffective);
+			//// NOISY this.checkPopupOnResetAndSync(msig + state);
+		}
 		public override string InitializeBacktest_beforeStarted_checkErrors() {
 			if (this.ParamMultiplier.ValueCurrent <= 0) return "Multiplier[" + this.ParamMultiplier.ValueCurrent + "] MUST BE > 0";
-			this.BandLower = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, "BandLower for " + base.Name, base.LineColor);
-			this.BandUpper = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, "BandLower for " + base.Name, base.LineColor);
 			return null;
 		}
 		
@@ -47,12 +92,10 @@ namespace Sq1.Indicators {
 			}
 			if (addNan == false && newStaticBar.ParentBarsIndex > this.atr.OwnValuesCalculated.Count - 1) {
 				addNan  = true;
-			} else {
-				atrValue = this.atr.OwnValuesCalculated[newStaticBar.ParentBarsIndex];
 			}
-			if (addNan == false && double.IsNaN(atrValue)) {
-				addNan  = true;
-			}
+			//if (addNan == false && double.IsNaN(atrValue)) {
+			//    addNan  = true;
+			//}
 			
 			if (addNan) {
 				//this.bandLower.Append(newStaticBar.DateTimeOpen, double.NaN);
@@ -61,6 +104,8 @@ namespace Sq1.Indicators {
 				this.BandUpper.AppendWithParentBar(newStaticBar.DateTimeOpen, double.NaN, newStaticBar);
 				return double.NaN;
 			}
+
+			atrValue = this.atr.OwnValuesCalculated[newStaticBar.ParentBarsIndex];
 
 			// EPIC_FAIL double lastClose = base.ClosesProxyEffective.StreamingValue;
 			double lastClose = newStaticBar.Close;
@@ -100,13 +145,12 @@ namespace Sq1.Indicators {
 			if (roundingError > newStaticBar.ParentBars.SymbolInfo.PriceStep) {
 			//if (diffCloseToLower != diffCloseToUpper) {
 				//greater than BacktestSpreadModelerPercentageOfMedian(0.01) will make ATRband inconsistent! you'll see in TooltipPrice (Close+ATR != C+Upper) & SPREAD_MODELER_SHOULD_GENERATE_TIGHTER_SPREADS
-				string msg = "INDICATOR_SHOULD_STORE_UPPER_LOWER_ROUNDED_SYMMETRICAL"
+				string msg = "ATR_BAND_ASYMMETRICAL"
 					+ " diffCloseToLower[" + diffCloseToLower + "] != diffCloseToUpper[" + diffCloseToUpper + "]"
 					+ " for bar.Close[" + BandLower.ParentBarsByDate[newStaticBar.DateTimeOpen].Close + "]"
 					+ " " + this.Executor.BacktesterOrLivesimulator.BacktestDataSource.StreamingAsBacktest_nullUnsafe.SpreadModeler.ToString()
 					;
-				int a = 1;
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 			}
 			#endif
 

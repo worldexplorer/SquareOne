@@ -143,6 +143,9 @@
     <Compile Include="DataTypes\SymbolInfo.EventGenerator.cs">
       <DependentUpon>SymbolInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Indicators\Indicator.EventGenerator.cs">
+      <DependentUpon>Indicator.cs</DependentUpon>
+    </Compile>
     <Compile Include="Indicators\Indicator.OverrideMe.cs">
       <DependentUpon>Indicator.cs</DependentUpon>
     </Compile>

@@ -80,17 +80,28 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 		// COPYPASTE from IndicatorParameter.cs END
 		
+			decimal _valueMouseOver_tryingToCatchZero;
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
-		public decimal ValueMouseOver {get; protected set;}
+		//public decimal ValueMouseOver { get; protected set; }
+		public decimal ValueMouseOver {
+			get { return _valueMouseOver_tryingToCatchZero; }
+			protected set {
+				if (value == 0 && this.LabelText.Contains("MA")) {
+					string msg = "FOR_MA_I_SHOULD_NEVER_HAVE_PERDIOD_ZERO remove me when debugging is done";
+					Assembler.PopupException(msg);
+				}
+				_valueMouseOver_tryingToCatchZero = value;
+			}
+		}
 		
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
-		public float FilledPercentageCurrentValue {get; protected set;}
+		public float FilledPercentageCurrentValue { get; protected set; }
 		
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public float FilledPercentageMouseOver { get; protected set; }
 		
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
-		public string LabelText {get; set;}
+		public string LabelText { get; set; }
 
 		//[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		string valueFormat;

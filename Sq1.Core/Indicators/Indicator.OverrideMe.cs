@@ -14,6 +14,10 @@ namespace Sq1.Core.Indicators {
 			this.barsEffective_cached = this.Executor.Bars;
 			this.closesProxyEffective_cached = new DataSeriesProxyBars(this.BarsEffective, this.DataSeriesProxyFor);
 			this.OwnValuesCalculated.Clear();
+
+			foreach (Indicator dependent in this.DependentIndicators) {
+				dependent.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();
+			}
 		}
 		
 		public virtual string ParametersAll_validate() {
@@ -36,10 +40,16 @@ namespace Sq1.Core.Indicators {
 			return null;
 		}
 		public virtual double CalculateOwnValue_onNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(Bar newStaticBar) {
+			#if VERBOSE_STRINGS_SLOW
+			string msig = " //CalculateOwnValue_onNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(" + newStaticBar.ToString() + ")";
+			#else
+			string msig = " //CalculateOwnValue_onNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(compileWith_VERBOSE_STRINGS_SLOW_toSeeDetails)";
+			#endif
+
 			if (this.OwnValuesCalculated.ContainsDate(newStaticBar.DateTimeOpen)) {
 				string msg = "ALREADY_HAVE_VALUE[" + this.OwnValuesCalculated[newStaticBar.DateTimeOpen] + "] on[" + newStaticBar.DateTimeOpen + "]"
 					+ " CLEAR_INDICATOR DONT_INVOKE_ME_TWICE";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg + msig);
 			}
 			return double.NaN;
 		}
@@ -52,32 +62,38 @@ namespace Sq1.Core.Indicators {
 
 
 		bool checkThrow_canRunCalculation_onBarOrQuote(Bar newStaticBar = null, Quote quote = null, bool popup = true) {
+			#if VERBOSE_STRINGS_SLOW
+			string msig = " //checkThrow_canRunCalculation_onBarOrQuote(" + newStaticBar + "," + quote + ")";
+			#else
+			string msig = " //checkThrow_canRunCalculation_onBarOrQuote(compileWith_VERBOSE_STRINGS_SLOW_toSeeDetails)";
+			#endif
+
 			bool ret = false;
 			if (this.OwnValuesCalculated == null) {
 				if (popup) {
 					string msg = "HAPPENS_DURING_REBACKTEST_AFTER_ABORTION this.OwnValuesCalculated=null " + this.ToString();
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig);
 				}
 				return ret;
 			}
 			if (string.IsNullOrEmpty(this.IndicatorErrorsOnBacktestStarting) == false) {
 				if (popup) {
 					string msg = "I_REFUSE_TO_CALCULATE_DUE_TO_PREVIOUS_ERRORS Indicator.OnNewStaticBarFormed(" + newStaticBar + ")" + this.ToString();
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig);
 				}
 				return ret;
 			}
 			if (this.Executor == null) {
 				if (popup) {
 					string msg = "NO_EXECUTOR_FOR_INDICATOR this.Executor=null" + this.ToString();
-					Assembler.PopupException(msg, null, false);
+					Assembler.PopupException(msg + msig, null, false);
 				}
 				return ret;
 			}
 			if (this.ClosesProxyEffective == null) {
 				if (popup) {
 					string msg = "NO_BARS_FOR_INDICATOR this.ClosesProxyEffective=null" + this.ToString();
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig);
 				}
 				return ret;
 			}
@@ -101,7 +117,12 @@ namespace Sq1.Core.Indicators {
 			return ret;
 		}
 		public virtual void OnBarStaticLastFormed_whileStreamingBar_withOneQuote_alreadyAppended(Bar newStaticBar) {
-			string msig = " //OnNewStaticBarFormed(" + newStaticBar.ToString() + ")";
+			#if VERBOSE_STRINGS_SLOW
+			string msig = " //OnBarStaticLastFormed_whileStreamingBar_withOneQuote_alreadyAppended(" + newStaticBar.ToString() + ")";
+			#else
+			string msig = " //OnBarStaticLastFormed_whileStreamingBar_withOneQuote_alreadyAppended(compileWith_VERBOSE_STRINGS_SLOW_toSeeDetails)";
+			#endif
+
 			bool canRunCalculation = this.checkThrow_canRunCalculation_onBarOrQuote(newStaticBar, null);
 			if (canRunCalculation == false) {
 				//this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, double.NegativeInfinity);
@@ -141,14 +162,18 @@ namespace Sq1.Core.Indicators {
 				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
+
+			foreach (Indicator dependent in this.DependentIndicators) {
+				dependent.OnBarStaticLastFormed_whileStreamingBar_withOneQuote_alreadyAppended(newStaticBar);
+			}
 		}
 		public virtual void OnNewQuote(Quote newStreamingQuote) {
-			if (this.AllowsOnNewQuote == false) return;
+			if (this.WillBeCalculated_onEachQuote_defaultNo == false) return;
 
 			#if VERBOSE_STRINGS_SLOW
 			string msig = " //OnNewQuote(" + newStreamingQuote.ToString() + ")";
 			#else
-			string msig = " //OnNewQuote()";
+			string msig = " //OnNewQuote(compileWith_VERBOSE_STRINGS_SLOW_toSeeDetails)";
 			#endif
 			
 			bool canRunCalculation = this.checkThrow_canRunCalculation_onBarOrQuote(null, newStreamingQuote);

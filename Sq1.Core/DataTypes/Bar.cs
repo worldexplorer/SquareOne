@@ -12,11 +12,12 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	DateTime			DateTime_nextBarOpen_unconditional		{ get; protected set; }
 		[JsonProperty]	public	DateTime			DateTime_previousBarOpen_unconditional	{ get; protected set; }
 		
-		[JsonProperty]	public	double	Open;
-		[JsonProperty]	public	double	High;
-		[JsonProperty]	public	double	Low;
-		[JsonProperty]	public	double	Close;
-		[JsonProperty]	public	double	Volume;
+		[JsonProperty]	public	double	Open		{ get; protected set; }
+		[JsonProperty]	public	double	High		{ get; protected set; }
+		[JsonProperty]	public	double	Low			{ get; protected set; }
+		[JsonProperty]	public	double	Close		{ get; protected set; }
+		[JsonProperty]	public	double	Volume		{ get; protected set; }
+		[JsonIgnore]	public	bool	Fixed_resavingRequired { get; private set; }
 
 		[JsonIgnore]	public	Bars	ParentBars			{ get; protected set; }
 		[JsonIgnore]	public	int		ParentBarsIndex		{ get; protected set; }
@@ -67,12 +68,12 @@ namespace Sq1.Core.DataTypes {
 		}
 		public Bar(string symbol, BarScaleInterval scaleInterval, DateTime dateTimeOpen, double firstPriceOfBar, double firstVolumeOfBar, SymbolInfo symbolInfo)
 						: this(symbol, scaleInterval, dateTimeOpen) {
-			this.SetSame_OHLCValigned(firstPriceOfBar, firstVolumeOfBar, symbolInfo);
+			this.SetSame_OHLCV_aligned(firstPriceOfBar, firstVolumeOfBar, symbolInfo);
 		}
-		public void SetSame_OHLCValigned(double firstPriceOfBar, double firstVolumeOfBar, SymbolInfo symbolInfo) {
-			this.SetOHLCValigned(firstPriceOfBar, firstPriceOfBar, firstPriceOfBar, firstPriceOfBar, firstVolumeOfBar, symbolInfo);
+		public void SetSame_OHLCV_aligned(double firstPriceOfBar, double firstVolumeOfBar, SymbolInfo symbolInfo) {
+			this.Set_OHLCV_aligned(firstPriceOfBar, firstPriceOfBar, firstPriceOfBar, firstPriceOfBar, firstVolumeOfBar, symbolInfo);
 		}
-		public void SetOHLCValigned(double open, double high, double low, double close, double volume, SymbolInfo symbolInfo = null) {
+		public void Set_OHLCV_aligned(double open, double high, double low, double close, double volume, SymbolInfo symbolInfo = null) {
 			this.Open = open;
 			this.High = high;
 			this.Low = low;
@@ -94,6 +95,15 @@ namespace Sq1.Core.DataTypes {
 				string msg = "PARENT_BARS_NOT_ACCESSIBLE OHLC_IS_NOT_ALIGNED_TRY_TO_AVOID_IT";
 				//Assembler.PopupException(msg, null);
 			}
+			this.CheckThrowFix_valuesOkay();
+		}
+		public void Set_OpenAligned_forPseudoBar_noChecks(double firstPriceOfBar, SymbolInfo symbolInfo) {
+			if (symbolInfo != null) {
+				this.Open	= Math.Round(this.Open,		symbolInfo.PriceDecimals);
+			} else {
+				string msg = "PARENT_BARS_NOT_ACCESSIBLE OHLC_IS_NOT_ALIGNED_TRY_TO_AVOID_IT";
+				//Assembler.PopupException(msg, null);
+			}
 		}
 		public void AbsorbOHLCVfrom(Bar bar) {
 			SymbolInfo symbolInfo = null;
@@ -110,7 +120,7 @@ namespace Sq1.Core.DataTypes {
 					;
 				Assembler.PopupException(msg, null);
 			}
-			this.SetOHLCValigned(bar.Open, bar.High, bar.Low, bar.Close, bar.Volume, symbolInfo);
+			this.Set_OHLCV_aligned(bar.Open, bar.High, bar.Low, bar.Close, bar.Volume, symbolInfo);
 		}
 		public void SetParent_forBackwardUpdate(Bars parentBars, int parentBarsIndex) {
 			if (this.ParentBars == parentBars) {
@@ -184,29 +194,71 @@ namespace Sq1.Core.DataTypes {
 			if (throwError) throw new Exception(msg);
 			return msg;
 		}
-		public string CheckThrow_valuesOkay(bool throwError = true) {
+		public string CheckThrowFix_valuesOkay(bool throwError = true, bool tryToFix = true) {
 			string msg = "";
 
 			msg = this.CheckThrow_DateOHLCV_validForSaving(throwError);
-
 			if (string.IsNullOrEmpty(msg) == false) {
-				if (this.Open <= 0)			msg += "Open[" + this.Open + "]<=0 ";
-				if (this.High <= 0)			msg += "High[" + this.High + "]<=0 ";
-				if (this.Low <= 0)			msg += "Low[" + this.Low + "]<=0 ";
-				if (this.Close <= 0)		msg += "Close[" + this.Close + "]<=0 ";
-				//if (this.Volume <= 0)		msg += "Volume[" + this.Volume + "]<=0 ";
+				if (throwError) throw new Exception(msg);
+				return msg;
+			}
+
+			if (this.Open <= 0)			msg += "Open[" + this.Open + "]<=0 ";
+			if (this.High <= 0)			msg += "High[" + this.High + "]<=0 ";
+			if (this.Low <= 0)			msg += "Low[" + this.Low + "]<=0 ";
+			if (this.Close <= 0)		msg += "Close[" + this.Close + "]<=0 ";
+			//if (this.Volume <= 0)		msg += "Volume[" + this.Volume + "]<=0 ";
 			
-				if (this.High < this.Low)	msg += "High[" + this.High + "]<Low[" + this.High + "] ";
-				if (this.Low <= 0)			msg += "Low[" + this.Low + "]<=0 ";
-			
-				if (this.Close > this.High)	msg += "Close[" + this.Close + "]>High[" + this.High + "] ";
-				if (this.Close < this.Low)	msg += "Close[" + this.Close + "]<Low[" + this.High + "] ";
-			
-				if (this.Open > this.High)	msg += "Open[" + this.Open + "]>High[" + this.High + "] ";
-				if (this.Open < this.Low)	msg += "Open[" + this.Open + "]<Low[" + this.High + "] ";
+			if (this.High < this.Low)	{
+				string err = "High[" + this.High + "]<Low[" + this.High + "] ";
+				if (tryToFix) {
+					double tmp = this.High;
+					this.High = this.Low;
+					this.Low = this.High;
+					err = "SWAPPED:" + err;
+					this.Fixed_resavingRequired = true;
+				}
+				msg += err;
+			}
+			if (this.Close > this.High)	{
+				string err = "Close[" + this.Close + "]>High[" + this.High + "] ";
+				if (tryToFix) {
+					this.Close = this.High;
+					err = "FIXED:CLOSE=HIGH:" + err;
+					this.Fixed_resavingRequired = true;
+				}
+				msg += err;
+			}
+			if (this.Close < this.Low) {
+				string err = "Close[" + this.Close + "]<Low[" + this.High + "] ";
+				if (tryToFix) {
+					this.Close = this.Low;
+					err = "FIXED:CLOSE=LOW:" + err;
+					this.Fixed_resavingRequired = true;
+				}
+				msg += err;
+			}
+			if (this.Open > this.High) {
+				string err = "Open[" + this.Open + "]>High[" + this.High + "] ";
+				if (tryToFix) {
+					this.Open = this.High;
+					err = "FIXED:OPEN=HIGH:" + err;
+					this.Fixed_resavingRequired = true;
+				}
+				msg += err;
+			}
+			if (this.Open < this.Low) {
+				string err = "Open[" + this.Open + "]<Low[" + this.High + "] ";
+				if (tryToFix) {
+					this.Open = this.Low;
+					err = "FIXED:OPEN=LOW:" + err;
+					this.Fixed_resavingRequired = true;
+				}
+				msg += err;
 			}
 			if (string.IsNullOrEmpty(msg)) return msg;
-			if (throwError) throw new Exception(msg);
+			if (tryToFix == false) throw new Exception(msg);
+			Assembler.PopupException(msg + " " + this.ToString());
 			return msg;
 		}
 		public bool HasSameDOHLCVas(Bar bar, string barIdent, string thisIdent, ref string errRef) {
@@ -498,7 +550,7 @@ namespace Sq1.Core.DataTypes {
 			if (entryFillPrice > this.High) return false;
 			return true;
 		}
-		public bool ContainsBidAskForQuoteGenerated(Quote quote, bool feedingGarbageAndIknowItDontBreak = false) {
+		public bool ContainsBidAsk_forQuoteGenerated(Quote quote, bool feedingGarbageAndIknowItDontBreak = false) {
 			if (this.HighLowDistance == 0) {
 				if (quote.Bid > this.Open || quote.Ask < this.Open) {
 					string msg = "FIRST_QUOTE_OF_THE_BAR MUST_HAVE_BID_OR_ASK_EQUALS_TO_OPEN(WHY_NOT_MORE_ELABORATE?)"

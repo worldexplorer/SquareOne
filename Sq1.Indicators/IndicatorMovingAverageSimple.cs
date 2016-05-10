@@ -84,7 +84,7 @@ namespace Sq1.Indicators {
 			// WHATS_THE_POINT? this.checkPopupOnResetAndSync(msig);
 		}
 		public override void BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries() {
-			string msig = " //BacktestStarting_substituteBarsEffectiveProxy_propagatePeriodsToHelperSeries() EMPTY_CLONE_BARS_AT_BACKTEST_START ";
+			string msig = " //BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries() EMPTY_CLONE_BARS_AT_BACKTEST_START ";
 			base.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();
 
 			//if (base.ClosesProxyEffective.Count != 0) {
@@ -163,7 +163,7 @@ namespace Sq1.Indicators {
 			}
 			#endregion
 
-			ret = this.smaSeries.CalculateOwnValue_append_forNewStaticBarFormed_NanUnsafe(newStaticBar, base.AllowsOnNewQuote);
+			ret = this.smaSeries.CalculateOwnValue_append_forNewStaticBarFormed_NanUnsafe(newStaticBar, base.WillBeCalculated_onEachQuote_defaultNo);
 
 			#region DELETEME_AFTER_COMPATIBILITY_TEST
 			#if TEST_COMPATIBILITY

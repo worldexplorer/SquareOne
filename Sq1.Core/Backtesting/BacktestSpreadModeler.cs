@@ -5,9 +5,9 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Backtesting {
 	public abstract class BacktestSpreadModeler {
-		public abstract double	FillBidAskSymmetrically(QuoteGenerated quote, double medianPrice, Bar barSimulated);
-		public abstract void	FillAskBasedOnBid_aligned(QuoteGenerated quote);
-		public abstract void	FillBidBasedOnAsk_aligned(QuoteGenerated quote);
+		public abstract double	FillBidAsk_symmetrically(QuoteGenerated quote, double medianPrice, Bar barSimulated);
+		public abstract void	FillAsk_basedOnBid_aligned(QuoteGenerated quote);
+		public abstract void	FillBid_basedOnAsk_aligned(QuoteGenerated quote);
 
 		public bool AlignToPriceLevel;
 		
@@ -15,7 +15,7 @@ namespace Sq1.Core.Backtesting {
 			AlignToPriceLevel = alignToPriceLevel;
 		}
 		
-		public void GeneratedQuoteFillBidAsk(QuoteGenerated quote, Bar barSimulated, double priceAligned_fromBar_forSymmetricFill_atOpenOrClose = -1) {
+		public void GeneratedQuote_fillBidAsk(QuoteGenerated quote, Bar barSimulated, double priceAligned_fromBar_forSymmetricFill_atOpenOrClose = -1) {
 			if (quote == null) {
 				string msg = "I_REFUSE_TO_GENERATE_BIDASK QUOTE_NULL";
 				Assembler.PopupException(msg);
@@ -33,11 +33,13 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			if (double.IsNaN(quote.Bid) && double.IsNaN(quote.Ask)) {
-				string msg = "WARNING_IMPRECISE_QUOTE_MODELING: at Open or Close stroke when I don't have to keep"
-					+ " bar boundaries very precise; check generateNewQuoteChildrenHelper() for BidOrAsk=UNKNOWN";
+				string msg = "quote.Bid[NaN].Ask[NaN] HAPPENS_WHEN_GenerateNewQuote_childrenHelper(BidAsk.UNKNOWN)"
+					//+ " WARNING_IMPRECISE_QUOTE_MODELING: at Open or Close stroke when I don't have to keep"
+					//+ " bar boundaries very precise; check generateNewQuoteChildrenHelper() for BidOrAsk=UNKNOWN"
+					;
 				//Assembler.PopupException(msg);
 				
-				double spreadAligned = this.FillBidAskSymmetrically(quote, priceAligned_fromBar_forSymmetricFill_atOpenOrClose, barSimulated);
+				double spreadAligned = this.FillBidAsk_symmetrically(quote, priceAligned_fromBar_forSymmetricFill_atOpenOrClose, barSimulated);
 				
 				// QUOTEGEN_PROBLEM#2 : at Open/Close, when they are == to Low/High, the Symmetrical quote will go beoynd bar boundaries => MarketSim will freak out
 				if (quote.Ask > barSimulated.High) {
@@ -63,15 +65,15 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			if (double.IsNaN(quote.Bid)) {
-				this.FillAskBasedOnBid_aligned(quote);
+				this.FillAsk_basedOnBid_aligned(quote);
 				return;
 			}
 			if (double.IsNaN(quote.Ask)) {
-				this.FillBidBasedOnAsk_aligned(quote);
+				this.FillBid_basedOnAsk_aligned(quote);
 				return;
 			}			
 		}
-		protected void AlignBidAskToPriceLevel(QuoteGenerated quote, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.DontRoundPrintLowerUpper,
+		protected void AlignBidAsk_toPriceLevel(QuoteGenerated quote, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.DontRoundPrintLowerUpper,
 											double spreadAlignedToMaintain = -1, double dontGoBeyond = -1) {
 			string msig = " " + this.GetType().Name + ".AlignBidAskToPriceLevel(" + quote.ToString() + ")";
 			try {

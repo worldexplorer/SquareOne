@@ -384,7 +384,8 @@ namespace Sq1.Gui {
 
 			// CHANGING_SLIDERS_ALREADY_AFFECTS_SCRIPT_AND_INDICATOR_PARAMS_KOZ_THERE_ARE_NO_CLONES_ANYMORE
 			// SAME_OBJECTS_BETWEEN_SLIDER_AND_CURRENT_SCRIPT_CONTEXT_BUT_SCRIPT_HAS_ITS_OWN_ACCESSIBLE_THROUGH_REFLECTED
-			if (strategyToSaveAndRun.ScriptContextCurrent.BacktestOnSelectorsChange == false) {
+			bool dontRecalculate = indicatorParamChangedArg.IndicatorParameter is ScriptParameter;
+			if (dontRecalculate == false && strategyToSaveAndRun.ScriptContextCurrent.BacktestOnSelectorsChange == false) {
 				strategyToSaveAndRun.RecalculateIndicator(indicatorParamChangedArg.IndicatorParameter);
 			}
 

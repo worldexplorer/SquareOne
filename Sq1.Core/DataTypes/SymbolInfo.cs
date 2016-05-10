@@ -326,15 +326,15 @@ namespace Sq1.Core.DataTypes {
 		}
 		#else
 		public double AlignToPriceLevel(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest) {
-			decimal integefier = Convert.ToDecimal(this.PriceStepFromDde);
-			if (integefier == -1) {
-				integefier = Convert.ToDecimal(Math.Pow(10, this.PriceDecimals));	// 10 ^ 2 = 100;
-				//integefier = this.PriceStepFromDecimal;
-			}
-			if (integefier < 0) {
+			double decimals = this.PriceDecimals;	//this.PriceStep);
+			//if (integefier == -1) {
+			//    integefier = Convert.ToDecimal(this.PriceDecimals);		//integefier = this.PriceStepFromDecimal;
+			//}
+			if (decimals < 0) {
 				throw new ArithmeticException();
 			}
-			decimal ret = (decimal) price * integefier; 							// 90.145 => 9014.5
+			decimal integefier = Convert.ToDecimal(Math.Pow(10, decimals));	// 10 ^ 2 = 100; 10 ^ 0.01
+			decimal ret = (decimal) price * integefier; 					// 90.145 => 9014.5
 			switch (upOrDown) {
 				case PriceLevelRoundingMode.RoundDown:		ret = Math.Floor(ret);		break;		// 9014.5 => 9014.0
 				case PriceLevelRoundingMode.RoundUp:		ret = Math.Ceiling(ret);	break;		// 9014.5 => 9015.0
@@ -350,11 +350,11 @@ namespace Sq1.Core.DataTypes {
 			}
 			ret /= integefier;														// 9015.0 => 90.15
 			//ret = Math.Round(ret, integefier);
-			if (ret < integefier) {
-				ret = integefier;
-			} else {
-				ret = Math.Round(ret, (int)integefier);	// DIRTY
-			}
+			//if (ret < integefier) {
+			//    ret = integefier;
+			//} else {
+			//    ret = Math.Round(ret, (int)integefier);	// DIRTY
+			//}
 			return Convert.ToDouble(ret);
 		}
 		#endif

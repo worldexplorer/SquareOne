@@ -89,15 +89,18 @@ namespace Sq1.Core.Streaming {
 		public virtual bool ConsumerBarSubscribe_solidifiers(string symbol, BarScaleInterval scaleInterval,
 							STREAMING_CONSUMER_CHILD barConsumer, bool quotePumpSeparatePushingThreadEnabled) { lock (this.lockConsumersBySymbol) {
 			if (barConsumer is StreamingConsumerSolidifier) {
-				string msg = "StreamingSolidifier_DOESNT_SUPPORT_ConsumerBarsToAppendInto";
+				string msg = "StreamingSolidifier_DOESNT_SUPPORT_ConsumerBarsToAppendInto BUT_I_HAVE_TO_SUBSCRIBE_IT_HERE";
 			} else {
 				Bar barStaticLast = barConsumer.ConsumerBars_toAppendInto.BarStaticLast_nullUnsafe;
 				bool isLive				= barConsumer			is StreamingConsumerChart;
 				bool isBacktest			= barConsumer			is BacktestStreamingConsumer;
 				bool isLivesimDefault	= this.StreamingAdapter is LivesimStreamingDefault;
 				if (barStaticLast == null) {
-					if (isLivesimDefault == false && isBacktest == false) {	// isBacktest,isLivesim are magically fine; where did you notice the problem?
-						string msg = "YOUR_BAR_CONSUMER_SHOULD_HAVE_BarStaticLast_NON_NULL"
+					if (isLivesimDefault || isBacktest) {
+						// isLivesim,isBacktest are magically fine; where did you notice the problem?
+					} else {
+						string msg = "BARFILE_WITH_ZERO_BARS??? [" + barConsumer.SymbolIntervalScaleDSN_imConsuming + "]"
+							+ " YOUR_BAR_CONSUMER_SHOULD_HAVE_BarStaticLast_NON_NULL"
 							+ " MOST_LIKELY_YOU_WILL_GET_MESSAGE__THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
 						Assembler.PopupException(msg, null, false);
 					}
@@ -153,15 +156,17 @@ namespace Sq1.Core.Streaming {
 		public virtual bool ConsumerLevelTwoFrozenSubscribe_solidifiers(string symbol, BarScaleInterval scaleInterval,
 							STREAMING_CONSUMER_CHILD levelTwoFrozenConsumer, bool quotePumpSeparatePushingThreadEnabled) { lock (this.lockConsumersBySymbol) {
 			if (levelTwoFrozenConsumer is StreamingConsumerSolidifier) {
-				string msg = "StreamingSolidifier_DOESNT_SUPPORT_ConsumerLevelTwoFrozensToAppendInto";
+				string msg = "StreamingSolidifier_DOESNT_SUPPORT_ConsumerLevelTwoFrozensToAppendInto BUT_I_HAVE_TO_SUBSCRIBE_IT_HERE";
 			} else {
 				Bar barStaticLast = levelTwoFrozenConsumer.ConsumerBars_toAppendInto.BarStaticLast_nullUnsafe;
 				bool isLive				= levelTwoFrozenConsumer	is StreamingConsumerChart;
 				bool isBacktest			= levelTwoFrozenConsumer	is BacktestStreamingConsumer;
 				bool isLivesimDefault	= this.StreamingAdapter is LivesimStreamingDefault;
 				if (barStaticLast == null) {
-					if (isLivesimDefault == false) {	// isBacktest,isLivesim are magically fine; where did you notice the problem?
-						string msg = "YOUR_BAR_CONSUMER_SHOULD_HAVE_LevelTwoFrozenStaticLast_NON_NULL"
+					if (isLivesimDefault) {	// isBacktest,isLivesim are magically fine; where did you notice the problem?
+					} else {
+						string msg = "BARFILE_HAS_ZERO_BARS_INSIDE? [" + levelTwoFrozenConsumer.SymbolIntervalScaleDSN_imConsuming + "]"
+							+ " YOUR_BAR_CONSUMER_SHOULD_HAVE_LevelTwoFrozenStaticLast_NON_NULL"
 							+ " MOST_LIKELY_YOU_WILL_GET_MESSAGE__THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
 						Assembler.PopupException(msg, null, false);
 					}

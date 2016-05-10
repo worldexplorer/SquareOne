@@ -68,8 +68,8 @@ namespace Sq1.Core.Broker {
 					if (this.UpstreamConnectedOnAppRestart == this.UpstreamConnected) return;
 					this.UpstreamConnectedOnAppRestart = this.UpstreamConnected;		// you can override this.UpstreamConnectedOnAppRestart and keep it FALSE to avoid DS serialization
 					if (this.DataSource == null) {
-						string msg = "SHOULD_NEVER_HAPPEN DataSource=null for streaming[" + this + "]";
-						Assembler.PopupException(msg);
+						string msg = "DataSource=null_WHEN_QUIK_FOLDER_NOT_FOUND for broker[" + this + "]";
+						Assembler.PopupException(msg, null, false);
 						return;
 					}
 					Assembler.InstanceInitialized.RepositoryJsonDataSources.SerializeSingle(this.DataSource);

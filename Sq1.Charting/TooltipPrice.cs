@@ -43,7 +43,8 @@ namespace Sq1.Charting {
 			//this.toolTipAlerts.SetToolTip(this.lnkAlertsVal, alertsAsString);
 			this.lnkAlertsVal.Text = alersForBar.Count + "";
 
-			this.IndicatorLabelsBuild(barToPopulate, indicators);
+			if (indicators == null) return;
+			this.indicatorLabelsBuild(barToPopulate, indicators);
 		}
 		
 		
@@ -51,14 +52,14 @@ namespace Sq1.Charting {
 		int spacingVerticalBeforeAnyDynamicIndicatorLabels = 5;
 		int lineIncrement = 12;
 		string dynamicItemPrefix = "lblIndicator_";
-		public void IndicatorLabelsBuild(Bar barToPopulate, Dictionary<string, Indicator> indicators) {
+		void indicatorLabelsBuild(Bar barToPopulate, Dictionary<string, Indicator> indicators) {
 			if (this.initialStaticHeight == 0) this.initialStaticHeight = this.Size.Height;
 			this.SuspendLayout();
-			this.IndicatorLabelsRemoveDecreaseTooltipHeight();
-			this.IndicatorLabelsBuildIncreaseTooltipHeight(barToPopulate, indicators);
+			this.indicatorLabelsRemove_decreaseTooltipHeight();
+			this.indicatorLabelsBuild_increaseTooltipHeight(barToPopulate, indicators);
 			this.ResumeLayout(true);
 		}
-		public void IndicatorLabelsBuildIncreaseTooltipHeight(Bar barToPopulate, Dictionary<string, Indicator> indicators) {
+		void indicatorLabelsBuild_increaseTooltipHeight(Bar barToPopulate, Dictionary<string, Indicator> indicators) {
 			Label ethalonName = this.lblVolume;
 			Label ethalonValue = this.lblVolumeVal;
 			
@@ -108,7 +109,7 @@ namespace Sq1.Charting {
 			}
 		}
 		
-		public void IndicatorLabelsRemoveDecreaseTooltipHeight() {
+		void indicatorLabelsRemove_decreaseTooltipHeight() {
 			foreach (Control item in this.Controls) {
 				//Label label = item as Label;
 				//if (label == null) continue;

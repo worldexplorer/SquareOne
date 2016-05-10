@@ -228,7 +228,7 @@ namespace Sq1.Core.Execution {
 						return true;
 					}
 
-					bool containsBidAsk = this.FilledBarSnapshotFrozenAtFill.ContainsBidAskForQuoteGenerated(this.QuoteFilledThisAlertDuringBacktestNotLive);
+					bool containsBidAsk = this.FilledBarSnapshotFrozenAtFill.ContainsBidAsk_forQuoteGenerated(this.QuoteFilledThisAlertDuringBacktestNotLive);
 					if (!containsBidAsk && fillAtSlimBarIsWithinSpread) {
 						#if DEBUG
 						Debugger.Break();

@@ -57,12 +57,15 @@ namespace Sq1.Widgets.SteppingSlider {
 			
 			this.FilledPercentageMouseOver = 100 * ((float)mouseRange / range);
 
-			if (leftMouseButtonHeldDown) {
+			if (this.leftMouseButtonHeldDown) {
 				if (this.ValueCurrent != this.ValueMouseOver) {
 					string msg = "this.ValueCurrent[" + this.ValueCurrent + "] != this.ValueMouseOver[" + this.ValueMouseOver + "]";
 					//Assembler.PopupException(msg);
 					this.ValueCurrent = this.ValueMouseOver;
 				}
+			}
+			if (this.ValueMouseOver == 0) {
+				int a = 1;
 			}
 
 			base.Invalidate();
@@ -86,8 +89,8 @@ namespace Sq1.Widgets.SteppingSlider {
 		}		
 		protected override void OnMouseLeave(EventArgs e) {
 			base.OnMouseLeave(e);
-			if (rightClickShouldKeepMouseOver == true) {
-				rightClickShouldKeepMouseOver = false;
+			if (this.rightClickShouldKeepMouseOver == true) {
+				this.rightClickShouldKeepMouseOver = false;
 				return;
 			}
 			this.mouseOver = false;
@@ -98,9 +101,9 @@ namespace Sq1.Widgets.SteppingSlider {
 		protected override void OnMouseDown(MouseEventArgs e) {
 			base.OnMouseDown(e);
 			if (e.Button == MouseButtons.Left) {
-				leftMouseButtonHeldDown = true;	// I_HATE_HACKING_F_WINDOWS_FORMS
+				this.leftMouseButtonHeldDown = true;	// I_HATE_HACKING_F_WINDOWS_FORMS
 			}
-			if (this.ValueCurrent != this.ValueMouseOver && leftMouseButtonHeldDown) {
+			if (this.ValueCurrent != this.ValueMouseOver && this.leftMouseButtonHeldDown) {
 				this.ValueCurrent  = this.ValueMouseOver;
 			}
 		}
@@ -108,10 +111,10 @@ namespace Sq1.Widgets.SteppingSlider {
 		protected override void OnMouseUp(MouseEventArgs e) {
 			base.OnMouseUp(e);
 			if (e.Button == MouseButtons.Left) {
-				leftMouseButtonHeldDown = false; 
+				this.leftMouseButtonHeldDown = false;
 			}
 			if (e.Button != MouseButtons.Left) {
-				rightClickShouldKeepMouseOver = true;
+				this.rightClickShouldKeepMouseOver = true;
 				return;
 			}
 			//this.FilledPercentageCurrentValue = this.FilledPercentageMouseOver;

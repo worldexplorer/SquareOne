@@ -86,7 +86,7 @@ namespace Sq1.Core.Streaming {
 						msg = "INITIALIZED_OPEN_WITH_NAN_FROM_quoteClone.LastDealPrice " + msg;
 					}
 					Assembler.PopupException(msg, null, false);
-					this.PseudoStreamingBar_unattached.Open = quoteCloneUU.TradedPrice;
+					this.PseudoStreamingBar_unattached.Set_OpenAligned_forPseudoBar_noChecks(quoteCloneUU.TradedPrice, this.symbolInfo);
 				}
 				if (quoteCloneUU.Size <= 0) {
 					string msg = "QUOTE_WITHOUT_SIZE_SHOULD_NOT_GO_TO_BAR";

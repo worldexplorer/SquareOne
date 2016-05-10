@@ -112,6 +112,7 @@ namespace Sq1.Core.Backtesting {
 				}
 
 				Bar bar = this.BarsOriginal[barNo];
+				bar.CheckThrowFix_valuesOkay();
 				this.generateQuotes_forBar_push(bar);
 				this.BarsSimulatedSoFar++;
 				if (this.BarsSimulatedSoFar % repaintableChunk == 0) {
@@ -410,7 +411,7 @@ namespace Sq1.Core.Backtesting {
 				#endif
 
 				#if DEBUG //TEST_EMBEDDED GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #1/2
-				if (bar2simulate.ContainsBidAskForQuoteGenerated(quote, true) == false) {
+				if (bar2simulate.ContainsBidAsk_forQuoteGenerated(quote, true) == false) {
 					Debugger.Break();
 				}
 				#endif

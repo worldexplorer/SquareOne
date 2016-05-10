@@ -11,7 +11,7 @@ namespace Sq1.Core.Backtesting {
 			Percentage = percentage;
 			PartOfPrice = percentage / 100;
 		}
-		public override double FillBidAskSymmetrically(QuoteGenerated quote, double openOrClosePrice, Bar barSimulated) {
+		public override double FillBidAsk_symmetrically(QuoteGenerated quote, double openOrClosePrice, Bar barSimulated) {
 			string msig = " " + this.GetType().Name + ".GenerateFillBidAskSymmetrically(" + quote.ToString() + ")";
 			SymbolInfo symbolInfo;
 			try {
@@ -53,7 +53,7 @@ namespace Sq1.Core.Backtesting {
 				}
 			}
 
-			this.AlignBidAskToPriceLevel(quote, PriceLevelRoundingMode.RoundToClosest, spreadAligned);
+			this.AlignBidAsk_toPriceLevel(quote, PriceLevelRoundingMode.RoundToClosest, spreadAligned);
 			if (double.IsNaN(quote.Spread)) {
 				string msg = "SPREAD_MUST_NOT_BE_NAN for " + quote;
 				Assembler.PopupException(msg);
@@ -64,7 +64,7 @@ namespace Sq1.Core.Backtesting {
 			}
 			return spreadAligned;
 		}
-		public override void FillAskBasedOnBid_aligned(QuoteGenerated quote) {
+		public override void FillAsk_basedOnBid_aligned(QuoteGenerated quote) {
 			string msig = " " + this.GetType().Name + ".GenerateFillBidAskSymmetrically(" + quote.ToString() + ")";
 			SymbolInfo symbolInfo;
 			try {
@@ -88,7 +88,7 @@ namespace Sq1.Core.Backtesting {
 			//base.AlignBidAskToPriceLevel(quote, PriceLevelRoundingMode.RoundUp, spreadAligned);
 			//if (quote.Spread == 0) Debugger.Break();
 		}
-		public override void FillBidBasedOnAsk_aligned(QuoteGenerated quote) {
+		public override void FillBid_basedOnAsk_aligned(QuoteGenerated quote) {
 			string msig = " " + this.GetType().Name + ".GenerateFillBidAskSymmetrically(" + quote.ToString() + ")";
 			SymbolInfo symbolInfo;
 			try {

@@ -48,13 +48,13 @@ namespace Sq1.Core.Indicators {
 
 			if (bar.IsBarStaticLast && this.Executor.IsStreamingTriggeringScript == false) {
 				string msg = "DONT_WANT_TO_HACK_WILL_DRAW_LAST_STATIC_BARS_INDICATOR_VALUE_AFTER_YOU_TURN_ON_STREAMING_SO_I_WILL_HAVE_NEW_QUOTE_PROVING_THE_LAST_BAR_IS_FORMED";
-				Assembler.PopupException(msg);
-				return indicatorLegDrawn;
+				//Assembler.PopupException(msg + msig, null, false);
+				//return indicatorLegDrawn;
 			}
 			if (this.OwnValuesCalculated.ContainsDate(bar.DateTimeOpen) == false) {
 				if (bar.IsBarStreaming) {
 					string msg2 = "INDICATORS_HAVING_OWN_VALUE_FOR_STREAMING_BAR_IS_NYI";
-					//Assembler.PopupException(msg);
+					Assembler.PopupException(msg2 + msig, null, false);
 					return indicatorLegDrawn;
 				}
 				if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
@@ -212,13 +212,13 @@ namespace Sq1.Core.Indicators {
 
 			if (double.IsNaN(value)) {
 				string msg = "INDICATOR_VALUE_IS_NAN " + bandSeriesName + "[" + barIndex + "]";
-				Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig, null, false);
 				valueOk = false;
 			}
 
 			if (double.IsNaN(valuePrevious)) {
 				string msg = "INDICATOR_VALUE_PREVIOUS_IS_NAN " + bandSeriesName + "[" + (barIndex - 1) + "]";
-				Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig, null, false);
 				valueOk = false;
 			}
 

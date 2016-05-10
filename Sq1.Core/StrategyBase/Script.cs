@@ -54,6 +54,15 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "SRIPT_ALREADY_INITIALIZED_WITH_EXECUTOR_AND_NEVER_GETS_ANOTHER_ONE"
 					+ " INDICATORS_WILL_COMPLAIN__HOST_PANEL_ALREADY_ASSIGNED";
 				Assembler.PopupException(msg, null, false);
+				
+				var reflected	= this.Strategy.Script.ScriptParametersById_reflectedCached_primary;
+				var ctx			= this.Strategy.ScriptContextCurrent.ScriptParametersById;
+				if (reflected.Count != ctx.Count) {
+					string msg2 = "RUDE_SYNC_STALE_CTX_WITH_REFLECTED";
+					Assembler.PopupException(msg2, null, false);
+					this.Strategy.ScriptContextCurrent.ScriptParametersById = this.Strategy.Script.ScriptParametersById_reflectedCached_primary;
+				}
+
 				return;
 			}
 

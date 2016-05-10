@@ -20,7 +20,8 @@ namespace Sq1.Core.Charting {
 			var symbolSafe				= base.Symbol_nullReported;
 			var scaleIntervalSafe		= base.ScaleInterval_nullReported;
 			var streaming_nullReported	= base.StreamingAdapter_nullReported;
-			var strategy_nullUnsafe		= base.Strategy_nullReported;
+			//var strategy_nullUnsafe		= base.Strategy_nullReported;
+			var strategy_nullUnsafe		= executorSafe.Strategy;
 
 			bool downstream_mustBeSubscribed = this.DownstreamSubscribed == false;
 			if (downstream_mustBeSubscribed) {
@@ -34,7 +35,6 @@ namespace Sq1.Core.Charting {
 				//streaming_nullReported.UnsubscribeChart(symbolSafe, scaleIntervalSafe, this, branch + base.MsigForNpExceptions);
 				streaming_nullReported.ChartStreamingConsumer_Unsubscribe(this, branch + base.MsigForNpExceptions);
 
-				//
 				bool downstreamMustBeUnSubscribed_reReadingToBe100sure = this.DownstreamSubscribed == false;
 				if (downstreamMustBeUnSubscribed_reReadingToBe100sure == false) {
 					string msg = "ERROR_CHART_STREAMING_STILL_SUBSCRIBED_QUOTES_OR_BARS";
@@ -59,13 +59,12 @@ namespace Sq1.Core.Charting {
 				if (strategy_nullUnsafe != null) {
 					//strategy_nullUnsafe.Serialize();
 					this.ChartShadow.RaiseOnContextScriptChanged_containerShouldSerialize();
-					serialized = true;
 				} else {
 					//string msg = "RAISE_EVENT_SO_THAT_MAIN_FORM_SAVES_CHART_CONTEXT_WITHOUT_STRATEGY";
 					//Assembler.PopupException(msg, null, false);
 					this.ChartShadow.RaiseOnChartSettingsIndividualChanged_chartManagerShouldSerialize_ChartFormDataSnapshot();
-					serialized = true;
 				}
+				serialized = true;
 			}
 
 #if DEBUG_STREAMING
@@ -163,9 +162,9 @@ namespace Sq1.Core.Charting {
 			base.MsigForNpExceptions = " //ChartStreamingConsumer.Consume_barLastStatic(" + barLastFormed + ")"
 				+ " ChartForm[" + base.ChartShadow_nullReported.Text + "]";
 			
+			Bars barsSafe = this.Bars_nullReported;		// Livesim-clone inside the Executor on receiving side? Is this right?
 			#region  PARANOID TEST_INLINE
 			#if DEBUG
-			Bars barsSafe = this.Bars_nullReported;		// Livesim-clone inside the Executor on receiving side? Is this right?
 			if (barsSafe.ScaleInterval != barLastFormed.ScaleInterval) {
 				string msg = "SCALEINTERVAL_RECEIVED_DOESNT_MATCH_CHARTS"
 					+ " bars[" + barsSafe.ScaleInterval + "] barLastFormed[" + barLastFormed.ScaleInterval + "]";
@@ -232,9 +231,10 @@ namespace Sq1.Core.Charting {
 		public override void Consume_quoteOfStreamingBar(Quote quote_clonedBoundAttached) {
 			base.MsigForNpExceptions = " //ChartStreamingConsumer.Consume_quoteOfStreamingBar(" + quote_clonedBoundAttached.ToString() + ")";
 
+			Bars barsSafe = this.Bars_nullReported;
+			
 			#region  PARANOID TEST_INLINE
 			#if DEBUG	// TEST_INLINE_BEGIN
-			Bars barsSafe = this.Bars_nullReported;
 			if (barsSafe.BarStreaming_nullUnsafe != quote_clonedBoundAttached.ParentBarStreaming) {
 				string msg1 = "BARS_STREAMING_MUST_BE_THE_SAME__NOT_CLONES STREAMING_BINDER_DIDNT_DO_ITS_JOB#3 bars[" + barsSafe
 					+ "] quote.ParentStreamingBar[" + quote_clonedBoundAttached.ParentBarStreaming + "]";

@@ -59,7 +59,9 @@ namespace Sq1.Core.Indicators {
 		public		int		DotsDrawnForCurrentSlidingWindow;									// nope I won't use a separate "responsibility" (I told you "SOLID principles are always misused" :)
 		public		int		DotsExistsForCurrentSlidingWindow		{ get; protected set; }		// just because the object itself is the most convenient place to incapsulate it
 
-		protected	bool	AllowsOnNewQuote;
+		protected	bool	WillBeCalculated_onEachQuote_defaultNo;
+
+		public		List<Indicator> DependentIndicators				{ get; protected set; }
 		
 		protected Indicator() {
 			AbsnoInstance = ++AbsnoCurrent;
@@ -72,7 +74,8 @@ namespace Sq1.Core.Indicators {
 			Decimals = 2;
 			parametersByName = new Dictionary<string, IndicatorParameter>();
 			parametersByName_ReflectionForced = true;
-			AllowsOnNewQuote = false;
+			WillBeCalculated_onEachQuote_defaultNo = false;
+			DependentIndicators = new List<Indicator>();
 		}
 
 		public void SetHostPanel(HostPanelForIndicator panelNamedFolding) {
@@ -199,6 +202,15 @@ namespace Sq1.Core.Indicators {
 		} }
 		public override string ToString() {
 			return "#" + this.AbsnoInstance + " " + this.NameWithParameters + " " + this.OwnValuesCalculated.ScaleIntervalCount_asString;
+		}
+
+		public void AddDependentIndicator(Indicator iShouldRecalculate) {
+			if (this.DependentIndicators.Contains(iShouldRecalculate)) {
+				string msg = "ADD_DEPENDENT_INDICATORS_IN_CHILD'S_CTOR() [" + iShouldRecalculate + "]ALREADY_ADDED_TO_DependentIndicators_FOR[" + this + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.DependentIndicators.Add(iShouldRecalculate);
 		}
 	}
 }

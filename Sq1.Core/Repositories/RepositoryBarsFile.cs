@@ -57,20 +57,18 @@ namespace Sq1.Core.Repositories {
 			this.Abspath = this.barsRepository.AbspathForSymbol(this.Symbol, throwIfDoesntExist, createIfDoesntExist);
 		}
 
-		public Bars BarsLoadAll_nullUnsafe_threadSafe(bool saveBarsIfThereWasFailedCheckOHLCV = true) {
+		public Bars BarsLoadAll_nullUnsafe_threadSafe(bool saveBarsIfThereWasFailedCheckOHLCV = true) { lock(this.fileReadWriteSequentialLock) {
 			Bars bars = null;
-			lock(this.fileReadWriteSequentialLock) {
-				if (File.Exists(this.Abspath) == false) {
-					string msg = "LoadBarsThreadSafe(): File doesn't exist [" + this.Abspath + "]";
-					//Assembler.PopupException(msg);
-					//throw new Exception(msg);
-					return null;
-//					return bars;
-				}
-				bars = this.barsLoadAll_nullUnsafe(saveBarsIfThereWasFailedCheckOHLCV);
+			
+			if (File.Exists(this.Abspath) == false) {
+				string msg = "LoadBarsThreadSafe(): File doesn't exist [" + this.Abspath + "]";
+				//Assembler.PopupException(msg);
+				//throw new Exception(msg);
+				return bars;	// null
 			}
+			bars = this.barsLoadAll_nullUnsafe(saveBarsIfThereWasFailedCheckOHLCV);
 			return bars;
-		}
+		} }
 		Bars barsLoadAll_nullUnsafe(bool resaveBarsIfThereWasFailedCheckOHLCV = true) {
 			string msig = " //barsLoadAll_nullUnsafe(this.Abspath=[" + this.Abspath + "]) ";
 
@@ -78,6 +76,7 @@ namespace Sq1.Core.Repositories {
 			int				barsFailed_OHLCVcheck_total = 0;
 			List<int>		barsIndexes_failedOHLCVcheck = new List<int>();
 			bool			resaveRequiredByVersionMismatch = false;
+			int				barsFixed_resaveIfNonZero = 0;
 			
 			Bars			bars = null;
 			DateTime		dateTime = DateTime.Now;
@@ -165,6 +164,7 @@ namespace Sq1.Core.Repositories {
 
 					try {
 						Bar barAdded = bars.BarStatic_createAppendAttach(dateTimeOpen, open, high, low, close, volume, true);
+						if (barAdded.Fixed_resavingRequired) barsFixed_resaveIfNonZero++;
 					} catch (Exception exception_DateOHLCV_NaNs__orZeroes) {
 						barsIndexes_failedOHLCVcheck.Add(barsRead_total-1);
 						barsFailed_OHLCVcheck_total++;
@@ -220,7 +220,7 @@ namespace Sq1.Core.Repositories {
 
 			string msg_resaving = "";
 			try {
-				bool resaveRequired = resaveRequiredByVersionMismatch;
+				bool resaveRequired = resaveRequiredByVersionMismatch || barsFixed_resaveIfNonZero > 0;
 				if (barsIndexes_failedOHLCVcheck.Count > 0) {
 					string barsIndexes_failedOHLCVcheck_asString = string.Join(",", barsIndexes_failedOHLCVcheck);
 					msg_resaving = "FIX_SOLIDIFIERS! BARS_NANs_OR_ZEROes"
@@ -298,7 +298,7 @@ namespace Sq1.Core.Repositories {
 				for (int i = 0; i < bars.Count; i++) {
 					Bar bar = bars[i];
 					try {
-						bar.CheckThrow_valuesOkay();	//	catching the exception will display stacktrace in ExceptionsForm
+						bar.CheckThrowFix_valuesOkay();	//	catching the exception will display stacktrace in ExceptionsForm
 					} catch (Exception ex) {
 						barsFailedCheckOHLCV++;
 						string msg = "NOT_SAVING_TO_FILE_THIS_BAR__TOO_LATE_TO_FIND_WHO_GENERATED_IT barAllZeroes bar[" + bar + "]";
@@ -350,7 +350,7 @@ namespace Sq1.Core.Repositories {
 			string msig = " barAppendStaticOrReplaceStreaming(" + barLastFormedStatic_orCurrentStreaming + ")=>[" + this.Abspath + "]";
 
 			try {
-				barLastFormedStatic_orCurrentStreaming.CheckThrow_valuesOkay();	//	catching the exception will display stacktrace in ExceptionsForm
+				barLastFormedStatic_orCurrentStreaming.CheckThrowFix_valuesOkay();	//	catching the exception will display stacktrace in ExceptionsForm
 			} catch (Exception ex) {
 				string msg = "NOT_APPENDING_TO_FILE_THIS_BAR__FIX_WHO_GENERATED_IT_UPSTACK barAllZeroes barLastFormed[" + barLastFormedStatic_orCurrentStreaming + "]";
 				Assembler.PopupException(msg + msig, ex, false);
@@ -421,7 +421,7 @@ namespace Sq1.Core.Repositories {
 										+ " YOU_MUST_BE_AT_THE_END_OF_FILE_NOW_BUT: fileStream.Position[" + fileStream.Position + "] != fileStreamLength[" + fileStreamLength + "]";
 									Assembler.PopupException(msg2);
 								}
-								barBeingOverwritten.SetOHLCValigned(open, high, low, close, volume);
+								barBeingOverwritten.Set_OHLCV_aligned(open, high, low, close, volume);
 							} catch (Exception ex) {
 								string msg1 = "YOU_SHOULD_GO_OVER_FULL_HEADER_READING_&_BARS_MAY_DEPEND_ON_VERSION"
 									+ " parametrize barsLoadAll_nullUnsafe(barsToRead=0) or extract readHeader()+readBar()";
