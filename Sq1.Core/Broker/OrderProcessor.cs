@@ -230,7 +230,8 @@ namespace Sq1.Core.Broker {
 						//+ OrderState.SLAnnihilated + ","
 						//+ OrderState.TPAnnihilated + "}";
 						;
-					throw new Exception(msg);
+					Assembler.PopupException(msg, null, false);
+					//throw new Exception(msg);
 					break;
 			}
 		}

@@ -1176,6 +1176,9 @@ namespace Sq1.Gui.Forms {
 
 			bool cancelClosingEvent = false;
 			if (this.Executor.Bars == null) return cancelClosingEvent;	//avoiding NPE in the next line
+			if (this.Executor.DataSource_fromBars == null) {
+				return cancelClosingEvent;
+			}
 			StreamingAdapter streaming = this.Executor.DataSource_fromBars.StreamingAdapter;
 			if (streaming == null) return cancelClosingEvent;
 

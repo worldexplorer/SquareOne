@@ -59,7 +59,7 @@ namespace Sq1.Core.Indicators {
 		public		int		DotsDrawnForCurrentSlidingWindow;									// nope I won't use a separate "responsibility" (I told you "SOLID principles are always misused" :)
 		public		int		DotsExistsForCurrentSlidingWindow		{ get; protected set; }		// just because the object itself is the most convenient place to incapsulate it
 
-		protected	bool	WillBeCalculated_onEachQuote_defaultNo;
+		protected	bool	HasValueForStreamingBar_caculatedOnEachQuote;
 
 		public		List<Indicator> DependentIndicators				{ get; protected set; }
 		
@@ -74,7 +74,7 @@ namespace Sq1.Core.Indicators {
 			Decimals = 2;
 			parametersByName = new Dictionary<string, IndicatorParameter>();
 			parametersByName_ReflectionForced = true;
-			WillBeCalculated_onEachQuote_defaultNo = false;
+			HasValueForStreamingBar_caculatedOnEachQuote = false;
 			DependentIndicators = new List<Indicator>();
 		}
 

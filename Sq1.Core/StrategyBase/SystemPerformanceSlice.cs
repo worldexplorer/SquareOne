@@ -416,7 +416,7 @@ namespace Sq1.Core.StrategyBase {
 
 			foreach (Position positionOpened in positionsOpenedAtBar) {
 				if (positionsOpenedAccounted.Contains(positionOpened)) {
-					string msg = "SHOULD_BE_INVOKED_FOR_LIVE_OPENED_POSITION_ONCE_ON_STEP1_OR_STEP3__DONT_USE_THIS_METHOD_FOR_STEP2";
+					string msg = "LIVESIM_ABORTED_WITH_POSITION_OPEN SHOULD_BE_INVOKED_FOR_LIVE_OPENED_POSITION_ONCE_ON_STEP1_OR_STEP3__DONT_USE_THIS_METHOD_FOR_STEP2";
 					Assembler.PopupException(msg);
 				}
 				positionsOpenedAccounted.Add(positionOpened);
@@ -451,7 +451,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				if (positionClosed.ExitAlert.ForcefullyClosedBacktestLastPosition) continue;
 				if (positionsClosedAccounted.Contains(positionClosed)) {
-					string msg = "SHOULD_BE_INVOKED_FOR_LIVE_CLOSED_POSITION_ONCE";
+					string msg = "LIVESIM_ABORTED_WITH_POSITION_OPEN SHOULD_BE_INVOKED_FOR_LIVE_CLOSED_POSITION_ONCE";
 					Assembler.PopupException(msg);
 				}
 				positionsClosedAccounted.Add(positionClosed);

@@ -79,6 +79,9 @@ namespace Sq1.Core.Execution {
 					if (this.Bars.BarStreaming_nullUnsafe == null) {
 						throw new Exception("Position.ExitOrStreamingPrice: this.Bars.StreamingBar=null; @ExitBar[" + this.ExitFilledBarIndex + "] position=[" + this + "]; ");
 					}
+					if (double.IsNaN(this.Bars.BarStreaming_nullUnsafe.Close)) {
+						throw new Exception("Position.ExitOrStreamingPrice: this.Bars.StreamingBar.Close IsNaN; @ExitBar[" + this.ExitFilledBarIndex + "] position=[" + this + "]; ");
+					}
 					ret = this.Bars.BarStreaming_nullUnsafe.Close;
 				}
 				if (this.ExitFilled_slippage != -1) ret += this.ExitFilled_slippage;
@@ -96,17 +99,17 @@ namespace Sq1.Core.Execution {
 				return ret;
 			} }
 		public bool IsEntryFilled { get {
-				if (this.EntryFilled_price == -1) return false;
-				if (this.EntryFilled_qty == -1) return false;
-				if (this.EntryFilled_commission == -1) return false;
-				if (this.EntryFilled_slippage == -1) return false;
+				if (this.EntryFilled_price == -1)		return false;
+				if (this.EntryFilled_qty == -1)			return false;
+				if (this.EntryFilled_commission == -1)	return false;
+				if (this.EntryFilled_slippage == -1)	return false;
 				return true;
 			} }
 		public bool IsExitFilled { get {
-				if (this.ExitFilled_price == -1) return false;
-				if (this.ExitFilled_qty == -1) return false;
-				if (this.ExitFilled_commission == -1) return false;
-				if (this.ExitFilled_slippage == -1) return false;
+				if (this.ExitFilled_price == -1)		return false;
+				if (this.ExitFilled_qty == -1)			return false;
+				if (this.ExitFilled_commission == -1)	return false;
+				if (this.ExitFilled_slippage == -1)		return false;
 				return true;
 			} }
 		public bool ClosedByTakeProfitLogically { get {

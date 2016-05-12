@@ -163,7 +163,7 @@ namespace Sq1.Indicators {
 			}
 			#endregion
 
-			ret = this.smaSeries.CalculateOwnValue_append_forNewStaticBarFormed_NanUnsafe(newStaticBar, base.WillBeCalculated_onEachQuote_defaultNo);
+			ret = this.smaSeries.CalculateOwnValue_append_forNewStaticBarFormed_NanUnsafe(newStaticBar, base.HasValueForStreamingBar_caculatedOnEachQuote);
 
 			#region DELETEME_AFTER_COMPATIBILITY_TEST
 			#if TEST_COMPATIBILITY

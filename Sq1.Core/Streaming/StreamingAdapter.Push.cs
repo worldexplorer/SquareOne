@@ -136,6 +136,7 @@ namespace Sq1.Core.Streaming {
 
 				string msg = "I_REFUSE_TO_PUSH_QUOTE NO_CHARTS_SUBSCRIBED";
 				if (		this.LivesimStreaming_ownImplementation != null
+						 && this.LivesimStreaming_ownImplementation.DataSource != null
 						 && this.LivesimStreaming_ownImplementation.Livesimulator != null
 						 && this.LivesimStreaming_ownImplementation.Livesimulator.ImRunningLivesim) {
 					this.LivesimStreaming_ownImplementation.Livesimulator.AbortRunningBacktest_waitAborted(msg, 0);
@@ -259,6 +260,7 @@ namespace Sq1.Core.Streaming {
 		    if (this.DistributorCharts_substitutedDuringLivesim.ChannelsBySymbol.Count == 0) {
 		        string msg = "I_REFUSE_TO_PUSH_LEVEL_TWO NO_CHARTS_SUBSCRIBED";
 		        if (		this.LivesimStreaming_ownImplementation != null
+		                 && this.LivesimStreaming_ownImplementation.DataSource != null
 		                 && this.LivesimStreaming_ownImplementation.Livesimulator != null
 		                 && this.LivesimStreaming_ownImplementation.Livesimulator.ImRunningLivesim) {
 		            this.LivesimStreaming_ownImplementation.Livesimulator.AbortRunningBacktest_waitAborted(msg, 0);

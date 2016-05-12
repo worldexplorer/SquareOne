@@ -55,7 +55,7 @@ namespace Sq1.Core.StrategyBase {
 					try {
 						indicator.OnBarStaticLastFormed_whileStreamingBar_withOneQuote_alreadyAppended(barStaticLastFormed);
 					} catch (Exception ex) {
-						Assembler.PopupException("INDICATOR_ON_NEW_BAR " + indicator.ToString(), ex);
+						Assembler.PopupException("INDICATOR_ON_NEW_BAR " + indicator.ToString(), ex, false);
 					}
 				}
 			}

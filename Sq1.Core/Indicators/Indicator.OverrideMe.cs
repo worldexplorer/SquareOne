@@ -11,12 +11,32 @@ namespace Sq1.Core.Indicators {
 		public virtual void BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries() {
 			this.ParametersAsStringShort_forceRecalculate = true;
 			// muting INDICATOR_SWITCHED_BARS
+			if (this.Executor == null) {
+				string msg = "YOU_MUST_INITIALIZE_ME_WITH_EXECUTOR!=null [" + this + "]";
+				Assembler.PopupException(msg, null, false);
+				return;
+				//throw new Exception(msg);
+			}
+			if (this.Executor.Bars == null) {
+				string msg = "YOU_MUST_INITIALIZE_ME_WITH_EXECUTORS_BARS!=null [" + this + "]";
+				Assembler.PopupException(msg, null, false);
+				return;
+				//throw new Exception(msg);
+			}
 			this.barsEffective_cached = this.Executor.Bars;
 			this.closesProxyEffective_cached = new DataSeriesProxyBars(this.BarsEffective, this.DataSeriesProxyFor);
-			this.OwnValuesCalculated.Clear();
+			if (this.Executor.Bars.ScaleInterval == this.OwnValuesCalculated.ScaleInterval) {
+				this.OwnValuesCalculated.Clear();
+			} else {
+				this.OwnValuesCalculated = new DataSeriesTimeBased(this.Executor.Bars.ScaleInterval, this.Name, this.Decimals);
+			}
 
 			foreach (Indicator dependent in this.DependentIndicators) {
-				dependent.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();
+				if (dependent.Executor == null) {
+					dependent.Initialize(this.Executor);
+				} else {
+					dependent.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();
+				}
 			}
 		}
 		
@@ -164,11 +184,12 @@ namespace Sq1.Core.Indicators {
 			}
 
 			foreach (Indicator dependent in this.DependentIndicators) {
+				if (dependent.OwnValuesCalculated.ContainsDate(newStaticBar.DateTimeOpen)) continue;
 				dependent.OnBarStaticLastFormed_whileStreamingBar_withOneQuote_alreadyAppended(newStaticBar);
 			}
 		}
 		public virtual void OnNewQuote(Quote newStreamingQuote) {
-			if (this.WillBeCalculated_onEachQuote_defaultNo == false) return;
+			if (this.HasValueForStreamingBar_caculatedOnEachQuote == false) return;
 
 			#if VERBOSE_STRINGS_SLOW
 			string msig = " //OnNewQuote(" + newStreamingQuote.ToString() + ")";

@@ -32,7 +32,7 @@ namespace Sq1.Indicators {
 			//}
 
 			string state = "";
-			if (this.trueRangeSeries == null) {
+			if (this.trueRangeSeries == null || this.trueRangeSeries.ScaleInterval != base.OwnValuesCalculated.ScaleInterval) {
 				state = "FIRST_BACKTEST_AFTER_APP_RESTART";
 				// not in ctor because base.BarsEffective should not be null; initialized only now in Indicator.BacktestStarting() upstack
 				this.trueRangeSeries = new TrueRangeSeries(base.OwnValuesCalculated.ScaleInterval);

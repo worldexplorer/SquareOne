@@ -24,7 +24,7 @@ namespace Sq1.Indicators {
 		public IndicatorAtrBand(Indicator atr) : base() {
 			base.Name = atr.Name + "band";
 			base.ChartPanelType = ChartPanelType.PanelPrice;
-			base.WillBeCalculated_onEachQuote_defaultNo = true;
+			base.HasValueForStreamingBar_caculatedOnEachQuote = true;
 			//base.Decimals = 0;	// "156,752.66" is too long for TooltipPrice
 
 			this.atr = atr;
@@ -98,10 +98,13 @@ namespace Sq1.Indicators {
 			//}
 			
 			if (addNan) {
+				//if (base.OwnValuesCalculated.ContainsDate(newStaticBar.DateTimeOpen)) return double.NaN;
+
 				//this.bandLower.Append(newStaticBar.DateTimeOpen, double.NaN);
 				//this.bandUpper.Append(newStaticBar.DateTimeOpen, double.NaN);
 				this.BandLower.AppendWithParentBar(newStaticBar.DateTimeOpen, double.NaN, newStaticBar);
 				this.BandUpper.AppendWithParentBar(newStaticBar.DateTimeOpen, double.NaN, newStaticBar);
+				//base.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, double.NaN);
 				return double.NaN;
 			}
 
@@ -126,6 +129,16 @@ namespace Sq1.Indicators {
 			//double lowerAligned = Math.Round(lower, newStaticBar.ParentBars.SymbolInfo.DecimalsPrice);
 			//double upperAligned = Math.Round(upper, newStaticBar.ParentBars.SymbolInfo.DecimalsPrice);
 			
+			double alreadyCalculated_kozImDependent = double.NaN;
+			if (this.BandLower.ContainsDate(newStaticBar.DateTimeOpen)) {
+				alreadyCalculated_kozImDependent = this.BandLower[newStaticBar.DateTimeOpen];
+				if (alreadyCalculated_kozImDependent != lowerAligned) {
+					string msg = "YOU_MUST_HAVE_CLEARED_BandLower_WHEN_CHANGING_PERIOD_OR_REBACKTESTING";
+					Assembler.PopupException(msg);
+				}
+				return double.NaN;
+			}
+
 			this.BandLower.AppendWithParentBar(newStaticBar.DateTimeOpen, lowerAligned, newStaticBar);
 			this.BandUpper.AppendWithParentBar(newStaticBar.DateTimeOpen, upperAligned, newStaticBar);
 
