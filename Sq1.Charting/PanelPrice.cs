@@ -10,7 +10,7 @@ namespace Sq1.Charting {
 	public partial class PanelPrice : PanelBase {
 		List<Position> PositionLineAlreadyDrawnFromOneOfTheEnds;
 
-		protected override int ValueIndexLastAvailableMinusOneUnsafe	{ get { return base.ChartControl.Bars.Count - 1; } }
+		protected override int ValueIndexLastAvailable_minusOneUnsafe	{ get { return base.ChartControl.Bars.Count - 1; } }
 
 		public PanelPrice() : base() {
 			this.PositionLineAlreadyDrawnFromOneOfTheEnds = new List<Position>();
@@ -58,7 +58,7 @@ namespace Sq1.Charting {
 			
 			int barX = base.ChartControl.ChartWidthMinusGutterRightPrice;
 			for (int i = base.VisibleBarRight_cached; i >= base.VisibleBarLeft_cached; i--) {
-				barX -= this.BarWidthIncludingPadding_cached;
+				barX -= this.BarWidth_includingPadding_cached;
 				if (arrowListByBar.ContainsKey(i) == false) continue;
 								
 				int shadowX = barX + this.BarShadowXoffset_cached;

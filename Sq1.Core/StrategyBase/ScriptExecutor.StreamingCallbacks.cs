@@ -88,6 +88,9 @@ namespace Sq1.Core.StrategyBase {
 			}
 			if (string.IsNullOrEmpty(scriptInvocationError) == false) {
 				Assembler.PopupException(scriptInvocationError + msig);
+				if (this.BacktesterOrLivesimulator.ImRunningLivesim) {
+					this.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted(scriptInvocationError, 10);
+				}
 				return ret;		//null here ReporterPokeUnit
 			}
 
@@ -127,8 +130,19 @@ namespace Sq1.Core.StrategyBase {
 
 			List<Alert> alertsDoomed_afterExec_safeCopy = this.ExecutionDataSnapshot.AlertsDoomed.SafeCopy(this, msig);
 			if (alertsDoomed_afterExec_safeCopy.Count > 0) {
-				if (this.IsStrategyEmittingOrders) {
-					this.OrderProcessor.Emit_alertsPending_kill(alertsDoomed_afterExec_safeCopy);
+				//v1
+				//if (this.IsStrategyEmittingOrders) {
+				//    this.OrderProcessor.Emit_alertsPending_kill(alertsDoomed_afterExec_safeCopy);
+				//}
+				//v2
+				if (this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
+					string msg2 = "BacktestBrokerAdapter just removes doomed from AlertsPending";
+					int removedFromPendings = this.DataSource_fromBars.BrokerAdapter.AlertPendings_kill(alertsDoomed_afterExec_safeCopy);
+				} else {
+					string msg1 = "QuikBrokerAdapter Emits Orders and waits for (simulated for LivesimBrokerDefault) callback";
+					if (this.IsStrategyEmittingOrders) {
+						int emitted = this.DataSource_fromBars.BrokerAdapter.AlertPendings_kill(alertsDoomed_afterExec_safeCopy);
+					}
 				}
 			}
 
@@ -158,7 +172,7 @@ namespace Sq1.Core.StrategyBase {
 				//bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
 
 				// for backtest only => btnEmirOrders.Checked isn't analyzed at all
-				if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+				if (this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 					this.ChartShadow.AlertsPlaced_addRealtime(alertsNew_afterExec_safeCopy);
 					this.ExecutionDataSnapshot.AlertsNewAfterExec.Clear(this, msig);
 					return ret;		//null here ReporterPokeUnit
@@ -211,7 +225,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (this.BacktesterOrLivesimulator.WasBacktestAborted)				return  ret;		//null here ReporterPokeUnit
-			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting)	return  ret;		//null here ReporterPokeUnit
+			if (this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing)	return  ret;		//null here ReporterPokeUnit
 			
 			
 			ReporterPokeUnit pokeUnit_dontForgetToDispose = new ReporterPokeUnit(quoteBoundAttached_toEnrichAlerts,

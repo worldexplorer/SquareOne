@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Sq1.Core.DoubleBuffered;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
+using Sq1.Core;
 
 namespace Sq1.Widgets.SteppingSlider {
 	//public partial class SlidersAutoGrowControl : UserControlDoubleBuffered {
@@ -55,24 +56,43 @@ namespace Sq1.Widgets.SteppingSlider {
 			if (this.skipSlidersFactory_changingValueDoesntChangeNumberOfSliders) return;
 
 			this.Strategy = strategy;
+			if (this.Strategy == null) return;
+			if (this.Strategy.Script == null) return;
 
-			base.SuspendLayout();
-			foreach (UserControl control in base.Controls) {
-				SteppingSliderComboControl  slider = control as SteppingSliderComboControl;
-				if (slider == null) {
-					string msg = "let context menus with items live; dispose only the sliders since you're going to rebuild them"
-						+ "; remember you blew up on this.mniAllParamsResetToScriptDefaults.IsDisposed in TsiDynamic {get{}} in commit fb4c86e31ab6d67fa8b9aad2756e0f4b9c14d4db ?...";
+			List<IndicatorParameter> parameters_inScript = this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParameters_mergedUncloned_forSequencerAndSliders;	// dont make me calculate it twice 
+			List<IndicatorParameter> parameters_inSliders		= new List<IndicatorParameter>();
+
+			List<IndicatorParameter> parameters_toAdd			= new List<IndicatorParameter>();
+			List<IndicatorParameter> parameters_toRemove		= new List<IndicatorParameter>();
+
+			foreach (Control canBeAnything in base.Controls) {
+				SteppingSliderComboControl eachSlider = canBeAnything as SteppingSliderComboControl;
+				if (eachSlider == null) continue;
+				IndicatorParameter paramInSlider = eachSlider.Tag as IndicatorParameter;
+				if (paramInSlider == null) {
+					string msg = "EACH_SLIDER_MUST_HAVE_IndicatorParameter_IN_ITS_.Tag CANT_BUILD_DIFFERENTIALS";
+					Assembler.PopupException(msg, null, false);
 					continue;
 				}
-				//base.Controls.Remove(slider);
-				slider.Dispose();
+				parameters_inSliders.Add(paramInSlider);
 			}
-			// MOVED_UP_2_LINES NOT_ENOUGH__EVERY_SLIDER_CLICK_WHOLE_BAG_MOVES_DOWN (!!!)
-			base.Controls.Clear();
-			try {
-				if (this.Strategy == null) return;
-				if (this.Strategy.Script == null) return;
 
+			foreach (IndicatorParameter eachParam_inScript in parameters_inScript) {
+				if (parameters_inSliders.Contains(eachParam_inScript)) continue;
+				parameters_toAdd.Add(eachParam_inScript);
+			}
+
+			foreach (IndicatorParameter eachParam_inSlider in parameters_inSliders) {
+				if (parameters_inScript.Contains(eachParam_inSlider)) continue;
+				parameters_toRemove.Add(eachParam_inSlider);
+			}
+
+			int modificationsRequired_toSync = parameters_toAdd.Count + parameters_toRemove.Count;
+			if (modificationsRequired_toSync == 0) return;
+
+			// script recompiled or ActiveTab switched => sorry it's gonna be slow
+
+			try {
 				//v1
 				//Dictionary<string, IndicatorParameter> parametersByName = this.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;	// dont make me calculate it twice 
 				//foreach (string indicatorNameDotParameterName in parametersByName.Keys) {																// #1
@@ -93,8 +113,23 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				//v2
 				IndicatorParameter parameterPrevToFeelChangeAndAddSpacing = null;
-				List<IndicatorParameter> parameters = this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders;	// dont make me calculate it twice 
-				foreach (IndicatorParameter param in parameters) {
+
+				base.SuspendLayout();
+
+				foreach (UserControl control in base.Controls) {
+				    SteppingSliderComboControl  slider = control as SteppingSliderComboControl;
+				    if (slider == null) {
+				        string msg = "let context menus with items live; dispose only the sliders since you're going to rebuild them"
+				            + "; remember you blew up on this.mniAllParamsResetToScriptDefaults.IsDisposed in TsiDynamic {get{}} in commit fb4c86e31ab6d67fa8b9aad2756e0f4b9c14d4db ?...";
+				        continue;
+				    }
+				    //base.Controls.Remove(slider);
+				    slider.Dispose();
+				}
+				// MOVED_UP_2_LINES NOT_ENOUGH__EVERY_SLIDER_CLICK_WHOLE_BAG_MOVES_DOWN (!!!)
+				base.Controls.Clear();
+
+				foreach (IndicatorParameter param in parameters_inScript) {
 					if (parameterPrevToFeelChangeAndAddSpacing == null) {
 						parameterPrevToFeelChangeAndAddSpacing = param;
 					}
@@ -102,7 +137,7 @@ namespace Sq1.Widgets.SteppingSlider {
 						this.addSpacingBeforeIndicatorParameters();
 					}
 					parameterPrevToFeelChangeAndAddSpacing = param;
-					SteppingSliderComboControl slider = this.SliderComboFactory(param);
+					SteppingSliderComboControl slider = this.sliderCombo_factory(param);
 					base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
 				}
 
@@ -136,7 +171,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniAllParamsShowNumeric.Text = atLeastOneNumericShown ? "All Params -> HideNumeric" : "All Params -> ShowNumeric";
 		}
 
-		SteppingSliderComboControl SliderComboFactory(IndicatorParameter indicatorOrScriptParameter, string indicatorNameDotParameterName = null) {
+		SteppingSliderComboControl sliderCombo_factory(IndicatorParameter indicatorOrScriptParameter, string indicatorNameDotParameterName = null) {
 			//v1 WOULD_BE_TOO_EASY ret = this.templateSliderControl.Clone();
 			//BEGIN merged with SlidersAutoGrow.Designer.cs:InitializeComponent()
 			SteppingSliderComboControl slider = new SteppingSliderComboControl();

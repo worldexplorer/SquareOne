@@ -399,8 +399,10 @@ namespace Sq1.Gui.Forms {
 				} else {
 					#if DEBUG	// PARANOID TEST
 					if (chartForm_nullUnsafe != this) {
-						string msg = "LEFT_FOR_QUIK_LIVESIM_COMPAT_TEST WHY___WE_ARE_HERE_WHEN_WE_CHANGE_TIMEFRAME_OF_CHART I_STARTED_LIVESIM_FOR_NON_ACTIVE_CHART";
-						Assembler.PopupException(msg, null, false);
+						string msg = "WHY_SHOULD_YOU_CARE???"
+							//+ " LEFT_FOR_QUIK_LIVESIM_COMPAT_TEST WHY___WE_ARE_HERE_WHEN_WE_CHANGE_TIMEFRAME_OF_CHART I_STARTED_LIVESIM_FOR_NON_ACTIVE_CHART"
+							;
+						//Assembler.PopupException(msg, null, false);
 					}
 					#endif
 				}

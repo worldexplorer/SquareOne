@@ -295,7 +295,7 @@ namespace Sq1.Charting {
 			}
 		}
 		public override void PushQuote_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll() {
-			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 				string msg = "FOR_CHARTLESS_BACKTEST__THIS_CHART_SHOULD_HAVE_NOT_BEEN_SUBSCRIBED_TO__BARS_SIMULATING";
 				Assembler.PopupException(msg, null, false);
 				return;
@@ -311,7 +311,7 @@ namespace Sq1.Charting {
 			this.ExecutorObjectsReady_triggerRepaint__raiseOnBarStreamingUpdatedMerged_chartFormPrintsQuoteTimestamp();
 		}
 		public override void PushLevelTwoFrozen_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll(LevelTwoFrozen levelTwoFrozen) {
-			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 				string msg = "FOR_CHARTLESS_BACKTEST__THIS_CHART_SHOULD_HAVE_NOT_BEEN_SUBSCRIBED_TO__BARS_SIMULATING";
 				Assembler.PopupException(msg, null, false);
 				return;

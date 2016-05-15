@@ -75,14 +75,14 @@ namespace Sq1.Core.StrategyBase {
 			this.SliceBuyHold		.Initialize();
 		}
 
-		public void BuildStatsOnBacktestFinished() {
+		public void BuildStats_onBacktestFinished() {
 			if (this.Executor.ExecutionDataSnapshot == null) {
-				string msg = "this.Executor.ExecutionDataSnapshot == null";
+				string msg = "MUST_NEVER_BE_NULL this.Executor.ExecutionDataSnapshot == null";
 				Assembler.PopupException(msg);
 				return;
 			}
 			if (this.Executor.ExecutionDataSnapshot.PositionsMaster == null) {
-				string msg = "this.Executor.ExecutionDataSnapshot.PositionsMaster == null";
+				string msg = "MUST_NEVER_BE_NULL this.Executor.ExecutionDataSnapshot.PositionsMaster == null";
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -107,10 +107,10 @@ namespace Sq1.Core.StrategyBase {
 					this.Executor.ExecutionDataSnapshot.PositionsOpenNow
 				);
 			using(pokeUnit_dontForgetToDispose) {
-				int absorbedLong	= this.SliceLong			.BuildStatsOnBacktestFinished(pokeUnit_dontForgetToDispose);
-				int absorbedShort	= this.SliceShort			.BuildStatsOnBacktestFinished(pokeUnit_dontForgetToDispose);
-				int absorbedBoth	= this.SlicesShortAndLong	.BuildStatsOnBacktestFinished(pokeUnit_dontForgetToDispose);
-				int absorbedBH		= this.SliceBuyHold			.BuildStatsOnBacktestFinished(pokeUnit_dontForgetToDispose);
+				int absorbedLong	= this.SliceLong			.BuildStats_onBacktestFinished(pokeUnit_dontForgetToDispose);
+				int absorbedShort	= this.SliceShort			.BuildStats_onBacktestFinished(pokeUnit_dontForgetToDispose);
+				int absorbedBoth	= this.SlicesShortAndLong	.BuildStats_onBacktestFinished(pokeUnit_dontForgetToDispose);
+				int absorbedBH		= this.SliceBuyHold			.BuildStats_onBacktestFinished(pokeUnit_dontForgetToDispose);
 
 				Strategy strategy = this.Executor.Strategy;
 				Script script = strategy.Script;
@@ -162,28 +162,28 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}			
 		}
-		internal void BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(Position position) {
-			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+		internal void BuildIncremental_brokerFilledAlertsOpening_forPositions_step1of3(Position position) {
+			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 				string msg = "DONT_INVOKE_ME_DURING_BACKTEST__BuildStatsOnBacktestFinished()_ALREADY_DID_THIS_JOB";
 				Assembler.PopupException(msg);
 				return;
 			}
-			int absorbedOpenLong		= this.SliceLong			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
-			int absorbedOpenShort		= this.SliceShort			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
-			int absorbedOpenBoth		= this.SlicesShortAndLong	.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
-			int absorbedOpenBH			= this.SliceBuyHold			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
+			int absorbedOpenLong		= this.SliceLong			.BuildIncremental_brokerFilledAlertsOpening_forPositions_step1of3(position);
+			int absorbedOpenShort		= this.SliceShort			.BuildIncremental_brokerFilledAlertsOpening_forPositions_step1of3(position);
+			int absorbedOpenBoth		= this.SlicesShortAndLong	.BuildIncremental_brokerFilledAlertsOpening_forPositions_step1of3(position);
+			int absorbedOpenBH			= this.SliceBuyHold			.BuildIncremental_brokerFilledAlertsOpening_forPositions_step1of3(position);
 		}
 		public void BuildIncremental_openPositionsUpdated_afterChartConsumedNewQuote_step2of3(PositionList positions) {
-			int absorbedUpdatedLong		= this.SliceLong			.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(positions);
-			int absorbedUpdatedShort	= this.SliceShort			.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(positions);
-			int absorbedUpdatedBoth		= this.SlicesShortAndLong	.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(positions);
-			int absorbedUpdatedBH		= this.SliceBuyHold			.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(positions);
+			int absorbedUpdatedLong		= this.SliceLong			.BuildIncremental_openPositionsUpdated_dueToStreamingNewQuote_step2of3(positions);
+			int absorbedUpdatedShort	= this.SliceShort			.BuildIncremental_openPositionsUpdated_dueToStreamingNewQuote_step2of3(positions);
+			int absorbedUpdatedBoth		= this.SlicesShortAndLong	.BuildIncremental_openPositionsUpdated_dueToStreamingNewQuote_step2of3(positions);
+			int absorbedUpdatedBH		= this.SliceBuyHold			.BuildIncremental_openPositionsUpdated_dueToStreamingNewQuote_step2of3(positions);
 		}
-		internal void BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(Position position) {
-			int absorbedClosedLong		= this.SliceLong			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
-			int absorbedClosedShort		= this.SliceShort			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
-			int absorbedClosedBoth		= this.SlicesShortAndLong	.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
-			int absorbedClosedBH		= this.SliceBuyHold			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
+		internal void BuildReportIncremental_brokerFilledAlertsClosing_forPositions_step3of3(Position position) {
+			int absorbedClosedLong		= this.SliceLong			.BuildReportIncremental_brokerFilledAlertsClosing_forPositions_step3of3(position);
+			int absorbedClosedShort		= this.SliceShort			.BuildReportIncremental_brokerFilledAlertsClosing_forPositions_step3of3(position);
+			int absorbedClosedBoth		= this.SlicesShortAndLong	.BuildReportIncremental_brokerFilledAlertsClosing_forPositions_step3of3(position);
+			int absorbedClosedBH		= this.SliceBuyHold			.BuildReportIncremental_brokerFilledAlertsClosing_forPositions_step3of3(position);
 		}
 
 		public SystemPerformance CloneForSequencer() {

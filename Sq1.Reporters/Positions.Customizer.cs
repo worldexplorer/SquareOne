@@ -85,7 +85,7 @@ namespace Sq1.Reporters {
 			this.olvcSerno.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "olvcSerno.AspectGetter: position=null";
-				return position.SernoAbs;
+				return position.SernoPerStrategy;
 			};
 			this.olvcSymbol.AspectGetter = delegate(object o) {
 				var position = o as Position;

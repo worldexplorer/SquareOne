@@ -46,7 +46,7 @@ namespace Sq1.Charting {
 		// USE_CACHED_VARIABLE_INSTEAD [Browsable(false)] public virtual double VisibleRange { get { return this.VisibleMax - this.VisibleMin; } }
 		[Browsable(false)]	public	virtual	double	FirstNonNanBetweenLeftRight { get {
 				double ret = double.NaN;
-				if (this.VisibleBarRight_cached > this.ValueIndexLastAvailableMinusOneUnsafe) return ret;
+				if (this.VisibleBarRight_cached > this.ValueIndexLastAvailable_minusOneUnsafe) return ret;
 				for (int i=this.VisibleBarLeft_cached; i<this.VisibleBarRight_cached; i++) {
 					ret = this.ValueGetNaNunsafe(i);
 					if (double.IsNaN(ret)) continue;
@@ -72,7 +72,7 @@ namespace Sq1.Charting {
 					Assembler.PopupException(msg + msig);
 					return ret;
 				}
-				if (this.ValueIndexLastAvailableMinusOneUnsafe == -1) {
+				if (this.ValueIndexLastAvailable_minusOneUnsafe == -1) {
 					string msg = "BARS_COUNT_ZERO__I_HAVE_NO_VALUES_TO_DRAW";
 					if (this as PanelIndicator != null) {
 						msg = "INDICATOR_WASNT_ATTACHED_TO_PANEL_YET BACKTEST_ON_APPRESTART=FALSE_AND_WE_JUST_DESERIALIZED" + msg;
@@ -82,7 +82,7 @@ namespace Sq1.Charting {
 					}
 					return ret;
 				}
-				ret = this.VisibleBarRight_cached <= this.ValueIndexLastAvailableMinusOneUnsafe;
+				ret = this.VisibleBarRight_cached <= this.ValueIndexLastAvailable_minusOneUnsafe;
 				return ret;
 			} }
 		[Browsable(false)]	public	virtual	double	ValueGetNaNunsafe(int barIndex) {
@@ -118,7 +118,7 @@ namespace Sq1.Charting {
 					: -1d; } }
 
 
-		protected	virtual	int		ValueIndexLastAvailableMinusOneUnsafe { get {
+		protected	virtual	int		ValueIndexLastAvailable_minusOneUnsafe { get {
 				#if DEBUG
 				Debugger.Break();
 				#endif
@@ -126,7 +126,7 @@ namespace Sq1.Charting {
 			} }
 		
 		#region Panel.Width and Panel.Height - dependant
-		[Browsable(false)]	public			int		PanelHeightMinusGutterBottomHeight { get {
+		[Browsable(false)]	public			int		PanelHeight_minusGutterBottomHeight { get {
 				int ret = base.Height;
 				if (this.GutterBottomDraw) {
 					if (this.GutterBottomHeight_cached <= 0) {
@@ -138,7 +138,7 @@ namespace Sq1.Charting {
 				}
 				return ret;
 			} }
-		[Browsable(false)]	private			int		PanelWidthMinusRightPriceGutter { get {
+		[Browsable(false)]	private			int		PanelWidth_minusRightPriceGutter { get {
 				int ret = base.Width;
 				// if (base.DesignMode) this.ChartControl will be NULL
 				if (this.GutterRightDraw) ret -= (this.ChartControl != null) ? this.ChartControl.GutterRightWidth_cached : 60;
@@ -328,17 +328,17 @@ namespace Sq1.Charting {
 		public int BarToX(int barVisible) {
 			if (barVisible <= this.VisibleBarLeft_cached) return -1;
 			if (barVisible > this.VisibleBarRight_cached) return -2;
-			int barRightX = this.PanelWidthMinusRightPriceGutter - this.BarWidthIncludingPadding_cached;
+			int barRightX = this.PanelWidth_minusRightPriceGutter - this.BarWidth_includingPadding_cached;
 			int barsFromRight = this.VisibleBarRight_cached - barVisible;
-			int barWidthdsFromRightMargin = barsFromRight * this.BarWidthIncludingPadding_cached;
+			int barWidthdsFromRightMargin = barsFromRight * this.BarWidth_includingPadding_cached;
 			return barRightX - barWidthdsFromRightMargin; // shouldn't be negative
 		}
 		public int XToBar(int xMouseOver) {
 			if (xMouseOver < 0) return -1;
-			if (xMouseOver > this.PanelWidthMinusRightPriceGutter) return -2;
-			int offsetFromRight = this.PanelWidthMinusRightPriceGutter - this.BarWidthIncludingPadding_cached;
+			if (xMouseOver > this.PanelWidth_minusRightPriceGutter) return -2;
+			int offsetFromRight = this.PanelWidth_minusRightPriceGutter - this.BarWidth_includingPadding_cached;
 			for (int i = this.visibleBarRightExisting; i >= this.visibleBarLeftExisting;
-					 i--, offsetFromRight -= this.BarWidthIncludingPadding_cached) {
+					 i--, offsetFromRight -= this.BarWidth_includingPadding_cached) {
 				if (xMouseOver > offsetFromRight) return i;
 			}
 			return -3; // negative means ERROR
@@ -387,7 +387,7 @@ namespace Sq1.Charting {
 			if (rangeMinMax == 0) rangeMinMax = 1;
 			double distanceFromMin = priceOrVolume - min;	//200 - 100 = 100
 			double priceAsPartOfRange = distanceFromMin / rangeMinMax;	//100 / 150	 = 0.6
-			int ret = (int)Math.Round(this.PanelHeightMinusGutterBottomHeight_cached * priceAsPartOfRange);		// 600 * 0.6 = 360px UP
+			int ret = (int)Math.Round(this.PanelHeight_minusGutterBottomHeight_cached * priceAsPartOfRange);		// 600 * 0.6 = 360px UP
 			ret = this.yInverted(ret);
 			ret = this.AdjustToPanelHeight(ret);
 			return ret;			// should be inverted to screen starting from upper left corner (600 - 360 = 240px DOWN)
@@ -395,20 +395,20 @@ namespace Sq1.Charting {
 		public double YinvertedToValue(int yMouseInverted) {
 			if (this.ChartControl.BarsEmpty) return 777;
 			if (yMouseInverted <= 0) return this.VisibleMaxPlusBottomSqueezer_cached;
-			if (yMouseInverted >= this.PanelHeightMinusGutterBottomHeight_cached) return this.VisibleMinMinusTopSqueezer_cached;
+			if (yMouseInverted >= this.PanelHeight_minusGutterBottomHeight_cached) return this.VisibleMinMinusTopSqueezer_cached;
 			int yStraight = yInverted(yMouseInverted);
-			double yAsPartOfPlot = yStraight / (double) this.PanelHeightMinusGutterBottomHeight_cached;
+			double yAsPartOfPlot = yStraight / (double) this.PanelHeight_minusGutterBottomHeight_cached;
 			double PartOfVisibleRange = this.VisibleRangeWithTwoSqueezers_cached * yAsPartOfPlot;
 			double ret = this.VisibleMinMinusTopSqueezer_cached + PartOfVisibleRange;
 			return ret;
 		}
 		int yInverted(int y) {
-			int yInverted = this.PanelHeightMinusGutterBottomHeight_cached - y;
+			int yInverted = this.PanelHeight_minusGutterBottomHeight_cached - y;
 			return yInverted;
 		}
 		public int AdjustToPanelHeight(int y) {
 			if (y < 0) y = 0;
-			if (y > this.PanelHeightMinusGutterBottomHeight_cached) y = this.PanelHeightMinusGutterBottomHeight_cached;
+			if (y > this.PanelHeight_minusGutterBottomHeight_cached) y = this.PanelHeight_minusGutterBottomHeight_cached;
 			return y;
 		}
 		int adjustToBoundariesHorizontalGutter(int x, int width) {

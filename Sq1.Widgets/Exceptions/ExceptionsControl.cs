@@ -205,13 +205,15 @@ namespace Sq1.Widgets.Exceptions {
 			}
 		}
 
-		public void InsertAsyncAutoFlush(Exception ex) {
+		public void InsertAsync_autoFlush(Exception ex) {
 			if (base.InvokeRequired) {	// waiting for WindowHandle to be created
 				//base.BeginInvoke((MethodInvoker)delegate() { this.populateWindowsTitle(); });
 				//base.BeginInvoke(new MethodInvoker(this.populateWindowsTitle));
-				base.BeginInvoke((MethodInvoker)delegate() { this.InsertAsyncAutoFlush(ex); });
+				base.BeginInvoke((MethodInvoker)delegate() { this.InsertAsync_autoFlush(ex); });
 				return;
 			}
+
+			int flushedStartup = this.flushStartupExceptions_toBuffered();
 
 			this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(ex);
 			this.exceptionLastDate_notFlushedYet = DateTime.Now;
@@ -225,6 +227,26 @@ namespace Sq1.Widgets.Exceptions {
 			//v2
 			base.Timed_flushingToGui.ScheduleOnce_postponeIfAlreadyScheduled();
 			//base.Timed_flushingToGui.ScheduleOnce();
+		}
+
+		int flushStartupExceptions_toBuffered() {
+			int ret = 0;
+			if (Assembler.InstanceInitialized.ExceptionsWhileInstantiating.Count > 0) {
+				foreach (Exception beforeFormInstantiated in Assembler.InstanceInitialized.ExceptionsWhileInstantiating) {
+					this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(beforeFormInstantiated);
+					ret++;
+				}
+				Assembler.InstanceInitialized.ExceptionsWhileInstantiating.Clear();
+			}
+
+			if (Assembler.InstanceInitialized.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle.Count > 0) {
+				foreach (Exception excStartup in Assembler.InstanceInitialized.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle) {
+					this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(excStartup);
+					ret++;
+				}
+				Assembler.InstanceInitialized.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle.Clear();
+			}
+			return ret;
 		}
 
 		void flushExceptionsToOLV_switchToGuiThread() {
@@ -260,6 +282,7 @@ namespace Sq1.Widgets.Exceptions {
 				}
 				try {
 					this.exceptions_notFlushedYet.WaitAndLockFor(this, msig);		// avoiding CollectionModified Exception - I employed WatchDog to tell (and silently resolve by sequencing) me which thread inserts while another thread is enumerating
+					int flushedStartup = this.flushStartupExceptions_toBuffered();
 					List<Exception> buffered = this.exceptions_notFlushedYet.SafeCopy(this, msig);
 					foreach (Exception ex in buffered) {
 						bool time4exAdded	= this.exceptionTimes	.Add(ex, DateTime.Now	, this, msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, true);
@@ -320,8 +343,13 @@ namespace Sq1.Widgets.Exceptions {
 			// ALWAYS_SCHEDULED_AFTER_ANY_NEWCOMER_BUFFERED_OR_FLUSHED ret += this.timerFlushToGui_noNewcomersWithinDelay.Scheduled ? "BUFFERING " : "";
 			// ALREADY_PRINTED_2_LINES_LATER ret += this.exceptions_notFlushedYet.Count ? "BUFFERING " : "";
 			ret += this.Exceptions.Count.ToString("000");
-			//if (this.exceptions_notFlushedYet.Count > 0)
-				ret += "/" + this.exceptions_notFlushedYet.Count.ToString("000") + "buffered";
+			ret += "/" + this.exceptions_notFlushedYet.Count.ToString("000") + "buffered";
+
+			List<Exception> exStartup = Assembler.InstanceInitialized.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle;
+			if (exStartup != null && exStartup.Count > 0) {
+				ret += "/" + exStartup.Count.ToString("000") + "startup";
+			}
+
 			ret += base.FlushingStats;
 			return ret;
 		}

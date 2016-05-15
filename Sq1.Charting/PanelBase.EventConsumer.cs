@@ -234,7 +234,7 @@ namespace Sq1.Charting {
 					Assembler.PopupException(msg);
 				}
 				//v1
-				if (this.VisibleBarRight_cached > this.ValueIndexLastAvailableMinusOneUnsafe) {
+				if (this.VisibleBarRight_cached > this.ValueIndexLastAvailable_minusOneUnsafe) {
 					return;
 				}
 				//v2
@@ -251,7 +251,7 @@ namespace Sq1.Charting {
 					return;
 				}
 	
-				this.BarWidthIncludingPadding_cached	= this.ChartControl.ChartSettingsIndividual.BarWidthIncludingPadding;
+				this.BarWidth_includingPadding_cached	= this.ChartControl.ChartSettingsIndividual.BarWidthIncludingPadding;
 				this.BarWidthMinusRightPadding_cached	= this.ChartControl.ChartSettingsIndividual.BarWidthMinusRightPadding;
 				this.BarShadowXoffset_cached			= this.ChartControl.ChartSettingsIndividual.BarShadowXoffset;
 				
@@ -264,10 +264,10 @@ namespace Sq1.Charting {
 //						&& this.PanelHeightMinusGutterBottomHeight_cached != this.PanelHeightMinusGutterBottomHeight) {
 //					Debugger.Break();
 //				}
-				this.PanelHeightMinusGutterBottomHeight_cached = this.PanelHeightMinusGutterBottomHeight;
-				if (this.PanelHeightMinusGutterBottomHeight_cached <= 0) {
+				this.PanelHeight_minusGutterBottomHeight_cached = this.PanelHeight_minusGutterBottomHeight;
+				if (this.PanelHeight_minusGutterBottomHeight_cached <= 0) {
 					string msg = "WASTED_ASSIGNMENT_WILL_THROW_SOON"
-						+ " this.PanelHeightMinusGutterBottomHeight[" + this.PanelHeightMinusGutterBottomHeight_cached + "]<=0";
+						+ " this.PanelHeightMinusGutterBottomHeight[" + this.PanelHeight_minusGutterBottomHeight_cached + "]<=0";
 					Assembler.PopupException(msg, null, false);
 				}
 				

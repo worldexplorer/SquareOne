@@ -424,7 +424,7 @@ namespace Sq1.Core.Streaming {
 				}
 			}
 			// #2/3 livesim => don't pause, just exit
-			if (backtesterOrLivesimAdding is Livesimulator) {
+			if (backtesterOrLivesimAdding.IsLivesimulator) {
 				//if (this.ImPumpNotQueue) {
 					string msg = "YOU_RUINED_THE_CONCEPT_OF_HAVING_LIVESIM_AS_A_TEST_FOR_LIVE_STREAMING"
 						//+ " YOU_SUBSCRIBED_LIVESIM_BARS_IN_SINGLE_THREADED_QUEUE__MUST_BE_A_PUMP_JUST_LIKE_FOR_QUIK_STREAMING"
@@ -457,7 +457,7 @@ namespace Sq1.Core.Streaming {
 				//return;
 			}
 			// #2/3 livesim => don't unpause, just exit
-			if (backtesterOrLivesimRemoving is Livesimulator) {
+			if (backtesterOrLivesimRemoving.IsLivesimulator) {
 				//if (this.ImPumpNotQueue) {
 					string msg = "YOU_RUINED_THE_CONCEPT_OF_HAVING_LIVESIM_AS_A_TEST_FOR_LIVE_STREAMING"
 						//+ " YOU_SUBSCRIBED_LIVESIM_BARS_IN_SINGLE_THREADED_QUEUE__MUST_BE_A_PUMP_JUST_LIKE_FOR_QUIK_STREAMING"

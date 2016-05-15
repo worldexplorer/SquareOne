@@ -31,9 +31,37 @@ namespace Sq1.Charting {
 		public double PriceAtBeyondBarRectangle { get {
 				double ret;
 				if (this.AboveBar) {
-					ret = this.ArrowIsForPositionEntry ? this.Position.EntryBar.High : this.Position.ExitBar.High;
+					//v1 ret = this.ArrowIsForPositionEntry ? this.Position.EntryBar.High : this.Position.ExitBar.High;
+					//v2
+					if (this.ArrowIsForPositionEntry) {
+						ret = this.Position.EntryBar.High;
+						if (ret < this.Position.EntryFilled_price) {
+							ret = this.Position.EntryFilled_price;
+							string msg = "placing arrow on a filled blue circle above Bar.High - BrokerAdapter filled the Limit from previous (higher) bar that allowed such price";
+						}
+					} else {
+						ret = this.Position.ExitBar.High;
+						if (ret < this.Position.ExitFilled_price) {
+							ret = this.Position.ExitFilled_price;
+							string msg = "placing arrow on a filled blue circle above Bar.High - BrokerAdapter filled the Limit from previous (higher) bar that allowed such price";
+						}
+					}
 				} else {
-					ret = this.ArrowIsForPositionEntry ? this.Position.EntryBar.Low : this.Position.ExitBar.Low;
+					//v1 ret = this.ArrowIsForPositionEntry ? this.Position.EntryBar.Low : this.Position.ExitBar.Low;
+					//v2
+					if (this.ArrowIsForPositionEntry) {
+						ret = this.Position.EntryBar.Low;
+						if (ret > this.Position.EntryFilled_price) {
+							ret = this.Position.EntryFilled_price;
+							string msg = "placing arrow on a filled blue circle below Bar.Low - BrokerAdapter filled the Limit from previous (lower) bar that allowed such price";
+						}
+					} else {
+						ret = this.Position.ExitBar.Low;
+						if (ret > this.Position.ExitFilled_price) {
+							ret = this.Position.ExitFilled_price;
+							string msg = "placing arrow on a filled blue circle below Bar.Low - BrokerAdapter filled the Limit from previous (lower) bar that allowed such price";
+						}
+					}
 				}
 //				if (this.AboveBar) {
 //					ret = this.ArrowIsForPositionEntry ? this.Position.EntryBar.BarPrevious.High : this.Position.ExitBar.BarPrevious.High;

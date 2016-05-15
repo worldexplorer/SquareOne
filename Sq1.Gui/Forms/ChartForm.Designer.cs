@@ -367,10 +367,12 @@ namespace Sq1.Gui.Forms {
 			this.MniShowSprintMonitor.Name = "MniShowSprintMonitor";
 			this.MniShowSprintMonitor.Size = new System.Drawing.Size(283, 22);
 			this.MniShowSprintMonitor.Text = "Show Sprint Monitor";
+			this.MniShowSprintMonitor.Visible = false;
 			// 
 			// MniShowExecution
 			// 
 			this.MniShowExecution.Enabled = false;
+			this.MniShowExecution.Visible = false;
 			this.MniShowExecution.Name = "MniShowExecution";
 			this.MniShowExecution.Size = new System.Drawing.Size(283, 22);
 			this.MniShowExecution.Text = "Show Order Execution";

@@ -45,10 +45,10 @@ namespace Sq1.Core.Backtesting {
 				return this.QuotesGeneratedSoFar + " / " + this.QuotesTotalToGenerate;
 			} }
 
-		public bool						ImLivesimulator					{ get { return (this as Livesimulator) != null; } }
-		public bool						ImBacktestingOrLivesimming		{ get { return this.BacktestIsRunningMre.WaitOne(0); } }
-		public bool						ImRunningChartlessBacktesting	{ get { return this.ImBacktestingOrLivesimming == true && this.ImLivesimulator == false; } }
-		public bool						ImRunningLivesim				{ get { return this.ImBacktestingOrLivesimming == true && this.ImLivesimulator == true; } }
+		public bool						IsLivesimulator							{ get { return this is Livesimulator; } }
+		public bool						ImBacktestingOrLivesimming				{ get { return this.BacktestIsRunningMre.WaitOne(0); } }
+		public bool						ImRunningChartless_backtestOrSequencing	{ get { return this.ImBacktestingOrLivesimming == true && this.IsLivesimulator == false; } }
+		public bool						ImRunningLivesim						{ get { return this.ImBacktestingOrLivesimming == true && this.IsLivesimulator == true; } }
 
 		public bool						WasBacktestAborted				{ get {
 				if (this.QuotesGenerator == null) {
@@ -378,7 +378,7 @@ namespace Sq1.Core.Backtesting {
 				return;
 			}
 
-			List<QuoteGenerated> quotesGenerated = this.QuotesGenerator.Generate_quotesFromBar_avoidClearing(bar2simulate);
+			List<QuoteGenerated> quotesGenerated = this.QuotesGenerator.Generate_quotesFromBar_avoidClearing_StreamingAdaterWontPushOutOfMarket(bar2simulate);
 			if (quotesGenerated == null) return;
 
 			for (int i = 0; i < quotesGenerated.Count; i++) {

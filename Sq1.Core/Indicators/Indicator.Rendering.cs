@@ -59,7 +59,7 @@ namespace Sq1.Core.Indicators {
 					Assembler.PopupException(msg2 + msig, null, false);
 					return indicatorLegDrawn;
 				}
-				if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+				if (this.Executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 					return indicatorLegDrawn;		// WHY? DONT_DELETE_ME
 				}
 				if (this.Executor.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false) {

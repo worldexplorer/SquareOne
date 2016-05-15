@@ -18,10 +18,10 @@ namespace Sq1.Charting {
 				}
 				this.ChartControl.GutterRightWidth_cached = catchingZero; 
 				Rectangle gutterRightRect = default(Rectangle);
-				gutterRightRect.X = this.PanelWidthMinusRightPriceGutter;
+				gutterRightRect.X = this.PanelWidth_minusRightPriceGutter;
 				gutterRightRect.Width = this.ChartControl.GutterRightWidth_cached;
 				gutterRightRect.Y = 0;
-				gutterRightRect.Height = this.PanelHeightMinusGutterBottomHeight;
+				gutterRightRect.Height = this.PanelHeight_minusGutterBottomHeight;
 				try {
 					g.FillRectangle(this.ChartControl.ChartSettingsTemplated.BrushGutterRightBackground, gutterRightRect);
 				} catch (Exception ex) {
@@ -32,7 +32,7 @@ namespace Sq1.Charting {
 				Rectangle gutterBottomRect = default(Rectangle);
 				gutterBottomRect.X = 0;
 				gutterBottomRect.Width = base.Width;
-				gutterBottomRect.Y = this.PanelHeightMinusGutterBottomHeight;
+				gutterBottomRect.Y = this.PanelHeight_minusGutterBottomHeight;
 				gutterBottomRect.Height = this.GutterBottomHeight_cached;
 				try {
 					g.FillRectangle(this.ChartControl.ChartSettingsTemplated.BrushGutterBottomBackground, gutterBottomRect);
@@ -54,9 +54,9 @@ namespace Sq1.Charting {
 				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
-			if (this.PanelHeightMinusGutterBottomHeight_cached <= 0) {
+			if (this.PanelHeight_minusGutterBottomHeight_cached <= 0) {
 				string msg = "[" + this.PanelName + "]-PANEL_HEIGHT_MUST_BE_POSITIVE_this.PanelHeightMinusGutterBottomHeight_cached["
-					+ this.PanelHeightMinusGutterBottomHeight_cached + "]";
+					+ this.PanelHeight_minusGutterBottomHeight_cached + "]";
 				msg += "; this.ChartSettings.ScrollPositionAtBarIndex seems to be ZERO (Chartontrol.cs:82) => move the slider to change&serialize";
 				Assembler.PopupException(msg + msig, null, false);
 				return;
@@ -77,7 +77,7 @@ namespace Sq1.Charting {
 						mouseY = this.ValueToYinverted(panelValueForBarMouseOvered);
 					} else {
 						string msg = "DRAWING_CURRENT_JUMPING_STREAMING_VALUE_ON_GUTTER_SINCE_MOUSE_WENT_OUT_OF_BOUNDARIES";
-						int lastIndex = this.ValueIndexLastAvailableMinusOneUnsafe;
+						int lastIndex = this.ValueIndexLastAvailable_minusOneUnsafe;
 						if (double.IsNaN(lastIndex) == false) {
 							double lastValue = this.ValueGetNaNunsafe(lastIndex);
 							if (double.IsNaN(lastValue)) {
@@ -99,7 +99,7 @@ namespace Sq1.Charting {
 				int minDistanceInFontHeights = this.ThisPanelIsPricePanel ? 3 : 2;
 				int minDistancePixels = minDistanceInFontHeights * this.GutterRightFontHeight_cached;
 				//int panelHeightPlusSqueezers = this.PanelHeightMinusGutterBottomHeight_cached + this.PaddingVerticalSqueeze * 2;
-				int panelHeightPlusSqueezers = this.PanelHeightMinusGutterBottomHeight_cached;
+				int panelHeightPlusSqueezers = this.PanelHeight_minusGutterBottomHeight_cached;
 				double howManyLinesWillFit = panelHeightPlusSqueezers / (double)minDistancePixels;
 				double gridStep = this.calculateOptimalVeritcalGridStep(this.VisibleRangeWithTwoSqueezers_cached, howManyLinesWillFit);
 				double extraOverFound = this.VisibleMinMinusTopSqueezer_cached % gridStep;	// 6447 % 50 = 47
@@ -112,7 +112,7 @@ namespace Sq1.Charting {
 					int gridY = this.ValueToYinverted(gridPrice);
 					try {
 						if (this.ChartControl.ChartSettingsTemplated.GridlinesHorizontalShow) {
-							g.DrawLine(this.ChartControl.ChartSettingsTemplated.PenGridlinesHorizontal, 0, gridY, this.PanelWidthMinusRightPriceGutter-1, gridY);
+							g.DrawLine(this.ChartControl.ChartSettingsTemplated.PenGridlinesHorizontal, 0, gridY, this.PanelWidth_minusRightPriceGutter-1, gridY);
 						}
 					} catch (Exception ex) {
 						Assembler.PopupException(null, ex, false);
@@ -135,7 +135,7 @@ namespace Sq1.Charting {
 							mouseY = this.ValueToYinverted(panelValueForBarMouseOvered);
 						} else {
 							string msg = "DRAWING_CURRENT_JUMPING_STREAMING_VALUE_ON_GUTTER_SINCE_MOUSE_WENT_OUT_OF_BOUNDARIES";
-							int lastIndex = this.ValueIndexLastAvailableMinusOneUnsafe;
+							int lastIndex = this.ValueIndexLastAvailable_minusOneUnsafe;
 							if (double.IsNaN(lastIndex) == false) {
 								double lastValue = this.ValueGetNaNunsafe(lastIndex);
 								if (double.IsNaN(lastValue)) {
@@ -210,7 +210,7 @@ namespace Sq1.Charting {
 				}
 				//this.ChartControl.ChartSettings.PenGridlinesVerticalNewDate.Width = 2f;
 				int leftPadding = this.ChartControl.ChartSettingsTemplated.GutterBottomPadding;
-				int y = this.PanelHeightMinusGutterBottomHeight_cached + leftPadding;
+				int y = this.PanelHeight_minusGutterBottomHeight_cached + leftPadding;
 				List<Rectangle> barDateLabelsAlreadyDrawn = new List<Rectangle>();
 				
 				// I draw the beginning of the day no matter what
@@ -231,12 +231,12 @@ namespace Sq1.Charting {
 					//}
 					
 					Bar barOpenerPrevDay = this.ChartControl.Bars[this.visibleBarRightExisting];
-					int barPrevX = this.PanelWidthMinusRightPriceGutter - this.BarWidthIncludingPadding_cached;
-					for (int i = this.visibleBarRightExisting - 1; i >= this.visibleBarLeftExisting; i--, barPrevX -= this.BarWidthIncludingPadding_cached) {
+					int barPrevX = this.PanelWidth_minusRightPriceGutter - this.BarWidth_includingPadding_cached;
+					for (int i = this.visibleBarRightExisting - 1; i >= this.visibleBarLeftExisting; i--, barPrevX -= this.BarWidth_includingPadding_cached) {
 						Bar bar = this.ChartControl.Bars[i];
 						if (bar.DateTimeOpen.Day == barOpenerPrevDay.DateTimeOpen.Day) continue;
 						if (this.ChartControl.ChartSettingsTemplated.GridlinesVerticalShow) {
-							g.DrawLine(this.ChartControl.ChartSettingsTemplated.PenGridlinesVerticalNewDate, barPrevX, 0, barPrevX, this.PanelHeightMinusGutterBottomHeight_cached - 1);
+							g.DrawLine(this.ChartControl.ChartSettingsTemplated.PenGridlinesVerticalNewDate, barPrevX, 0, barPrevX, this.PanelHeight_minusGutterBottomHeight_cached - 1);
 						}
 						
 						string barDayOpener = barOpenerPrevDay.DateTimeOpen.ToString(this.ChartControl.ChartSettingsTemplated.GutterBottomDateFormatDayOpener);
@@ -260,8 +260,8 @@ namespace Sq1.Charting {
 				}
 				
 				//this.ChartControl.ChartSettings.PenGridlinesVertical.Width = 1f;
-				int barMiddleX = this.PanelWidthMinusRightPriceGutter - this.BarWidthIncludingPadding_cached + this.BarShadowXoffset_cached;
-				for (int i = this.visibleBarRightExisting; i >= this.visibleBarLeftExisting; i--, barMiddleX -= this.BarWidthIncludingPadding_cached) {
+				int barMiddleX = this.PanelWidth_minusRightPriceGutter - this.BarWidth_includingPadding_cached + this.BarShadowXoffset_cached;
+				for (int i = this.visibleBarRightExisting; i >= this.visibleBarLeftExisting; i--, barMiddleX -= this.BarWidth_includingPadding_cached) {
 					Bar bar = this.ChartControl.Bars[i];
 					if (isIntraday_cached && bar.DateTimeOpen.Minute > 0) continue;
 					string dateFormatted = bar.DateTimeOpen.ToString(this.formatForBars);
@@ -278,7 +278,7 @@ namespace Sq1.Charting {
 					}
 					if (tooCrowded) continue;
 					if (this.ChartControl.ChartSettingsTemplated.GridlinesVerticalShow) {
-						g.DrawLine(this.ChartControl.ChartSettingsTemplated.PenGridlinesVertical, barMiddleX, 0, barMiddleX, this.PanelHeightMinusGutterBottomHeight_cached - 1);
+						g.DrawLine(this.ChartControl.ChartSettingsTemplated.PenGridlinesVertical, barMiddleX, 0, barMiddleX, this.PanelHeight_minusGutterBottomHeight_cached - 1);
 					}
 					g.DrawString(dateFormatted, this.ChartControl.ChartSettingsTemplated.GutterBottomFont, this.ChartControl.ChartSettingsTemplated.BrushGutterBottomForeground, xLabel, y);
 					barDateLabelsAlreadyDrawn.Add(proposal);
@@ -342,7 +342,7 @@ namespace Sq1.Charting {
 			return magMsd * magPow;
 		}
 		protected void RenderBarHistogram(Graphics graphics, int barX, int barYVolumeInverted, bool fillDownCandleBody) {
-			int histogramBarHeight = this.PanelHeightMinusGutterBottomHeight_cached - barYVolumeInverted;		// height is measured DOWN the screen from candleBodyInverted.Y, not UP
+			int histogramBarHeight = this.PanelHeight_minusGutterBottomHeight_cached - barYVolumeInverted;		// height is measured DOWN the screen from candleBodyInverted.Y, not UP
 			if (histogramBarHeight < 0) {
 				string msg = "NEVER_HAPPENED_SO_FAR histogramBarHeight[" + histogramBarHeight + "] < 0";
 				Assembler.PopupException(msg);
@@ -440,7 +440,7 @@ namespace Sq1.Charting {
 //				candleBodyInverted.Y = barYHighInverted;					// drawing down, since Y grows down the screen from left upper corner (0:0)
 //				candleBodyInverted.Height = candleBodyHeight;
 
-				barX -= this.BarWidthIncludingPadding_cached;
+				barX -= this.BarWidth_includingPadding_cached;
 				foreach (Indicator indicator in indicators.Values) {
 					if (indicator.HostPanelForIndicator != this) continue;
 					if (bar.ParentBarsIndex <= indicator.FirstValidBarIndex) continue;

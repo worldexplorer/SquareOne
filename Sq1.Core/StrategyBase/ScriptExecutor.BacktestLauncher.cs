@@ -55,6 +55,11 @@ namespace Sq1.Core.StrategyBase {
 			this.EventGenerator.RaiseOnBacktesterSimulationContextInitialized_step2of4();
 		}
 		internal void BacktestContext_restore() {
+			if (this.preBacktestBars == null) {
+				string msg = "AVOIDING_NPE YOU_DIDNT_BACKUP_BARS_BEFORE_LIVESIM";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
 			this.Bars = this.preBacktestBars;
 			string msig = " //BacktestContextRestore(" + this.Bars + ")";
 			foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Values) {
@@ -74,7 +79,7 @@ namespace Sq1.Core.StrategyBase {
 			this.EventGenerator.RaiseOnBacktesterContextRestoredAfterExecutingAllBars_step4of4(null);
 		}
 		public void Backtester_abortIfRunning_restoreContext() {
-			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) return;
+			if (this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing == false) return;
 			// TODO INTRODUCE_NEW_MANUAL_RESET_SO_THAT_NEW_BACKTEST_WAITS_UNTIL_TERMINATION_OF_THIS_METHOD_TO_AVOID_BROKEN_DISTRIBUTION_CHANNELS
 			this.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted("USER_CHANGED_SELECTORS_IN_GUI_NEW_BACKTEST_IS_ALMOST_TASK.SCHEDULED");
 			//ALREADY_RESTORED_BY_simulationPostBarsRestore() this.BacktestContextRestore();
@@ -98,9 +103,10 @@ namespace Sq1.Core.StrategyBase {
 			}
 			
 			if (backtestException == null) {
-				if (this.BacktesterOrLivesimulator.ImRunningLivesim == false) {		// && this.WasBacktestAborted
+				//if (this.BacktesterOrLivesimulator.ImRunningLivesim == false) {					// && this.WasBacktestAborted
+				if (this.BacktesterOrLivesimulator.IsLivesimulator == false) {	// && this.WasBacktestAborted
 					try {
-						this.PerformanceAfterBacktest.BuildStatsOnBacktestFinished();
+						this.PerformanceAfterBacktest.BuildStats_onBacktestFinished();
 					} catch (Exception exPerformance) {
 						string msg = "PERFORMANCE_THREW_AFTER_BACKTEST_FINISHED_OKAY__NOT_RE-THROWING_NEED_TO_RESTORE_BACKTEST_CONTEXT_FINALLY";
 						Assembler.PopupException(msg, exPerformance);
@@ -160,7 +166,7 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 
-			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+			if (this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 				this.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted("ALREADY_BACKTESTING_this.Backtester.IsBacktestingNow");
 			}
 
@@ -168,12 +174,12 @@ namespace Sq1.Core.StrategyBase {
 
 			//inNewThread = false;
 			if (inNewThread) {
-				int ThreadPoolAvailablePercentageLimit = 20;
+				int threadPoolAvailablePercentageLimit = 20;
 				int threadPoolAvailablePercentage = this.getThreadPoolAvailable_percentage();
-				if (threadPoolAvailablePercentage < ThreadPoolAvailablePercentageLimit) {
+				if (threadPoolAvailablePercentage < threadPoolAvailablePercentageLimit) {
 					string msg = "NOT_SCHEDULING_RUN_SIMULATION QueueUserWorkItem(backtesterRunSimulationThreadEntryPoint)"
 						+ " because threadPoolAvailablePercentage[" + threadPoolAvailablePercentage
-						+ "]<" + ThreadPoolAvailablePercentageLimit + "%";
+						+ "]<" + threadPoolAvailablePercentageLimit + "%";
 					#if DEBUG
 					Debugger.Break();
 					#endif

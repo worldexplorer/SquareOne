@@ -64,7 +64,7 @@ namespace Sq1.Core.StrategyBase {
 			if (position.Prototype != null) {
 				if (signalName.Contains("protoTakeProfitExit")
 					&& position.Prototype.TakeProfitAlert_forMoveAndAnnihilation != null
-					&& this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
+					&& this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing == false) {
 					string msg = "I won't create another protoTakeProfitExit because"
 						+ " position.Prototype.TakeProfitAlertForAnnihilation != null"
 						+ " position[" + position + "]";
@@ -73,7 +73,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				if (signalName.Contains("protoStopLossExit")
 					&& position.Prototype.StopLossAlert_forMoveAndAnnihilation != null
-					&& this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
+					&& this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing == false) {
 					string msg = "I won't create another protoStopLossExit because"
 						+ " position.Prototype.StopLossAlertForAnnihilation != null"
 						+ " position[" + position + "]";

@@ -130,7 +130,7 @@ namespace Sq1.Gui {
 					parentChart = this.GuiDataSnapshot.FindChartFormsManager_bySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
 					string typeFullName = persistedParsedToHash["ReporterWrapped"];
-					ret = parentChart.ReportersFormsManager.ReporterActivateShowRegisterMniTick(typeFullName);
+					ret = parentChart.ReportersFormsManager.ReporterActivateShowRegister_mniClicked(typeFullName);
 					break;
 
 				case ("ScriptEditor"):

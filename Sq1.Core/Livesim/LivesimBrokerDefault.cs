@@ -99,7 +99,13 @@ namespace Sq1.Core.Livesim {
 			// so that after keeping the pointer I could launch another new Task
 			// that's also why I used lock(base.threadEntryLockToHaveBarQuoteSentToThread)
 			//Thread.Sleep(10);
-			bool iCanContinue = quotePointerCaptured.WaitOne(1000);
+
+			int waitingForever_becauseMreWillBeDisposed_ifVisualStudioIsPaused_forAnotherExceptionFromAnotherThread = -1;
+			#if DEBUG
+				//waitingForever_becauseMreWillBeDisposed_ifVisualStudioIsPaused_forAnotherExceptionFromAnotherThread = 1000;
+			#endif
+
+			bool iCanContinue = quotePointerCaptured.WaitOne(waitingForever_becauseMreWillBeDisposed_ifVisualStudioIsPaused_forAnotherExceptionFromAnotherThread);
 			quotePointerCaptured.Dispose();
 			//"CAN_BE_DISPOSED_ONLY_IF_RAN_TILL_COMPLETION...." t.Dispose();
 			quotePointerCaptured = null;

@@ -19,11 +19,11 @@ namespace Sq1.Core.Execution {
 		public	bool	AnyScriptOverridenMethodIsRunningNowBlockingRead { get {
 			bool ret =	IsScriptRunningOnBarStaticLastNonBlockingRead;
 			ret		|=	IsScriptRunningOnNewQuoteNonBlockingRead;
-			ret		|=	IsScriptRunningOnAlertFilledNonBlockingRead;
+			ret		|=	IsScriptRunning_onAlertFilled_nonBlockingRead;
 			ret		|=	IsScriptRunningOnAlertKilledNonBlockingRead;
 			ret		|=	IsScriptRunningOnAlertNotSubmittedNonBlockingRead;
 			ret		|=	IsScriptRunningOnPositionOpenedNonBlockingRead;
-			ret		|=	IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead;
+			ret		|=	IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlockingRead;
 			ret		|=	IsScriptRunningOnPositionClosedNonBlockingRead;
 			ret		|=	IsScriptRunningOnStreamingTriggeringScriptTurnedOnNonBlockingRead;
 			ret		|=	IsScriptRunningOnStreamingTriggeringScriptTurnedOffNonBlockingRead;
@@ -40,7 +40,7 @@ namespace Sq1.Core.Execution {
 			get { return this.ScriptRunningOnNewQuote.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnNewQuote.Set();
 								else this.ScriptRunningOnNewQuote.Reset(); } }
-		public bool IsScriptRunningOnAlertFilledNonBlockingRead						{
+		public bool IsScriptRunning_onAlertFilled_nonBlockingRead						{
 			get { return this.ScriptRunningOnAlertFilled.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnAlertFilled.Set();
 								else this.ScriptRunningOnAlertFilled.Reset(); } }
@@ -56,7 +56,7 @@ namespace Sq1.Core.Execution {
 			get { return this.ScriptRunningOnPositionOpened.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnPositionOpened.Set();
 								else this.ScriptRunningOnPositionOpened.Reset(); } }
-		public bool IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead	{
+		public bool IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlockingRead	{
 			get { return this.ScriptRunningOnPositionOpenedPrototypeSlTpPlaced.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnPositionOpenedPrototypeSlTpPlaced.Set();
 								else this.ScriptRunningOnPositionOpenedPrototypeSlTpPlaced.Reset(); } }
@@ -85,10 +85,10 @@ namespace Sq1.Core.Execution {
 			string ret = "";
 			if (this.IsScriptRunningOnBarStaticLastNonBlockingRead)							ret += "OnBarStaticLast,";
 			if (this.IsScriptRunningOnNewQuoteNonBlockingRead)								ret += "OnNewQuote,";
-			if (this.IsScriptRunningOnAlertFilledNonBlockingRead)							ret += "OnAlertFilled,";
+			if (this.IsScriptRunning_onAlertFilled_nonBlockingRead)							ret += "OnAlertFilled,";
 			if (this.IsScriptRunningOnAlertNotSubmittedNonBlockingRead)						ret += "OnAlertNotSubmitted,";
 			if (this.IsScriptRunningOnPositionOpenedNonBlockingRead)						ret += "OnPositionOpened,";
-			if (this.IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead)		ret += "OnPositionOpenedPrototypeSlTpPlaced,";
+			if (this.IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlockingRead)		ret += "OnPositionOpenedPrototypeSlTpPlaced,";
 			if (this.IsScriptRunningOnPositionClosedNonBlockingRead)						ret += "PositionClosed,";
 			if (this.IsScriptRunningOnStreamingTriggeringScriptTurnedOnNonBlockingRead)		ret += "OnStreamingTriggeringScriptTurnedOn,";
 			if (this.IsScriptRunningOnStreamingTriggeringScriptTurnedOffNonBlockingRead)	ret += "OnStreamingTriggeringScriptTurnedOff,";
@@ -116,7 +116,7 @@ namespace Sq1.Core.Execution {
 			//WHATS_THE_POINT_THEN return;	//EXPLAIN_BETTER  POTENTIAL_RACE_CONDITIONs are all followed by lock(){} upstack, right?
 
 			if (this.AnyScriptOverridenMethodIsRunningNowBlockingRead == false) return;
-			if (this.executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+			if (this.executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 				string msg1 = "SKIPPING_CHECKS_FOR_BACKTESTER_SINCE_ITS_SINGLE_THREADED";
 				return;
 			}

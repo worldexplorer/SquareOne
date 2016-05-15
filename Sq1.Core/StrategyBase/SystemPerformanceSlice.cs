@@ -260,7 +260,7 @@ namespace Sq1.Core.StrategyBase {
 				this.CumulativeNetProfitPercent[positionClosedOrUpdating] = cumProfitPercent;
 			}
 		}
-		internal int BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(Position positionOpened) {
+		internal int BuildIncremental_brokerFilledAlertsOpening_forPositions_step1of3(Position positionOpened) {
 			int positionsOpenAbsorbedBoth = 0;
 			if (this.positionIsMineShouldAppendAndUpdate(positionOpened) == false) return positionsOpenAbsorbedBoth;
 			bool added = this.PositionsImTracking.AddOpened_step1of2(positionOpened, this, "BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)", ConcurrentWatchdog.TIMEOUT_DEFAULT, true);
@@ -279,7 +279,7 @@ namespace Sq1.Core.StrategyBase {
 
 			return positionsOpenAbsorbedBoth;
 		}
-		internal int BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(Position positionClosed) {
+		internal int BuildReportIncremental_brokerFilledAlertsClosing_forPositions_step3of3(Position positionClosed) {
 			int positionsClosedAbsorbedBoth = 0;
 			if (this.positionIsMineShouldAppendAndUpdate(positionClosed) == false) return positionsClosedAbsorbedBoth; 
 			bool added = this.PositionsImTracking.AddToClosedDictionary_step2of2(positionClosed, this, "BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)", ConcurrentWatchdog.TIMEOUT_DEFAULT, true);
@@ -294,7 +294,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return positionsClosedAbsorbedBoth;
 		}
-		internal int BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(PositionList positionsOpenNow) {
+		internal int BuildIncremental_openPositionsUpdated_dueToStreamingNewQuote_step2of3(PositionList positionsOpenNow) {
 			int positionsUpdatedAbsorbed = 0;
 
 			var byEntryBarFilledSafeCopySafeCopy = positionsOpenNow.ByEntryBarFilledSafeCopy(
@@ -323,7 +323,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return positionsUpdatedAbsorbed;
 		}
-		public int BuildStatsOnBacktestFinished(ReporterPokeUnit pokeUnit) {
+		public int BuildStats_onBacktestFinished(ReporterPokeUnit pokeUnit) {
 			int positionsOpenedAbsorbedToInternal = 0;
 			List<Position> openedSafe = pokeUnit.PositionsOpened.SafeCopy(this, "//BuildStatsOnBacktestFinished(WAIT)");
 			foreach (Position positionOpened in openedSafe) {

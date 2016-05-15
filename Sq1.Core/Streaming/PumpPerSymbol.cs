@@ -46,9 +46,10 @@ namespace Sq1.Core.Streaming {
 			get { return this.IsDisposed ? false : this.hasQuoteToPush.WaitOne(0); }
 			set {
 				if (this.IsDisposed) return;
-				if (value == hasQuoteToPush_nonBlocking) {
+				bool myOwn_currentValue_nonBlocking = this.hasQuoteToPush_nonBlocking;
+				if (value == myOwn_currentValue_nonBlocking) {
 					string msg = "DONT_INVOKE_ME_TWICE__I_DONT_WANNA_SIGNAL_AGAIN_THOSE_WHO_ARE_WAITING__YOU_HAVE_TO_FIX_IT";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
 					return;
 				}
 				if (value == true) this.hasQuoteToPush.Set();
@@ -56,16 +57,26 @@ namespace Sq1.Core.Streaming {
 			} }
 		bool hasQuoteToPush_blockingAtHeartBeatRate { get {
 			bool signalledTrue_expiredFalse = this.hasQuoteToPush.WaitOne(this.heartbeatTimeout);
-			if (this.signalledTo_pauseUnpauseAbort) {
-				if (signalledTrue_expiredFalse == false) {
-					string msg = "IMPOSSIBLE__MUST_BE_signalTo_pauseUnpauseAbort()_WAS_INVOKED_SECOND_TIME_BEFORE_I_EXECUTED_TWO_RESETS_BELOW__ADD_LOCK_STATEMENT?";
-					Assembler.PopupException(msg);
-				}
-				this.signalledTo_pauseUnpauseAbort = false;
-				Thread.Sleep(10);	// that helped somewhere else
-				// avoiding 100%CPU after livesim paused   original Solidifier/Charts pumps; was done by "fake gateway open" to process pauseRequested=true		in signalTo_pauseUnpauseAbort()
-				// avoiding 100%CPU after livesim unpaused original Solidifier/Charts pumps; was done by "fake gateway open" to process unPauseRequested=true	in signalTo_pauseUnpauseAbort()
-				this.hasQuoteToPush_nonBlocking  = false;
+			if (this.signalledTo_pauseUnpauseAbort == false) {
+				return signalledTrue_expiredFalse;
+			}
+
+			bool check_pausedBefore = this.Paused;
+
+			if (signalledTrue_expiredFalse == false) {
+				string msg = "IMPOSSIBLE__MUST_BE_signalTo_pauseUnpauseAbort()_WAS_INVOKED_SECOND_TIME_BEFORE_I_EXECUTED_TWO_RESETS_BELOW__ADD_LOCK_STATEMENT?";
+				Assembler.PopupException(msg, null, false);
+			}
+			this.signalledTo_pauseUnpauseAbort = false;
+			Thread.Sleep(10);	// that helped somewhere else
+			// avoiding 100%CPU after livesim paused   original Solidifier/Charts pumps; was done by "fake gateway open" to process pauseRequested=true		in signalTo_pauseUnpauseAbort()
+			// avoiding 100%CPU after livesim unpaused original Solidifier/Charts pumps; was done by "fake gateway open" to process unPauseRequested=true	in signalTo_pauseUnpauseAbort()
+			this.hasQuoteToPush_nonBlocking  = false;
+
+			bool check_pausedAfter = this.Paused;
+			if (check_pausedBefore == check_pausedAfter) {
+				string msg = "PAUSED_STATE_DIDNT_CHANGE__EXPECT_PROBLEMS " + this;
+				//LIVESIM_STREAMING_DEFAULT_WASNT_PUSHING_LEVEL2 Assembler.PopupException(msg, null, false);
 			}
 			return signalledTrue_expiredFalse;
 		} }
@@ -83,7 +94,10 @@ namespace Sq1.Core.Streaming {
 			base.UpdateThreadNameAfterMaxConsumersSubscribed = false;
 			//v1 NOPE_ITS_TOO_THICK_FOR_POST_CONSTRUCTOR_TIMES_this.PusherPause();	// ALL_PUMPS_AT_BIRTH_ARE_PAUSED__AVOIDING_INDICATORS_NOT_HAVING_EXECUTOR_AT_APP_RESTART_BACKTEST
 			this.confirmPaused.Set();		// IF_ON_APP_RESTART_WE_HAVE_BACKTESTS_SCHEDULED_SymbolCScaleDistributionChannel.PumpResumeBacktesterFinishedRemove()_WILL_UNPAUSE_AFTER_THEY_FINISH
-			this.pushingThread_Start_waitConfirmed();
+
+			bool waitConfirmed = false;		// true + -1 in others REASON_FOR_SLOW_STARTUP caused Livesim never starting
+			this.pushingThread_Start(waitConfirmed);
+
 			if (this.Paused) {
 				string msg = "PUSHER_THREAD_STARTED__DONT_FORGET_UNPAUSE " + this.ToString();
 #if DEBUG_STREAMING
@@ -127,7 +141,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig, ex);
 			}
 		}
-		void pushingThread_Start_waitConfirmed() {
+		void pushingThread_Start(bool waitConfirmed = true) {
 			string msig = " //pushingThreadStart isPushingThreadStarted[" + this.IsPushingThreadStarted + "]=>[" + true + "] " + this.ToString();
 			if (this.IsPushingThreadStarted == true) {
 				// this.simulationPreBarsSubstitute() waits for 10 seconds
@@ -143,11 +157,13 @@ namespace Sq1.Core.Streaming {
 			try {
 				this.confirmThreadStarted.Reset();
 				this.bufferPusher.Start();
-				bool startConfirmed = this.confirmThreadStarted.WaitOne(this.heartbeatTimeout * 4);
-				string msg = startConfirmed ? "PUMPING_THREAD_STARTED_CONFIRMED" : "PUMPING_THREAD_STARTED_NOT_CONFIRMED";
-				if (startConfirmed == false) {
-					msg = "ACCELERATE_APPSTARTUP_HERE " + msg;
-					Assembler.PopupException(msg + msig, null, false);
+				if (waitConfirmed) {
+					bool startConfirmed = this.confirmThreadStarted.WaitOne(this.heartbeatTimeout * 4);
+					string msg = startConfirmed ? "PUMPING_THREAD_STARTED_CONFIRMED" : "PUMPING_THREAD_STARTED_NOT_CONFIRMED";
+					if (startConfirmed == false) {
+						msg = "ACCELERATE_APPSTARTUP_HERE " + msg;
+						Assembler.PopupException(msg + msig, null, false);
+					}
 				}
 			} catch (Exception ex) {
 				string msg = "IMPOSSIBLE_HAPPENED_WHILE_PUSHING_THREAD_STARTING";
@@ -164,7 +180,10 @@ namespace Sq1.Core.Streaming {
 
 			//v1 this.hasQuoteToPush_nonBlocking = true;		//skip waiting and pause immediately, so that we won't wait next line
 			//v2
+			this.hasQuoteToPush.Reset();
+			Thread.Sleep(10);
 			this.hasQuoteToPush.Set();
+			// atHeartBeatRate will get unblocked, will see we wanted to pauseUnpauseAbort and will return to heartbeating Pump true meaning gotQuote or pauseUnpauseAbort...
 		}
 		void pusherEntryPoint() {
 			string msig = "THREW_PRIOR_TO_INITIALIZATION_pusherEntryPoint()";
@@ -209,8 +228,8 @@ namespace Sq1.Core.Streaming {
 
 					//DEBUGGING_100%CPU#2
 					mustBeHeartBeatInterval.Stop();
-					bool waitedLessThanHalfInterval = mustBeHeartBeatInterval.ElapsedMilliseconds < this.heartbeatTimeout / 2;
-					if (waitedLessThanHalfInterval
+					bool waitedLonger_thanHalfInterval = mustBeHeartBeatInterval.ElapsedMilliseconds >= this.heartbeatTimeout * 0.6;
+					if (waitedLonger_thanHalfInterval
 							//&& livesimThread
 						) {
 						string msg = "I_MUST_BE_IN_LIVESIM_OR_REAL"

@@ -200,6 +200,24 @@ namespace Sq1.Core.DataTypes {
 				ret = this.ParentBars.BarIndexExpectedMarketClosesTodaySinceMarketOpenSuggestBackwardForDateLaterOrEqual(this.DateTimeOpen);
 				return ret; 
 			}}
+
+		[JsonIgnore]	public bool IsMarketSuspended_forClearing_duringThisBar { get {
+			bool ret = false;
+			string msig = " //Bar.IsMarketSuspended_forClearing_duringThisBar; returning[" + ret + "]";
+			if (this.ParentBars == null) {
+				string msg = "ASK_MarketInfo_KOZ_PseudoBar_DOESNT_HAVE_ParentBars";
+				Assembler.PopupException(msg + msig);
+				return ret;
+			}
+			if (this.ParentBars.MarketInfo == null) {
+				string msg = "Bars_DOESNT_HAVE_MarketInfo";
+				Assembler.PopupException(msg + msig);
+				return ret;
+			}
+			ret = this.ParentBars.MarketInfo.IsMarketSuspended_forClearing_duringBar(this.DateTimeOpen, this.DateTime_nextBarOpen_unconditional);
+			return ret;
+		} }
+
 //		[JsonIgnore]	public int BarsDuringMarketOpenExpectedIncludingClearingIntervals { get {
 //				int ret = -1;
 //				if (this.HasParentBars == false) return ret;

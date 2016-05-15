@@ -40,7 +40,7 @@ namespace Sq1.Charting.Demo {
 			#region EXPERIMENTAL
 			Task t = new Task(delegate {
 				//v1 this.ExceptionControl.InsertSyncAndFlushExceptionsToOLVIfDockContentDeserialized_inGuiThread(ex);
-				this.ExceptionControl.InsertAsyncAutoFlush(ex);
+				this.ExceptionControl.InsertAsync_autoFlush(ex);
 				});
 			t.ContinueWith(delegate {
 				string msg2 = "TASK_THREW_ExceptionsForm.popupException()";

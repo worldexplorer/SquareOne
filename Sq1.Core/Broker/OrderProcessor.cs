@@ -279,9 +279,15 @@ namespace Sq1.Core.Broker {
 						// && order.Alert.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker
 							) {
 						if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) {
-							slippageByFact = order.PriceFilled - order.CurrentBid;
+							slippageByFact = priceFill - order.CurrentBid;
+							if (slippageByFact < 0) {
+								string msg = "do you really want a negative slippage?";
+							}
 						} else {
-							slippageByFact = order.PriceFilled - order.CurrentAsk;
+							slippageByFact = priceFill - order.CurrentAsk;
+							if (slippageByFact < 0) {
+								string msg = "do you really want a negative slippage?";
+							}
 						}
 					}
 

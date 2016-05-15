@@ -120,7 +120,7 @@ namespace Sq1.Reporters {
 			foreach (Position pos in safeCopy) {
 				if (this.positionsAll_reversedCached.Contains(pos)) {
 					string msg3 = "REPORTERS.POSITIONS_ALREADY_ADDED_BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3()";
-					Assembler.PopupException(msg3);
+					Assembler.PopupException(msg3, null);
 					continue;
 				}
 				this.positionsAll_reversedCached.Insert(0, pos);
@@ -188,7 +188,7 @@ namespace Sq1.Reporters {
 			StringBuilder sb = new StringBuilder();
 			sb.Append("#\tPosition\tSymbol\tShares\tEntry Date\tEntry Price\tExit Date\tExit Price\tProfit %\tProfit $\tBars Held\tProfit per bar\tEntry Name\tExit Name\tMAE %\tMFE %\tCumulProfit$\tCumulProfit%\n");
 			foreach (Position position in this.positionsAll_reversedCached) {
-				sb.Append(position.SernoAbs);
+				sb.Append(position.SernoPerStrategy);
 				sb.Append("\t");
 				sb.Append(position.PositionLongShort.ToString());
 				sb.Append("\t");

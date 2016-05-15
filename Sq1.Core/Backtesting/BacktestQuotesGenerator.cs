@@ -162,7 +162,7 @@ namespace Sq1.Core.Backtesting {
 				if (pendingsToFillInitially != pendingAfterInjected) {
 					string msg = " it looks like the quoteInjected triggered something";
 					//Assembler.PopupException(msg, null, false);
-					if (this.backtester.ImLivesimulator && this.backtester.Executor.Strategy.LivesimBrokerSettings.DelayBeforeFillEnabled) {
+					if (this.backtester.IsLivesimulator && this.backtester.Executor.Strategy.LivesimBrokerSettings.DelayBeforeFillEnabled) {
 						msg = "SEPARATE_MARKET_MODEL_WOULD_HELP_LAZY NO_ORDER_MUST_HAVE_BEEN_FILLED_WHILE_INJECTING__KOZ_LIVESIM_BROKER_EXECUTION_IS_DELAYED" + msg;
 						// NOTHING_WRONG_WITH_ALERT_FILLED_DURING_LIVESIM Assembler.PopupException(msg, null, false);
 					}
@@ -503,7 +503,7 @@ namespace Sq1.Core.Backtesting {
 			ret.AbsnoPerSymbol = quoteGenerated.AbsnoPerSymbol + 1;
 			return ret;
 		}
-		public virtual List<QuoteGenerated> Generate_quotesFromBar_avoidClearing(Bar barSimulated) {
+		public virtual List<QuoteGenerated> Generate_quotesFromBar_avoidClearing_StreamingAdaterWontPushOutOfMarket(Bar barSimulated) {
 			string msig = " //Generate_quotesFromBar_avoidClearing()";
 			this.Quotes_generatedForOneBar_amountDependsOnEngineType.Clear();
 
@@ -536,7 +536,7 @@ namespace Sq1.Core.Backtesting {
 			TimeSpan leftTillNextBar = barOpenNext - barOpenOrResume;
 			int incrementSeconds = ((int)(leftTillNextBar.TotalSeconds / this.BacktestStrokesPerBarAsInt));	// WRONG -1 one second less to not have exactly next bar opening at last stroke but 4 seconds before
 			TimeSpan timespanIncrementInterquote = new TimeSpan(0, 0, incrementSeconds);
-			TimeSpan timespanBarBeginningOffsetCumulative = new TimeSpan(0);
+			TimeSpan timespanBarBeginning_offsetCumulative = new TimeSpan(0);
 			
 			SymbolInfo symbolInfo = barSimulated.ParentBars.SymbolInfo;
 
@@ -558,20 +558,21 @@ namespace Sq1.Core.Backtesting {
 					throw new Exception(msg);
 				}
 
-				DateTime timeServerForStroke = barOpenOrResume + timespanBarBeginningOffsetCumulative;
+				DateTime timeServerForStroke = barOpenOrResume + timespanBarBeginning_offsetCumulative;
 				// for clearing[14:00...14:03].GetClearingResumes(14:00)=14:03, will be shifted now
 				DateTime timeClearingResumes = marketInfo.GetClearingResumes(timeServerForStroke);
 				if (timeClearingResumes != DateTime.MinValue && timeClearingResumes >= barOpenNext) {
 					string msg = "CLEARING_EXTENDS_BEOYND_BAR_SIMULATED SKIPPING_QUOTE_GENERATION_TILL_END_OF_BAR EXPECTING_BAR_INCREASE_UPSTACK";
 					Assembler.PopupException(msg, null, false);
+					//I_WANNA_SEE_LIVESIM_GOING_THORUGH_PREMARKET_BARS__AND_CLOSE_POSITIONS_ON_MARKET_CLOSE_FOR_THE_DAY!!!
 					break;
 				}
 				
-				bool recalcShrunkenIncrementDueToIntrabarClearing = false;
+				bool recalcShrunkenIncrement_dueToIntrabarClearing = false;
 				if (timeServerForStroke < timeClearingResumes) {
 					// 4quotes 1bar 5min @14:00: clearing[14:00...14:03] should produce 14:03.00 14:03.30 14:04.00 14:04.30
 					timeServerForStroke = timeClearingResumes;
-					recalcShrunkenIncrementDueToIntrabarClearing = true;
+					recalcShrunkenIncrement_dueToIntrabarClearing = true;
 				}
 				
 				QuoteGenerated quote = this.GenerateNewQuote_childrenHelper(barSimulated.Symbol,
@@ -580,8 +581,8 @@ namespace Sq1.Core.Backtesting {
 
 				if (stroke == this.BacktestStrokesPerBarAsInt - 1) break;		// avoiding expensive {cumulativeOffset += increment} at last stroke 
 
-				if (recalcShrunkenIncrementDueToIntrabarClearing == false) {
-					timespanBarBeginningOffsetCumulative += timespanIncrementInterquote;
+				if (recalcShrunkenIncrement_dueToIntrabarClearing == false) {
+					timespanBarBeginning_offsetCumulative += timespanIncrementInterquote;
 					continue;
 				}
 
@@ -591,7 +592,7 @@ namespace Sq1.Core.Backtesting {
 				timespanIncrementInterquote = new TimeSpan(0, 0, ((int)(leftTillNextBar.TotalSeconds / quotesLeft)));
 				
 				TimeSpan clearingResumesOffset = timeClearingResumes - barOpenOrResume;
-				timespanBarBeginningOffsetCumulative = clearingResumesOffset + timespanIncrementInterquote;
+				timespanBarBeginning_offsetCumulative = clearingResumesOffset + timespanIncrementInterquote;
 
 				#if DEBUG
 				MarketClearingTimespan clearing1 = marketInfo.GetSingleClearingTimespan_ifMarketSuspended_duringBar(barSimulated.DateTimeOpen, barSimulated.DateTimeOpen);

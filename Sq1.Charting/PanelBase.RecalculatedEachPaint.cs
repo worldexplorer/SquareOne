@@ -18,10 +18,10 @@ namespace Sq1.Charting {
 							protected		double	VisibleRangeWithTwoSqueezers_cached;
 		
 		
-							protected		int		BarWidthIncludingPadding_cached;
+							protected		int		BarWidth_includingPadding_cached;
 							protected		int		BarWidthMinusRightPadding_cached;
 							protected		int		BarShadowXoffset_cached;
-							protected		int		PanelHeightMinusGutterBottomHeight_cached;
+							protected		int		PanelHeight_minusGutterBottomHeight_cached;
 		
 	 						protected		int		GutterRightFontHeight_cached = -1;
 	 						protected		int		GutterRightFontHeightHalf_cached = -1;

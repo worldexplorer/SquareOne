@@ -82,7 +82,7 @@ namespace Sq1.Strategies.Demo {
 
 			if (this.Executor.Sequencer.IsRunningNow) return;
 
-			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
+			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing == false) {
 				Bar bar = quote.ParentBarStreaming;
 				int barNo = bar.ParentBarsIndex;
 				if (barNo <= 0) return;
@@ -107,7 +107,7 @@ namespace Sq1.Strategies.Demo {
 			//Thread.Sleep(500);
 
 			Bar barStreaming = base.Bars.BarStreaming_nullUnsafe;
-			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
+			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing == false) {
 				//Debugger.Break();
 			}
 			if (barStaticFormed.ParentBarsIndex <= 2) return;

@@ -18,7 +18,7 @@ namespace Sq1.Core.Execution {
 		public	AlertList						AlertsDoomed				{ get; private set; }
 		//public Dictionary<int, List<Alert>>	AlertsPendingHistorySafeCopy { get { return this.AlertsPendingHistorySafeCopyForRenderer(0, -1); } }
 
-		public	int								positionSernoAbs			{ get; private set; }
+		public	int								positionSerno_perStrategy	{ get; private set; }
 		public	PositionList					PositionsMaster				{ get; private set; }
 		public	PositionList					PositionsOpenedAfterExec	{ get; private set; }
 		public	PositionList					PositionsClosedAfterExec	{ get; private set; }
@@ -33,7 +33,7 @@ namespace Sq1.Core.Execution {
 			AlertsDoomed						= new AlertList("AlertsDoomed"					, this);	// monitored
 			AlertsMaster						= new AlertList("AlertsMaster"					, this);	// monitored
 			AlertsNewAfterExec					= new AlertList("AlertsNewAfterExec"			, this);	// monitored
-			positionSernoAbs					= 0;
+			positionSerno_perStrategy			= 0;
 			PositionsMaster						= new PositionList("PositionsMaster"			, this);	// monitored
 			PositionsOpenNow					= new PositionList("PositionsOpenNow"			, this);	// monitored
 			PositionsOpenedAfterExec			= new PositionList("PositionsOpenedAfterExec"	, this);	// monitored
@@ -47,7 +47,7 @@ namespace Sq1.Core.Execution {
 			this.AlertsNewAfterExec			.DisposeWaitHandlesAndClear(this, msig);
 			this.AlertsPending				.DisposeWaitHandlesAndClear(this, msig);
 			this.AlertsDoomed				.DisposeWaitHandlesAndClear(this, msig);
-			this.positionSernoAbs			= 0;
+			this.positionSerno_perStrategy	= 0;
 			this.PositionsMaster			.DisposeTwoRelatedAlertsWaitHandlesAndClear(this, msig);
 			this.PositionsOpenedAfterExec	.DisposeTwoRelatedAlertsWaitHandlesAndClear(this, msig);
 			this.PositionsClosedAfterExec	.DisposeTwoRelatedAlertsWaitHandlesAndClear(this, msig);
@@ -67,8 +67,8 @@ namespace Sq1.Core.Execution {
 				Assembler.PopupException(msg);
 				return;
 			}
-				
-			positionOpening.SernoAbs = this.positionSernoAbs + 1;
+			
+			positionOpening.SernoPerStrategy = ++this.positionSerno_perStrategy;
 			this.PositionsMaster			.AddOpened_step1of2(positionOpening, this, msig);
 			this.PositionsOpenedAfterExec	.AddOpened_step1of2(positionOpening, this, msig);
 			this.PositionsOpenNow			.AddOpened_step1of2(positionOpening, this, msig);

@@ -32,7 +32,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				Alert stopLoss_toAnnihilate = position.Prototype.StopLossAlert_forMoveAndAnnihilation;
 				killedForBacktest_emittedForLive = this.executor.DataSource_fromBars.BrokerAdapter.AlertCounterparty_annihilate(stopLoss_toAnnihilate);
-				bool liveOrLivesim = executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false;
+				bool liveOrLivesim = executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing == false;
 				if (liveOrLivesim) {
 					string msg = "COUNTERPARTY_STOPLOSS_ANNIHILATED annihilationScheduled[" + killedForBacktest_emittedForLive + "] alertStopLoss_toAnnihilate[" + stopLoss_toAnnihilate + "]";
 					this.appendMessage_toOrderFollowed(stopLoss_toAnnihilate, msg);
@@ -55,7 +55,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				Alert takeProfit_toAnnihilate = position.Prototype.TakeProfitAlert_forMoveAndAnnihilation;
 				killedForBacktest_emittedForLive = this.executor.DataSource_fromBars.BrokerAdapter.AlertCounterparty_annihilate(takeProfit_toAnnihilate);
-				if (executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
+				if (executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing == false) {
 					string msg = "COUNTERPARTY_TAKEPROFIT_ANNIHILATED annihilationScheduled[" + killedForBacktest_emittedForLive + "] takeProfit_toAnnihilate[" + takeProfit_toAnnihilate + "]";
 					this.appendMessage_toOrderFollowed(takeProfit_toAnnihilate, msg);
 				}

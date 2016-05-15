@@ -172,7 +172,7 @@ namespace Sq1.Core.DataTypes {
 						serverDateTime.Hour, serverDateTime.Minute, valueCeiled);
 					if (addNextRank) ret = ret.AddMinutes(1);
 
-					clearingTimespan = GetClearingTimespan_ifMarketSuspended(ret);
+					clearingTimespan = GetClearingTimespan_ifMarketSuspended_nullUnsafe(ret);
 					if (clearingTimespan != null) {
 						ret = this.AdvanceToWhenClearingResumes(ret, clearingTimespan);
 						//ret = ret.AddSeconds((double)scale.Interval);
@@ -193,7 +193,7 @@ namespace Sq1.Core.DataTypes {
 						serverDateTime.Hour, valueCeiled, 0);
 					if (addNextRank) ret = ret.AddHours(1);
 
-					clearingTimespan = GetClearingTimespan_ifMarketSuspended(ret);
+					clearingTimespan = GetClearingTimespan_ifMarketSuspended_nullUnsafe(ret);
 					if (clearingTimespan != null) {
 						ret = this.AdvanceToWhenClearingResumes(ret, clearingTimespan);
 						//ret = ret.AddMinutes((double)scale.Interval);
@@ -220,7 +220,7 @@ namespace Sq1.Core.DataTypes {
 						serverDateTime.Hour, valueCeiled, 0);
 					if (addNextRank) ret = ret.AddDays(1);
 
-					clearingTimespan = GetClearingTimespan_ifMarketSuspended(ret);
+					clearingTimespan = GetClearingTimespan_ifMarketSuspended_nullUnsafe(ret);
 					if (clearingTimespan != null) {
 						ret = this.AdvanceToWhenClearingResumes(ret, clearingTimespan);
 						//ret = ret.AddHours((double)scale.Interval);
@@ -360,10 +360,10 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		}
 		public bool IsMarketSuspendedForClearing(DateTime dateTimeServer, bool considerSuspendedIfFullBarIsWithinClearingTimespan_NYI = false) {
-			MarketClearingTimespan suspendedNow = this.GetClearingTimespan_ifMarketSuspended(dateTimeServer, considerSuspendedIfFullBarIsWithinClearingTimespan_NYI);
+			MarketClearingTimespan suspendedNow = this.GetClearingTimespan_ifMarketSuspended_nullUnsafe(dateTimeServer, considerSuspendedIfFullBarIsWithinClearingTimespan_NYI);
 			return (suspendedNow != null) ? true : false;
 		}
-		public MarketClearingTimespan GetClearingTimespan_ifMarketSuspended(DateTime dateTimeServer, bool considerSuspendedIfFullBarIsWithinClearingTimespan_NYI = false) {
+		public MarketClearingTimespan GetClearingTimespan_ifMarketSuspended_nullUnsafe(DateTime dateTimeServer, bool considerSuspendedIfFullBarIsWithinClearingTimespan_NYI = false) {
 			MarketClearingTimespan ret = null;
 			if (this.ClearingTimespans == null) return ret;
 			foreach (MarketClearingTimespan clearingTimespan in this.ClearingTimespans) {
@@ -381,68 +381,68 @@ namespace Sq1.Core.DataTypes {
 				}
 			}
 
-			if (ret != null) {
-				bool saveMe = false;
+			if (ret == null) return ret;	// for dateTimeServer, the market is NOT in clearing state => null
+			
+			bool saveMe = false;
 
-				DateTime dateSuspend_deserialized = ret.SuspendServerTimeOfDay.Date;
-				DateTime dateSuspend_today = dateTimeServer.Date;
-				if (dateSuspend_deserialized != dateSuspend_today) {
-					ret.SuspendServerTimeOfDay = new DateTime(dateSuspend_today.Year, dateSuspend_today.Month, dateSuspend_today.Day,
-						dateSuspend_deserialized.Hour, dateSuspend_deserialized.Minute, dateSuspend_deserialized.Second);
+			DateTime dateSuspend_deserialized = ret.SuspendServerTimeOfDay.Date;
+			DateTime dateSuspend_today = dateTimeServer.Date;
+			if (dateSuspend_deserialized != dateSuspend_today) {
+				ret.SuspendServerTimeOfDay = new DateTime(dateSuspend_today.Year, dateSuspend_today.Month, dateSuspend_today.Day,
+					ret.SuspendServerTimeOfDay.Hour, ret.SuspendServerTimeOfDay.Minute, ret.SuspendServerTimeOfDay.Second);
 
-					if (dateSuspend_today > dateSuspend_deserialized) {
-						saveMe = true;
-					} else {
-						string msg = "I_DONT_WANT_EACH_BACKTEST_SERIALIZE_HUNDREDS_TIMES ONLY_REALTIME_WITH_GROWING_DATE";
-					}
+				if (dateSuspend_today > dateSuspend_deserialized) {
+					saveMe = true;
+				} else {
+					string msg = "I_DONT_WANT_EACH_BACKTEST_SERIALIZE_HUNDREDS_TIMES ONLY_REALTIME_WITH_GROWING_DATE";
 				}
+			}
 
-				DateTime dateResume_deserialized = ret.ResumeServerTimeOfDay.Date;
-				DateTime dateResume_today = dateTimeServer.Date;
-				if (dateResume_deserialized != dateResume_today) {
-					ret.ResumeServerTimeOfDay = new DateTime(dateResume_today.Year, dateResume_today.Month, dateResume_today.Day,
-						dateResume_deserialized.Hour, dateResume_deserialized.Minute, dateResume_deserialized.Second);
+			DateTime dateResume_deserialized = ret.ResumeServerTimeOfDay.Date;
+			DateTime dateResume_today = dateTimeServer.Date;
+			if (dateResume_deserialized != dateResume_today) {
+				ret.ResumeServerTimeOfDay = new DateTime(dateResume_today.Year, dateResume_today.Month, dateResume_today.Day,
+					ret.ResumeServerTimeOfDay.Hour, ret.ResumeServerTimeOfDay.Minute, ret.ResumeServerTimeOfDay.Second);
 
-					if (dateResume_today > dateResume_deserialized) {
-						saveMe = true;
-					} else {
-						string msg = "I_DONT_WANT_EACH_BACKTEST_SERIALIZE_HUNDREDS_TIMES ONLY_REALTIME_WITH_GROWING_DATE";
-					}
+				if (dateResume_today > dateResume_deserialized) {
+					saveMe = true;
+				} else {
+					string msg = "I_DONT_WANT_EACH_BACKTEST_SERIALIZE_HUNDREDS_TIMES ONLY_REALTIME_WITH_GROWING_DATE";
 				}
-				if (ret.SuspendServerTimeOfDay > ret.ResumeServerTimeOfDay) {
-					ret.ResumeServerTimeOfDay.AddDays(1);
-					string msg = "RESUMING_AFTER_MIDNIGHT,RIGHT?__ADDED_ONE_DAY";
-					Assembler.PopupException(msg);
+			}
+			if (ret.SuspendServerTimeOfDay > ret.ResumeServerTimeOfDay) {
+				ret.ResumeServerTimeOfDay.AddDays(1);
+				string msg = "RESUMING_AFTER_MIDNIGHT,RIGHT?__ADDED_ONE_DAY";
+				Assembler.PopupException(msg);
 
-					if (ret.ResumeServerTimeOfDay > dateResume_deserialized) {
-						saveMe = true;
-					} else {
-						string msg1 = "I_DONT_WANT_EACH_BACKTEST_SERIALIZE_HUNDREDS_TIMES ONLY_REALTIME_WITH_GROWING_DATE";
-					}
+				if (ret.ResumeServerTimeOfDay > dateResume_deserialized) {
+					saveMe = true;
+				} else {
+					string msg1 = "I_DONT_WANT_EACH_BACKTEST_SERIALIZE_HUNDREDS_TIMES ONLY_REALTIME_WITH_GROWING_DATE";
 				}
+			}
 
-				if (saveMe) {
-					Assembler.InstanceInitialized.RepositoryMarketInfos.Serialize();
-				}
+			if (saveMe) {
+				//SEQUENCER_THROWS_DUE_TO_CONCURRENT_WRITES_FROM_4_THREADS Assembler.InstanceInitialized.RepositoryMarketInfos.Serialize();
 			}
 			return ret;
 		}
 		#region CANT_SET_DEFAULT_DATETIME_PARAMETER_TO_NULL_OR_MINIMALVALUE_SORRY_REDUNDANCY
-		public bool IsMarketOpenDuringDateIntervalServerTime(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
+		public bool IsMarketOpen_duringDateInterval_serverTime(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
 			if (this.IsTradeableDayServerTime(dateTimeServerBarOpen.Date) == false) return false;
 			DateTime openTimeServer;
 			DateTime closeTimeServer;
 			this.GetRegularOrShortDayOpenCloseMarketTimeForServerDate(dateTimeServerBarOpen, out openTimeServer, out closeTimeServer);
 			bool isMarketAfterOpening = dateTimeServerBarOpen.TimeOfDay >= openTimeServer.TimeOfDay;
 			bool isMarketBeforeClosing = dateTimeServerBarOpen.TimeOfDay < closeTimeServer.TimeOfDay;
-			bool isMarketSuspendedForClearing = this.IsMarketSuspendedForClearingDuringBar(dateTimeServerBarOpen, dateTimeServerBarClose);
+			bool isMarketSuspendedForClearing = this.IsMarketSuspended_forClearing_duringBar(dateTimeServerBarOpen, dateTimeServerBarClose);
 			bool marketIsOpen = isMarketAfterOpening && isMarketBeforeClosing && (isMarketSuspendedForClearing == false);
 			if (marketIsOpen == false) {
 				string msg = "breakpoint";
 			}
 			return marketIsOpen;
 		}
-		public bool IsMarketSuspendedForClearingDuringBar(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
+		public bool IsMarketSuspended_forClearing_duringBar(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
 			MarketClearingTimespan suspendedNow = this.GetSingleClearingTimespan_ifMarketSuspended_duringBar(dateTimeServerBarOpen, dateTimeServerBarClose);
 			return (suspendedNow != null) ? true : false;
 		}
@@ -522,7 +522,7 @@ namespace Sq1.Core.DataTypes {
 		}
 		public DateTime GetClearingResumes(DateTime quoteTimeGuess) {
 			DateTime ret = DateTime.MinValue;
-			MarketClearingTimespan clearingNow_today = this.GetClearingTimespan_ifMarketSuspended(quoteTimeGuess);
+			MarketClearingTimespan clearingNow_today = this.GetClearingTimespan_ifMarketSuspended_nullUnsafe(quoteTimeGuess);
 			if (clearingNow_today == null) return ret;
 			ret = Bars.CombineBarDateWithMarketOpenTime(quoteTimeGuess, clearingNow_today.ResumeServerTimeOfDay);
 			//string msg = "[" + this.Name + "]Market is CLEARING, resumes["
@@ -533,7 +533,7 @@ namespace Sq1.Core.DataTypes {
 		[Obsolete("you pay too much for OFFSET; get DateTime adjusted instead! use GetClearingResumes()")]
 		public TimeSpan GetClearingResumesOffset_orZeroSeconds(DateTime assumed) {
 			TimeSpan ret = new TimeSpan(0);
-			MarketClearingTimespan clearingNow = this.GetClearingTimespan_ifMarketSuspended(assumed);
+			MarketClearingTimespan clearingNow = this.GetClearingTimespan_ifMarketSuspended_nullUnsafe(assumed);
 			if (clearingNow == null) return ret;
 			DateTime clearingEndsDateTime = Bars.CombineBarDateWithMarketOpenTime(assumed, clearingNow.ResumeServerTimeOfDay);
 			ret = clearingEndsDateTime.Subtract(assumed);
@@ -548,7 +548,7 @@ namespace Sq1.Core.DataTypes {
 		public string GetReason_ifMarket_closedOrSuspended_at(DateTime quoteServerTime) {
 			string reasonMarketIsClosedNow = "";
 
-			MarketClearingTimespan clearingNow_today = this.GetClearingTimespan_ifMarketSuspended(quoteServerTime);
+			MarketClearingTimespan clearingNow_today = this.GetClearingTimespan_ifMarketSuspended_nullUnsafe(quoteServerTime);
 			if (clearingNow_today != null) {
 				TimeSpan timeLeft = clearingNow_today.ResumeServerTimeOfDay.Subtract(quoteServerTime);
 				reasonMarketIsClosedNow += "CLEARING_FINISHES_SOON[" + clearingNow_today.ToString() + "] timeLeft[" + timeLeft + "] ";

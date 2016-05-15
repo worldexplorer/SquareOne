@@ -72,7 +72,7 @@ namespace Sq1.Core.DataTypes {
 
 		[JsonIgnore]	public	List<Bar>			InnerBars_exposedOnlyForEditor_fromSafeCopy		{ get; private set; }
 
-		public Bars SafeCopy_oneCopyForEachDisposableExecutors(string reasonToExist, bool exposeInnerBars_forEditor = false, bool reverseInnerBars_forEditor = false) { lock (base.BarsLock) {
+		public Bars SafeCopy_forEachReusableExecutor(string reasonToExist, bool exposeInnerBars_forEditor = false, bool reverseInnerBars_forEditor = false) { lock (base.BarsLock) {
 			if (reverseInnerBars_forEditor) reasonToExist = "REVERTED " + reasonToExist;
 			//Bars ret = new Bars(this.Symbol, this.ScaleInterval, "SafeCopy_oneCopyForEachDisposableExecutors");
 			Bars clone = new Bars(this.Symbol, this.ScaleInterval, reasonToExist);

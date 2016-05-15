@@ -46,7 +46,7 @@ namespace Sq1.Widgets.Correlation {
 			}
 			SortedDictionary<string, IndicatorParameter> parametersByFullName =
 				this.correlator.Executor.Strategy.ScriptContextCurrent
-					.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName;
+					.ScriptAndIndicatorParameters_mergedUncloned_forSequencerByName;
 			if (parametersByFullName.ContainsKey(this.Parameter.ParameterName) == false) {
 				string msg = "OneParameterControl.correlator.Executor.Strategy.ScriptContextCurrent"
 					+ ".ScriptAndIndicatorParametersMergedUnclonedForSequencerByName.ContainsKey(" + this.Parameter.ParameterName + ") == false";

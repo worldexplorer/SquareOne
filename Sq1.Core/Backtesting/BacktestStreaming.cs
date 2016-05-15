@@ -7,6 +7,7 @@ using Sq1.Core.Support;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.DataFeed;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Backtesting {
 	[SkipInstantiationAt(Startup = true)]
@@ -103,6 +104,15 @@ namespace Sq1.Core.Backtesting {
 				Assembler.PopupException(msg + msig, ex);
 			}
 			
+			if (this is LivesimStreamingDefault) {		// BacktestStreaming itself doesn't have Pump processing yet; Script wont' receive Level2Frozen during F5/Backtest, only for LivesimDefault
+				try {
+					base.PushLevelTwoReceived_alreadyInStreamingSnap(quoteBoundAttached.Symbol);
+				} catch (Exception ex) {
+					string msg = "CHART_OR_STRATEGY__FAILED_INSIDE Distributor.PushLevelTwoReceived_alreadyInStreamingSnap(" + quoteBoundAttached.Symbol + ")";
+					Assembler.PopupException(msg + msig, ex);
+				}
+			}
+
 			quoteBoundAttached.WentThroughStreamingToScript = true;
 		}
 

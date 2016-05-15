@@ -44,6 +44,12 @@ namespace Sq1.Gui {
 			if (mainThreadGotHandle == false && Assembler.InstanceInitialized.ExceptionsFormInstance_safelyCreated == false) {
 				if (msg != null) exc = new Exception(msg, exc);
 				Assembler.InstanceInitialized.Exceptions_duringApplicationStartup_Insert(exc);
+				#if DEBUG
+				if (debuggingBreak) {
+					Debugger.Break();
+				}
+				#endif
+
 				return;
 			}
 			
@@ -55,14 +61,15 @@ namespace Sq1.Gui {
 				throw new Exception(msg2, exc);
 			}
 
-			Assembler.InstanceInitialized.ExceptionsFormInstance_safelyCreated = true;
+			//MOVED_TO_ExceptionForm.OnLoad() Assembler.InstanceInitialized.ExceptionsFormInstance_safelyCreated = true;
 
-			if (Assembler.InstanceInitialized.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle.Count > 0) {
-				foreach (Exception excStartup in Assembler.InstanceInitialized.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle) {
-					exceptionsForm.ExceptionControl.InsertAsyncAutoFlush(excStartup);
-				}
-				Assembler.InstanceInitialized.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle.Clear();
-			}
+			//MOVED_TO_ExceptionControl.PopupException()
+			//if (Assembler.InstanceInitialized.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle.Count > 0) {
+			//    foreach (Exception excStartup in Assembler.InstanceInitialized.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle) {
+			//        exceptionsForm.ExceptionControl.InsertAsyncAutoFlush(excStartup);
+			//    }
+			//    Assembler.InstanceInitialized.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle.Clear();
+			//}
 
 			try {
 				exceptionsForm.PopupException(msg, exc, debuggingBreak);

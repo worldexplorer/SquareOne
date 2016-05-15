@@ -155,7 +155,7 @@ namespace Sq1.Core.Backtesting {
 			
 			if (quote.PriceBetweenBidAsk(entryPriceOut) == false) {
 				string msig = " MUST_BE_BETWEEN: [" + quote.Bid + "] < [" + entryPriceOut + "] < [" + quote.Ask + "]";
-				if (this.scriptExecutor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+				if (this.scriptExecutor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 					string msg = "OBSOLETE I_DONT_UNDERSTAND_HOW_I_DIDNT_DROP_THIS_QUOTE_BEFORE_BUT_I_HAVE_TO_DROP_IT_NOW";
 					Assembler.PopupException(msg + msig);
 				} else {
@@ -313,7 +313,7 @@ namespace Sq1.Core.Backtesting {
 					// WHY (IsBacktestingNow == true): market orders during LIVE could be filled at virtually ANY price
 					Sq1.Core.Streaming.StreamingDataSnapshot snap = this.scriptExecutor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot;
 					exitPriceOut = snap.GetBidOrAsk_forDirection_fromQuoteLast(exitAlert.Symbol, exitAlert.PositionLongShortFromDirection);
-					if (quote.PriceBetweenBidAsk(exitPriceOut) == false && this.scriptExecutor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == true) {
+					if (quote.PriceBetweenBidAsk(exitPriceOut) == false && this.scriptExecutor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing == true) {
 						string msg = "exitPriceOut[" + exitPriceOut + "] must be inside the bar; we'll need to generate one more quote onTheWayTo exitPriceOut";
 						Assembler.PopupException(msg);
 						return false;
@@ -428,7 +428,7 @@ namespace Sq1.Core.Backtesting {
 				//Debugger.Break();
 			}
 			if (	this.scriptExecutor.Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow == true
-				 && this.scriptExecutor.BacktesterOrLivesimulator.ImLivesimulator == false) {
+				 && this.scriptExecutor.BacktesterOrLivesimulator.IsLivesimulator == false) {
 				string msg = "";
 				if (alert.IsFilledOutsideQuote_DEBUG_CHECK)				msg += "ALERT_FILLED_OUSIDE_QUOTE ";
 				if (alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK) msg += "ALERT_FILLED_OUSIDE_BAR " + quote.ParentBarStreaming;
@@ -513,7 +513,7 @@ namespace Sq1.Core.Backtesting {
 				#endif
 				throw new Exception(msg);
 			}
-			if (this.scriptExecutor.BacktesterOrLivesimulator.ImLivesimulator == false && quote.ParentBarStreaming.ParentBarsIndex != this.scriptExecutor.Bars.Count - 1) {
+			if (this.scriptExecutor.BacktesterOrLivesimulator.IsLivesimulator == false && quote.ParentBarStreaming.ParentBarsIndex != this.scriptExecutor.Bars.Count - 1) {
 				string msg = "I refuse to serve this quoteToReach.ParentStreamingBar.ParentBarsIndex["
 					+ quote.ParentBarStreaming.ParentBarsIndex + "] != this.backtestBroker.ScriptExecutor.Bars.Count-1[" + (this.scriptExecutor.Bars.Count - 1) + "]";
 				#if DEBUG

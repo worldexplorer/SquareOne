@@ -119,7 +119,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			alertStopLoss.PriceStopLimitActivation = 0;
 			if (proto.StopLossActivation_negativeOffset < 0) alertStopLoss.PriceStopLimitActivation = proto.PriceStopLossActivation;
-			if (proto.StopLossAlert_forMoveAndAnnihilation != null && this.executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
+			if (proto.StopLossAlert_forMoveAndAnnihilation != null && this.executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing == false) {
 				string msg = "CLEANUP: I was trying to catch MoveStopLoss::if(proto.StopLossAlertForAnnihilation==null)"
 					+ " so I thought there is a new prototype assigned to a position,"
 					+ " since we never put null directly proto.StopLossAlertForAnnihilation";

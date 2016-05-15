@@ -87,7 +87,7 @@ namespace Sq1.Core.Streaming {
 		//}
 		
 
-		public bool IsDisposed { get; private set; }
+		[JsonIgnore]	public bool IsDisposed { get; private set; }
 		public virtual void Dispose() {
 			if (this.IsDisposed) {
 				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();

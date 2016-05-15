@@ -223,7 +223,7 @@ namespace Sq1.Core.DataTypes {
 					return ret;
 				}
 				DateTime nextBarWillOpen = forwardFromMarketOpenToCurrentBar.Add(distanceBetweenBars);
-				if (this.MarketInfo.IsMarketOpenDuringDateIntervalServerTime(forwardFromMarketOpenToCurrentBar, nextBarWillOpen) == false) continue;
+				if (this.MarketInfo.IsMarketOpen_duringDateInterval_serverTime(forwardFromMarketOpenToCurrentBar, nextBarWillOpen) == false) continue;
 				ret++;	//FIRST_BAR_WILL_BECOME_ZERO
 			}
 			return ret;
@@ -255,7 +255,7 @@ namespace Sq1.Core.DataTypes {
 					return ret;
 				}
 				DateTime thisBarWillOpen = backFromDayCloseToCurrentBar.Subtract(distanceBetweenBars);
-				if (this.MarketInfo.IsMarketOpenDuringDateIntervalServerTime(thisBarWillOpen, backFromDayCloseToCurrentBar) == false) continue;
+				if (this.MarketInfo.IsMarketOpen_duringDateInterval_serverTime(thisBarWillOpen, backFromDayCloseToCurrentBar) == false) continue;
 				ret++;	//FIRST_BAR_WILL_BECOME_ZERO
 			}
 			return ret;

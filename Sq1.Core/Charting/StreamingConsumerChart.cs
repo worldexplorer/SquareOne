@@ -217,7 +217,7 @@ namespace Sq1.Core.Charting {
 			}
 
 			#if DEBUG
-			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+			if (this.Executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 				string msg = "SHOULD_NEVER_HAPPEN ImRunningChartlessBacktesting[true] AVOIDING_InvalidateAllPanels()--WHY???";
 				Assembler.PopupException(msg + base.MsigForNpExceptions);
 				return;
@@ -373,7 +373,7 @@ namespace Sq1.Core.Charting {
 			}
 
 			#if DEBUG
-			if (base.Executor_nullReported.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+			if (base.Executor_nullReported.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 				string msg = "SHOULD_NEVER_HAPPEN IsBacktestingNoLivesimNow[true] //ChartStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
 				Assembler.PopupException(msg);
 				return;

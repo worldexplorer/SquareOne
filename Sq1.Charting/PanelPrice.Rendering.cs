@@ -5,9 +5,9 @@ using System.Drawing;
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.Charting;
 
 using Sq1.Charting.OnChart;
-using Sq1.Core.Charting;
 
 namespace Sq1.Charting {
 	public partial class PanelPrice {
@@ -19,6 +19,7 @@ namespace Sq1.Charting {
 
 			this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
 
+			// painting from rightmost (streaming) bar to the left (oldest visible static bar)
 			for (int barIndex = base.VisibleBarRight_cached; barIndex > base.VisibleBarLeft_cached; barIndex--) {
 				if (barIndex >= base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
@@ -26,8 +27,16 @@ namespace Sq1.Charting {
 					continue;
 				}
 				
-				barX -= base.BarWidthIncludingPadding_cached;
+				barX -= base.BarWidth_includingPadding_cached;
 				Bar bar = base.ChartControl.Bars[barIndex];
+
+				if (bar.IsMarketSuspended_forClearing_duringThisBar) {
+					Rectangle fullHeightBarBackground = new Rectangle(barX, 0, base.BarWidth_includingPadding_cached, base.PanelHeight_minusGutterBottomHeight);
+					g.FillRectangle(
+						base.ChartControl.ChartSettingsTemplated.BrushMarketSuspendedDuringClearing,
+						fullHeightBarBackground);
+				}
+
 				//bar.CheckOHLCVthrow();
 				int barYOpenInverted = base.ValueToYinverted(bar.Open);
 				int barYHighInverted = base.ValueToYinverted(bar.High);
@@ -306,7 +315,7 @@ namespace Sq1.Charting {
 					continue;
 				}
 				
-				barXshadow -= base.BarWidthIncludingPadding_cached;
+				barXshadow -= base.BarWidth_includingPadding_cached;
 				if (eoFrozen.OnChartBarAnnotationsByBar.ContainsKey(barIndex) == false) continue;
 				
 				Bar bar = base.ChartControl.Bars[barIndex];
@@ -346,7 +355,7 @@ namespace Sq1.Charting {
 						string msg = "PREVENT_Y_BEYOUND_VISIBLE_DUE_TO_EXCEEDED_BAR_ANNOTATION_PADDING (due to barAnnotation.VerticalPaddingPx = Int32.MaxValue)";
 						y = barAnnotation.AboveBar
 							? verticalOffsetForNextStackedAnnotationsAboveSameBar
-							: this.PanelHeightMinusGutterBottomHeight_cached - labelHeightMeasured - verticalOffsetForMextStackedAnnotationsBelowSameBar - 3;
+							: this.PanelHeight_minusGutterBottomHeight_cached - labelHeightMeasured - verticalOffsetForMextStackedAnnotationsBelowSameBar - 3;
 						if (barAnnotation.AboveBar) verticalOffsetForNextStackedAnnotationsAboveSameBar += labelHeightMeasured;
 						else						verticalOffsetForMextStackedAnnotationsBelowSameBar += labelHeightMeasured;
 //					} else {

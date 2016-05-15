@@ -218,9 +218,7 @@ namespace Sq1.Widgets {
 				if (this.IsDocked) {
 					string msg = "go find out if I'm covered by other forms docked into the same area"
 						+ " ; meanwhile I'll report I'm not covered so you can click ChartForm>HIDESourceCodeEditor";
-					#if DEBUG
-					//Debugger.Break();
-					#endif
+					//Assembler.PopupException(msg, null, false);
 					//v1 return false;
 					bool isCovered = base.Pane.ActiveContent != this;
 					return isCovered;
@@ -228,23 +226,17 @@ namespace Sq1.Widgets {
 				if (this.IsFloatingWindow) {
 					string msg = "go find out if I'm covered by other forms floating in the same window"
 						+ " ; meanwhile I'll report I'm not covered so you can click ChartForm>HIDESourceCodeEditor";
-					#if DEBUG
-					//Debugger.Break();
-					#endif
+					Assembler.PopupException(msg, null, false);
 					return true;
 				}
 				if (base.DockState == DockState.Unknown) {
 					string msg = "EDITOR_WAS_CONDITIONALLY_INSTANTIATED_BUT_NOT_DOCKPANEL.SHOW()n";
-					#if DEBUG
-					//Debugger.Break();
-					#endif
+					Assembler.PopupException(msg, null, false);
 					return true;
 				}
 				if (base.DockState == DockState.Hidden) {
 					string msg = "DESERIALIZED_AS_HIDDEN__NOT_REALLY_DOCKED_NOR_COVERED";
-					#if DEBUG
-					Debugger.Break();
-					#endif
+					Assembler.PopupException(msg, null, false);
 					return true;
 				}
 				
@@ -254,9 +246,7 @@ namespace Sq1.Widgets {
 				}
 				
 				string msg1 = "WHERE_AM_I,THEN???";
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				Assembler.PopupException(msg1, null, false);
 				return true;
 			} }
 		public bool MustBeActivated		{ get { return this.IsShown ? this.IsCoveredOrAutoHidden : false; } }

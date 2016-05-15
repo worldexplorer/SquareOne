@@ -124,12 +124,12 @@ namespace Sq1.Charting {
 						&& this.squeezingHorizontally == false
 						&& this.squeezingVertically == false) {
 					// coordinates inverted: (x=0;y=0) is upper left corner
-					if (e.X > this.PanelWidthMinusRightPriceGutter) {
+					if (e.X > this.PanelWidth_minusRightPriceGutter) {
 						// first move after this.mousePressed means DRAG!! wasn't in UserControl due to ambiguity between OnMouseMove and OnMouseDrag, probably
 						this.squeezeVerticalYstarted = e.Y;
 						this.squeezeVerticalYprev = e.Y;
 						this.squeezingVertically = true;
-					} else if (e.Y > this.PanelHeightMinusGutterBottomHeight_cached) {
+					} else if (e.Y > this.PanelHeight_minusGutterBottomHeight_cached) {
 						// first move after this.mousePressed means DRAG!! wasn't in UserControl due to ambiguity between OnMouseMove and OnMouseDrag, probably
 						this.squeezeHorizontalXstarted = e.Y;
 						this.squeezeHorizontalXprev = e.Y;
@@ -326,7 +326,7 @@ namespace Sq1.Charting {
 			int barX = this.BarToX(barIndexMouseIsOverNow);
 			Rectangle rectangleYarrowXbar = new Rectangle();
 			rectangleYarrowXbar.X		= barX;
-			rectangleYarrowXbar.Width	= this.BarWidthIncludingPadding_cached;		//arrowFoundForMouse.Width;
+			rectangleYarrowXbar.Width	= this.BarWidth_includingPadding_cached;		//arrowFoundForMouse.Width;
 			rectangleYarrowXbar.Y		= arrowFoundForMouse.Ytransient;
 			rectangleYarrowXbar.Height	= arrowFoundForMouse.Height;
 
@@ -363,7 +363,7 @@ namespace Sq1.Charting {
 			Rectangle rectangleBarWithShadows = new Rectangle();
 			rectangleBarWithShadows.X = this.BarToX(barIndexMouseIsOverNow);
 			rectangleBarWithShadows.Y = yHigh;
-			rectangleBarWithShadows.Width = this.BarWidthIncludingPadding_cached;
+			rectangleBarWithShadows.Width = this.BarWidth_includingPadding_cached;
 			rectangleBarWithShadows.Height = yLow - yHigh;	// due to upperLeft=(0:0), inverted yLow > yHigh
 			if (this.ChartControl.ChartSettingsTemplated.TooltipPriceShowOnlyWhenMouseTouchesCandle) {
 // FAILED		hide the priceTooltip when mouse hovers <= chart drag is "blocked", mouse "cross" doesn't update (I want to see the price of current mouse position)  

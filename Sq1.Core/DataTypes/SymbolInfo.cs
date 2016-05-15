@@ -95,14 +95,17 @@ namespace Sq1.Core.DataTypes {
 
 
 
-		[Category("4. OrderProcessor"), Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis"), DefaultValue(true)]
+		[Category("4. OrderProcessor"), DefaultValue(true),		Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis")]
 		[JsonProperty]	public	bool			SameBarPolarCloseThenOpen	{ get; set; }
 
-		[Category("4. OrderProcessor"), Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis"), DefaultValue(100)]
+		[Category("4. OrderProcessor"), DefaultValue(100),		Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis")]
 		[JsonProperty]	public	int				SequencedOpeningAfterClosedDelayMillis		{ get; set; }
 
-		[Category("4. OrderProcessor"), Description("For each Broker.OrderSubmit(), check if a similar [TBD] order is already in the Pendings; useful when you are debugging your strategy that shoots the same order multiple times by mistake"), DefaultValue(false)]
+		[Category("4. OrderProcessor"), DefaultValue(false),	Description("For each Broker.OrderSubmit(), check if a similar [TBD] order is already in the Pendings; useful when you are debugging your strategy that shoots the same order multiple times by mistake")]
 		[JsonProperty]	public	bool			CheckForSimilarAlreadyPending { get; set; }
+
+		[Category("4. OrderProcessor"), DefaultValue(-1),		Description("if!=-1: 1) Kill Pending Limit + wait it's killed, 2) use SlippagesCrossMarketCsv for CrossMarket and SlippagesTidalCsv for Tidal, 3) send replacement order with more cutting-through slippage")]
+		[JsonProperty]	public	int				ApplyNextSlippageIfLimitNotFilledWithin		{ get; set; }
 
 
 

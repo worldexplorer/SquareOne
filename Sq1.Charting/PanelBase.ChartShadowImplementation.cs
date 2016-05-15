@@ -17,15 +17,15 @@ namespace Sq1.Charting {
 					continue;
 				}
 				
-				barX -= this.BarWidthIncludingPadding_cached;
+				barX -= this.BarWidth_includingPadding_cached;
 				ExecutorObjects_FrozenForRendering seo = this.ChartControl.ExecutorObjects_frozenForRendering;
 				if (seo.BarBackgroundsByBar.ContainsKey(barIndex) == false) continue;
 				
 				Rectangle barFullHeight = new Rectangle();
 				barFullHeight.X = barX;
-				barFullHeight.Width = this.BarWidthIncludingPadding_cached;
+				barFullHeight.Width = this.BarWidth_includingPadding_cached;
 				barFullHeight.Y = 0;
-				barFullHeight.Height = this.PanelHeightMinusGutterBottomHeight;
+				barFullHeight.Height = this.PanelHeight_minusGutterBottomHeight;
 
 				Color backgroundSetByScript = seo.BarBackgroundsByBar[barIndex];
 				Color backgroundMoreTransparent = Color.FromArgb(this.ChartControl.ChartSettingsTemplated.BarsBackgroundTransparencyAlpha, backgroundSetByScript);
@@ -74,11 +74,11 @@ namespace Sq1.Charting {
 			if (y < 0) y = 0;
 
 			// Y_BEYOUND_VISIBLE_DUE_TO_EXCEEDED_BAR_ANNOTATION_PADDING
-			if (this.PanelHeightMinusGutterBottomHeight_cached > 0 && y > this.PanelHeightMinusGutterBottomHeight_cached) {
-				y = this.PanelHeightMinusGutterBottomHeight_cached - labelMeasuredHeight;
+			if (this.PanelHeight_minusGutterBottomHeight_cached > 0 && y > this.PanelHeight_minusGutterBottomHeight_cached) {
+				y = this.PanelHeight_minusGutterBottomHeight_cached - labelMeasuredHeight;
 			}
-			if (this.PanelHeightMinusGutterBottomHeight_cached > 0 && x > this.PanelWidthMinusRightPriceGutter) {
-				x = this.PanelHeightMinusGutterBottomHeight_cached - labelMeasuredHeight;
+			if (this.PanelHeight_minusGutterBottomHeight_cached > 0 && x > this.PanelWidth_minusRightPriceGutter) {
+				x = this.PanelHeight_minusGutterBottomHeight_cached - labelMeasuredHeight;
 			}
 			
 			if (drawBackgroundRectangle) {

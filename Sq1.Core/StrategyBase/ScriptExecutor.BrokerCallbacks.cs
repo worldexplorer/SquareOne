@@ -302,12 +302,15 @@ namespace Sq1.Core.StrategyBase {
 					}
 					#endregion
 
-					if (this.IsStrategyEmittingOrders) {
-						Quote quoteHackForLive = quoteFilledThisAlertNullForLive;
-						if (quoteHackForLive == null) {
-							quoteHackForLive = alertFilled.QuoteCurrent_whenThisAlertFilled;	// unconditionally filled 130 lines above
-						}
-						this.EnrichAlerts_withQuoteCreated(alertsNewAfterExecSafeCopy, quoteHackForLive);
+					Quote quoteHackForLive = quoteFilledThisAlertNullForLive;
+					if (quoteHackForLive == null) {
+						quoteHackForLive = alertFilled.QuoteCurrent_whenThisAlertFilled;	// unconditionally filled 130 lines above
+					}
+					this.EnrichAlerts_withQuoteCreated(alertsNewAfterExecSafeCopy, quoteHackForLive);
+
+					if (this.IsStrategyEmittingOrders && this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing == false) {
+						string msg1 = "IM_HERE_FOR_LIVE_OR_LIVESIM__BACKTEST_AND_SEQUENCING_IGNORE_IsStrategyEmittingOrders";
+
 						this.OrderProcessor.Emit_createOrders_forScriptGeneratedAlerts_eachInNewThread(alertsNewAfterExecSafeCopy, setStatusSubmitting, true);
 	
 						// 3. Script using proto might move SL and TP which require ORDERS to be moved, not NULLs
@@ -362,15 +365,13 @@ namespace Sq1.Core.StrategyBase {
 							//	Assembler.PopupException(msg);
 							}
 						}
-						if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
-							this.ChartShadow.AlertsPlaced_addRealtime(alertsNewAfterExecSafeCopy);
-						}
+						this.ChartShadow.AlertsPlaced_addRealtime(alertsNewAfterExecSafeCopy);
 					}
 				}
 			}
 
-			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
-				string msg = "AFTER_BACKTEST_HOOK_INVOKES_Performance.BuildStatsOnBacktestFinished()_AND_ReportersFormsManager.BuildReportFullOnBacktestFinished()";
+			if (this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
+				string msg = "AFTER_BACKTEST__THE_HOOK_INVOKES_Performance.BuildStatsOnBacktestFinished()_AND_ReportersFormsManager.BuildReportFullOnBacktestFinished()";
 				return;
 			}
 
@@ -382,14 +383,14 @@ namespace Sq1.Core.StrategyBase {
 			using(pokeUnit_dontForgetToDispose) {
 				//v1 this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
 				if (positionOpenedAfterAlertFilled != null) {
-					this.PerformanceAfterBacktest.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(positionOpenedAfterAlertFilled);
+					this.PerformanceAfterBacktest.BuildIncremental_brokerFilledAlertsOpening_forPositions_step1of3(positionOpenedAfterAlertFilled);
 					//if (alertFilled.GuiHasTimeRebuildReportersAndExecution) {
 						// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
 						this.EventGenerator.RaiseOnBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit_dontForgetToDispose);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
 					//}
 				}
 				if (positionClosedAfterAlertFilled != null) {
-					this.PerformanceAfterBacktest.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(positionClosedAfterAlertFilled);
+					this.PerformanceAfterBacktest.BuildReportIncremental_brokerFilledAlertsClosing_forPositions_step3of3(positionClosedAfterAlertFilled);
 					if (alertFilled.GuiHasTimeRebuildReportersAndExecution) {
 						// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
 						this.EventGenerator.RaiseOnBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit_dontForgetToDispose);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
@@ -402,12 +403,12 @@ namespace Sq1.Core.StrategyBase {
 				if (this.Strategy.Script == null) return;
 				try {
 					try {
-						this.ExecutionDataSnapshot.IsScriptRunningOnAlertFilledNonBlockingRead = true;
+						this.ExecutionDataSnapshot.IsScriptRunning_onAlertFilled_nonBlockingRead = true;
 						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnAlertFilled_callback(WAIT)");
 						this.Strategy.Script.OnAlertFilled_callback(alertFilled);
 					} finally {
 						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnAlertFilled_callback(WAIT)");
-						this.ExecutionDataSnapshot.IsScriptRunningOnAlertFilledNonBlockingRead = false;
+						this.ExecutionDataSnapshot.IsScriptRunning_onAlertFilled_nonBlockingRead = false;
 					}
 				} catch (Exception e) {
 					string msg = "fix your OnAlertFilledCallback() in script[" + this.Strategy.Script.StrategyName + "]"
@@ -418,12 +419,12 @@ namespace Sq1.Core.StrategyBase {
 					try {
 						if (alertFilled.PositionAffected.Prototype != null) {
 							try {
-								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead = true;
+								this.ExecutionDataSnapshot.IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlockingRead = true;
 								this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpened_prototypeSlTpPlaced_callback(WAIT)");
 								this.Strategy.Script.OnPositionOpened_prototypeSlTpPlaced_callback(alertFilled.PositionAffected);
 							} finally {
 								this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionOpened_prototypeSlTpPlaced_callback(WAIT)");
-								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead = false;
+								this.ExecutionDataSnapshot.IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlockingRead = false;
 							}
 						} else {
 							try {

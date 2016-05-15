@@ -29,7 +29,7 @@ namespace Sq1.Core.Broker {
 			BrokerAdapter broker = null;
 			foreach (Alert alert in alertsBatch) {
 				// I only needed alert.OrderFollowed=newOrder... mb even CreatePropagateOrderFromAlert() should be reduced for backtest
-				if (alert.Strategy.Script.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+				if (alert.Strategy.Script.Executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 					string msg = "BACKTEST_DOES_NOT_SUBMIT_ORDERS__UNCHECK_CHART=>EMIT_BUTTON";
 					Assembler.PopupException(msg, null, false);
 					alert.Strategy.Script.Executor.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted(msg);
@@ -426,7 +426,7 @@ namespace Sq1.Core.Broker {
 			Order victim = alert.OrderFollowed;
 			if (victim == null) {
 				string msg = "ALERT_MUST_HAVE_ORDER_NON_NULL";
-				Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig, null, false);
 				return emitted;
 			}
 			if (victim.IsKiller) {
@@ -435,8 +435,8 @@ namespace Sq1.Core.Broker {
 				return false;
 			}
 			if (victim.State != OrderState.WaitingBrokerFill) {
-				string msg = "ALERTS_ORDER_MUST_HAVE_KILLABLE_STATUS {" + OrderState.WaitingBrokerFill + "}";
-				Assembler.PopupException(msg + msig);
+				string msg = "ALERTS_ORDER_MUST_HAVE_KILLABLE_STATUS {" + victim.State + "}MUST_BE{" + OrderState.WaitingBrokerFill + "}";
+				Assembler.PopupException(msg + msig, null, false);
 				return emitted;
 			}
 

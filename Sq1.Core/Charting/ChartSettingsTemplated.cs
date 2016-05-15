@@ -38,6 +38,9 @@ namespace Sq1.Core.Charting {
 		[Category("1. Essential"), Description("description to be composed")]
 		[JsonProperty]	public Color	VolumeRightGutterColorForeground						{ get; set; }
 
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public Color	MarketSuspendedDuringClearing						{ get; set; }
+
 
 		[Category("1. Essential"), Description("description to be composed")]
 		[JsonProperty]	public bool		BarUpFillCandleBody										{ get; set; }
@@ -494,6 +497,17 @@ namespace Sq1.Core.Charting {
 				return this.brushVolumeBarDown;
 			} }
 
+
+		[Browsable(false)]
+		[JsonIgnore]	SolidBrush brushMarketSuspendedDuringClearing;
+		[Browsable(false)]
+		[JsonIgnore]	public SolidBrush BrushMarketSuspendedDuringClearing { get {
+				if (this.brushMarketSuspendedDuringClearing == null) this.brushMarketSuspendedDuringClearing = 
+					new SolidBrush(this.MarketSuspendedDuringClearing);
+				return this.brushMarketSuspendedDuringClearing;
+			} }
+
+
 		[Browsable(false)]
 		[JsonIgnore]	Pen penGridlinesHorizontal;
 		[Browsable(false)]
@@ -732,6 +746,7 @@ namespace Sq1.Core.Charting {
 			VolumeColorBarDown = Color.CadetBlue;
 			VolumeRightGutterColorForeground = Color.White;
 			BarUpFillCandleBody = false;
+			MarketSuspendedDuringClearing = Color.Yellow;
 
 			GutterRightColorBackground = Color.Gainsboro;
 			GutterRightColorForeground = Color.Black;
@@ -886,6 +901,7 @@ namespace Sq1.Core.Charting {
 			if (this.brushSpreadLabel							!= null) { this.brushSpreadLabel						.Dispose(); this.brushSpreadLabel							= null; }
 			if (this.brushVolumeBarDown							!= null) { this.brushVolumeBarDown						.Dispose(); this.brushVolumeBarDown							= null; }
 			if (this.brushVolumeBarUp							!= null) { this.brushVolumeBarUp						.Dispose(); this.brushVolumeBarUp							= null; }
+			if (this.brushMarketSuspendedDuringClearing			!= null) { this.brushMarketSuspendedDuringClearing		.Dispose(); this.brushMarketSuspendedDuringClearing			= null; }
 		}
 
 		public void PensAndBrushesCached_DisposeAndNullify() {

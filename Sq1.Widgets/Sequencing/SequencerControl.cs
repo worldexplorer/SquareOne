@@ -130,7 +130,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
 		}
 		public void OlvParameterPopulate() {
-			this.scriptAndIndicatorParametersMergedCloned = this.sequencer.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders;
+			this.scriptAndIndicatorParametersMergedCloned = this.sequencer.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParameters_mergedUncloned_forSequencerAndSliders;
 			this.olvParameters.SetObjects(this.scriptAndIndicatorParametersMergedCloned);
 		}
 		void olvHistoryRescanRefillSelect(string symbolScaleRange) {

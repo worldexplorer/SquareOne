@@ -127,7 +127,7 @@ namespace Sq1.Core.Execution {
 		[JsonIgnore]	public	bool				IsBacktestingNoLivesimNow_FalseIfNoBacktester		{ get {
 				Backtester	backtester = this.Backtester_nullUnsafeForDeserialized;
 				if (backtester == null) return false;
-				return backtester.ImRunningChartlessBacktesting;
+				return backtester.ImRunningChartless_backtestOrSequencing;
 			} }
 		[JsonIgnore]	public	bool				IsBacktestingLivesimNow_FalseIfNoBacktester		{ get {
 				Backtester	backtester = this.Backtester_nullUnsafeForDeserialized;
@@ -468,7 +468,7 @@ namespace Sq1.Core.Execution {
 			StreamingDataSnapshot snap = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot;
 			if (this.DataSource_fromBars.StreamingAdapter is LivesimStreaming) {
 				string msg = "NPE_AHEAD?... OR_ONLY_WITH_OWN_LIVEIM_ADAPTERS???...";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg);
 			}
 			this.CurrentBid = snap.GetBestBid_notAligned_forMarketOrder_fromQuoteLast(this.Symbol);
 			this.CurrentAsk = snap.GetBestAsk_notAligned_forMarketOrder_fromQuoteCurrent(this.Symbol);
@@ -538,7 +538,7 @@ namespace Sq1.Core.Execution {
 			if (this.PositionAffected != null) {
 				msg.Append("; Position[#");
 				//msg.Append(this.PositionAffected.ToString());
-				msg.Append(this.PositionAffected.SernoAbs);
+				msg.Append(this.PositionAffected.SernoPerStrategy);
 				msg.Append("]");
 			}
 			if (this.OrderFollowed != null) {

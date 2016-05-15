@@ -26,15 +26,15 @@ namespace Sq1.Core.Sequencing {
 		}
 		public ReusableExecutorsPool(Sequencer sequencerPassed) : this() {
 			this.sequencer = sequencerPassed;
-			executorEthalonWithDetachedBars = new ReusableExecutor("DISPOSABLE_EHTALON", this.sequencer.Executor);
+			executorEthalonWithDetachedBars = new ReusableExecutor("REUSABLE_EHTALON", this.sequencer.Executor);
 			parametersSequencer = new ParametersSequencer(executorEthalonWithDetachedBars.Strategy.ScriptContextCurrent);
 			IsReinitialized = false;
 		}
 
 		public void Reinitialize() { lock (this.oneLockForAllLists) {
 			var parametersMustNotBeZero = executorEthalonWithDetachedBars.Strategy.ScriptContextCurrent;
-			if (parametersMustNotBeZero.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName.Count == 0) {
-				string msg = "I_FIXED_IT_BY_REPLACING_THIS_TO_RET_IN_Strategy.CloneMinimalForEachThread_forEachDisposableExecutorInSequencerPool()";
+			if (parametersMustNotBeZero.ScriptAndIndicatorParameters_mergedUncloned_forSequencerByName.Count == 0) {
+				string msg = "I_FIXED_IT_BY_REPLACING_THIS_TO_RET_IN_Strategy.CloneMinimalForEachThread_forEachReusableExecutorInSequencerPool()";
 				Assembler.PopupException(msg);
 			}
 
@@ -55,9 +55,9 @@ namespace Sq1.Core.Sequencing {
 		} }
 
 		internal void AbortAllTasksAndDispose() { lock (this.oneLockForAllLists) {
-			foreach (ReusableExecutor disposable in this.executorsRunningNow) {
-				string msg = "DISPOSABLE_ABORTED " + this.executorsRunningNow.IndexOf(disposable) + "/" + this.executorsRunningNow.Count;
-				disposable.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted(msg);
+			foreach (ReusableExecutor reusable in this.executorsRunningNow) {
+				string msg = "REUSABLE_ABORTED " + this.executorsRunningNow.IndexOf(reusable) + "/" + this.executorsRunningNow.Count;
+				reusable.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted(msg);
 			}
 			this.Reinitialize();
 		} }
@@ -84,8 +84,8 @@ namespace Sq1.Core.Sequencing {
 				return;
 			}
 			for (int i = this.ExecutorsSpawnedNow; i < threadsToUse; i++) {
-				string reasonToExist = "DISPOSABLE_" + (i+1) + "/" +  threadsToUse;
-				ReusableExecutor executorSpawned = executorEthalonWithDetachedBars.SpawnEthalonForEachThread_forEachDisposableExecutorInSequencerPool(reasonToExist);
+				string reasonToExist = "REUSABLE_" + (i+1) + "/" +  threadsToUse;
+				ReusableExecutor executorSpawned = executorEthalonWithDetachedBars.SpawnEthalonForEachThread_forEachReusableExecutor_inSequencerPool(reasonToExist);
 
 				this.executorsSpawned.Add(executorSpawned);
 				this.ExecutorsSpawnedNow = this.executorsSpawned.Count;
@@ -128,7 +128,7 @@ namespace Sq1.Core.Sequencing {
 			}
 		} }
 		void afterBacktesterComplete(ScriptExecutor executorFinished) { lock (this.oneLockForAllLists) {
-			string msig = " //DisposableExecutorsPool.afterBacktesterComplete()";
+			string msig = " //ReusableExecutorsPool.afterBacktesterComplete()";
 
 			if (executorFinished == null) {
 				string msg = "CAN_NOT_BE_NULL_executorCompletePooled";
@@ -139,16 +139,16 @@ namespace Sq1.Core.Sequencing {
 			//string msg2 = " ANOTHER_IN_SEQUENCE_executorCompletePooled";
 			//Assembler.PopupException(msg2 + msig, null, false);
 
-			ReusableExecutor disposableFinished = executorFinished as ReusableExecutor;
-			if (disposableFinished == null) {
-				string msg = "CAN_NOT_BE_NULL_disposableFinished";
+			ReusableExecutor reusableFinished = executorFinished as ReusableExecutor;
+			if (reusableFinished == null) {
+				string msg = "CAN_NOT_BE_NULL_reusableFinished";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
 
-			this.executorsRunningNow.Remove(disposableFinished);
+			this.executorsRunningNow.Remove(reusableFinished);
 			this.ExecutorsRunningNow = this.executorsRunningNow.Count;
-			this.executorsIdlingNow.Add(disposableFinished);
+			this.executorsIdlingNow.Add(reusableFinished);
 			this.ExecutorsIdlingNow = this.executorsIdlingNow.Count;
 
 			if (this.sequencer.AbortedDontScheduleNewBacktests) {
@@ -157,7 +157,7 @@ namespace Sq1.Core.Sequencing {
 				return;
 			}
 
-			this.sequencer.PoolFinishedBacktestOne(disposableFinished.PerformanceAfterBacktest);
+			this.sequencer.PoolFinishedBacktestOne(reusableFinished.PerformanceAfterBacktest);
 		} }
 
 		public void Dispose() {

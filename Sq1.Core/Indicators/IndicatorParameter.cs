@@ -42,7 +42,7 @@ namespace Sq1.Core.Indicators {
 
 		// DESPITE_NOT_INVOKED_EXPLICITLY__I_GUESS_INITIALIZING_VALUES_USING_OTHER_CONSTRUCTOR_MAY_CORRUPT_JSON_DESERIALIZATION
 		public IndicatorParameter() {
-			BorderShown			= false;
+			BorderShown			= true;
 			NumericUpdownShown	= true;
 			IndicatorName	= "NOT_ATTACHED_TO_ANY_INDICATOR_YET will be replaced in Indicator.cs:118.ParametersByNameParametersByName";
 			ReasonToClone	= "";	// expected to be a non-null string in Clone_asIndicatorParameter() and Clone_asScriptParameter()

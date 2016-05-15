@@ -30,7 +30,17 @@ namespace Sq1.Core.Livesim {
 				ChartShadow				chartShadow;
 
 		public	bool					IsPaused_waitForever_untilUnpaused	{ get {
-			return this.DataSourceAsLivesim_generator_nullUnsafe.StreamingAsLivesim_nullUnsafe.UnpausedMre.WaitOne(-1);
+			bool ret = false;
+			if (this.DataSourceAsLivesim_generator_nullUnsafe == null) {
+				string msg = "THROWS_IF_DATASOURCE_HAS_NO_STREAMING";
+				Assembler.PopupException(msg);
+			}
+			if (this.DataSourceAsLivesim_generator_nullUnsafe.StreamingAsLivesim_nullUnsafe == null) {
+				string msg = "THROWS_IF_DATASOURCE_HAS_NO_STREAMING";
+				Assembler.PopupException(msg);
+			}
+			ret = this.DataSourceAsLivesim_generator_nullUnsafe.StreamingAsLivesim_nullUnsafe.UnpausedMre.WaitOne(-1);
+			return ret;
 		} }
 
 
@@ -75,7 +85,7 @@ namespace Sq1.Core.Livesim {
 				int pumpsPaused = 0;
 				if (base.BarsOriginal.DataSource.BrokerAdapter is LivesimBrokerDefault) {
 					//v1 BROKER_IN_TEST_MODE_WILL_NOT_SEND_ORDERS_FOR_NON_LIVESIMMING_SYMBOLS
-					pumpsPaused = this.Executor.DataSource_fromBars.LivesimStreaming_PumpPause_forSameSymbolScale_freezeNonSimmingConsumers_whenBrokerOriginalIsLivesimDefault(this.Executor);
+					//pumpsPaused = this.Executor.DataSource_fromBars.LivesimStreaming_PumpPause_forSameSymbolScale_freezeNonSimmingConsumers_whenBrokerOriginalIsLivesimDefault(this.Executor);
 				} else {
 					base.BarsOriginal.DataSource.BrokerAdapter.ImBeingTested_byOwnLivesimImplementation_set(true);
 					pumpsPaused = this.Executor.DataSource_fromBars.LivesimStreaming_PumpsAllPause_forAllSymbolsScales_freezeAllConsumers_whenBrokerOriginalIsReal(this.Executor);

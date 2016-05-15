@@ -118,7 +118,7 @@ namespace Sq1.Core.Sequencing {
 						}
 						if (this.backtests[0].KPIsCumulativeByDateIncreasing.Count == 0) {
 							string msg = "DESERIALIZED_WITH_KPIsCumulativeByDateIncreasing.Count_ZERO__RESEQUENCE_ME_AGAIN";
-							Assembler.PopupException(msg);
+							Assembler.PopupException(msg, null, false);
 							return ret;
 						}
 						this.BacktestedBarFirstDateTime = this.backtests[0].KPIsCumulativeDateFirst_DateTimeMinUnsafe;
@@ -168,7 +168,7 @@ namespace Sq1.Core.Sequencing {
 			string msig				= "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
 			backtests				= new List<SystemPerformanceRestoreAble>();
 			FileName 				= SequencedBacktests.SEQUENCED_BACKTESTS_NO_FNAME__REINITIALIZE_REPOSITORY;
-			//SubsetPercentage		= 100;
+			SubsetPercentage		= 50;	// PanelFillSlider will complain it won't accept 0 koz min = 5
 			//SubsetPercentageFromEnd = false;
 		}
 		public SequencedBacktests(ScriptExecutor executor, string fileName) : this() {
@@ -195,7 +195,7 @@ namespace Sq1.Core.Sequencing {
 			}
 			if (backtestsValidCount == 0) {
 				string msg = "AVOIDIND_DIVISION_BY_ZERO__YOU_MUST_HAVE_CHECKED this.backtests.Count=0 for[" + this.ToString() + "]";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 			if (backtestsValidCount > 0) {		// AVOIDING_OUR_GOOD_FRIEND_DIVISION_TO_ZERO_EXCEPTION
@@ -210,7 +210,8 @@ namespace Sq1.Core.Sequencing {
 		internal void SubsetPercentageSetInvalidate(double subsetPercentage) {
 			if (subsetPercentage <= 0) {
 				string msg = "I_REFUSE_TO_DIVIDE_BY_ZERO_OR_NEGATIVE__SET_YOU_SLIDER_MIN_VALUE_TO_1%";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
+				return;
 			}
 			this.SubsetPercentage = subsetPercentage;
 			this.clearSubsets_cached();

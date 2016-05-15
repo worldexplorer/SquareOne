@@ -33,12 +33,14 @@ namespace Sq1.Gui.Singletons {
 				#endif
 			}
 
-			this.ExceptionControl.InsertAsyncAutoFlush(ex);
+			this.ExceptionControl.InsertAsync_autoFlush(ex);
 		}
 		protected override void OnLoad(EventArgs e) {
-			foreach (Exception beforeFormInstantiated in Assembler.InstanceInitialized.ExceptionsWhileInstantiating) {
-				this.PopupException(null, beforeFormInstantiated, false);
-			}
+			Assembler.InstanceInitialized.ExceptionsFormInstance_safelyCreated = true;
+			//MOVED_TO_this.PopupException();
+			//foreach (Exception beforeFormInstantiated in Assembler.InstanceInitialized.ExceptionsWhileInstantiating) {
+			//    this.PopupException(null, beforeFormInstantiated, false);
+			//}
 		}
 	}
 }

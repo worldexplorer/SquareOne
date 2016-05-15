@@ -49,16 +49,33 @@ namespace Sq1.Core.Streaming {
 				this.DistributorCharts_substitutedDuringLivesim.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(symbolLivesimming);
 			}
 
-			if (this.DistributorSolidifiers_substitutedDuringLivesim.ChannelsBySymbol.Count > 0) {
-				this.DistributorSolidifiers_substitutedDuringLivesim.TwoLiveRealPumps_Pause_whileSymbolLivesimming(symbolLivesimming, reasonForNewDistributor);
-			} else {
-				if (this is LivesimStreamingDefault) {
-					string msg4 = "DEFAULT_LIVESIM_HAS_NO_SOLIDIFIERS";
-				} else {
-					string msg4 = "IM_A_REAL_STREAMING__I_MUST_HAVE_SOLIDIFIERS_TO_PAUSE";
-					Assembler.PopupException(msg4, null, false);
-				}
+			#region same check for no-streaming-in-datasource-and-no-own-livesim for both SubstituteDistributor_extractChart and SubstituteDistributor_restoreOriginal
+			bool dataSource_hasNoStreamingAdapter = this.DistributorSolidifiers_substitutedDuringLivesim == null;
+			bool streamingAdapter_hasNoOwnStreamingImplementation_defaultLivesimHasNoSolidifiers = this is LivesimStreamingDefault;
+
+			if (dataSource_hasNoStreamingAdapter || streamingAdapter_hasNoOwnStreamingImplementation_defaultLivesimHasNoSolidifiers) {
+				string msg = "SKIPPING_SUBSTUTION_OF_SOLIDIFIERS"
+					+ " dataSource_hasNoStreamingAdapter[" + dataSource_hasNoStreamingAdapter + "]"
+					+ " streamingAdapter_hasNoOwnStreamingImplementation[" + streamingAdapter_hasNoOwnStreamingImplementation_defaultLivesimHasNoSolidifiers + "]";
+				Assembler.PopupException(msg, null, false);
+				return;
 			}
+
+			if (this.DistributorSolidifiers_substitutedDuringLivesim.ChannelsBySymbol == null) {
+				string msg4 = "MUST_NEVER_HAPPEN_ChannelsBySymbol=NULL";
+				Assembler.PopupException(msg4, null, false);
+				return;
+			}
+
+			// IM_A_REAL_STREAMING__I_MUST_HAVE_SOLIDIFIERS_TO_PAUSE__WILL_SUBSTITUTE_AND_WILL_HAVE_TO_RESTORE
+			if (this.DistributorSolidifiers_substitutedDuringLivesim.ChannelsBySymbol.Count == 0) {
+				string msg4 = "MUST_NEVER_HAPPEN ChannelsBySymbol.Count=0";
+				Assembler.PopupException(msg4, null, false);
+			}
+			#endregion
+
+			this.DistributorSolidifiers_substitutedDuringLivesim.TwoLiveRealPumps_Pause_whileSymbolLivesimming(symbolLivesimming, reasonForNewDistributor);
+
 			string msg3 = "REGARDLESS_WHETHER_I_HAD_SOLIDIFIERS__I_CREATE_NEW_TO_INDICATE_IM_LIVESIMMING";
 			this.dataDistributorSolidifier_preLivesimForSymbolLivesimming = this.DistributorSolidifiers_substitutedDuringLivesim;
 			this.DistributorSolidifiers_substitutedDuringLivesim = new DistributorSolidifier(this, reasonForNewDistributor);		// EMPTY!!! exactly what I wanted
@@ -82,19 +99,35 @@ namespace Sq1.Core.Streaming {
 
 			this.DistributorCharts_substitutedDuringLivesim.TwoLiveRealPumps_Stop_forSymbolLivesimTerminatedAborted(symbolLivesimming, reasonForStoppingReplacedDistributor);
 
-			this.DistributorCharts_substitutedDuringLivesim				= this.dataDistributorCharts_preLivesimForSymbolLivesimming;
+			this.DistributorCharts_substitutedDuringLivesim			= this.dataDistributorCharts_preLivesimForSymbolLivesimming;
 			this.DistributorSolidifiers_substitutedDuringLivesim	= this.dataDistributorSolidifier_preLivesimForSymbolLivesimming;
 
-			if (this.DistributorSolidifiers_substitutedDuringLivesim.ChannelsBySymbol.Count > 0) {
-				this.DistributorSolidifiers_substitutedDuringLivesim.TwoLiveRealPumps_Unpause_afterSymbolLivesimmed(symbolLivesimming, reasonForStoppingReplacedDistributor);
-			} else {
-				if (this is LivesimStreamingDefault) {
-					string msg4 = "DEFAULT_LIVESIM_HAS_NO_SOLIDIFIERS";
-				} else {
-					string msg4 = "IM_A_REAL_STREAMING__I_MUST_HAVE_SOLIDIFIERS_TO_UNPAUSE";
-					Assembler.PopupException(msg4, null, false);
-				}
+			#region same check for no-streaming-in-datasource-and-no-own-livesim for both SubstituteDistributor_extractChart and SubstituteDistributor_restoreOriginal
+			bool dataSource_hasNoStreamingAdapter = this.DistributorSolidifiers_substitutedDuringLivesim == null;
+			bool streamingAdapter_hasNoOwnStreamingImplementation_defaultLivesimHasNoSolidifiers = this is LivesimStreamingDefault;
+
+			if (dataSource_hasNoStreamingAdapter || streamingAdapter_hasNoOwnStreamingImplementation_defaultLivesimHasNoSolidifiers) {
+				string msg = "SKIPPING_RESTORE_OF_SOLIDIFIERS"
+					+ " dataSource_hasNoStreamingAdapter[" + dataSource_hasNoStreamingAdapter + "]"
+					+ " streamingAdapter_hasNoOwnStreamingImplementation[" + streamingAdapter_hasNoOwnStreamingImplementation_defaultLivesimHasNoSolidifiers + "]";
+				Assembler.PopupException(msg, null, false);
+				return;
 			}
+
+			if (this.DistributorSolidifiers_substitutedDuringLivesim.ChannelsBySymbol == null) {
+				string msg4 = "MUST_NEVER_HAPPEN_ChannelsBySymbol=NULL";
+				Assembler.PopupException(msg4, null, false);
+				return;
+			}
+
+			// IM_A_REAL_STREAMING__I_MUST_HAVE_SOLIDIFIERS_TO_PAUSE__WILL_SUBSTITUTE_AND_WILL_HAVE_TO_RESTORE
+			if (this.DistributorSolidifiers_substitutedDuringLivesim.ChannelsBySymbol.Count == 0) {
+				string msg4 = "MUST_NEVER_HAPPEN ChannelsBySymbol.Count=0";
+				Assembler.PopupException(msg4, null, false);
+			}
+			#endregion
+
+			this.DistributorSolidifiers_substitutedDuringLivesim.TwoLiveRealPumps_Unpause_afterSymbolLivesimmed(symbolLivesimming, reasonForStoppingReplacedDistributor);
 
 			string msg1 = "STREAMING_CONSUMERS_RESTORED_CONNECTIVITY_TO_STREAMING_ADAPTER_AFTER_LIVESIM: "
 				+ this.DistributorCharts_substitutedDuringLivesim.ToString() + " SOLIDIFIERS:" + this.DistributorSolidifiers_substitutedDuringLivesim	;

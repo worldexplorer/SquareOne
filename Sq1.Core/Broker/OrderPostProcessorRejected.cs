@@ -22,12 +22,12 @@ namespace Sq1.Core.Broker {
 				return;
 			}
 			if (order.NoMoreSlippagesAvailable) {
-				AddMessageNoMoreSlippagesAvailable(order);
+				this.addMessage_noMoreSlippagesAvailable(order);
 				//return;
 			}
-			this.ReplaceRejectedOrder(order);
+			this.replaceRejectedOrder(order);
 		}
-		public void ReplaceRejectedOrder(Order rejectedOrderToReplace) {
+		void replaceRejectedOrder(Order rejectedOrderToReplace) {
 			if (rejectedOrderToReplace.State != OrderState.Rejected) {
 				string msg = "will not ReplaceRejectedOrder(" + rejectedOrderToReplace + ") which is not Rejected; continuing";
 				this.orderProcessor.AppendMessage_propagateToGui(rejectedOrderToReplace, msg);
@@ -41,7 +41,7 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException(msg);
 				return;
 			}
-			Order replacement = this.CreateReplacementOrder_insteadOfRejected(rejectedOrderToReplace);
+			Order replacement = this.createReplacementOrder_insteadOfRejected(rejectedOrderToReplace);
 			if (replacement == null) {
 				string msg = "ReplaceRejectedOrder(" + rejectedOrderToReplace + ") got NULL from CreateReplacementOrder()"
 					+ "; broker reported twice about rejection, ignored this second callback";
@@ -70,7 +70,7 @@ namespace Sq1.Core.Broker {
 			this.orderProcessor.AppendMessage_propagateToGui(replacement, msg_replacement);
 
 			if (replacement.NoMoreSlippagesAvailable) {
-				AddMessageNoMoreSlippagesAvailable(replacement);
+				this.addMessage_noMoreSlippagesAvailable(replacement);
 				//return;
 			}
 
@@ -79,9 +79,9 @@ namespace Sq1.Core.Broker {
 			double slippage = replacement.Alert.GetSlippage_signAware_forLimitAlertsOnly(priceStreaming, replacement.SlippageAppliedIndex);
 			replacement.SlippageApplied = slippage;
 			replacement.PriceRequested = priceStreaming + slippage;
-			this.SubmitReplacementOrder_insteadOfRejected(replacement);
+			this.submitReplacementOrder_insteadOfRejected(replacement);
 		}
-		public Order CreateReplacementOrder_insteadOfRejected(Order rejectedOrderToReplace) {
+		Order createReplacementOrder_insteadOfRejected(Order rejectedOrderToReplace) {
 			if (rejectedOrderToReplace == null) {
 				Assembler.PopupException("order2replace=null why did you call me?");
 				return null;
@@ -108,7 +108,7 @@ namespace Sq1.Core.Broker {
 			//this.orderProcessor.RaiseOrderReplacementOrKillerCreatedForVictim(this, rejectedOrderToReplace);
 			return replacementOrder;
 		}
-		public Order findReplacementOrder_forRejectedOrder(Order orderRejected) {
+		Order findReplacementOrder_forRejectedOrder(Order orderRejected) {
 			OrderLane	suggestedLane = null;
 			string		suggestion = "PASS_suggestLane=TRUE";
 			
@@ -120,7 +120,7 @@ namespace Sq1.Core.Broker {
 			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(rejected.ReplacedByGUID, out suggestedLane, out suggestion, true);
 			return replacement;
 		}
-		public void SubmitReplacementOrder_insteadOfRejected(Order replacementOrder) {
+		void submitReplacementOrder_insteadOfRejected(Order replacementOrder) {
 			if (replacementOrder == null) {
 				Assembler.PopupException("replacementOrder == null why did you call me?");
 				return;
@@ -143,7 +143,7 @@ namespace Sq1.Core.Broker {
 
 			//this.orderProcessor.UpdateActiveOrdersCountEvent();
 		}
-		public void AddMessageNoMoreSlippagesAvailable(Order order) {
+		void addMessage_noMoreSlippagesAvailable(Order order) {
 			SymbolInfo symbolInfo = order.Alert.Bars.SymbolInfo;
 			int slippageIndexMax = symbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(order.Alert);
 			string msg2 = "Reached max slippages available for [" + order.Alert.Bars.Symbol + "]"

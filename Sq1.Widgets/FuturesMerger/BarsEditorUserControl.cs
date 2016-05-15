@@ -119,7 +119,7 @@ namespace Sq1.Widgets.FuturesMerger {
 					return;
 				}
 
-				this.barsCloned			= barsOriginal.SafeCopy_oneCopyForEachDisposableExecutors("CLONED_FOR_BARS_EDITOR", true);
+				this.barsCloned			= barsOriginal.SafeCopy_forEachReusableExecutor("CLONED_FOR_BARS_EDITOR", true);
 
 				this.bars_selectRange_flushToGui(new BarDataRange(lastBarsToShow_otherwizeTooSlow), millisElapsed);
 			} catch (Exception ex) {
@@ -136,7 +136,7 @@ namespace Sq1.Widgets.FuturesMerger {
 
 			//v1 this.olvBarsEditor.SetObjects(this.barsCloned_rangeIamEditing.InnerBars_exposedOnlyForEditor);
 			//v2
-			this.barsClonedReversed	= this.barsCloned_rangeIamEditing.SafeCopy_oneCopyForEachDisposableExecutors("RANGE_CLONED_FOR_BARS_EDITOR", true, this.barsDescending);
+			this.barsClonedReversed	= this.barsCloned_rangeIamEditing.SafeCopy_forEachReusableExecutor("RANGE_CLONED_FOR_BARS_EDITOR", true, this.barsDescending);
 			this.olvBarsEditor.SetObjects(this.barsClonedReversed.InnerBars_exposedOnlyForEditor_fromSafeCopy);
 
 			this.btnReload.Enabled = true;

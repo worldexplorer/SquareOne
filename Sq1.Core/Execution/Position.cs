@@ -8,7 +8,7 @@ using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Execution {
 	public partial class Position : IDisposable {
-		public int SernoAbs;
+		public int SernoPerStrategy;
 		
 		public bool					IsLong					{ get { return this.PositionLongShort == PositionLongShort.Long; } }
 		public bool					IsShort					{ get { return this.PositionLongShort == PositionLongShort.Short; } }
@@ -390,9 +390,9 @@ namespace Sq1.Core.Execution {
 		}
 		public override string ToString() {
 			StringBuilder msg = new StringBuilder();
-			if (this.SernoAbs > 0) {
+			if (this.SernoPerStrategy > 0) {
 				msg.Append("#");
-				msg.Append(this.SernoAbs);
+				msg.Append(this.SernoPerStrategy);
 			}
 			msg.Append(this.PositionLongShort);
 			msg.Append(" ");

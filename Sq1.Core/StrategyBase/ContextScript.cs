@@ -45,7 +45,7 @@ namespace Sq1.Core.StrategyBase {
 
 		[JsonProperty]	public bool							MinimizeGuiExtensiveExecutionAllReportersForTheDurationOfLiveSim;
 
-		[JsonIgnore]	public List<IndicatorParameter>		ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders { get {
+		[JsonIgnore]	public List<IndicatorParameter>		ScriptAndIndicatorParameters_mergedUncloned_forSequencerAndSliders { get {
 				List<IndicatorParameter> ret = new List<IndicatorParameter>();
 				ret.AddRange(this.ScriptParametersById.Values);
 				//v1 foreach (List<IndicatorParameter> iParams in this.IndicatorParametersByName.Values) ret.AddRange(iParams);
@@ -60,9 +60,9 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return ret;
 			} }
-		[JsonIgnore]	public SortedDictionary<string, IndicatorParameter> ScriptAndIndicatorParametersMergedUnclonedForSequencerByName { get {
+		[JsonIgnore]	public SortedDictionary<string, IndicatorParameter> ScriptAndIndicatorParameters_mergedUncloned_forSequencerByName { get {
 				SortedDictionary<string, IndicatorParameter> ret = new SortedDictionary<string, IndicatorParameter>();
-				foreach (IndicatorParameter iParam in this.ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders) {
+				foreach (IndicatorParameter iParam in this.ScriptAndIndicatorParameters_mergedUncloned_forSequencerAndSliders) {
 					if (ret.ContainsKey(iParam.FullName)) {
 						if (iParam.FullName.Contains("NOT_ATTACHED_TO_ANY_INDICATOR_YET")) {
 							string msg2 = "IM_CLONING_A_CONTEXT_TO_PUSH_FROM_SEQUENCER__NO_IDEA_HOW_TO_FIX";
@@ -77,8 +77,8 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return ret;
 			} }
-		[JsonProperty]	public string										ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString { get {
-				SortedDictionary<string, IndicatorParameter> merged = this.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName;
+		[JsonProperty]	public string									   ScriptAndIndicatorParameters_mergedUncloned_forSequencerByName_AsString { get {
+				SortedDictionary<string, IndicatorParameter> merged = this.ScriptAndIndicatorParameters_mergedUncloned_forSequencerByName;
 				if (merged.Count == 0) return "(NoParameters)";
 				string ret = "";
 				foreach (string indicatorDotParameter in merged.Keys) {
@@ -148,8 +148,8 @@ namespace Sq1.Core.StrategyBase {
 			return clone;
 		}
 		public void AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerOnly(string reasonToClone, ContextScript found) {
-			this.ScriptParametersById			= found.ScriptParametersById;
-			this.IndicatorParametersByIndicatorName		= found.IndicatorParametersByIndicatorName;
+			this.ScriptParametersById				= found.ScriptParametersById;
+			this.IndicatorParametersByIndicatorName	= found.IndicatorParametersByIndicatorName;
 			this.replaceWithCloned_scriptAndIndicatorParameters("FOR_" + reasonToClone, false);
 		}
 		public void AbsorbFrom_duplicatedInSliders_orImportedFromSequencer(ContextScript found, bool absorbScriptAndIndicatorParams = true) {
@@ -218,7 +218,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.IndicatorParametersByIndicatorName = indicatorParameters_byNameClonedReset;
 		}
-		public int AbsorbOnlyScriptAndIndicatorParameterCurrentValues_toDisposableFromSequencer(ContextScript ctxSequencerSequenced) {
+		public int AbsorbOnlyScriptAndIndicatorParameterCurrentValues_toReusableFromSequencer(ContextScript ctxSequencerSequenced) {
 			int ret = 0;
 			try {
 				this.SequenceIterationName = ctxSequencerSequenced.Name;
@@ -243,6 +243,7 @@ namespace Sq1.Core.StrategyBase {
 						}
 					}
 				}
+				this.StreamingIsTriggeringScript = true;	// otherwize Sequenced Backtests wont trigger Script.OverrideMe methods; this is Plan A; Plan B is inside ScriptExecutor.IsStreamingTriggeringScript_get() {}
 			} catch (Exception ex) {
 				string msg = "SCRIPT_RECOMPILED__SEQUENCER_WAS_NOT_NOTIFIED_ABOUT_CHANGED_SCRIPT_OR_INDICATOR_PARAMETERS";
 				Assembler.PopupException(msg);

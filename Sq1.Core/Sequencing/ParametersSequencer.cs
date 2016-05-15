@@ -17,7 +17,7 @@ namespace Sq1.Core.Sequencing {
 		public ParametersSequencer(ContextScript contextScript) {
 			getNextLock = new object();
 			contextScriptCloneIterateable = contextScript.CloneResetAllToMin_ForSequencer("FOR_SequencerParametersSequencer");
-			paramsMerged = contextScriptCloneIterateable.ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders;
+			paramsMerged = contextScriptCloneIterateable.ScriptAndIndicatorParameters_mergedUncloned_forSequencerAndSliders;
 			slowIndex = 0; 
 			fastIndex = 0;
 			log = "";

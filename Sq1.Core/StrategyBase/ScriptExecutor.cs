@@ -74,7 +74,16 @@ namespace Sq1.Core.StrategyBase {
 					Assembler.PopupException(msg);
 					return false;
 				}
-				return this.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript;
+
+				bool alwaysTrueForBacktestsAndSequencing = this.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript;
+				if (alwaysTrueForBacktestsAndSequencing == false && this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
+					string msg = "plan A was inside ContextScript.AbsorbOnlyScriptAndIndicatorParameterCurrentValues_toReusableFromSequencer()"
+						+ " otherwize Sequencer will generate Quotes and Bars but won't invoke Script.OverrideMe - methods";
+					//Assembler.PopupException(msg);
+					alwaysTrueForBacktestsAndSequencing =  true;
+				}
+
+				return alwaysTrueForBacktestsAndSequencing;
 			}
 			set {
 				if (this.Strategy == null) {
@@ -342,13 +351,10 @@ namespace Sq1.Core.StrategyBase {
 				msg = "CANT_BE_REMOVED " + orderState + " isn't Pending alert[" + alert + "] ";
 			}
 			if (alert.OrderFollowed == null) {
-				if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
-					msg = "RealTime alerts should NOT have OrderFollowed=null; " + msg;
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					throw new Exception(msg);
-				}
+				//if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
+				//    msg = "WHAT_WAS_IT??? RealTime alerts should NOT have OrderFollowed=null; " + msg;
+				//    throw new Exception(msg);
+				//}
 				return;
 			}
 			// OrderFollowed=null when executeStrategyBacktestEntryPoint() is in the call stack
@@ -397,7 +403,7 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Bars == barsClicked) {
 				string msg = "DONT_SET_SAME_BARS";
 			}
-			if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting) {
+			if (this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 				this.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted("CLICKED_ON_OTHER_BARS_WHILE_BACKTESTING");
 			}
 
@@ -427,7 +433,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 			} else {
 				string msg1 = "LOOKS_LIKE_WE_SPAWN_REUSABLE_EXECUTORS_FOR_PARALLEL_CHARTLESS_BACKTESTING";
-				Assembler.PopupException(msg1);
+				// YES_WE_SPAWN Assembler.PopupException(msg1);
 			}
 
 			if (this.Bars.DataSource == null) {
@@ -551,11 +557,12 @@ namespace Sq1.Core.StrategyBase {
 			string ret = "";
 			ret += this.ToString();
 			// this.Strategy.Script==null for an {editor-based + compilation failed} Script
-			if (this.Strategy.Script != null) ret += " " + this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString;
+			if (this.Strategy.Script != null) ret += " " + this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParameters_mergedUncloned_forSequencerByName_AsString;
 			//ret += " why???PerformanceAfterBacktest:" + this.PerformanceAfterBacktest.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished_AsString;
 			return ret;
 		}
 
+		public bool IsDisposed { get; private set; }
 		public void Dispose() {
 			if (this.IsDisposed) {
 				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();
@@ -581,7 +588,6 @@ namespace Sq1.Core.StrategyBase {
 			this.Bars				= null;		// if this.Bars are subscribed to anything, the event generator will keep Bars' handler and so this.Bars wont get GC'ed
 			this.IsDisposed			= true;
 		}
-		public bool IsDisposed { get; private set; }
 
 		public void PreCalculateIndicators_forLoadedBars_backtestWontFollow(Indicator recalculateOnlyOneIndicator_thatUserMovedSliderFor = null) {
 			string msig = " //PreCalculateIndicators_forLoadedBars_backtestWontFollow()";
@@ -613,7 +619,7 @@ namespace Sq1.Core.StrategyBase {
 				indicatorEach.BacktestStarting_substituteBarsEffectiveProxy_clearOwnValues_propagatePeriodsToHelperSeries();	// will create new SMA with Period changed
 			}
 
-			Bars barsSafeCopy = this.Bars.SafeCopy_oneCopyForEachDisposableExecutors(msig, true);
+			Bars barsSafeCopy = this.Bars.SafeCopy_forEachReusableExecutor(msig, true);
 			foreach(Bar eachBar_likeLastStaticFormed in barsSafeCopy.InnerBars_exposedOnlyForEditor_fromSafeCopy) {
 				foreach(Indicator indicatorEach in this.Strategy.Script.IndicatorsByName_reflectedCached_primary.Values) {
 					if (recalculateOnlyOneIndicator_thatUserMovedSliderFor != null && indicatorEach != recalculateOnlyOneIndicator_thatUserMovedSliderFor) continue;

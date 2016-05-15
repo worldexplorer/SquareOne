@@ -152,7 +152,7 @@ namespace Sq1.Charting {
 				return ret;
 			} }
 		
-		protected override int ValueIndexLastAvailableMinusOneUnsafe { get {
+		protected override int ValueIndexLastAvailable_minusOneUnsafe { get {
 				if (this.Indicator == null) return -1; 
 				if (this.Indicator.OwnValuesCalculated == null) return -1; 
 				return this.Indicator.OwnValuesCalculated.Count - 1; 

@@ -632,7 +632,7 @@ namespace Sq1.Gui.Forms {
 				//this.Executor.Performance.BuildStatsOnBacktestFinished(this.Executor.ExecutionDataSnapshot.PositionsMaster);
 				// MOVED_TO_BacktesterRunSimulation() this.Executor.Performance.BuildStatsOnBacktestFinished();
 				//this.ReportersFormsManager.BuildReportFullOnBacktestFinishedAllReporters(this.Executor.Performance);
-				this.ReportersFormsManager.BuildReportFullOnBacktestFinishedAllReporters();
+				this.ReportersFormsManager.BuildReportFull_onBacktestFinished_allReporters();
 
 				Assembler.DisplayStatus(this.Executor.LastBacktestStatus);
 			} catch (Exception ex) {
@@ -760,7 +760,7 @@ namespace Sq1.Gui.Forms {
 			}
 			if (this.Strategy == null) return;
 			this.Strategy.ScriptContextCurrent.ReporterShortNamesUserInvokedJSONcheck =
-				new List<string>(this.ReportersFormsManager.ReporterShortNamesUserInvoked.Keys);
+				new List<string>(this.ReportersFormsManager.ReporterShortNames_userInvoked.Keys);
 		}
 
 		public void ChartFormShow(string scriptContext = null) {
@@ -942,7 +942,7 @@ namespace Sq1.Gui.Forms {
 				this.ScriptEditorForm.Text = this.ChartForm.Text;
 			}
 
-			this.ReportersFormsManager.WindowTitlePullFromStrategy_allReporterWrappers();
+			this.ReportersFormsManager.PullWindowTitle_fromStrategy_allReporterWrappers();
 			if (DockContentImproved.IsNullOrDisposed(this.SequencerForm) == false) {
 				this.SequencerForm.WindowTitlePullFromStrategy();
 			}

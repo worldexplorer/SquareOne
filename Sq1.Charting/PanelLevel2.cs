@@ -14,7 +14,7 @@ namespace Sq1.Charting {
 		const string REASON_TO_EXIST = "besides my own Panel, paint also on a clipped Graphics to draw below candles on PanelPrice (intensivity of layers might be controlled by sliders))";
 
 		[Browsable(false)]	public override bool					PanelHasValuesForVisibleBarWindow		{ get { return false;	/* this will cancel drawing right gutter */ } }
-		[Browsable(false)]	protected override int					ValueIndexLastAvailableMinusOneUnsafe	{ get { return -1; } }
+		[Browsable(false)]	protected override int					ValueIndexLastAvailable_minusOneUnsafe	{ get { return -1; } }
 		[Browsable(false)]	public			StreamingDataSnapshot	StreamingDataSnapshot_nullUnsafe			{ get {
 			if (base.ChartControl.Executor == null) return null;		// for TestChartControl
 			if (base.ChartControl.Executor.DataSource_fromBars.StreamingAdapter == null) return null;
@@ -181,6 +181,13 @@ namespace Sq1.Charting {
 			//LevelTwoHalfSortedFrozen bids_frozenDesc_forOnePaint	= base.ChartControl.ScriptExecutorObjects.Bids_frozenDesc_forOnePaint;
 			//v2
 			LevelTwoFrozen levelTwo_frozenForOnePaint = base.ChartControl.ExecutorObjects_frozenForRendering.LevelTwo_frozen_forOnePaint;
+			if (levelTwo_frozenForOnePaint == null) {
+				base.DrawError(g, "LEVEL_TWO_MUST_NEVER_BE_NULL_DURING_LIVESIM_DEFAULT");
+				base.DrawError(g, "ChartControl.ExecutorObjects_frozenForRendering.LevelTwo_frozen_forOnePaint=null");
+				base.DrawError(g, "MUST_DISAPPEAR_AFTER_ADDING BacktestStreaming:PushQuoteGenerated()<=PushLevelTwoReceived_alreadyInStreamingSnap()");
+				return;
+			}
+
 			LevelTwoHalfSortedFrozen asks_frozenAsc_forOnePaint		= levelTwo_frozenForOnePaint.Asks_sortedAsc;
 			LevelTwoHalfSortedFrozen bids_frozenDesc_forOnePaint	= levelTwo_frozenForOnePaint.Bids_sortedDesc;
 

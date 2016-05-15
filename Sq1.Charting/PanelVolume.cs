@@ -143,7 +143,7 @@ namespace Sq1.Charting {
 					Assembler.PopupException("RenderBarsPrice(): " + msg);
 					continue;
 				}
-				barX -= base.BarWidthIncludingPadding_cached;
+				barX -= base.BarWidth_includingPadding_cached;
 				Bar bar = base.ChartControl.Bars[i];
 				//if (bar.IsStreamingBar) {	// NaNs are possible for all bars, not only for streaming bar
 					if (double.IsNaN(bar.Open)) continue;
@@ -162,6 +162,6 @@ namespace Sq1.Charting {
 			Bar bar = base.ChartControl.Bars[barIndex];
 			return bar.Volume;
 		}
-		protected override int ValueIndexLastAvailableMinusOneUnsafe { get { return base.ChartControl.Bars.Count - 1; } }
+		protected override int ValueIndexLastAvailable_minusOneUnsafe { get { return base.ChartControl.Bars.Count - 1; } }
 	}
 }

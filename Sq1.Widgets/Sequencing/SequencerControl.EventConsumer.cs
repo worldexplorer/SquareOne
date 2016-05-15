@@ -3,11 +3,13 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
+
 using Sq1.Core;
 using Sq1.Core.Indicators;
 using Sq1.Core.Sequencing;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Repositories;
+
 using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Widgets.Sequencing {

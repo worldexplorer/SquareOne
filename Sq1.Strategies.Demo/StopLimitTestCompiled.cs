@@ -19,7 +19,7 @@ namespace Sq1.Strategies.Demo {
 			//this.placePrototypeOncePositionClosed(barNewStaticArrived);
 		}
 		private void placePrototypeOncePositionClosed(Bar bar) {
-			bool isBacktesting = this.Executor.BacktesterOrLivesimulator.ImRunningChartlessBacktesting;
+			bool isBacktesting = this.Executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing;
 			//WHATS_THE_DIFFERENCE? if (isBacktesting) return;
 
 			if (bar.ParentBarsIndex == 138) {

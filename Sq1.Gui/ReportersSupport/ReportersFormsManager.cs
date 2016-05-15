@@ -10,20 +10,22 @@ using Sq1.Core.Charting;
 using Sq1.Core.Execution;
 using Sq1.Core.Repositories;
 using Sq1.Core.StrategyBase;
+
 using Sq1.Widgets;
+
 using Sq1.Gui.Forms;
 
 namespace Sq1.Gui.ReportersSupport {
 	public class ReportersFormsManager {
 		public	ChartFormManager 				ChartFormsManager 				{ get; private set; }
 				RepositoryDllReporters 			reportersRepo;
-		public	Dictionary<string, Reporter>	ReporterShortNamesUserInvoked	{ get; private set; }	// multiple instances of the same reporter invoked for one chart <= are not allowed
+		public	Dictionary<string, Reporter>	ReporterShortNames_userInvoked	{ get; private set; }	// multiple instances of the same reporter invoked for one chart <= are not allowed
 		public	MenuItemsProvider				MenuItemsProvider				{ get; private set; }
 		
 		public Dictionary<string, ReporterFormWrapper> FormsAllRelated { get {
-				var ret = new Dictionary<string, ReporterFormWrapper>();
-				foreach (string reporterName in this.ReporterShortNamesUserInvoked.Keys) {
-					Reporter reporter = this.ReporterShortNamesUserInvoked[reporterName];
+				Dictionary<string, ReporterFormWrapper> ret = new Dictionary<string, ReporterFormWrapper>();
+				foreach (string reporterName in this.ReporterShortNames_userInvoked.Keys) {
+					Reporter reporter = this.ReporterShortNames_userInvoked[reporterName];
 					ReporterFormWrapper reporterContainerForm = reporter.Parent as ReporterFormWrapper;
 					if (reporterContainerForm == null) {
 						string msg = "Reporter[" + reporter + "].Parent[" + reporter.Parent + "] is not a ReporterFormWrapper";
@@ -38,7 +40,7 @@ namespace Sq1.Gui.ReportersSupport {
 		ReportersFormsManager() {
 			// ALREADY_THERE deserializeIndex = 0;
 			reportersRepo = Assembler.InstanceInitialized.RepositoryDllReporters;
-			ReporterShortNamesUserInvoked = new Dictionary<string, Reporter>();
+			ReporterShortNames_userInvoked = new Dictionary<string, Reporter>();
 			MenuItemsProvider = new MenuItemsProvider(this, this.reportersRepo.TypesFound_inScannedDLLs);
 		}
 		public ReportersFormsManager(ChartFormManager chartFormManager) : this() {
@@ -48,33 +50,33 @@ namespace Sq1.Gui.ReportersSupport {
 				this.eventGenerator_BacktesterContextInitialized_step2of4);
 
 			this.ChartFormsManager.Executor.EventGenerator.OnBrokerFilledAlertsOpeningForPositions_step1of3 += new EventHandler<ReporterPokeUnitEventArgs>(
-				this.eventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3);
+				this.eventGenerator_BrokerFilledAlertsOpening_forPositions_step1of3);
 
 			this.ChartFormsManager.Executor.EventGenerator.OnOpenPositionsUpdated_afterChartConsumedNewQuote_reportersOnly_step2of3 += new EventHandler<ReporterPokeUnitEventArgs>(
-				this.eventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3);
+				this.eventGenerator_OpenPositionsUpdated_dueToStreamingNewQuote_step2of3);
 
 			this.ChartFormsManager.Executor.EventGenerator.OnBrokerFilledAlertsClosingForPositions_step3of3 += new EventHandler<ReporterPokeUnitEventArgs>(
-				this.eventGenerator_BrokerFilledAlertsClosingForPositions_step3of3);
+				this.eventGenerator_BrokerFilledAlertsClosing_forPositions_step3of3);
 		}
 
 		void eventGenerator_BacktesterContextInitialized_step2of4(object sender, EventArgs e) {
-			this.ClearAllReportsSincePerformanceGotCleared_step0of3();
+			this.ClearAllReports_sincePerformanceGotCleared_step0of3();
 		}
 
-		void eventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3(object sender, ReporterPokeUnitEventArgs e) {
+		void eventGenerator_BrokerFilledAlertsOpening_forPositions_step1of3(object sender, ReporterPokeUnitEventArgs e) {
 			//DELEGATED_TO_REPORTER_WRAPPER if (e.PokeUnit.PositionsOpened.AlertsEntry.GuiHasTimeToRebuild(this, "eventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3(WAIT)") == false) return;
-			this.BuildIncrementalOnPositionsOpenedAllReports_step1of3(e.PokeUnit);
+			this.BuildIncremental_onPositionsOpened_allReports_step1of3(e.PokeUnit);
 		}
-		void eventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(object sender, ReporterPokeUnitEventArgs e) {
+		void eventGenerator_OpenPositionsUpdated_dueToStreamingNewQuote_step2of3(object sender, ReporterPokeUnitEventArgs e) {
 			//I_WANT_REPORTERS_TO_REBUILD!!OPTIMIZED_THEM
 			//DELEGATED_TO_REPORTER_WRAPPER if (e.PokeUnit.PositionsOpenNow.AlertsOpenNow.GuiHasTimeToRebuild(this, "eventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(WAIT)") == false) return;
-			this.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(e.PokeUnit);
+			this.UpdateOpenPositions_dueToStreamingNewQuote_step2of3(e.PokeUnit);
 		}
-		void eventGenerator_BrokerFilledAlertsClosingForPositions_step3of3(object sender, ReporterPokeUnitEventArgs e) {
+		void eventGenerator_BrokerFilledAlertsClosing_forPositions_step3of3(object sender, ReporterPokeUnitEventArgs e) {
 			//DELEGATED_TO_REPORTER_WRAPPER if (e.PokeUnit.PositionsClosed.AlertsExit.GuiHasTimeToRebuild(this, "eventGenerator_BrokerFilledAlertsClosingForPositions_step3of3(WAIT)") == false) return;
-			this.BuildIncrementalOnPositionsClosedAllReports_step3of3(e.PokeUnit);
+			this.BuildIncremental_onPositionsClosed_allReports_step3of3(e.PokeUnit);
 		}
-		public void ClearAllReportsSincePerformanceGotCleared_step0of3() {
+		public void ClearAllReports_sincePerformanceGotCleared_step0of3() {
 			SystemPerformanceSlice both = this.ChartFormsManager.Executor.PerformanceAfterBacktest.SlicesShortAndLong;
 			//bool amIlaunchingLivesim = this.ChartFormManager.Executor.Backtester.IsLivesimRunning;
 			//if (amIlaunchingLivesim) {
@@ -97,18 +99,18 @@ namespace Sq1.Gui.ReportersSupport {
 				//}
 
 				//this.ChartFormsManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.ClearAllReportsSincePerformanceGotCleared_step0of3(); });
-				this.ChartFormsManager.ChartForm.BeginInvoke(new MethodInvoker(this.ClearAllReportsSincePerformanceGotCleared_step0of3));
+				this.ChartFormsManager.ChartForm.BeginInvoke(new MethodInvoker(this.ClearAllReports_sincePerformanceGotCleared_step0of3));
 				return;
 			}
 
-			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+			foreach (Reporter rep in this.ReporterShortNames_userInvoked.Values) {
 				rep.BuildFull_onBacktestFinished();
 			}
-			this.WindowTitlePullFromStrategy_allReporterWrappers();
+			this.PullWindowTitle_fromStrategy_allReporterWrappers();
 		}
 
-		public void WindowTitlePullFromStrategy_allReporterWrappers() {
-			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+		public void PullWindowTitle_fromStrategy_allReporterWrappers() {
+			foreach (Reporter rep in this.ReporterShortNames_userInvoked.Values) {
 				// Reporters.Position should display "Positions (276)"
 				ReporterFormWrapper parent = rep.Parent as ReporterFormWrapper;
 				if (parent == null) continue;
@@ -121,41 +123,41 @@ namespace Sq1.Gui.ReportersSupport {
 				parent.Text = windowTitle;
 			}
 		}
-		public void BuildReportFullOnBacktestFinishedAllReporters(SystemPerformance performance = null) {
+		public void BuildReportFull_onBacktestFinished_allReporters(SystemPerformance performance = null) {
 			if (performance == null) {
 				performance = this.ChartFormsManager.Executor.PerformanceAfterBacktest;
 			}
 			if (this.ChartFormsManager.ChartForm.InvokeRequired) {
-				this.ChartFormsManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildReportFullOnBacktestFinishedAllReporters(performance); });
+				this.ChartFormsManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildReportFull_onBacktestFinished_allReporters(performance); });
 				return;
 			}
 			if (performance.SlicesShortAndLong.PositionsImTracking.Count == 0 && performance.SlicesShortAndLong.NetProfitForClosedPositionsBoth != 0) {
 				string msg = "REPORTERS.POSITIONS_WILL_BE_EMPTY__WHILE_REPORTERS.PERFORMACE_WILL_DISPLAY_BACKTESTED_NUMBERS";
 				Assembler.PopupException(msg);
 			}
-			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+			foreach (Reporter rep in this.ReporterShortNames_userInvoked.Values) {
 				rep.BuildFull_onBacktestFinished();
-				this.populateWindowTextFromTabTextStashed(rep);
+				this.populateWindowText_fromTabTextStashed(rep);
 			}
 		}
 
-		void populateWindowTextFromTabTextStashed(Reporter rep) {
+		void populateWindowText_fromTabTextStashed(Reporter rep) {
 				// Reporters.Position should display "Positions (276)"
 				ReporterFormWrapper parent = rep.Parent as ReporterFormWrapper;
 				if (parent == null) return;
 				parent.Text = rep.TabText + " :: " + this.ChartFormsManager.ChartForm.Text;
 		}
-		public void BuildIncrementalOnPositionsClosedAllReports_step3of3(ReporterPokeUnit pokeUnit) {
+		public void BuildIncremental_onPositionsClosed_allReports_step3of3(ReporterPokeUnit pokeUnit) {
 			if (this.ChartFormsManager.ChartForm.InvokeRequired) {
-				this.ChartFormsManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildIncrementalOnPositionsClosedAllReports_step3of3(pokeUnit); });
+				this.ChartFormsManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildIncremental_onPositionsClosed_allReports_step3of3(pokeUnit); });
 				return;
 			}
-			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+			foreach (Reporter rep in this.ReporterShortNames_userInvoked.Values) {
 				rep.BuildIncremental_onPositionsOpenedClosed_step3of3(pokeUnit);
-				this.populateWindowTextFromTabTextStashed(rep);
+				this.populateWindowText_fromTabTextStashed(rep);
 			}
 		}
-		public void UpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
+		public void UpdateOpenPositions_dueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
 //			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
 //				if (rep.SystemPerformance != null) continue;
 //				string msg = "AVOIDING_EXCEPTION_DOWNSTACK YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES__QUOTES_PUMP_SHOULD_BE_UNPAUSED_AFTER_BACKTEST_COMPLETES";
@@ -164,22 +166,22 @@ namespace Sq1.Gui.ReportersSupport {
 //			}
 	
 			if (this.ChartFormsManager.ChartForm.InvokeRequired) {
-				this.ChartFormsManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(pokeUnit); });
+				this.ChartFormsManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.UpdateOpenPositions_dueToStreamingNewQuote_step2of3(pokeUnit); });
 				return;
 			}
-			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+			foreach (Reporter rep in this.ReporterShortNames_userInvoked.Values) {
 				rep.BuildIncremental_updateOpenPositions_dueToStreamingNewQuote_step2of3(pokeUnit);
-				this.populateWindowTextFromTabTextStashed(rep);
+				this.populateWindowText_fromTabTextStashed(rep);
 			}
 		}
-		public void BuildIncrementalOnPositionsOpenedAllReports_step1of3(ReporterPokeUnit pokeUnit) {
+		public void BuildIncremental_onPositionsOpened_allReports_step1of3(ReporterPokeUnit pokeUnit) {
 			if (this.ChartFormsManager.ChartForm.InvokeRequired) {
-				this.ChartFormsManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildIncrementalOnPositionsOpenedAllReports_step1of3(pokeUnit); });
+				this.ChartFormsManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildIncremental_onPositionsOpened_allReports_step1of3(pokeUnit); });
 				return;
 			}
-			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+			foreach (Reporter rep in this.ReporterShortNames_userInvoked.Values) {
 				rep.BuildIncremental_onBrokerFilled_alertsOpening_forPositions_step1of3(pokeUnit);
-				this.populateWindowTextFromTabTextStashed(rep);
+				this.populateWindowText_fromTabTextStashed(rep);
 			}
 		}
 
@@ -188,9 +190,9 @@ namespace Sq1.Gui.ReportersSupport {
 				this.ChartFormsManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.RebuildingFullReportForced_onLivesimPaused(); });
 				return;
 			}
-			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+			foreach (Reporter rep in this.ReporterShortNames_userInvoked.Values) {
 				rep.Stash_windowTextSuffix_inBaseTabText_usefulToUpdateAutohiddenStats_withoutRebuildingFullReport_OLVisSlow();
-				this.populateWindowTextFromTabTextStashed(rep);
+				this.populateWindowText_fromTabTextStashed(rep);
 				rep.RebuildingFullReport_forced_onLivesimPaused();
 			}
 		}
@@ -205,13 +207,13 @@ namespace Sq1.Gui.ReportersSupport {
 			bool beforeCheckPropagatedInverted = mniClicked.Checked;
 			try {
 				if (beforeCheckPropagatedInverted == true) {
-					Reporter reporterToBeClosed = this.ReporterShortNamesUserInvoked[reporterShortNameClicked];
+					Reporter reporterToBeClosed = this.ReporterShortNames_userInvoked[reporterShortNameClicked];
 					this.ReporterClosingUnregisterMniUntick(reporterToBeClosed.GetType().Name);
 					//reporterToBeClosed.ParentForm.Close();
 					DockContent form = reporterToBeClosed.Parent as DockContent;
 					form.Close();
 				} else {
-					this.ReporterActivateShowRegisterMniTick(reporterShortNameClicked);
+					this.ReporterActivateShowRegister_mniClicked(reporterShortNameClicked);
 				}
 				this.ChartFormsManager.MainForm.MainFormSerialize();
 			} catch (Exception ex) {
@@ -222,7 +224,7 @@ namespace Sq1.Gui.ReportersSupport {
 			//mniClicked.Checked = !mniClicked.Checked;
 		}
 
-		public ReporterFormWrapper ReporterActivateShowRegisterMniTick(string typeNameShortOrFullAutodetect, bool show=true) {
+		public ReporterFormWrapper ReporterActivateShowRegister_mniClicked(string typeNameShortOrFullAutodetect, bool show=true) {
 			string typeNameShort = this.reportersRepo.ShrinkTypeName(typeNameShortOrFullAutodetect);
 			Reporter reporterActivated = this.reportersRepo.Activate_fromTypeName(typeNameShortOrFullAutodetect);
 			object reportersSnapshot = this.findOrCreateReportersSnapshot_nullUnsafe(reporterActivated);
@@ -232,7 +234,7 @@ namespace Sq1.Gui.ReportersSupport {
 			//ret.Text = reporterActivated.TabText + " :: " + this.ChartFormsManager.Strategy.Name;
 			ret.Text = reporterActivated.TabText + " :: " + this.ChartFormsManager.ChartForm.Text;
 			if (show) ret.Show(this.ChartFormsManager.MainForm.DockPanel);
-			this.ReporterShortNamesUserInvoked.Add(typeNameShort, reporterActivated);
+			this.ReporterShortNames_userInvoked.Add(typeNameShort, reporterActivated);
 			this.ChartFormsManager.ReportersDumpCurrentForSerialization();
 			this.MenuItemsProvider.FindMniByShortNameAndTick(typeNameShort);
 			
@@ -269,14 +271,14 @@ namespace Sq1.Gui.ReportersSupport {
 		}
 
 		public void ReporterClosingUnregisterMniUntick(string reporterShortName) {
-			this.ReporterShortNamesUserInvoked.Remove(reporterShortName);
+			this.ReporterShortNames_userInvoked.Remove(reporterShortName);
 			this.ChartFormsManager.ReportersDumpCurrentForSerialization();
 			this.MenuItemsProvider.FindMniByShortNameAndTick(reporterShortName, false);
 			this.ChartFormsManager.MainForm.MainFormSerialize();
 		}
 
 		public void PopupReporters_OnParentChartActivated(object sender, EventArgs e) {
-			foreach (Reporter reporterToPopup in this.ReporterShortNamesUserInvoked.Values) {
+			foreach (Reporter reporterToPopup in this.ReporterShortNames_userInvoked.Values) {
 				DockContentImproved dockContentImproved = reporterToPopup.Parent as DockContentImproved;
 				if (dockContentImproved == null) {
 					string msg = "MUST_BE_DockContentImproved_reporterToPopup.Parent[" + reporterToPopup.Parent + "]";
@@ -289,14 +291,14 @@ namespace Sq1.Gui.ReportersSupport {
 		}
 
 		public void LivesimStartedOrUnpaused_HideReporters() {
-			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+			foreach (Reporter rep in this.ReporterShortNames_userInvoked.Values) {
 				ReporterFormWrapper wrapper = rep.Parent as ReporterFormWrapper;
 				if (wrapper == null) continue;
 				if (wrapper.IsCoveredOrAutoHidden == false) wrapper.ToggleAutoHide();
 			}
 		}
 		public void LivesimEndedOrStoppedOrPaused_RestoreHiddenReporters() {
-			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+			foreach (Reporter rep in this.ReporterShortNames_userInvoked.Values) {
 				ReporterFormWrapper wrapper = rep.Parent as ReporterFormWrapper;
 				if (wrapper == null) continue;
 				if (wrapper.IsCoveredOrAutoHidden == true) wrapper.ToggleAutoHide();
@@ -309,7 +311,7 @@ namespace Sq1.Gui.ReportersSupport {
 				each.Dispose();
 			}
 			// each Reporter was added into ReporterFormWrapper, so none of my Reporters should have left undisposed by now
-			foreach (Reporter each in this.ReporterShortNamesUserInvoked.Values) {
+			foreach (Reporter each in this.ReporterShortNames_userInvoked.Values) {
 				if (each.IsDisposed || each.Disposing) continue;
 				each.Dispose();
 			}
