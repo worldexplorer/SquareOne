@@ -365,7 +365,7 @@ namespace Sq1.Core.Broker {
 							alert.MarketLimitStop = MarketLimitStop.Limit;
 							alert.MarketLimitStopAsString += " => " + alert.MarketLimitStop + " (" + alert.MarketOrderAs + ")";
 							msg = "";
-							if (symbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(alert) > 0) {
+							if (alert.Slippage_maxIndex_forLimitOrdersOnly > 0) {
 								//double slippage = symbolInfo.GetSlippage_signAware_forLimitAlertsOnly(alert, 0);
 								double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly();
 								order.PriceRequested += slippage;
@@ -374,7 +374,7 @@ namespace Sq1.Core.Broker {
 									msg += "!=Alert.PriceRequested[" + order.Alert.PriceEmitted + "]";
 								}
 							} else {
-								msg += "DOING_NOTHING__AS_SymbolInfo[" + symbolInfo.Symbol + "].SlippagesCrossMarketCsv_ARE_NOT_DEFINED";
+								msg += "SLIPPAGES_NOT_DEFINED__SymbolInfo[" + symbolInfo.Symbol + "].SlippagesCrossMarketCsv";
 							}
 							msg += " PreSubmit_LimitCrossMarket: Alert.MarketOrderAs=[" + alert.MarketOrderAs + "] ";
 							break;
@@ -383,7 +383,7 @@ namespace Sq1.Core.Broker {
 							alert.MarketLimitStop = MarketLimitStop.Limit;
 							alert.MarketLimitStopAsString += " => " + alert.MarketLimitStop + " (" + alert.MarketOrderAs + ")";
 							msg = "";
-							if (symbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(alert) > 0) {
+							if (alert.Slippage_maxIndex_forLimitOrdersOnly > 0) {
 								//double slippage = symbolInfo.GetSlippage_signAware_forLimitAlertsOnly(alert, 0);
 								double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly();
 								order.PriceRequested += slippage;

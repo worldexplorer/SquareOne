@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
@@ -664,10 +665,17 @@ namespace Sq1.Core.Execution {
 			return true;
 		}
 
+		public List<double> Slippages_forLimitOrdersOnly { get {
+			return this.Bars.SymbolInfo.GetSlippages_forLimitOrdersOnly(this.MarketOrderAs);
+		} }
+
+		public int Slippage_maxIndex_forLimitOrdersOnly { get {
+		    return this.Slippages_forLimitOrdersOnly.Count - 1;
+		} }
+
 		internal double GetSlippage_signAware_forLimitAlertsOnly(double priceRequested = -1, int slippageApplyingIndex = 0) {
 			if (priceRequested == -1) priceRequested = this.PriceEmitted;
-			double slippage = this.Bars.SymbolInfo.GetSlippage_signAware_forLimitOrdersOnly(priceRequested,
-				this.Direction, this.MarketOrderAs, slippageApplyingIndex);
+			double slippage = this.Bars.SymbolInfo.GetSlippage_signAware_forLimitAlertsOnly(this.Direction, this.MarketOrderAs, slippageApplyingIndex);
 			return slippage;
 		}
 

@@ -12,6 +12,7 @@ using Sq1.Core.Charting;
 
 using Sq1.Widgets;
 using Sq1.Widgets.LabeledTextBox;
+using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
@@ -561,5 +562,33 @@ namespace Sq1.Gui.Forms {
 			this.btnQuoteTimingRealtime.Visible = true;
 		}
 		#endregion
+
+		void lblEmptySpring_catchingClickEvents_Click(object sender, EventArgs e) {
+
+		}
+
+		void mniEditSymbol_Click(object sender, EventArgs e) {
+			if (this.ChartControl.Executor == null) {
+				string msg = "MUST_NEVER_HAPPEN Executor=NULL";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (this.ChartControl.Executor.Bars == null) {
+				string msg = "MUST_NEVER_HAPPEN Executor.Bars=NULL";
+				Assembler.PopupException(msg);
+				return;
+			}
+
+			string symbol = this.ChartControl.Executor.Bars.Symbol;
+			if (Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfo_nullUnsafe(symbol) == null) {
+				string msg = "MUST_NEVER_HAPPEN NO_SymbolInfo_FOUND_FOR_SYMBOL[" + symbol + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+
+			SymbolInfoEditorForm.Instance.SymbolEditorControl.PopulateWithSymbol_findOrCreateSymbolInfo(symbol);
+			SymbolInfoEditorForm.Instance.Show();
+			SymbolInfoEditorForm.Instance.ActivateDockContentPopupAutoHidden(false, true);
+		}
 	}
 }

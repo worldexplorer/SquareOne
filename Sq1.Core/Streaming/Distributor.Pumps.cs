@@ -4,7 +4,7 @@ namespace Sq1.Core.Streaming {
 	public partial class Distributor<STREAMING_CONSUMER_CHILD> {
 
 		internal int TwoLiveRealPumps_Pause_whileSymbolLivesimming(string symbolLivesimming, string reasonForNewDistributor) {
-			string msig = " //PumpPause_forSymbolLivesimming(" + symbolLivesimming + "," + reasonForNewDistributor + ") DISTRIBUTOR[" + this.ReasonIwasCreated + "]";
+			string msig = " //TwoLiveRealPumps_Pause_whileSymbolLivesimming(" + symbolLivesimming + "," + reasonForNewDistributor + ") DISTRIBUTOR[" + this.ReasonIwasCreated + "]";
 			string msg = "I_REFUSE_TO_PAUSE_PUMP ";
 			int paused = 0;
 			if (this.ChannelsBySymbol.ContainsKey(symbolLivesimming) == false) {
@@ -54,7 +54,7 @@ namespace Sq1.Core.Streaming {
 			return paused;
 		}
 		internal int TwoLiveRealPumps_Unpause_afterSymbolLivesimmed(string symbolLivesimming, string reasonForStoppingReplacedDistributor) {
-			string msig = " //PumpUnpause_forSymbolLivesimming(" + symbolLivesimming + "," + reasonForStoppingReplacedDistributor + ") DISTRIBUTOR[" + this.ReasonIwasCreated + "]";
+			string msig = " //TwoLiveRealPumps_Unpause_afterSymbolLivesimmed(" + symbolLivesimming + "," + reasonForStoppingReplacedDistributor + ") DISTRIBUTOR[" + this.ReasonIwasCreated + "]";
 			string msg = "I_REFUSE_TO_UNPAUSE_PUMP ";
 			int unpaused = 0;
 			if (this.ChannelsBySymbol.ContainsKey(symbolLivesimming) == false) {

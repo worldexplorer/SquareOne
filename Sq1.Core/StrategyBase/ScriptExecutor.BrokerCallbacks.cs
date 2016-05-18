@@ -56,8 +56,10 @@ namespace Sq1.Core.StrategyBase {
 					string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsPending DELETED_EARLIER_OR_NEVER_BEEN_ADDED;"
 						+ " PositionCloseImmediately() kills all PositionPrototype-based PendingAlerts"
 						+ " => killing those using AlertKillPending() before/after PositionCloseImmediately() is wrong!";
-					//throw new Exception(msg);
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
+					if (alertKilled.OrderFollowed != null) {
+						this.OrderProcessor.AppendMessage_propagateToGui(alertKilled.OrderFollowed, msg);
+					}
 				}
 
 				if (this.ExecutionDataSnapshot.AlertsDoomed.Contains(alertKilled, this, msig)) {
@@ -65,7 +67,6 @@ namespace Sq1.Core.StrategyBase {
 					if (removed) alertKilled.IsKilled = true;
 				} else {
 					string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed DELETED_EARLIER_OR_NEVER_BEEN_ADDED";
-					//throw new Exception(msg);
 					Assembler.PopupException(msg, null, false);
 					if (alertKilled.OrderFollowed != null) {
 						this.OrderProcessor.AppendMessage_propagateToGui(alertKilled.OrderFollowed, msg);
@@ -80,13 +81,16 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 
-		public void CallbackAlertFilled_moveAround_invokeScriptNonReenterably(Alert alertFilled, Quote quoteFilledThisAlert_nullForLive,
+		public void CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(Alert alertFilled, Quote quoteFilledThisAlert_nullForLive,
 																			double priceFill, double qtyFill, double slippageFill, double commissionFill) {
 			//SLOW string msig = " //CallbackAlertFilledMoveAroundInvokeScript(" + alertFilled + ", " + quoteFilledThisAlert_nullForLive + ")";
-			string msig = " //CallbackAlertFilled_moveAround_invokeScriptNonReenterably(WAIT)";
+			string msig = " //CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(WAIT)";
 
 			//avoiding two alertsFilled and messing script-overrides; despite all script invocations downstack are sequential, guaranteed for 1 alertFilled
 			try {
+				bool breakIfAbsent = true;
+				int threeSeconds = Sq1.Core.Support.ConcurrentWatchdog.TIMEOUT_DEFAULT;
+				int forever = -1;
 				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig);
 				this.callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(alertFilled, quoteFilledThisAlert_nullForLive,
 																					 priceFill, qtyFill, slippageFill, commissionFill);
@@ -185,12 +189,11 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "REMOVE_FILLED_FROM_PENDING? DONT_USE_Bar.ContainsPrice()?";
 				Assembler.PopupException(msg + msig, ex);
 			}
-			bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertFilled, this, msig);
-			if (removed == false) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
-			}
+
+			bool breakIfAbsent = true;
+			int threeSeconds = Sq1.Core.Support.ConcurrentWatchdog.TIMEOUT_DEFAULT;
+			int forever = -1;
+			bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertFilled, this, msig, forever, breakIfAbsent);
 
 			Position positionOpenedAfterAlertFilled = null;
 			Position positionClosedAfterAlertFilled = null;

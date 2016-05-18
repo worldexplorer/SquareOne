@@ -4,18 +4,18 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.Broker {
 	public class OrderPostProcessorStateHook {
-		public string Purpose { get; private set; }
-		public Order Order { get; private set; }
-		public OrderState OrderState { get; private set; }
-		public Action<Order, ReporterPokeUnit> Delegate { get; private set; }
-		public bool CurrentlyExecuting;
-		public bool InvokedThusCanBeDeleted;
+		public string		Purpose				{ get; private set; }
+		public Order		Order				{ get; private set; }
+		public OrderState	OrderState			{ get; private set; }
+		public Action<Order, ReporterPokeUnit> ActionOnState_broughByBroker { get; private set; }
+		public bool			CurrentlyExecuting;
+		public bool			InvokedThusCanBeDeleted;
 
 		public OrderPostProcessorStateHook(string purpose, Order order, OrderState orderState, Action<Order, ReporterPokeUnit> hook) {
-			this.Purpose = purpose;
-			this.Order = order;
-			this.OrderState = orderState;
-			this.Delegate = hook;
+			this.Purpose	= purpose;
+			this.Order		= order;
+			this.OrderState	= orderState;
+			this.ActionOnState_broughByBroker	= hook;
 			this.InvokedThusCanBeDeleted = false;
 		}
 

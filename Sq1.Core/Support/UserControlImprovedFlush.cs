@@ -8,7 +8,7 @@ namespace Sq1.Core.Support {
 	public class UserControlPeriodicFlush : UserControlImproved {
 		protected Stopwatch			HowLongTreeRebuilds;
 
-		protected TimerSimplified	Timed_flushingToGui;
+		protected TimerSimplifiedWinForms	Timed_flushingToGui;
 		//protected TimeredBlockTask	Timed_flushingToGui;
 		protected int				Timed_flushingToGui_Delay = 200;
 
@@ -37,7 +37,7 @@ namespace Sq1.Core.Support {
 			//	flushingMethod_invokedFrom_timeredTask, this.Timed_flushingToGui_Delay);
 			//v2
 			this.flushMethod_invokedAfter_lastScheduleExpired = flushingMethod_invokedFrom_timeredTask;
-			this.Timed_flushingToGui = new TimerSimplified(threadName, this, this.Timed_flushingToGui_Delay);
+			this.Timed_flushingToGui = new TimerSimplifiedWinForms(threadName, this, this.Timed_flushingToGui_Delay);
 			this.Timed_flushingToGui.OnLastScheduleExpired += new EventHandler<EventArgs>(timed_flushingToGui_OnLastScheduleExpired);
 			this.Timed_flushingToGui.ScheduleOnce_postponeIfAlreadyScheduled();
 		}
@@ -60,8 +60,8 @@ namespace Sq1.Core.Support {
 				= "   flushed:" + this.HowLongTreeRebuilds.ElapsedMilliseconds + "ms";
 			if (this.Timed_flushingToGui == null) return ret;
 
-			ret += "   buffering:" + this.Timed_flushingToGui.Delay + "ms";
-			if (this.HowLongTreeRebuilds.ElapsedMilliseconds > this.Timed_flushingToGui.Delay) {
+			ret += "   buffering:" + this.Timed_flushingToGui.DelayMillis + "ms";
+			if (this.HowLongTreeRebuilds.ElapsedMilliseconds > this.Timed_flushingToGui.DelayMillis) {
 				string msg = "YOU_MAY_NEED_TO_INCREASE_TIMER.Delay_FOR_FLUSHING " + ret;
 				// STACK_OVERFLOW_AGAIN Assembler.PopupException(msg);
 				//this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(new Exception(msg));

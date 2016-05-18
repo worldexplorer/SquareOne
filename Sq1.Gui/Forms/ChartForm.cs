@@ -456,9 +456,5 @@ namespace Sq1.Gui.Forms {
 			this.ctxStrategy.Items.Add(this.TssReportersBelowMe);	// if not added then we didn't initialize!
 			this.ctxStrategy.Items.AddRange(toolStripItems);
 		}
-
-		private void lblEmptySpring_catchingClickEvents_Click(object sender, EventArgs e) {
-
-		}
 	}
 }

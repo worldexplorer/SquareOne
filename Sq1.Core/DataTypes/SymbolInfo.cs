@@ -5,6 +5,7 @@ using System.ComponentModel;
 using Newtonsoft.Json;
 
 using Sq1.Core.Execution;
+using System.Collections.Generic;
 
 namespace Sq1.Core.DataTypes {
 	public partial class SymbolInfo {
@@ -105,7 +106,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	bool			CheckForSimilarAlreadyPending { get; set; }
 
 		[Category("4. OrderProcessor"), DefaultValue(-1),		Description("if!=-1: 1) Kill Pending Limit + wait it's killed, 2) use SlippagesCrossMarketCsv for CrossMarket and SlippagesTidalCsv for Tidal, 3) send replacement order with more cutting-through slippage")]
-		[JsonProperty]	public	int				ApplyNextSlippageIfLimitNotFilledWithin		{ get; set; }
+		[JsonProperty]	public	int				ApplyNextSlippage_ifLimitNotFilledWithin		{ get; set; }
 
 
 
@@ -177,10 +178,10 @@ namespace Sq1.Core.DataTypes {
 			this.Level2PriceLevels				= 10;
 		}
 
-		public string getSlippagesCsv(MarketOrderAs crossOrTidal) {
+		string getSlippagesCsv(MarketOrderAs crossOrTidal) {
 			string ret = null;
 			switch (crossOrTidal) {
-				case MarketOrderAs.LimitCrossMarket:	ret = this.SlippagesCrossMarketCsv;	break;
+				case MarketOrderAs.LimitCrossMarket:	ret = this.SlippagesCrossMarketCsv;		break;
 				case MarketOrderAs.LimitTidal:			ret = this.SlippagesTidalCsv;			break;
 
 				case MarketOrderAs.MarketUnchanged_DANGEROUS:
@@ -197,48 +198,59 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
-		public int GetSlippage_maxIndex_forLimitOrdersOnly(Alert alert) {
-			return this.getSlippage_maxIndex_forLimitOrdersOnly(alert.Direction, alert.MarketOrderAs);
-		}
-		int getSlippage_maxIndex_forLimitOrdersOnly(Direction direction, MarketOrderAs crossOrTidal) {
-			int ret = -1;
+		public List<double> GetSlippages_forLimitOrdersOnly(MarketOrderAs crossOrTidal) {
+			List<double> ret = new List<double>();
 			string slippagesCsv = this.getSlippagesCsv(crossOrTidal);
-			if (string.IsNullOrEmpty(slippagesCsv)) {
-				return ret;
-			}
+			if (string.IsNullOrEmpty(slippagesCsv)) return ret;
 			string[] slippages = slippagesCsv.Split(',');
-			if (slippages != null) ret = slippages.Length - 1;
+			for (int i=0; i<slippages.Length; i++) {
+				string slippage_asString = slippages[i];
+				try {
+					double parsed = Convert.ToDouble(slippage_asString);
+					ret.Add(parsed);
+				} catch (Exception ex) {
+					string msg = "slippages[" + i + "]=[" + slippage_asString + "] should be Double"
+						+ " slippagesCsv[" + slippagesCsv + "]";
+					//throw new Exception(msg, e);
+					Assembler.PopupException(msg, ex, false);
+				}
+
+			}
+			return ret;
+		}
+		public int GetSlippage_maxIndex_forLimitOrdersOnly(MarketOrderAs crossOrTidal) {
+			List<double> slippages = this.GetSlippages_forLimitOrdersOnly(crossOrTidal);
+			int ret = slippages.Count - 1;
 			return ret;
 		}
 		//public double GetSlippage_signAware_forLimitAlertsOnly(Alert alert, int slippageIndex=0, bool isStreaming=true) {
 		//    return this.GetSlippage_signAware_forLimitOrdersOnly(alert.PriceScriptAligned, alert.Direction, alert.MarketOrderAs, slippageIndex, isStreaming);
 		//}
 
-		public double GetSlippage_signAware_forLimitOrdersOnly(double priceAligned, Direction direction, MarketOrderAs crossOrTidal, int slippageIndex=0, bool isStreaming=true) {
+		public double GetSlippage_signAware_forLimitAlertsOnly(Direction direction, MarketOrderAs crossOrTidal, int slippageIndex=0, bool isStreaming=true) {
 			double ret = 0;
-			
-			if (isStreaming == false && this.UseFirstSlippageForBacktest == false) return ret;		// HACKY
+			//if (isStreaming == false && this.UseFirstSlippageForBacktest == false) return ret;		// HACKY
+			//string slippagesCsv = this.GetSlippagesCsv(crossOrTidal);
+			//if (string.IsNullOrEmpty(slippagesCsv)) return ret;
+			//string[] slippages = slippagesCsv.Split(',');
+			//if (slippages.Length == 0) throw new Exception("check getSlippagesAvailable(" + direction + ") != 0) before calling me");
+			//if (slippageIndex < 0) slippageIndex = 0;
+			//if (slippageIndex >= slippages.Length) slippageIndex = slippages.Length - 1;
+			//string slippage_asString = slippages[slippageIndex];
+			//try {
+			//    ret = Convert.ToDouble(slippage_asString);
+			//} catch (Exception ex) {
+			//    string msg = "slippages[" + slippageIndex + "]=[" + slippage_asString + "] should be Double"
+			//        + " slippagesCsv[" + slippagesCsv + "]";
+			//    //throw new Exception(msg, e);
+			//    Assembler.PopupException(msg, ex, false);
+			//}
 
-			string slippagesCsv = this.getSlippagesCsv(crossOrTidal);
-
-			if (string.IsNullOrEmpty(slippagesCsv)) return ret;
-
-			string[] slippages = slippagesCsv.Split(',');
-			if (slippages.Length == 0)
-				throw new Exception("check getSlippagesAvailable(" + direction + ") != 0) before calling me");
-
+			List<double> slippages = this.GetSlippages_forLimitOrdersOnly(crossOrTidal);
+			if (slippages.Count == 0) return ret;
 			if (slippageIndex < 0) slippageIndex = 0;
-			if (slippageIndex >= slippages.Length) slippageIndex = slippages.Length - 1;
-
-			string slippage_asString = slippages[slippageIndex];
-			try {
-				ret = Convert.ToDouble(slippage_asString);
-			} catch (Exception ex) {
-				string msg = "slippages[" + slippageIndex + "]=[" + slippage_asString + "] should be Double"
-					+ " slippagesCsv[" + slippagesCsv + "]";
-				//throw new Exception(msg, e);
-				Assembler.PopupException(msg, ex, false);
-			}
+			if (slippageIndex >= slippages.Count) slippageIndex = slippages.Count - 1;
+			ret = slippages[slippageIndex];
 
 			if (direction == Direction.Short || direction == Direction.Sell) ret = -ret;
 			return ret;

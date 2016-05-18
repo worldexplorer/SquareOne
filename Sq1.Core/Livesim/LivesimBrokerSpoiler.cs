@@ -8,8 +8,14 @@ namespace Sq1.Core.Livesim {
 		public	int		DelayBeforeFill		{ get; private set; }
 		public	int		DelayBeforeKill		{ get; private set; }
 
-		public LivesimBrokerSpoiler(LivesimBroker livesimBroker) {
+		public	bool	RejectOrderNow		{ get; private set; }
+
+		LivesimBrokerSpoiler() {
 			this.DelayBeforeFill = 0;
+			this.RejectOrderNow = false;
+		}
+
+		public LivesimBrokerSpoiler(LivesimBroker livesimBroker) : this() {
 			this.livesimBroker = livesimBroker;
 		}
 
@@ -51,5 +57,29 @@ namespace Sq1.Core.Livesim {
 			if (this.DelayBeforeKill <= 0) return;
 			Thread.Sleep(this.DelayBeforeKill);
 		}
+
+	
+		int howManyOrders_wereNotRejected = 0;
+		public bool RejectNow_calculate() {
+			this.RejectOrderNow = false;
+			if (this.livesimBroker.LivesimBrokerSettings.OrderRejectionEnabled == false) return this.RejectOrderNow;
+
+			int planned_nonRejectedLimit = this.livesimBroker.LivesimBrokerSettings.OrderRejectionHappensOncePerXordersMin;
+			if (this.livesimBroker.LivesimBrokerSettings.OrderRejectionHappensOncePerXordersMax > 0) {
+				int range = Math.Abs(this.livesimBroker.LivesimBrokerSettings.OrderRejectionHappensOncePerXordersMin -
+									 this.livesimBroker.LivesimBrokerSettings.OrderRejectionHappensOncePerXordersMax);
+				double rnd0to1 = new Random().NextDouble();
+				int rangePart = (int)Math.Round(range * rnd0to1);
+				planned_nonRejectedLimit += rangePart;
+			}
+
+			howManyOrders_wereNotRejected++;
+			if (howManyOrders_wereNotRejected >= planned_nonRejectedLimit) {
+				this.RejectOrderNow = true;
+				howManyOrders_wereNotRejected = 0;
+			}
+			return this.RejectOrderNow;
+		}
+
 	}
 }

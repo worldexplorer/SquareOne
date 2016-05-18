@@ -35,7 +35,7 @@ namespace Sq1.Core.Livesim {
 		private System.Windows.Forms.TextBox txt_OutOfOrderFillHappensOncePerQuoteMax;
 		private System.Windows.Forms.TextBox txt_OutOfOrderFillHappensOncePerQuoteMin;
 		private System.Windows.Forms.Label label8;
-		private System.Windows.Forms.GroupBox groupBox3;
+		private System.Windows.Forms.GroupBox grp_orderRejectionRate;
 		private System.Windows.Forms.Label label13;
 		private System.Windows.Forms.CheckBox cbx_OrderRejectionEnabled;
 		private System.Windows.Forms.Label label14;
@@ -93,7 +93,7 @@ namespace Sq1.Core.Livesim {
 			this.txt_PartialFillHappensOncePerQuoteMax = new System.Windows.Forms.TextBox();
 			this.txt_PartialFillHappensOncePerQuoteMin = new System.Windows.Forms.TextBox();
 			this.label12 = new System.Windows.Forms.Label();
-			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.grp_orderRejectionRate = new System.Windows.Forms.GroupBox();
 			this.label13 = new System.Windows.Forms.Label();
 			this.cbx_OrderRejectionEnabled = new System.Windows.Forms.CheckBox();
 			this.label14 = new System.Windows.Forms.Label();
@@ -151,7 +151,7 @@ namespace Sq1.Core.Livesim {
 			this.txt_KillPendingDelay_min = new System.Windows.Forms.TextBox();
 			this.lbl_KillPendingDelay = new System.Windows.Forms.Label();
 			this.groupBox2.SuspendLayout();
-			this.groupBox3.SuspendLayout();
+			this.grp_orderRejectionRate.SuspendLayout();
 			this.groupBox4.SuspendLayout();
 			this.groupBox5.SuspendLayout();
 			this.groupBox1.SuspendLayout();
@@ -276,23 +276,22 @@ namespace Sq1.Core.Livesim {
 			this.label12.TabIndex = 20;
 			this.label12.Text = "orders processed";
 			// 
-			// groupBox3
+			// grp_orderRejectionRate
 			// 
-			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			this.grp_orderRejectionRate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this.groupBox3.Controls.Add(this.label13);
-			this.groupBox3.Controls.Add(this.cbx_OrderRejectionEnabled);
-			this.groupBox3.Controls.Add(this.label14);
-			this.groupBox3.Controls.Add(this.txt_OrderRejectionHappensOncePerXordersMax);
-			this.groupBox3.Controls.Add(this.txt_OrderRejectionHappensOncePerXordersMin);
-			this.groupBox3.Controls.Add(this.label15);
-			this.groupBox3.Enabled = false;
-			this.groupBox3.Location = new System.Drawing.Point(3, 131);
-			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(356, 64);
-			this.groupBox3.TabIndex = 30;
-			this.groupBox3.TabStop = false;
-			this.groupBox3.Text = "Order Rejection Rate";
+			this.grp_orderRejectionRate.Controls.Add(this.label13);
+			this.grp_orderRejectionRate.Controls.Add(this.cbx_OrderRejectionEnabled);
+			this.grp_orderRejectionRate.Controls.Add(this.label14);
+			this.grp_orderRejectionRate.Controls.Add(this.txt_OrderRejectionHappensOncePerXordersMax);
+			this.grp_orderRejectionRate.Controls.Add(this.txt_OrderRejectionHappensOncePerXordersMin);
+			this.grp_orderRejectionRate.Controls.Add(this.label15);
+			this.grp_orderRejectionRate.Location = new System.Drawing.Point(3, 131);
+			this.grp_orderRejectionRate.Name = "grp_orderRejectionRate";
+			this.grp_orderRejectionRate.Size = new System.Drawing.Size(356, 64);
+			this.grp_orderRejectionRate.TabIndex = 30;
+			this.grp_orderRejectionRate.TabStop = false;
+			this.grp_orderRejectionRate.Text = "Order Rejection Rate";
 			// 
 			// label13
 			// 
@@ -851,14 +850,14 @@ namespace Sq1.Core.Livesim {
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.groupBox5);
 			this.Controls.Add(this.groupBox4);
-			this.Controls.Add(this.groupBox3);
+			this.Controls.Add(this.grp_orderRejectionRate);
 			this.Controls.Add(this.groupBox2);
 			this.Name = "LivesimBrokerEditor";
 			this.Size = new System.Drawing.Size(362, 564);
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
-			this.groupBox3.ResumeLayout(false);
-			this.groupBox3.PerformLayout();
+			this.grp_orderRejectionRate.ResumeLayout(false);
+			this.grp_orderRejectionRate.PerformLayout();
 			this.groupBox4.ResumeLayout(false);
 			this.groupBox4.PerformLayout();
 			this.groupBox5.ResumeLayout(false);

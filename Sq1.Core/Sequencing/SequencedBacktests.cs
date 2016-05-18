@@ -113,7 +113,7 @@ namespace Sq1.Core.Sequencing {
 					if (this.backtests.Count > 0) {
 						if (this.backtests[0].KPIsCumulativeByDateIncreasing == null) {
 							string msg = "DESERIALIZED_WITH_KPIsCumulativeByDateIncreasing_NULL__RESEQUENCE_ME_AGAIN";
-							Assembler.PopupException(msg);
+							Assembler.PopupException(msg, null, false);
 							return ret;
 						}
 						if (this.backtests[0].KPIsCumulativeByDateIncreasing.Count == 0) {

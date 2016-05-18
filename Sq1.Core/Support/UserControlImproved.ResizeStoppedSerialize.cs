@@ -8,7 +8,7 @@ namespace Sq1.Core.Support {
 		// derived Controls can use base.OnResizeStopped += delegate{this.dataSnapshotSerializer.Serialize();};
 
 		public	int					ResizeStopped_delayAfterLastResize = 2200;	// 2000 was set for MultiSplitters
-				TimerSimplified		timerResizeStopped;
+				TimerSimplifiedWinForms		timerResizeStopped;
 
 		public event EventHandler<EventArgs>		ResizeStopped;
 		public void RaiseResizeStopped() {
@@ -19,7 +19,7 @@ namespace Sq1.Core.Support {
 		void onResizeReceived_rescheduleSerializationTimer() {
 		    if (this.timerResizeStopped == null) {
 				string timerReason = "EXCEPTIONS_WILL_BE_FLUSHED EMULATING_ResizeStopped()_WITH_DELAY[" + this.ResizeStopped_delayAfterLastResize + "] for: " + this.ToString();
-				this.timerResizeStopped = new TimerSimplified(timerReason, this, this.ResizeStopped_delayAfterLastResize);	// not started by default
+				this.timerResizeStopped = new TimerSimplifiedWinForms(timerReason, this, this.ResizeStopped_delayAfterLastResize);	// not started by default
 				this.timerResizeStopped.OnLastScheduleExpired += new EventHandler<EventArgs>(this.timerResizeStopped_OnLastScheduleExpired);
 			}
 		    if (this.timerResizeStopped.Scheduled) return;

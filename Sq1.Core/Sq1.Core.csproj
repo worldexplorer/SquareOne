@@ -93,6 +93,8 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
+    <Compile Include="Broker\OrderPostProcessorReplacer.cs" />
+    <Compile Include="Broker\OrderPostProcessorReplacerExpired.cs" />
     <Compile Include="Broker\OrderProcessor.Accounting.cs">
       <DependentUpon>OrderProcessor.cs</DependentUpon>
     </Compile>
@@ -441,7 +443,9 @@
     <Compile Include="Support\ConcurrentWatchdog.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Support\TimerSimplified.cs" />
+    <Compile Include="Support\TimerSimplifiedThreading_withOrder.cs" />
+    <Compile Include="Support\TimerSimplifiedThreading.cs" />
+    <Compile Include="Support\TimerSimplifiedWinForms.cs" />
     <Compile Include="Support\ExtensionAttribute.cs" />
     <Compile Include="Support\FontCache.cs" />
     <Compile Include="Support\GenericsUtil.cs" />
@@ -498,7 +502,7 @@
     <Compile Include="Broker\OrderPostProcessorSequencerCloseThenOpen.cs" />
     <Compile Include="Broker\OrderPostProcessorEmergencyLock.cs" />
     <Compile Include="Broker\OrderPostProcessorEmergency.cs" />
-    <Compile Include="Broker\OrderPostProcessorRejected.cs" />
+    <Compile Include="Broker\OrderPostProcessorReplacerRejected.cs" />
     <Compile Include="Backtesting\BacktestStrokesPerBar.cs" />
     <Compile Include="Backtesting\BacktestSpreadModeler.cs" />
     <Compile Include="Backtesting\BacktestSpreadModelerPercentage.cs" />

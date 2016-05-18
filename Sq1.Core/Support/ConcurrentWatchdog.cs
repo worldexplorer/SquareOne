@@ -94,7 +94,9 @@ namespace Sq1.Core.Support {
 				}
 
 				if (this.recursionDetector.Contains(lockPurpose)) {
-					string msg = "YOU_ALREADY_LOCKED_ME_WITH_SAME_REASON[" + lockPurpose + "] lockStack[" + this.LockStack_asString + "] AVOIDING_STACK_OVERFLOW RECURSIVE_CALL";
+					string msg = "DIDNT_UNLOCK_WITH_SAME_REASON[" + lockPurpose + "] WITHIN[" + waitMillis + "]ms"
+						//+ " lockStack[" + this.LockStack_asString + "] AVOIDING_STACK_OVERFLOW RECURSIVE_CALL"
+						;
 					Assembler.PopupException(msg + msig, null, false);
 				}
 				this.recursionDetector.Push(lockPurpose);
@@ -112,7 +114,7 @@ namespace Sq1.Core.Support {
 						while (unlocked == false) {
 							unlocked = this.isFree.WaitOne(waitMillis);
 							if (unlocked) break;
-							string msg = "LOCK_NOT_ACQUIRED_WITHIN_MILLIS: [" + this.stopwatchLock.ElapsedMilliseconds + "]/[" + waitMillis + "] ";
+							string msg = "LOCK_REPEATEDLY_NOT_ACQUIRED_WITHIN elapsedWaiting[" + this.stopwatchLock.ElapsedMilliseconds + "]ms heartBeat[" + waitMillis + "]ms ";
 							Assembler.PopupException(msig + msg + this.Ident, null, false);
 						}
 					}

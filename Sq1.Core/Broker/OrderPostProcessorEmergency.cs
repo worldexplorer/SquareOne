@@ -84,7 +84,7 @@ namespace Sq1.Core.Broker {
 			lock (this.emergencyLocks) {
 				this.emergencyLocks.Add(emergencyLock);
 			}
-			CreateEmergencyReplacement_resubmitFor(rejectedExitOrder);
+			this.CreateEmergencyReplacement_resubmitFor(rejectedExitOrder);
 		}
 		public void CreateEmergencyReplacement_resubmitFor(Order rejectedExitOrderOrEmergencyCloseOrder) {
 			try {
@@ -165,9 +165,10 @@ namespace Sq1.Core.Broker {
 					+ replacement.EmergencyReplacementForGUID + "]; SlippageIndex[" + replacement.SlippageAppliedIndex + "]";
 				this.orderProcessor.AppendMessage_propagateToGui(replacement, msg_replacement);
 
-				if (replacement.HasSlippagesDefined && replacement.NoMoreSlippagesAvailable) {
+				if (replacement.HasSlippagesDefined && replacement.SlippagesLeftAvailable_noMore) {
 					addMessage_noMoreSlippagesAvailable(replacement);
-					replacement.SlippageAppliedIndex = replacement.Alert.Bars.SymbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(replacement.Alert);
+					//replacement.SlippageAppliedIndex = replacement.Alert.Bars.SymbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(replacement.Alert);
+					replacement.SlippageAppliedIndex = replacement.Alert.Slippage_maxIndex_forLimitOrdersOnly;
 				}
 				//double slippage = replacement.Alert.Bars.SymbolInfo.GetSlippage_signAware_forLimitOrdersOnly(
 				//	priceScript, replacement.Alert.Direction, replacement.Alert.MarketOrderAs, replacement.SlippageAppliedIndex);
@@ -281,7 +282,7 @@ namespace Sq1.Core.Broker {
 			throw new Exception(msg);
 		}
 		void addMessage_noMoreSlippagesAvailable(Order order) {
-			int slippageIndexMax = order.Alert.Bars.SymbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(order.Alert);
+			int slippageIndexMax = order.Alert.Slippage_maxIndex_forLimitOrdersOnly;
 			string msg2 = "EMERGENCY Reached max slippages available for [" + order.Alert.Bars.Symbol + "]"
 				+ " order.SlippageIndex[" + order.SlippageAppliedIndex + "] > slippageIndexMax[" + slippageIndexMax + "]"
 				+ "; Order will have slippageIndexMax[" + slippageIndexMax + "]";

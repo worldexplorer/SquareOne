@@ -199,10 +199,10 @@ namespace Sq1.Core.StrategyBase {
 						// ^^^ this.DataSource.PausePumpingFor(this.Bars, true);		// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
 						bool paused = this.Bars.DataSource.PumpingWaitUntilPaused(this.Bars, 0);
 						if (paused == true) {
-							string msg3 = "YES_I_PAUSED_THIS_PUMP_MYSELF_UPSTACK_IN_PumpPauseNeighborsIfAnyFor()"
-								+ "YOU_WANT_ONE_STRATEGY_PER_SYMBOL_LIVE MAKE_SURE_YOU_HAVE_ONLY_ONE_SYMBOL:INTERVAL_ACROSS_ALL_OPEN_CHARTS PUMP_SHOULD_HAVE_BEEN_PAUSED_EARLIER"
+							string msg3 = "YES_I_PAUSED_THIS_PUMP_MYSELF_UPSTACK_IN TwoLiveRealPumps_Pause_whileSymbolLivesimming()"
+								+ " YOU_WANT_ONE_STRATEGY_PER_SYMBOL_LIVE MAKE_SURE_YOU_HAVE_ONLY_ONE_SYMBOL:INTERVAL_ACROSS_ALL_OPEN_CHARTS PUMP_SHOULD_HAVE_BEEN_PAUSED_EARLIER"
 								+ " in ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
-							//Assembler.PopupException(msg3 + msig, null, false);
+							Assembler.PopupException(msg3 + msig, null, false);
 						}
 					}
 					ordersEmitted = this.OrderProcessor.Emit_createOrders_forScriptGeneratedAlerts_eachInNewThread(alertsNew_afterExec_safeCopy

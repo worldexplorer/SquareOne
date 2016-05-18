@@ -90,7 +90,7 @@ namespace Sq1.Widgets.Exceptions {
 			}
 			this.dataSnapshot.FlushToGuiDelayMsec = typedMsec;
 			this.dataSnapshotSerializer.Serialize();
-			this.Timed_flushingToGui.Delay = this.dataSnapshot.FlushToGuiDelayMsec;
+			this.Timed_flushingToGui.DelayMillis = this.dataSnapshot.FlushToGuiDelayMsec;
 			mnilbDelay.TextRed = false;
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
 			this.populateWindowsTitle();

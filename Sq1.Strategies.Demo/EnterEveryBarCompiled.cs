@@ -118,8 +118,8 @@ namespace Sq1.Strategies.Demo {
 				#endif
 			}
 
-			Position lastPos = base.LastPosition;
-			bool isLastPositionNotClosedYet = base.IsLastPositionNotClosedYet;
+			Position lastPos = base.LastPosition_nullUnsafe;
+			bool isLastPositionNotClosedYet = base.IsLastPosition_stillOpen;
 			if (isLastPositionNotClosedYet) {
 				if (lastPos.EntryFilledBarIndex > barStaticFormed.ParentBarsIndex) {
 					string msg1 = "NOTIFIED_ABOUT_LAST_FORMED_WHILE_LAST_POST_FILLED_AT_STREAMING__LOOKS_OK";

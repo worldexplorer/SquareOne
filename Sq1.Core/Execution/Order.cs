@@ -157,9 +157,9 @@ namespace Sq1.Core.Execution {
 					;
 			} }
 		[JsonProperty]	public bool				InStateChangeableToSubmitted { get {
-				if (this.State == OrderState.PreSubmit
-					|| this.State == OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted
-					|| this.State == OrderState.EmitOrdersNotClicked
+				if (	this.State == OrderState.PreSubmit ||
+						this.State == OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted ||
+						this.State == OrderState.EmitOrdersNotClicked
 					//&& this._IsLoggedInOrPaperAccount(current3)
 					) {
 					return true;
@@ -167,9 +167,9 @@ namespace Sq1.Core.Execution {
 				return false;
 			} }
 		[JsonProperty]	public bool				InState_emergency { get {
-				if (this.State == OrderState.EmergencyCloseSheduledForRejected
-						|| this.State == OrderState.EmergencyCloseSheduledForRejectedLimitReached
-						|| this.State == OrderState.EmergencyCloseSheduledForErrorSubmittingBroker) {
+				if (	this.State == OrderState.EmergencyCloseSheduledForRejected ||
+						this.State == OrderState.EmergencyCloseSheduledForRejectedLimitReached ||
+						this.State == OrderState.EmergencyCloseSheduledForErrorSubmittingBroker) {
 					return true;
 				}
 				return false;
@@ -189,7 +189,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	int				AddedToOrdersListCounter;	// SET_IN_ORDER_LIST { get; protected set; }
 		[JsonProperty]	public	string			LastMessage;
 
-		[JsonIgnore]	public	bool			HasSlippagesDefined { get {
+		[JsonIgnore]	public	List<double>	Slippages { get {
 				string msg1 = "[JsonIgnore]	to let orders restored after app restart fly over it; they don't have alert.Bars restored yet";
 				if (this.Alert == null) {
 					string msg = "PROBLEMATIC_Order.Alert=NULL_hasSlippagesDefined";
@@ -203,10 +203,19 @@ namespace Sq1.Core.Execution {
 					string msg = "PROBLEMATIC_Order.Alert.Bars.SymbolInfo=NULL_hasSlippagesDefined";
 					Assembler.PopupException(msg);
 				}
-				int slippageIndexMax = this.Alert.Bars.SymbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(this.Alert);
-				return (slippageIndexMax == -1) ? false : true;
+				List<double> ret = this.Alert.Slippages_forLimitOrdersOnly;
+				return ret;
 			} }
-		[JsonIgnore]	public	bool			NoMoreSlippagesAvailable { get {
+		[JsonIgnore]	public	string			Slippages_asCSV { get {
+				return string.Join(",", this.Slippages);
+			} }
+		[JsonIgnore]	public	int				SlippagesIndexMax { get {
+				return this.Slippages.Count - 1;
+			} }
+		[JsonIgnore]	public	bool			HasSlippagesDefined { get {				
+				return this.SlippagesIndexMax != -1;
+			} }
+		[JsonIgnore]	public	int				SlippagesLeftAvailable { get {
 				string msg1 = "[JsonIgnore]	to let orders restored after app restart fly over it; they don't have alert.Bars restored yet";
 				if (this.Alert == null) {
 					string msg = "PROBLEMATIC_Order.Alert=NULL_noMoreSlippagesAvailable";
@@ -221,9 +230,15 @@ namespace Sq1.Core.Execution {
 					Assembler.PopupException(msg);
 				}
 				string msg2 = "slippagesNotDefinedOr?";
-				int slippageIndexMax = this.Alert.Bars.SymbolInfo.GetSlippage_maxIndex_forLimitOrdersOnly(this.Alert);
-				if (slippageIndexMax == -1) return false;
-				return (this.SlippageAppliedIndex > slippageIndexMax) ? true : false;
+				int slippageIndexMax = this.Alert.Slippage_maxIndex_forLimitOrdersOnly;
+				if (slippageIndexMax == -1) return slippageIndexMax;
+				int ret = slippageIndexMax - this.SlippageAppliedIndex;
+				return ret;
+			}}
+		[JsonIgnore]	public	bool			SlippagesLeftAvailable_noMore { get {
+				int slippagesLeftAvailable = this.SlippagesLeftAvailable;
+				bool noMoreSlippagesLeft = slippagesLeftAvailable <= 0;
+				return noMoreSlippagesLeft;
 			} }
 		[JsonIgnore]	public	bool			EmergencyCloseAttemptSernoExceedLimit { get {
 				if (this.Alert.Bars == null) {
@@ -441,16 +456,19 @@ namespace Sq1.Core.Execution {
 			string formatPrice = "N0";
 			if (this.Alert.Bars != null) formatPrice = this.Alert.Bars.SymbolInfo.PriceFormat;
 
-			ret += " @ " + this.PriceRequested.ToString(formatPrice);
+			ret += " " + this.Qty;
+			ret += "@" + this.PriceRequested.ToString(formatPrice);
 			ret += " " + this.State;
-			if (this.SernoSession != 0) ret += " SernoSession[" + this.SernoSession + "]";
-			//if (GUID != "") ret += " GUID[" + GUID + "]";
-			//if (SernoExchange != 0) ret += " SernoExchange[" + SernoExchange + "]";
-			if (this.QtyFill != 0.0) ret += " FillQty[" + this.QtyFill + "]";
-			if (this.PriceFilled != 0.0) ret += " PriceFilled[" + this.PriceFilled.ToString(formatPrice) + "]";
+			if (this.SernoSession	!= 0)	ret += " SernoSession[" + this.SernoSession + "]";
+			//if (GUID				!= "")	ret += " GUID["			+ GUID + "]";
+			//if (SernoExchange		!= 0)	ret += " SernoExchange["+ SernoExchange + "]";
+			if (this.QtyFill		!= 0.0)	ret += " FillQty["		+ this.QtyFill + "]";
+			if (this.PriceFilled	!= 0.0) ret += " PriceFilled["	+ this.PriceFilled.ToString(formatPrice) + "]";
 			//if (this.Alert.PriceDeposited != 0) ret += " PricePaid[" + this.Alert.PriceDeposited + "]";
 			if (this.EmittedByScript) ret += " EmittedByScript";
-			if (this.Alert.MyBrokerIsLivesim) ret += " Livesim";
+			//if (this.Alert.MyBrokerIsLivesim) ret += " Livesim";
+			ret += this.Alert.BrokerName;
+			
 			return ret;
 		}
 		public bool hasBrokerAdapter(string callerMethod) {

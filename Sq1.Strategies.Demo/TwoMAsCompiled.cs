@@ -107,8 +107,8 @@ namespace Sq1.Strategies.Demo {
 				
 			Bar barStreaming = barStaticFormed.ParentBars.BarStreaming_nullUnsafe;
 
-			Position lastPos = base.LastPosition;
-			bool isLastPositionNotClosedYet = base.IsLastPositionNotClosedYet;
+			Position lastPos = base.LastPosition_nullUnsafe;
+			bool isLastPositionNotClosedYet = base.IsLastPosition_stillOpen;
 			if (isLastPositionNotClosedYet && crossed) {
 				string msg = "ExitAtMarket@" + barStaticFormed.ParentBarsIdent;
 				Alert exitPlaced = base.ExitAtMarket(barStreaming, lastPos, msg);

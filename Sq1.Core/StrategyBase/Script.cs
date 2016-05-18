@@ -9,30 +9,33 @@ using Sq1.Core.Indicators;
 namespace Sq1.Core.StrategyBase {
 	public partial class Script {
 		public		ScriptExecutor	Executor							{ get; private set; }
-		protected	Bars			Bars								{ get { return (this.Executor == null) ? null : this.Executor.Bars; } }
+		protected	Bars			Bars								{ get { return this.Executor == null ? null : this.Executor.Bars; } }
 		public		Strategy		Strategy							{ get { return this.Executor.Strategy; } }
 		public		string			StrategyName						{ get { return this.Executor.StrategyName; } }
-		public		PositionList	Positions							{ get { return this.Executor.ExecutionDataSnapshot.PositionsMaster; } }
+		public		PositionList	PositionsMaster						{ get { return this.Executor.ExecutionDataSnapshot.PositionsMaster; } }
 		
 		#region Position-related userland-invokeable parts
-		public		bool			IsLastPositionNotClosedYet			{ get {
-				//v1 return LastPosition.Active;
-				Position pos = this.LastPosition;
-				if (null == pos) return false;
-				//v1 return pos.ExitMarketLimitStop == MarketLimitStop.Unknown;
-				bool closed = pos.ExitBar != null;
-				return !closed;
+		public		bool			IsLastPosition_stillOpen			{ get {
+				Position lastPosition = this.LastPosition_nullUnsafe;
+				if (lastPosition == null) {
+					string msg = "there is no open positions at all => false looks like a legit answer to IsLastPosition_stillOpen? question";
+					bool equivalentReplacement_mustBeFalse = (this.LastPosition_nullUnsafe != null && this.LastPosition_nullUnsafe.ExitBar != null);
+					return false;
+				}
+				bool lastPosition_stillOpen = lastPosition.ExitFilledBarIndex != -1;
+				//bool lastPosition_stillOpen = lastPosition.ExitBar == null;
+				return lastPosition_stillOpen;
 			} }
-		public		Position		LastPositionOpenNow					{ get {
-				return this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Last_nullUnsafe(this, "//LastPositionOpenNowWAIT");
+		public		Position		LastPositionOpenNow_nullUnsafe		{ get {
+				return this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Last_nullUnsafe(this, "//LastPositionOpenNow_WAIT");
 			} }
-		public		Position		LastPosition						{ get {
-				return this.Executor.ExecutionDataSnapshot.PositionsMaster.Last_nullUnsafe(this, "//LastPositionWAIT");
+		public		Position		LastPosition_nullUnsafe				{ get {
+				return this.Executor.ExecutionDataSnapshot.PositionsMaster.Last_nullUnsafe(this, "//LastPosition_WAIT");
 			} }
 		public		bool			HasAlertsPendingAndPositionsOpenNow	{ get { return this.HasAlertsPending && this.HasPositionsOpenNow; } }
 		public		bool			HasAlertsPendingOrPositionsOpenNow	{ get { return this.HasAlertsPending || this.HasPositionsOpenNow; } }
-		public		bool			HasAlertsPending					{ get { return (this.Executor.ExecutionDataSnapshot.AlertsPending.Count > 0); } }
-		public		bool			HasPositionsOpenNow					{ get { return (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0); } }
+		public		bool			HasAlertsPending					{ get { return this.Executor.ExecutionDataSnapshot.AlertsPending.Count > 0; } }
+		public		bool			HasPositionsOpenNow					{ get { return this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0; } }
 		#endregion
 		
 		public	string				ScriptParametersAsString		{ get {

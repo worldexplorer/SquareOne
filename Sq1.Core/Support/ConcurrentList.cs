@@ -98,7 +98,7 @@ namespace Sq1.Core.Support {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				if (this.InnerList.Contains(position) == false) {
 					if (absenseThrowsAnError == true) {
-						string msg = "CANT_REMOVE_REMOVED_EARLIER_OR_WASNT_ADDED position[" + position + "] ";
+						string msg = "LIVESIM_SHOULD_NOT_FILL_ORDER_THAT_WAS_ALREADY_KILLED CANT_REMOVE_REMOVED_EARLIER_OR_WASNT_ADDED position[" + position + "] ";
 						Assembler.PopupException(msg + this.ToString());
 					}
 				} else {

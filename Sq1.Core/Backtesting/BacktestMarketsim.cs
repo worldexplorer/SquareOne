@@ -569,7 +569,7 @@ namespace Sq1.Core.Backtesting {
 				return filled;
 			}
 			if (this.broker_backtestOrLivesim is BacktestBroker) {
-				this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptNonReenterably(alert, quote,
+				this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(alert, quote,
 					priceFill, alert.Qty, slippageFill, entryCommission);
 				return filled;
 			}
@@ -610,7 +610,7 @@ namespace Sq1.Core.Backtesting {
 				return filled;
 			}
 			if (this.broker_backtestOrLivesim is BacktestBroker) {
-				this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptNonReenterably(alert, quote,
+				this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(alert, quote,
 					priceFill, alert.Qty, slippageFill, exitCommission);
 				return filled;
 			}

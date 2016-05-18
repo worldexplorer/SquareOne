@@ -63,7 +63,7 @@ namespace Sq1.Core.Serializers {
 			} catch (Exception ex) {
 				string msig = " LogrotateSerializer<" + base.OfWhat + ">::Serialize(): ";
 				string msg = "FAILED_SerializeLogrotate_WITH_this.JsonAbsFile[" + base.JsonAbsFile + "]";
-				Assembler.PopupException(msg + msig, ex);
+				Assembler.PopupException(msg + msig, ex, false);
 			} finally {
 				this.currentlySerializing = false;
 			}

@@ -29,22 +29,12 @@
           "ValueMin": 0.0,
           "ValueMax": 10.0,
           "ValueIncrement": 1.0,
-          "ValueCurrent": 8.0,
+          "ValueCurrent": 4.0,
           "WillBeSequenced": false,
-          "BorderShown": true,
+          "BorderShown": false,
           "NumericUpdownShown": false,
-          "CorrelatorSnap": {
-            "$type": "Sq1.Core.Correlation.CorrelatorOneParameterSnapshot, Sq1.Core",
-            "MniShowAllBacktestsChecked": false,
-            "MniShowChosenChecked": false,
-            "MniShowDeltaChecked": false,
-            "MniShowMomentumsAverageChecked": false,
-            "MniShowMomentumsDispersionChecked": true,
-            "MniShowMomentumsVarianceChecked": false,
-            "OlvStateBase64": ""
-          },
           "NumberOfRuns": 11,
-          "ValuesAsString": "8[0..10/1]"
+          "ValuesAsString": "4[0..10/1]"
         },
         "2": {
           "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
@@ -55,25 +45,15 @@
           "ValueMin": 0.0,
           "ValueMax": 10.0,
           "ValueIncrement": 1.0,
-          "ValueCurrent": 3.0,
+          "ValueCurrent": 5.0,
           "WillBeSequenced": false,
-          "BorderShown": true,
+          "BorderShown": false,
           "NumericUpdownShown": false,
-          "CorrelatorSnap": {
-            "$type": "Sq1.Core.Correlation.CorrelatorOneParameterSnapshot, Sq1.Core",
-            "MniShowAllBacktestsChecked": false,
-            "MniShowChosenChecked": false,
-            "MniShowDeltaChecked": false,
-            "MniShowMomentumsAverageChecked": false,
-            "MniShowMomentumsDispersionChecked": true,
-            "MniShowMomentumsVarianceChecked": false,
-            "OlvStateBase64": ""
-          },
           "NumberOfRuns": 11,
-          "ValuesAsString": "3[0..10/1]"
+          "ValuesAsString": "5[0..10/1]"
         }
       },
-      "IndicatorParametersByName": {
+      "IndicatorParametersByIndicatorName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
         "MAfast": [
           {
@@ -83,40 +63,32 @@
             "ValueMin": 10.0,
             "ValueMax": 20.0,
             "ValueIncrement": 1.0,
-            "ValueCurrent": 15.0,
+            "ValueCurrent": 16.0,
             "WillBeSequenced": true,
             "BorderShown": false,
             "NumericUpdownShown": false,
-            "CorrelatorSnap": {
-              "$type": "Sq1.Core.Correlation.CorrelatorOneParameterSnapshot, Sq1.Core",
-              "MniShowAllBacktestsChecked": true,
-              "MniShowChosenChecked": false,
-              "MniShowDeltaChecked": false,
-              "MniShowMomentumsAverageChecked": false,
-              "MniShowMomentumsDispersionChecked": true,
-              "MniShowMomentumsVarianceChecked": false,
-              "OlvStateBase64": "AAEAAAD/////AQAAAAAAAAAMAgAAAFVPYmplY3RMaXN0VmlldywgVmVyc2lvbj0yLjguMC4yMDUwMywgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iMWM1YmY1ODE0ODFiY2Q0DAMAAABXU3lzdGVtLldpbmRvd3MuRm9ybXMsIFZlcnNpb249NC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAA2QnJpZ2h0SWRlYXNTb2Z0d2FyZS5PYmplY3RMaXN0VmlldytPYmplY3RMaXN0Vmlld1N0YXRlCQAAAA1WZXJzaW9uTnVtYmVyD051bWJlck9mQ29sdW1ucwtDdXJyZW50VmlldwpTb3J0Q29sdW1uD0lzU2hvd2luZ0dyb3Vwcw1MYXN0U29ydE9yZGVyD0NvbHVtbklzVmlzaWJsZRVDb2x1bW5EaXNwbGF5SW5kaWNpZXMMQ29sdW1uV2lkdGhzAAAEAAAEAwMDCAgZU3lzdGVtLldpbmRvd3MuRm9ybXMuVmlldwMAAAAIAR5TeXN0ZW0uV2luZG93cy5Gb3Jtcy5Tb3J0T3JkZXIDAAAAHFN5c3RlbS5Db2xsZWN0aW9ucy5BcnJheUxpc3QcU3lzdGVtLkNvbGxlY3Rpb25zLkFycmF5TGlzdBxTeXN0ZW0uQ29sbGVjdGlvbnMuQXJyYXlMaXN0AgAAAAEAAAA3AAAABfz///8ZU3lzdGVtLldpbmRvd3MuRm9ybXMuVmlldwEAAAAHdmFsdWVfXwAIAwAAAAEAAAD/////AAX7////HlN5c3RlbS5XaW5kb3dzLkZvcm1zLlNvcnRPcmRlcgEAAAAHdmFsdWVfXwAIAwAAAAEAAAAJBgAAAAkHAAAACQgAAAAEBgAAABxTeXN0ZW0uQ29sbGVjdGlvbnMuQXJyYXlMaXN0AwAAAAZfaXRlbXMFX3NpemUIX3ZlcnNpb24FAAAICAkJAAAANwAAADcAAAABBwAAAAYAAAAJCgAAADcAAAA3AAAAAQgAAAAGAAAACQsAAAA3AAAANwAAABAJAAAAQAAAAAgBAQgBAAgBAAgBAAgBAAgBAQgBAAgBAAgBAAgBAAgBAAgBAQgBAAgBAAgBAAgBAAgBAAgBAQgBAAgBAAgBAAgBAAgBAAgBAQgBAAgBAAgBAAgBAAgBAAgBAQgBAAgBAAgBAAgBAAgBAAgBAQgBAAgBAAgBAAgBAAgBAAgBAQgBAAgBAAgBAAgBAAgBAAgBAQgBAAgBAAgBAAgBAAgBAAgBAQgBAA0JEAoAAABAAAAACAgAAAAACAgBAAAACAgCAAAACAgDAAAACAgEAAAACAgBAAAACAgGAAAACAgHAAAACAgIAAAACAgJAAAACAgKAAAACAgCAAAACAgMAAAACAgNAAAACAgOAAAACAgPAAAACAgQAAAACAgDAAAACAgSAAAACAgTAAAACAgUAAAACAgVAAAACAgWAAAACAgEAAAACAgYAAAACAgZAAAACAgaAAAACAgbAAAACAgcAAAACAgFAAAACAgeAAAACAgfAAAACAggAAAACAghAAAACAgiAAAACAgGAAAACAgkAAAACAglAAAACAgmAAAACAgnAAAACAgoAAAACAgHAAAACAgqAAAACAgrAAAACAgsAAAACAgtAAAACAguAAAACAgIAAAACAgwAAAACAgxAAAACAgyAAAACAgzAAAACAg0AAAACAgJAAAACAg2AAAADQkQCwAAAEAAAAAICMgAAAAICCsAAAAICCsAAAAICCsAAAAICCsAAAAICCsAAAAICCsAAAAICDQAAAAICDQAAAAICDQAAAAICDQAAAAICDQAAAAICDQAAAAICD8AAAAICD8AAAAICD8AAAAICD8AAAAICD8AAAAICD8AAAAICCMAAAAICCMAAAAICCMAAAAICCMAAAAICCMAAAAICCMAAAAICCAAAAAICCAAAAAICCAAAAAICCAAAAAICCAAAAAICCAAAAAICCAAAAAICCAAAAAICCAAAAAICCAAAAAICCAAAAAICCAAAAAICD8AAAAICD8AAAAICD8AAAAICD8AAAAICD8AAAAICD8AAAAICB8AAAAICB8AAAAICB8AAAAICB8AAAAICB8AAAAICB8AAAAICB4AAAAICB4AAAAICB4AAAAICB4AAAAICB4AAAAICB4AAAANCQs="
-            },
             "NumberOfRuns": 11,
-            "ValuesAsString": "15[10..20/1]"
+            "ValuesAsString": "16[10..20/1]"
           }
         ]
       },
       "IsCurrent": true,
-      "StrategyEmittingOrders": false,
+      "StrategyEmittingOrders": true,
       "ReporterShortNamesUserInvokedJSONcheck": [
         "Positions"
       ],
+      "BacktestOnTriggeringYesWhenNotSubscribed": false,
       "BacktestOnRestart": false,
       "BacktestOnSelectorsChange": false,
-      "BacktestOnDataSourceSaved": true,
+      "BacktestOnDataSourceSaved": false,
+      "BacktestAfterSubscribed": false,
       "ReportersSnapshots": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
         "Performance": null,
         "Positions": {
           "$type": "Sq1.Reporters.PositionsDataSnapshot, Sq1.Reporters",
           "Colorify": true,
-          "PositionsOlvStateBase64": "AAEAAAD/////AQAAAAAAAAAMAgAAAFVPYmplY3RMaXN0VmlldywgVmVyc2lvbj0yLjguMC4zNTcyNSwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iMWM1YmY1ODE0ODFiY2Q0DAMAAABXU3lzdGVtLldpbmRvd3MuRm9ybXMsIFZlcnNpb249NC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAA2QnJpZ2h0SWRlYXNTb2Z0d2FyZS5PYmplY3RMaXN0VmlldytPYmplY3RMaXN0Vmlld1N0YXRlCQAAAA1WZXJzaW9uTnVtYmVyD051bWJlck9mQ29sdW1ucwtDdXJyZW50VmlldwpTb3J0Q29sdW1uD0lzU2hvd2luZ0dyb3Vwcw1MYXN0U29ydE9yZGVyD0NvbHVtbklzVmlzaWJsZRVDb2x1bW5EaXNwbGF5SW5kaWNpZXMMQ29sdW1uV2lkdGhzAAAEAAAEAwMDCAgZU3lzdGVtLldpbmRvd3MuRm9ybXMuVmlldwMAAAAIAR5TeXN0ZW0uV2luZG93cy5Gb3Jtcy5Tb3J0T3JkZXIDAAAAHFN5c3RlbS5Db2xsZWN0aW9ucy5BcnJheUxpc3QcU3lzdGVtLkNvbGxlY3Rpb25zLkFycmF5TGlzdBxTeXN0ZW0uQ29sbGVjdGlvbnMuQXJyYXlMaXN0AgAAAAEAAAAYAAAABfz///8ZU3lzdGVtLldpbmRvd3MuRm9ybXMuVmlldwEAAAAHdmFsdWVfXwAIAwAAAAEAAAAMAAAAAAX7////HlN5c3RlbS5XaW5kb3dzLkZvcm1zLlNvcnRPcmRlcgEAAAAHdmFsdWVfXwAIAwAAAAEAAAAJBgAAAAkHAAAACQgAAAAEBgAAABxTeXN0ZW0uQ29sbGVjdGlvbnMuQXJyYXlMaXN0AwAAAAZfaXRlbXMFX3NpemUIX3ZlcnNpb24FAAAICAkJAAAAGAAAABgAAAABBwAAAAYAAAAJCgAAABgAAAAYAAAAAQgAAAAGAAAACQsAAAAYAAAAGAAAABAJAAAAIAAAAAgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAQgBAA0IEAoAAAAgAAAACAgAAAAACAgBAAAACAgEAAAACAgDAAAACAgCAAAACAgLAAAACAgPAAAACAgFAAAACAgSAAAACAgTAAAACAgHAAAACAgGAAAACAgOAAAACAgJAAAACAgKAAAACAgUAAAACAgVAAAACAgWAAAACAgIAAAACAgRAAAACAgQAAAACAgMAAAACAgNAAAACAgXAAAADQgQCwAAACAAAAAICCMAAAAICB4AAAAICCgAAAAICBsAAAAICDwAAAAICHgAAAAICDwAAAAICC0AAAAICHgAAAAICDwAAAAICE0AAAAICC8AAAAICDwAAAAICCIAAAAICDMAAAAICEYAAAAICEYAAAAICC8AAAAICC8AAAAICDYAAAAICDUAAAAICC4AAAAICFEAAAAICC0AAAANCAs="
+          "PositionsOlvStateBase64": "AAEAAAD/////AQAAAAAAAAAMAgAAAFVPYmplY3RMaXN0VmlldywgVmVyc2lvbj0yLjguMC4zMjMyOCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iMWM1YmY1ODE0ODFiY2Q0DAMAAABXU3lzdGVtLldpbmRvd3MuRm9ybXMsIFZlcnNpb249NC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAA2QnJpZ2h0SWRlYXNTb2Z0d2FyZS5PYmplY3RMaXN0VmlldytPYmplY3RMaXN0Vmlld1N0YXRlCQAAAA1WZXJzaW9uTnVtYmVyD051bWJlck9mQ29sdW1ucwtDdXJyZW50VmlldwpTb3J0Q29sdW1uD0lzU2hvd2luZ0dyb3Vwcw1MYXN0U29ydE9yZGVyD0NvbHVtbklzVmlzaWJsZRVDb2x1bW5EaXNwbGF5SW5kaWNpZXMMQ29sdW1uV2lkdGhzAAAEAAAEAwMDCAgZU3lzdGVtLldpbmRvd3MuRm9ybXMuVmlldwMAAAAIAR5TeXN0ZW0uV2luZG93cy5Gb3Jtcy5Tb3J0T3JkZXIDAAAAHFN5c3RlbS5Db2xsZWN0aW9ucy5BcnJheUxpc3QcU3lzdGVtLkNvbGxlY3Rpb25zLkFycmF5TGlzdBxTeXN0ZW0uQ29sbGVjdGlvbnMuQXJyYXlMaXN0AgAAAAEAAAAYAAAABfz///8ZU3lzdGVtLldpbmRvd3MuRm9ybXMuVmlldwEAAAAHdmFsdWVfXwAIAwAAAAEAAAD/////AAX7////HlN5c3RlbS5XaW5kb3dzLkZvcm1zLlNvcnRPcmRlcgEAAAAHdmFsdWVfXwAIAwAAAAEAAAAJBgAAAAkHAAAACQgAAAAEBgAAABxTeXN0ZW0uQ29sbGVjdGlvbnMuQXJyYXlMaXN0AwAAAAZfaXRlbXMFX3NpemUIX3ZlcnNpb24FAAAICAkJAAAAGAAAABgAAAABBwAAAAYAAAAJCgAAABgAAAAYAAAAAQgAAAAGAAAACQsAAAAYAAAAGAAAABAJAAAAIAAAAAgBAQgBAQgBAAgBAAgBAAgBAAgBAQgBAQgBAAgBAQgBAQgBAAgBAQgBAAgBAAgBAAgBAAgBAAgBAAgBAAgBAAgBAAgBAQgBAA0IEAoAAAAgAAAACAgAAAAACAgBAAAACAgCAAAACAgDAAAACAgEAAAACAgFAAAACAgDAAAACAgCAAAACAgIAAAACAgFAAAACAgEAAAACAgLAAAACAgGAAAACAgNAAAACAgOAAAACAgPAAAACAgQAAAACAgRAAAACAgSAAAACAgTAAAACAgUAAAACAgVAAAACAgHAAAACAj/////DQgQCwAAACAAAAAICCMAAAAICB4AAAAICD4AAAAICBgAAAAICDwAAAAICHgAAAAICC0AAAAICC0AAAAICHcAAAAICC0AAAAICC0AAAAICC8AAAAICCQAAAAICCIAAAAICDMAAAAICEYAAAAICEYAAAAICC8AAAAICC8AAAAICDYAAAAICDUAAAAICC4AAAAICDYAAAAICC0AAAANCAs="
         }
       },
       "ApplyCommission": false,
@@ -131,43 +103,48 @@
       "FillOutsideQuoteSpreadParanoidCheckThrow": false,
       "SpreadModelerClassName": "BacktestSpreadModelerPercentage",
       "SpreadModelerPercent": 0.005,
-      "BacktestStrokesPerBar": 4,
-      "MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim": false,
+      "BacktestStrokesPerBar": 10,
+      "MinimizeGuiExtensiveExecutionAllReportersForTheDurationOfLiveSim": false,
       "SequenceIterationName": "it was a F5 GUI invoked backtest, not an optimization",
       "SequenceIterationSerno": -1,
       "Name": "Default",
-      "Symbol": "RIM3",
-      "DataSourceName": "MOCK",
+      "Symbol": "SRM6",
+      "DataSourceName": "QUIKopen",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-        "AsString_cached": "1-Minute",
-        "Scale": 3,
         "Interval": 1,
+        "Scale": 3,
+        "AsString_cached": "1-Minute",
         "IsIntraday": true,
         "AsTimeSpanInSeconds": 60,
-        "AsTimeSpan": "00:01:00"
+        "AsTimeSpan": "00:01:00",
+        "AsStringShortest_cached": "1m",
+        "AsStringShort_cached": "1min"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
         "Range": 1,
         "DateFrom": "0001-01-01T00:00:00",
         "DateTill": "9999-12-31T23:59:59.9999999",
-        "RecentBars": 5000,
+        "RecentBars": 500,
         "RecentTimeunits": 0
       },
-      "IsStreamingTriggeringScript": true,
+      "StreamingIsTriggeringScript": true,
       "ShowRangeBar": false,
-      "IsStreaming": false,
-      "ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString": "(MAfast.Period=15,test=8,verbose=3)",
-      "SymbolScaleIntervalDataRangeForScriptContextNewName": "RIM3 1-Minute 5,000 Bars"
+      "DownstreamSubscribed": true,
+      "ScriptAndIndicatorParameters_mergedUncloned_forSequencerByName_AsString": "(MAfast.Period=16,test=4,verbose=5)",
+      "SymbolScaleInterval_dataRangeForScriptContext_newName": "SRM6 1-Minute 500 Bars"
     }
   },
   "LivesimBrokerSettings": {
     "$type": "Sq1.Core.Livesim.LivesimBrokerSettings, Sq1.Core",
-    "DelayBeforeFillMillisMin": 3,
-    "DelayBeforeFillMillisMax": 0,
+    "DelayBeforeFillMillisMin": 2000,
+    "DelayBeforeFillMillisMax": 5000,
     "DelayBeforeFillEnabled": true,
-    "OrderRejectionHappensOncePerXordersMin": 0,
+    "KillPendingDelayMillisMin": 100,
+    "KillPendingDelayMillisMax": 0,
+    "KillPendingDelayEnabled": true,
+    "OrderRejectionHappensOncePerXordersMin": 1,
     "OrderRejectionHappensOncePerXordersMax": 0,
     "OrderRejectionEnabled": true,
     "PartialFillHappensOncePerQuoteMin": 0,
@@ -185,9 +162,6 @@
     "PriceDeviationForMarketOrdersPercentageOfBestPriceMin": 0,
     "PriceDeviationForMarketOrdersPercentageOfBestPriceMax": 0,
     "PriceDeviationForMarketOrdersEnabled": true,
-    "KillPendingDelayMillisMin": 5,
-    "KillPendingDelayMillisMax": 0,
-    "KillPendingDelayEnabled": true,
     "AdaperDisconnectHappensOncePerQuoteMin": 0,
     "AdaperDisconnectHappensOncePerQuoteMax": 0,
     "AdaperDisconnectReconnectsAfterMillisMin": 0,
@@ -196,8 +170,8 @@
   },
   "LivesimStreamingSettings": {
     "$type": "Sq1.Core.Livesim.LivesimStreamingSettings, Sq1.Core",
-    "DelayBetweenSerialQuotesMin": 90,
-    "DelayBetweenSerialQuotesMax": 0,
+    "DelayBetweenSerialQuotesMin": 50,
+    "DelayBetweenSerialQuotesMax": 200,
     "DelayBetweenSerialQuotesEnabled": true,
     "OutOfOrderQuoteGenerationHappensOncePerQuoteMin": 0,
     "OutOfOrderQuoteGenerationHappensOncePerQuoteMax": 0,
@@ -214,6 +188,7 @@
     "AdaperDisconnectReconnectsAfterMillisMin": 0,
     "AdaperDisconnectReconnectsAfterMillisMax": 0,
     "AdaperDisconnectEnabled": true,
+    "GenerateWideSpreadWithZeroSize": false,
     "LevelTwoLevelsToGenerate": 10
   },
   "HasChartOnly": false

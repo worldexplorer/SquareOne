@@ -6,31 +6,25 @@ using System.Diagnostics;
 using Sq1.Core;
 
 namespace Sq1.Core.Support {
-	public class TimerSimplified : IDisposable {
+	public class TimerSimplifiedWinForms : IDisposable {
 		System.Windows.Forms.Timer	timer;
-				int					forever;
-				int					immediately;
-				int					tooSoon;
 				string				reasonToExist;
 				Control				guiInvoker;
 		
-		public	int					Delay;		// ATOMIC_OPERATION ExceptionsForm may be closed and opened again => Initialize will have to set the TreeRefreshDelayMsec		{ get; private set; }
+		public	int					DelayMillis;		// ATOMIC_OPERATION ExceptionsForm may be closed and opened again => Initialize will have to set the TreeRefreshDelayMsec		{ get; private set; }
 		public	bool				Scheduled	{ get; private set; }
 
 		public event EventHandler<EventArgs>		OnLastScheduleExpired;
 
-		TimerSimplified() {
-			forever			= -1;
-			immediately		= 0;
-			tooSoon			= 1;
+		TimerSimplifiedWinForms() {
 			timer			= new System.Windows.Forms.Timer();
 			timer.Tick		+= new EventHandler(timer_expired);
 		}
 
-		public TimerSimplified(string reasonToExist_passed, Control guiInvokerPassed, int delayInitial = 200) : this() {
+		public TimerSimplifiedWinForms(string reasonToExist_passed, Control guiInvokerPassed, int delayInitial = 200) : this() {
 			reasonToExist	= reasonToExist_passed;
 			guiInvoker		= guiInvokerPassed;
-			Delay			= delayInitial;
+			DelayMillis			= delayInitial;
 		}
 
 		void timer_expired(object sender, EventArgs e) {
@@ -65,7 +59,7 @@ namespace Sq1.Core.Support {
 
 			this.Scheduled = true;	// if we were invoked from GUI thread
 
-			if (this.timer.Interval != this.Delay) this.timer.Interval = this.Delay;
+			if (this.timer.Interval != this.DelayMillis) this.timer.Interval = this.DelayMillis;
 
 			// Timer is Enabled until event fired; after that Enabled can be used for a repetitive firing (I don't use repetitive so on every re-use of Start() I set Enabled
 			// hint: https://msdn.microsoft.com/en-us/library/system.windows.forms.timer.tick(v=vs.110).aspx
