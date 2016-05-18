@@ -40,6 +40,19 @@ namespace Sq1.Widgets.DataSourceEditor {
 				RepositorySerializerMarketInfos			repositorySerializerMarketInfoPassed,
 				OrderProcessor							orderProcessorPassed
 			) {
+			string msig = " //DataSourceEditorControl.InitializeContext()";
+
+			if (streamingAdaptersByName == null) {
+				string msg = "DONT_PASS_NULL streamingAdaptersByName_passed=null";
+				Assembler.PopupException(msg + msig, null, false);
+				streamingAdaptersByName = new Dictionary<string, StreamingAdapter>();
+			}
+			if (brokerAdaptersByName == null) {
+				string msg = "DONT_PASS_NULL brokerAdaptersByName_passed=null";
+				Assembler.PopupException(msg + msig, null, false);
+				brokerAdaptersByName = new Dictionary<string, BrokerAdapter>();
+			}
+
 			this.StreamingAdaptersByName			= streamingAdaptersByName;
 			this.BrokerAdaptersByName				= brokerAdaptersByName;
 			this.repositoryJsonDataSource			= repositoryJsonDataSourcePassed;
@@ -80,6 +93,11 @@ namespace Sq1.Widgets.DataSourceEditor {
 
 			this.marketInfoEditor.Initialize(dataSourceIamEditing, this.repositoryJsonDataSource, this.repositoryMarketInfo);
 
+			if (this.repositoryJsonDataSource == null) {
+				string msg = "AVOIDING_NPE this.repositoryJsonDataSource=null";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
 
 			RepositoryJsonDataSources dsRepo = this.repositoryJsonDataSource;
 			dsRepo.OnItemRemovedDone -= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(repositoryJsonDataSource_OnDataSourceDeleted_closeDataSourceEditor);
@@ -137,6 +155,13 @@ namespace Sq1.Widgets.DataSourceEditor {
 			//	Name = StreamingAdapter.NO_STREAMING_ADAPTER,
 			//};
 			//this.lvStreamingAdapters.Items.Add(lviAbsentStreaming);
+
+			if (this.StreamingAdaptersByName == null) {
+				string msg = "AVOIDING_NPE_this.StreamingAdaptersByName=null";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+
 			foreach (StreamingAdapter streamingAdapterPrototype in this.StreamingAdaptersByName.Values) {
 				try {
 					StreamingAdapter streamingAdapterInstance = null;	// streamingAdapterPrototype;
@@ -190,7 +215,13 @@ namespace Sq1.Widgets.DataSourceEditor {
 			//	Name = BrokerAdapter.NO_BROKER_ADAPTER,
 			//};
 			//this.lvBrokerAdapters.Items.Add(lviAbsentBroker);
-			foreach (BrokerAdapter brokerAdapterPrototype in BrokerAdaptersByName.Values) {
+			if (this.BrokerAdaptersByName == null) {
+				string msg = "AVOIDING_NPE_this.BrokerAdaptersByName=null";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+
+			foreach (BrokerAdapter brokerAdapterPrototype in this.BrokerAdaptersByName.Values) {
 				try {
 					BrokerAdapter brokerAdapterInstance = null;	// brokerAdapterPrototype;
 					if (dataSourceIamEditing.BrokerAdapter != null && dataSourceIamEditing.BrokerAdapter.GetType().FullName == brokerAdapterPrototype.GetType().FullName) {

@@ -46,6 +46,12 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.populateTimeZonesSelector();
 		}
 		void populateMarketNamesDataGrid() {
+			if (this.marketInfoRepository == null) {
+				string msg = "AVOIDING_NPE this.marketInfoRepository=null";
+				Sq1.Core.Assembler.PopupException(msg, null, false);
+				return;
+			}
+
 			this.ignoreSelectionEventDuringPopulate = true;
 			this.dgMarketName.Rows.Clear();
 			foreach (MarketInfo marketInfo in this.marketInfoRepository.MarketsByName.Values) {
@@ -110,6 +116,11 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.txtMarketDaysOfWeek.Text = this.dataSource.MarketInfo.DaysOfWeekOpenAsString;
 		}
 		void populateTimeZonesSelector() {
+			if (this.marketInfoRepository == null) {
+				string msg = "AVOIDING_NPE this.marketInfoRepository=null";
+				Sq1.Core.Assembler.PopupException(msg, null, false);
+				return;
+			}
 			this.ignoreSelectionEventDuringPopulate = true;
 			this.cbxMarketTimeZone.Items.Clear();
 			Dictionary<string, string> tzReadableNames_withUTC = this.marketInfoRepository.TimeZonesWithUTC;

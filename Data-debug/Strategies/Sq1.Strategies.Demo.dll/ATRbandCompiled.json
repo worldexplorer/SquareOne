@@ -4,9 +4,9 @@
   "Name": "ATRbandCompiled",
   "ScriptSourceCode": null,
   "DotNetReferences": null,
-  "DllPathIfNoSourceCode": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\Sq1.Strategies.Demo.dll",
+  "DllPathIfNoSourceCode": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\Sq1.Strategies.Demo.dll",
   "ExceptionsLimitToAbortBacktest": 10,
-  "StoredInJsonAbspath": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json",
+  "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json",
   "ScriptContextCurrentName": "Default",
   "ScriptContextsByName": {
     "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.StrategyBase.ContextScript, Sq1.Core]], mscorlib",
@@ -18,12 +18,68 @@
         "DollarsConstantEachTrade": 0.0,
         "SharesConstantEachTrade": 1.0
       },
-      "IsCurrent": false,
-      "ChartEmittingOrders": false,
+      "ScriptParametersById": {
+        "$type": "System.Collections.Generic.SortedDictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], System",
+        "1": {
+          "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
+          "Id": 1,
+          "ReasonToExist": "??hopefully this will go to the tooltip",
+          "IndicatorName": "THIS_IS_A_STRATEGY_PARAMETER",
+          "Name": "test",
+          "ValueMin": 0.0,
+          "ValueMax": 10.0,
+          "ValueIncrement": 1.0,
+          "ValueCurrent": 9.0,
+          "WillBeSequenced": false,
+          "BorderShown": true,
+          "NumericUpdownShown": false,
+          "NumberOfRuns": 11,
+          "ValuesAsString": "9[0..10/1]"
+        }
+      },
+      "IndicatorParametersByIndicatorName": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+        "ATR": [
+          {
+            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+            "IndicatorName": "ATR",
+            "Name": "Period",
+            "ValueMin": 1.0,
+            "ValueMax": 11.0,
+            "ValueIncrement": 2.0,
+            "ValueCurrent": 7.0,
+            "WillBeSequenced": false,
+            "BorderShown": true,
+            "NumericUpdownShown": false,
+            "NumberOfRuns": 6,
+            "ValuesAsString": "7[1..11/2]"
+          }
+        ],
+        "ATRband": [
+          {
+            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+            "IndicatorName": "ATRband",
+            "Name": "Multiplier",
+            "ValueMin": 0.1,
+            "ValueMax": 3.0,
+            "ValueIncrement": 0.1,
+            "ValueCurrent": 1.8,
+            "WillBeSequenced": false,
+            "BorderShown": true,
+            "NumericUpdownShown": false,
+            "NumberOfRuns": 29,
+            "ValuesAsString": "1.8[0.1..3/0.1]"
+          }
+        ]
+      },
+      "IsCurrent": true,
+      "StrategyEmittingOrders": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
+      "BacktestOnTriggeringYesWhenNotSubscribed": false,
       "BacktestOnRestart": false,
-      "BacktestOnSelectorsChange": true,
-      "BacktestOnDataSourceSaved": true,
+      "BacktestOnSelectorsChange": false,
+      "BacktestOnDataSourceSaved": false,
+      "BacktestAfterSubscribed": false,
       "ReportersSnapshots": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"
       },
@@ -35,61 +91,97 @@
       "NoDecimalRoundingForLimitStopPrice": false,
       "SlippageUnits": 1.0,
       "SlippageTicks": 1,
-      "PriceLevelSizeForBonds": 0,
+      "PriceStep": 0,
       "FillOutsideQuoteSpreadParanoidCheckThrow": false,
       "SpreadModelerClassName": "BacktestSpreadModelerPercentage",
       "SpreadModelerPercent": 0.005,
-      "BacktestMode": 4,
+      "BacktestStrokesPerBar": 4,
+      "MinimizeGuiExtensiveExecutionAllReportersForTheDurationOfLiveSim": true,
+      "SequenceIterationName": "it was a F5 GUI invoked backtest, not a sequencer-generated run",
+      "SequenceIterationSerno": -1,
       "Name": "Default",
-      "Symbol": "autogen",
-      "DataSourceName": "Qmock",
+      "Symbol": "SBER",
+      "DataSourceName": "QuikBCS",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+        "Interval": 1,
         "Scale": 3,
-        "Interval": 10,
+        "AsString_cached": "1-Minute",
         "IsIntraday": true,
-        "AsTimeSpanInSeconds": 600,
-        "AsTimeSpan": "00:10:00"
+        "AsTimeSpanInSeconds": 60,
+        "AsTimeSpan": "00:01:00",
+        "AsStringShortest_cached": "1m",
+        "AsStringShort_cached": "1min"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
         "Range": 1,
-        "StartDate": "0001-01-01T00:00:00",
-        "EndDate": "9999-12-31T23:59:59.9999999",
+        "DateFrom": "0001-01-01T00:00:00",
+        "DateTill": "9999-12-31T23:59:59.9999999",
         "RecentBars": 500,
         "RecentTimeunits": 0
       },
-      "ChartStreaming": false,
+      "StreamingIsTriggeringScript": true,
       "ShowRangeBar": false,
-
-      "IndicatorParametersByName": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
-        "ATR": [
-          {
-            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-            "Name": "Period",
-            "ValueMin": 1.0,
-            "ValueMax": 11.0,
-            "ValueIncrement": 2.0,
-            "ValueCurrent": 5.0,
-            "BorderShown": false,
-            "NumericUpdownShown": true
-          }
-        ],
-        "ATRband": [
-          {
-            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-            "Name": "Multiplier",
-            "ValueMin": 0.1,
-            "ValueMax": 10.0,
-            "ValueIncrement": 0.1,
-            "ValueCurrent": 1.0,
-            "BorderShown": false,
-            "NumericUpdownShown": true
-          }
-        ]
-      }
+      "DownstreamSubscribed": false,
+      "ScriptAndIndicatorParameters_mergedUncloned_forSequencerByName_AsString": "(ATR.Period=7,ATRband.Multiplier=1.8,test=9)",
+      "SymbolScaleInterval_dataRangeForScriptContext_newName": "SBER 1-Minute 500 Bars"
     }
+  },
+  "LivesimBrokerSettings": {
+    "$type": "Sq1.Core.Livesim.LivesimBrokerSettings, Sq1.Core",
+    "DelayBeforeFillMillisMin": 0,
+    "DelayBeforeFillMillisMax": 0,
+    "DelayBeforeFillEnabled": true,
+    "KillPendingDelayMillisMin": 0,
+    "KillPendingDelayMillisMax": 0,
+    "KillPendingDelayEnabled": true,
+    "OrderRejectionHappensOncePerXordersMin": 0,
+    "OrderRejectionHappensOncePerXordersMax": 0,
+    "OrderRejectionEnabled": true,
+    "PartialFillHappensOncePerQuoteMin": 0,
+    "PartialFillHappensOncePerQuoteMax": 0,
+    "PartialFillPercentageFilledMin": 0,
+    "PartialFillPercentageFilledMax": 0,
+    "PartialFillEnabled": true,
+    "OutOfOrderFillHappensOncePerQuoteMin": 0,
+    "OutOfOrderFillHappensOncePerQuoteMax": 0,
+    "OutOfOrderFillDeliveredXordersLaterMin": 0,
+    "OutOfOrderFillDeliveredXordersLaterMax": 0,
+    "OutOfOrderFillEnabled": true,
+    "PriceDeviationForMarketOrdersHappensOncePerXordersMin": 0,
+    "PriceDeviationForMarketOrdersHappensOncePerXordersMax": 0,
+    "PriceDeviationForMarketOrdersPercentageOfBestPriceMin": 0,
+    "PriceDeviationForMarketOrdersPercentageOfBestPriceMax": 0,
+    "PriceDeviationForMarketOrdersEnabled": true,
+    "AdaperDisconnectHappensOncePerQuoteMin": 0,
+    "AdaperDisconnectHappensOncePerQuoteMax": 0,
+    "AdaperDisconnectReconnectsAfterMillisMin": 0,
+    "AdaperDisconnectReconnectsAfterMillisMax": 0,
+    "AdaperDisconnectEnabled": true
+  },
+  "LivesimStreamingSettings": {
+    "$type": "Sq1.Core.Livesim.LivesimStreamingSettings, Sq1.Core",
+    "DelayBetweenSerialQuotesMin": 0,
+    "DelayBetweenSerialQuotesMax": 0,
+    "DelayBetweenSerialQuotesEnabled": true,
+    "OutOfOrderQuoteGenerationHappensOncePerQuoteMin": 0,
+    "OutOfOrderQuoteGenerationHappensOncePerQuoteMax": 0,
+    "OutOfOrderQuoteGenerationDelayMillisMin": 0,
+    "OutOfOrderQuoteGenerationDelayMillisMax": 0,
+    "OutOfOrderQuoteDeliveryEnabled": true,
+    "QuoteGenerationFreezeHappensOncePerQuoteMin": 0,
+    "QuoteGenerationFreezeHappensOncePerQuoteMax": 0,
+    "QuoteGenerationFreezeMillisMin": 0,
+    "QuoteGenerationFreezeMillisMax": 0,
+    "QuoteGenerationFreezeEnabled": true,
+    "AdaperDisconnectHappensOncePerQuoteMin": 0,
+    "AdaperDisconnectHappensOncePerQuoteMax": 0,
+    "AdaperDisconnectReconnectsAfterMillisMin": 0,
+    "AdaperDisconnectReconnectsAfterMillisMax": 0,
+    "AdaperDisconnectEnabled": true,
+    "GenerateWideSpreadWithZeroSize": false,
+    "LevelTwoLevelsToGenerate": 10
   },
   "HasChartOnly": false
 }

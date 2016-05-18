@@ -86,6 +86,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.tsiLtbDataSourceName.InputFieldValue = this.dataSourceIamEditing.Name;
 		}
 		void repositoryJsonDataSource_OnDataSourceDeleted_closeDataSourceEditor(object sender, NamedObjectJsonEventArgs<DataSource> e) {
+			if (this.ParentForm == null) return;
 			this.ParentForm.Close();
 		}
 		void repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea(object sender, DataSourceSymbolEventArgs e) {
