@@ -14,6 +14,7 @@ namespace Sq1.Core.Backtesting {
 	public class BacktestBroker : BrokerAdapter {
 		[JsonIgnore]	public	BacktestMarketsim		BacktestMarketsim	{ get; protected set; }
 		[JsonIgnore]	public	ScriptExecutor			ScriptExecutor		{ get; private set; }
+		[JsonIgnore]	public	override bool			EmittingCapable		{ get { return false; } }
 
 		public BacktestBroker(string reasonToExist) : base(reasonToExist) {
 			base.Name						= "BacktestBrokerAdapter";

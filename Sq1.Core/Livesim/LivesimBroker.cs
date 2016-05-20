@@ -29,6 +29,8 @@ namespace Sq1.Core.Livesim {
 
 		[JsonIgnore]	public		bool						IsDisposed								{ get; private set; }
 
+		[JsonIgnore]	public	override bool					EmittingCapable							{ get { return true; } }
+
 		public LivesimBroker(string reasonToExist) : base(reasonToExist) {
 			base.Name									= "LivesimBroker";
 			this.LivesimMarketsim						= new BacktestMarketsim(this);

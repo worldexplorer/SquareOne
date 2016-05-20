@@ -8,10 +8,10 @@ namespace Sq1.Core.Livesim {
 		public override void Initialize(StreamingAdapter streamingAdapter, IDataSourceEditor dataSourceEditor) {
 			base.Initialize(streamingAdapter, dataSourceEditor);
 		}
-		public override void PopulateStreamingAdapterSettingsToEditor() {
+		public override void PullStreamingAdapterSettings_toEditor() {
 			string msg = "INAPPLICABLE_FOR_A_LIVESIMSTREAMING_ENFORCED_TO_BE_MANDATORY_WHEN_NO_OTHER_STREAMING_IS_ASSIGNED_BY_USER_TO_A_DATASOURCE for streamingAdapter=[" + base.StreamingAdapter + "]";
 		}
-		public override void PushEditedSettingsToStreamingAdapter() {
+		public override void PushEditedSettings_toStreamingAdapter_serializeDataSource() {
 			string msg = "INAPPLICABLE_FOR_A_LIVESIMSTREAMING_ENFORCED_TO_BE_MANDATORY_WHEN_NO_OTHER_STREAMING_IS_ASSIGNED_BY_USER_TO_A_DATASOURCE for streamingAdapter=[" + base.StreamingAdapter + "]";
 		}
 		protected override void StreamingAdapter_OnStreamingConnectionStateChanged(object sender, EventArgs e) {

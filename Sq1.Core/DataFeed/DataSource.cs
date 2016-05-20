@@ -271,5 +271,9 @@ namespace Sq1.Core.DataFeed {
 			}
 			repo.SerializeSingle(this);
 		}
+
+		public void Serialize() {
+			Assembler.InstanceInitialized.RepositoryJsonDataSources.SerializeSingle(this);
+		}
 	}
 }

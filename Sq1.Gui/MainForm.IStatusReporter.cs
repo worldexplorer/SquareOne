@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-
+using System.Threading;
 using System.Diagnostics;
 
 using Sq1.Core;
@@ -8,7 +8,6 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Support;
 
 using Sq1.Gui.Singletons;
-using System.Threading;
 
 namespace Sq1.Gui {
 	public partial class MainForm : IStatusReporter {

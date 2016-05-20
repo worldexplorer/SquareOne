@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.Support;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
@@ -191,7 +192,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			bool breakIfAbsent = true;
-			int threeSeconds = Sq1.Core.Support.ConcurrentWatchdog.TIMEOUT_DEFAULT;
+			int threeSeconds = ConcurrentWatchdog.TIMEOUT_DEFAULT;
 			int forever = -1;
 			bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertFilled, this, msig, forever, breakIfAbsent);
 

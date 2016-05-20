@@ -65,8 +65,8 @@ namespace Sq1.Core.Broker {
 				try {
 					if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
 					if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
-					if (this.UpstreamConnectedOnAppRestart == this.UpstreamConnected) return;
-					this.UpstreamConnectedOnAppRestart = this.UpstreamConnected;		// you can override this.UpstreamConnectedOnAppRestart and keep it FALSE to avoid DS serialization
+					if (this.UpstreamConnect_onAppRestart == this.UpstreamConnected) return;
+					this.UpstreamConnect_onAppRestart = this.UpstreamConnected;		// you can override this.UpstreamConnectedOnAppRestart and keep it FALSE to avoid DS serialization
 					if (this.DataSource == null) {
 						string msg = "DataSource=null_WHEN_QUIK_FOLDER_NOT_FOUND for broker[" + this + "]";
 						Assembler.PopupException(msg, null, false);
@@ -79,8 +79,9 @@ namespace Sq1.Core.Broker {
 				}
 			}
 		}
-		[JsonProperty]	public	virtual	bool			UpstreamConnectedOnAppRestart		{ get; protected set; }
-		[JsonIgnore]	public		bool				UpstreamConnected					{ get {
+		[JsonProperty]	public	virtual	bool			UpstreamConnect_onAppRestart		{ get; protected set; }
+		[JsonProperty]	public			bool			UpstreamConnect_onFirstOrder;//		{ get; internal  set; } internal will help if you won't throw in BrokerAdapter.PushEditedSettingsToBrokerAdapter()
+		[JsonIgnore]	public			bool			UpstreamConnected					{ get {
 		    bool ret = false;
 		    switch (this.UpstreamConnectionState) {
 		        case ConnectionState.UnknownConnectionState:						ret = false;	break;
@@ -132,6 +133,12 @@ namespace Sq1.Core.Broker {
 			//Accounts = new List<Account>();
 			this.AccountAutoPropagate		= new Account("ACCTNR_NOT_SET", -1000);
 			this.OrderCallbackDupesChecker	= new OrderCallbackDupesCheckerTransparent(this);
+
+			this.UpstreamConnect_onAppRestart = false;
+			this.UpstreamConnect_onFirstOrder = true;
+
+			this.EmittingCapable_mre		= new ManualResetEvent(false);
+			this.EmittingIncapable_mre		= new ManualResetEvent(true);
 		}
 
 		public BrokerAdapter(string reasonToExist) : this() {
@@ -168,9 +175,9 @@ namespace Sq1.Core.Broker {
 			Assembler.PopupException(msg);
 			ordersFromAlerts[0].appendMessage(msg);
 			Thread.Sleep(millis);
-			this.SubmitOrders_backtestAndLiveFromProcessor_OPPunlockedSequence_threadEntry(ordersFromAlerts);
+			this.SubmitOrders_liveAndLiveSim_fromProcessor_OPPunlockedSequence_threadEntry(ordersFromAlerts);
 		}
-		public virtual void SubmitOrders_backtestAndLiveFromProcessor_OPPunlockedSequence_threadEntry(List<Order> ordersFromAlerts) {
+		public virtual void SubmitOrders_liveAndLiveSim_fromProcessor_OPPunlockedSequence_threadEntry(List<Order> ordersFromAlerts) {
 			try {
 				if (ordersFromAlerts.Count == 0) {
 					Assembler.PopupException("SubmitOrdersThreadEntry should get at least one order to place! List<Order>; got ordersFromAlerts.Count=0; returning");
@@ -546,6 +553,43 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException(msg);
 				return;
 			}
+		}
+
+
+
+		[JsonIgnore]	public		abstract bool		EmittingCapable			{ get; }	// always false, override?
+		[JsonIgnore]	protected	ManualResetEvent	EmittingCapable_mre;
+		[JsonIgnore]	protected	ManualResetEvent	EmittingIncapable_mre;
+		public bool ConnectionState_waitFor_emittingCapable(int waitMillis = -1) {
+			bool capable =	this.EmittingCapable_mre.WaitOne(waitMillis);
+			if (capable)	this.EmittingCapable_mre.Reset();		// it's a MANUAL reset, not AUTO
+			return capable;
+		}
+		public bool ConnectionState_waitFor_emittingIncapable(int waitMillis = -1) {
+		    bool incapable =	this.EmittingIncapable_mre.WaitOne(waitMillis);
+			if (incapable)		this.EmittingIncapable_mre.Reset();		// it's a MANUAL reset, not AUTO
+		    return incapable;
+		}
+		public void ConnectionState_update(ConnectionState state, string message) {
+			this.UpstreamConnectionState = state;
+			Assembler.DisplayConnectionStatus(state, message);
+			if (this.EmittingCapable) {
+				this.EmittingCapable_mre.Set();
+				this.EmittingIncapable_mre.Reset();
+			} else {
+			    bool incapable = this.EmittingIncapable_mre.WaitOne(0);
+				this.EmittingIncapable_mre.Reset();
+				this.EmittingCapable_mre.Set();
+			}
+		}
+
+		public void SerializeDatasource_streamingBrokerMarketInfo() {
+			if (this.DataSource == null) {
+				string msg = "DATASOURCE_NULL_FOR_BROKER__CAN_NOT_SAVE [" + this + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.DataSource.Serialize();
 		}
 	}
 }

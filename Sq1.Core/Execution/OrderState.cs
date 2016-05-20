@@ -58,6 +58,7 @@ namespace Sq1.Core.Execution {
 
 		ErrorSubmitting_BrokerTerminalDisconnected	= 720,
 		ErrorSubmitting_BrokerDllDisconnected		= 721,
+		IRefuseEmitting_BrokerDisconnected = 722,
 
 		ErrorSubmittingOrder_classifyMe				= 730,
 		ErrorSubmittingOrder_unexecutableParameters	= 731,

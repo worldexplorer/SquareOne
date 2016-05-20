@@ -20,17 +20,17 @@ namespace Sq1.Core.Broker {
 			this.BrokerAdapter.OnBrokerConnectionStateChanged += new EventHandler<EventArgs>(this.BrokerAdapter_OnBrokerConnectionStateChanged);
 		}
 		// was intended to be abstract but has implementation for Designer to be able to instantiate BrokerEditor
-		public virtual void PushBrokerAdapterSettingsToEditor() {
+		public virtual void PullBrokerAdapterSettings_toEditor() {
 			throw new Exception("please override BrokerAdapter::PushBrokerAdapterSettingsToEditor() for brokerAdapter=[" + BrokerAdapter + "]");
 		}
 		// was intended to be abstract but has implementation for Designer to be able to instantiate BrokerEditor
-		public virtual void PushEditedSettingsToBrokerAdapter() {
+		public virtual void PushEditedSettings_toBrokerAdapter_serializeDataSource() {
 			throw new Exception("please override BrokerAdapter::PushEditedSettingsToBrokerAdapter() for brokerAdapter=[" + BrokerAdapter + "]");
 		}
 
 		void initializeEditorFields() {
 			this.IgnoreEditorFieldChangesWhileInitializingEditor = true;
-			this.PushBrokerAdapterSettingsToEditor();
+			this.PullBrokerAdapterSettings_toEditor();
 			this.IgnoreEditorFieldChangesWhileInitializingEditor = false;
 		}
 	}

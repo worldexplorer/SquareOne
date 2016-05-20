@@ -15,7 +15,8 @@ namespace Sq1.Core.Livesim {
 	//I_WANT_LIVESIM_STREAMING_BROKER_BE_AUTOASSIGNED_AND_VISIBLE_IN_DATASOURCE_EDITOR => SkipInstantiationAt(Startup = false)
 	[SkipInstantiationAt(Startup = false)]
 	public sealed partial class LivesimBrokerDefault : LivesimBroker, IDisposable {
-		[JsonIgnore]				object						threadEntryLockToHaveQuoteSentToThread;
+		[JsonIgnore]			object					threadEntryLockToHaveQuoteSentToThread;
+		[JsonIgnore]	public	override bool			EmittingCapable		{ get { return true; } }
 
 		public LivesimBrokerDefault() : base("USED_FOR_DATASOURCE_EDITOR_DUMMY") {
 			string msg = "IM_HERE_WHEN_DLL_SCANNER_INSTANTIATES_DUMMY_STREAMING"

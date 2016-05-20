@@ -307,8 +307,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 
 			this.dataSourceIamEditing.ScaleInterval.StringsCachedInvalidate();
 
-			if (this.dataSourceIamEditing.StreamingAdapter	!= null) this.dataSourceIamEditing.StreamingAdapter	.EditorInstance.PushEditedSettingsToStreamingAdapter();
-			if (this.dataSourceIamEditing.BrokerAdapter		!= null) this.dataSourceIamEditing.BrokerAdapter	.EditorInstance.PushEditedSettingsToBrokerAdapter();
+			if (this.dataSourceIamEditing.StreamingAdapter	!= null) this.dataSourceIamEditing.StreamingAdapter	.EditorInstance.PushEditedSettings_toStreamingAdapter_serializeDataSource();
+			if (this.dataSourceIamEditing.BrokerAdapter		!= null) this.dataSourceIamEditing.BrokerAdapter	.EditorInstance.PushEditedSettings_toBrokerAdapter_serializeDataSource();
 
 			try {
 				this.repositoryJsonDataSource.SerializeSingle(dataSourceIamEditing);

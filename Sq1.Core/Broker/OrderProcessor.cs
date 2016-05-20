@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Sq1.Core.Accounting;
 using Sq1.Core.Execution;
 using Sq1.Core.Livesim;
+using Sq1.Core.StrategyBase;
+using Sq1.Core.Support;
 
 namespace Sq1.Core.Broker {
 	public partial class OrderProcessor {
@@ -133,19 +135,42 @@ namespace Sq1.Core.Broker {
 			Order firstOrder = orders[0];
 			msig = " //SubmitToBrokerAdapter_inNewThread(" + firstOrder.Alert.DataSourceName + ", " + broker + ")";
 
-			// !!!THERE_MUST_BE_NO_DIFFERENCE_BETWEEN_LIVEISIMBROKER_AND_LIVEBROKER!!!
-			bool brokerIsLivesim = (broker as LivesimBroker) != null;
-			if (brokerIsLivesim) {
-				//broker.SubmitOrdersThreadEntry(new object[] { orders });
-				//broker.SubmitOrders(orders);
-				//return;
-				
-				string msg1 = "";
-				//Assembler.PopupException(msg1, null, false);
+			bool	wontEmit_cleanPendingAlerts = false;
+			string	wontEmit_reason = "UNKNOWN_wontEmit_reason";
+			try {
+				if (broker.UpstreamConnected == false) {
+					if (broker.UpstreamConnect_onFirstOrder) {
+						broker.Broker_connect();
+						broker.ConnectionState_waitFor_emittingCapable();
+					} else {
+						wontEmit_cleanPendingAlerts = true;
+						wontEmit_reason = "CLEANING_PENDING_ALERTS UpstreamConnected==false && UpstreamConnect_onFirstOrder==false";
+						Assembler.PopupException(wontEmit_reason + msig, null, false);
+					}
+				}
+			} catch (Exception ex) {
+				wontEmit_cleanPendingAlerts = true;
+				wontEmit_reason = "CLEANING_PENDING_ALERTS Broker_connect()__THREW";
+				Assembler.PopupException(wontEmit_reason + msig, ex);
 			}
-			// !!!THERE_MUST_BE_NO_DIFFERENCE_BETWEEN_LIVEISIMBROKER_AND_LIVEBROKER!!!
+
+			if (wontEmit_cleanPendingAlerts) {
+				ScriptExecutor executor = firstOrder.Alert.Strategy.Script.Executor;
+				foreach (Order order in orders) {
+					bool breakIfAbsent = true;
+					int threeSeconds = ConcurrentWatchdog.TIMEOUT_DEFAULT;
+					int forever = -1;
+					bool removed = executor.ExecutionDataSnapshot.AlertsPending.Remove(order.Alert, this, msig, forever, breakIfAbsent);
+
+					wontEmit_reason = "ALERT_REMOVED_FROM_PENDING[" + removed + "] " + wontEmit_reason;
+					OrderStateMessage osm_brokerDisconnected = new OrderStateMessage(order, OrderState.IRefuseEmitting_BrokerDisconnected, wontEmit_reason);
+					this.AppendOrderMessage_propagateToGui(osm_brokerDisconnected);
+				}
+				return;
+			}
+
 			Task taskEmittingOrders = new Task(delegate {
-				broker.SubmitOrders_backtestAndLiveFromProcessor_OPPunlockedSequence_threadEntry(orders);
+				broker.SubmitOrders_liveAndLiveSim_fromProcessor_OPPunlockedSequence_threadEntry(orders);
 			});
 			taskEmittingOrders.Start();
 		}

@@ -95,5 +95,14 @@ namespace Sq1.Core.Streaming {
 				return;
 			}
 		}
+
+		public void SerializeDatasource_streamingBrokerMarketInfo() {
+			if (this.DataSource == null) {
+				string msg = "DATASOURCE_NULL_FOR_STREAMING__CAN_NOT_SAVE [" + this + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.DataSource.Serialize();
+		}
 	}
 } 

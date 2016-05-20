@@ -25,7 +25,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 				return;
 			}
 			this.dataSourceIamEditing.StreamingAdapter = (StreamingAdapter)lvi.Tag;
-			this.dataSourceIamEditing.StreamingAdapter.EditorInstance.PopulateStreamingAdapterSettingsToEditor();
+			this.dataSourceIamEditing.StreamingAdapter.EditorInstance.PullStreamingAdapterSettings_toEditor();
 			this.pnlStreamingEditor.Controls.Clear();
 			this.pnlStreamingEditor.Controls.Add(this.dataSourceIamEditing.StreamingAdapter.EditorInstance);
 			this.grpStreaming.Text = this.dataSourceIamEditing.StreamingAdapter.NameWithVersion + " Settings";
@@ -46,7 +46,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 				return;
 			}
 			this.dataSourceIamEditing.BrokerAdapter = (BrokerAdapter)lvi.Tag;
-			this.dataSourceIamEditing.BrokerAdapter.EditorInstance.PushBrokerAdapterSettingsToEditor();
+			this.dataSourceIamEditing.BrokerAdapter.EditorInstance.PullBrokerAdapterSettings_toEditor();
 			this.pnlBrokerEditor.Controls.Clear();
 			this.pnlBrokerEditor.Controls.Add(this.dataSourceIamEditing.BrokerAdapter.EditorInstance);
 			this.grpBroker.Text = this.dataSourceIamEditing.BrokerAdapter.NameWithVersion + " Settings";
