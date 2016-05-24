@@ -26,14 +26,14 @@ namespace Sq1.Strategies.Demo {
 				//Debugger.Break();
 			}
 
-			if (base.HasPositionsOpenNow) return;
+			if (base.HasPositions_PendingOrOpenNow) return;
 
-			if (base.HasAlertsPending) {
+			if (base.HasAlertsPending_flashyWhenReplacingUnfilled) {
 				// only kill pending entries, but leave activated SL & TP for an open position UNTOUCHED !!!!
 				ExecutorDataSnapshot snap = this.Executor.ExecutionDataSnapshot;
-				List<Alert> pendings = snap.AlertsPending.SafeCopy(this, "placePrototypeOncePositionClosed(WAIT)");
+				List<Alert> pendings = snap.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, "placePrototypeOncePositionClosed(WAIT)");
 				if (pendings.Count > 0) {
-					string msg = pendings.Count + " last AlertsPending[" + snap.AlertsPending.Last_nullUnsafe(this, "placePrototypeOncePositionClosed(WAIT)") + "]";
+					string msg = pendings.Count + " last AlertsPending[" + snap.AlertsPending_havingOrderFollowed_notYetFilled.Last_nullUnsafe(this, "placePrototypeOncePositionClosed(WAIT)") + "]";
 					//PrintDebug(msg);
 					foreach (Alert alert in pendings) {
 						int wasntFilledDuringPastNbars = bar.ParentBarsIndex - alert.PlacedBarIndex;

@@ -19,7 +19,7 @@ namespace Sq1.Core.StrategyBase {
 			proto.checkSLOffsets_throwBeforeAbsorbing(proto.StopLoss_negativeOffset, proto.StopLossActivation_negativeOffset);
 			//bool a = this.executor.Backtester.IsBacktestingNow;
 
-			Position posWithAlert = executor.BuyOrShort_alertCreateRegister (
+			Position posWithAlert = executor.BuyOrShort_alertAndPosition_createRegister (
 				this.executor.Bars.BarStreaming_nullUnsafe, proto.PriceEntry,
 				proto.SignalEntry + "protoEntry@" + proto.PriceEntry,
 				MarketConverter.EntryDirectionFromLongShort(proto.LongShort),
@@ -43,7 +43,7 @@ namespace Sq1.Core.StrategyBase {
 
 		bool checkPrototype_alreadyPlaced(PositionPrototype proto) {
 			string msig = " //checkPrototype_alreadyPlaced(WAIT)";
-			List<Alert> pendingSafe = this.executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, msig);
+			List<Alert> pendingSafe = this.executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, msig);
 			foreach (Alert alert in pendingSafe) {
 				Position pos = alert.PositionAffected;
 				if (pos == null) continue;
@@ -55,7 +55,7 @@ namespace Sq1.Core.StrategyBase {
 		bool checkPendingEntry_positionAlreadyPlaced(Position entryPosition) {
 			string msig = " //checkPendingEntry_positionAlreadyPlaced(WAIT)";
 			if (entryPosition.EntryAlert == null) return false;
-			List<Alert> pendingSafe = this.executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, msig);
+			List<Alert> pendingSafe = this.executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, msig);
 			foreach (Alert alert in pendingSafe) {
 				Position pos = alert.PositionAffected;
 				if (pos == null) continue;
@@ -105,7 +105,7 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "POSITION_PROTOTYPE_SUPPORTS_MARKET_ENTRY";
 				proto.PriceEntryAbsorb(position.EntryFilled_price);
 			}
-			Alert alertStopLoss = executor.SellOrCover_alertCreate_dontRegisterInNew (
+			Alert alertStopLoss = executor.SellOrCover_alertCreate_dontRegisterInNew_prototypeActivator (
 				this.executor.Bars.BarStreaming_nullUnsafe,
 				position, proto.PriceStopLoss,
 				proto.SignalStopLoss + "protoStopLossExit:" + proto.StopLossActivation_negativeOffset
@@ -139,7 +139,7 @@ namespace Sq1.Core.StrategyBase {
 				return null;
 			}
 
-			Alert alertTakeProfit = executor.SellOrCover_alertCreate_dontRegisterInNew (
+			Alert alertTakeProfit = executor.SellOrCover_alertCreate_dontRegisterInNew_prototypeActivator (
 				this.executor.Bars.BarStreaming_nullUnsafe,
 				position, proto.PriceTakeProfit,
 				proto.SignalTakeProfit + "protoTakeProfitExit:" + proto.TakeProfit_positiveOffset

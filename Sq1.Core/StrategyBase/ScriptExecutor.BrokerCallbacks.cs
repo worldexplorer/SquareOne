@@ -50,16 +50,18 @@ namespace Sq1.Core.StrategyBase {
 				//v1 NO!!! DIRECT_KILLED_TO_EXECUTOR_UPSTACK alert.Strategy.Script.OnAlertKilledCallback(alert);
 				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig);
 
-				if (this.ExecutionDataSnapshot.AlertsPending.Contains(alertKilled, this, msig)) {
-					bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertKilled, this, msig);
+				Order orderKilled = alertKilled.OrderFollowed;
+
+				if (this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Contains(alertKilled, this, msig)) {
+					bool removed = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alertKilled, this, msig);
 					if (removed) alertKilled.IsKilled = true;
 				} else {
 					string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsPending DELETED_EARLIER_OR_NEVER_BEEN_ADDED;"
 						+ " PositionCloseImmediately() kills all PositionPrototype-based PendingAlerts"
 						+ " => killing those using AlertKillPending() before/after PositionCloseImmediately() is wrong!";
 					Assembler.PopupException(msg, null, false);
-					if (alertKilled.OrderFollowed != null) {
-						this.OrderProcessor.AppendMessage_propagateToGui(alertKilled.OrderFollowed, msg);
+					if (orderKilled != null) {
+						this.OrderProcessor.AppendMessage_propagateToGui(orderKilled, msg);
 					}
 				}
 
@@ -69,8 +71,21 @@ namespace Sq1.Core.StrategyBase {
 				} else {
 					string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed DELETED_EARLIER_OR_NEVER_BEEN_ADDED";
 					Assembler.PopupException(msg, null, false);
-					if (alertKilled.OrderFollowed != null) {
-						this.OrderProcessor.AppendMessage_propagateToGui(alertKilled.OrderFollowed, msg);
+					if (orderKilled != null) {
+						this.OrderProcessor.AppendMessage_propagateToGui(orderKilled, msg);
+					}
+				}
+
+				bool removingAlert_afterLastSlippaged_replacementOrderExpired =	orderKilled != null &&
+																				orderKilled.HasSlippagesDefined &&
+																   double.IsNaN(orderKilled.SlippageNextAvailable_NanWhenNoMore);
+				if (removingAlert_afterLastSlippaged_replacementOrderExpired) {
+					if (alertKilled.BuyOrShort) {
+						this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.RemoveUnique(alertKilled.PositionAffected, this,
+							"REMOVING_ALERT_UNFILLED__AFTER_LAST_SLIPPAGED_REPLACEMENT_ORDER_EXPIRED__ENTRY_ALERT_UNLUCKY_DIDNT_GET_FILL");
+					} else {
+						string msg = "PROBABLY_EMERGENCY_CLOSE_WILL_KICK_IN... BUT_SHOULD_I_REMOVE??";
+						Assembler.PopupException(msg, null, false);
 					}
 				}
 
@@ -184,17 +199,64 @@ namespace Sq1.Core.StrategyBase {
 				alertFilled.QuoteCurrent_whenThisAlertFilled_deserializable = alertFilled.QuoteCurrent_whenThisAlertFilled.Clone_asCoreQuote();
 			}
 
-			try {
-				alertFilled.FillPositionAffected_entryOrExit_respectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
-			} catch (Exception ex) {
-				string msg = "REMOVE_FILLED_FROM_PENDING? DONT_USE_Bar.ContainsPrice()?";
-				Assembler.PopupException(msg + msig, ex);
+			if (priceFill != 0) {
+				try {
+					alertFilled.FillPositionAffected_entryOrExit_respectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
+				} catch (Exception ex) {
+					string msg = "REMOVE_FILLED_FROM_PENDING? DONT_USE_Bar.ContainsPrice()?";
+					Assembler.PopupException(msg + msig, ex);
+				}
+			//} else {
+			//    if (alertFilled.OrderFollowed != null) {
+			//        switch (alertFilled.OrderFollowed.State) {
+			//            case OrderState.RejectedLimitReached:
+			//            case OrderState.EmergencyCloseSheduledForRejectedLimitReached:
+			//                string msg = "PRICE_FILL=0_EXPECTED_FOR_ORDER_STATUS[" + alertFilled.OrderFollowed.State + "]";
+			//                break;
+					
+			//            default:
+			//                string err = "PRICE_FILL=0_UNEXPECTEDLY__ADD_A_HANDLER alertFilled.OrderFollowed[" + alertFilled.OrderFollowed + "]";
+			//                Assembler.PopupException(err);
+			//                break;
+			//        }
+			//    } else {
+			//        string err = "PRICE_FILL=0_UNEXPECTEDLY_FOR_BACKTEST_alertFilled.OrderFollowed=NULL"
+			//            + " backtest should never call callbackAlertFilled_moveAround() if no fill happened!";
+			//        Assembler.PopupException(err);
+			//    }
 			}
 
 			bool breakIfAbsent = true;
 			int threeSeconds = ConcurrentWatchdog.TIMEOUT_DEFAULT;
 			int forever = -1;
-			bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertFilled, this, msig, forever, breakIfAbsent);
+			bool removed = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alertFilled, this, msig, forever, breakIfAbsent);
+
+			bool filledIndeed_notRejected_willAddPosition_toExecutionSnapshot = true;
+			if (alertFilled.OrderFollowed != null) {
+				string msg = "dealing with Live or LiveSim; it's not a backtest";
+				//Assembler.PopupException(msg, null, false);
+				switch (alertFilled.OrderFollowed.State) {
+					case OrderState.Filled:
+					case OrderState.FilledPartially:
+						filledIndeed_notRejected_willAddPosition_toExecutionSnapshot = true;
+						break;
+
+					case OrderState.RejectedLimitReached:
+						string msg2 = "SHOULD_NOT_ADD_REJECTED_POSITION_OPEN_ANYWHERE";
+						filledIndeed_notRejected_willAddPosition_toExecutionSnapshot = false;
+						break;
+
+					default:
+						string msg1 = "WHEN_IS_THIS_APPLICABLE??? implement OrderStatus=initial for QUIK, hopefully these callbacks will bring fill/error after TCP flow resumed";
+						Assembler.PopupException(msg1, null, false);
+						break;
+				}
+			} else {
+				string msg = "NO_PLACE_FOR_ORDER_REJECTION backtester always fills full size requested with 100% success rate; when no fill => I'm not invoked here";
+				//Assembler.PopupException(msg, null, false);
+				filledIndeed_notRejected_willAddPosition_toExecutionSnapshot = true;
+			}
+
 
 			Position positionOpenedAfterAlertFilled = null;
 			Position positionClosedAfterAlertFilled = null;
@@ -202,46 +264,36 @@ namespace Sq1.Core.StrategyBase {
 			PositionList positionsOpenedAfterAlertFilled = new PositionList("positionsOpenedAfterAlertFilled", this.ExecutionDataSnapshot);
 			PositionList positionsClosedAfterAlertFilled = new PositionList("positionsClosedAfterAlertFilled", this.ExecutionDataSnapshot);
 
-			bool backtest_orNonRejectedLiveAndSim = true;
-			if (alertFilled.OrderFollowed != null) {
-				string msg = "dealing with Live or LiveSim; it's not a backtest";
-				//Assembler.PopupException(msg, null, false);
-				if (	alertFilled.OrderFollowed.State == OrderState.Filled
-					 || alertFilled.OrderFollowed.State == OrderState.FilledPartially) {
-					backtest_orNonRejectedLiveAndSim = true;
-				} else {
-					string msg1 = "implement OrderStatus=initial for QUIK, hopefully these callbacks will bring fill/error after TCP flow resumed";
-					Assembler.PopupException(msg1, null, false);
-				}
-			} else {
-				string msg = "NO_PLACE_FOR_ORDER_REJECTION backtester always fills full size requested with 100% success rate; when no fill => I'm not invoked here";
-				//Assembler.PopupException(msg, null, false);
-			}
-
-			if (backtest_orNonRejectedLiveAndSim) {
+			if (filledIndeed_notRejected_willAddPosition_toExecutionSnapshot) {
 				if (alertFilled.IsEntryAlert) {
 					this.ExecutionDataSnapshot.PositionsMasterOpen_addNew(alertFilled.PositionAffected);
 					positionOpenedAfterAlertFilled = alertFilled.PositionAffected;
 					positionsOpenedAfterAlertFilled.AddOpened_step1of2(positionOpenedAfterAlertFilled, this, msig);
+					// ALREADY_ADDED_at_"NOT_OPENED_BUT_PENDING" this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.AddOpened_step1of2(alertFilled.PositionAffected, this, "NOT_OPENED_BUT_PENDING");
 				} else {
 					this.ExecutionDataSnapshot.MovePositionOpen_toClosed(alertFilled.PositionAffected);
 					positionClosedAfterAlertFilled = alertFilled.PositionAffected;
 					positionsClosedAfterAlertFilled.AddClosed(positionClosedAfterAlertFilled, this, msig);
+					this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.RemoveUnique(alertFilled.PositionAffected, this, "NOT_OPENED_BUT_PENDING");
 				}
 			} else {
-				string msg = "NOT_OPENING_NOR_CLOSING_KOZ_STATE[" + alertFilled.OrderFollowed.State + "]";
+				string msg = "NOT_ADDING_POSITION_TO_SNAP_KOZ_STATE[" + alertFilled.OrderFollowed.State + "]";
+				bool closingAlert_wasRejected = alertFilled.SellOrCover;
+				if (alertFilled.PositionAffected.Prototype != null && closingAlert_wasRejected) {
+					msg = "CLOSING_ALERT_REJECTED__USE_SymbolInfo.EMERGENCY_CLOSE " + msg;
+				}
 				Assembler.PopupException(msg, null, false);
+				return;
 			}
 
 			bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
 
-// MOST_LIKELY_INVOKED_FROM_CALLBACK_WITH_PREVIOUS_BAR_INDEX AND_ONE_MORE_FILTER_PENDING_NOT_EARLIER_THAN_PLACED 
-//			Bar barBarStreaming_nullUnsafe = this.Bars.BarStreaming_nullUnsafe;
-//			List<Alert> alertsPendingAtCurrentBarSafeCopy = this.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
-//			if (barBarStreaming_nullUnsafe != null && alertsPendingAtCurrentBarSafeCopy.Count > 0) {
-//				this.ChartShadow.AlertsPendingStillNotFilledForBarAdd(barBarStreaming_nullUnsafe.ParentBarsIndex, alertsPendingAtCurrentBarSafeCopy);
-//			}
-			
+			// MOST_LIKELY_INVOKED_FROM_CALLBACK_WITH_PREVIOUS_BAR_INDEX AND_ONE_MORE_FILTER_PENDING_NOT_EARLIER_THAN_PLACED 
+			//Bar barBarStreaming_nullUnsafe = this.Bars.BarStreaming_nullUnsafe;
+			//List<Alert> alertsPendingAtCurrentBarSafeCopy = this.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
+			//if (barBarStreaming_nullUnsafe != null && alertsPendingAtCurrentBarSafeCopy.Count > 0) {
+			//    this.ChartShadow.AlertsPendingStillNotFilledForBarAdd(barBarStreaming_nullUnsafe.ParentBarsIndex, alertsPendingAtCurrentBarSafeCopy);
+			//}
 
 			AlertList alertsNewAfterAlertFilled = new AlertList("alertsNewAfterAlertFilled", this.ExecutionDataSnapshot);
 			PositionPrototype proto = alertFilled.PositionAffected.Prototype;
@@ -331,7 +383,7 @@ namespace Sq1.Core.StrategyBase {
 								if (this.BacktesterOrLivesimulator.ImRunningLivesim) {
 									bool unpaused = this.Livesimulator.IsPaused_waitForever_untilUnpaused;
 								} else {
-									proto.StopLossAlert_forMoveAndAnnihilation.MreOrderFollowedIsAssignedNow.WaitOne(twoMinutes);
+									proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed_isAssignedNow_Mre.WaitOne(twoMinutes);
 								}
 
 								waitedForStopLossOrder.Stop();
@@ -354,7 +406,7 @@ namespace Sq1.Core.StrategyBase {
 								this.PopupException(msg);
 								Stopwatch waitedForTakeProfitOrder = new Stopwatch();
 								waitedForTakeProfitOrder.Start();
-								proto.TakeProfitAlert_forMoveAndAnnihilation.MreOrderFollowedIsAssignedNow.WaitOne(twoMinutes);
+								proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed_isAssignedNow_Mre.WaitOne(twoMinutes);
 								waitedForTakeProfitOrder.Stop();
 								msg = "waited " + waitedForTakeProfitOrder.ElapsedMilliseconds + "ms for TakeProfitAlert.OrderFollowed";
 								if (proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed == null) {
@@ -384,7 +436,7 @@ namespace Sq1.Core.StrategyBase {
 															 positionsClosedAfterAlertFilled,
 															 null
 															);
-			using(pokeUnit_dontForgetToDispose) {
+			using (pokeUnit_dontForgetToDispose) {
 				//v1 this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
 				if (positionOpenedAfterAlertFilled != null) {
 					this.PerformanceAfterBacktest.BuildIncremental_brokerFilledAlertsOpening_forPositions_step1of3(positionOpenedAfterAlertFilled);
@@ -400,6 +452,7 @@ namespace Sq1.Core.StrategyBase {
 						this.EventGenerator.RaiseOnBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit_dontForgetToDispose);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
 					}
 				}
+
 				this.ChartShadow.PositionsRealtimeAdd(pokeUnit_dontForgetToDispose);
 
 				// 4. Script event will generate a StopLossMove PostponedHook
@@ -461,17 +514,6 @@ namespace Sq1.Core.StrategyBase {
 						this.PopupException(msg, e);
 					}
 				}
-
-				// reasons for (alertsNewAfterExec.Count > 0) include:
-				// 2.1. PrototypeActivator::AlertFilledPlaceSlTpOrAnnihilateCounterparty
-				// 2.2. Script.OnAlertFilledCallback(alert)
-				// 2.3. Script.OnPositionOpenedPrototypeSlTpPlacedCallback(alert.PositionAffected)
-				// 2.4. Script.OnPositionClosedCallback(alert.PositionAffected)
-
-	//			if (pokeUnit.AlertsNew.Count > 0) {
-	//				string msg = "WANNA_CREATE_AND_SEND_ORDERS???MISSING_IN_LIVESIM invokeScriptEvents_EASILY_ACTIVATES_POSITION_PROTOTYPE_CREATING_TWO_ALERTS_NEW!! I_THOUGHT_NEW_ALERTS_ARE_CREATED_UPSTACK_BUT_APPARENTLY_IM_WRONG";
-	//				//Assembler.PopupException(msg, null, false);
-	//			}
 			}
 		}
 		void closePosition_withAlertClonedFromEntry_backtestEnded(Alert alert) {
@@ -510,7 +552,7 @@ namespace Sq1.Core.StrategyBase {
 				return false;
 			}
 			if (checkPositionOpenNow == true) {
-				bool shouldRemove = this.ExecutionDataSnapshot.PositionsOpenNow.Contains(alert.PositionAffected, this, "check_positionCanBeClosed(WAIT)");
+				bool shouldRemove = this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.Contains(alert.PositionAffected, this, "check_positionCanBeClosed(WAIT)");
 
 				if (alert.FilledBarIndex > -1) {
 					if (shouldRemove) {

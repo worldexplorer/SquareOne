@@ -35,7 +35,7 @@ namespace Sq1.Core.Backtesting {
 			//Bar barLastFormed = quoteToReach.ParentStreamingBar;
 			ExecutorDataSnapshot snap = this.backtester.Executor.ExecutionDataSnapshot;
 
-			if (snap.AlertsPending.Count > 0) {
+			if (snap.AlertsPending_havingOrderFollowed_notYetFilled.Count > 0) {
 				//var dumped = snap.DumpPendingAlertsIntoPendingHistoryByBar();
 				//int dumped = snap.AlertsPending.ByBarPlaced.Count;
 				//if (dumped > 0) {
@@ -44,9 +44,9 @@ namespace Sq1.Core.Backtesting {
 				//	//	+ " but I don't see a need to invoke it since we dumped pendings already after OnNewBarCallback";
 				//	string msg = "DUMPED_BEFORE_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
 				//}
-				int pendingCountPre	= this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
+				int pendingCountPre	= this.backtester.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
 				int pendingFilled	= this.backtester.Executor.DataSource_fromBars.BrokerAsBacktest_nullUnsafe.BacktestMarketsim.SimulateFill_allPendingAlerts(quoteClone_boundAttached, null);
-				int pendingCountNow	= this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
+				int pendingCountNow	= this.backtester.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
 				if (pendingCountNow != pendingCountPre - pendingFilled) {
 					string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";
 				}

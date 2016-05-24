@@ -65,14 +65,15 @@ namespace Sq1.Charting {
 			if (alertPendingListByBar.ContainsKey(barIndex) == false) return;
 			List<Alert> alertsPending = alertPendingListByBar[barIndex].SafeCopy(this, "//renderPendingAlertsIfExistForBar(WAIT)");
 
-			Pen penPending	= base.ChartControl.ChartSettingsTemplated.PenAlertPendingEllipse;
+			Pen penPending_BuyCover		= base.ChartControl.ChartSettingsTemplated.PenAlertPendingBuyCoverCircle;
+			Pen penPending_ShortSell	= base.ChartControl.ChartSettingsTemplated.PenAlertPendingShortSellCircle;
 			Pen penTP		= base.ChartControl.ChartSettingsTemplated.PenAlertPendingProtoTakeProfitEllipse;
 			Pen penSL		= base.ChartControl.ChartSettingsTemplated.PenAlertPendingProtoStopLossEllipse;
-			int radius		= base.ChartControl.ChartSettingsTemplated.AlertPendingEllipseRadius;
+			int radius		= base.ChartControl.ChartSettingsTemplated.AlertPendingCircleRadius;
 			int diameter	= radius * 2;
 
 			foreach (Alert pending in alertsPending) {
-				Pen pen = penPending;
+				Pen pen = pending.BuyOrCover ? penPending_BuyCover : penPending_ShortSell;
 				if (pending.PositionAffected != null && pending.PositionAffected.Prototype != null) {
 					if (pending == pending.PositionAffected.Prototype.StopLossAlert_forMoveAndAnnihilation) {
 						//Assembler.PopupException("SL_CIRCLE_RED");
@@ -83,7 +84,10 @@ namespace Sq1.Charting {
 						pen = penTP;
 					}
 				}
-				double alertPending_priceScript_zeroForMarket = pending.PriceEmitted;
+
+				//v1 SHOWS_ONLY_CURRENT_NO_HISTORY double alertPending_priceScript_zeroForMarket = pending.PriceEmitted;
+				double alertPending_priceScript_zeroForMarket = pending.GetEmittedPrice_forBarIndex(barIndex);
+
 				int pendingY = base.ValueToYinverted(alertPending_priceScript_zeroForMarket);
 				Rectangle entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
 				g.DrawEllipse(pen, entryPlannedRect);

@@ -82,6 +82,11 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	string 				MarketLimitStopAsString;		//BROKER_ADAPDER_LEAVES_COMMENTS_WHEN_CHANGING__ORIGINAL_ALERT_TYPE { get; protected set; }
 		[JsonProperty]	public	Direction			Direction						{ get; protected set; }
 		[JsonIgnore]	public	string				DirectionAsString				{ get; protected set; }
+		[JsonIgnore]	public	bool				BuyOrCover						{ get { return this.Direction == Direction.Buy		|| this.Direction == Direction.Cover; } }
+		[JsonIgnore]	public	bool				ShortOrSell						{ get { return this.Direction == Direction.Short	|| this.Direction == Direction.Sell; } }
+		[JsonIgnore]	public	bool				BuyOrShort						{ get { return this.Direction == Direction.Buy		|| this.Direction == Direction.Short; } }
+		[JsonIgnore]	public	bool				SellOrCover						{ get { return this.Direction == Direction.Sell		|| this.Direction == Direction.Cover; } }
+
 		[JsonIgnore]	public	PositionLongShort	PositionLongShortFromDirection	{ get { return MarketConverter.LongShortFromDirection(this.Direction); } }
 
 		[JsonProperty]	public	double				PriceStopLimitActivation;
@@ -150,7 +155,7 @@ namespace Sq1.Core.Execution {
 				return DateTime.MinValue;
 			} }
 		[JsonIgnore]	public	Order				OrderFollowed;			// set on Order(alert).executed;
-		[JsonIgnore]	public	ManualResetEvent	MreOrderFollowedIsAssignedNow		{ get; private set; }
+		[JsonIgnore]	public	ManualResetEvent	OrderFollowed_isAssignedNow_Mre		{ get; private set; }
 		[JsonProperty]	public	double				PriceDeposited;		// for a Future, we pay less that it's quoted (GUARANTEE DEPOSIT)
 		[JsonIgnore]	public	string				IsAlertCreatedOnPreviousBar		{ get {
 				string ret = "";
@@ -185,7 +190,7 @@ namespace Sq1.Core.Execution {
 				return ret;
 			} }
 
-		[JsonProperty]	public	bool				IsFilled { get {
+		[JsonProperty]	public	bool				IsFilled_fromPosition { get {
 				if (this.PositionAffected == null) return false;
 				return this.IsEntryAlert
 					? this.PositionAffected.IsEntryFilled
@@ -338,13 +343,13 @@ namespace Sq1.Core.Execution {
 		} }
 
 		public void Dispose() {
-			if (this.IsDisposed || this.MreOrderFollowedIsAssignedNow == null) {
+			if (this.IsDisposed || this.OrderFollowed_isAssignedNow_Mre == null) {
 				string msg = "ALERT_WAS_ALREADY_DISPOSED__ACCESSING_NULL_WAIT_HANDLE_WILL_THROW_NPE " + this.ToString();
 				//Assembler.PopupException(msg);
 				return;
 			}
-			this.MreOrderFollowedIsAssignedNow.Dispose();	// BASTARDO_ESTA_AQUI !!!! LEAKED_HANDLES_HUNTER
-			this.MreOrderFollowedIsAssignedNow = null;
+			this.OrderFollowed_isAssignedNow_Mre.Dispose();	// BASTARDO_ESTA_AQUI !!!! LEAKED_HANDLES_HUNTER
+			this.OrderFollowed_isAssignedNow_Mre = null;
 			this.IsDisposed = true;
 		}
 		
@@ -376,7 +381,10 @@ namespace Sq1.Core.Execution {
 			StrategyName				= "NO_STRATEGY";
 			BarsScaleInterval			= new BarScaleInterval(BarScale.Unknown, 0);
 			OrderFollowed				= null;
-			MreOrderFollowedIsAssignedNow	= new ManualResetEvent(false);
+			OrderFollowed_isAssignedNow_Mre	= new ManualResetEvent(false);
+
+			PriceEmitted_byBarIndex				= new SortedDictionary<int,double>();
+			OrdersFollowed_killedAndReplaced	= new List<Order>();
 		}
 		public	Alert(Bar bar, double qty, double priceScript_limitOrStop_zeroForMarket, string signalName,
 				Direction direction, MarketLimitStop marketLimitStop, Strategy strategy) : this() {
@@ -483,7 +491,7 @@ namespace Sq1.Core.Execution {
 				SpreadSide spreadSide = SpreadSide.Unknown;
 				this.PriceEmitted = snap.GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteLast(
 						this.Symbol, this.Direction, out spreadSide, false);
-				this.SlippageApplied = this.GetSlippage_signAware_forLimitAlertsOnly(this.PriceEmitted, 0);
+				this.SlippageApplied = this.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(0);
 				this.PriceEmitted += this.SlippageApplied;
 				this.SpreadSide = spreadSide;
 			} else {
@@ -494,6 +502,8 @@ namespace Sq1.Core.Execution {
 					Assembler.PopupException(msg + msig);
 				}
 			}
+			if (this.Bars == null) return;
+			this.PriceEmitted_byBarIndex.Add(this.Bars.Count - 1, this.PriceEmitted);
 		}
 
 		public	override string ToString() {
@@ -673,11 +683,89 @@ namespace Sq1.Core.Execution {
 		    return this.Slippages_forLimitOrdersOnly.Count - 1;
 		} }
 
-		internal double GetSlippage_signAware_forLimitAlertsOnly(double priceRequested = -1, int slippageApplyingIndex = 0) {
-			if (priceRequested == -1) priceRequested = this.PriceEmitted;
-			double slippage = this.Bars.SymbolInfo.GetSlippage_signAware_forLimitAlertsOnly(this.Direction, this.MarketOrderAs, slippageApplyingIndex);
+		internal double GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(int slippageApplyingIndex = 0, bool NaN_whenNoMoreSlippagesAvailable = true) {
+			double slippage = this.Bars.SymbolInfo.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(this.Direction, this.MarketOrderAs, slippageApplyingIndex, NaN_whenNoMoreSlippagesAvailable);
 			return slippage;
 		}
 
+
+		[JsonProperty]	public	List<Order> OrdersFollowed_killedAndReplaced			{ get; private set; }
+		[JsonProperty]	public	SortedDictionary<int, double> PriceEmitted_byBarIndex	{ get; private set; }
+		internal void SetNewPriceEmitted_fromReplacementOrder(Order replacementOrder) {
+			this.OrdersFollowed_killedAndReplaced.Add(this.OrderFollowed);
+			this.OrderFollowed = replacementOrder;
+
+			double replacementOrder_PriceRequested = replacementOrder.PriceRequested;
+
+			this.PriceEmitted = replacementOrder_PriceRequested;
+			if (this.PositionAffected == null) {
+				string msg = "POSITION_AFFECTED_MUST_NOT_BE_NULL WHEN_ORDER_IS_REPLACED_INSTEAD_OF_REJECTED alert[" + this.ToString() + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+
+			if (this.IsEntryAlert) {
+				this.PositionAffected.EntryEmitted_price = this.PriceEmitted;
+			} else {
+				this.PositionAffected.ExitEmitted_price = this.PriceEmitted;
+			}
+
+			int howManyAdded = this.fillPriceEmitted_fromLastChangeTillBar(this.Bars.Count - 2);
+			if (this.PriceEmitted_byBarIndex.ContainsKey(this.Bars.Count - 1)) {
+				this.PriceEmitted_byBarIndex[this.Bars.Count - 1] = this.PriceEmitted;
+			} else {
+				this.PriceEmitted_byBarIndex.Add(this.Bars.Count - 1, this.PriceEmitted);
+			}
+
+		}
+		
+		int fillPriceEmitted_fromLastChangeTillBar(int barTill_streamingOrBarFilled = -1) {
+			int howManyAdded = 0;
+			if (this.Bars == null) return howManyAdded;
+
+			List<int> barIndexes = new List<int>(this.PriceEmitted_byBarIndex.Keys);
+			if (barIndexes.Count == 0) return howManyAdded;
+			int lastBarIndex = barIndexes[barIndexes.Count-1];
+
+			double lastPriceEmitted = this.PriceEmitted_byBarIndex[lastBarIndex];
+
+			if (barTill_streamingOrBarFilled == -1) barTill_streamingOrBarFilled = this.Bars.Count - 1;
+			//lastBarIndex++;
+			if (lastBarIndex >= barTill_streamingOrBarFilled) return howManyAdded;
+			for (int i = lastBarIndex; i <= barTill_streamingOrBarFilled; i++) {
+				if (this.PriceEmitted_byBarIndex.ContainsKey(i)) {
+					string msg = "";
+					continue;
+				}
+				this.PriceEmitted_byBarIndex.Add(i, lastPriceEmitted);
+				howManyAdded++;
+			}
+			return howManyAdded;
+		}
+
+		public double GetEmittedPrice_forBarIndex(int barIndex_beingPainted) {
+			double ret = this.PriceEmitted;
+			if (this.PriceEmitted_byBarIndex.Count == 0) return ret;
+
+			List<int> barIndexes = new List<int>(this.PriceEmitted_byBarIndex.Keys);
+			if (this.FilledBarIndex != -1) {
+				if (barIndexes.Contains(this.FilledBarIndex) == false) {
+					int howManyAdded = this.fillPriceEmitted_fromLastChangeTillBar(this.FilledBarIndex);
+					barIndexes = new List<int>(this.PriceEmitted_byBarIndex.Keys);
+				}
+			} else {
+				int howManyAdded = this.fillPriceEmitted_fromLastChangeTillBar();
+				barIndexes = new List<int>(this.PriceEmitted_byBarIndex.Keys);
+			}
+
+			if (barIndexes.Contains(barIndex_beingPainted) == false) {
+				string msg = "PANEL_PRICE_SHOULD_NOT_ASK_ME_ABOUT_Alert.PriceEmitted_FOR_BAR_WHERE_ALERT_DIDNT_EXIST";
+				Assembler.PopupException(msg);
+				return double.NaN;
+			}
+
+			ret = this.PriceEmitted_byBarIndex[barIndex_beingPainted];
+			return ret;
+		}
 	}
 }

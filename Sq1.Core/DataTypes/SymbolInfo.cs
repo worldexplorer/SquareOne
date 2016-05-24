@@ -227,30 +227,21 @@ namespace Sq1.Core.DataTypes {
 		//    return this.GetSlippage_signAware_forLimitOrdersOnly(alert.PriceScriptAligned, alert.Direction, alert.MarketOrderAs, slippageIndex, isStreaming);
 		//}
 
-		public double GetSlippage_signAware_forLimitAlertsOnly(Direction direction, MarketOrderAs crossOrTidal, int slippageIndex=0, bool isStreaming=true) {
+		public double GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(Direction direction, MarketOrderAs crossOrTidal, int slippageIndex=0, bool NaN_whenNoMoreSlippagesAvailable = true) {
 			double ret = 0;
-			//if (isStreaming == false && this.UseFirstSlippageForBacktest == false) return ret;		// HACKY
-			//string slippagesCsv = this.GetSlippagesCsv(crossOrTidal);
-			//if (string.IsNullOrEmpty(slippagesCsv)) return ret;
-			//string[] slippages = slippagesCsv.Split(',');
-			//if (slippages.Length == 0) throw new Exception("check getSlippagesAvailable(" + direction + ") != 0) before calling me");
-			//if (slippageIndex < 0) slippageIndex = 0;
-			//if (slippageIndex >= slippages.Length) slippageIndex = slippages.Length - 1;
-			//string slippage_asString = slippages[slippageIndex];
-			//try {
-			//    ret = Convert.ToDouble(slippage_asString);
-			//} catch (Exception ex) {
-			//    string msg = "slippages[" + slippageIndex + "]=[" + slippage_asString + "] should be Double"
-			//        + " slippagesCsv[" + slippagesCsv + "]";
-			//    //throw new Exception(msg, e);
-			//    Assembler.PopupException(msg, ex, false);
-			//}
-
-			List<double> slippages = this.GetSlippages_forLimitOrdersOnly(crossOrTidal);
-			if (slippages.Count == 0) return ret;
+			List<double> slippagesAvailable = this.GetSlippages_forLimitOrdersOnly(crossOrTidal);
+			if (slippagesAvailable.Count == 0) return ret;
 			if (slippageIndex < 0) slippageIndex = 0;
-			if (slippageIndex >= slippages.Count) slippageIndex = slippages.Count - 1;
-			ret = slippages[slippageIndex];
+			if (slippageIndex >= slippagesAvailable.Count) {
+				if (NaN_whenNoMoreSlippagesAvailable) {
+					string msg = "NO_MORE_SLIPPAGES_AVAILABLE slippageIndex[" + slippageIndex + "] >= slippagesAvailable.Count[" + slippagesAvailable.Count + "]";
+					//throw new Exception(msg);
+					return double.NaN;
+				} else {
+					slippageIndex = slippagesAvailable.Count - 1;
+				}
+			}
+			ret = slippagesAvailable[slippageIndex];
 
 			if (direction == Direction.Short || direction == Direction.Sell) ret = -ret;
 			return ret;

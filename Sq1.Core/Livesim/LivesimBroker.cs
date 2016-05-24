@@ -96,14 +96,17 @@ namespace Sq1.Core.Livesim {
 		}
 
 		public override void Broker_connect() {
-			string msig = " //UpstreamConnect(" + this.ToString() + ")";
-			string msg = "LIVESIM_CHILDREN_SHOULD_NEVER_RECEIVE_UpstreamConnect()";
-			Assembler.PopupException(msg + msig, null, false);
+			string msig = " //Broker_connect(" + this.ToString() + ")";
+			//string msg = "LIVESIM_CHILDREN_SHOULD_NEVER_RECEIVE_UpstreamConnect()";
+			//Assembler.PopupException(msg + msig, null, false);
+			string why = "I simulate Terminal_Connected on first order, and each next spoiledDisconnect(); but LivesimDataSource.json doesnt exist";
+			base.ConnectionState_update(ConnectionState.Broker_TerminalConnected, msig);
 		}
 		public override void Broker_disconnect() {
-			string msig = " //UpstreamDisconnect(" + this.ToString() + ")";
-			string msg = "LIVESIM_CHILDREN_SHOULD_NEVER_RECEIVE_UpstreamDisonnect()";
-			Assembler.PopupException(msg + msig, null, false);
+			string msig = " //Broker_disconnect(" + this.ToString() + ")";
+			//string msg = "LIVESIM_CHILDREN_SHOULD_NEVER_RECEIVE_UpstreamDisonnect()";
+			//Assembler.PopupException(msg + msig, null, false);
+			base.ConnectionState_update(ConnectionState.Broker_TerminalDisconnected, msig);
 		}
 		
 	}

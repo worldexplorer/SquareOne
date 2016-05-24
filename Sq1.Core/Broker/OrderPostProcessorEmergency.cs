@@ -172,9 +172,9 @@ namespace Sq1.Core.Broker {
 				}
 				//double slippage = replacement.Alert.Bars.SymbolInfo.GetSlippage_signAware_forLimitOrdersOnly(
 				//	priceScript, replacement.Alert.Direction, replacement.Alert.MarketOrderAs, replacement.SlippageAppliedIndex);
-				double slippage = replacement.Alert.GetSlippage_signAware_forLimitAlertsOnly(priceScript, replacement.SlippageAppliedIndex);
-				replacement.SlippageApplied = slippage;
-				replacement.PriceRequested = priceScript + slippage;
+				double slippageNext_NaNunsafe = replacement.Alert.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(replacement.SlippageAppliedIndex);
+				replacement.SlippageApplied = slippageNext_NaNunsafe;
+				replacement.PriceRequested = priceScript + slippageNext_NaNunsafe;
 
 				string msg = "Scheduling SubmitOrdersThreadEntry [" + replacement.ToString() + "] slippageIndex["
 					+ replacement.SlippageAppliedIndex + "] through [" + replacement.Alert.DataSource_fromBars.BrokerAdapter + "]";
@@ -185,7 +185,7 @@ namespace Sq1.Core.Broker {
 				//	new object[] { new List<Order>() { replacement } });
 				List<Order> replacementOrder_oneInTheList = new List<Order>() { replacement };
 				BrokerAdapter broker = replacement.Alert.DataSource_fromBars.BrokerAdapter;
-				this.orderProcessor.SubmitToBrokerAdapter_inNewThread(replacementOrder_oneInTheList, broker);
+				int orderSubmitted = this.orderProcessor.SubmitToBroker_waitForConnected(replacementOrder_oneInTheList, broker);
 			} catch (Exception e) {
 				Assembler.PopupException("Replacement wasn't submitted [" + replacement + "]", e);
 				OrderStateMessage omsg2 = new OrderStateMessage(replacement, OrderState.Error, e.Message);

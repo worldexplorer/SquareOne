@@ -80,13 +80,13 @@ namespace Sq1.Core.Broker {
 			return exitOrderHasNoErrors;
 		}
 		Order createOrder_propagateToGui_fromAlert(Alert alert, bool setStatusSubmitting, bool emittedByScript) {
-			Order newborn = new Order(alert, emittedByScript, false);
+			Order newborn = new Order(alert, emittedByScript, true);
 			try {
 				newborn.Alert.DataSource_fromBars.BrokerAdapter.Order_modifyOrderType_priceRequesting_accordingToMarketOrderAs(newborn);
-			} catch (Exception e) {
-				string msg = "hoping that MarketOrderAs.MarketMinMax influenced order.Alert.MarketLimitStop["
+			} catch (Exception ex) {
+				string msg = " hoping that MarketOrderAs.MarketMinMax influenced order.Alert.MarketLimitStop["
 					+ newborn.Alert.MarketLimitStop + "]=MarketLimitStop.Limit for further match; PREV=" + newborn.LastMessage;
-				this.AppendMessage_propagateToGui(newborn, msg);
+				this.AppendMessage_propagateToGui(newborn, ex.Message + msg);
 			}
 			if (alert.IsExitAlert) {
 				if (this.isExitOrderConsistent_logInconsistency(newborn) == false) {
@@ -126,7 +126,8 @@ namespace Sq1.Core.Broker {
 			return newborn;
 		}
 
-		public void SubmitToBrokerAdapter_inNewThread(List<Order> orders, BrokerAdapter broker) {
+		public int SubmitToBroker_waitForConnected(List<Order> orders, BrokerAdapter broker, bool inNewThread = true) {
+			int orderSubmitted = 0;
 			string msig = " //SubmitToBrokerAdapter_inNewThread(" + broker + ")";
 			if (orders.Count == 0) {
 				string msg = "DONT_SUMBIT_orders.Count==0";
@@ -160,24 +161,30 @@ namespace Sq1.Core.Broker {
 					bool breakIfAbsent = true;
 					int threeSeconds = ConcurrentWatchdog.TIMEOUT_DEFAULT;
 					int forever = -1;
-					bool removed = executor.ExecutionDataSnapshot.AlertsPending.Remove(order.Alert, this, msig, forever, breakIfAbsent);
+					bool removed = executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(order.Alert, this, msig, forever, breakIfAbsent);
 
 					wontEmit_reason = "ALERT_REMOVED_FROM_PENDING[" + removed + "] " + wontEmit_reason;
 					OrderStateMessage osm_brokerDisconnected = new OrderStateMessage(order, OrderState.IRefuseEmitting_BrokerDisconnected, wontEmit_reason);
 					this.AppendOrderMessage_propagateToGui(osm_brokerDisconnected);
 				}
-				return;
+				return orderSubmitted;
 			}
 
-			Task taskEmittingOrders = new Task(delegate {
+			if (inNewThread) {
+				Task taskEmittingOrders = new Task(delegate {
+					broker.SubmitOrders_liveAndLiveSim_fromProcessor_OPPunlockedSequence_threadEntry(orders);
+				});
+				taskEmittingOrders.Start();
+			} else {
 				broker.SubmitOrders_liveAndLiveSim_fromProcessor_OPPunlockedSequence_threadEntry(orders);
-			});
-			taskEmittingOrders.Start();
+			}
+			orderSubmitted = orders.Count;
+			return orderSubmitted;
 		}
 		bool isOrderEatable(Order order) {
 			if (order.Alert.Strategy == null) return true;
 			if (order.IsKiller) return true;
-			if (order.Alert.Direction == Direction.Sell || order.Alert.Direction == Direction.Cover) {
+			if (order.Alert.SellOrCover) {
 				return true;
 			}
 			Account account = null;
@@ -245,6 +252,12 @@ namespace Sq1.Core.Broker {
 					string msg_killer = "orderKiller[" + killerOrder.SernoExchange + "]=>[" + OrderState.KillerDone + "] <= orderVictim[" + victimOrder.SernoExchange + "][" + victimOrder.State + "]";
 					OrderStateMessage omg_done_killer = new OrderStateMessage(killerOrder, OrderState.KillerDone, msg_killer + " //postProcess_victimOrder()");
 					this.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(omg_done_killer);
+					double slippageNext = victimOrder.SlippageNextAvailable_NanWhenNoMore;
+					if (victimOrder.DontRemoveMyPendingAfterImKilled_IwillBeReplaced && double.IsNaN(slippageNext) == false) {
+						string msg1 = "SKIPPING_REMOVAL_OF_PENDING_ALERT; I will remove when NoMoreSlippageAvailable";
+						this.AppendMessage_propagateToGui(victimOrder, msg1);
+						break;
+					}
 					this.BrokerCallback_pendingKilled_withKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(victimOrder, msg_killer);
 					break;
 
@@ -380,7 +393,7 @@ namespace Sq1.Core.Broker {
 						return;
 					}
 					
-					Assembler.PopupException("REJECTED_BY_BROKER__FIRST_TIME_NEVER_REPLACED: order.PriceFill=0 " + msig, null, false);
+					//DONT_LIE Assembler.PopupException("REJECTED_BY_BROKER__FIRST_TIME_NEVER_REPLACED: order.PriceFill=0 " + msig, null, false);
 					order.PriceFilled = 0;
 					//NEVER order.PricePaid = 0;
 

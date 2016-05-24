@@ -163,13 +163,13 @@ namespace Sq1.Core.Execution {
 			this.ScriptRunningOnStrategyEmittingOrdersTurnedOn		.Dispose();
 			this.ScriptRunningOnStrategyEmittingOrdersTurnedOff		.Dispose();
 
-			this.AlertsPending										.Dispose();
+			this.AlertsPending_havingOrderFollowed_notYetFilled										.Dispose();
 			this.AlertsMaster										.Dispose();
 			this.AlertsNewAfterExec									.Dispose();
 			this.PositionsMaster									.Dispose();
-			this.PositionsOpenNow									.Dispose();
-			this.PositionsOpenedAfterExec							.Dispose();
-			this.PositionsClosedAfterExec							.Dispose();
+			this.Positions_Pending_orOpenNow									.Dispose();
+			this.Positions_toBeOpenedAfterExec							.Dispose();
+			this.Positions_toBeClosedAfterExec							.Dispose();
 			this.IsDisposed = true;
 		}
 		public bool IsDisposed { get; private set; }

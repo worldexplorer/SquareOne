@@ -165,57 +165,6 @@ namespace Sq1.Core.Backtesting {
 			if (this.ExceptionsHappenedSinceBacktestStarted < this.Executor.Strategy.ExceptionsLimitToAbortBacktest) return;
 			this.AbortRunningBacktest_waitAborted("AbortBacktestIfExceptionsLimitReached[" + this.Executor.Strategy.ExceptionsLimitToAbortBacktest + "]");
 		}
-		void closePositionsLeftOpenAfterBacktest() {
-			//return;
-			List<Alert> alertsSafe = this.Executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "closePositionsLeftOpenAfterBacktest(WAIT)");
-			foreach (Alert alertPending in alertsSafe) {
-				try {
-					//if (alertPending.IsEntryAlert) {
-					//	this.Executor.ClosePositionWithAlertClonedFromEntryBacktestEnded(alertPending);
-					//} else {
-					//	string msg = "checkPositionCanBeClosed() will later interrupt the flow saying {Sorry I don't serve alerts.IsExitAlert=true}";
-					//	this.Executor.RemovePendingExitAlertPastDueClosePosition(alertPending);
-					//}
-					//bool removed = this.Executor.ExecutionDataSnapshot.AlertsPending.Remove(alertPending);
-					this.Executor.AlertPending_kill(alertPending);
-				} catch (Exception ex) {
-					string msg = "NOT_AN_ERROR BACKTEST_POSITION_FINALIZER: check innerException: most likely you got POSITION_ALREADY_CLOSED on counterparty alert's force-close?";
-					this.Executor.PopupException(msg, ex, false);
-				}
-			}
-			if (this.Executor.ExecutionDataSnapshot.AlertsPending.Count > 0) {
-				string msg = "KILLING_LEFTOVER_ALERTS_DIDNT_WORK_OUT snap.AlertsPending.Count["
-					+ this.Executor.ExecutionDataSnapshot.AlertsPending.Count + "] should be ZERO";
-				Assembler.PopupException(msg, null, false);
-			}
-
-			List<Position> positionsSafe = this.Executor.ExecutionDataSnapshot.PositionsOpenNow.SafeCopy(this, "closePositionsLeftOpenAfterBacktest(WAIT)");
-			foreach (Position positionOpen in positionsSafe) {
-				//v1 List<Alert> alertsSubmittedToKill = this.Executor.Strategy.Script.PositionCloseImmediately(positionOpen, );
-				//v2 WONT_CLOSE_POSITION_EARLIER_THAN_OPENED Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStaticLast_nullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
-				Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStreaming_nullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
-				if (exitAlert != positionOpen.ExitAlert) {
-					string msg = "FIXME_SOMEHOW";
-					Assembler.PopupException(msg);
-				}
-				// BETTER WOULD BE TO KILL PREVIOUS PENDING ALERT FROM A CALLBACK AFTER MARKET EXIT ORDER GETS FILLED, IT'S UNRELIABLE EXIT IF WE KILL IT HERE
-				// LOOK AT EMERGENCY CLASSES, SOLUTION MIGHT BE THERE ALREADY
-				//List<Alert> alertsSubmittedToKill = this.Executor.Strategy.Script.PositionKillExitAlert(positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
-				//v3 this.Executor.ExecutionDataSnapshot.MovePositionOpenToClosed(positionOpen);
-				//v4
-				if (positionOpen.ExitAlert == null) continue;
-				try {
-					this.Executor.RemovePendingExitAlerts_closePositionsBacktestLeftHanging(positionOpen.ExitAlert);
-				} catch (Exception ex) {
-					Assembler.PopupException("closePositionsLeftOpenAfterBacktest()", ex, false);
-				}
-			}
-			if (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0) {
-				string msg = "DIDNT_CLOSE_BACKTEST_LEFTOVER_POSITIONS snap.PositionsOpenNow.Count["
-					+ this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count + "]";
-				Assembler.PopupException(msg, null, false);
-			}
-		}
 		protected virtual void SimulationPreBarsSubstitute_overrideable() {
 			if (this.BarsOriginal == this.Executor.Bars) {
 				string msg = "DID_YOU_FORGET_TO_RESET_this.BarsOriginal_TO_NULL_AFTER_BACKTEST_FINISHED??";
@@ -416,7 +365,7 @@ namespace Sq1.Core.Backtesting {
 				}
 				#endif
 
-				int pendingsToFillInitially = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
+				int pendingsToFillInitially = this.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
 				List<QuoteGenerated> quotesInjected = this.QuotesGenerator.InjectQuotes_toFillPendingAlerts_push(quote, bar2simulate);
 				
 				#if DEBUG //TEST_EMBEDDED
@@ -427,7 +376,7 @@ namespace Sq1.Core.Backtesting {
 					}
 				} else {
 					if (quotesInjected.Count == pendingsToFillInitially) {
-						int pendingsLeft = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
+						int pendingsLeft = this.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
 						string msg = "GENERATED_EXACTLY_AS_MANY_AS_PENDINGS; PENDINGS_UNFILLED_LEFT_" + pendingsLeft;
 					}
 				}
@@ -441,13 +390,13 @@ namespace Sq1.Core.Backtesting {
 				}
 				#endif
 
-				int pendingsLeftAfterInjected = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
+				int pendingsLeftAfterInjected = this.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
 
 				this.BacktestDataSource.StreamingAsBacktest_nullUnsafe.PushQuoteGenerated(quote);
 
 				//nothing poductive below, only breakpoint placeholders
 				#if DEBUG //TEST_EMEDDED
-				int pendingsLeftAfterTargetQuoteGenerated = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
+				int pendingsLeftAfterTargetQuoteGenerated = this.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
 				if (pendingsToFillInitially == 0) continue;
 
 				int pendingsFilledByInjected = pendingsLeftAfterInjected - pendingsToFillInitially;
@@ -478,7 +427,9 @@ namespace Sq1.Core.Backtesting {
 		}
 		public void BacktestRestore_step2of2() {
 			if (this.ImRunningLivesim == false) {
-				this.closePositionsLeftOpenAfterBacktest();
+				this.Executor.BacktestEnded_closeOpenPositions();
+			} else {
+				this.Executor.LivesimEnded_invalidateUnfilledOrders_ClearPendingAlerts();
 			}
 			this.SimulationPostBarsRestore_overrideable();
 			this.BacktestIsRunningMre.Reset();

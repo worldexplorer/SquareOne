@@ -80,7 +80,7 @@ namespace Sq1.Core.StrategyBase {
 			string scriptInvocationError = "";
 			if (onNewQuoteTrue_onNewBarFalse == true) {
 				scriptInvocationError = this.invokeScript_onNewQuote_indicatorsAlready(quote_fromStreaming);
-				if (this.ExecutionDataSnapshot.AlertsPending.Count > 0) {
+				if (this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count > 0) {
 					this.fillPendings_onEachQuote_onlyForLivesimBrokerDefault(quote_fromStreaming);
 				}
 			} else {
@@ -123,7 +123,7 @@ namespace Sq1.Core.StrategyBase {
 			//this.ExecutionDataSnapshot.PositionsClosedAfterExec
 
 			Bar barStreaming_nullUnsafe = this.Bars.BarStreaming_nullUnsafe;
-			List<Alert> alertsPending_atCurrentBar_safeCopy = this.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, msig);
+			List<Alert> alertsPending_atCurrentBar_safeCopy = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, msig);
 			if (barStreaming_nullUnsafe != null && alertsPending_atCurrentBar_safeCopy.Count > 0) {
 				this.ChartShadow.AlertsPendingStillNotFilledForBarAdd(barStreaming_nullUnsafe.ParentBarsIndex, alertsPending_atCurrentBar_safeCopy);
 			}
@@ -170,6 +170,9 @@ namespace Sq1.Core.StrategyBase {
 			if (alertsNew_afterExec_safeCopy.Count > 0) {
 				this.EnrichAlerts_withQuoteCreated(alertsNew_afterExec_safeCopy, quoteBoundAttached_toEnrichAlerts);
 				//bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
+				foreach (Alert alertNew in alertsNew_afterExec_safeCopy) {
+					this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.AddPending(alertNew.PositionAffected, this, "NOT_OPENED_BUT_PENDING");
+				}
 
 				// for backtest only => btnEmirOrders.Checked isn't analyzed at all
 				if (this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
@@ -212,12 +215,17 @@ namespace Sq1.Core.StrategyBase {
 					// ^^^ this.DataSource.UnPausePumpingFor(this.Bars, true);	// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
 
 					foreach (Alert alert in alertsNew_afterExec_safeCopy) {
-						if (alert.OrderFollowed != null) continue;
-						bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, msig);
-						if (removed == false) {
-							string msg3 = "FAILED_TO_REMOVE_INCONSISTENT_ALERT_FROM_PENDING removed=" + removed;
-							Assembler.PopupException(msg3 + msig);
-						}
+						string msg = "WHEN_DO_YOU_NEED_TO_REMOVE??? onFill_WILL_REMOVE_IT";
+						//if (alert.OrderFollowed == null) {
+						//    string msg = "STRATEGY_GENERATED_FRESH_ALERTS_MUST_HAVE_ORDERS_BY_NOW__KILLER_ALERTS_DO_NOT_EXIST";
+						//    Assembler.PopupException(msg);
+						//    continue;
+						//}
+						//bool removed = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alert, this, msig);
+						//if (removed == false) {
+						//    string msg3 = "FAILED_TO_REMOVE_INCONSISTENT_ALERT_FROM_PENDING removed=" + removed;
+						//    Assembler.PopupException(msg3 + msig);
+						//}
 					}
 					this.ChartShadow.AlertsPlaced_addRealtime(alertsNew_afterExec_safeCopy);
 				}
@@ -229,10 +237,10 @@ namespace Sq1.Core.StrategyBase {
 			
 			
 			ReporterPokeUnit pokeUnit_dontForgetToDispose = new ReporterPokeUnit(quoteBoundAttached_toEnrichAlerts,
-												this.ExecutionDataSnapshot.AlertsNewAfterExec		.Clone(this, msig),
-												this.ExecutionDataSnapshot.PositionsOpenedAfterExec	.Clone(this, msig),
-												this.ExecutionDataSnapshot.PositionsClosedAfterExec	.Clone(this, msig),
-												this.ExecutionDataSnapshot.PositionsOpenNow			.Clone(this, msig) );
+												this.ExecutionDataSnapshot.AlertsNewAfterExec				.Clone(this, msig),
+												this.ExecutionDataSnapshot.Positions_toBeOpenedAfterExec	.Clone(this, msig),
+												this.ExecutionDataSnapshot.Positions_toBeClosedAfterExec	.Clone(this, msig),
+												this.ExecutionDataSnapshot.Positions_Pending_orOpenNow		.Clone(this, msig) );
 
 			//MOVED_UPSTACK_TO_LivesimQuoteBarConsumer
 			//if (this.Backtester.IsBacktestRunning && this.Backtester.IsLivesimRunning) {

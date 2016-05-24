@@ -13,7 +13,7 @@ namespace Sq1.Core.StrategyBase {
 //			return BuyOrShortAlertCreateRegister(entryBar, stopOrLimitPrice, entrySignalName,
 //												 direction, entryMarketLimitStop, false);
 //		}
-		public Position BuyOrShort_alertCreateRegister(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
+		public Position BuyOrShort_alertAndPosition_createRegister(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
 													  Direction direction, MarketLimitStop entryMarketLimitStop, bool registerInNew = true) {
 			string msig = " //BuyOrShortAlertCreateRegister(stopOrLimitPrice[" + stopOrLimitPrice+ "], entrySignalName[" + entrySignalName + "], entryBar[" + entryBar + "])";
 			this.checkThrow_alertCanBeCreated(entryBar, msig);
@@ -29,7 +29,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg);
 				return null;
 			}
-			Alert similar = this.ExecutionDataSnapshot.AlertsPending.FindSimilarNotSameIdenticalForOrdersPending(alert, this, "BuyOrShortAlertCreateRegister(WAIT)");
+			Alert similar = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.FindSimilarNotSameIdenticalForOrdersPending(alert, this, "BuyOrShortAlertCreateRegister(WAIT)");
 			if (similar != null) {
 				string msg = "DUPLICATE_ALERT_FOUND similar[" + similar + "]";
 				Assembler.PopupException(msg + msig);
@@ -44,7 +44,7 @@ namespace Sq1.Core.StrategyBase {
 			alert.PositionAffected = pos;
 			return pos;
 		}
-		public Alert SellOrCover_alertCreate_dontRegisterInNew(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
+		public Alert SellOrCover_alertCreate_dontRegisterInNew_prototypeActivator(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
 															 Direction direction, MarketLimitStop exitMarketLimitStop) {
 			return this.SellOrCover_alertCreateRegister(exitBar, position, stopOrLimitPrice, signalName,
 													   direction, exitMarketLimitStop, false);
@@ -88,7 +88,7 @@ namespace Sq1.Core.StrategyBase {
 					return position.ExitAlert;
 				}
 
-				List<Alert> pendingSafe = this.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "//SellOrCoverAlertCreateRegister(WAIT)");
+				List<Alert> pendingSafe = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, "//SellOrCoverAlertCreateRegister(WAIT)");
 				foreach (Alert closingAlertForPosition in pendingSafe) {
 					if (closingAlertForPosition.PositionAffected == position && closingAlertForPosition.IsExitAlert) {
 						string msg = "PENDING_EXIT_ALERT_FOUND_WHILE_POSITION.EXITALERT=NULL"
@@ -153,7 +153,7 @@ namespace Sq1.Core.StrategyBase {
 			Bar barNewStaticArrived = this.Bars.BarStaticLast_nullUnsafe;
 			int barIndex = barNewStaticArrived.ParentBarsIndex;
 
-			List<Position> positionsOpenNow = this.ExecutionDataSnapshot.PositionsOpenNow.SafeCopy(this, msig);
+			List<Position> positionsOpenNow = this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.SafeCopy(this, msig);
 			List<Alert> alertsSubmittedToKill_forAllOpenPositions = new List<Alert>();
 			foreach (Position positionOpen in positionsOpenNow) {
 				List<Alert> alertsSubmittedToKill = this.PositionClose_immediately(positionOpen, "EXIT_FORCED_" + barNewStaticArrived.DateTimeOpen.ToString(), true);

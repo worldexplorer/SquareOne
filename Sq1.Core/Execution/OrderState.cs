@@ -58,13 +58,13 @@ namespace Sq1.Core.Execution {
 
 		ErrorSubmitting_BrokerTerminalDisconnected	= 720,
 		ErrorSubmitting_BrokerDllDisconnected		= 721,
-		IRefuseEmitting_BrokerDisconnected = 722,
+		IRefuseEmitting_BrokerDisconnected			= 722,
 
 		ErrorSubmittingOrder_classifyMe				= 730,
 		ErrorSubmittingOrder_unexecutableParameters	= 731,
 		ErrorSubmittingOrder_wrongAccount			= 732,
 
-		SubmittedNoFeedback			= 799,
+		SubmittedNoFeedback							= 799,
 
 
 
@@ -72,6 +72,8 @@ namespace Sq1.Core.Execution {
 		IRefuseToCloseUnfilledEntry			= 801,
 		IRefuseOpenTillEmergencyCloses		= 802,
 		IRefuseToAnnihilateNonPrototyped	= 803,
+
+		Invalidated_LivesimEnded			= 820,
 
 		EmergencyCloseSheduledForNoReason				= 900,
 		EmergencyCloseSheduledForRejected				= 901,

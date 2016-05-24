@@ -344,8 +344,8 @@ namespace Sq1.Core.StrategyBase {
 			ExecutorDataSnapshot snap = alert.Strategy.Script.Executor.ExecutionDataSnapshot;
 			//this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert);
 			string orderState = (alert.OrderFollowed == null) ? "alert.OrderFollowed=NULL" : alert.OrderFollowed.State.ToString();
-			if (snap.AlertsPending.Contains(alert, this, "RemovePendingExitAlert(WAIT)")) {
-				bool removed = snap.AlertsPending.Remove(alert, this, "RemovePendingExitAlert(WAIT)");
+			if (snap.AlertsPending_havingOrderFollowed_notYetFilled.Contains(alert, this, "RemovePendingExitAlert(WAIT)")) {
+				bool removed = snap.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alert, this, "RemovePendingExitAlert(WAIT)");
 				msg = "REMOVED " + orderState + " Pending alert[" + alert + "] ";
 			} else {
 				msg = "CANT_BE_REMOVED " + orderState + " isn't Pending alert[" + alert + "] ";

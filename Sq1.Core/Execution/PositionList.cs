@@ -118,13 +118,44 @@ namespace Sq1.Core.Execution {
 			this.AddOpened_step1of2(position, lockOwner, lockPurpose, waitMillis);
 			this.AddToClosedDictionary_step2of2(position, lockOwner, lockPurpose, waitMillis);
 		}
+		public bool AddPending(Position positionPending, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+			lockPurpose += " //" + base.ReasonToExist + ".AddPending(" + positionPending.ToString() + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				bool added = false;
+				if (positionPending == null) {
+					string msg = "ADD_ONLY_FILLED_POSITION_NOT_NULL position[" + positionPending + "]";
+					Assembler.PopupException(msg);
+					return added;
+				}
+				if (positionPending.Shares == 0.0) {
+					string msg = "POSITION_MUST_HAVE_POSITIVE_SIZE position[" + positionPending + "]";
+					Assembler.PopupException(msg);
+					return added;
+				}
+				if (positionPending.EntryAlert == null) {
+					string msg = "POSITION_ATBAR_HAS_NO_ENTRY_ALERT position[" + positionPending + "]";
+					Assembler.PopupException(msg);
+					return added;
+				}
+				added = base.AppendUnique(positionPending, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
+				if (added == false) {
+					string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH?";
+					Assembler.PopupException(msg);
+					return added;
+				}
+				return added;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
+		}
 		public bool AddOpened_step1of2(Position positionOpened, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
 			lockPurpose += " //" + base.ReasonToExist + ".AddOpened_step1of2(" + positionOpened.ToString() + ")";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				bool added = false;
 				if (positionOpened == null) {
-					string msg = "ADD_ONLY_FILLED_POSITION_NOT_NULL position[" + positionOpened + "]";
+					string msg = "ADD_ONLY_POSITION_NOT_NULL position[" + positionOpened + "]";
 					Assembler.PopupException(msg);
 					return added;
 				}

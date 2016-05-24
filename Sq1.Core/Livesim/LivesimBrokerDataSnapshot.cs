@@ -13,8 +13,8 @@ namespace Sq1.Core.Livesim {
 			if (this.dataSource_asLivesim_nullUnsafe == null) return ret;
 			if (this.dataSource_asLivesim_nullUnsafe.Executor == null) return ret;
 			if (this.dataSource_asLivesim_nullUnsafe.Executor.ExecutionDataSnapshot == null) return ret;
-			if (this.dataSource_asLivesim_nullUnsafe.Executor.ExecutionDataSnapshot.AlertsPending == null) return ret;
-			return this.dataSource_asLivesim_nullUnsafe.Executor.ExecutionDataSnapshot.AlertsPending;
+			if (this.dataSource_asLivesim_nullUnsafe.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled == null) return ret;
+			return this.dataSource_asLivesim_nullUnsafe.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled;
 		} }
 		public	AlertList			AlertsPending_scheduledForDelayedFill;
 		

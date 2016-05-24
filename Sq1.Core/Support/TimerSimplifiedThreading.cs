@@ -21,15 +21,20 @@ namespace Sq1.Core.Support {
 		public TimerSimplifiedThreading(string reasonToExist_passed, int delayMillis_Initial = 200) : this() {
 			reasonToExist	= reasonToExist_passed;
 			DelayMillis		= delayMillis_Initial;
-			Assembler.SetThreadName(reasonToExist);
 		}
 
 		void timer_expired(object state) {
 			if (this.IsDisposed) return;
 			this.Scheduled = false;
 			this.timer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+			Assembler.SetThreadName(this.reasonToExist);
 			if (this.OnLastScheduleExpired == null) return;
-			this.OnLastScheduleExpired(this, null);
+			try {
+				this.OnLastScheduleExpired(this, null);
+			} catch (Exception ex) {
+				string msg = "REPORTING_FROM_TIMER_THREAD";
+				Assembler.PopupException(msg, ex);
+			}
 		}
 
 		void reschedule() {

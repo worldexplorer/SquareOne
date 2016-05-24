@@ -229,16 +229,27 @@ namespace Sq1.Core.Charting {
 
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public Color	AlertPendingEllipseColor								{ get; set; }
+		[JsonProperty]	public Color	AlertPendingBuyCoverCircleColor							{ get; set; }
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public int		AlertPendingEllipseColorAlpha							{ get; set; }
+		[JsonProperty]	public int		AlertPendingBuyCoverCircleColorAlpha					{ get; set; }
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public int		AlertPendingEllipsePenWidth								{ get; set; }
+		[JsonProperty]	public int		AlertPendingBuyCoverCirclePenWidth						{ get; set; }
+
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public int		AlertPendingEllipseRadius								{ get; set; }
+		[JsonProperty]	public Color	AlertPendingShortSellCircleColor						{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingShortSellCircleColorAlpha					{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingShortSellCirclePenWidth						{ get; set; }
+
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingCircleRadius								{ get; set; }
 
 
 
@@ -591,12 +602,21 @@ namespace Sq1.Core.Charting {
 			} }
 
 		[Browsable(false)]
-		[JsonIgnore]	Pen penAlertPendingEllipse;
+		[JsonIgnore]	Pen penAlertPendingBuyCoverCircle;
 		[Browsable(false)]
-		[JsonIgnore]	public Pen PenAlertPendingEllipse { get {
-				if (this.penAlertPendingEllipse == null) this.penAlertPendingEllipse =
-					new Pen(Color.FromArgb(this.AlertPendingEllipseColorAlpha, this.AlertPendingEllipseColor), this.AlertPendingEllipsePenWidth);
-				return this.penAlertPendingEllipse;
+		[JsonIgnore]	public Pen PenAlertPendingBuyCoverCircle { get {
+				if (this.penAlertPendingBuyCoverCircle == null) this.penAlertPendingBuyCoverCircle =
+					new Pen(Color.FromArgb(this.AlertPendingBuyCoverCircleColorAlpha, this.AlertPendingBuyCoverCircleColor), this.AlertPendingBuyCoverCirclePenWidth);
+				return this.penAlertPendingBuyCoverCircle;
+			} }
+
+		[Browsable(false)]
+		[JsonIgnore]	Pen penAlertPendingShortSellCircle;
+		[Browsable(false)]
+		[JsonIgnore]	public Pen PenAlertPendingShortSellCircle { get {
+				if (this.penAlertPendingShortSellCircle == null) this.penAlertPendingShortSellCircle =
+					new Pen(Color.FromArgb(this.AlertPendingShortSellCircleColorAlpha, this.AlertPendingShortSellCircleColor), this.AlertPendingShortSellCirclePenWidth);
+				return this.penAlertPendingShortSellCircle;
 			} }
 
 		[Browsable(false)]
@@ -797,10 +817,13 @@ namespace Sq1.Core.Charting {
 			PositionLineLossyColorAlpha = 100;
 			PriceVsVolumeSplitterDistance = 0;
 			
-			AlertPendingEllipseColor = Color.DarkBlue;
-			AlertPendingEllipseColorAlpha = 180;
-			AlertPendingEllipsePenWidth = 2;
-			AlertPendingEllipseRadius = 3;
+			AlertPendingBuyCoverCircleColor = Color.DarkGreen;
+			AlertPendingBuyCoverCircleColorAlpha = 180;
+			AlertPendingBuyCoverCirclePenWidth = 2;
+			AlertPendingShortSellCircleColor = Color.DarkRed;
+			AlertPendingShortSellCircleColorAlpha = 180;
+			AlertPendingShortSellCirclePenWidth = 2;
+			AlertPendingCircleRadius = 3;
 
 			AlertPendingProtoTakeProfitEllipseColor = Color.Green;
 			AlertPendingProtoTakeProfitEllipseColorAlpha = 100;
@@ -865,7 +888,8 @@ namespace Sq1.Core.Charting {
 		}
 		
 		public void DisposeAllGDIs_handlesLeakHunter() {
-			if (this.penAlertPendingEllipse						!= null) { this.penAlertPendingEllipse					.Dispose(); this.penAlertPendingEllipse						= null; }
+			if (this.penAlertPendingBuyCoverCircle				!= null) { this.penAlertPendingBuyCoverCircle			.Dispose(); this.penAlertPendingBuyCoverCircle				= null; }
+			if (this.penAlertPendingShortSellCircle				!= null) { this.penAlertPendingShortSellCircle			.Dispose(); this.penAlertPendingShortSellCircle				= null; }
 			if (this.penAlertPendingProtoStopLossEllipse		!= null) { this.penAlertPendingProtoStopLossEllipse		.Dispose(); this.penAlertPendingProtoStopLossEllipse		= null; }
 			if (this.penAlertPendingProtoTakeProfitEllipse		!= null) { this.penAlertPendingProtoTakeProfitEllipse	.Dispose(); this.penAlertPendingProtoTakeProfitEllipse		= null; }
 			if (this.penGridlinesHorizontal						!= null) { this.penGridlinesHorizontal					.Dispose(); this.penGridlinesHorizontal						= null; }

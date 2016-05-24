@@ -208,16 +208,16 @@ namespace Sq1.Core.Execution {
 			ExitFilled_slippage = -1;
 			ExitFilled_commission = -1;
 		}
-		Position(Bars bars, PositionLongShort positionLongShort, string strategyID, double basisPrice, double shares) : this() {
+		Position(Bars bars, PositionLongShort positionLongShort, string strategyID, double entryPrice, double shares) : this() {
 			this.Bars = bars;
 			this.PositionLongShort = positionLongShort;
 			this.StrategyID = strategyID;
-			this.QuoteCurrent_forMarketOrStopLimit_implicitPrice = basisPrice;
+			this.QuoteCurrent_forMarketOrStopLimit_implicitPrice = entryPrice;
 			this.Shares = shares;
 		}
-		public Position(Alert alertEntry, double basisPrice) : this(alertEntry.Bars
+		public Position(Alert alertEntry, double entryPrice) : this(alertEntry.Bars
 				, alertEntry.PositionLongShortFromDirection, alertEntry.StrategyID.ToString()
-				, basisPrice, alertEntry.Qty) {
+				, entryPrice, alertEntry.Qty) {
 			this.EntryAlert = alertEntry;
 			this.EntryMarketLimitStop = alertEntry.MarketLimitStop;
 			this.EntryEmitted_price = alertEntry.PriceEmitted;
@@ -242,7 +242,7 @@ namespace Sq1.Core.Execution {
 				}
 			} else {
 				if (this.ExitAlert != null) {
-					if (alertExit.IsFilled == false) {
+					if (alertExit.IsFilled_fromPosition == false) {
 						string msg = "REPLACING_FIRST_CREATED_STOPLOSS_WITH_SECOND_CREATED_TAKEPROFIT ExitAlert[" 
 							+ this.ExitAlert.SignalName + "] shouldBeTakeprofit[" + alertExit.SignalName + "]";
 					} else {

@@ -111,20 +111,20 @@ namespace Sq1.Core.Broker {
 			if (orders_polarSequenceAgnostic.Count > 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry orders_polarSequenceAgnostic[" + orders_polarSequenceAgnostic.Count + "] through [" + broker + "]";
 				//Assembler.PopupException(msg, null, false);
-				this.SubmitToBrokerAdapter_inNewThread(orders_polarSequenceAgnostic, broker);
+				int orderSubmitted = this.SubmitToBroker_waitForConnected(orders_polarSequenceAgnostic, broker);
 				return orders_polarSequenceAgnostic;
 			}
 			if (orders_polarClosingFirst.Count > 0 && orders_polarOpeningSecond.Count == 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry orders_polarClosingFirst[" + orders_polarClosingFirst.Count + "] through [" + broker + "]";
 				//Assembler.PopupException(msg, null, false);
-				this.SubmitToBrokerAdapter_inNewThread(orders_polarClosingFirst, broker);
+				int orderSubmitted = this.SubmitToBroker_waitForConnected(orders_polarClosingFirst, broker);
 				return orders_polarClosingFirst;
 			}
 			if (orders_polarClosingFirst.Count == 0 && orders_polarOpeningSecond.Count > 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry orders_polarOpeningSecond[" + orders_polarOpeningSecond.Count + "] through [" + broker + "]";
 				//Assembler.PopupException(msg, null, false);
 				//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersOpening });
-				this.SubmitToBrokerAdapter_inNewThread(orders_polarOpeningSecond, broker);
+				int orderSubmitted = this.SubmitToBroker_waitForConnected(orders_polarOpeningSecond, broker);
 				return orders_polarOpeningSecond;
 			}
 
@@ -135,7 +135,7 @@ namespace Sq1.Core.Broker {
 						+ "] through [" + broker + "], then  orders_polarOpeningSecond[" + orders_polarOpeningSecond.Count + "]";
 					Assembler.PopupException(msg, null, false);
 					//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersClosing });
-					this.SubmitToBrokerAdapter_inNewThread(orders_polarClosingFirst, broker);
+					int orderSubmitted = this.SubmitToBroker_waitForConnected(orders_polarClosingFirst, broker);
 					return orders_polarClosingFirst;
 				} else {
 					List<Order> ordersMerged = new List<Order>(orders_polarClosingFirst);
@@ -143,7 +143,7 @@ namespace Sq1.Core.Broker {
 					string msg = "Scheduling SubmitOrdersThreadEntry ordersMerged[" + ordersMerged.Count + "] through [" + broker + "]";
 					Assembler.PopupException(msg, null, false);
 					//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersMerged });
-					this.SubmitToBrokerAdapter_inNewThread(ordersMerged, broker);
+					int orderSubmitted = this.SubmitToBroker_waitForConnected(ordersMerged, broker);
 					return ordersMerged;
 				}
 			}

@@ -106,7 +106,7 @@ namespace Sq1.Core.Execution {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				foreach (Alert each in base.InnerList) {
 					if (maybeAlready.IsIdentical_orderlessPriceless(each) == false) continue;
-					if (onlyUnfilled && each.IsFilled) continue;
+					if (onlyUnfilled && each.IsFilled_fromPosition) continue;
 					return true;
 				}
 				return false;

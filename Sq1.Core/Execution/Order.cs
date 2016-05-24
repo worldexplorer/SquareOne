@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 
 using Sq1.Core.Streaming;
+using System.Threading;
 
 namespace Sq1.Core.Execution {
 	public class Order {
@@ -237,7 +238,7 @@ namespace Sq1.Core.Execution {
 			}}
 		[JsonIgnore]	public	bool			SlippagesLeftAvailable_noMore { get {
 				int slippagesLeftAvailable = this.SlippagesLeftAvailable;
-				bool noMoreSlippagesLeft = slippagesLeftAvailable <= 0;
+				bool noMoreSlippagesLeft = slippagesLeftAvailable <= 0;	// last slippage is still a valid slippage; 0 is okay
 				return noMoreSlippagesLeft;
 			} }
 		[JsonIgnore]	public	bool			EmergencyCloseAttemptSernoExceedLimit { get {
@@ -252,9 +253,15 @@ namespace Sq1.Core.Execution {
 				return false;
 			} }
 
-		[JsonProperty]	static int absno = 0;
+		[JsonProperty]	static	int				absno = 0;
+		[JsonProperty]	public	bool			DontRemoveMyPendingAfterImKilled_IwillBeReplaced;
 		[JsonProperty]	public	double			CommissionFill				{ get; protected set; }
 		[JsonProperty]	public	string			BrokerAdapterName			{ get { return this.Alert.BrokerName; } }
+
+		[JsonIgnore]	public	double			SlippageNextAvailable_NanWhenNoMore { get {
+			return this.Alert.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(this.SlippageAppliedIndex + 1, true);
+		} }
+		[JsonIgnore]	public	ManualResetEvent	OrderReplacement_Emitted_afterOriginalKilled__orError		{ get; private set; }
 
  		public Order() {	// called by Json.Deserialize(); what if I'll make it protected?
 			GUID = newGUID();
@@ -284,18 +291,15 @@ namespace Sq1.Core.Execution {
 			CurrentAsk = 0;
 			CurrentBid = 0;
 			SpreadSide = SpreadSide.Unknown;
-			//MreActiveCanCome = new ManualResetEvent(false);
 			DerivedOrders = new List<Order>();
 			DerivedOrdersGuids = new List<string>();
+
+			DontRemoveMyPendingAfterImKilled_IwillBeReplaced = false;
+			OrderReplacement_Emitted_afterOriginalKilled__orError	= new ManualResetEvent(false);
 		}
-		public Order(Alert alert, bool emittedByScript, bool forceOverwriteAlertOrderFollowedToNewlyCreatedOrder = false) : this() {
+		public Order(Alert alert, bool emittedByScript, bool setAlertOrderFollowed_toNewlyCreatedOrder_falseForKiller = true) : this() {
 			if (alert == null) {
 				string msg = "DONT_PASS_ALERT_NULL_TO_Order()  btw, OrderSerializerLogrotate will also refuse to serialize an empty Order";
-				throw new Exception(msg);
-			}
-			if (alert.OrderFollowed != null && forceOverwriteAlertOrderFollowedToNewlyCreatedOrder == false) {
-				string msg = "YOU_DONT_NEED_TWO_ORDERS_PER_ALERT alert.OrderFollowed!=null; alert[" + alert + "] alert.OrderFollowed[" + alert.OrderFollowed + "]";
-				alert.OrderFollowed.appendMessage(msg);
 				throw new Exception(msg);
 			}
 			
@@ -331,9 +335,22 @@ namespace Sq1.Core.Execution {
 			}
 
 			this.Alert = alert;
-			alert.OrderFollowed = this;
-			
-			alert.MreOrderFollowedIsAssignedNow.Set();	// simple alert submission is single threaded, including proto.StopLossAlertForAnnihilation!
+
+			if (setAlertOrderFollowed_toNewlyCreatedOrder_falseForKiller) {
+				if (alert.OrderFollowed != null) {
+					string msg = null;
+					string msig = " alert.OrderFollowed.State[" + alert.OrderFollowed.State + "] alert[" + alert + "]";
+					if (alert.OrderFollowed.State == OrderState.VictimKilled) {
+						msg = "I_ASSIGN_A_REPLACEMENT_ORDER_INSTEAD_OF_EXPIRED_KILLED";
+					} else {
+						msg = "ONLY_REPLACEMENT_ORDER_CAN_OVERWRITE_THE_KILLED_EXPIRED";
+					}
+					alert.OrderFollowed.appendMessage(msg + msig);
+					Assembler.PopupException(msg + msig, null, false);
+				}
+				alert.OrderFollowed = this;
+				alert.OrderFollowed_isAssignedNow_Mre.Set();	// simple alert submission is single threaded, including proto.StopLossAlertForAnnihilation!
+			}
 		}
 		public static string newGUID() {
 			string ret = DateTime.Now.ToString("Hmmssfff");
@@ -351,7 +368,7 @@ namespace Sq1.Core.Execution {
 				string msg = "DeriveKillerOrder(): Alert=null (serializer will get upset) for " + this.ToString();
 				throw new Exception(msg);
 			}
-			Order killer = new Order(this.Alert, this.EmittedByScript, true);
+			Order killer = new Order(this.Alert, this.EmittedByScript, false);
 			killer.State = OrderState.JustConstructed;
 			killer.PriceRequested = 0;
 			killer.PriceFilled = 0;

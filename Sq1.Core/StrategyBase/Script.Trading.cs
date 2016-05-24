@@ -7,13 +7,13 @@ using Sq1.Core.Execution;
 namespace Sq1.Core.StrategyBase {
 	public partial class Script {
 		public Position BuyAtLimit(Bar bar, double limitPrice, string signalName = "BOUGHT_AT_LIMIT") {
-			return this.Executor.BuyOrShort_alertCreateRegister(bar, limitPrice, signalName, Direction.Buy, MarketLimitStop.Limit);
+			return this.Executor.BuyOrShort_alertAndPosition_createRegister(bar, limitPrice, signalName, Direction.Buy, MarketLimitStop.Limit);
 		}
 		public Position BuyAtMarket(Bar bar, string signalName = "BOUGHT_AT_MARKET") {
-			return this.Executor.BuyOrShort_alertCreateRegister(bar, 0, signalName, Direction.Buy, MarketLimitStop.Market);
+			return this.Executor.BuyOrShort_alertAndPosition_createRegister(bar, 0, signalName, Direction.Buy, MarketLimitStop.Market);
 		}
 		public Position BuyAtStop(Bar bar, double stopPrice, string signalName = "BOUGHT_AT_STOP") {
-			return this.Executor.BuyOrShort_alertCreateRegister(bar, stopPrice, signalName, Direction.Buy, MarketLimitStop.Stop);
+			return this.Executor.BuyOrShort_alertAndPosition_createRegister(bar, stopPrice, signalName, Direction.Buy, MarketLimitStop.Stop);
 		}
 		
 		public Alert CoverAtLimit(Bar bar, Position position, double limitPrice, string signalName = "COVERED_AT_LIMIT") {
@@ -37,13 +37,13 @@ namespace Sq1.Core.StrategyBase {
 		}
 		
 		public Position ShortAtLimit(Bar bar, double limitPrice, string signalName = "SHORTED_AT_LIMIT") {
-			return this.Executor.BuyOrShort_alertCreateRegister(bar, limitPrice, signalName, Direction.Short, MarketLimitStop.Limit);
+			return this.Executor.BuyOrShort_alertAndPosition_createRegister(bar, limitPrice, signalName, Direction.Short, MarketLimitStop.Limit);
 		}
 		public Position ShortAtMarket(Bar bar, string signalName = "SHORTED_AT_MARKET") {
-			return this.Executor.BuyOrShort_alertCreateRegister(bar, 0, signalName, Direction.Short, MarketLimitStop.Market);
+			return this.Executor.BuyOrShort_alertAndPosition_createRegister(bar, 0, signalName, Direction.Short, MarketLimitStop.Market);
 		}
 		public Position ShortAtStop(Bar bar, double stopPrice, string signalName = "SHORTED_AT_STOP") {
-			return this.Executor.BuyOrShort_alertCreateRegister(bar, stopPrice, signalName, Direction.Short, MarketLimitStop.Stop);
+			return this.Executor.BuyOrShort_alertAndPosition_createRegister(bar, stopPrice, signalName, Direction.Short, MarketLimitStop.Stop);
 		}
 		public Alert ExitAtMarket(Bar bar, Position position, string signalName = "EXITED_AT_MARKET") {
 			if (position.PositionLongShort == PositionLongShort.Long) {

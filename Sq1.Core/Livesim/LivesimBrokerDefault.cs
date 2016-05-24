@@ -64,7 +64,7 @@ namespace Sq1.Core.Livesim {
 
 			AlertList willBeFilled_minusAlreadyScheduled_volatilePointer = willBeFilled.Substract_returnClone(base.DataSnapshot.AlertsPending_scheduledForDelayedFill, this, "willBeFilled_minusAlreadyScheduled");
 
-			AlertList priorDelayedFill = base.ScriptExecutor.ExecutionDataSnapshot.AlertsPending;
+			AlertList priorDelayedFill = base.ScriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled;
 			if (priorDelayedFill.Count == 0) return;
 
 			ManualResetEvent quotePointerCaptured = new ManualResetEvent(false);
@@ -79,7 +79,7 @@ namespace Sq1.Core.Livesim {
 
 				//base.ScriptExecutor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = true;
 				base.LivesimBrokerSpoiler.DelayBeforeFill_threadSleep();
-				AlertList afterDelay = base.ScriptExecutor.ExecutionDataSnapshot.AlertsPending;
+				AlertList afterDelay = base.ScriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled;
 				if (afterDelay.Count == 0) return;
 				if (priorDelayedFill.Count != afterDelay.Count) {
 				    string msg = "COUNT_MIGHT_HAVE_DECREASED_FOR_MULTIPLE_OPEN_POSITIONS/STRATEGY_IN_ANOTHER_FILLING_THREAD WHO_FILLED_WHILE_I_WAS_SLEEPING???";
@@ -140,7 +140,7 @@ namespace Sq1.Core.Livesim {
 					return;
 				}
 				ExecutorDataSnapshot snap = base.ScriptExecutor.ExecutionDataSnapshot;
-				if (snap.AlertsPending.Count == 0) {
+				if (snap.AlertsPending_havingOrderFollowed_notYetFilled.Count == 0) {
 					string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //consumeQuoteUnattached_toFillPendingAsync(" + expectingToFill + ")";
 					Assembler.PopupException(msg, null, false);
 					return;
@@ -151,11 +151,11 @@ namespace Sq1.Core.Livesim {
 				quoteBoundAttached.StreamingBar_Replace(barStreaming);
 			}
 
-			int pendingCountPre = base.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Count;
+			int pendingCountPre = base.ScriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
 			//int pendingFilled = executor.MarketsimBacktest.SimulateFillAllPendingAlerts(
 			int pendingFilled = base.LivesimMarketsim.SimulateFill_allPendingAlerts(quoteBoundAttached,
 					new Action<Alert, Quote, double, double>(this.action_afterAlertFilled_inducePostProcessing_movedAroundOnReturn));
-			int pendingCountNow = base.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Count;
+			int pendingCountNow = base.ScriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
 			if (pendingCountNow != pendingCountPre - pendingFilled) {
 				string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";
 			}

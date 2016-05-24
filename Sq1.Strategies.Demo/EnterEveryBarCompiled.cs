@@ -118,15 +118,17 @@ namespace Sq1.Strategies.Demo {
 				#endif
 			}
 
-			Position lastPos = base.LastPosition_nullUnsafe;
-			bool isLastPositionNotClosedYet = base.IsLastPosition_stillOpen;
-			if (isLastPositionNotClosedYet) {
-				if (lastPos.EntryFilledBarIndex > barStaticFormed.ParentBarsIndex) {
+			//Position lastPos_fromMaster_canBeAnything = base.LastPosition_fromMaster_nullUnsafe;
+			Position lastPos_OpenNow_nullUnsafe = base.LastPosition_OpenNow_nullUnsafe;
+			//v1 if (base.IsLastPosition_OpenNow) {
+			//v2 if (base.HasPositions_OpenNow) {
+			if (lastPos_OpenNow_nullUnsafe != null) {
+				if (lastPos_OpenNow_nullUnsafe.EntryFilledBarIndex > barStaticFormed.ParentBarsIndex) {
 					string msg1 = "NOTIFIED_ABOUT_LAST_FORMED_WHILE_LAST_POST_FILLED_AT_STREAMING__LOOKS_OK";
 					//Debugger.Break();
 				}
 
-				if (lastPos.ExitAlert != null && lastPos.ExitAlert.IsKilled == false) {
+				if (lastPos_OpenNow_nullUnsafe.ExitAlert != null && lastPos_OpenNow_nullUnsafe.ExitAlert.IsKilled == false) {
 					string msg1 = "YES_IM_LIVESIMMING_WITH_BROKER_SPOILING_EXECUTION_FOR_3000ms"
 						//+ " you want to avoid POSITION_ALREADY_HAS_AN_EXIT_ALERT_REPLACE_INSTEAD_OF_ADDING_SECOND"
 						//+ " ExitAtMarket by throwing [can't have two closing alerts for one positionExit]"
@@ -150,20 +152,21 @@ namespace Sq1.Strategies.Demo {
 				//return;
 
 				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
-				Alert exitPlaced = base.ExitAtMarket(barStreaming, lastPos, msg);
+				Alert exitPlaced = base.ExitAtMarket(barStreaming, lastPos_OpenNow_nullUnsafe, msg);
 				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
 				log("Execute(): " + msg);
 			}
 
 			ExecutorDataSnapshot snap = base.Executor.ExecutionDataSnapshot;
 
-			if (base.HasAlertsPendingOrPositionsOpenNow) {
+			//if (base.HasAlertsPendingOrBeingReplaced_orPositionsOpenNow) {
+			if (base.HasPositions_PendingOrOpenNow) {
 			//if (base.HasAlertsPendingAndPositionsOpenNow) {
-				if (snap.AlertsPending.Count > 0) {
+				if (snap.AlertsPending_havingOrderFollowed_notYetFilled.Count > 0) {
 					//GOT_OUT_OF_BOUNDADRY_EXCEPTION_ONCE Alert firstPendingAlert = snap.AlertsPending.InnerList[0];
-					Alert firstPendingAlert = snap.AlertsPending.Last_nullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
-					Alert lastPosEntryAlert = lastPos != null ? lastPos.EntryAlert : null;
-					Alert lastPosExitAlert  = lastPos != null ? lastPos.ExitAlert : null;
+					Alert firstPendingAlert = snap.AlertsPending_havingOrderFollowed_notYetFilled.Last_nullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
+					Alert lastPosEntryAlert = lastPos_OpenNow_nullUnsafe != null ? lastPos_OpenNow_nullUnsafe.EntryAlert : null;
+					Alert lastPosExitAlert  = lastPos_OpenNow_nullUnsafe != null ? lastPos_OpenNow_nullUnsafe.ExitAlert : null;
 					if (firstPendingAlert == lastPosEntryAlert) {
 						string msg = "EXPECTED: I don't have open positions but I have an unfilled firstPendingAlert from lastPosition.EntryAlert=alertsPending[0]";
 						this.log(msg);
@@ -175,9 +178,9 @@ namespace Sq1.Strategies.Demo {
 						this.log(msg);
 					}
 				}
-				if (snap.PositionsOpenNow.Count > 1) {
-					string msg = "EXPECTED: I got multiple positions[" + snap.PositionsOpenNow.Count + "]";
-					if (snap.PositionsOpenNow.First_nullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)") == lastPos) {
+				if (snap.Positions_Pending_orOpenNow.Count > 1) {
+					string msg = "EXPECTED: I got multiple positions[" + snap.Positions_Pending_orOpenNow.Count + "]";
+					if (snap.Positions_Pending_orOpenNow.First_nullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)") == lastPos_OpenNow_nullUnsafe) {
 						msg += "50/50: positionsMaster.Last = positionsOpenNow.First";
 					}
 					this.log(msg);
@@ -207,7 +210,8 @@ namespace Sq1.Strategies.Demo {
 				+ " ScriptContextCurrent.IsStreamingTriggeringScript[" + this.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript+ "]";
 			Assembler.PopupException(msg, null, false);
 			
-			if (base.HasAlertsPendingOrPositionsOpenNow == false) return;
+			//if (base.HasAlertsPendingOrBeingReplaced_orPositionsOpenNow == false) return;
+			if (base.HasPositions_PendingOrOpenNow == false) return;
 
 			string msg2 = "here you can probably sync your actual open positions on the broker side with backtest-opened ghosts";
 			Assembler.PopupException(msg2, null, false);
@@ -236,7 +240,9 @@ namespace Sq1.Strategies.Demo {
 			}
 		}
 		public override void OnAlertKilled_callback(Alert alertKilled) {
-			string msg = "OnAlertKilled_callback";
+			int ordersNumber_thatTried_toFillAlert = alertKilled.OrderFollowed == null ? 0 : 1;
+			ordersNumber_thatTried_toFillAlert += alertKilled.OrdersFollowed_killedAndReplaced.Count;
+			string msg = "OnAlertKilled_callback ordersNumber_thatTried_toFillAlert[" + ordersNumber_thatTried_toFillAlert + "]";
 			Assembler.PopupException(msg, null, false);
 		}
 		public override void OnAlertNotSubmitted_callback(Alert alertNotSubmitted, int barNotSubmittedRelno) {

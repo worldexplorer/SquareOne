@@ -49,7 +49,7 @@ namespace Sq1.Core.Broker {
 		[JsonIgnore]				ConnectionState		upstreamConnectionState;
 		[JsonIgnore]	public		ConnectionState		UpstreamConnectionState	{
 			get { return this.upstreamConnectionState; }
-			protected set {
+			private set {		// use ConnectionState_update();
 				if (this.upstreamConnectionState == value) return;	//don't invoke StateChanged if it didn't change
 				if (this.upstreamConnectionState == ConnectionState.Streaming_UpstreamConnected_downstreamSubscribedAll
 								&& value == ConnectionState.Streaming_JustInitialized_solidifiersUnsubscribed) {
@@ -72,10 +72,15 @@ namespace Sq1.Core.Broker {
 						Assembler.PopupException(msg, null, false);
 						return;
 					}
+					if (this is LivesimBroker) {
+						string whyReturn = "I simulate ConnectionState.Broker_TerminalConnected on first order, and each next spoiledDisconnect()"
+							+ "; but LivesimDataSource.json doesnt exist";
+						return;
+					}
 					Assembler.InstanceInitialized.RepositoryJsonDataSources.SerializeSingle(this.DataSource);
 				} catch (Exception ex) {
 					string msg = "SOMETHING_WENT_WRONG_WHILE_SAVING_DATASOURCE_AFTER_YOU_CHANGED UpstreamConnected for streaming[" + this + "]";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, ex);
 				}
 			}
 		}
@@ -374,7 +379,7 @@ namespace Sq1.Core.Broker {
 							msg = "";
 							if (alert.Slippage_maxIndex_forLimitOrdersOnly > 0) {
 								//double slippage = symbolInfo.GetSlippage_signAware_forLimitAlertsOnly(alert, 0);
-								double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly();
+								double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(0);
 								order.PriceRequested += slippage;
 								msg += "ADDED_FIRST_SLIPPAGE[" + slippage + "]";
 								if (order.Alert.PriceEmitted != order.PriceRequested) {
@@ -392,7 +397,7 @@ namespace Sq1.Core.Broker {
 							msg = "";
 							if (alert.Slippage_maxIndex_forLimitOrdersOnly > 0) {
 								//double slippage = symbolInfo.GetSlippage_signAware_forLimitAlertsOnly(alert, 0);
-								double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly();
+								double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(0);
 								order.PriceRequested += slippage;
 								msg += "ADDED_FIRST_SLIPPAGE[" + slippage + "]";
 								if (order.Alert.PriceEmitted != order.PriceRequested) {

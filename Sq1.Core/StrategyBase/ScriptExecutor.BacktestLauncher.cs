@@ -2,11 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Indicators;
 using Sq1.Core.Livesim;
+using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
@@ -185,7 +187,7 @@ namespace Sq1.Core.StrategyBase {
 					#endif
 					throw new Exception(msg);
 				}
-				//this.MainForm.PopupException("SCHEDULING_RUN_SIMULATION for Strategy[" + this.Executor.Strategy + "] on Bars[" + this.Executor.Bars + "]");
+				//this.MainForm.PopupException("SCHEDULING_RUN_SIMULATION for Strategy[" + this.Strategy + "] on Bars[" + this.Bars + "]");
 
 				Task backtesterTask = new Task(this.BacktesterRunSimulation_threadEntry_exceptionCatcher);
 				if (executeAfterSimulationEvenIfIFailed != null) {
@@ -197,7 +199,7 @@ namespace Sq1.Core.StrategyBase {
 				//ON_REQUESTING_ABORT_TASK_DIES_WITHOUT_INVOKING_CONTINUE_WITH started.Start(TaskScheduler.FromCurrentSynchronizationContext());
 				backtesterTask.Start();		// WHO_DOES t.Dispose() ?
 			} else {
-				//this.Executor.BacktesterRunSimulation();
+				//this.BacktesterRunSimulation();
 				//this.ChartForm.Chart.DoInvalidate();
 				this.BacktesterRunSimulation_threadEntry_exceptionCatcher();
 				if (executeAfterSimulationEvenIfIFailed != null) {
@@ -211,6 +213,74 @@ namespace Sq1.Core.StrategyBase {
 			int workerThreadsMax, completionPortThreadsMax = 0;
 			ThreadPool.GetMaxThreads(out workerThreadsMax, out completionPortThreadsMax);
 			return (completionPortThreadsMax / completionPortThreadsAvailable) * 100;
+		}
+
+
+
+		internal void BacktestEnded_closeOpenPositions() {
+			//return;
+			List<Alert> alertsSafe = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, "BacktestEnded_closeOpenPositions(WAIT)");
+			foreach (Alert alertPending in alertsSafe) {
+				try {
+					//if (alertPending.IsEntryAlert) {
+					//	this.ClosePositionWithAlertClonedFromEntryBacktestEnded(alertPending);
+					//} else {
+					//	string msg = "checkPositionCanBeClosed() will later interrupt the flow saying {Sorry I don't serve alerts.IsExitAlert=true}";
+					//	this.RemovePendingExitAlertPastDueClosePosition(alertPending);
+					//}
+					//bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertPending);
+					this.AlertPending_kill(alertPending);
+				} catch (Exception ex) {
+					string msg = "NOT_AN_ERROR BACKTEST_POSITION_FINALIZER: check innerException: most likely you got POSITION_ALREADY_CLOSED on counterparty alert's force-close?";
+					this.PopupException(msg, ex, false);
+				}
+			}
+			if (this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count > 0) {
+				string msg = "KILLING_LEFTOVER_ALERTS_DIDNT_WORK_OUT snap.AlertsPending.Count["
+					+ this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count + "] should be ZERO";
+				Assembler.PopupException(msg, null, false);
+			}
+
+			List<Position> positionsSafe = this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.SafeCopy(this, "closePositionsLeftOpenAfterBacktest(WAIT)");
+			foreach (Position positionOpen in positionsSafe) {
+				//v1 List<Alert> alertsSubmittedToKill = this.Strategy.Script.PositionCloseImmediately(positionOpen, );
+				//v2 WONT_CLOSE_POSITION_EARLIER_THAN_OPENED Alert exitAlert = this.Strategy.Script.ExitAtMarket(this.Bars.BarStaticLast_nullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
+				Alert exitAlert = this.Strategy.Script.ExitAtMarket(this.Bars.BarStreaming_nullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
+				if (exitAlert != positionOpen.ExitAlert) {
+					string msg = "FIXME_SOMEHOW";
+					Assembler.PopupException(msg);
+				}
+				// BETTER WOULD BE TO KILL PREVIOUS PENDING ALERT FROM A CALLBACK AFTER MARKET EXIT ORDER GETS FILLED, IT'S UNRELIABLE EXIT IF WE KILL IT HERE
+				// LOOK AT EMERGENCY CLASSES, SOLUTION MIGHT BE THERE ALREADY
+				//List<Alert> alertsSubmittedToKill = this.Strategy.Script.PositionKillExitAlert(positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
+				//v3 this.ExecutionDataSnapshot.MovePositionOpenToClosed(positionOpen);
+				//v4
+				if (positionOpen.ExitAlert == null) continue;
+				try {
+					this.RemovePendingExitAlerts_closePositionsBacktestLeftHanging(positionOpen.ExitAlert);
+				} catch (Exception ex) {
+					Assembler.PopupException("closePositionsLeftOpenAfterBacktest()", ex, false);
+				}
+			}
+			if (this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.Count > 0) {
+				string msg = "DIDNT_CLOSE_BACKTEST_LEFTOVER_POSITIONS snap.PositionsOpenNow.Count["
+					+ this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.Count + "]";
+				Assembler.PopupException(msg, null, false);
+			}
+		}
+
+		internal void LivesimEnded_invalidateUnfilledOrders_ClearPendingAlerts() {
+			string msig = " //LivesimEnded_invalidateUnfilledOrders_ClearPendingAlerts() " + this.ToString();
+			List<Alert> mostLikelyUnfilled = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, msig);
+			foreach (Alert alertWithUnfilledOrder in mostLikelyUnfilled) {
+				Order unfilled = alertWithUnfilledOrder.OrderFollowed;
+				if (unfilled == null) continue;
+
+				OrderStateMessage omsg = new OrderStateMessage(unfilled, OrderState.Invalidated_LivesimEnded, msig);
+				this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
+			}
+			this.OrderProcessor.OPPexpired.AllTimers_stopDispose_LivesimEnded(mostLikelyUnfilled, msig);
+			// some other PostProcessors might need to clear their queues
 		}
 	}
 }

@@ -19,7 +19,7 @@ namespace Sq1.Core.Broker {
 
 			int expiredMillis = order.Alert.Bars.SymbolInfo.ApplyNextSlippage_ifLimitNotFilledWithin;
 			if (expiredMillis == 0) {
-				string msg = "Symbol[" + order.Alert.Bars.Symbol + "].ApplyNextSlippageIfLimitNotFilledWithin=[" + expiredMillis +  "]; returning";
+				string msg = "Symbol[" + order.Alert.Bars.Symbol + "].ApplyNextSlippage_ifLimitNotFilledWithin=[" + expiredMillis +  "]; returning";
 				Assembler.PopupException(msg + msig_invoker, null, false);
 				return ret;
 			}
@@ -38,7 +38,7 @@ namespace Sq1.Core.Broker {
 				reasonCanNotBeReplaced += "NoMoreSlippagesAvailable "
 					+ " order.SlippageAppliedIndex[" + order.SlippageAppliedIndex + "]=[" + order.SlippageApplied + "]"
 					+ " order.SlippagesLeftAvailable[" + order.SlippagesLeftAvailable + "]";
-				base.AddMessage_noMoreSlippagesAvailable(order);
+				//REMOVES_PENDING_WHILE_WaitingBrokerFill__MOVED_TO_ReplaceRejected_ifResubmitRejected_setInSymbolInfo() base.AddMessage_noMoreSlippagesAvailable(order);
 			}
 
 			if (string.IsNullOrEmpty(reasonCanNotBeReplaced)) {
@@ -46,11 +46,22 @@ namespace Sq1.Core.Broker {
 				return ret;
 			}
 
+			this.OrderProcessor.AppendMessage_propagateToGui(order, reasonCanNotBeReplaced);
 			this.removeTimer_forOrder(order, reasonCanNotBeReplaced, msig_invoker);
 			return ret;
 		}
 
-		void removeTimer_forOrder(Order order, string reasonCanNotBeReplaced = "", string msig_invoker = "") {
+		public void AllTimers_stopDispose_LivesimEnded(List<Alert> alertsPending, string scriptStopped) {
+			string msig = " //AllTimers_stopDispose_LivesimEnded(" + scriptStopped + ")";
+			foreach (Alert pending in alertsPending) {
+				if (pending.OrderFollowed == null) continue;
+				bool pumpMustAlreadyStopped_atLivesimEndedOrAborted = false;
+				this.removeTimer_forOrder(pending.OrderFollowed, "", msig, pumpMustAlreadyStopped_atLivesimEndedOrAborted);
+			}
+		}
+
+		void removeTimer_forOrder(Order order, string reasonCanNotBeReplaced = "", string msig_invoker = "",
+				bool waitForReplacementComplete_andUnpauseAll = true) {
 			// "ORDER_CAN_NOT_BE_REPLACED"
 			if (this.timeredOrders.ContainsKey(order)) {
 				reasonCanNotBeReplaced = "CANCELLING_TIMER " + reasonCanNotBeReplaced;
@@ -67,7 +78,9 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException(msg2 + msig_invoker + reasonCanNotBeReplaced, null, false);
 			}
 
-			bool mostLikelyUnpaused = base.replacementComplete.WaitOne(0);
+			if (waitForReplacementComplete_andUnpauseAll == false) return;
+
+			bool mostLikelyUnpaused = order.OrderReplacement_Emitted_afterOriginalKilled__orError.WaitOne(0);
 			if (mostLikelyUnpaused) return;
 			base.UnpauseAll_signalReplacementComplete(order, null);		// otherwize after last slippage => rejected => stays paused => backlog grew[10]
 		}
@@ -112,6 +125,13 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
+
+			//v1 this.removeTimer_forOrder(orderExpired, "ELIGIBLE_FOR_REPLACEMENT", msig, false);
+			string reasonCanNotBeReplaced = "CANCELLING_TIMER ORDER_ELIGIBLE_FOR_REPLACEMENT";
+			this.OrderProcessor.AppendMessage_propagateToGui(orderExpired, reasonCanNotBeReplaced);
+			//NO this.timeredOrders[orderExpired].Dispose();
+			this.timeredOrders.Remove(orderExpired);
+
 			base.ReplaceOrder_withNextSlippage(orderExpired);
 		}
 	}
