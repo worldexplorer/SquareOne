@@ -22,8 +22,11 @@ namespace Sq1.Widgets.Sequencing {
 		}
 		void olvBacktestsCustomizeColors() {
 			//if (this.snap.Colorify) {
-				this.colorBackgroundRed = Color.FromArgb(255, 230, 230);
-				this.colorBackgroundGreen = Color.FromArgb(230, 255, 230);
+				//this.colorBackgroundRed		= Color.FromArgb(255, 230, 230);
+				//this.colorBackgroundGreen	= Color.FromArgb(230, 255, 230);
+				this.colorBackgroundRed		= Assembler.InstanceInitialized.ColorBackgroundRed_forPositionLoss;
+				this.colorBackgroundGreen	= Assembler.InstanceInitialized.ColorBackgroundGreen_forPositionProfit;
+
 				this.olvBacktests.UseCellFormatEvents = true;
 				this.olvBacktests.FormatRow += new EventHandler<FormatRowEventArgs>(olvBacktests_FormatRow);
 			//} else {

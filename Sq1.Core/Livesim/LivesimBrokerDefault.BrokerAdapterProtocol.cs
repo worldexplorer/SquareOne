@@ -70,8 +70,8 @@ namespace Sq1.Core.Livesim {
 			OrderStateMessage omg_preSubmit_killer = new OrderStateMessage(orderKiller, OrderState.KillerPreSubmit, "SIMULATING_PREPARING_KILL_COMMAND_FOR_BROKER" + msigHead);
 			this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omg_preSubmit_killer);
 
-			msigHead = " orderVictim[" + orderVictim.SernoExchange + "]=>[" + OrderState.VictimsBulletPreSubmit + "] <= orderKiller[" + orderKiller.SernoExchange + "][" + orderKiller.State + "]";
-			OrderStateMessage omsg_preSubmit_victim = new OrderStateMessage(orderVictim, OrderState.VictimsBulletPreSubmit, "SIMULATING_PREPARING_KILL_COMMAND_FOR_BROKER__VICTIM_SHOULD_KNOW" + msigHead);
+			msigHead = " orderVictim[" + orderVictim.SernoExchange + "]=>[" + OrderState.VictimBulletPreSubmit + "] <= orderKiller[" + orderKiller.SernoExchange + "][" + orderKiller.State + "]";
+			OrderStateMessage omsg_preSubmit_victim = new OrderStateMessage(orderVictim, OrderState.VictimBulletPreSubmit, "SIMULATING_PREPARING_KILL_COMMAND_FOR_BROKER__VICTIM_SHOULD_KNOW" + msigHead);
 			base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg_preSubmit_victim);
 
 
@@ -79,8 +79,8 @@ namespace Sq1.Core.Livesim {
 			OrderStateMessage omg_transSubmitted_killer = new OrderStateMessage(orderKiller, OrderState.KillerTransSubmittedOK, "SIMULATING_SENDING_KILL_TRANSACTION" + msigHead);
 			this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omg_transSubmitted_killer);
 
-			msigHead = " orderVictim[" + orderVictim.SernoExchange + "]=>[" + OrderState.VictimsBulletConfirmed + "] <= orderKiller[" + orderKiller.SernoExchange + "][" + orderKiller.State + "]";
-			OrderStateMessage omsg_confirmed_victim = new OrderStateMessage(orderVictim, OrderState.VictimsBulletConfirmed, "SIMULATING_SENDING_KILL_TRANSACTION__VICTIM_SHOULD_KNOW" + msigHead);
+			msigHead = " orderVictim[" + orderVictim.SernoExchange + "]=>[" + OrderState.VictimBulletConfirmed + "] <= orderKiller[" + orderKiller.SernoExchange + "][" + orderKiller.State + "]";
+			OrderStateMessage omsg_confirmed_victim = new OrderStateMessage(orderVictim, OrderState.VictimBulletConfirmed, "SIMULATING_SENDING_KILL_TRANSACTION__VICTIM_SHOULD_KNOW" + msigHead);
 			base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg_confirmed_victim);
 
 
@@ -92,8 +92,8 @@ namespace Sq1.Core.Livesim {
 			OrderStateMessage omsg_waitingFill_killer = new OrderStateMessage(orderKiller, OrderState.KillerBulletFlying, "SIMULATING_WAITING_KILL_DELAY_ON_BROKER_SIDE" + msigHead);
 			base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg_waitingFill_killer);
 
-			msigHead = " orderVictim[" + orderVictim.SernoExchange + "]=>[" + OrderState.VictimsBulletFlying + "] <= orderKiller[" + orderKiller.SernoExchange + "][" + orderKiller.State + "]";
-			OrderStateMessage omsg_waitingFill_victim = new OrderStateMessage(orderVictim, OrderState.VictimsBulletFlying, "SIMULATING_WAITING_KILL_DELAY_ON_BROKER_SIDE__VICTIM_SHOULD_KNOW" + msigHead);
+			msigHead = " orderVictim[" + orderVictim.SernoExchange + "]=>[" + OrderState.VictimBulletFlying + "] <= orderKiller[" + orderKiller.SernoExchange + "][" + orderKiller.State + "]";
+			OrderStateMessage omsg_waitingFill_victim = new OrderStateMessage(orderVictim, OrderState.VictimBulletFlying, "SIMULATING_WAITING_KILL_DELAY_ON_BROKER_SIDE__VICTIM_SHOULD_KNOW" + msigHead);
 			base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg_waitingFill_victim);
 
 

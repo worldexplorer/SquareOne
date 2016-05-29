@@ -19,7 +19,7 @@ namespace Sq1.Charting {
 				
 				barX -= this.BarWidth_includingPadding_cached;
 				ExecutorObjects_FrozenForRendering seo = this.ChartControl.ExecutorObjects_frozenForRendering;
-				if (seo.BarBackgroundsByBar.ContainsKey(barIndex) == false) continue;
+				if (seo.BarBackgrounds_byBar.ContainsKey(barIndex) == false) continue;
 				
 				Rectangle barFullHeight = new Rectangle();
 				barFullHeight.X = barX;
@@ -27,7 +27,7 @@ namespace Sq1.Charting {
 				barFullHeight.Y = 0;
 				barFullHeight.Height = this.PanelHeight_minusGutterBottomHeight;
 
-				Color backgroundSetByScript = seo.BarBackgroundsByBar[barIndex];
+				Color backgroundSetByScript = seo.BarBackgrounds_byBar[barIndex];
 				Color backgroundMoreTransparent = Color.FromArgb(this.ChartControl.ChartSettingsTemplated.BarsBackgroundTransparencyAlpha, backgroundSetByScript);
 
 				using (Brush backBrush = new SolidBrush(backgroundMoreTransparent)) {

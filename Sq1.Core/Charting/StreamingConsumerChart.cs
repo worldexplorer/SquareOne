@@ -322,15 +322,15 @@ namespace Sq1.Core.Charting {
 				// UPDATE_REPORTS_OPEN_POSITIONS_WITH_EACH_QUOTE_DESPITE_STRATEGY_IS_NOT_TRIGGERED
 				// copypaste from Executor.ExecuteOnNewBarOrNewQuote()
 				ReporterPokeUnit pokeUnit_dontForgetToDispose = new ReporterPokeUnit(quote_clonedBoundAttached,
-					this.Executor.ExecutionDataSnapshot.AlertsNewAfterExec			.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
+					this.Executor.ExecutionDataSnapshot.AlertsNewAfterExec				.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
 					this.Executor.ExecutionDataSnapshot.Positions_toBeOpenedAfterExec	.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
 					this.Executor.ExecutionDataSnapshot.Positions_toBeClosedAfterExec	.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
-					this.Executor.ExecutionDataSnapshot.Positions_Pending_orOpenNow			.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)")
+					this.Executor.ExecutionDataSnapshot.Positions_OpenNow				.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)")
 				);
 				using(pokeUnit_dontForgetToDispose) {
 					// FROM_ChartStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
 					if (pokeUnit_dontForgetToDispose.PositionsOpenNow.Count > 0) {
-						this.Executor.PerformanceAfterBacktest.BuildIncremental_openPositionsUpdated_afterChartConsumedNewQuote_step2of3(this.Executor.ExecutionDataSnapshot.Positions_Pending_orOpenNow);
+						this.Executor.PerformanceAfterBacktest.BuildIncremental_openPositionsUpdated_afterChartConsumedNewQuote_step2of3(this.Executor.ExecutionDataSnapshot.Positions_OpenNow);
 						this.Executor.EventGenerator.RaiseOpenPositionsUpdated_afterChartConsumedNewQuote_reportersOnly_step2of3(pokeUnit_dontForgetToDispose);
 					}
 				}

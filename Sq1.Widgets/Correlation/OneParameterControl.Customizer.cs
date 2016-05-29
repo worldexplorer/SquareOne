@@ -239,8 +239,10 @@ namespace Sq1.Widgets.Correlation {
 		}
 		void olvAllValuesForOneParamCustomizeColors() {
 			//if (this.snap.Colorify) {
-				this.colorBackgroundRed = Color.FromArgb(255, 230, 230);
-				this.colorBackgroundGreen = Color.FromArgb(230, 255, 230);
+				//this.colorBackgroundRed		= Color.FromArgb(255, 230, 230);
+				//this.colorBackgroundGreen	= Color.FromArgb(230, 255, 230);
+				this.colorBackgroundRed		= Assembler.InstanceInitialized.ColorBackgroundRed_forPositionLoss;
+				this.colorBackgroundGreen	= Assembler.InstanceInitialized.ColorBackgroundGreen_forPositionProfit;
 				this.olv.UseCellFormatEvents = true;
 				this.olv.FormatRow += new EventHandler<FormatRowEventArgs>(olv_FormatRow);
 				this.olv.FormatCell += new EventHandler<FormatCellEventArgs>(olv_FormatCell);

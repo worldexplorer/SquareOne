@@ -226,7 +226,7 @@ namespace Sq1.Core.Broker {
 			Alert replacement = executor.PositionPrototypeActivator.CreateStopLoss_fromPositionPrototype(position);
 			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter();
 			//this.CreateOrdersSubmitToBrokerAdapterInNewThreadGroups(new List<Alert>() {replacement}, true, true);
-			pokeUnit.AlertsNew.AddNoDupe(replacement, this, "oppHook_onStopLossKilled_createNewStopLoss_andAddToPokeUnit(WAIT)");
+			pokeUnit.AlertsNew.AddNoDupe_byBarsPlaced(replacement, this, "oppHook_onStopLossKilled_createNewStopLoss_andAddToPokeUnit(WAIT)");
 			msg += " newAlert[" + replacement + "]";
 			killedStopLoss.appendMessage(msg + msig);
 		}
@@ -296,7 +296,7 @@ namespace Sq1.Core.Broker {
 			Alert replacement = executor.PositionPrototypeActivator.CreateTakeProfit_fromPositionPrototype(position);
 			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter();
 			//this.CreateOrdersSubmitToBrokerAdapterInNewThreadGroups(new List<Alert>() { replacement }, true, true);
-			pokeUnit.AlertsNew.AddNoDupe(replacement, this, "oppHook_onTakeProfitKilled_createNewTakeProfit_addToPokeUnit(WAIT)");
+			pokeUnit.AlertsNew.AddNoDupe_byBarsPlaced(replacement, this, "oppHook_onTakeProfitKilled_createNewTakeProfit_addToPokeUnit(WAIT)");
 			msg += " newAlert[" + replacement + "]";
 			killedTakeProfit.appendMessage(msg + msig);
 		}
@@ -337,7 +337,7 @@ namespace Sq1.Core.Broker {
 			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
 
 			string msg_victim = "YOUR_KILLER_ORDER_IS [" + killerOrder_withRefToVictim + "]";
-			OrderStateMessage osm_victim = new OrderStateMessage(victimOrder, OrderState.VictimsBulletFlying, msg_victim);
+			OrderStateMessage osm_victim = new OrderStateMessage(victimOrder, OrderState.VictimBulletFlying, msg_victim);
 			//victimOrder.AppendMessageSynchronized(osm_victim);
 			//this.postProcess_victimOrder(osm_victim);		// SET THE STATE!!!
 			this.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(osm_victim);

@@ -68,9 +68,11 @@ namespace Sq1.Widgets.Level2 {
 		void olvDomCustomize_cellBackgound() {
 			// colors copypasted from ChartSettings.cs
 			//this.LevelTwoLotsColorForeground	= Color.Black;
-			this.LevelTwoAskColorBackground		= Color.FromArgb(255, 230, 230);
+			//this.LevelTwoAskColorBackground		= Color.FromArgb(255, 230, 230);
+			this.LevelTwoAskColorBackground		= Assembler.InstanceInitialized.ColorBackgroundRed_forPositionLoss;
 			//this.LevelTwoAskColorContour		= Color.FromArgb(this.LevelTwoAskColorBackground.R - 50, this.LevelTwoAskColorBackground.G - 50, this.LevelTwoAskColorBackground.B - 50);
-			this.LevelTwoBidColorBackground		= Color.FromArgb(230, 255, 230);
+			//this.LevelTwoBidColorBackground		= Color.FromArgb(230, 255, 230);
+			this.LevelTwoBidColorBackground		= Assembler.InstanceInitialized.ColorBackgroundGreen_forPositionProfit;
 			//this.LevelTwoBidColorContour		= Color.FromArgb(this.LevelTwoBidColorBackground.R - 50, this.LevelTwoBidColorBackground.G - 50, this.LevelTwoBidColorBackground.B - 50);
 			this.LevelTwoSpreadColorBackground	= Color.Gainsboro;
 

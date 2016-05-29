@@ -12,6 +12,8 @@ using Sq1.Charting.OnChart;
 namespace Sq1.Charting {
 	public partial class PanelPrice {
 		void renderBarsPrice(Graphics g) {
+			ChartSettingsTemplated tpl = base.ChartControl.ChartSettingsTemplated;
+
 			//for (int i = 0; i < base.ChartControl.BarsCanFitForCurrentWidth; i++) {
 			//	int barFromRight = base.ChartControl.BarsCanFitForCurrentWidth - i - 1;
 			//int barX = this.BarTotalWidthPx_localCache * barFromRight;
@@ -33,7 +35,7 @@ namespace Sq1.Charting {
 				if (bar.IsMarketSuspended_forClearing_duringThisBar) {
 					Rectangle fullHeightBarBackground = new Rectangle(barX, 0, base.BarWidth_includingPadding_cached, base.PanelHeight_minusGutterBottomHeight);
 					g.FillRectangle(
-						base.ChartControl.ChartSettingsTemplated.BrushMarketSuspendedDuringClearing,
+						tpl.BrushMarketSuspendedDuringClearing,
 						fullHeightBarBackground);
 				}
 
@@ -44,7 +46,7 @@ namespace Sq1.Charting {
 				int barYCloseInverted = base.ValueToYinverted(bar.Close);
 				//base.CheckConvertedBarDataIsNotZero(xOffsetFromRightBorder, barYOpen, barYHigh, barYLow, barYClose);
 				bool fillCandleBody = (bar.Open > bar.Close) ? true : false;
-				fillCandleBody |= base.ChartControl.ChartSettingsTemplated.BarUpFillCandleBody;
+				fillCandleBody |= tpl.BarUpFillCandleBody;
 				base.RenderBarCandle(g, barX, barYOpenInverted, barYHighInverted, barYLowInverted, barYCloseInverted, fillCandleBody);
 
 				//int shadowX = 0;
@@ -57,29 +59,53 @@ namespace Sq1.Charting {
 				AlertArrow arrow = base.ChartControl.TooltipPositionShownForAlertArrow;
 				if (arrow == null) continue;
 				if (arrow.BarIndexFilled != barIndex) continue;
-				this.renderPositionLineForArrow(arrow, g, true);
+				this.renderPositionLine_forArrow(arrow, g, true);
 			}
 		}
-		void renderAlertsPending_bigAquaDot_atPriceEmitted_ifExistForBar(int barIndex, int shadowX, Graphics g) {
-			Dictionary<int, AlertList> alertPendingListByBar = base.ChartControl.ExecutorObjects_frozenForRendering.AlertsPlacedByBar;
-			if (alertPendingListByBar.ContainsKey(barIndex) == false) return;
-			List<Alert> alertsPending = alertPendingListByBar[barIndex].SafeCopy(this, "//renderPendingAlertsIfExistForBar(WAIT)");
+		void renderOrdersKilled_grayCircle_ifExistForBar(int barIndex, int shadowX, Graphics g) {
+			Dictionary<int, OrderList> ordersKilled_byBar = base.ChartControl.ExecutorObjects_frozenForRendering.OrdersKilled_byBar;
+			if (ordersKilled_byBar.ContainsKey(barIndex) == false) return;
+			List<Order> ordersKilled = ordersKilled_byBar[barIndex].SafeCopy(this, "//renderOrdersKilled_grayCircle_ifExistForBar(WAIT)");
 
-			Pen penPending_BuyCover		= base.ChartControl.ChartSettingsTemplated.PenAlertPendingBuyCoverCircle;
-			Pen penPending_ShortSell	= base.ChartControl.ChartSettingsTemplated.PenAlertPendingShortSellCircle;
-			Pen penTP		= base.ChartControl.ChartSettingsTemplated.PenAlertPendingProtoTakeProfitEllipse;
-			Pen penSL		= base.ChartControl.ChartSettingsTemplated.PenAlertPendingProtoStopLossEllipse;
-			int radius		= base.ChartControl.ChartSettingsTemplated.AlertPendingCircleRadius;
-			int diameter	= radius * 2;
+			ChartSettingsTemplated	tpl = base.ChartControl.ChartSettingsTemplated;
+			Pen pen						= tpl.PenOrderKilledCircle;
+			int radius					= tpl.AlertPendingCircleRadius;
+			int diameter				= radius * 2 + tpl.OrderKilledCirclePenWidth + 1;	// wider than the alert to make both visible when replaced with same (BidAsk + slippage)
+			
+			foreach (Order orderVictim in ordersKilled) {
+				double priceEmitted = orderVictim.PriceEmitted;
+				int pendingY = base.ValueToYinverted(priceEmitted);
+				Rectangle entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
+				g.DrawEllipse(pen, entryPlannedRect);
+
+				if (orderVictim.Alert.MarketLimitStop == MarketLimitStop.StopLimit) {
+					string msg = "TESTME_DRAWING_StopLimit_SHOULD_GRAYOUT_ALSO_pendingStopActivationPrice";
+					Assembler.PopupException(msg, null, false);
+				}
+			}
+		}
+
+		void renderAlertsPending_bigAquaDot_atPriceEmitted_ifExistForBar(int barIndex, int shadowX, Graphics g) {
+			Dictionary<int, AlertList> alertPending_byBar = base.ChartControl.ExecutorObjects_frozenForRendering.AlertsPlaced_byBar;
+			if (alertPending_byBar.ContainsKey(barIndex) == false) return;
+			List<Alert> alertsPending = alertPending_byBar[barIndex].SafeCopy(this, "//renderAlertsPending_bigAquaDot_atPriceEmitted_ifExistForBar(WAIT)");
+
+			ChartSettingsTemplated	tpl = base.ChartControl.ChartSettingsTemplated;
+			Pen penPending_BuyCover		= tpl.PenAlertPendingBuyCoverCircle;
+			Pen penPending_ShortSell	= tpl.PenAlertPendingShortSellCircle;
+			Pen penTP					= tpl.PenAlertPendingProtoTakeProfitEllipse;
+			Pen penSL					= tpl.PenAlertPendingProtoStopLossEllipse;
+			int radius					= tpl.AlertPendingCircleRadius;
+			int diameter				= radius * 2;
 
 			foreach (Alert pending in alertsPending) {
 				Pen pen = pending.BuyOrCover ? penPending_BuyCover : penPending_ShortSell;
-				if (pending.PositionAffected != null && pending.PositionAffected.Prototype != null) {
-					if (pending == pending.PositionAffected.Prototype.StopLossAlert_forMoveAndAnnihilation) {
+				if (pending.PositionAffected != null && pending.PositionPrototype != null) {
+					if (pending == pending.PositionPrototype.StopLossAlert_forMoveAndAnnihilation) {
 						//Assembler.PopupException("SL_CIRCLE_RED");
 						pen = penSL;
 					}
-					if (pending == pending.PositionAffected.Prototype.TakeProfitAlert_forMoveAndAnnihilation) {
+					if (pending == pending.PositionPrototype.TakeProfitAlert_forMoveAndAnnihilation) {
 						//Assembler.PopupException("TP_CIRCLE_GREEN");
 						pen = penTP;
 					}
@@ -93,6 +119,9 @@ namespace Sq1.Charting {
 				g.DrawEllipse(pen, entryPlannedRect);
 
 				if (pending.MarketLimitStop == MarketLimitStop.StopLimit) {
+					string msg = "TESTME_DRAWING_pendingStopActivationPrice";
+					Assembler.PopupException(msg, null, false);
+
 					double pendingStopActivationPrice = pending.PriceStopLimitActivation;
 					pendingY = base.ValueToYinverted(pendingStopActivationPrice);
 					entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
@@ -101,7 +130,7 @@ namespace Sq1.Charting {
 			}
 		}
 		void renderPosition_smallBrownDot_atPriceFilled_arrowsLines_ifExistForBar(int barIndex, int shadowX, Graphics g) {
-			Dictionary<int, List<AlertArrow>> alertArrowsListByBar = base.ChartControl.ExecutorObjects_frozenForRendering.AlertArrowsListByBar;
+			Dictionary<int, List<AlertArrow>> alertArrowsListByBar = base.ChartControl.ExecutorObjects_frozenForRendering.AlertArrowLists_byBar;
 			if (alertArrowsListByBar.ContainsKey(barIndex) == false) return;
 			List<AlertArrow> arrows = alertArrowsListByBar[barIndex];
 
@@ -116,41 +145,43 @@ namespace Sq1.Charting {
 					//g.FillRectangle(position.BitmapTextureBrush, position.ClientRectangle);
 				}
 
-				this.renderPositionLineForArrow(arrow, g, false);
+				this.renderPositionLine_forArrow(arrow, g, false);
 
 				Position position = arrow.Position;
 
-				int ellipsePlannedDiameter = base.ChartControl.ChartSettingsTemplated.PositionPlannedEllipseDiameter;	//6
-				int ellipsePlannedRadius = (int)(Math.Round(ellipsePlannedDiameter / 2f));
-				int ellipseFilledDiameter = base.ChartControl.ChartSettingsTemplated.PositionFilledDotDiameter;		//4
-				int ellipseFilledRadius = (int)(Math.Round(ellipseFilledDiameter / 2f));
+				ChartSettingsTemplated	tpl = base.ChartControl.ChartSettingsTemplated;
+
+				int ellipsePlannedDiameter	= tpl.PositionPlannedEllipseDiameter;	//6
+				int ellipsePlannedRadius	= (int)(Math.Round(ellipsePlannedDiameter / 2f));
+				int ellipseFilledDiameter	= tpl.PositionFilledDotDiameter;		//4
+				int ellipseFilledRadius		= (int)(Math.Round(ellipseFilledDiameter / 2f));
 
 				if (arrow.ArrowIsForPositionEntry) {
 					int entryPlannedX = shadowX;
 					int entryPlannedY = base.ValueToYinverted(position.EntryEmitted_price);
 					Rectangle entryPlannedRect = new Rectangle(entryPlannedX - ellipsePlannedRadius, entryPlannedY - ellipsePlannedRadius, ellipsePlannedDiameter, ellipsePlannedDiameter);
-					g.DrawEllipse(base.ChartControl.ChartSettingsTemplated.PenPositionPlannedEllipse, entryPlannedRect);
+					g.DrawEllipse(tpl.PenPositionPlannedEllipse, entryPlannedRect);
 
 					if (position.IsEntryFilled) {
 						int entryFilledOnY = base.ValueToYinverted(position.EntryFilled_price);
 						Rectangle entryFilledRect = new Rectangle(entryPlannedX - ellipseFilledRadius, entryFilledOnY - ellipseFilledRadius, ellipseFilledDiameter, ellipseFilledDiameter);
-						g.FillEllipse(base.ChartControl.ChartSettingsTemplated.BrushPositionFilledDot, entryFilledRect);
+						g.FillEllipse(tpl.BrushPositionFilledDot, entryFilledRect);
 					}
 				} else {
 					int exitPlannedX = base.BarToXshadowBeyondGoInside(position.ExitBar.ParentBarsIndex);
 					int exitPlannedY = base.ValueToYinverted(position.ExitEmitted_price);
 					Rectangle exitPlannedRect = new Rectangle(exitPlannedX - ellipsePlannedRadius, exitPlannedY - ellipsePlannedRadius, ellipsePlannedDiameter, ellipsePlannedDiameter);
-					g.DrawEllipse(base.ChartControl.ChartSettingsTemplated.PenPositionPlannedEllipse, exitPlannedRect);
+					g.DrawEllipse(tpl.PenPositionPlannedEllipse, exitPlannedRect);
 
 					if (position.IsExitFilled) {
 						int exitFilledOnY = base.ValueToYinverted(position.ExitFilled_price);
 						Rectangle exitFilledRect = new Rectangle(exitPlannedX - ellipseFilledRadius, exitFilledOnY - ellipseFilledRadius, ellipseFilledDiameter, ellipseFilledDiameter);
-						g.FillEllipse(base.ChartControl.ChartSettingsTemplated.BrushPositionFilledDot, exitFilledRect);
+						g.FillEllipse(tpl.BrushPositionFilledDot, exitFilledRect);
 					}
 				}
 			}
 		}
-		void renderPositionLineForArrow(AlertArrow arrow, Graphics g, bool highlighted = false) {
+		void renderPositionLine_forArrow(AlertArrow arrow, Graphics g, bool highlighted = false) {
 			Position position = arrow.Position;
 			if (position.EntryFilledBarIndex == -1) return;		// position without EntryFilled shouldn't have a Line
 
@@ -159,6 +190,7 @@ namespace Sq1.Charting {
 				this.PositionLineAlreadyDrawnFromOneOfTheEnds.Add(position);
 			}
 
+			ChartSettingsTemplated tpl = base.ChartControl.ChartSettingsTemplated;
 			int mouseEndX, mouseEndY, oppositeEndX, oppositeEndY;
 
 			if (arrow.ArrowIsForPositionEntry) {
@@ -185,11 +217,11 @@ namespace Sq1.Charting {
 				oppositeEndY = base.ValueToYinverted(position.EntryFilled_price);
 			}
 
-			Pen penLine = base.ChartControl.ChartSettingsTemplated.PenPositionLineEntryExitConnectedUnknown;
+			Pen penLine = tpl.PenPositionLineEntryExitConnectedUnknown;
 			if (double.IsNaN(arrow.Position.NetProfit) == false) {
 				penLine = (arrow.Position.NetProfit > 0)
-					? base.ChartControl.ChartSettingsTemplated.PenPositionLineEntryExitConnectedProfit
-					: base.ChartControl.ChartSettingsTemplated.PenPositionLineEntryExitConnectedLoss;
+					? tpl.PenPositionLineEntryExitConnectedProfit
+					: tpl.PenPositionLineEntryExitConnectedLoss;
 			}
 
 			if (highlighted == false) {
@@ -197,8 +229,8 @@ namespace Sq1.Charting {
 				return;
 			}
 
-			int alpha = base.ChartControl.ChartSettingsTemplated.PositionLineHighlightedAlpha;
-			int width = base.ChartControl.ChartSettingsTemplated.PositionLineHighlightedWidth;
+			int alpha = tpl.PositionLineHighlightedAlpha;
+			int width = tpl.PositionLineHighlightedWidth;
 			Color colorLessTransparent = Color.FromArgb(alpha, penLine.Color.R, penLine.Color.G, penLine.Color.B);
 			using (Pen penLineHighlighted = new Pen(colorLessTransparent, width)) {
 				g.DrawLine(penLineHighlighted, mouseEndX, mouseEndY, oppositeEndX, oppositeEndY);
@@ -249,12 +281,12 @@ namespace Sq1.Charting {
 			//}
 			//v3 - will work faster closer to right edge of Chart (fastest when StreamingBar is displayed); will display all lines that start AND end beoynd VisibleBars
 			// throwing "Dictionary.CopyTo target array wrong size" during backtest & chartMouseOver
-			List<int> lineRightEnds = new List<int>(base.ChartControl.ExecutorObjects_frozenForRendering.LinesByRightBar.Keys);
+			List<int> lineRightEnds = new List<int>(base.ChartControl.ExecutorObjects_frozenForRendering.Lines_byRightBar.Keys);
 			lineRightEnds.Sort();
 			lineRightEnds.Reverse();
 			foreach (int index in lineRightEnds) {				// 5,3,2,0 (sorted & reversed enforced: max => min)
 				if (index < base.VisibleBarLeft_cached) break;	// if our VisibleLeft is 3 we should ignore all lines ending at 2 
-				List<OnChartLine> linesByRight = eoFrozen.LinesByRightBar[index];
+				List<OnChartLine> linesByRight = eoFrozen.Lines_byRightBar[index];
 				foreach (OnChartLine line in linesByRight) {
 					if (line.BarLeft > base.VisibleBarRight_cached) continue;	// line will start after VisibleRight
 					if (linesToDraw.Contains(line)) {
@@ -291,7 +323,7 @@ namespace Sq1.Charting {
 			// DO_I_NEED_SIMILAR_CHECK_HERE???? MOST_LIKELY_I_DONT this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
 
 			ExecutorObjects_FrozenForRendering eoFrozen = base.ChartControl.ExecutorObjects_frozenForRendering;
-			foreach (OnChartLabel label in eoFrozen.OnChartLabelsById.Values) {
+			foreach (OnChartLabel label in eoFrozen.OnChartLabels_byId.Values) {
 				try {
 					base.DrawLabelOnNextLine(g, label.LabelText, label.Font, label.ColorForeground, label.ColorBackground);
 				} catch (Exception ex) {
@@ -311,6 +343,7 @@ namespace Sq1.Charting {
 
 			int barXshadow = base.ChartControl.ChartWidthMinusGutterRightPrice + base.BarShadowXoffset_cached;
 			ExecutorObjects_FrozenForRendering eoFrozen = base.ChartControl.ExecutorObjects_frozenForRendering;
+			ChartSettingsTemplated tpl = base.ChartControl.ChartSettingsTemplated;
 
 			for (int barIndex = base.VisibleBarRight_cached; barIndex > base.VisibleBarLeft_cached; barIndex--) {
 				if (barIndex >= base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
@@ -320,20 +353,20 @@ namespace Sq1.Charting {
 				}
 				
 				barXshadow -= base.BarWidth_includingPadding_cached;
-				if (eoFrozen.OnChartBarAnnotationsByBar.ContainsKey(barIndex) == false) continue;
+				if (eoFrozen.OnChartBarAnnotations_byBar.ContainsKey(barIndex) == false) continue;
 				
 				Bar bar = base.ChartControl.Bars[barIndex];
 				int yForLabelsAbove = base.ValueToYinverted(bar.High);
 				int yForLabelsBelow = base.ValueToYinverted(bar.Low);
-				int paddingFromSettings = base.ChartControl.ChartSettingsTemplated.ChartLabelsUpperLeftPlatePadding;
+				int paddingFromSettings = tpl.ChartLabelsUpperLeftPlatePadding;
 
 				// UNCLUTTER_ADD_POSITIONS_ARROWS_OFFSET begin
-				Dictionary<int, List<AlertArrow>> alertArrowsListByBar = base.ChartControl.ExecutorObjects_frozenForRendering.AlertArrowsListByBar;
+				Dictionary<int, List<AlertArrow>> alertArrowsListByBar = base.ChartControl.ExecutorObjects_frozenForRendering.AlertArrowLists_byBar;
 				if (alertArrowsListByBar.ContainsKey(barIndex)) {
 					List<AlertArrow> arrows = alertArrowsListByBar[barIndex];
 					foreach (AlertArrow arrow in arrows) {
-						int arrowHeight = arrow.Height + base.ChartControl.ChartSettingsTemplated.PositionArrowPaddingVertical;
-						if (arrow.AboveBar) yForLabelsAbove -= arrowHeight + base.ChartControl.ChartSettingsTemplated.PositionArrowPaddingVertical; 
+						int arrowHeight = arrow.Height + tpl.PositionArrowPaddingVertical;
+						if (arrow.AboveBar) yForLabelsAbove -= arrowHeight + tpl.PositionArrowPaddingVertical; 
 						else yForLabelsBelow += arrowHeight; 
 					}
 				}
@@ -341,7 +374,7 @@ namespace Sq1.Charting {
 				
 				int verticalOffsetForNextStackedAnnotationsAboveSameBar = 0;
 				int verticalOffsetForMextStackedAnnotationsBelowSameBar = 0;
-				SortedDictionary<string, OnChartBarAnnotation> barAnnotationsById =  eoFrozen.OnChartBarAnnotationsByBar[barIndex];
+				SortedDictionary<string, OnChartBarAnnotation> barAnnotationsById =  eoFrozen.OnChartBarAnnotations_byBar[barIndex];
 				foreach (OnChartBarAnnotation barAnnotation in barAnnotationsById.Values) {
 					//DUPLICATION copypaste from DrawLabel
 					Font font = (barAnnotation.Font != null) ? barAnnotation.Font : base.Font;
@@ -403,7 +436,7 @@ namespace Sq1.Charting {
 			double spread = quoteLast.Spread;
 			if (double.IsNaN(spread) == true) return;
 
-			ChartSettingsTemplated settings = base.ChartControl.ChartSettingsTemplated;
+			ChartSettingsTemplated tpl = base.ChartControl.ChartSettingsTemplated;
 
 			int chartWidth = base.ChartControl.ChartWidthMinusGutterRightPrice;
 			//	chartWidth = base.ChartControl.Width;
@@ -411,7 +444,7 @@ namespace Sq1.Charting {
 			
 			string spreadFormatted = spread.ToString(base.PriceFormat);
 			string labelSpread = "spread[" + spreadFormatted + "]";
-			SizeF labelSpread_measured = g.MeasureString(labelSpread, settings.SpreadLabelFont);
+			SizeF labelSpread_measured = g.MeasureString(labelSpread, tpl.SpreadLabelFont);
 			int labelSpread_measuredWidth	= (int)labelSpread_measured.Width;
 			int labelSpread_measuredHeight	= (int)labelSpread_measured.Height;
 			int padding = 4;
@@ -430,11 +463,11 @@ namespace Sq1.Charting {
 			int yAsk = 0;
 			if (double.IsNaN(bid) == false) {
 				yBid = base.ValueToYinverted(bid);
-				g.DrawLine(settings.PenSpreadBid, xLinesSpread, yBid, spreadLinesWidth, yBid);
+				g.DrawLine(tpl.PenSpreadBid, xLinesSpread, yBid, spreadLinesWidth, yBid);
 			}
 			if (double.IsNaN(ask) == false) {
 				yAsk = base.ValueToYinverted(ask);
-				g.DrawLine(settings.PenSpreadAsk, xLinesSpread, yAsk, spreadLinesWidth, yAsk);
+				g.DrawLine(tpl.PenSpreadAsk, xLinesSpread, yAsk, spreadLinesWidth, yAsk);
 			}
 
 			int xLabelSpread = showLabels_onRightEdge
@@ -447,7 +480,7 @@ namespace Sq1.Charting {
 
 			if (yLabelSpread < 5) yLabelSpread = 5;		// im not testing g.DrawString() if it accepts negative values; just want it to draw
 
-			g.DrawString(labelSpread, settings.SpreadLabelFont, settings.BrushSpreadLabel, xLabelSpread, yLabelSpread);
+			g.DrawString(labelSpread, tpl.SpreadLabelFont, tpl.BrushSpreadLabel, xLabelSpread, yLabelSpread);
 
 		}
 	}

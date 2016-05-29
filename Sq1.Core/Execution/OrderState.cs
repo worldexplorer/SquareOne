@@ -40,10 +40,10 @@ namespace Sq1.Core.Execution {
 		TPAnnihilating			= 585,
 		TPAnnihilated			= 586,
 
-		VictimsBulletPreSubmit	= 610,		// KillerPreSubmit			<=> VictimsBulletPreSubmit
-		VictimsBulletConfirmed	= 620,		// KillerSubmitting			<=> VictimsBulletConfirmed		
-		VictimsBulletSubmitted	= 630,		// KillerTransSubmittedOK	<=> VictimsBulletSubmitted
-		VictimsBulletFlying		= 640,		// KillerBulletFlying		<=> VictimsBulletFlying
+		VictimBulletPreSubmit	= 610,		// KillerPreSubmit			<=> VictimsBulletPreSubmit
+		VictimBulletConfirmed	= 620,		// KillerSubmitting			<=> VictimsBulletConfirmed		
+		VictimBulletSubmitted	= 630,		// KillerTransSubmittedOK	<=> VictimsBulletSubmitted
+		VictimBulletFlying		= 640,		// KillerBulletFlying		<=> VictimsBulletFlying
 		VictimKilled			= 650,		// KillerDone				<=> VictimKilled
 
 

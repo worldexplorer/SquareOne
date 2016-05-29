@@ -8,7 +8,7 @@ namespace Sq1.Core.Execution {
 				OrderState.PreSubmit,
 				OrderState.Submitting,
 				OrderState.SubmittingSequenced,
-				OrderState.VictimsBulletPreSubmit,
+				OrderState.VictimBulletPreSubmit,
 				OrderState.KillerPreSubmit,
 				OrderState.KillerSubmitting,
 				OrderState.SubmittingSequenced
@@ -24,9 +24,9 @@ namespace Sq1.Core.Execution {
 				OrderState._TransactionStatus,	// an order must never be actually analyzed for this status koz it never has it assigned
 				OrderState.KillerBulletFlying,
 				OrderState.KillerTransSubmittedOK,
-				OrderState.VictimsBulletSubmitted,
-				OrderState.VictimsBulletFlying,
-				OrderState.VictimsBulletConfirmed,
+				OrderState.VictimBulletSubmitted,
+				OrderState.VictimBulletFlying,
+				OrderState.VictimBulletConfirmed,
 				OrderState.SLAnnihilating,
 				OrderState.SLAnnihilated,
 				OrderState.TPAnnihilating,

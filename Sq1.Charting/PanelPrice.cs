@@ -54,7 +54,7 @@ namespace Sq1.Charting {
 		//}
 		int alignVisiblePositionArrowsAndCountMaxOutstanding() {
 			int ret = 0;
-			Dictionary<int, List<AlertArrow>> arrowListByBar = base.ChartControl.ExecutorObjects_frozenForRendering.AlertArrowsListByBar;
+			Dictionary<int, List<AlertArrow>> arrowListByBar = base.ChartControl.ExecutorObjects_frozenForRendering.AlertArrowLists_byBar;
 			
 			int barX = base.ChartControl.ChartWidthMinusGutterRightPrice;
 			for (int i = base.VisibleBarRight_cached; i >= base.VisibleBarLeft_cached; i--) {

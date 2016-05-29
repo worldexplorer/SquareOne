@@ -241,7 +241,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg, null, false);
 			}
 
-			List<Position> positionsSafe = this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.SafeCopy(this, "closePositionsLeftOpenAfterBacktest(WAIT)");
+			List<Position> positionsSafe = this.ExecutionDataSnapshot.Positions_OpenNow.SafeCopy(this, "closePositionsLeftOpenAfterBacktest(WAIT)");
 			foreach (Position positionOpen in positionsSafe) {
 				//v1 List<Alert> alertsSubmittedToKill = this.Strategy.Script.PositionCloseImmediately(positionOpen, );
 				//v2 WONT_CLOSE_POSITION_EARLIER_THAN_OPENED Alert exitAlert = this.Strategy.Script.ExitAtMarket(this.Bars.BarStaticLast_nullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
@@ -262,9 +262,9 @@ namespace Sq1.Core.StrategyBase {
 					Assembler.PopupException("closePositionsLeftOpenAfterBacktest()", ex, false);
 				}
 			}
-			if (this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.Count > 0) {
+			if (this.ExecutionDataSnapshot.Positions_OpenNow.Count > 0) {
 				string msg = "DIDNT_CLOSE_BACKTEST_LEFTOVER_POSITIONS snap.PositionsOpenNow.Count["
-					+ this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.Count + "]";
+					+ this.ExecutionDataSnapshot.Positions_OpenNow.Count + "]";
 				Assembler.PopupException(msg, null, false);
 			}
 		}

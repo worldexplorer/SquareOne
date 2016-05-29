@@ -26,7 +26,7 @@ namespace Sq1.Strategies.Demo {
 				//Debugger.Break();
 			}
 
-			if (base.HasPositions_PendingOrOpenNow) return;
+			if (base.HasPositions_OpenNow) return;
 
 			if (base.HasAlertsPending_flashyWhenReplacingUnfilled) {
 				// only kill pending entries, but leave activated SL & TP for an open position UNTOUCHED !!!!
@@ -38,7 +38,7 @@ namespace Sq1.Strategies.Demo {
 					foreach (Alert alert in pendings) {
 						int wasntFilledDuringPastNbars = bar.ParentBarsIndex - alert.PlacedBarIndex;
 						if (wasntFilledDuringPastNbars >= 30) {
-							//if (alert.PositionAffected.Prototype != null) {}
+							//if (alert.PositionPrototype != null) {}
 							//base.Executor.CallbackAlertKilledInvokeScript(alert);
 							base.AlertPending_kill(alert);
 						}

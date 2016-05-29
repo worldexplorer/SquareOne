@@ -380,7 +380,7 @@ namespace Sq1.Core.StrategyBase {
 			//alert.PositionAffected.ExitAlertAttach(alert);
 
 			bool absenseInPositionsOpenNowIsAnError = true;
-			this.ExecutionDataSnapshot.MovePositionOpen_toClosed(alert.PositionAffected, absenseInPositionsOpenNowIsAnError);
+			this.ExecutionDataSnapshot.BacktestEnded_MovePositionOpen_toClosed(alert.PositionAffected, absenseInPositionsOpenNowIsAnError);
 		}
 		void removePendingEntry(Alert alert) {
 			string msig = "RemovePendingEntry(): ";
@@ -389,6 +389,7 @@ namespace Sq1.Core.StrategyBase {
 			Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreaming_nullUnsafeCloneReadonly : alert.Bars.BarStaticLast_nullUnsafe;
 			alert.FillPositionAffected_entryOrExit_respectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
 			alert.SignalName += " RemovePendingEntryAlertClosePosition " + Alert.FORCEFULLY_CLOSED_BACKTEST_LAST_POSITION;
+		    //this.ExecutionDataSnapshot.Positions_OpenNow.RemoveUnique(alert.PositionAffected, this, msig);
 		}
 
 

@@ -14,6 +14,8 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Broker {
 	public partial class BrokerAdapter : IDisposable {
+		[JsonIgnore]	public const string TESTING_BY_OWN_LIVESIM = "TESTING_BY_OWN_LIVESIM :: ";
+
 		[JsonIgnore]				object				lockSubmitOrders;
 		[JsonIgnore]	public		string				Name				{ get; protected set; }
 		[JsonIgnore]	public		string				ReasonToExist		{ get; protected set; }
@@ -121,7 +123,7 @@ namespace Sq1.Core.Broker {
 
 		[JsonIgnore]	public LivesimBroker	LivesimBroker_ownImplementation				{ get; protected set; }
 		[JsonIgnore]	public	bool			ImBeingTested_byOwnLivesimImplementation	{ get; private set; }
-		[JsonIgnore]	public	string			ImBeingTested_PREFIX						{ get { return this.ImBeingTested_byOwnLivesimImplementation ? "TESTING_BY_OWN_LIVESIM :: " : ""; } }
+		[JsonIgnore]	public	string			ImBeingTested_PREFIX						{ get { return this.ImBeingTested_byOwnLivesimImplementation ? BrokerAdapter.TESTING_BY_OWN_LIVESIM : ""; } }
 		public void ImBeingTested_byOwnLivesimImplementation_set(bool setIn_SimulationPreBarsSubstitute) {
 			if (this is LivesimBroker) {
 				string msg = "I_REFUSE_TO_SET_ImBeingTested_BECAUSE_I_AM_A_TESTER(MASTER)_AND_YOU_MUST_ADDRESS_BROKER_ORIGINAL_FROM_DATASOURCE";
@@ -165,9 +167,9 @@ namespace Sq1.Core.Broker {
 			if (orderToCheck.Alert.Direction == null) {
 				throw new Exception("order[" + orderToCheck + "].Alert.Direction IsNullOrEmpty");
 			}
-			if (orderToCheck.PriceRequested == 0 &&
+			if (orderToCheck.PriceEmitted == 0 &&
 					(orderToCheck.Alert.MarketLimitStop == MarketLimitStop.Stop || orderToCheck.Alert.MarketLimitStop == MarketLimitStop.Limit)) {
-				throw new Exception("order[" + orderToCheck + "].Price[" + orderToCheck.PriceRequested + "] should be != 0 for Stop or Limit");
+				throw new Exception("order[" + orderToCheck + "].Price[" + orderToCheck.PriceEmitted + "] should be != 0 for Stop or Limit");
 			}
 		}
 		public void Orders_submitOpeners_afterClosedUnlocked_threadEntry_delayed(List<Order> ordersFromAlerts, int millis) {
@@ -355,7 +357,7 @@ namespace Sq1.Core.Broker {
 
 					switch (alert.MarketOrderAs) {
 						case MarketOrderAs.MarketZeroSentToBroker:
-							order.PriceRequested = 0;
+							order.PriceEmitted = 0;
 							msg = "SYMBOL_INFO_CONVERSION_MarketZeroSentToBroker SymbolInfo[" + alert.Symbol + "/" + alert.SymbolClass + "].OverrideMarketPriceToZero==true"
 								+ "; setting Price=0 (Slippage=" + order.SlippageApplied + ")";
 							break;
@@ -380,9 +382,9 @@ namespace Sq1.Core.Broker {
 							if (alert.Slippage_maxIndex_forLimitOrdersOnly > 0) {
 								//double slippage = symbolInfo.GetSlippage_signAware_forLimitAlertsOnly(alert, 0);
 								double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(0);
-								order.PriceRequested += slippage;
+								order.PriceEmitted += slippage;
 								msg += "ADDED_FIRST_SLIPPAGE[" + slippage + "]";
-								if (order.Alert.PriceEmitted != order.PriceRequested) {
+								if (order.Alert.PriceEmitted != order.PriceEmitted) {
 									msg += "!=Alert.PriceRequested[" + order.Alert.PriceEmitted + "]";
 								}
 							} else {
@@ -398,9 +400,9 @@ namespace Sq1.Core.Broker {
 							if (alert.Slippage_maxIndex_forLimitOrdersOnly > 0) {
 								//double slippage = symbolInfo.GetSlippage_signAware_forLimitAlertsOnly(alert, 0);
 								double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(0);
-								order.PriceRequested += slippage;
+								order.PriceEmitted += slippage;
 								msg += "ADDED_FIRST_SLIPPAGE[" + slippage + "]";
-								if (order.Alert.PriceEmitted != order.PriceRequested) {
+								if (order.Alert.PriceEmitted != order.PriceEmitted) {
 									msg += "!=Alert.PriceRequested[" + order.Alert.PriceEmitted + "]";
 								}
 							} else {
@@ -433,11 +435,11 @@ namespace Sq1.Core.Broker {
 					switch (alert.Direction) {
 						case Direction.Buy:
 						case Direction.Cover:
-							if (priceBestBidAsk <= order.PriceRequested) order.SpreadSide = SpreadSide.BidTidal;
+							if (priceBestBidAsk <= order.PriceEmitted) order.SpreadSide = SpreadSide.BidTidal;
 							break;
 						case Direction.Sell:
 						case Direction.Short:
-							if (priceBestBidAsk >= order.PriceRequested) order.SpreadSide = SpreadSide.AskTidal;
+							if (priceBestBidAsk >= order.PriceEmitted) order.SpreadSide = SpreadSide.AskTidal;
 							break;
 						default:
 							msg += " No Direction[" + alert.Direction + "] handler for order[" + order.ToString() + "]"
@@ -455,11 +457,11 @@ namespace Sq1.Core.Broker {
 					switch (alert.Direction) {
 						case Direction.Buy:
 						case Direction.Cover:
-							if (priceBestBidAsk >= order.PriceRequested) order.SpreadSide = SpreadSide.AskTidal;
+							if (priceBestBidAsk >= order.PriceEmitted) order.SpreadSide = SpreadSide.AskTidal;
 							break;
 						case Direction.Sell:
 						case Direction.Short:
-							if (priceBestBidAsk <= order.PriceRequested) order.SpreadSide = SpreadSide.BidTidal;
+							if (priceBestBidAsk <= order.PriceEmitted) order.SpreadSide = SpreadSide.BidTidal;
 							break;
 						default:
 							msg += " No Direction[" + alert.Direction + "] handler for order[" + order.ToString() + "]"
@@ -565,6 +567,7 @@ namespace Sq1.Core.Broker {
 		[JsonIgnore]	public		abstract bool		EmittingCapable			{ get; }	// always false, override?
 		[JsonIgnore]	protected	ManualResetEvent	EmittingCapable_mre;
 		[JsonIgnore]	protected	ManualResetEvent	EmittingIncapable_mre;
+
 		public bool ConnectionState_waitFor_emittingCapable(int waitMillis = -1) {
 			bool capable =	this.EmittingCapable_mre.WaitOne(waitMillis);
 			if (capable)	this.EmittingCapable_mre.Reset();		// it's a MANUAL reset, not AUTO

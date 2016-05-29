@@ -297,7 +297,7 @@ namespace Sq1.Core.StrategyBase {
 		internal int BuildIncremental_openPositionsUpdated_dueToStreamingNewQuote_step2of3(PositionList positionsOpenNow) {
 			int positionsUpdatedAbsorbed = 0;
 
-			var byEntryBarFilledSafeCopySafeCopy = positionsOpenNow.ByEntryBarFilledSafeCopy(
+			var byEntryBarFilledSafeCopySafeCopy = positionsOpenNow.ByEntryBarFilled_safeCopy(
 				this, "//BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(WAIT)");
 			List<int> barIndexesAsc = new List<int>(byEntryBarFilledSafeCopySafeCopy.Keys);
 			barIndexesAsc.Sort();
@@ -359,8 +359,8 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 
-			Dictionary<int, List<Position>> positionsOpenedAfterExec	= pokeUnit.PositionsOpened.ByEntryBarFilledSafeCopy(this, "BuildStatsOnBacktestFinished(WAIT)");
-			Dictionary<int, List<Position>> positionsClosedAfterExec	= pokeUnit.PositionsClosed.ByExitBarFilledSafeCopy(this, "BuildStatsOnBacktestFinished(WAIT)");
+			Dictionary<int, List<Position>> positionsOpenedAfterExec	= pokeUnit.PositionsOpened.ByEntryBarFilled_safeCopy(this, "BuildStatsOnBacktestFinished(WAIT)");
+			Dictionary<int, List<Position>> positionsClosedAfterExec	= pokeUnit.PositionsClosed.ByExitBarFilled_safeCopy(this, "BuildStatsOnBacktestFinished(WAIT)");
 			
 			int positionsOpenAbsorbed = 0;
 

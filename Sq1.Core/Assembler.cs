@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
+using System.Drawing;
 using System.Threading;
 
 using Sq1.Core.Broker;
@@ -134,8 +135,8 @@ namespace Sq1.Core {
 			} }
 		
 		public Assembler() {
-			//AssemblerDataSnapshot					= new AssemblerDataSnapshot();
-			AssemblerDataSnapshotSerializer			= new Serializer<AssemblerDataSnapshot>();
+			//AssemblerDataSnapshot			= new AssemblerDataSnapshot();
+			AssemblerDataSnapshotSerializer	= new Serializer<AssemblerDataSnapshot>();
 			bool createdNewFile = this.AssemblerDataSnapshotSerializer.Initialize(this.AppDataPath, "AssemblerDataSnapshot.json", "", null);
 			if (createdNewFile) {
 				this.AssemblerDataSnapshotSerializer.Serialize();
@@ -143,18 +144,21 @@ namespace Sq1.Core {
 				this.AssemblerDataSnapshot = this.AssemblerDataSnapshotSerializer.Deserialize();
 			}
 
-			RepositorySymbolInfos					= new RepositorySerializerSymbolInfos();
-			RepositoryMarketInfos					= new RepositorySerializerMarketInfos();
-			RepositoryDllJsonStrategies				= new RepositoryDllJsonStrategies();
-			RepositoryJsonDataSources				= new RepositoryJsonDataSources();
+			RepositorySymbolInfos			= new RepositorySerializerSymbolInfos();
+			RepositoryMarketInfos			= new RepositorySerializerMarketInfos();
+			RepositoryDllJsonStrategies		= new RepositoryDllJsonStrategies();
+			RepositoryJsonDataSources		= new RepositoryJsonDataSources();
 
-			WorkspacesRepository					= new RepositoryFoldersNoJson();
+			WorkspacesRepository			= new RepositoryFoldersNoJson();
 
-			OrderProcessor							= new OrderProcessor();
-			AlertsForChart							= new DictionaryManyToOne<ChartShadow, Alert>();
+			OrderProcessor					= new OrderProcessor();
+			AlertsForChart					= new DictionaryManyToOne<ChartShadow, Alert>();
 
 			//RepositorySerializerChartSettingsTemplates = new RepositorySerializerChartSettingsTemplates();
-			RepositoryJsonChartSettings	= new RepositoryJsonChartSettings();
+			RepositoryJsonChartSettings		= new RepositoryJsonChartSettings();
+
+			ColorBackgroundRed_forPositionLoss		= Color.FromArgb(255, 230, 230);
+			ColorBackgroundGreen_forPositionProfit	= Color.FromArgb(230, 255, 230);
 		}
 		public Assembler Initialize(IStatusReporter mainForm, bool usedOnlyToPopupExceptions_NPEunsafe = false) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {
@@ -313,6 +317,8 @@ namespace Sq1.Core {
 
 		public List<Exception>		Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle;
 		public bool					ExceptionsFormInstance_safelyCreated;
+		public Color				ColorBackgroundRed_forPositionLoss;
+		public Color				ColorBackgroundGreen_forPositionProfit;
 		public void Exceptions_duringApplicationStartup_Insert(Exception exc, int indexToInsert = 0) {
 			if (exc == null) return;
 			if (this.MainForm_dockFormsFullyDeserialized_layoutComplete &&

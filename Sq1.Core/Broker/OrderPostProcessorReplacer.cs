@@ -169,8 +169,8 @@ namespace Sq1.Core.Broker {
 
 				replacement.SlippageApplied = slippageNext_NanUnsafe;
 				double priceBasedOnLastQuote = priceStreaming + slippageNext_NanUnsafe;
-				double difference_withExpiredOrder_signInprecise = expiredOrderKilled_replaceMe.PriceRequested - priceBasedOnLastQuote;
-				replacement.PriceRequested = priceBasedOnLastQuote;
+				double difference_withExpiredOrder_signInprecise = expiredOrderKilled_replaceMe.PriceEmitted - priceBasedOnLastQuote;
+				replacement.PriceEmitted = priceBasedOnLastQuote;
 				replacement.Alert.SetNewPriceEmitted_fromReplacementOrder(replacement);	// will repaint the circle at the new order-emitted price PanelPrice.Rendering.cs:86
 
 				string verdict = "EMITTING_REPLACEMENT_ORDER diff[" + difference_withExpiredOrder_signInprecise + "] " + replacement;
@@ -179,6 +179,8 @@ namespace Sq1.Core.Broker {
 
 				bool inNewThread = false;
 				int orderSubmitted = this.SubmitReplacementOrder_insteadOfReplaceExpired(replacement, inNewThread);
+
+				replacement.Alert.Strategy.Script.Executor.CallbackOrderReplaced_invokeScript_nonReenterably(expiredOrderKilled_replaceMe, replacement, orderSubmitted);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex, false);
 			} finally {

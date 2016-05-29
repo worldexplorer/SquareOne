@@ -205,8 +205,8 @@ namespace Sq1.Charting {
 					//this.DrawError(e.Graphics, msgRepaint);
 					//if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
 					//v2
-					string msg = "MOVED_TO_THE_BEGINNING__SKIPPING_ALL_REPAINTS_DURING_BACKTEST__SETTING_WaitCursor";
-					Assembler.PopupException(msg);
+					//string msg = "MOVED_TO_THE_BEGINNING__SKIPPING_ALL_REPAINTS_DURING_BACKTEST__SETTING_WaitCursor";
+					//Assembler.PopupException(msg);
 					return;
 				}
 				//if (this.Cursor != Cursors.Default) this.Cursor = Cursors.Default;

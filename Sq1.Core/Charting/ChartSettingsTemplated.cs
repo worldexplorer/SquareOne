@@ -253,26 +253,38 @@ namespace Sq1.Core.Charting {
 
 
 
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public Color	OrderKilledCircleColor									{ get; set; }
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public Color	AlertPendingProtoTakeProfitEllipseColor					{ get; set; }
+		[JsonProperty]	public int		OrderKilledCircleColorAlpha								{ get; set; }
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public int		AlertPendingProtoTakeProfitEllipseColorAlpha			{ get; set; }
+		[JsonProperty]	public int		OrderKilledCirclePenWidth								{ get; set; }
+
+		
+
+
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public int		AlertPendingProtoTakeProfitEllipsePenWidth				{ get; set; }
+		[JsonProperty]	public Color	AlertPendingProtoTakeProfitCircleColor					{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingProtoTakeProfitCircleColorAlpha				{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingProtoTakeProfitCirclePenWidth				{ get; set; }
 		
 
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public Color	AlertPendingProtoStopLossEllipseColor					{ get; set; }
+		[JsonProperty]	public Color	AlertPendingProtoStopLossCircleColor					{ get; set; }
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public int		AlertPendingProtoStopLossEllipseColorAlpha				{ get; set; }
+		[JsonProperty]	public int		AlertPendingProtoStopLossCircleColorAlpha				{ get; set; }
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public int		AlertPendingProtoStopLossEllipsePenWidth				{ get; set; }
+		[JsonProperty]	public int		AlertPendingProtoStopLossCirclePenWidth					{ get; set; }
 
 
 
@@ -618,13 +630,23 @@ namespace Sq1.Core.Charting {
 					new Pen(Color.FromArgb(this.AlertPendingShortSellCircleColorAlpha, this.AlertPendingShortSellCircleColor), this.AlertPendingShortSellCirclePenWidth);
 				return this.penAlertPendingShortSellCircle;
 			} }
+			
+		[Browsable(false)]
+		[JsonIgnore]	Pen penOrderKilledCircle;
+		[Browsable(false)]
+		[JsonIgnore]	public Pen PenOrderKilledCircle { get {
+				if (this.penOrderKilledCircle == null) this.penOrderKilledCircle =
+					new Pen(Color.FromArgb(this.OrderKilledCircleColorAlpha, this.OrderKilledCircleColor), this.OrderKilledCirclePenWidth);
+				return this.penOrderKilledCircle;
+			} }
+
 
 		[Browsable(false)]
 		[JsonIgnore]	Pen penAlertPendingProtoTakeProfitEllipse;
 		[Browsable(false)]
 		[JsonIgnore]	public Pen PenAlertPendingProtoTakeProfitEllipse { get {
 				if (this.penAlertPendingProtoTakeProfitEllipse == null) this.penAlertPendingProtoTakeProfitEllipse =
-					new Pen(Color.FromArgb(this.AlertPendingProtoTakeProfitEllipseColorAlpha, this.AlertPendingProtoTakeProfitEllipseColor), this.AlertPendingProtoTakeProfitEllipsePenWidth);
+					new Pen(Color.FromArgb(this.AlertPendingProtoTakeProfitCircleColorAlpha, this.AlertPendingProtoTakeProfitCircleColor), this.AlertPendingProtoTakeProfitCirclePenWidth);
 				return this.penAlertPendingProtoTakeProfitEllipse;
 			} }
 
@@ -633,7 +655,7 @@ namespace Sq1.Core.Charting {
 		[Browsable(false)]
 		[JsonIgnore]	public Pen PenAlertPendingProtoStopLossEllipse { get {
 				if (this.penAlertPendingProtoStopLossEllipse == null) this.penAlertPendingProtoStopLossEllipse =
-					new Pen(Color.FromArgb(this.AlertPendingProtoStopLossEllipseColorAlpha, this.AlertPendingProtoStopLossEllipseColor), this.AlertPendingProtoStopLossEllipsePenWidth);
+					new Pen(Color.FromArgb(this.AlertPendingProtoStopLossCircleColorAlpha, this.AlertPendingProtoStopLossCircleColor), this.AlertPendingProtoStopLossCirclePenWidth);
 				return this.penAlertPendingProtoStopLossEllipse;
 			} }
 			
@@ -825,13 +847,17 @@ namespace Sq1.Core.Charting {
 			AlertPendingShortSellCirclePenWidth = 2;
 			AlertPendingCircleRadius = 3;
 
-			AlertPendingProtoTakeProfitEllipseColor = Color.Green;
-			AlertPendingProtoTakeProfitEllipseColorAlpha = 100;
-			AlertPendingProtoTakeProfitEllipsePenWidth = 2;
+			OrderKilledCircleColor = Color.DarkGray;
+			OrderKilledCircleColorAlpha = 180;
+			OrderKilledCirclePenWidth = 2;
 
-			AlertPendingProtoStopLossEllipseColor = Color.Red;
-			AlertPendingProtoStopLossEllipseColorAlpha = 100;
-			AlertPendingProtoStopLossEllipsePenWidth = 2;
+			AlertPendingProtoTakeProfitCircleColor = Color.Green;
+			AlertPendingProtoTakeProfitCircleColorAlpha = 100;
+			AlertPendingProtoTakeProfitCirclePenWidth = 2;
+
+			AlertPendingProtoStopLossCircleColor = Color.Red;
+			AlertPendingProtoStopLossCircleColorAlpha = 100;
+			AlertPendingProtoStopLossCirclePenWidth = 2;
 
 			MousePositionTrackOnGutters = true;
 			MousePositionTrackOnGuttersColorBackground = Color.Black;
@@ -890,6 +916,7 @@ namespace Sq1.Core.Charting {
 		public void DisposeAllGDIs_handlesLeakHunter() {
 			if (this.penAlertPendingBuyCoverCircle				!= null) { this.penAlertPendingBuyCoverCircle			.Dispose(); this.penAlertPendingBuyCoverCircle				= null; }
 			if (this.penAlertPendingShortSellCircle				!= null) { this.penAlertPendingShortSellCircle			.Dispose(); this.penAlertPendingShortSellCircle				= null; }
+			if (this.penOrderKilledCircle						!= null) { this.penOrderKilledCircle					.Dispose(); this.penOrderKilledCircle						= null; }
 			if (this.penAlertPendingProtoStopLossEllipse		!= null) { this.penAlertPendingProtoStopLossEllipse		.Dispose(); this.penAlertPendingProtoStopLossEllipse		= null; }
 			if (this.penAlertPendingProtoTakeProfitEllipse		!= null) { this.penAlertPendingProtoTakeProfitEllipse	.Dispose(); this.penAlertPendingProtoTakeProfitEllipse		= null; }
 			if (this.penGridlinesHorizontal						!= null) { this.penGridlinesHorizontal					.Dispose(); this.penGridlinesHorizontal						= null; }

@@ -364,14 +364,14 @@ namespace Sq1.Core.Backtesting {
 
 			List<Alert> alertsPendingSafeCopy = this.scriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, "SimulateFill_allPendingAlerts(WAIT)");
 			foreach (Alert alert in alertsPendingSafeCopy) {
-				if (alert.IsFilled_fromPosition && alert.IsExitAlert && alert.PositionAffected.Prototype != null) {
+				if (alert.IsFilled_fromPosition && alert.IsExitAlert && alert.PositionPrototype != null) {
 					bool thisAlertWasAnnihilated = false;
-					if (alert.PositionAffected.ExitAlert == alert.PositionAffected.Prototype.StopLossAlert_forMoveAndAnnihilation
-							&& alert == alert.PositionAffected.Prototype.TakeProfitAlert_forMoveAndAnnihilation) {
+					if (alert.PositionAffected.ExitAlert == alert.PositionPrototype.StopLossAlert_forMoveAndAnnihilation
+							&& alert == alert.PositionPrototype.TakeProfitAlert_forMoveAndAnnihilation) {
 						thisAlertWasAnnihilated = true;
 					}
-					if (alert.PositionAffected.ExitAlert == alert.PositionAffected.Prototype.TakeProfitAlert_forMoveAndAnnihilation
-							&& alert == alert.PositionAffected.Prototype.StopLossAlert_forMoveAndAnnihilation) {
+					if (alert.PositionAffected.ExitAlert == alert.PositionPrototype.TakeProfitAlert_forMoveAndAnnihilation
+							&& alert == alert.PositionPrototype.StopLossAlert_forMoveAndAnnihilation) {
 						thisAlertWasAnnihilated = true;
 					}
 					if (thisAlertWasAnnihilated) continue;
@@ -442,10 +442,6 @@ namespace Sq1.Core.Backtesting {
 				msg = "alert.IsFilled=true shouldn't stay in AlertsPending; shall I remove it now? [" + alert + "]";
 				return msg;
 			}
-			if (alert.PositionAffected == null) {
-				msg = "alert.PositionAffected=null should never be null; [" + alert + "]";
-				return msg;
-			}
 			//if (alertToBeKilled.BarPlaced.ParentBarsIndex > alertToBeKilled.Bars.Count) {
 			//	msg = "YOU_SHOULDNT_PEND_ALERT_FOR_FUTURE_BARS: alertToBeKilled.BarPlaced.ParentBarsIndex["
 			//		+ alertToBeKilled.BarPlaced.ParentBarsIndex + "] > alertToBeKilled.Bars.Count[" + alertToBeKilled.Bars.Count + "]";
@@ -458,12 +454,19 @@ namespace Sq1.Core.Backtesting {
 			//};
 			// (i don't have any simultaneous EntryAlerts for a bar, but)
 			// once EntryAlerts is filled it's removed from Snap; however we have it in the copy so we need to skip it
-			if (alert.IsEntryAlert) {
-				if (alert.PositionAffected.IsEntryFilled) {
-					msg = "I refuse to SimulatePendingFill for alertToBeKilled.PositionAffected.IsEntryFilled=true";
-					return msg;
-				}
-			}
+
+			// ENTRY_ALERTS_WILL_GET_POSITION_AFTER_FILL
+			//if (alert.PositionAffected == null) {
+			//    msg = "alert.PositionAffected=null should never be null; [" + alert + "]";
+			//    return msg;
+			//}
+			//if (alert.IsEntryAlert) {
+			//    if (alert.PositionAffected.IsEntryFilled) {
+			//        msg = "I refuse to SimulatePendingFill for alertToBeKilled.PositionAffected.IsEntryFilled=true";
+			//        return msg;
+			//    }
+			//}
+
 			if (alert.IsExitAlert) {
 				if (alert.PositionAffected.IsExitFilled == true) {
 					msg = "I refuse to simulatePendingFillExit() since PositionAffected.ExitFilled=true";
@@ -569,6 +572,7 @@ namespace Sq1.Core.Backtesting {
 				return filled;
 			}
 			if (this.broker_backtestOrLivesim is BacktestBroker) {
+				// YIELDED_TO_postProcess_invokeScriptCallback()
 				this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(alert, quote,
 					priceFill, alert.Qty, slippageFill, entryCommission);
 				return filled;
@@ -610,6 +614,7 @@ namespace Sq1.Core.Backtesting {
 				return filled;
 			}
 			if (this.broker_backtestOrLivesim is BacktestBroker) {
+				// YIELDED_TO_postProcess_invokeScriptCallback()
 				this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(alert, quote,
 					priceFill, alert.Qty, slippageFill, exitCommission);
 				return filled;

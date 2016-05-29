@@ -152,11 +152,12 @@ namespace Sq1.Core.Charting {
 
 		public virtual void PositionsBacktestAdd(List<Position> positionsMaster) { }
 		public virtual void PositionsRealtimeAdd(ReporterPokeUnit pokeUnit) { }
-		public virtual void AlertsPendingStillNotFilledForBarAdd(int barIndex, List<Alert> alertsPendingSafeCopy) { }
-
+		public virtual void AlertsPending_stillNotFilled_addForBar(int barIndex, List<Alert> alertsPendingAtCurrentBar_safeCopy) { }
 
 		public virtual void PendingHistoryBacktestAdd(Dictionary<int, AlertList> alertsPendingHistorySafeCopy) { }
 		public virtual void AlertsPlaced_addRealtime(List<Alert> alertsNewPlaced) { }
+
+		public virtual void OrderKilled_addForBar(int barIndex, Order ordersKilled) { }
 
 		public virtual OnChartObjectOperationStatus LineDrawModify(
 				string id, int barStart, double priceStart, int barEnd, double priceEnd,

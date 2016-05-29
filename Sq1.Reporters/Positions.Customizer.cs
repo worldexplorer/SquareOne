@@ -9,18 +9,18 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Reporters {
 	public partial class Positions {
-		Color colorBackgroundRedForPositionLoss;
-		Color colorBackgroundGreenForPositionProfit;
+		Color colorBackgroundRed_forPositionLoss;
+		Color colorBackgroundGreen_forPositionProfit;
 		
 		void olvPositions_FormatRow(object sender, FormatRowEventArgs e) {
 			Position position = e.Model as Position;
 			if (position == null) return;
-			e.Item.BackColor = (position.NetProfit > 0.0) ? this.colorBackgroundGreenForPositionProfit : this.colorBackgroundRedForPositionLoss;
+			e.Item.BackColor = (position.NetProfit > 0.0) ? this.colorBackgroundGreen_forPositionProfit : this.colorBackgroundRed_forPositionLoss;
 		}
-		void objectListViewCustomizeColors() {
+		void olv_customizeColors() {
 			if (this.snap.Colorify) {
-				this.colorBackgroundRedForPositionLoss = Color.FromArgb(255, 230, 230);
-				this.colorBackgroundGreenForPositionProfit = Color.FromArgb(230, 255, 230);
+				this.colorBackgroundRed_forPositionLoss		= Color.FromArgb(255, 230, 230);
+				this.colorBackgroundGreen_forPositionProfit	= Color.FromArgb(230, 255, 230);
 				this.olvPositions.UseCellFormatEvents = true;
 				this.olvPositions.FormatRow += new EventHandler<FormatRowEventArgs>(olvPositions_FormatRow);
 			} else {
@@ -28,12 +28,12 @@ namespace Sq1.Reporters {
 				this.olvPositions.FormatRow -= new EventHandler<FormatRowEventArgs>(olvPositions_FormatRow);
 			}
 		}
-		void oLVColumn_VisibilityChanged(object sender, EventArgs e) {
+		void olvColumn_VisibilityChanged(object sender, EventArgs e) {
 			OLVColumn oLVColumn = sender as OLVColumn;
 			if (oLVColumn == null) return;
 			this.olvBinaryState_save_raiseStrategySerialize();
 		}
-		void objectListViewReCustomize_OnPriceDecimalsChanged() {
+		void olvReCustomize_OnPriceDecimalsChanged() {
 			if (this.olvcEntryPrice			.AspectToStringFormat == "{0:" + base.FormatPrice + "}") {
 				string msg = "FORMAT_PRICE_DIDNT_CHANGE__WHY_DID_YOU_INVOKE_ME???";
 				Assembler.PopupException(msg);
@@ -49,8 +49,8 @@ namespace Sq1.Reporters {
 			this.olvcComission			.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
 			this.olvcCost				.AspectToStringFormat = "{0:" + base.FormatPrice + "}";
 		}
-		void objectListViewCustomize() {
-			this.objectListViewCustomizeColors();
+		void olvCustomize() {
+			this.olv_customizeColors();
 			this.olvBinaryState_restore();
 
 			this.olvcPosition.ImageGetter = delegate(object o) {

@@ -311,6 +311,9 @@ namespace Sq1.Core.Execution {
 		} }
 		[JsonIgnore]	public	bool				IsDisposed;
 
+		
+		[JsonIgnore]	public						PositionPrototype	PositionPrototype;
+
 		[JsonIgnore]	public	bool				ImTakeProfit_prototyped { get {
 			string msig = " //ImTakeProfit_prototyped.Get() " + this;
 
@@ -318,12 +321,12 @@ namespace Sq1.Core.Execution {
 			bool nullOnTheWay = this.check_positionPrototype_notNull(msig) == false;
 			if (nullOnTheWay) return ret;
 
-			if (this.PositionAffected.Prototype.TakeProfitAlert_forMoveAndAnnihilation == null) {
+			if (this.PositionPrototype.TakeProfitAlert_forMoveAndAnnihilation == null) {
 				string msg = "SHOULD_I_COMPLAIN?";
 				Assembler.PopupException(msg + msig);
 				return ret;
 			}
-			ret = this.PositionAffected.Prototype.TakeProfitAlert_forMoveAndAnnihilation == this;
+			ret = this.PositionPrototype.TakeProfitAlert_forMoveAndAnnihilation == this;
 			return ret;
 		} }
 		[JsonIgnore]	public	bool				ImStopLoss_prototyped { get {
@@ -333,12 +336,12 @@ namespace Sq1.Core.Execution {
 			bool nullOnTheWay = this.check_positionPrototype_notNull(msig) == false;
 			if (nullOnTheWay) return ret;
 
-			if (this.PositionAffected.Prototype.StopLossAlert_forMoveAndAnnihilation == null) {
+			if (this.PositionPrototype.StopLossAlert_forMoveAndAnnihilation == null) {
 				string msg = "SHOULD_I_COMPLAIN?";
 				Assembler.PopupException(msg + msig);
 				return ret;
 			}
-			ret = this.PositionAffected.Prototype.StopLossAlert_forMoveAndAnnihilation == this;
+			ret = this.PositionPrototype.StopLossAlert_forMoveAndAnnihilation == this;
 			return ret;
 		} }
 
@@ -569,8 +572,8 @@ namespace Sq1.Core.Execution {
 				+ "\t" + longOrderType + Qty + "/" + this.QtyFilledThroughPosition + "filled*" + Symbol
 				+ "@" + PriceScript + "/" + this.PriceFilledThroughPosition + "filled"
 				;
-			if (this.PositionAffected != null && this.PositionAffected.Prototype != null) {
-				msg += "\tProto" + this.PositionAffected.Prototype;
+			if (this.PositionAffected != null && this.PositionPrototype != null) {
+				msg += "\tProto" + this.PositionPrototype;
 			}
 			msg += "\t[" + SignalName + "]";
 			return msg;
@@ -643,11 +646,15 @@ namespace Sq1.Core.Execution {
 			this.FilledBarSnapshotFrozenAtFill = barFill.Clone();		//BarsStreaming#130 becomes BarStatic#130
 			this.FilledBar = barFill;
 			this.FilledBarIndex = barFillRelno;
-			if (this.PositionAffected == null) {
-				//if (this.IsExecutorBacktestingNow) return;
-				throw new Exception("Backtesting or Realtime, an alert always has a PositionAffected, oder?...");
-			}
+
 			if (this.IsEntryAlert) {
+				if (this.PositionAffected != null) {	//this.PositionAffected.EntryFilledBarIndex != -1) {
+					string msg = "ENTRY_ALERT.POSITION_MUST_BE_NULL alert [" + this + "]";
+					Assembler.PopupException(msg, null, false);
+					return;
+				}
+
+				this.PositionAffected = new Position(this, this.PriceScript);
 				this.PositionAffected.FillEntryWith(barFill, priceFill, qtyFill, slippageFill, commissionFill);
 				if (this.PositionAffected.EntryFilledBarIndex != barFillRelno) {
 					string msg = "ENTRY_ALERT_SIMPLE_CHECK_FAILED_AVOIDING_EXCEPTION_IN_PositionsMasterOpenNewAdd"
@@ -655,6 +662,18 @@ namespace Sq1.Core.Execution {
 					Assembler.PopupException(msg, null, false);	//makes #D loose callstack & throw
 				}
 			} else {
+				if (this.PositionAffected == null) {	//this.PositionAffected.EntryFilledBarIndex != -1) {
+					string msg = "EXIT_ALERT_SHOULD_HAVE_POSITION_ALREDY_ASSIGNED alert [" + this + "]";
+					Assembler.PopupException(msg, null, false);
+					return;
+				}
+
+				if (this.PositionAffected.ExitFilledBarIndex != -1) {
+					string msg = "DUPE: CallbackAlertFilled can't do its job: alert.PositionAffected.ExitBar!=-1 for alert [" + this + "]";
+					Assembler.PopupException(msg, null, false);
+				} else {
+					string msg = "initializing ExitBar=[" + barFill + "] on AlertFilled";
+				}
 				this.PositionAffected.FillExitWith(barFill, priceFill, qtyFill, slippageFill, commissionFill);
 			}
 		}
@@ -666,7 +685,7 @@ namespace Sq1.Core.Execution {
 				//throw new Exception(msg + msig_invoker);
 				return false;
 			}
-			if (this.PositionAffected.Prototype == null) {
+			if (this.PositionPrototype == null) {
 				string msg = "ALERT_MUST_HAVE_PROTOTYPE";
 				Assembler.PopupException(msg + msig_invoker);
 				//throw new Exception(msg + msig_invoker);
@@ -695,20 +714,21 @@ namespace Sq1.Core.Execution {
 			this.OrdersFollowed_killedAndReplaced.Add(this.OrderFollowed);
 			this.OrderFollowed = replacementOrder;
 
-			double replacementOrder_PriceRequested = replacementOrder.PriceRequested;
+			double replacementOrder_PriceRequested = replacementOrder.PriceEmitted;
 
 			this.PriceEmitted = replacementOrder_PriceRequested;
-			if (this.PositionAffected == null) {
-				string msg = "POSITION_AFFECTED_MUST_NOT_BE_NULL WHEN_ORDER_IS_REPLACED_INSTEAD_OF_REJECTED alert[" + this.ToString() + "]";
-				Assembler.PopupException(msg);
-				return;
-			}
 
-			if (this.IsEntryAlert) {
-				this.PositionAffected.EntryEmitted_price = this.PriceEmitted;
-			} else {
-				this.PositionAffected.ExitEmitted_price = this.PriceEmitted;
-			}
+			// POSITION_DOESNT_EXIST_UNTIL_ENTRY_ALERT_GOT_FILL
+			//if (this.PositionAffected == null) {
+			//    string msg = "POSITION_AFFECTED_MUST_NOT_BE_NULL WHEN_ORDER_IS_REPLACED_INSTEAD_OF_REJECTED alert[" + this.ToString() + "]";
+			//    Assembler.PopupException(msg);
+			//    return;
+			//}
+			//if (this.IsEntryAlert) {
+			//    this.PositionAffected.EntryEmitted_price = this.PriceEmitted;
+			//} else {
+			//    this.PositionAffected.ExitEmitted_price = this.PriceEmitted;
+			//}
 
 			int howManyAdded = this.fillPriceEmitted_fromLastChangeTillBar(this.Bars.Count - 2);
 			if (this.PriceEmitted_byBarIndex.ContainsKey(this.Bars.Count - 1)) {

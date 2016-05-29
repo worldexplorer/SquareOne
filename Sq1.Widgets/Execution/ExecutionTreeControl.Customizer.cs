@@ -8,6 +8,7 @@ using BrightIdeasSoftware;
 using Sq1.Core;
 using Sq1.Core.Execution;
 using Sq1.Core.Support;
+using Sq1.Core.Broker;
 
 namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
@@ -29,7 +30,7 @@ namespace Sq1.Widgets.Execution {
 				this.olvcPriceScript,
 				this.olvcPriceCurBidOrAsk,
 				this.olvcSlippageApplied,
-				this.olvcPriceRequested_withSlippageApplied,
+				this.olvcPriceEmitted_withSlippageApplied,
 				this.olvcPriceFilled,
 				this.olvcSlippageFilledMinusApplied,
 				this.olvcPriceDeposited_DollarForPoint
@@ -77,8 +78,9 @@ namespace Sq1.Widgets.Execution {
 			this.DataSnapshotSerializer.Serialize();
 		}
 
-		void OlvOrderTree_customize() {
-			//v2
+		void olvOrderTree_customize() {
+			// MOVED_TO_PopulateDataSnapshot this.olvOrdersTree_customizeColors();
+
 			// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
 			List<OLVColumn> allColumns = new List<OLVColumn>();
 			foreach (ColumnHeader columnHeader in this.OlvOrdersTree.Columns) {
@@ -178,10 +180,10 @@ namespace Sq1.Widgets.Execution {
 				if (order == null) return "olvcSlippage.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.SlippageApplied.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
 			};
-			this.olvcPriceRequested_withSlippageApplied.AspectGetter = delegate(object o) {
+			this.olvcPriceEmitted_withSlippageApplied.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "olvcPriceRequested_withSlippageApplied.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.PriceRequested.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
+				if (order == null) return "olvcPriceEmitted_withSlippageApplied.AspectGetter: order=null";
+				return order.IsKiller ? "" : order.PriceEmitted.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
 			};
 			this.olvcPriceFilled.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -308,7 +310,9 @@ namespace Sq1.Widgets.Execution {
 			}
 			return ret;
 		}
-		void messagesListView_customize() {
+		void olvMessages_customize() {
+			// MOVED_TO_PopulateDataSnapshot this.olvMessages_customizeColors();
+
 			// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
 			List<OLVColumn> allColumns = new List<OLVColumn>();
 			foreach (ColumnHeader columnHeader in this.olvMessages.Columns) {
@@ -337,9 +341,50 @@ namespace Sq1.Widgets.Execution {
 			};
 		}
 
-		FontCache fontCache;
+		void olvOrdersTree_customizeColors() {
+			//this.colorBackgroundRed_forPositionLoss		= Color.FromArgb(255, 230, 230);
+			//this.colorBackgroundGreen_forPositionProfit	= Color.FromArgb(230, 255, 230);
+			this.colorBackgroundRed_forPositionLoss		= Assembler.InstanceInitialized.ColorBackgroundRed_forPositionLoss;
+			this.colorBackgroundGreen_forPositionProfit	= Assembler.InstanceInitialized.ColorBackgroundGreen_forPositionProfit;
 
-		void tree_FormatRow(object sender, BrightIdeasSoftware.FormatRowEventArgs e) {
+			// unconditional because Font=bold is set for order.InState_expectingBrokerCallback
+			this.OlvOrdersTree.FormatRow += new EventHandler<FormatRowEventArgs>(this.olvOrdersTree_FormatRow);
+
+			if (this.dataSnapshot.ColorifyOrderTree_positionNet) {
+				this.OlvOrdersTree.UseCellFormatEvents = true;
+			} else {
+				this.OlvOrdersTree.UseCellFormatEvents = false;
+			}
+		}
+
+		void olvMessages_customizeColors() {
+			if (this.dataSnapshot.ColorifyMessages_askBrokerProvider) {
+				this.olvMessages.UseCellFormatEvents = true;
+				this.olvMessages.FormatRow += new EventHandler<FormatRowEventArgs>(this.olvMessages_FormatRow);
+			} else {
+				this.olvMessages.UseCellFormatEvents = false;
+				this.olvMessages.FormatRow -= new EventHandler<FormatRowEventArgs>(this.olvMessages_FormatRow);
+			}
+		}		
+		void olvMessages_FormatRow(object sender, FormatRowEventArgs e) {
+			OrderStateMessage osm = e.Model as OrderStateMessage;
+			if (osm													== null) return;
+			if (osm.Order											== null) return;
+			if (osm.Order.Alert										== null) return;
+			if (osm.Order.Alert.DataSource_fromBars					== null) return;
+			if (osm.Order.Alert.DataSource_fromBars.BrokerAdapter	== null) return;
+			BrokerAdapter broker = osm.Order.Alert.DataSource_fromBars.BrokerAdapter;
+			Color backColor = broker.GetBackGroundColor_forOrderStateMessage_nullUnsafe(osm);
+			if (backColor											== null) return;
+			if (backColor									 == Color.Empty) return;
+			e.Item.BackColor = backColor;
+		}
+
+		FontCache fontCache;
+		Color colorBackgroundRed_forPositionLoss;
+		Color colorBackgroundGreen_forPositionProfit;
+
+		void olvOrdersTree_FormatRow(object sender, FormatRowEventArgs e) {
 			Order order = e.Model as Order;
 			if (order == null) return;
 			if (order.InState_expectingBrokerCallback) {
@@ -351,8 +396,17 @@ namespace Sq1.Widgets.Execution {
 			//v2 ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL
 			if (order.Alert.Bars == null) e.Item.ForeColor = Color.DimGray;
 			// replaced with new column if (order.Alert.MyBrokerIsLivesim) e.Item.BackColor = Color.Gainsboro;
-		}
 
+			// I already set if when unclicked but didn't unsubscribe from the event... hm...
+			if (this.OlvOrdersTree.UseCellFormatEvents == false) return;
+
+			if (order.Alert == null) return;
+			if (order.Alert.PositionAffected == null) return;
+			e.Item.BackColor = order.Alert.PositionAffected.NetProfit > 0.0
+				? this.colorBackgroundGreen_forPositionProfit
+				: this.colorBackgroundRed_forPositionLoss;
+
+		}
 
 		//http://objectlistview.sourceforge.net/cs/recipes.html#how-can-i-change-the-colours-of-a-row-or-just-a-cell
 		//readonly Color BACKGROUND_GREEN = Color.FromArgb(230, 255, 230);

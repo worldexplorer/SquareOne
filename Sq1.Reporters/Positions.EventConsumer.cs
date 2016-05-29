@@ -13,7 +13,7 @@ namespace Sq1.Reporters {
 		void mniColorify_Click(object sender, EventArgs e) {
 			try {
 				this.snap.Colorify = this.mniColorify.Checked;
-				this.objectListViewCustomizeColors();
+				this.olv_customizeColors();
 				//this.olvPositions.Refresh();
 				this.olvPositions.BuildList(true);	// otherwize RestoreState() doesn't restore after restart?
 				//this.rebuildOLVproperly();
@@ -48,7 +48,7 @@ namespace Sq1.Reporters {
 			}
 		}
 		protected override void SymbolInfo_PriceDecimalsChanged(object sender, EventArgs e) {
-			this.objectListViewReCustomize_OnPriceDecimalsChanged();
+			this.olvReCustomize_OnPriceDecimalsChanged();
 			this.olvPositions.RebuildColumns();
 		}
 	}

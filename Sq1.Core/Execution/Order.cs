@@ -14,7 +14,7 @@ namespace Sq1.Core.Execution {
 //SEARCH_MESSAGES_FOR_STATE_YOU_NEED		[JsonProperty]	public DateTime		FilledBrokerTime;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
 //SEARCH_MESSAGES_FOR_STATE_YOU_NEED 		[JsonProperty]	public DateTime		KilledBrokerTime;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
 		
-		[JsonProperty]	public	double		PriceRequested;				// SET_IN_BROKER_ADAPDER	{ get; protected set; }
+		[JsonProperty]	public	double		PriceEmitted;				// SET_IN_BROKER_ADAPDER	{ get; protected set; }
 		[JsonProperty]	public	double		PriceFilled;					// SET_IN_ORDER_PROCESSOR   { get; protected set; }
 		[JsonProperty]	public	double		Qty;				// SET_IN_ORDER_PROCESSOR   { get; protected set; }
 		[JsonProperty]	public	double		QtyFill;						// SET_IN_ORDER_PROCESSOR   { get; protected set; }
@@ -50,8 +50,8 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	double		SlippageFilledMinusApplied	{ get {
 				if (this.SlippageApplied	== 0) return 0;
 				if (this.PriceFilled		== 0) return 0;
-				if (this.PriceRequested		== 0) return 0;
-				double slippageFilled = this.PriceFilled - this.PriceRequested;
+				if (this.PriceEmitted		== 0) return 0;
+				double slippageFilled = this.PriceFilled - this.PriceEmitted;
 				return slippageFilled - this.SlippageApplied;
 		} }
 		[JsonProperty]	public	double		CurrentAsk					{ get; protected set; }
@@ -153,8 +153,8 @@ namespace Sq1.Core.Execution {
 					|| this.State == OrderState.KillerSubmitting
 					|| this.State == OrderState.KillerBulletFlying
 				//	|| this.State == OrderState.KillPendingPreSubmit
-					|| this.State == OrderState.VictimsBulletConfirmed
-					|| this.State == OrderState.VictimsBulletSubmitted
+					|| this.State == OrderState.VictimBulletConfirmed
+					|| this.State == OrderState.VictimBulletSubmitted
 					;
 			} }
 		[JsonProperty]	public bool				InStateChangeableToSubmitted { get {
@@ -266,7 +266,7 @@ namespace Sq1.Core.Execution {
  		public Order() {	// called by Json.Deserialize(); what if I'll make it protected?
 			GUID = newGUID();
 			messages = new ConcurrentStack<OrderStateMessage>();
-			PriceRequested = 0;
+			PriceEmitted = 0;
 			PriceFilled = 0;
 			Qty = 0;
 			QtyFill = 0;
@@ -321,7 +321,7 @@ namespace Sq1.Core.Execution {
 
 			this.SpreadSide				= alert.SpreadSide;
 
-			this.PriceRequested			= alert.PriceEmitted;
+			this.PriceEmitted			= alert.PriceEmitted;
 			this.SlippageAppliedIndex	= 0;
 			this.SlippageApplied		= alert.SlippageApplied;
 
@@ -370,7 +370,7 @@ namespace Sq1.Core.Execution {
 			}
 			Order killer = new Order(this.Alert, this.EmittedByScript, false);
 			killer.State = OrderState.JustConstructed;
-			killer.PriceRequested = 0;
+			killer.PriceEmitted = 0;
 			killer.PriceFilled = 0;
 			killer.Qty = 0;
 			killer.QtyFill = 0;
@@ -474,7 +474,7 @@ namespace Sq1.Core.Execution {
 			if (this.Alert.Bars != null) formatPrice = this.Alert.Bars.SymbolInfo.PriceFormat;
 
 			ret += " " + this.Qty;
-			ret += "@" + this.PriceRequested.ToString(formatPrice);
+			ret += "@" + this.PriceEmitted.ToString(formatPrice);
 			ret += " " + this.State;
 			if (this.SernoSession	!= 0)	ret += " SernoSession[" + this.SernoSession + "]";
 			//if (GUID				!= "")	ret += " GUID["			+ GUID + "]";
@@ -547,6 +547,22 @@ namespace Sq1.Core.Execution {
 		void setState_localTime(OrderState newOrderState, DateTime localTime_updated) {
 			this.State						= newOrderState;
 			this.StateUpdateLastTimeLocal	= localTime_updated;
+		}
+
+		[JsonIgnore]	public	bool				IsDisposed;
+		public void Dispose() {
+			string err = "YOU_SHOULD_NOT_DISPOSE_ORDERS_WHEN_CLEANING_OrderList " + this.ToString();
+			Assembler.PopupException(err);
+			return;
+
+			if (this.IsDisposed || this.OrderReplacement_Emitted_afterOriginalKilled__orError == null) {
+				string msg = "ORDER_WAS_ALREADY_DISPOSED__ACCESSING_NULL_WAIT_HANDLE_WILL_THROW_NPE " + this.ToString();
+				//Assembler.PopupException(msg);
+				return;
+			}
+			this.OrderReplacement_Emitted_afterOriginalKilled__orError.Dispose();	// BASTARDO_ESTA_AQUI !!!! LEAKED_HANDLES_HUNTER
+			this.OrderReplacement_Emitted_afterOriginalKilled__orError = null;
+			this.IsDisposed = true;
 		}
 	}
 }

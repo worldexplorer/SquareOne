@@ -12,6 +12,9 @@ namespace Sq1.Widgets.Execution {
 		[JsonProperty]	public bool ShowMessagesPane						= true;
 		[JsonProperty]	public bool ShowMessagePaneSplittedHorizontally		= false;
 		[JsonProperty]	public bool	SingleClickSyncWithChart				= false;
+
+		[JsonProperty]	public bool	ColorifyOrderTree_positionNet			= true;
+		[JsonProperty]	public bool	ColorifyMessages_askBrokerProvider		= true;
 		
 		[JsonProperty]	public int	MessagePaneSplitDistanceHorizontal		= 0;
 		[JsonProperty]	public int	MessagePaneSplitDistanceVertical		= 0;

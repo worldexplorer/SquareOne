@@ -39,7 +39,7 @@ namespace Sq1.Reporters {
 			}
 			this.snap = snapCasted;
 			this.mniColorify.Checked = this.snap.Colorify;
-			this.objectListViewCustomize();
+			this.olvCustomize();
 		}
 		void activateMniFilter(Dictionary<ToolStripMenuItem, List<OLVColumn>> columnsByFilters, ToolStripMenuItem mni) {
 			if (columnsByFilters.ContainsKey(mni) == false) {
@@ -257,7 +257,7 @@ namespace Sq1.Reporters {
 				foreach (ColumnHeader columnHeader in this.olvPositions.Columns) {
 					OLVColumn oLVColumn = columnHeader as OLVColumn;
 					if (oLVColumn == null) continue;
-					oLVColumn.VisibilityChanged += oLVColumn_VisibilityChanged;
+					oLVColumn.VisibilityChanged += olvColumn_VisibilityChanged;
 					//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
 					if (this.olvPositions.AllColumns.Contains(oLVColumn)) continue;
 					allColumnsOtherwizeEmptyListAndRowFormatException.Add(oLVColumn);

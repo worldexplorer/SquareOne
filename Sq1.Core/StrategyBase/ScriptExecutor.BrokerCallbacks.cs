@@ -39,6 +39,28 @@ namespace Sq1.Core.StrategyBase {
 				this.PopupException(msg, e);
 			}
 		}
+
+		public void CallbackOrderKilled_addGrayCircle_onChart(Order expiredOrderKilled_replaceMe) {
+			int barIndex_streamingNow = this.Bars.Count - 1;
+			this.ChartShadow.OrderKilled_addForBar(barIndex_streamingNow, expiredOrderKilled_replaceMe);
+		}
+
+		public void CallbackOrderReplaced_invokeScript_nonReenterably(Order expiredOrderKilled_replaceMe, Order replacement, int orderSubmitted) {
+			string msig = " //CallbackOrderReplaced_invokeScript_nonReenterably(WAIT)";
+
+			if (this.Strategy.Script != replacement.Alert.Strategy.Script) {
+				Assembler.PopupException("NONSENSE this.Strategy.Script != replacement.Alert.Strategy.Script");
+			}
+			try {
+				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig);
+				this.ExecutionDataSnapshot.IsScriptRunningOnAlertKilledNonBlockingRead = true;
+				// NEVER_INVOKED_IF_ORDER_REPLACEMENT_TURNED_OFF this.CallbackOrderKilled(expiredOrderKilled_replaceMe);
+				this.Strategy.Script.OnOrderReplaced_callback(expiredOrderKilled_replaceMe, replacement);
+			} finally {
+				this.ExecutionDataSnapshot.IsScriptRunningOnAlertKilledNonBlockingRead = false;
+				this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msig);
+			}
+		}
 		public void CallbackAlertKilled_invokeScript_nonReenterably(Alert alertKilled) {
 			//SLOW string msig = " CallbackAlertKilled_invokeScript_nonReenterably(" + alertKilled + ")";
 			string msig = " //CallbackAlertKilled_invokeScript_nonReenterably(WAIT)";
@@ -81,7 +103,7 @@ namespace Sq1.Core.StrategyBase {
 																   double.IsNaN(orderKilled.SlippageNextAvailable_NanWhenNoMore);
 				if (removingAlert_afterLastSlippaged_replacementOrderExpired) {
 					if (alertKilled.BuyOrShort) {
-						this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.RemoveUnique(alertKilled.PositionAffected, this,
+						this.ExecutionDataSnapshot.Positions_OpenNow.RemoveUnique(alertKilled.PositionAffected, this,
 							"REMOVING_ALERT_UNFILLED__AFTER_LAST_SLIPPAGED_REPLACEMENT_ORDER_EXPIRED__ENTRY_ALERT_UNLUCKY_DIDNT_GET_FILL");
 					} else {
 						string msg = "PROBABLY_EMERGENCY_CLOSE_WILL_KICK_IN... BUT_SHOULD_I_REMOVE??";
@@ -97,15 +119,36 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 
+		public void CallbackOrderExpired(Order orderExpired) {
+#if VERBOSE_STRINGS_SLOW
+			string msig = " //CallbackOrderExpired(" + orderExpired + ", " + quoteFilledThisAlert_nullForLive + ")";
+#else
+			string msig = " //CallbackOrderExpired(WAIT)";
+#endif
+
+		}
+
+		public void CallbackOrderError(Order orderExpired) {
+#if VERBOSE_STRINGS_SLOW
+			string msig = " //CallbackOrderExpired(" + orderExpired + ")";
+#else
+			string msig = " //CallbackOrderError(WAIT)";
+#endif
+
+		}
+
 		public void CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(Alert alertFilled, Quote quoteFilledThisAlert_nullForLive,
 																			double priceFill, double qtyFill, double slippageFill, double commissionFill) {
-			//SLOW string msig = " //CallbackAlertFilledMoveAroundInvokeScript(" + alertFilled + ", " + quoteFilledThisAlert_nullForLive + ")";
+#if VERBOSE_STRINGS_SLOW
+			string msig = " //CallbackAlertFilledMoveAroundInvokeScript(" + alertFilled + ", " + quoteFilledThisAlert_nullForLive + ")";
+#else
 			string msig = " //CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(WAIT)";
+#endif
 
 			//avoiding two alertsFilled and messing script-overrides; despite all script invocations downstack are sequential, guaranteed for 1 alertFilled
 			try {
 				bool breakIfAbsent = true;
-				int threeSeconds = Sq1.Core.Support.ConcurrentWatchdog.TIMEOUT_DEFAULT;
+				int threeSeconds = ConcurrentWatchdog.TIMEOUT_DEFAULT;
 				int forever = -1;
 				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig);
 				this.callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(alertFilled, quoteFilledThisAlert_nullForLive,
@@ -121,39 +164,17 @@ namespace Sq1.Core.StrategyBase {
 			//SLOW string msig = " callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
 			string msig = " //callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
 
+			Bar barFill = (this.IsStreamingTriggeringScript)
+				? alertFilled.Bars.BarStreaming_nullUnsafeCloneReadonly
+				: alertFilled.Bars.BarStaticLast_nullUnsafe;
+
+			#region PARANOID
 			if (priceFill == -1) {
 				string msg = "won't set priceFill=-1 for alert [" + alertFilled + "]";
 				#if DEBUG
 				Debugger.Break();
 				#endif
 				throw new Exception(msg);
-			}
-			if (alertFilled.PositionAffected == null) {
-				string msg = "CallbackAlertFilled can't do its job: alert.PositionAffected=null for alert [" + alertFilled + "]";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
-			}
-
-			Bar barFill = (this.IsStreamingTriggeringScript)
-				? alertFilled.Bars.BarStreaming_nullUnsafeCloneReadonly
-				: alertFilled.Bars.BarStaticLast_nullUnsafe;
-
-			if (alertFilled.IsEntryAlert) {
-				if (alertFilled.PositionAffected.EntryFilledBarIndex != -1) {
-					string msg = "DUPE: CallbackAlertFilled can't do its job: alert.PositionAffected.EntryBar!=-1 for alert [" + alertFilled + "]";
-					Assembler.PopupException(msg, null, false);
-				} else {
-					string msg = "initializing EntryBar=[" + barFill + "] on AlertFilled";
-				}
-			} else {
-				if (alertFilled.PositionAffected.ExitFilledBarIndex != -1) {
-					string msg = "DUPE: CallbackAlertFilled can't do its job: alert.PositionAffected.ExitBar!=-1 for alert [" + alertFilled + "]";
-					Assembler.PopupException(msg, null, false);
-				} else {
-					string msg = "initializing ExitBar=[" + barFill + "] on AlertFilled";
-				}
 			}
 
 			int barFillRelno  = alertFilled.Bars.Count - 1;
@@ -175,6 +196,7 @@ namespace Sq1.Core.StrategyBase {
 					+ alertFilled.PlacedBarIndex + "]; FilledBar=[" + alertFilled.FilledBar + "] PlacedBar=[" + alertFilled.PlacedBar + "]";
 				Assembler.PopupException(msg);
 			}
+			#endregion
 
 			if (quoteFilledThisAlertNullForLive != null) {
 				//BACKTEST
@@ -199,37 +221,32 @@ namespace Sq1.Core.StrategyBase {
 				alertFilled.QuoteCurrent_whenThisAlertFilled_deserializable = alertFilled.QuoteCurrent_whenThisAlertFilled.Clone_asCoreQuote();
 			}
 
-			if (priceFill != 0) {
-				try {
-					alertFilled.FillPositionAffected_entryOrExit_respectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
-				} catch (Exception ex) {
-					string msg = "REMOVE_FILLED_FROM_PENDING? DONT_USE_Bar.ContainsPrice()?";
-					Assembler.PopupException(msg + msig, ex);
-				}
-			//} else {
-			//    if (alertFilled.OrderFollowed != null) {
-			//        switch (alertFilled.OrderFollowed.State) {
-			//            case OrderState.RejectedLimitReached:
-			//            case OrderState.EmergencyCloseSheduledForRejectedLimitReached:
-			//                string msg = "PRICE_FILL=0_EXPECTED_FOR_ORDER_STATUS[" + alertFilled.OrderFollowed.State + "]";
-			//                break;
-					
-			//            default:
-			//                string err = "PRICE_FILL=0_UNEXPECTEDLY__ADD_A_HANDLER alertFilled.OrderFollowed[" + alertFilled.OrderFollowed + "]";
-			//                Assembler.PopupException(err);
-			//                break;
+			//DILUTED_30_LINES_BELOW
+			//if (priceFill != 0) {
+			//    try {
+			//        alertFilled.FillPositionAffected_entryOrExit_respectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
+			//        if (alertFilled.IsEntryAlert) {
+			//            this.ExecutionDataSnapshot.Positions_OpenNow.AddOpened_step1of2	(alertFilled.PositionAffected, this, "BROKER_FILLED_ENTRY_ALERT__ADDING_TO_POSITIONS_OPEN");
+			//        } else {
+			//            this.ExecutionDataSnapshot.Positions_OpenNow.RemoveUnique		(alertFilled.PositionAffected, this, "BROKER_FILLED_EXIT_ALERT__REMOVING_FROM_POSITIONS_OPEN");
 			//        }
-			//    } else {
-			//        string err = "PRICE_FILL=0_UNEXPECTEDLY_FOR_BACKTEST_alertFilled.OrderFollowed=NULL"
-			//            + " backtest should never call callbackAlertFilled_moveAround() if no fill happened!";
-			//        Assembler.PopupException(err);
+			//    } catch (Exception ex) {
+			//        string msg = "REMOVE_FILLED_FROM_PENDING? DONT_USE_Bar.ContainsPrice()?";
+			//        Assembler.PopupException(msg + msig, ex);
 			//    }
-			}
+			//}
 
 			bool breakIfAbsent = true;
 			int threeSeconds = ConcurrentWatchdog.TIMEOUT_DEFAULT;
 			int forever = -1;
 			bool removed = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alertFilled, this, msig, forever, breakIfAbsent);
+
+			if (priceFill <= 0) {
+				string msg = "REJECTED_ALERTS_SHOULD_BE_PROCESSED_IN_callBackAlertRejected() WONT_MOVE_AROUND: priceFill[" + priceFill + "] <= 0";
+				Assembler.PopupException(msg, null, false);
+				//filledIndeed_notRejected_willAddPosition_toExecutionSnapshot = false;
+				return;
+			}
 
 			bool filledIndeed_notRejected_willAddPosition_toExecutionSnapshot = true;
 			if (alertFilled.OrderFollowed != null) {
@@ -257,33 +274,64 @@ namespace Sq1.Core.StrategyBase {
 				filledIndeed_notRejected_willAddPosition_toExecutionSnapshot = true;
 			}
 
-
-			Position positionOpenedAfterAlertFilled = null;
-			Position positionClosedAfterAlertFilled = null;
-
-			PositionList positionsOpenedAfterAlertFilled = new PositionList("positionsOpenedAfterAlertFilled", this.ExecutionDataSnapshot);
-			PositionList positionsClosedAfterAlertFilled = new PositionList("positionsClosedAfterAlertFilled", this.ExecutionDataSnapshot);
-
-			if (filledIndeed_notRejected_willAddPosition_toExecutionSnapshot) {
-				if (alertFilled.IsEntryAlert) {
-					this.ExecutionDataSnapshot.PositionsMasterOpen_addNew(alertFilled.PositionAffected);
-					positionOpenedAfterAlertFilled = alertFilled.PositionAffected;
-					positionsOpenedAfterAlertFilled.AddOpened_step1of2(positionOpenedAfterAlertFilled, this, msig);
-					// ALREADY_ADDED_at_"NOT_OPENED_BUT_PENDING" this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.AddOpened_step1of2(alertFilled.PositionAffected, this, "NOT_OPENED_BUT_PENDING");
-				} else {
-					this.ExecutionDataSnapshot.MovePositionOpen_toClosed(alertFilled.PositionAffected);
-					positionClosedAfterAlertFilled = alertFilled.PositionAffected;
-					positionsClosedAfterAlertFilled.AddClosed(positionClosedAfterAlertFilled, this, msig);
-					this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.RemoveUnique(alertFilled.PositionAffected, this, "NOT_OPENED_BUT_PENDING");
-				}
-			} else {
+			if (filledIndeed_notRejected_willAddPosition_toExecutionSnapshot == false) {
 				string msg = "NOT_ADDING_POSITION_TO_SNAP_KOZ_STATE[" + alertFilled.OrderFollowed.State + "]";
 				bool closingAlert_wasRejected = alertFilled.SellOrCover;
-				if (alertFilled.PositionAffected.Prototype != null && closingAlert_wasRejected) {
+				if (alertFilled.PositionPrototype != null && closingAlert_wasRejected) {
 					msg = "CLOSING_ALERT_REJECTED__USE_SymbolInfo.EMERGENCY_CLOSE " + msg;
 				}
 				Assembler.PopupException(msg, null, false);
 				return;
+			}
+
+
+			Position positionOpened_afterAlertFilled = null;
+			Position positionClosed_afterAlertFilled = null;
+
+			PositionList positionsOpened_afterAlertFilled = new PositionList("positionsOpened_afterAlertFilled", this.ExecutionDataSnapshot);
+			PositionList positionsClosed_afterAlertFilled = new PositionList("positionsClosed_afterAlertFilled", this.ExecutionDataSnapshot);
+
+
+			alertFilled.FillPositionAffected_entryOrExit_respectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
+
+			if (alertFilled.IsEntryAlert) {
+				Position positionOpening = alertFilled.PositionAffected;
+				bool duplicateThrows = true;
+				this.ExecutionDataSnapshot.Positions_addNew_incrementPositionSerno(positionOpening);
+				if (this.DataSource_fromBars.BrokerAsBacktest_nullUnsafe != null) {
+					this.ExecutionDataSnapshot.Positions_AllBacktested.AddOpened_step1of2(positionOpening, this,
+						"ENTRY_ALERT_GOT_FILL__ADDING_TO_Positions_AllBacktested" + msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, duplicateThrows);
+				}
+
+				positionOpened_afterAlertFilled = positionOpening;
+				positionsOpened_afterAlertFilled.AddOpened_step1of2(positionOpened_afterAlertFilled,
+					this, msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, duplicateThrows);
+				// THIS WAS_WRONG ALREADY_ADDED	this.ExecutionDataSnapshot.Positions_OpenNow.AddOpened_step1of2(positionOpening, this,
+				// THIS WAS_WRONG ALREADY_ADDED		"ENTRY_ALERT_GOT_FILL__ADDING_TO_Positions_OpenNow" + msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, duplicateThrows);		//ONLY_ALERTS_ARE_PENDING_TILL_ORDER_FILL PENDING_POSITIONS_ARENT_KEPT_ANYMORE
+			} else {
+				Position positionClosing = alertFilled.PositionAffected;
+				bool absenceThrows = true;
+				if (this.DataSource_fromBars.BrokerAsBacktest_nullUnsafe != null) {
+					bool added = this.ExecutionDataSnapshot.Positions_AllBacktested.AddToClosedDictionary_step2of2(positionClosing, this,
+						"EXIT_ALERT_GOT_FILL__ADDING_TO_Positions_AllBacktested" + msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, absenceThrows);
+				}
+				positionClosed_afterAlertFilled = positionClosing;
+				positionsClosed_afterAlertFilled.AddClosed(positionClosed_afterAlertFilled, this,
+					"EXIT_ALERT_GOT_FILL__ADDING_TO_positionsClosed_afterAlertFilled" + msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, absenceThrows);
+
+
+				// not necessary but keeps by-bar-open/close "history" inside PositionList
+				bool added2 = this.ExecutionDataSnapshot.Positions_OpenNow.AddToClosedDictionary_step2of2(positionClosing, this,
+					"EXIT_ALERT_GOT_FILL__ADDING_TO_Positions_OpenNow_ByBarClosedDictionary" + msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, absenceThrows);
+
+				this.ExecutionDataSnapshot.Positions_OpenNow.RemoveUnique(positionClosing, this,
+					"EXIT_ALERT_GOT_FILL__REMOVING_FROM_Positions_OpenNow" + msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, absenceThrows);
+
+				Position mustBeNull = this.Strategy.Script.LastPosition_OpenNow_nullUnsafe;
+				if (mustBeNull != null) {
+					string msg = "DONT_USE_RemoveUnique()_FOR_POSITIONS_LIST";
+					Assembler.PopupException(msg);
+				}
 			}
 
 			bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
@@ -296,7 +344,7 @@ namespace Sq1.Core.StrategyBase {
 			//}
 
 			AlertList alertsNewAfterAlertFilled = new AlertList("alertsNewAfterAlertFilled", this.ExecutionDataSnapshot);
-			PositionPrototype proto = alertFilled.PositionAffected.Prototype;
+			PositionPrototype proto = alertFilled.PositionPrototype;
 			if (proto != null) {
 				// 0. once again, set ExitAlert to What was actually filled, because prototypeEntry created SL & TP, which were both written into ExitAlert;
 				// so if we caught the Loss and SL was executed, position.ExitAlert will still contain TP if we don't set it here
@@ -304,7 +352,7 @@ namespace Sq1.Core.StrategyBase {
 				if (alertFilled.IsExitAlert && exitIsDifferent) {
 					alertFilled.PositionAffected.ExitAlertAttach(alertFilled);
 				}
-				// 1. alert.PositionAffected.Prototype.StopLossAlertForAnnihilation and TP will get assigned
+				// 1. alert.PositionPrototype.StopLossAlertForAnnihilation and TP will get assigned
 				alertsNewAfterAlertFilled.AddRange(this.PositionPrototypeActivator.PositionActivator_entryPoint__alertFilled_createSlTp_orAnnihilateCounterparty(alertFilled), this, msig);
 				// quick check: there must be {SL+TP} OR Annihilator
 				//this.Backtester.IsBacktestingNow == false &&
@@ -426,27 +474,91 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 
+			// 4. Script event will generate a StopLossMove PostponedHook
+			//NOW_INLINE this.invokeScriptEvents(alertFilled);
+			if (this.Strategy.Script != null) {
+				try {
+					this.ExecutionDataSnapshot.IsScriptRunning_onAlertFilled_nonBlockingRead = true;
+					this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnAlertFilled_callback(WAIT)");
+					this.Strategy.Script.OnAlertFilled_callback(alertFilled);
+				} catch (Exception e) {
+					string msg = "fix your OnAlertFilled_callback() in script[" + this.Strategy.Script.StrategyName + "]"
+						+ "; was invoked with alert[" + alertFilled + "]";
+					this.PopupException(msg, e);
+				} finally {
+					this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnAlertFilled_callback(WAIT)");
+					this.ExecutionDataSnapshot.IsScriptRunning_onAlertFilled_nonBlockingRead = false;
+				}
+				if (alertFilled.IsEntryAlert) {
+					if (alertFilled.PositionPrototype != null) {
+						try {
+							this.ExecutionDataSnapshot.IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlockingRead = true;
+							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpened_prototypeSlTpPlaced_callback(WAIT)");
+							this.Strategy.Script.OnPositionOpened_prototypeSlTpPlaced_callback(alertFilled.PositionAffected);
+						} catch (Exception e) {
+							string msg = "fix your OnPositionOpened_prototypeSlTpPlaced_callback() in script[" + this.Strategy.Script.StrategyName + "]"
+								+ "; was invoked with PositionAffected[" + alertFilled.PositionAffected + "]";
+							this.PopupException(msg, e);
+						} finally {
+							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionOpened_prototypeSlTpPlaced_callback(WAIT)");
+							this.ExecutionDataSnapshot.IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlockingRead = false;
+						}
+					} else {
+						try {
+							this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedNonBlockingRead = true;
+							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpened_callback(WAIT)");
+							this.Strategy.Script.OnPositionOpened_callback(alertFilled.PositionAffected);
+						} catch (Exception e) {
+							string msg = "fix your OnPositionOpened_callback() in script[" + this.Strategy.Script.StrategyName + "]"
+								+ "; was invoked with PositionAffected[" + alertFilled.PositionAffected + "]";
+							this.PopupException(msg, e);
+						} finally {
+							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionOpened_callback(WAIT)");
+							this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedNonBlockingRead = false;
+						}
+					}
+				} else {
+					if (alertFilled.PositionPrototype != null) {
+						string msg = "NYI alertFilled.PositionPrototype != null";
+						Assembler.PopupException(msg + msig);
+					} else {
+						try {
+							this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosedNonBlockingRead = true;
+							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionClosed_callback(WAIT)");
+							this.Strategy.Script.OnPositionClosed_callback(alertFilled.PositionAffected);
+						} catch (Exception e) {
+							string msg = "fix your OnPositionClosed_callback() in script[" + this.Strategy.Script.StrategyName + "]"
+								+ "; was invoked with PositionAffected[" + alertFilled.PositionAffected + "]";
+							this.PopupException(msg, e);
+						} finally {
+							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionClosed_callback(WAIT)");
+							this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosedNonBlockingRead = false;
+						}
+					}
+				}
+			}
+
 			if (this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 				string msg = "AFTER_BACKTEST__THE_HOOK_INVOKES_Performance.BuildStatsOnBacktestFinished()_AND_ReportersFormsManager.BuildReportFullOnBacktestFinished()";
 				return;
 			}
 
 			ReporterPokeUnit pokeUnit_dontForgetToDispose = new ReporterPokeUnit(quoteFilledThisAlertNullForLive, alertsNewAfterAlertFilled,
-															 positionsOpenedAfterAlertFilled,
-															 positionsClosedAfterAlertFilled,
+															 positionsOpened_afterAlertFilled,
+															 positionsClosed_afterAlertFilled,
 															 null
 															);
 			using (pokeUnit_dontForgetToDispose) {
 				//v1 this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
-				if (positionOpenedAfterAlertFilled != null) {
-					this.PerformanceAfterBacktest.BuildIncremental_brokerFilledAlertsOpening_forPositions_step1of3(positionOpenedAfterAlertFilled);
+				if (positionOpened_afterAlertFilled != null) {
+					this.PerformanceAfterBacktest.BuildIncremental_brokerFilledAlertsOpening_forPositions_step1of3(positionOpened_afterAlertFilled);
 					//if (alertFilled.GuiHasTimeRebuildReportersAndExecution) {
 						// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
 						this.EventGenerator.RaiseOnBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit_dontForgetToDispose);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
 					//}
 				}
-				if (positionClosedAfterAlertFilled != null) {
-					this.PerformanceAfterBacktest.BuildReportIncremental_brokerFilledAlertsClosing_forPositions_step3of3(positionClosedAfterAlertFilled);
+				if (positionClosed_afterAlertFilled != null) {
+					this.PerformanceAfterBacktest.BuildReportIncremental_brokerFilledAlertsClosing_forPositions_step3of3(positionClosed_afterAlertFilled);
 					if (alertFilled.GuiHasTimeRebuildReportersAndExecution) {
 						// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
 						this.EventGenerator.RaiseOnBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit_dontForgetToDispose);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
@@ -454,66 +566,6 @@ namespace Sq1.Core.StrategyBase {
 				}
 
 				this.ChartShadow.PositionsRealtimeAdd(pokeUnit_dontForgetToDispose);
-
-				// 4. Script event will generate a StopLossMove PostponedHook
-				//NOW_INLINE this.invokeScriptEvents(alertFilled);
-				if (this.Strategy.Script == null) return;
-				try {
-					try {
-						this.ExecutionDataSnapshot.IsScriptRunning_onAlertFilled_nonBlockingRead = true;
-						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnAlertFilled_callback(WAIT)");
-						this.Strategy.Script.OnAlertFilled_callback(alertFilled);
-					} finally {
-						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnAlertFilled_callback(WAIT)");
-						this.ExecutionDataSnapshot.IsScriptRunning_onAlertFilled_nonBlockingRead = false;
-					}
-				} catch (Exception e) {
-					string msg = "fix your OnAlertFilledCallback() in script[" + this.Strategy.Script.StrategyName + "]"
-						+ "; was invoked with alert[" + alertFilled + "]";
-					this.PopupException(msg, e);
-				}
-				if (alertFilled.IsEntryAlert) {
-					try {
-						if (alertFilled.PositionAffected.Prototype != null) {
-							try {
-								this.ExecutionDataSnapshot.IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlockingRead = true;
-								this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpened_prototypeSlTpPlaced_callback(WAIT)");
-								this.Strategy.Script.OnPositionOpened_prototypeSlTpPlaced_callback(alertFilled.PositionAffected);
-							} finally {
-								this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionOpened_prototypeSlTpPlaced_callback(WAIT)");
-								this.ExecutionDataSnapshot.IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlockingRead = false;
-							}
-						} else {
-							try {
-								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedNonBlockingRead = true;
-								this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpened_callback(WAIT)");
-								this.Strategy.Script.OnPositionOpened_callback(alertFilled.PositionAffected);
-							} finally {
-								this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionOpened_callback(WAIT)");
-								this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedNonBlockingRead = false;
-							}
-						}
-					} catch (Exception e) {
-						string msg = "fix your ExecuteOnPositionOpened() in script[" + this.Strategy.Script.StrategyName + "]"
-							+ "; was invoked with PositionAffected[" + alertFilled.PositionAffected + "]";
-						this.PopupException(msg, e);
-					}
-				} else {
-					try {
-						try {
-							this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosedNonBlockingRead = true;
-							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionClosed_callback(WAIT)");
-							this.Strategy.Script.OnPositionClosed_callback(alertFilled.PositionAffected);
-						} finally {
-							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionClosed_callback(WAIT)");
-							this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosedNonBlockingRead = false;
-						}
-					} catch (Exception e) {
-						string msg = "fix your OnPositionClosedCallback() in script[" + this.Strategy.Script.StrategyName + "]"
-							+ "; was invoked with PositionAffected[" + alertFilled.PositionAffected + "]";
-						this.PopupException(msg, e);
-					}
-				}
 			}
 		}
 		void closePosition_withAlertClonedFromEntry_backtestEnded(Alert alert) {
@@ -534,8 +586,8 @@ namespace Sq1.Core.StrategyBase {
 			alert.PositionAffected.FillExitWith(alert.FilledBar, alert.PriceEmitted, alert.Qty, 0, 0);
 			//alertFilled.FillPositionAffectedEntryOrExitRespectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
 
-			bool absenseInPositionsOpenNowIsAnError = false;
-			this.ExecutionDataSnapshot.MovePositionOpen_toClosed(alert.PositionAffected, absenseInPositionsOpenNowIsAnError);
+			bool absenceThrows = true;
+			this.ExecutionDataSnapshot.BacktestEnded_MovePositionOpen_toClosed(alert.PositionAffected, absenceThrows);
 		}
 		bool check_positionCanBeClosed(Alert alert, string msig, bool checkPositionOpenNow = true) {
 			if (alert.PositionAffected == null) {
@@ -552,7 +604,7 @@ namespace Sq1.Core.StrategyBase {
 				return false;
 			}
 			if (checkPositionOpenNow == true) {
-				bool shouldRemove = this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.Contains(alert.PositionAffected, this, "check_positionCanBeClosed(WAIT)");
+				bool shouldRemove = this.ExecutionDataSnapshot.Positions_OpenNow.Contains(alert.PositionAffected, this, "check_positionCanBeClosed(WAIT)");
 
 				if (alert.FilledBarIndex > -1) {
 					if (shouldRemove) {

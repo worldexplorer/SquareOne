@@ -19,36 +19,36 @@ namespace Sq1.Core.StrategyBase {
 			proto.checkSLOffsets_throwBeforeAbsorbing(proto.StopLoss_negativeOffset, proto.StopLossActivation_negativeOffset);
 			//bool a = this.executor.Backtester.IsBacktestingNow;
 
-			Position posWithAlert = executor.BuyOrShort_alertAndPosition_createRegister (
+			Alert alert = executor.BuyOrShort_alertCreateRegister (
 				this.executor.Bars.BarStreaming_nullUnsafe, proto.PriceEntry,
 				proto.SignalEntry + "protoEntry@" + proto.PriceEntry,
 				MarketConverter.EntryDirectionFromLongShort(proto.LongShort),
 				MarketConverter.EntryMarketLimitStopFromDirection(
 					this.executor.Bars.BarStreaming_nullUnsafeCloneReadonly.Close, proto.PriceEntry, proto.LongShort)
 				);
-			if (posWithAlert == null) {
+			if (alert == null) {
 				string msg = "man I don't understand this null; out-of-bar limit should still leave a pending Alert.PositionAffected";
 				Assembler.PopupException(msg + msig);
 				throw new Exception(msg + msig);
 			}
-			if (posWithAlert.Prototype != null) {
+			if (alert.PositionPrototype != null) {
 				string msg = "CLEANUP: I was trying to catch MoveStopLoss::if(proto.StopLossAlertForAnnihilation==null)"
 					+ " so I thought there is a new prototype assigned to a position,"
 					+ " since we never put null directly proto.StopLossAlertForAnnihilation";
 				Assembler.PopupException(msg + msig);
 				throw new Exception(msg + msig);
 			}
-			posWithAlert.Prototype = proto;
+			alert.PositionPrototype = proto;
 		}
 
 		bool checkPrototype_alreadyPlaced(PositionPrototype proto) {
 			string msig = " //checkPrototype_alreadyPlaced(WAIT)";
 			List<Alert> pendingSafe = this.executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, msig);
 			foreach (Alert alert in pendingSafe) {
-				Position pos = alert.PositionAffected;
-				if (pos == null) continue;
-				if (pos.Prototype == null) continue;
-				if (pos.Prototype.IsIdenticalTo(proto)) return true;
+				//Position pos = alert.PositionAffected;
+				//if (pos == null) continue;
+				if (alert.PositionPrototype == null) continue;
+				if (alert.PositionPrototype.IsIdenticalTo(proto)) return true;
 			}
 			return false;
 		}

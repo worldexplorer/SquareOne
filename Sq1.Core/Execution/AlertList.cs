@@ -37,7 +37,7 @@ namespace Sq1.Core.Execution {
 				base.UnLockFor(lockOwner, lockPurpose);
 			}
 		}
-		public void DisposeWaitHandlesAndClear(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public void DisposeWaitHandles_andClearInnerList(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			lockPurpose += " //" + base.ReasonToExist + ".DisposeWaitHandlesAndClear()";
 			try {
 				base.WaitAndLockFor(lockOwner, lockPurpose, waitMillis);
@@ -51,18 +51,18 @@ namespace Sq1.Core.Execution {
 			lockPurpose += " //" + base.ReasonToExist + ".AddRange(" + alerts.Count + ")";
 			try {
 				base.WaitAndLockFor(lockOwner, lockPurpose, waitMillis);
-				foreach (Alert alert in alerts) this.AddNoDupe(alert, lockOwner, lockPurpose, waitMillis, duplicateThrowsAnError);
+				foreach (Alert alert in alerts) this.AddNoDupe_byBarsPlaced(alert, lockOwner, lockPurpose, waitMillis, duplicateThrowsAnError);
 			} finally {
 				base.UnLockFor(lockOwner, lockPurpose);
 			}
 		}
-		public ByBarDumpStatus AddNoDupe(Alert alert, object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+		public ByBarDumpStatus AddNoDupe_byBarsPlaced(Alert alert, object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
 			lockPurpose += " //" + base.ReasonToExist + ".AddNoDupe(" + alert.ToString() + ")";
 			try {
 				base.WaitAndLockFor(lockOwner, lockPurpose, waitMillis);
 				bool newBarAddedInHistory = false;
 				bool added = base.AppendUnique(alert, lockOwner, lockPurpose, waitMillis, duplicateThrowsAnError);
-				if (added == false) return ByBarDumpStatus.BarAlreadyContainedTheAlertToAdd;
+				if (added == false) return ByBarDumpStatus.BarAlreadyContained_alertYouAdd;
 
 				//int barIndexAlertStillPending = alert.Bars.Count - 1;
 				int barIndexPlaced = alert.PlacedBarIndex;
@@ -71,13 +71,13 @@ namespace Sq1.Core.Execution {
 					newBarAddedInHistory = true;
 				}
 				List<Alert> slot = this.ByBarPlaced[barIndexPlaced];
-				if (slot.Contains(alert)) return ByBarDumpStatus.BarAlreadyContainedTheAlertToAdd;
+				if (slot.Contains(alert)) return ByBarDumpStatus.BarAlreadyContained_alertYouAdd;
 				if (slot.Count > 0) {
 					string msg = "appending second StopLossDot to the same bar [" + alert + "]";
 				}
 				slot.Add(alert);
-				return (newBarAddedInHistory) ? ByBarDumpStatus.OneNewAlertAddedForNewBarInHistory
-					: ByBarDumpStatus.SequentialAlertAddedForExistingBarInHistory;
+				return (newBarAddedInHistory) ? ByBarDumpStatus.OneNewAlertAdded_forNewBar
+					: ByBarDumpStatus.SequentialAlertAdded_forExistingBar;
 			} finally {
 				base.UnLockFor(lockOwner, lockPurpose);
 			}
@@ -114,8 +114,8 @@ namespace Sq1.Core.Execution {
 				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public Alert FindSimilarNotSameIdenticalForOrdersPending(Alert alert, object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
-			lockPurpose += " //" + base.ReasonToExist + ".FindSimilarNotSameIdenticalForOrdersPending(" + alert + ")";
+		public Alert FindIdentical_notSame_forOrdersPending(Alert alert, object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + base.ReasonToExist + ".FindIdentical_notSame_forOrdersPending(" + alert + ")";
 			try {
 				base.WaitAndLockFor(lockOwner, lockPurpose, waitMillis);
 				Alert similar = null;
@@ -174,7 +174,7 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public override string ToString() {
-			return base.ToString() + " ByBarPlaced.Bars[" + ByBarPlaced.Keys.Count + "]";
+			return base.ToString() + " this.ByBarPlaced.Bars[" + this.ByBarPlaced.Keys.Count + "]";
 		}
 
 		public void Dispose() {
@@ -183,7 +183,7 @@ namespace Sq1.Core.Execution {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.DisposeWaitHandlesAndClear(this, "EXTERNAL_DISPOSE()_CALL");
+			this.DisposeWaitHandles_andClearInnerList(this, "EXTERNAL_DISPOSE()_CALL");
 			this.IsDisposed = true;
 		}
 		public bool IsDisposed { get; private set; }
@@ -196,7 +196,7 @@ namespace Sq1.Core.Execution {
 				AlertList ret		= new AlertList(base.ReasonToExist + "_MINUS_" + alertsPending_alreadyScheduledForDelayedFill.ReasonToExist, base.Snap);
 				foreach(Alert eachMine in base.InnerList) {
 					if (alertsPending_alreadyScheduledForDelayedFill.Contains(eachMine, lockOwner, lockPurpose)) continue;
-					ret.AddNoDupe(eachMine, lockOwner, lockPurpose);
+					ret.AddNoDupe_byBarsPlaced(eachMine, lockOwner, lockPurpose);
 				}
 				return ret;
 			} finally {

@@ -125,7 +125,7 @@ namespace Sq1.Core.StrategyBase {
 			Bar barStreaming_nullUnsafe = this.Bars.BarStreaming_nullUnsafe;
 			List<Alert> alertsPending_atCurrentBar_safeCopy = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, msig);
 			if (barStreaming_nullUnsafe != null && alertsPending_atCurrentBar_safeCopy.Count > 0) {
-				this.ChartShadow.AlertsPendingStillNotFilledForBarAdd(barStreaming_nullUnsafe.ParentBarsIndex, alertsPending_atCurrentBar_safeCopy);
+				this.ChartShadow.AlertsPending_stillNotFilled_addForBar(barStreaming_nullUnsafe.ParentBarsIndex, alertsPending_atCurrentBar_safeCopy);
 			}
 
 			List<Alert> alertsDoomed_afterExec_safeCopy = this.ExecutionDataSnapshot.AlertsDoomed.SafeCopy(this, msig);
@@ -170,9 +170,11 @@ namespace Sq1.Core.StrategyBase {
 			if (alertsNew_afterExec_safeCopy.Count > 0) {
 				this.EnrichAlerts_withQuoteCreated(alertsNew_afterExec_safeCopy, quoteBoundAttached_toEnrichAlerts);
 				//bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
-				foreach (Alert alertNew in alertsNew_afterExec_safeCopy) {
-					this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.AddPending(alertNew.PositionAffected, this, "NOT_OPENED_BUT_PENDING");
-				}
+				
+				// PENDING_POSITIONS_ARE_DEPRECATED
+				//foreach (Alert alertNew in alertsNew_afterExec_safeCopy) {
+				//    this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.AddPending(alertNew.PositionAffected, this, "PENDING_POSITIONS_ARE_DEPRECATED NOT_OPENED_BUT_PENDING");
+				//}
 
 				// for backtest only => btnEmirOrders.Checked isn't analyzed at all
 				if (this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
@@ -240,7 +242,7 @@ namespace Sq1.Core.StrategyBase {
 												this.ExecutionDataSnapshot.AlertsNewAfterExec				.Clone(this, msig),
 												this.ExecutionDataSnapshot.Positions_toBeOpenedAfterExec	.Clone(this, msig),
 												this.ExecutionDataSnapshot.Positions_toBeClosedAfterExec	.Clone(this, msig),
-												this.ExecutionDataSnapshot.Positions_Pending_orOpenNow		.Clone(this, msig) );
+												this.ExecutionDataSnapshot.Positions_OpenNow		.Clone(this, msig) );
 
 			//MOVED_UPSTACK_TO_LivesimQuoteBarConsumer
 			//if (this.Backtester.IsBacktestRunning && this.Backtester.IsLivesimRunning) {

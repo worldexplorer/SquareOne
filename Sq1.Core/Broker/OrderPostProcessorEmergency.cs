@@ -174,7 +174,7 @@ namespace Sq1.Core.Broker {
 				//	priceScript, replacement.Alert.Direction, replacement.Alert.MarketOrderAs, replacement.SlippageAppliedIndex);
 				double slippageNext_NaNunsafe = replacement.Alert.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(replacement.SlippageAppliedIndex);
 				replacement.SlippageApplied = slippageNext_NaNunsafe;
-				replacement.PriceRequested = priceScript + slippageNext_NaNunsafe;
+				replacement.PriceEmitted = priceScript + slippageNext_NaNunsafe;
 
 				string msg = "Scheduling SubmitOrdersThreadEntry [" + replacement.ToString() + "] slippageIndex["
 					+ replacement.SlippageAppliedIndex + "] through [" + replacement.Alert.DataSource_fromBars.BrokerAdapter + "]";

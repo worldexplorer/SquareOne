@@ -145,6 +145,7 @@
     <Compile Include="DataTypes\SymbolInfo.EventGenerator.cs">
       <DependentUpon>SymbolInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Execution\OrderList.cs" />
     <Compile Include="Indicators\Indicator.EventGenerator.cs">
       <DependentUpon>Indicator.cs</DependentUpon>
     </Compile>

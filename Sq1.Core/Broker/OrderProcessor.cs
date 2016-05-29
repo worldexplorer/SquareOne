@@ -222,10 +222,10 @@ namespace Sq1.Core.Broker {
 			Order victimOrder = newStateOmsg.Order;
 			this.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(newStateOmsg);
 			switch (victimOrder.State) {
-				case OrderState.VictimsBulletPreSubmit:
-				case OrderState.VictimsBulletSubmitted:
-				case OrderState.VictimsBulletConfirmed:
-				case OrderState.VictimsBulletFlying:
+				case OrderState.VictimBulletPreSubmit:
+				case OrderState.VictimBulletSubmitted:
+				case OrderState.VictimBulletConfirmed:
+				case OrderState.VictimBulletFlying:
 				case OrderState.SLAnnihilated:
 				case OrderState.TPAnnihilated:
 					break;
@@ -265,7 +265,7 @@ namespace Sq1.Core.Broker {
 					string msg = "postProcess_victimOrder() NO_HANDLER_FOR_ORDER_VICTIM [" + victimOrder + "]'s state[" + victimOrder.State + "]"
 						+ "your BrokerAdapter should call for Victim.States:{"
 						//+ OrderState.KillSubmitting + ","
-						+ OrderState.VictimsBulletFlying + ","
+						+ OrderState.VictimBulletFlying + ","
 						//+ OrderState.Killed + ","
 						//+ OrderState.SLAnnihilated + ","
 						//+ OrderState.TPAnnihilated + "}";
@@ -364,8 +364,10 @@ namespace Sq1.Core.Broker {
 					order.PriceFilled = 0;
 					//NEVER order.PricePaid = 0;
 					try {
-						order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(order.Alert, null,
-							order.PriceFilled, order.QtyFill, order.SlippageFilled, order.CommissionFill);
+						//DOESNT_EXPECT_PRICE=0
+						//order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(order.Alert, null,
+						//	order.PriceFilled, order.QtyFill, order.SlippageFilled, order.CommissionFill);
+						order.Alert.Strategy.Script.Executor.CallbackOrderError(order);
 					} catch (Exception ex) {
 						string msg3 = "PostProcessOrderState caught from CallbackAlertFilledMoveAroundInvokeScript() ";
 						Assembler.PopupException(msg3 + msig, ex);
@@ -398,8 +400,10 @@ namespace Sq1.Core.Broker {
 					//NEVER order.PricePaid = 0;
 
 					try {
-						order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(order.Alert, null,
-							order.PriceFilled, order.QtyFill, order.SlippageFilled, order.CommissionFill);
+						//DOESNT_EXPECT_PRICE=0
+						//order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(order.Alert, null,
+						//	order.PriceFilled, order.QtyFill, order.SlippageFilled, order.CommissionFill);
+						order.Alert.Strategy.Script.Executor.CallbackOrderExpired(order);
 					} catch (Exception ex) {
 						string msg3 = "I_FAILED_TO_REMOVE_FROM_AlertsPending_FOR_REJECTED_ORDER CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably() ";
 						Assembler.PopupException(msg3 + msig, ex);
@@ -444,7 +448,7 @@ namespace Sq1.Core.Broker {
 					break;
 
 				case OrderState.PreSubmit:
-				case OrderState.VictimsBulletPreSubmit:
+				case OrderState.VictimBulletPreSubmit:
 				case OrderState.KillerPreSubmit:
 					break;
 
@@ -466,12 +470,12 @@ namespace Sq1.Core.Broker {
 			string ret = "";
 
 			//int itemsCnt			= this.ExecutionTreeControl.OlvOrdersTree.Items.Count;
-			int allCnt				= this.DataSnapshot.OrdersAll.Count;
-			int submittingCnt		= this.DataSnapshot.OrdersSubmitting.Count;
-			int pendingCnt			= this.DataSnapshot.OrdersPending.Count;
-			int pendingFailedCnt	= this.DataSnapshot.OrdersPendingFailed.Count;
-			int cemeteryHealtyCnt	= this.DataSnapshot.OrdersCemeteryHealthy.Count;
-			int cemeterySickCnt		= this.DataSnapshot.OrdersCemeterySick.Count;
+			int allCnt				= this.DataSnapshot.OrdersAll				.Count;
+			int submittingCnt		= this.DataSnapshot.OrdersSubmitting		.Count;
+			int pendingCnt			= this.DataSnapshot.OrdersPending			.Count;
+			int pendingFailedCnt	= this.DataSnapshot.OrdersPendingFailed		.Count;
+			int cemeteryHealtyCnt	= this.DataSnapshot.OrdersCemeteryHealthy	.Count;
+			int cemeterySickCnt		= this.DataSnapshot.OrdersCemeterySick		.Count;
 			int fugitive			= allCnt - (submittingCnt + pendingCnt + pendingFailedCnt + cemeteryHealtyCnt + cemeterySickCnt);
 
 										ret +=		   cemeteryHealtyCnt + " Filled/Killed/Killers";

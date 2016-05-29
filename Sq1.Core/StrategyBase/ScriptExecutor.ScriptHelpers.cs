@@ -13,7 +13,7 @@ namespace Sq1.Core.StrategyBase {
 //			return BuyOrShortAlertCreateRegister(entryBar, stopOrLimitPrice, entrySignalName,
 //												 direction, entryMarketLimitStop, false);
 //		}
-		public Position BuyOrShort_alertAndPosition_createRegister(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
+		public Alert BuyOrShort_alertCreateRegister(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
 													  Direction direction, MarketLimitStop entryMarketLimitStop, bool registerInNew = true) {
 			string msig = " //BuyOrShortAlertCreateRegister(stopOrLimitPrice[" + stopOrLimitPrice+ "], entrySignalName[" + entrySignalName + "], entryBar[" + entryBar + "])";
 			this.checkThrow_alertCanBeCreated(entryBar, msig);
@@ -29,20 +29,20 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg);
 				return null;
 			}
-			Alert similar = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.FindSimilarNotSameIdenticalForOrdersPending(alert, this, "BuyOrShortAlertCreateRegister(WAIT)");
+			Alert similar = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.FindIdentical_notSame_forOrdersPending(alert, this, "BuyOrShortAlertCreateRegister(WAIT)");
 			if (similar != null) {
 				string msg = "DUPLICATE_ALERT_FOUND similar[" + similar + "]";
 				Assembler.PopupException(msg + msig);
-				return similar.PositionAffected;
+				return similar;
 			}
 
 			this.ExecutionDataSnapshot.AlertEnriched_register(alert, registerInNew);
 
 			// ok for single-entry strategies; nogut if we had many Streaming alerts and none of orders was filled yet...
 			// MOVED_TO_ON_ALERT_FILLED_CALBACK
-			Position pos = new Position(alert, alert.PriceScript);
-			alert.PositionAffected = pos;
-			return pos;
+			//Position pos = new Position(alert, alert.PriceScript);
+			//alert.PositionAffected = pos;
+			return alert;
 		}
 		public Alert SellOrCover_alertCreate_dontRegisterInNew_prototypeActivator(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
 															 Direction direction, MarketLimitStop exitMarketLimitStop) {
@@ -141,7 +141,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return;
 			}
-			this.ExecutionDataSnapshot.AlertsDoomed.AddNoDupe(alert, this, msig);
+			this.ExecutionDataSnapshot.AlertsDoomed.AddNoDupe_byBarsPlaced(alert, this, msig);
 		}
 
 
@@ -153,7 +153,7 @@ namespace Sq1.Core.StrategyBase {
 			Bar barNewStaticArrived = this.Bars.BarStaticLast_nullUnsafe;
 			int barIndex = barNewStaticArrived.ParentBarsIndex;
 
-			List<Position> positionsOpenNow = this.ExecutionDataSnapshot.Positions_Pending_orOpenNow.SafeCopy(this, msig);
+			List<Position> positionsOpenNow = this.ExecutionDataSnapshot.Positions_OpenNow.SafeCopy(this, msig);
 			List<Alert> alertsSubmittedToKill_forAllOpenPositions = new List<Alert>();
 			foreach (Position positionOpen in positionsOpenNow) {
 				List<Alert> alertsSubmittedToKill = this.PositionClose_immediately(positionOpen, "EXIT_FORCED_" + barNewStaticArrived.DateTimeOpen.ToString(), true);
@@ -163,7 +163,7 @@ namespace Sq1.Core.StrategyBase {
 			// NOTE if you didn't use low level Alerts (like SellByStop()), no need to kill PendingAlerts manually here!
 			//List<Alert> alertsPending = base.Executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "//Gap2StudiesCompiled.closeAllOpenPositionsKillPendingAlertsAtExitForced(WAIT)");
 			//foreach (Alert alertPending in alertsPending) {
-			//    if (alertPending.PositionAffected != null && alertPending.PositionAffected.Prototype != null) {
+			//    if (alertPending.PositionAffected != null && alertPending.PositionPrototype != null) {
 			//        return;
 			//    }
 			//    base.Executor.AlertPending_kill(alertPending);

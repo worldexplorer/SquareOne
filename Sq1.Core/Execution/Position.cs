@@ -19,8 +19,6 @@ namespace Sq1.Core.Execution {
 		public double				Shares					{ get; protected set; }
 		public double				QuoteCurrent_forMarketOrStopLimit_implicitPrice;// { get; protected set; }
 
-		public PositionPrototype	Prototype;
-
 		public Alert				EntryAlert;				// { get; protected set; }
 		public MarketLimitStop		EntryMarketLimitStop	{ get; protected set; }
 		public int					EntryFilledBarIndex		{ get; protected set; }
@@ -452,5 +450,7 @@ namespace Sq1.Core.Execution {
 			return msg.ToString();
 
 		}
+
+		public PositionPrototype Prototype { get { return this.EntryAlert.PositionPrototype; } }
 	}
 }

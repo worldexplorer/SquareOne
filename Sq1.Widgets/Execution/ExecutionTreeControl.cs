@@ -46,8 +46,11 @@ namespace Sq1.Widgets.Execution {
 			this.InitializeComponent();
 			this.buildMniShortcuts_afterInitializeComponent();
 			
-			this.OlvOrderTree_customize();
-			this.messagesListView_customize();
+			this.fontCache = new FontCache(base.Font);
+
+			this.olvOrderTree_customize();
+			this.olvMessages_customize();
+
 
 			// THROWS this.olvMessages.AllColumns.AddRange(new List<OLVColumn>() {
 			//	this.colheMessageDateTime,
@@ -58,8 +61,6 @@ namespace Sq1.Widgets.Execution {
 			WindowsFormsUtils.SetDoubleBuffered(this.OlvOrdersTree);
 			WindowsFormsUtils.SetDoubleBuffered(this.olvMessages);
 			WindowsFormsUtils.SetDoubleBuffered(this);
-
-			this.fontCache = new FontCache(this.Font);
 		}
 
 		//former public void Initialize(), replaced by InitializeWithShadowTreeRebuilt();
@@ -126,9 +127,14 @@ namespace Sq1.Widgets.Execution {
 				this.ResumeLayout(true);
 			}
 			
-			this.mniToggleBrokerTime		.Checked = this.dataSnapshot.ShowBrokerTime;
-			this.mniToggleCompletedOrders	.Checked = this.dataSnapshot.ShowCompletedOrders;
-			this.mniToggleSyncWithChart		.Checked = this.dataSnapshot.SingleClickSyncWithChart;
+			this.mniToggleBrokerTime			.Checked = this.dataSnapshot.ShowBrokerTime;
+			this.mniToggleCompletedOrders		.Checked = this.dataSnapshot.ShowCompletedOrders;
+			this.mniToggleSyncWithChart			.Checked = this.dataSnapshot.SingleClickSyncWithChart;
+			this.mniToggleColorifyOrdersTree	.Checked = this.dataSnapshot.ColorifyOrderTree_positionNet;
+			this.mniToggleColorifyMessages		.Checked = this.dataSnapshot.ColorifyMessages_askBrokerProvider;
+
+			this.olvOrdersTree_customizeColors();
+			this.olvMessages_customizeColors();
 			
 			this.dataSnapshot.FirstRowShouldStaySelected = true;
 			this.RebuildAllTree_focusOnTopmost();

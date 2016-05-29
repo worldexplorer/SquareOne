@@ -107,20 +107,21 @@ namespace Sq1.Strategies.Demo {
 				
 			Bar barStreaming = barStaticFormed.ParentBars.BarStreaming_nullUnsafe;
 
-			Position lastPos = base.LastPosition_fromMaster_nullUnsafe;
-			bool isLastPosition_OpenNow = base.IsLastPosition_OpenNow;
-			if (isLastPosition_OpenNow && crossed) {
+			Position lastPositionOpen = base.LastPosition_OpenNow_nullUnsafe;
+			//bool isLastPosition_alreadyClosed = base.IsLastPosition_stillOpen;
+			//if (isLastPosition_alreadyClosed && crossed) {
+			if (lastPositionOpen == null && crossed) {
 				string msg = "ExitAtMarket@" + barStaticFormed.ParentBarsIdent;
-				Alert exitPlaced = base.ExitAtMarket(barStreaming, lastPos, msg);
+				Alert exitPlaced = base.ExitAtMarket(barStreaming, lastPositionOpen, msg);
 			}
 
 			if (fastCrossedUp) {
 				string msg = "BuyAtMarket@" + barStaticFormed.ParentBarsIdent;
-				Position buyPlaced = base.BuyAtMarket(barStreaming, msg);
+				Alert buyPlaced = base.BuyAtMarket(barStreaming, msg);
 			}
 			if (fastCrossedDown) {
 				string msg = "ShortAtMarket@" + barStaticFormed.ParentBarsIdent;
-				Position shortPlaced = base.ShortAtMarket(barStreaming, msg);
+				Alert shortPlaced = base.ShortAtMarket(barStreaming, msg);
 			}
 		}
 		public override void OnAlertFilled_callback(Alert alertFilled) {

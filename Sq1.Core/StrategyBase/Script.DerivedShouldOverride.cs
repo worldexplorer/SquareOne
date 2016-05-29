@@ -42,5 +42,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public virtual void OnStrategyEmittingOrders_turnedOff_callback() {
 		}
+		public virtual void OnOrderReplaced_callback(Order orderKilled, Order orderReplacement) {
+		}
 	}
 }

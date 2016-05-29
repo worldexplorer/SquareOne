@@ -208,6 +208,8 @@ namespace Sq1.Core.Broker {
 			}
 			ScriptExecutor executor = alert_forVictim.Strategy.Script.Executor;
 			try {
+				executor.CallbackOrderKilled_addGrayCircle_onChart(orderPending_victimKilled);
+
 				executor.CallbackAlertKilled_invokeScript_nonReenterably(alert_forVictim);
 				string msg = orderPending_victimKilled.State + " => AlertsPending.Remove.Remove(orderExecuted.Alert)'d";
 				orderPending_victimKilled.appendMessage(msg + msigInvoker);

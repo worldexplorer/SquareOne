@@ -13,7 +13,7 @@ namespace Sq1.Core.Serializers {
 		public bool HasChangesToSave;
 		bool currentlySerializing;
 		object itemsBufferedWhileSerializingLock;
-		List<T> itemsBufferedWhileSerializing;
+		List<T> itemsBuffered_whileSerializing;
 
 		public SerializerLogrotate() : base() {
 			this.logRotateSizeLimit = 2 * 1024 * 1024;	// 2Mb
@@ -22,7 +22,7 @@ namespace Sq1.Core.Serializers {
 			this.entityLock = new Object();
 			this.currentlySerializing = false;
 			this.itemsBufferedWhileSerializingLock = new object();
-			this.itemsBufferedWhileSerializing = new List<T>();
+			this.itemsBuffered_whileSerializing = new List<T>();
 		}
 
 		public override List<T> Deserialize() {
@@ -54,9 +54,9 @@ namespace Sq1.Core.Serializers {
 						});
 					this.safeRotateWriteAll(base.JsonAbsFile, json);
 					lock (this.itemsBufferedWhileSerializingLock) {
-						if (this.itemsBufferedWhileSerializing.Count > 0) {
-							base.EntityDeserialized.AddRange(this.itemsBufferedWhileSerializing);
-							this.itemsBufferedWhileSerializing.Clear();
+						if (this.itemsBuffered_whileSerializing.Count > 0) {
+							base.EntityDeserialized.AddRange(this.itemsBuffered_whileSerializing);
+							this.itemsBuffered_whileSerializing.Clear();
 						}
 					}
 				}
@@ -102,7 +102,7 @@ namespace Sq1.Core.Serializers {
 		public void Insert(int index, T order) {
 			if (this.currentlySerializing == true) {
 				lock (this.itemsBufferedWhileSerializingLock) {
-					this.itemsBufferedWhileSerializing.Insert(index, order);
+					this.itemsBuffered_whileSerializing.Insert(index, order);
 				}
 			} else {
 				lock (this.entityLock) {

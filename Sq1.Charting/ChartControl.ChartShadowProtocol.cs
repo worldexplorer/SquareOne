@@ -80,7 +80,7 @@ namespace Sq1.Charting {
 			if (barIndex < this.VisibleBarLeft) return tooltipPositionShown;
 			if (barIndex > this.VisibleBarRight) return tooltipPositionShown;	//Debugger.Break();
 
-			Dictionary<int, List<AlertArrow>> alertArrowsListByBar = this.ExecutorObjects_frozenForRendering.AlertArrowsListByBar;
+			Dictionary<int, List<AlertArrow>> alertArrowsListByBar = this.ExecutorObjects_frozenForRendering.AlertArrowLists_byBar;
 			if (alertArrowsListByBar.ContainsKey(barIndex) == false) {
 				this.TooltipPositionHide();
 				#if DEBUG
@@ -127,7 +127,7 @@ namespace Sq1.Charting {
 			return tooltipPositionShown; 
 		}
 		public override void Clear_allScriptObjects_beforeBacktest() {
-			this.ExecutorObjects_frozenForRendering.ClearAllBeforeBacktest();
+			this.ExecutorObjects_frozenForRendering.ClearAll_beforeBacktest();
 		}
 		public override void PositionsBacktestAdd(List<Position> positionsMaster) {
 			this.ExecutorObjects_frozenForRendering.PositionArrowsBacktestAdd(positionsMaster);
@@ -139,13 +139,16 @@ namespace Sq1.Charting {
 //			this.ScriptExecutorObjects.PendingHistoryClearBacktestStarting();
 //		}
 		public override void PendingHistoryBacktestAdd(Dictionary<int, AlertList> alertsPendingHistorySafeCopy) {
-			this.ExecutorObjects_frozenForRendering.AlertsPlacedBacktestAdd(alertsPendingHistorySafeCopy);
+			this.ExecutorObjects_frozenForRendering.AlertsPlacedBacktest_add(alertsPendingHistorySafeCopy);
 		}
 		public override void AlertsPlaced_addRealtime(List<Alert> alertsNewPlaced) {
-			this.ExecutorObjects_frozenForRendering.AlertsPlacedRealtimeAdd(alertsNewPlaced);
+			this.ExecutorObjects_frozenForRendering.AlertsPlacedRealtime_add(alertsNewPlaced);
 		}
-		public override void AlertsPendingStillNotFilledForBarAdd(int barIndex, List<Alert> alertsPendingAtCurrentBarSafeCopy) {
-			this.ExecutorObjects_frozenForRendering.AlertsPendingStillNotFilledForBarAdd(barIndex, alertsPendingAtCurrentBarSafeCopy);
+		public override void AlertsPending_stillNotFilled_addForBar(int barIndex, List<Alert> alertsPendingAtCurrentBar_safeCopy) {
+			this.ExecutorObjects_frozenForRendering.AlertsPending_stillNotFilled_addForBar(barIndex, alertsPendingAtCurrentBar_safeCopy);
+		}
+		public virtual void OrderKilled_addForBar(int barIndex, Order orderKilled) {
+			this.ExecutorObjects_frozenForRendering.OrderKilled_addForBar(barIndex, orderKilled);
 		}
 		
 		Dictionary<Indicator, PanelIndicator> PanelsByIndicator = new Dictionary<Indicator, PanelIndicator>();

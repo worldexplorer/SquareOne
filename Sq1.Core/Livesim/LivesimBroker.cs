@@ -13,6 +13,7 @@ using Sq1.Core.Backtesting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Support;
+using System.Drawing;
 
 namespace Sq1.Core.Livesim {
 	// I_WANT_LIVESIM_STREAMING_BROKER_BE_AUTOASSIGNED_AND_VISIBLE_IN_DATASOURCE_EDITOR [SkipInstantiationAt(Startup = true)]
@@ -109,5 +110,13 @@ namespace Sq1.Core.Livesim {
 			base.ConnectionState_update(ConnectionState.Broker_TerminalDisconnected, msig);
 		}
 		
+
+		public override Color GetBackGroundColor_forOrderStateMessage_nullUnsafe(OrderStateMessage osm) {
+			Color ret = Color.Empty;
+			if (osm.Message.Contains(TESTING_BY_OWN_LIVESIM)) {
+				ret = Assembler.InstanceInitialized.ColorBackgroundRed_forPositionLoss;
+			}
+			return ret;
+		}
 	}
 }

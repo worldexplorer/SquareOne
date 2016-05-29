@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.Execution {
-	public class PositionList : ConcurrentList<Position> {
+	public class PositionList : ConcurrentList<Position>, IDisposable {
 		public Dictionary<int, List<Position>>	ByEntryBarFilled	{ get; protected set; }
 		public Dictionary<int, List<Position>>	ByExitBarFilled		{ get; protected set; }
 		
-		public Dictionary<int, List<Position>>	ByExitBarFilledSafeCopy(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public Dictionary<int, List<Position>>	ByExitBarFilled_safeCopy(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			lockPurpose += " //" + base.ReasonToExist + "..ByExitBarFilledSafeCopy()";
 			Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
 			try {
@@ -28,7 +28,7 @@ namespace Sq1.Core.Execution {
 			}
 			return ret;
 		}
-		public Dictionary<int, List<Position>>	ByEntryBarFilledSafeCopy(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public Dictionary<int, List<Position>>	ByEntryBarFilled_safeCopy(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			lockPurpose += " //" + base.ReasonToExist + ".ByExitBarFilledSafeCopy()";
 			Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
 			try {
@@ -100,7 +100,7 @@ namespace Sq1.Core.Execution {
 			this.LastBarIndexEntry	= -1;
 			this.LastBarIndexExit	= -1;
 		}
-		public void DisposeTwoRelatedAlertsWaitHandlesAndClear(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public void DisposeTwoRelatedAlerts_waitHandles_andClearInnerList(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			lockPurpose += " //" + base.ReasonToExist + ".DisposeTwoRelatedAlertsWaitHandlesAndClear()";
 			try {
 				base.WaitAndLockFor(lockOwner, lockPurpose, waitMillis);
@@ -114,41 +114,41 @@ namespace Sq1.Core.Execution {
 		// NEVER_USED__UNCOMMENT_WHEN_YOU_NEED_IT public void AddRangeOpened(List<Position> positions) {
 		//	foreach (Position position in positions) this.AddOpened_step1of2(position);
 		//}
-		public void AddClosed(Position position, object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
-			this.AddOpened_step1of2(position, lockOwner, lockPurpose, waitMillis);
-			this.AddToClosedDictionary_step2of2(position, lockOwner, lockPurpose, waitMillis);
+		public void AddClosed(Position position, object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+			this.AddOpened_step1of2(position, lockOwner, lockPurpose, waitMillis, duplicateThrowsAnError);
+			this.AddToClosedDictionary_step2of2(position, lockOwner, lockPurpose, waitMillis, duplicateThrowsAnError);
 		}
-		public bool AddPending(Position positionPending, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
-			lockPurpose += " //" + base.ReasonToExist + ".AddPending(" + positionPending.ToString() + ")";
-			try {
-				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				bool added = false;
-				if (positionPending == null) {
-					string msg = "ADD_ONLY_FILLED_POSITION_NOT_NULL position[" + positionPending + "]";
-					Assembler.PopupException(msg);
-					return added;
-				}
-				if (positionPending.Shares == 0.0) {
-					string msg = "POSITION_MUST_HAVE_POSITIVE_SIZE position[" + positionPending + "]";
-					Assembler.PopupException(msg);
-					return added;
-				}
-				if (positionPending.EntryAlert == null) {
-					string msg = "POSITION_ATBAR_HAS_NO_ENTRY_ALERT position[" + positionPending + "]";
-					Assembler.PopupException(msg);
-					return added;
-				}
-				added = base.AppendUnique(positionPending, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
-				if (added == false) {
-					string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH?";
-					Assembler.PopupException(msg);
-					return added;
-				}
-				return added;
-			} finally {
-				base.UnLockFor(owner, lockPurpose);
-			}
-		}
+		//public bool Add_PositionOpened(Position positionWithFilledEntryAlert, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+		//    lockPurpose += " //" + base.ReasonToExist + ".AddPending(" + positionWithFilledEntryAlert.ToString() + ")";
+		//    try {
+		//        base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+		//        bool added = false;
+		//        if (positionWithFilledEntryAlert == null) {
+		//            string msg = "ADD_ONLY_FILLED_POSITION_NOT_NULL position[" + positionWithFilledEntryAlert + "]";
+		//            Assembler.PopupException(msg);
+		//            return added;
+		//        }
+		//        if (positionWithFilledEntryAlert.Shares == 0.0) {
+		//            string msg = "POSITION_MUST_HAVE_POSITIVE_SIZE position[" + positionWithFilledEntryAlert + "]";
+		//            Assembler.PopupException(msg);
+		//            return added;
+		//        }
+		//        if (positionWithFilledEntryAlert.EntryAlert == null) {
+		//            string msg = "POSITION_ATBAR_HAS_NO_ENTRY_ALERT position[" + positionWithFilledEntryAlert + "]";
+		//            Assembler.PopupException(msg);
+		//            return added;
+		//        }
+		//        added = base.AppendUnique(positionWithFilledEntryAlert, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
+		//        if (added == false) {
+		//            string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH?";
+		//            Assembler.PopupException(msg);
+		//            return added;
+		//        }
+		//        return added;
+		//    } finally {
+		//        base.UnLockFor(owner, lockPurpose);
+		//    }
+		//}
 		public bool AddOpened_step1of2(Position positionOpened, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
 			lockPurpose += " //" + base.ReasonToExist + ".AddOpened_step1of2(" + positionOpened.ToString() + ")";
 			try {
@@ -272,8 +272,8 @@ namespace Sq1.Core.Execution {
 			try {
 				base.WaitAndLockFor(lockOwner, lockPurpose, waitMillis);
 				PositionList ret		= new PositionList("CLONE_" + base.ReasonToExist, base.Snap, base.InnerList);		// WHO_DISPOSES_MANUAL_RESET_EVENT_OF_THE_CHILD__WHEN_RELOADING_WORKSPACE???
-				ret.ByEntryBarFilled	= this.ByEntryBarFilledSafeCopy(this, "Clone(WAIT)");
-				ret.ByExitBarFilled		= this.ByExitBarFilledSafeCopy(this, "Clone(WAIT)");
+				ret.ByEntryBarFilled	= this.ByEntryBarFilled_safeCopy(this, "Clone(WAIT)");
+				ret.ByExitBarFilled		= this.ByExitBarFilled_safeCopy(this, "Clone(WAIT)");
 				ret.Count				= this.Count;
 				return ret;
 			} finally {

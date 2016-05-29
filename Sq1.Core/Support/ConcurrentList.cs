@@ -91,14 +91,14 @@ namespace Sq1.Core.Support {
 				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public virtual bool RemoveUnique(T position, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenseThrowsAnError = true) {
+		public virtual bool RemoveUnique(T position, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
 			//lockPurpose += " //" + this.ToString() + ".Remove(" + position.ToString() + ")";
 			bool removed = false;
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				if (this.InnerList.Contains(position) == false) {
-					if (absenseThrowsAnError == true) {
-						string msg = "LIVESIM_SHOULD_NOT_FILL_ORDER_THAT_WAS_ALREADY_KILLED CANT_REMOVE_REMOVED_EARLIER_OR_WASNT_ADDED position[" + position + "] ";
+					if (absenceThrowsAnError == true) {
+						string msg = "WASNT_ADDED_OR_REMOVED_EARLIER position[" + position + "] LIVESIM_SHOULD_NOT_FILL_ORDER_THAT_WAS_ALREADY_KILLED";
 						Assembler.PopupException(msg + this.ToString());
 					}
 				} else {
@@ -117,7 +117,8 @@ namespace Sq1.Core.Support {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				if (this.InnerList.Contains(alertOrPosition) && duplicateThrowsAnError) {
 					string msg = base.ReasonToExist + ": CLWD_MUST_BE_ADDED_ONLY_ONCE__ALREADY_ADDED_BEFORE " + alertOrPosition.ToString();
-					Assembler.PopupException(msg, null, false);
+					Assembler.PopupException(msg, null, true);
+					return added;
 				}
 				this.InnerList.Add(alertOrPosition);
 				this.Count = this.InnerList.Count;
@@ -133,8 +134,9 @@ namespace Sq1.Core.Support {
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				if (this.InnerList.Contains(alertOrPosition) && duplicateThrowsAnError) {
-					string msg = base.ReasonToExist + ": CLWD_MUST_BE_ADDED_ONLY_ONCE__ALREADY_ADDED_BEFORE " + alertOrPosition.ToString();
-					Assembler.PopupException(msg, null, false);
+					string msg = base.ReasonToExist + ": CLWD_MUST_BE_INSERTED_ONLY_ONCE__ALREADY_INSERTED_BEFORE " + alertOrPosition.ToString();
+					Assembler.PopupException(msg, null, true);
+					return added;
 				}
 				this.InnerList.Insert(indexToInsertAt, alertOrPosition);
 				this.Count = this.InnerList.Count;

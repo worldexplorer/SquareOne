@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 using Newtonsoft.Json;
 
@@ -70,7 +71,7 @@ namespace Sq1.Core.Broker {
 				return false;
 			}
 
-			PositionPrototype proto = alertCounterparty_toAnnihilate.PositionAffected.Prototype;
+			PositionPrototype proto = alertCounterparty_toAnnihilate.PositionPrototype;
 			if (proto == null) {
 				string msg = "POSITION_MUST_HAVE_A_PROTOTYPE";
 				Assembler.PopupException(msg);
@@ -107,5 +108,8 @@ namespace Sq1.Core.Broker {
 			return emitted;
 		}
 
+		public virtual Color GetBackGroundColor_forOrderStateMessage_nullUnsafe(OrderStateMessage osm) {
+			return Color.Empty;
+		}
 	}
 }

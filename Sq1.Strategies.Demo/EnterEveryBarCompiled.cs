@@ -160,7 +160,7 @@ namespace Sq1.Strategies.Demo {
 			ExecutorDataSnapshot snap = base.Executor.ExecutionDataSnapshot;
 
 			//if (base.HasAlertsPendingOrBeingReplaced_orPositionsOpenNow) {
-			if (base.HasPositions_PendingOrOpenNow) {
+			if (base.HasPositions_OpenNow) {
 			//if (base.HasAlertsPendingAndPositionsOpenNow) {
 				if (snap.AlertsPending_havingOrderFollowed_notYetFilled.Count > 0) {
 					//GOT_OUT_OF_BOUNDADRY_EXCEPTION_ONCE Alert firstPendingAlert = snap.AlertsPending.InnerList[0];
@@ -178,9 +178,9 @@ namespace Sq1.Strategies.Demo {
 						this.log(msg);
 					}
 				}
-				if (snap.Positions_Pending_orOpenNow.Count > 1) {
-					string msg = "EXPECTED: I got multiple positions[" + snap.Positions_Pending_orOpenNow.Count + "]";
-					if (snap.Positions_Pending_orOpenNow.First_nullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)") == lastPos_OpenNow_nullUnsafe) {
+				if (snap.Positions_OpenNow.Count > 1) {
+					string msg = "EXPECTED: I got multiple positions[" + snap.Positions_OpenNow.Count + "]";
+					if (snap.Positions_OpenNow.First_nullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)") == lastPos_OpenNow_nullUnsafe) {
 						msg += "50/50: positionsMaster.Last = positionsOpenNow.First";
 					}
 					this.log(msg);
@@ -191,14 +191,14 @@ namespace Sq1.Strategies.Demo {
 			if (barStaticFormed.Close > barStaticFormed.Open) {
 				string msg = "BuyAtMarket@" + barStaticFormed.ParentBarsIdent;
 				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
-				Position buyPlaced = base.BuyAtMarket(barStreaming, msg);
+				Alert buyPlaced = base.BuyAtMarket(barStreaming, msg);
 				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
 				//Debugger.Break();
 				this.log(msg);
 			} else {
 				string msg = "ShortAtMarket@" + barStaticFormed.ParentBarsIdent;
 				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
-				Position shortPlaced = base.ShortAtMarket(barStreaming, msg);
+				Alert shortPlaced = base.ShortAtMarket(barStreaming, msg);
 				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
 				//Debugger.Break();
 				this.log(msg);
@@ -211,7 +211,7 @@ namespace Sq1.Strategies.Demo {
 			Assembler.PopupException(msg, null, false);
 			
 			//if (base.HasAlertsPendingOrBeingReplaced_orPositionsOpenNow == false) return;
-			if (base.HasPositions_PendingOrOpenNow == false) return;
+			if (base.HasPositions_OpenNow == false) return;
 
 			string msg2 = "here you can probably sync your actual open positions on the broker side with backtest-opened ghosts";
 			Assembler.PopupException(msg2, null, false);
@@ -243,6 +243,12 @@ namespace Sq1.Strategies.Demo {
 			int ordersNumber_thatTried_toFillAlert = alertKilled.OrderFollowed == null ? 0 : 1;
 			ordersNumber_thatTried_toFillAlert += alertKilled.OrdersFollowed_killedAndReplaced.Count;
 			string msg = "OnAlertKilled_callback ordersNumber_thatTried_toFillAlert[" + ordersNumber_thatTried_toFillAlert + "]";
+			Assembler.PopupException(msg, null, false);
+		}
+		public override void OnOrderReplaced_callback(Order orderKilled, Order orderReplacement) {
+			//int ordersNumber_thatTried_toFillAlert = alertKilled.OrderFollowed == null ? 0 : 1;
+			//ordersNumber_thatTried_toFillAlert += alertKilled.OrdersFollowed_killedAndReplaced.Count;
+			string msg = "OnOrderReplaced_callback";		// ordersNumber_thatTried_toFillAlert[" + ordersNumber_thatTried_toFillAlert + "]";
 			Assembler.PopupException(msg, null, false);
 		}
 		public override void OnAlertNotSubmitted_callback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
