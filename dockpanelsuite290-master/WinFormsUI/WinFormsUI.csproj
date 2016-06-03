@@ -220,7 +220,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="dockpanelsuite.snk" />
-    <None Include="WeifenLuo.WinFormsUI.Docking-LICENSE1.txt">
+    <None Include="WeifenLuo.WinFormsUI.Docking-LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
