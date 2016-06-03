@@ -13,10 +13,10 @@ namespace Sq1.Core.Livesim {
 			if (this.dataSource_asLivesim_nullUnsafe == null) return ret;
 			if (this.dataSource_asLivesim_nullUnsafe.Executor == null) return ret;
 			if (this.dataSource_asLivesim_nullUnsafe.Executor.ExecutionDataSnapshot == null) return ret;
-			if (this.dataSource_asLivesim_nullUnsafe.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled == null) return ret;
-			return this.dataSource_asLivesim_nullUnsafe.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled;
+			if (this.dataSource_asLivesim_nullUnsafe.Executor.ExecutionDataSnapshot.AlertsUnfilled == null) return ret;
+			return this.dataSource_asLivesim_nullUnsafe.Executor.ExecutionDataSnapshot.AlertsUnfilled;
 		} }
-		public	AlertList			AlertsPending_scheduledForDelayedFill;
+		public	AlertList			AlertsUnfilled_scheduledForDelayedFill;
 		
 		//public	AlertList	AlertsNotYetScheduledForDelayedFill { get {
 		//	AlertList ret = new AlertList("ALERTS_PENDING_MINUS_SCHEDULED_FOR_DELAYED_FILL");
@@ -56,7 +56,7 @@ namespace Sq1.Core.Livesim {
 				Assembler.PopupException(msg + msig);
 			}
 			this.dataSource = dataSource_realOrLivesim;	// LAZY_TO_SPLIT_TO_CTOR_AND_INITIALIZE() null for dummies, non-null for clone() { Activator.Create() } 'd LivesimBrokers
-			this.AlertsPending_scheduledForDelayedFill = new AlertList("SCHEDULED_FOR_DELAYED_FILL", null);
+			this.AlertsUnfilled_scheduledForDelayedFill = new AlertList("SCHEDULED_FOR_DELAYED_FILL", null);
 		}
 
 		public void Dispose() {

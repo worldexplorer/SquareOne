@@ -19,6 +19,7 @@ namespace Sq1.Core.Execution {
 		_OrderStatus			= 255,
 
 		Rejected				= 300,
+		LimitExpired			= 305,
 		KillingUnfilledExpired	= 310,
 		EmittingReplacement		= 320,
 		RejectedLimitReached	= 330,

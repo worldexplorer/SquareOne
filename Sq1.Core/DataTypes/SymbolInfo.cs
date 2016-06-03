@@ -12,7 +12,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	const double PriceStepFromDde_NOT_RECEIVED = -1;
 
 
-		[Category("1. Essential"), Description("[Stock] is linear, [Future] expires and has to be glued up (2D), [Option] has strikes (3D), [Forex] allows non-integer lots and trades Mon6am-Fri5pm EST, [CryptoCurrencies] are slow due to their JSON-over-web nature, [USBond] has 1/16 PriceStep"), DefaultValue(SecurityType.Stock)]
+		[Category("1. Essential"), DefaultValue(SecurityType.Stock), Description("[Stock] is linear, [Future] expires and has to be glued up (2D), [Option] has strikes (3D), [Forex] allows non-integer lots and trades Mon6am-Fri5pm EST, [CryptoCurrencies] are slow due to their JSON-over-web nature, [USBond] has 1/16 PriceStep")]
 		[JsonProperty]	public	SecurityType	SecurityType				{ get; set; }
 
 		[Category("1. Essential"), Description(""), ReadOnly(true)]
@@ -21,7 +21,7 @@ namespace Sq1.Core.DataTypes {
 		[Category("1. Essential"), Description("")]
 		[JsonProperty]	public	string			SymbolClass					{ get; set; }
 
-		[Category("1. Essential"), Description("For {RTSIndex = MICEX * USD/RUR}: {Position.Size = Position.Size * SymbolInfo.Point2Dollar}"), DefaultValue(1)]
+		[Category("1. Essential"), DefaultValue(1), Description("For {RTSIndex = MICEX * USD/RUR}: {Position.Size = Position.Size * SymbolInfo.Point2Dollar}")]
 		[JsonProperty]	public	double			Point2Dollar				{ get; set; }
 
 		[Category("1. Essential"), Description("0=DISABLED Forces killUnfilledPendings, closeOpenPositions N seconds prior to MarketInfo.GetReason_ifMarket_closedOrSuspended_secondsFromNow(int secondsFromNow) Backtest,Livesim,Live: no timer/thread, just inside StrategyExecutor for each newQuote")]
@@ -55,7 +55,7 @@ namespace Sq1.Core.DataTypes {
 		[Category("2. Price and Volume Units"), Description("Chart and Execution will display PriceDecimals+1 to visually assure Streaming and Broker adapters haven't got prices out of your expectations")]
 		[JsonIgnore]	public	string			PriceFormat					{ get { return "N" + (this.PriceDecimals); } }
 
-		[Category("2. Price and Volume Units"), Description("digits after decimal dot for min lot Volume; valid for partial Forex lots (-5 for 0.00001) and Bitcoins (-6 for 0.0000001); for stocks/options/futures I'd set 0 here"), DefaultValue(0)]
+		[Category("2. Price and Volume Units"), DefaultValue(0), Description("digits after decimal dot for min lot Volume; valid for partial Forex lots (-5 for 0.00001) and Bitcoins (-6 for 0.0000001); for stocks/options/futures I'd set 0 here")]
 		[JsonProperty]	public	int				VolumeDecimals				{ get; set; }
 
 		//BEFORE Pow/Log was invented: for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
@@ -76,22 +76,22 @@ namespace Sq1.Core.DataTypes {
 					|| this.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
 			} }
 
-		[Category("3. Pre-OrderProcessor"), Description(""), DefaultValue("10,20,30,40")]
+		[Category("3. Pre-OrderProcessor"), DefaultValue("10,20,30,40"), Description("")]
 		[JsonProperty]	public	string			SlippagesCrossMarketCsv				{ get; set; }
 
-		[Category("3. Pre-OrderProcessor"), Description(""), DefaultValue("10,20,30,40")]
+		[Category("3. Pre-OrderProcessor"), DefaultValue("10,20,30,40"), Description("")]
 		[JsonProperty]	public	string			SlippagesTidalCsv				{ get; set; }
 
-		[Category("3. Pre-OrderProcessor"), Description(""), DefaultValue(true)]
+		[Category("3. Pre-OrderProcessor"), DefaultValue(true), Description("")]
 		[JsonProperty]	public	bool			UseFirstSlippageForBacktest	{ get; set; }
 
-		[Category("3. Pre-OrderProcessor"), Description("For StopSell + "), DefaultValue(true)]
+		[Category("3. Pre-OrderProcessor"), DefaultValue(true), Description("For StopSell + ")]
 		[JsonProperty]	public	bool			ReplaceTidalWithCrossMarket	{ get; set; }
 
-		[Category("3. Pre-OrderProcessor"), Description(""), DefaultValue(100)]
+		[Category("3. Pre-OrderProcessor"), DefaultValue(100), Description("")]
 		[JsonProperty]	public	int				ReplaceTidalMillis			{ get; set; }
 
-		[Category("3. Pre-OrderProcessor"), Description(""), DefaultValue(false)]
+		[Category("3. Pre-OrderProcessor"), DefaultValue(false), Description("")]
 		[JsonProperty]	public	bool			MarketOrders_priceFill_bringBackFromOutrageous			{ get; set; }
 
 
@@ -105,51 +105,50 @@ namespace Sq1.Core.DataTypes {
 		[Category("4. OrderProcessor"), DefaultValue(false),	Description("For each Broker.OrderSubmit(), check if a similar [TBD] order is already in the Pendings; useful when you are debugging your strategy that shoots the same order multiple times by mistake")]
 		[JsonProperty]	public	bool			CheckForSimilarAlreadyPending { get; set; }
 
-		[Category("4. OrderProcessor"), DefaultValue(-1),		Description("if!=-1: 1) Kill Pending Limit + wait it's killed, 2) use SlippagesCrossMarketCsv for CrossMarket and SlippagesTidalCsv for Tidal, 3) send replacement order with more cutting-through slippage")]
-		[JsonProperty]	public	int				ApplyNextSlippage_ifLimitNotFilledWithin		{ get; set; }
 
 
-
-		[Category("5. Post-OrderProcessor"), Description("EmergencyClose is PostProcessor's thread that kicks in when triggers when Position's Close was Rejected (Ctrl+Shift+F: InStateErrorComplementaryEmergencyState)"), DefaultValue(5)]
+		[Category("5. Post-OrderProcessor"), DefaultValue(5), Description("EmergencyClose is PostProcessor's thread that kicks in when triggers when Position's Close was Rejected (Ctrl+Shift+F: InStateErrorComplementaryEmergencyState)")]
 		[JsonProperty]	public	int				EmergencyCloseAttemptsMax	{ get; set; }
 
-		[Category("5. Post-OrderProcessor"), Description("EmergencyClose will sleep EmergencyCloseInterAttemptDelayMillis in its thread and repeat Closing of a Rejected ExitOrder, until ExitOrder.Clone will be returned by the BrokerAdapter as Filled, EmergencyCloseAttemptsMax times max"), DefaultValue(100)]
+		[Category("5. Post-OrderProcessor"), DefaultValue(100), Description("EmergencyClose will sleep EmergencyCloseInterAttemptDelayMillis in its thread and repeat Closing of a Rejected ExitOrder, until ExitOrder.Clone will be returned by the BrokerAdapter as Filled, EmergencyCloseAttemptsMax times max")]
 		[JsonProperty]	public	int				EmergencyCloseInterAttemptDelayMillis	{ get; set; }
 
-		[Category("5. Post-OrderProcessor"), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry"), DefaultValue(true)]
+		[Category("5. Post-OrderProcessor"), DefaultValue(-1),		Description("if!=-1: 1) Kill Pending Limit + wait it's killed, 2) use SlippagesCrossMarketCsv for CrossMarket and SlippagesTidalCsv for Tidal, 3) send replacement order with more cutting-through slippage")]
+		[JsonProperty]	public	int				ReSubmitLimitNotFilledWithinMillis		{ get; set; }
+
+		[Category("5. Post-OrderProcessor"), DefaultValue(true), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry")]
 		[JsonProperty]	public	bool			ReSubmitRejected			{ get; set; }
 
-		[Category("5. Post-OrderProcessor"), Description("OrderPostProcessorRejected and OrderPostProcessorEmergency will increase the distance (=> decrease the profit) by using next available from SlippagesBuy/SlippagesSell"), DefaultValue(true)]
-		[JsonProperty]	public	bool			ReSubmittedUsesNextSlippage	{ get; set; }
+		[Category("5. Post-OrderProcessor"), DefaultValue(true), Description("OrderPostProcessorRejected and OrderPostProcessorEmergency will increase the distance (=> decrease the profit) by using next available from SlippagesBuy/SlippagesSell")]
+		[JsonProperty]	public	bool			ReSubmitWithNextSlippage	{ get; set; }
 
 
 
-		[Category("6. Other"), Description(""), DefaultValue(true)]
+		[Category("6. Other"), DefaultValue(true), Description("")]
 		[JsonProperty]	public	bool			SimBugOutOfBarStopsFill		{ get; set; }
 
-		[Category("6. Other"), Description(""), DefaultValue(true)]
+		[Category("6. Other"), DefaultValue(true), Description("")]
 		[JsonProperty]	public	bool			SimBugOutOfBarLimitsFill	{ get; set; }
 
 
 
-		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
+		[Category("7. DdeMonitor"), DefaultValue(true), Description("")]
 		[JsonProperty]	public	bool			Level2AskShowHoles			{ get; set; }
 
-		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
+		[Category("7. DdeMonitor"), DefaultValue(true), Description("")]
 		[JsonProperty]	public	bool			Level2ShowSpread			{ get; set; }
 
-		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
+		[Category("7. DdeMonitor"), DefaultValue(true), Description("")]
 		[JsonProperty]	public	bool			Level2BidShowHoles			{ get; set; }
 
-		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
+		[Category("7. DdeMonitor"), DefaultValue(true), Description("")]
 		[JsonProperty]	public bool				Level2ShowCumulativesInsteadOfLots	{ get; set; }
 
-		[Category("7. DdeMonitor"), Description(""), DefaultValue(true)]
+		[Category("7. DdeMonitor"), DefaultValue(true), Description("")]
 		[JsonProperty]	public int				Level2PriceLevels			{ get; set; }
 
 
 		public SymbolInfo() { 		// used by JSONdeserialize() /  XMLdeserialize()
-			//this.MarketName = "US Equities";
 			this.SecurityType					= SecurityType.Stock;
 			this.Symbol							= "UNKNOWN_SYMBOL";
 			this.SymbolClass					= "";
@@ -167,7 +166,7 @@ namespace Sq1.Core.DataTypes {
 			this.SlippagesCrossMarketCsv		= "";
 			this.SlippagesTidalCsv				= "";
 			this.ReSubmitRejected				= false;
-			this.ReSubmittedUsesNextSlippage	= false;
+			this.ReSubmitWithNextSlippage		= false;
 			this.UseFirstSlippageForBacktest	= true;
 			this.EmergencyCloseInterAttemptDelayMillis		= 8000;
 			this.EmergencyCloseAttemptsMax		= 5;

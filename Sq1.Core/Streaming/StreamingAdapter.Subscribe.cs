@@ -41,8 +41,8 @@ namespace Sq1.Core.Streaming {
 				try {
 					if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
 					if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
-					if (this.UpstreamConnectedOnAppRestart == this.UpstreamConnected) return;
-					this.UpstreamConnectedOnAppRestart = this.UpstreamConnected;		// you can override this.UpstreamConnectedOnAppRestart and keep it FALSE to avoid DS serialization
+					if (this.UpstreamConnect_onAppRestart == this.UpstreamConnected) return;
+					this.UpstreamConnect_onAppRestart = this.UpstreamConnected;		// you can override this.UpstreamConnectedOnAppRestart and keep it FALSE to avoid DS serialization
 					if (this.DataSource == null) {
 						string msg = "SHOULD_NEVER_HAPPEN DataSource=null for streaming[" + this + "]";
 						Assembler.PopupException(msg);
@@ -55,7 +55,7 @@ namespace Sq1.Core.Streaming {
 				}
 			}
 		}
-		[JsonProperty]	public	virtual	bool						UpstreamConnectedOnAppRestart		{ get; protected set; }
+		[JsonProperty]	public	virtual	bool						UpstreamConnect_onAppRestart		{ get; protected set; }
 		[JsonIgnore]	public		bool							UpstreamConnected					{ get {
 			bool ret = false;
 			switch (this.UpstreamConnectionState) {

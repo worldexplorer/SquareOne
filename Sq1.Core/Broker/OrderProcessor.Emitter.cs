@@ -111,20 +111,20 @@ namespace Sq1.Core.Broker {
 			if (orders_polarSequenceAgnostic.Count > 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry orders_polarSequenceAgnostic[" + orders_polarSequenceAgnostic.Count + "] through [" + broker + "]";
 				//Assembler.PopupException(msg, null, false);
-				int orderSubmitted = this.SubmitToBroker_waitForConnected(orders_polarSequenceAgnostic, broker);
+				int orderSubmitted = this.SubmitToBroker_inNewThread_waitUntilConnected(orders_polarSequenceAgnostic, broker);
 				return orders_polarSequenceAgnostic;
 			}
 			if (orders_polarClosingFirst.Count > 0 && orders_polarOpeningSecond.Count == 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry orders_polarClosingFirst[" + orders_polarClosingFirst.Count + "] through [" + broker + "]";
 				//Assembler.PopupException(msg, null, false);
-				int orderSubmitted = this.SubmitToBroker_waitForConnected(orders_polarClosingFirst, broker);
+				int orderSubmitted = this.SubmitToBroker_inNewThread_waitUntilConnected(orders_polarClosingFirst, broker);
 				return orders_polarClosingFirst;
 			}
 			if (orders_polarClosingFirst.Count == 0 && orders_polarOpeningSecond.Count > 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry orders_polarOpeningSecond[" + orders_polarOpeningSecond.Count + "] through [" + broker + "]";
 				//Assembler.PopupException(msg, null, false);
 				//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersOpening });
-				int orderSubmitted = this.SubmitToBroker_waitForConnected(orders_polarOpeningSecond, broker);
+				int orderSubmitted = this.SubmitToBroker_inNewThread_waitUntilConnected(orders_polarOpeningSecond, broker);
 				return orders_polarOpeningSecond;
 			}
 
@@ -135,7 +135,7 @@ namespace Sq1.Core.Broker {
 						+ "] through [" + broker + "], then  orders_polarOpeningSecond[" + orders_polarOpeningSecond.Count + "]";
 					Assembler.PopupException(msg, null, false);
 					//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersClosing });
-					int orderSubmitted = this.SubmitToBroker_waitForConnected(orders_polarClosingFirst, broker);
+					int orderSubmitted = this.SubmitToBroker_inNewThread_waitUntilConnected(orders_polarClosingFirst, broker);
 					return orders_polarClosingFirst;
 				} else {
 					List<Order> ordersMerged = new List<Order>(orders_polarClosingFirst);
@@ -143,7 +143,7 @@ namespace Sq1.Core.Broker {
 					string msg = "Scheduling SubmitOrdersThreadEntry ordersMerged[" + ordersMerged.Count + "] through [" + broker + "]";
 					Assembler.PopupException(msg, null, false);
 					//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersMerged });
-					int orderSubmitted = this.SubmitToBroker_waitForConnected(ordersMerged, broker);
+					int orderSubmitted = this.SubmitToBroker_inNewThread_waitUntilConnected(ordersMerged, broker);
 					return ordersMerged;
 				}
 			}
@@ -184,7 +184,7 @@ namespace Sq1.Core.Broker {
 					string msg = msig + "oppHook_stopLossKilled(): invoking oppHook_onStopLossKilled_createNewStopLoss_andAddToPokeUnit() "
 						+ "[" + stateBeforeKilledAssumingActive + "] => "
 						+ "[" + stopLossKilled.State + "]";
-					stopLossKilled.appendMessage(msg);
+					stopLossKilled.AppendMessage(msg);
 					this.oppHook_onStopLossKilled_createNewStopLoss_andAddToPokeUnit(stopLossKilled, newActivation_negativeOffset, newStopLoss_negativeOffset, pokeUnit);
 				}
 			);
@@ -196,7 +196,7 @@ namespace Sq1.Core.Broker {
 					string msg = msig + "oppHook_stopLossReceived_WaitingBrokerFill_state(): invoking Emit_killOrderPending_usingKiller() "
 						+ " [" + stateBeforeActiveAssummingSubmitting + "] => "
 						+ "[" + stopLossToBeKilled.State + "]";
-					stopLossToBeKilled.appendMessage(msg);
+					stopLossToBeKilled.AppendMessage(msg);
 					stateBeforeKilledAssumingActive = stopLossToBeKilled.State;
 					//this.Emit_killOrderPending_withoutKiller(order2killAndReplace, msig);
 					bool emitted = this.Emit_killOrderPending_usingKiller(order2killAndReplace, msig);
@@ -228,7 +228,7 @@ namespace Sq1.Core.Broker {
 			//this.CreateOrdersSubmitToBrokerAdapterInNewThreadGroups(new List<Alert>() {replacement}, true, true);
 			pokeUnit.AlertsNew.AddNoDupe_byBarsPlaced(replacement, this, "oppHook_onStopLossKilled_createNewStopLoss_andAddToPokeUnit(WAIT)");
 			msg += " newAlert[" + replacement + "]";
-			killedStopLoss.appendMessage(msg + msig);
+			killedStopLoss.AppendMessage(msg + msig);
 		}
 		public void Emit_takeProfitMove_byKillingAndSubmittingNew(PositionPrototype proto, double newTakeProfit_positiveOffset) {
 			if (proto.TakeProfitAlert_forMoveAndAnnihilation == null) {
@@ -254,7 +254,7 @@ namespace Sq1.Core.Broker {
 					string msg = "oppHook_takeProfitKilled(): invoking oppHook_onTakeProfitKilled_createNewTakeProfit_addToPokeUnit() "
 						+ " [" + stateBeforeKilledAssumingActive + "] => "
 						+ "[" + takeProfitKilled.State + "]";
-					takeProfitKilled.appendMessage(msg + msig);
+					takeProfitKilled.AppendMessage(msg + msig);
 					this.oppHook_onTakeProfitKilled_createNewTakeProfit_addToPokeUnit(takeProfitKilled, newTakeProfit_positiveOffset, pokeUnit);
 				}
 			);
@@ -266,7 +266,7 @@ namespace Sq1.Core.Broker {
 					string msg = "oppHook_takeProfitReceived_WaitingForBrokerFill(): invoking Emit_killOrderPending_usingKiller() "
 						+ " [" + stateBeforeActiveAssummingSubmitting + "] => "
 						+ "[" + takeProfitToBeKilled.State + "]";
-					takeProfitToBeKilled.appendMessage(msg + msig);
+					takeProfitToBeKilled.AppendMessage(msg + msig);
 					stateBeforeKilledAssumingActive = takeProfitToBeKilled.State;
 					//this.Emit_killOrderPending_withoutKiller(order2killAndReplace, msig);
 					bool emitted = this.Emit_killOrderPending_usingKiller(order2killAndReplace, msig);
@@ -298,7 +298,7 @@ namespace Sq1.Core.Broker {
 			//this.CreateOrdersSubmitToBrokerAdapterInNewThreadGroups(new List<Alert>() { replacement }, true, true);
 			pokeUnit.AlertsNew.AddNoDupe_byBarsPlaced(replacement, this, "oppHook_onTakeProfitKilled_createNewTakeProfit_addToPokeUnit(WAIT)");
 			msg += " newAlert[" + replacement + "]";
-			killedTakeProfit.appendMessage(msg + msig);
+			killedTakeProfit.AppendMessage(msg + msig);
 		}
 
 		public bool Emit_killOrderPending_usingKiller(Order victimOrder, string msigInvoker) {
@@ -311,7 +311,7 @@ namespace Sq1.Core.Broker {
 			}
 			if (victimOrder.hasBrokerAdapter(msig) == false) {
 				string msg = "VICTIM_DOESNT_HAVE_BROKER " + victimOrder;
-				victimOrder.appendMessage(msg + msig);
+				victimOrder.AppendMessage(msg + msig);
 				Assembler.PopupException(msg + msig);
 				return emitted;
 			}
@@ -323,7 +323,7 @@ namespace Sq1.Core.Broker {
 
 			if (canBeKilled == false) {
 				string msg = "I_REFUSE_TO_KILL__STATE_NOT_IN {" + OrderStatesCollections.CanBeKilled.ToString() + "} [" + victimOrder + "]";
-				victimOrder.appendMessage(msg + msig);
+				victimOrder.AppendMessage(msg + msig);
 				Assembler.PopupException(msg + msig, null, false);
 				return emitted;
 			}

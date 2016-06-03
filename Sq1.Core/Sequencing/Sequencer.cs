@@ -32,6 +32,7 @@ namespace Sq1.Core.Sequencing {
 		
 		public	int			ScriptParametersTotalNr			{ get {
 				int ret = 0;
+				if (this.Executor.Strategy.Script == null) return ret;
 				foreach (ScriptParameter sp in this.Executor.Strategy.Script.ScriptParametersById_reflectedCached_primary.Values) {
 					if (sp.NumberOfRuns == 0) continue;
 					if (sp.WillBeSequenced == false) continue;
@@ -49,6 +50,7 @@ namespace Sq1.Core.Sequencing {
 			} }
 		public	int			IndicatorParameterTotalNr		{ get {
 				int ret = 0;
+				if (this.Executor.Strategy.Script == null) return ret;
 				//foreach (Indicator i in executor.Strategy.Script.indicatorsByName_ReflectedCached.Values) {	//looks empty on Deserialization
 				foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParameters_reflectedCached.Values) {
 					if (ip.NumberOfRuns == 0) continue;

@@ -429,7 +429,7 @@ namespace Sq1.Core.Livesim {
 			this.DataSourceAsLivesim_generator_nullUnsafe.StreamingAsLivesim_nullUnsafe.UnpausedMre.Reset();
 			string msg = "LEAKED_HANDLES_HUNTER AlertsScheduledForDelayedFill.Count=";
 			if (this.DataSourceAsLivesim_generator_nullUnsafe.BrokerAsLivesim_nullUnsafe != null) {
-				msg += this.DataSourceAsLivesim_generator_nullUnsafe.BrokerAsLivesim_nullUnsafe.DataSnapshot.AlertsPending_scheduledForDelayedFill.Count;
+				msg += this.DataSourceAsLivesim_generator_nullUnsafe.BrokerAsLivesim_nullUnsafe.DataSnapshot.AlertsUnfilled_scheduledForDelayedFill.Count;
 			} else {
 				msg += "UNKNOWN_COUNT: YOU_DIDNT_SET_ORIGINAL_BROKER_ADAPTER_FOR_LIVESIM_DATASOURCE__WHEN_STREAMING_GENERATING_PUSHES_INTO_DDE";
 			}

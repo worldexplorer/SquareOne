@@ -155,7 +155,7 @@ namespace Sq1.Core.Broker {
 					replacement.Alert.Bars.Symbol, replacement.Alert.Direction, out replacement.SpreadSide, true);
 				replacement.Alert.PositionAffected.ExitEmitted_price = priceScript;
 
-				if (replacement.Alert.Bars.SymbolInfo.ReSubmittedUsesNextSlippage == true) {
+				if (replacement.Alert.Bars.SymbolInfo.ReSubmitWithNextSlippage == true) {
 					replacement.SlippageAppliedIndex++;
 				}
 
@@ -185,7 +185,7 @@ namespace Sq1.Core.Broker {
 				//	new object[] { new List<Order>() { replacement } });
 				List<Order> replacementOrder_oneInTheList = new List<Order>() { replacement };
 				BrokerAdapter broker = replacement.Alert.DataSource_fromBars.BrokerAdapter;
-				int orderSubmitted = this.orderProcessor.SubmitToBroker_waitForConnected(replacementOrder_oneInTheList, broker);
+				int orderSubmitted = this.orderProcessor.SubmitToBroker_inNewThread_waitUntilConnected(replacementOrder_oneInTheList, broker);
 			} catch (Exception e) {
 				Assembler.PopupException("Replacement wasn't submitted [" + replacement + "]", e);
 				OrderStateMessage omsg2 = new OrderStateMessage(replacement, OrderState.Error, e.Message);

@@ -145,6 +145,18 @@
     <Compile Include="DataTypes\SymbolInfo.EventGenerator.cs">
       <DependentUpon>SymbolInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Execution\Alert.ManualClose.cs">
+      <DependentUpon>Alert.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Execution\Alert.PricesEmitted.cs">
+      <DependentUpon>Alert.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Execution\Order.Derived.cs">
+      <DependentUpon>Order.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Execution\Order.Slippages.cs">
+      <DependentUpon>Order.cs</DependentUpon>
+    </Compile>
     <Compile Include="Execution\OrderList.cs" />
     <Compile Include="Indicators\Indicator.EventGenerator.cs">
       <DependentUpon>Indicator.cs</DependentUpon>

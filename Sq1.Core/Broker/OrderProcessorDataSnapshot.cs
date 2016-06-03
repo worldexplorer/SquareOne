@@ -181,6 +181,10 @@ namespace Sq1.Core.Broker {
 				logOrEmpty = "LANES_SCANNED [" + logOrEmpty + "]";
 			}
 
+			if (suggestion != "PASS_suggestLane=TRUE") {
+				logOrEmpty += " suggestion[" + suggestion + "]";
+			}
+
 			return ret;
 		}
 	}

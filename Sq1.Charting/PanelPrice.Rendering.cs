@@ -112,20 +112,22 @@ namespace Sq1.Charting {
 				}
 
 				//v1 SHOWS_ONLY_CURRENT_NO_HISTORY double alertPending_priceScript_zeroForMarket = pending.PriceEmitted;
-				double alertPending_priceScript_zeroForMarket = pending.GetEmittedPrice_forBarIndex(barIndex);
+				List<double> orderReplacements_pricesEmitted_forBar = pending.GetEmittedPrice_forBarIndex(barIndex);
 
-				int pendingY = base.ValueToYinverted(alertPending_priceScript_zeroForMarket);
-				Rectangle entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
-				g.DrawEllipse(pen, entryPlannedRect);
-
-				if (pending.MarketLimitStop == MarketLimitStop.StopLimit) {
-					string msg = "TESTME_DRAWING_pendingStopActivationPrice";
-					Assembler.PopupException(msg, null, false);
-
-					double pendingStopActivationPrice = pending.PriceStopLimitActivation;
-					pendingY = base.ValueToYinverted(pendingStopActivationPrice);
-					entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
+				foreach (double alertPending_priceScript_zeroForMarket in orderReplacements_pricesEmitted_forBar) {
+					int pendingY = base.ValueToYinverted(alertPending_priceScript_zeroForMarket);
+					Rectangle entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
 					g.DrawEllipse(pen, entryPlannedRect);
+
+					if (pending.MarketLimitStop == MarketLimitStop.StopLimit) {
+						string msg = "TESTME_DRAWING_pendingStopActivationPrice";
+						Assembler.PopupException(msg, null, false);
+
+						double pendingStopActivationPrice = pending.PriceStopLimitActivation;
+						pendingY = base.ValueToYinverted(pendingStopActivationPrice);
+						entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
+						g.DrawEllipse(pen, entryPlannedRect);
+					}
 				}
 			}
 		}

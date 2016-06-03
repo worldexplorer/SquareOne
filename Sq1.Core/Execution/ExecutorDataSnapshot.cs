@@ -14,8 +14,8 @@ namespace Sq1.Core.Execution {
 		
 		//NOT_USED public	AlertList						AlertsMaster					{ get; private set; }
 		public	AlertList						AlertsNewAfterExec				{ get; private set; }
-		public	AlertList						AlertsPending_havingOrderFollowed_notYetFilled				{ get; private set; }
-		public	AlertList						AlertsDoomed					{ get; private set; }
+		public	AlertList						AlertsUnfilled					{ get; private set; }
+		public	AlertList						AlertsDoomed					{ get; private set; }		 //will be Killed after Script.OnNewQuote()/OnNewBar() return
 		//public Dictionary<int, List<Alert>>	AlertsPendingHistorySafeCopy { get { return this.AlertsPendingHistorySafeCopyForRenderer(0, -1); } }
 
 		public	int								positionSerno_perStrategy		{ get; private set; }
@@ -49,7 +49,7 @@ namespace Sq1.Core.Execution {
 			this.executor						= strategyExecutor;
 			allOperations_withAlerts					= new object();
 			allOperations_withPositions					= new object();
-			AlertsPending_havingOrderFollowed_notYetFilled						= new AlertList("AlertsPending"					, this);	// monitored
+			AlertsUnfilled						= new AlertList("AlertsPending"					, this);	// monitored
 			AlertsDoomed						= new AlertList("AlertsDoomed"					, this);	// monitored
 			//NOT_USED AlertsMaster						= new AlertList("AlertsMaster"					, this);	// monitored
 			AlertsNewAfterExec					= new AlertList("AlertsNewAfterExec"			, this);	// monitored
@@ -65,7 +65,7 @@ namespace Sq1.Core.Execution {
 			string msig = " //Initialize(WAIT)";
 			//NOT_USED this.AlertsMaster					.DisposeWaitHandles_andClearInnerList(this, msig);
 			this.AlertsNewAfterExec				.DisposeWaitHandles_andClearInnerList(this, msig);
-			this.AlertsPending_havingOrderFollowed_notYetFilled				.DisposeWaitHandles_andClearInnerList(this, msig);
+			this.AlertsUnfilled					.DisposeWaitHandles_andClearInnerList(this, msig);
 			this.AlertsDoomed					.DisposeWaitHandles_andClearInnerList(this, msig);
 			this.positionSerno_perStrategy	= 0;
 			this.Positions_AllBacktested		.DisposeTwoRelatedAlerts_waitHandles_andClearInnerList(this, msig);
@@ -79,19 +79,23 @@ namespace Sq1.Core.Execution {
 			this.Positions_toBeOpenedAfterExec	.Clear(this, msig);
 			this.Positions_toBeClosedAfterExec	.Clear(this, msig);
 		} }
-		internal void Positions_addNew_incrementPositionSerno(Position positionOpening_alertJustFilled) { lock (this.allOperations_withPositions) {
+		internal int Positions_addNew_incrementPositionSerno(Position positionOpening_alertJustFilled) { lock (this.allOperations_withPositions) {
+			int ret = 0;
 			string msig = " //Positions_toBeOpenedAfterExec_addNew_incrementPositionsSerno(WAIT)";
 			if (positionOpening_alertJustFilled.EntryFilledBarIndex == -1) {
 				string msg = "ENTRY_BAR_NEGATIVE_CAN_NOT_STORE_POSITION_IN_PositionsMaster.ByEntryBarFilled"
 					+ " Strategy[" + this.executor.Strategy.ToString() + "] EntryBar=-1 for position[" + positionOpening_alertJustFilled + "]";
 				Assembler.PopupException(msg, null, false);
-				return;
+				return ret;
 			}
 			
 			positionOpening_alertJustFilled.SernoPerStrategy = ++this.positionSerno_perStrategy;
 
-			this.Positions_toBeOpenedAfterExec	.AddOpened_step1of2(positionOpening_alertJustFilled, this, msig);
-			this.Positions_OpenNow				.AddOpened_step1of2(positionOpening_alertJustFilled, this, msig);
+			bool added1 = this.Positions_toBeOpenedAfterExec	.AddOpened_step1of2(positionOpening_alertJustFilled, this, msig);
+			bool added2 = this.Positions_OpenNow				.AddOpened_step1of2(positionOpening_alertJustFilled, this, msig);
+			if (added1) ret++;
+			if (added2) ret++;
+			return ret;
 		} }
 		public void AlertEnriched_register(Alert alert, bool registerIn_AlertsNewAfterExec = false) { lock (this.allOperations_withAlerts) {
 			string msig = " //AlertEnriched_register(WAIT)";
@@ -116,7 +120,7 @@ namespace Sq1.Core.Execution {
 			
 			//NOT_USED this.AlertsMaster.AddNoDupe_byBarsPlaced(alert, this, msig);
 			if (registerIn_AlertsNewAfterExec == true) this.AlertsNewAfterExec.AddNoDupe_byBarsPlaced(alert, this, msig);
-			ByBarDumpStatus dumped = this.AlertsPending_havingOrderFollowed_notYetFilled.AddNoDupe_byBarsPlaced(alert, this, msig);
+			ByBarDumpStatus dumped = this.AlertsUnfilled.AddNoDupe_byBarsPlaced(alert, this, msig);
 			switch (dumped) {
 				case ByBarDumpStatus.BarAlreadyContained_alertYouAdd:
 					string msg1 = "DUPE while adding JUST CREATED??? alert[" + alert + "]";
@@ -127,23 +131,23 @@ namespace Sq1.Core.Execution {
 					break;
 			}
 		} }
-		public void BacktestEnded_MovePositionOpen_toClosed(Position positionClosing, bool absenceThrows = true) { lock (this.allOperations_withPositions) {
+		public void MovePositionOpen_toClosed_backtestEnded(Position positionClosing, bool absenceThrows = true) { lock (this.allOperations_withPositions) {
 			string msig = " //MovePositionOpen_toClosed(WAIT)";
 			this.Positions_toBeClosedAfterExec.AddClosed(positionClosing, this, msig);
-			this.Positions_OpenNow.RemoveUnique(positionClosing, this, msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, absenceThrows);
+			this.Positions_OpenNow.Remove(positionClosing, this, msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, absenceThrows);
 		} }
-		public AlertList AlertsPending_thatQuoteWillFill(Quote quote) {		//QuoteGenerated quote
-			string msig = " //AlertsPending_thatQuoteWillFill(WAIT)";
+		public AlertList AlertsUnfilled_thatQuoteWillFill(Quote quote) {		//QuoteGenerated quote
+			string msig = " //AlertsUnfilled_thatQuoteWillFill(WAIT)";
 			bool imRunningBacktest = this.executor.DataSource_fromBars.BrokerAsBacktest_nullUnsafe != null;
 			BacktestMarketsim marketsim = imRunningBacktest
 				? this.executor.DataSource_fromBars.BrokerAsBacktest_nullUnsafe.BacktestMarketsim
 				: this.executor.DataSource_fromBars.BrokerAsLivesim_nullUnsafe.LivesimMarketsim;
 
 			AlertList ret = new AlertList("THERE_WERE_NO_ALERTS_PENDING_TO_FILL_ON_EACH_QUOTE", null);
-			if (this.AlertsPending_havingOrderFollowed_notYetFilled.Count == 0) return ret;
+			if (this.AlertsUnfilled.Count == 0) return ret;
 
 			ret = new AlertList("ALERTS_PENDING_MINUS_SCHEDULED_FOR_DELAYED_FILL", null);
-			List<Alert> pendingSafe = this.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, msig);
+			List<Alert> pendingSafe = this.AlertsUnfilled.SafeCopy(this, msig);
 			foreach (Alert eachPending in pendingSafe) {
 				double priceFill = -1;
 				double slippageFill = -1;

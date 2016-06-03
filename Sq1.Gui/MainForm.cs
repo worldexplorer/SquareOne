@@ -431,7 +431,7 @@ namespace Sq1.Gui {
 				StreamingAdapter streamingAdapter = eachDataSource.StreamingAdapter;
 				if (streamingAdapter == null) continue;
 				if (streamingAdapter is LivesimStreaming) continue;
-				if (streamingAdapter.UpstreamConnectedOnAppRestart == false) continue;
+				if (streamingAdapter.UpstreamConnect_onAppRestart == false) continue;
 				try {
 					streamingAdapter.UpstreamConnect();
 				} catch (Exception ex) {

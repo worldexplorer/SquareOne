@@ -365,7 +365,7 @@ namespace Sq1.Core.Backtesting {
 				}
 				#endif
 
-				int pendingsToFillInitially = this.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
+				int pendingsToFillInitially = this.Executor.ExecutionDataSnapshot.AlertsUnfilled.Count;
 				List<QuoteGenerated> quotesInjected = this.QuotesGenerator.InjectQuotes_toFillPendingAlerts_push(quote, bar2simulate);
 				
 				#if DEBUG //TEST_EMBEDDED
@@ -376,7 +376,7 @@ namespace Sq1.Core.Backtesting {
 					}
 				} else {
 					if (quotesInjected.Count == pendingsToFillInitially) {
-						int pendingsLeft = this.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
+						int pendingsLeft = this.Executor.ExecutionDataSnapshot.AlertsUnfilled.Count;
 						string msg = "GENERATED_EXACTLY_AS_MANY_AS_PENDINGS; PENDINGS_UNFILLED_LEFT_" + pendingsLeft;
 					}
 				}
@@ -390,13 +390,13 @@ namespace Sq1.Core.Backtesting {
 				}
 				#endif
 
-				int pendingsLeftAfterInjected = this.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
+				int pendingsLeftAfterInjected = this.Executor.ExecutionDataSnapshot.AlertsUnfilled.Count;
 
 				this.BacktestDataSource.StreamingAsBacktest_nullUnsafe.PushQuoteGenerated(quote);
 
 				//nothing poductive below, only breakpoint placeholders
 				#if DEBUG //TEST_EMEDDED
-				int pendingsLeftAfterTargetQuoteGenerated = this.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
+				int pendingsLeftAfterTargetQuoteGenerated = this.Executor.ExecutionDataSnapshot.AlertsUnfilled.Count;
 				if (pendingsToFillInitially == 0) continue;
 
 				int pendingsFilledByInjected = pendingsLeftAfterInjected - pendingsToFillInitially;
@@ -427,7 +427,7 @@ namespace Sq1.Core.Backtesting {
 		}
 		public void BacktestRestore_step2of2() {
 			if (this.ImRunningLivesim == false) {
-				this.Executor.BacktestEnded_closeOpenPositions();
+				this.Executor.CloseOpenPositions_backtestEnded();
 			} else {
 				this.Executor.LivesimEnded_invalidateUnfilledOrders_ClearPendingAlerts();
 			}

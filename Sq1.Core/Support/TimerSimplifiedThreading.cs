@@ -6,16 +6,19 @@ using Sq1.Core;
 
 namespace Sq1.Core.Support {
 	public class TimerSimplifiedThreading : IDisposable {
-				System.Threading.Timer	timer;
-				string					reasonToExist;
+		System.Threading.Timer	timer;
+				Stopwatch		elapsed;
+				string			reasonToExist;
 		
-		public	int		DelayMillis;		// ATOMIC_OPERATION ExceptionsForm may be closed and opened again => Initialize will have to set the TreeRefreshDelayMsec		{ get; private set; }
-		public	bool	Scheduled	{ get; private set; }
+		public	int				DelayMillis;				// ATOMIC_OPERATION ExceptionsForm may be closed and opened again => Initialize will have to set the TreeRefreshDelayMsec		{ get; private set; }
+		public	bool			Scheduled					{ get; private set; }
+		public	string			ElapsedVsDelayed_asString	{ get { return "elapsedMillis[" + this.elapsed.ElapsedMilliseconds + "/" + this.DelayMillis + "]scheduled"; } }
 
-		public event EventHandler<EventArgs>		OnLastScheduleExpired;
+		public	event	EventHandler<EventArgs>		OnLastScheduleExpired;
 
 		TimerSimplifiedThreading() {
-			timer			= new System.Threading.Timer(this.timer_expired);
+			timer	= new System.Threading.Timer(this.timer_expired);
+			elapsed	= new Stopwatch();
 		}
 
 		public TimerSimplifiedThreading(string reasonToExist_passed, int delayMillis_Initial = 200) : this() {
@@ -27,6 +30,7 @@ namespace Sq1.Core.Support {
 			if (this.IsDisposed) return;
 			this.Scheduled = false;
 			this.timer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+			this.elapsed.Stop();
 			Assembler.SetThreadName(this.reasonToExist);
 			if (this.OnLastScheduleExpired == null) return;
 			try {
@@ -40,6 +44,7 @@ namespace Sq1.Core.Support {
 		void reschedule() {
 			if (this.IsDisposed) return;
 			this.Scheduled = true;
+			this.elapsed.Restart();
 			this.timer.Change(this.DelayMillis, System.Threading.Timeout.Infinite);
 		}
 

@@ -107,11 +107,11 @@ namespace Sq1.Gui.Singletons {
 			}
 		}
 		void executionForm_Load(object sender, EventArgs e) {
-			this.orderProcessor.OnAsyncOrderAdded_executionControlShouldRebuildOLV			+= this.orderProcessor_OrderAdded;
+			this.orderProcessor.OnAsyncOrderAdded_executionControlShouldRebuildOLV				+= this.orderProcessor_OrderAdded;
 			this.orderProcessor.OnAsyncOrderRemoved_executionControlShouldRebuildOLV			+= this.orderProcessor_OrderRemoved;
 			this.orderProcessor.OnOrderStateOrPropertiesChanged_executionControlShouldPopulate	+= this.orderProcessor_OrderStateChanged;
-			this.orderProcessor.OnOrderMessageAdded_executionControlShouldPopulate	+= this.orderProcessor_OrderMessageAdded;
-			this.orderProcessor.OnDelaylessLivesimEnded_shouldRebuildOLV			+= this.orderProcessor_OnDelaylessLivesimEndedShouldRebuildOLV;
+			this.orderProcessor.OnOrderMessageAdded_executionControlShouldPopulate				+= this.orderProcessor_OrderMessageAdded;
+			this.orderProcessor.OnDelaylessLivesimEnded_shouldRebuildOLV						+= this.orderProcessor_OnDelaylessLivesimEndedShouldRebuildOLV;
 
 			//this.ExecutionTreeControl.OnOrderStatsChangedRecalculateWindowTitleExecutionFormNotification += delegate { this.PopulateWindowText(); };
 			this.ExecutionTreeControl.OnOrderSingleClicked_ChartControlShouldPopupPosition += this.executionTree_OnOrderSingleClicked_ChartControlShouldPopupPosition;

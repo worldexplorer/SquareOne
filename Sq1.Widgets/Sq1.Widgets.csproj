@@ -173,6 +173,7 @@
       <DependentUpon>ExceptionsControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Exceptions\ExceptionList.cs" />
     <Compile Include="Execution\ExecutionTreeControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

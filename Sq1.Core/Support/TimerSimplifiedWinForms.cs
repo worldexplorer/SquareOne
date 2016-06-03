@@ -8,17 +8,20 @@ using Sq1.Core;
 namespace Sq1.Core.Support {
 	public class TimerSimplifiedWinForms : IDisposable {
 		System.Windows.Forms.Timer	timer;
+				Stopwatch			elapsed;
 				string				reasonToExist;
 				Control				guiInvoker;
 		
-		public	int					DelayMillis;		// ATOMIC_OPERATION ExceptionsForm may be closed and opened again => Initialize will have to set the TreeRefreshDelayMsec		{ get; private set; }
-		public	bool				Scheduled	{ get; private set; }
+		public	int					DelayMillis;				// ATOMIC_OPERATION ExceptionsForm may be closed and opened again => Initialize will have to set the TreeRefreshDelayMsec		{ get; private set; }
+		public	bool				Scheduled					{ get; private set; }
+		public	string				ElapsedVsDelayed_asString	{ get { return "elapsed[" + this.elapsed.ElapsedMilliseconds + "ms/" + this.DelayMillis + "]scheduled"; } }
 
 		public event EventHandler<EventArgs>		OnLastScheduleExpired;
 
 		TimerSimplifiedWinForms() {
-			timer			= new System.Windows.Forms.Timer();
-			timer.Tick		+= new EventHandler(timer_expired);
+			timer		= new System.Windows.Forms.Timer();
+			timer.Tick	+= new EventHandler(timer_expired);
+			elapsed		= new Stopwatch();
 		}
 
 		public TimerSimplifiedWinForms(string reasonToExist_passed, Control guiInvokerPassed, int delayInitial = 200) : this() {
@@ -32,6 +35,7 @@ namespace Sq1.Core.Support {
 			this.Scheduled = false;
 			this.timer.Enabled = false;
 			this.timer.Stop();		// MAY_NEED_TO_GO_TO_GUI_THREAD otherwize it'll keep running even without rescheduling
+			this.elapsed.Stop();
 			if (this.OnLastScheduleExpired == null) return;
 			this.OnLastScheduleExpired(this, null);
 		}
@@ -67,6 +71,7 @@ namespace Sq1.Core.Support {
 				this.timer.Enabled = false;
 				this.timer.Stop();
 			}
+			this.elapsed.Restart();
 			this.timer.Enabled = true;
 			this.timer.Start();
 		}

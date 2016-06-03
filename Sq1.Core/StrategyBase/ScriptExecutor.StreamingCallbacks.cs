@@ -80,7 +80,7 @@ namespace Sq1.Core.StrategyBase {
 			string scriptInvocationError = "";
 			if (onNewQuoteTrue_onNewBarFalse == true) {
 				scriptInvocationError = this.invokeScript_onNewQuote_indicatorsAlready(quote_fromStreaming);
-				if (this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count > 0) {
+				if (this.ExecutionDataSnapshot.AlertsUnfilled.Count > 0) {
 					this.fillPendings_onEachQuote_onlyForLivesimBrokerDefault(quote_fromStreaming);
 				}
 			} else {
@@ -123,9 +123,9 @@ namespace Sq1.Core.StrategyBase {
 			//this.ExecutionDataSnapshot.PositionsClosedAfterExec
 
 			Bar barStreaming_nullUnsafe = this.Bars.BarStreaming_nullUnsafe;
-			List<Alert> alertsPending_atCurrentBar_safeCopy = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, msig);
+			List<Alert> alertsPending_atCurrentBar_safeCopy = this.ExecutionDataSnapshot.AlertsUnfilled.SafeCopy(this, msig);
 			if (barStreaming_nullUnsafe != null && alertsPending_atCurrentBar_safeCopy.Count > 0) {
-				this.ChartShadow.AlertsPending_stillNotFilled_addForBar(barStreaming_nullUnsafe.ParentBarsIndex, alertsPending_atCurrentBar_safeCopy);
+				this.ChartShadow.Alerts_stillUnfilled_addForBar(barStreaming_nullUnsafe.ParentBarsIndex, alertsPending_atCurrentBar_safeCopy);
 			}
 
 			List<Alert> alertsDoomed_afterExec_safeCopy = this.ExecutionDataSnapshot.AlertsDoomed.SafeCopy(this, msig);
@@ -242,7 +242,7 @@ namespace Sq1.Core.StrategyBase {
 												this.ExecutionDataSnapshot.AlertsNewAfterExec				.Clone(this, msig),
 												this.ExecutionDataSnapshot.Positions_toBeOpenedAfterExec	.Clone(this, msig),
 												this.ExecutionDataSnapshot.Positions_toBeClosedAfterExec	.Clone(this, msig),
-												this.ExecutionDataSnapshot.Positions_OpenNow		.Clone(this, msig) );
+												this.ExecutionDataSnapshot.Positions_OpenNow				.Clone(this, msig) );
 
 			//MOVED_UPSTACK_TO_LivesimQuoteBarConsumer
 			//if (this.Backtester.IsBacktestRunning && this.Backtester.IsLivesimRunning) {
@@ -283,7 +283,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg, null, false);
 			}
 
-			AlertList willBeFilled = this.ExecutionDataSnapshot.AlertsPending_thatQuoteWillFill(quoteForAlertsCreated);
+			AlertList willBeFilled = this.ExecutionDataSnapshot.AlertsUnfilled_thatQuoteWillFill(quoteForAlertsCreated);
 			if (willBeFilled.Count == 0) {
 				string msg1 = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
 				return;

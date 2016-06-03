@@ -74,8 +74,8 @@ namespace Sq1.Core.StrategyBase {
 
 				Order orderKilled = alertKilled.OrderFollowed;
 
-				if (this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Contains(alertKilled, this, msig)) {
-					bool removed = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alertKilled, this, msig);
+				if (this.ExecutionDataSnapshot.AlertsUnfilled.Contains(alertKilled, this, msig)) {
+					bool removed = this.ExecutionDataSnapshot.AlertsUnfilled.Remove(alertKilled, this, msig);
 					if (removed) alertKilled.IsKilled = true;
 				} else {
 					string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsPending DELETED_EARLIER_OR_NEVER_BEEN_ADDED;"
@@ -103,7 +103,7 @@ namespace Sq1.Core.StrategyBase {
 																   double.IsNaN(orderKilled.SlippageNextAvailable_NanWhenNoMore);
 				if (removingAlert_afterLastSlippaged_replacementOrderExpired) {
 					if (alertKilled.BuyOrShort) {
-						this.ExecutionDataSnapshot.Positions_OpenNow.RemoveUnique(alertKilled.PositionAffected, this,
+						this.ExecutionDataSnapshot.Positions_OpenNow.Remove(alertKilled.PositionAffected, this,
 							"REMOVING_ALERT_UNFILLED__AFTER_LAST_SLIPPAGED_REPLACEMENT_ORDER_EXPIRED__ENTRY_ALERT_UNLUCKY_DIDNT_GET_FILL");
 					} else {
 						string msg = "PROBABLY_EMERGENCY_CLOSE_WILL_KICK_IN... BUT_SHOULD_I_REMOVE??";
@@ -147,9 +147,6 @@ namespace Sq1.Core.StrategyBase {
 
 			//avoiding two alertsFilled and messing script-overrides; despite all script invocations downstack are sequential, guaranteed for 1 alertFilled
 			try {
-				bool breakIfAbsent = true;
-				int threeSeconds = ConcurrentWatchdog.TIMEOUT_DEFAULT;
-				int forever = -1;
 				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig);
 				this.callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(alertFilled, quoteFilledThisAlert_nullForLive,
 																					 priceFill, qtyFill, slippageFill, commissionFill);
@@ -159,10 +156,10 @@ namespace Sq1.Core.StrategyBase {
 			// filled alerts should be immediately be reflected with an arrow on PricePanel
 			this.ChartShadow.InvalidateAllPanels();
 		}
-		void callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(Alert alertFilled, Quote quoteFilledThisAlertNullForLive,
+		void callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(Alert alertFilled, Quote quoteFilledThisAlert_nullFromOrderProcessorWhenLive,
 																			 double priceFill, double qtyFill, double slippageFill, double commissionFill) {
 			//SLOW string msig = " callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
-			string msig = " //callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
+			string msig = " //callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(" + alertFilled + ", " + quoteFilledThisAlert_nullFromOrderProcessorWhenLive + ")";
 
 			Bar barFill = (this.IsStreamingTriggeringScript)
 				? alertFilled.Bars.BarStreaming_nullUnsafeCloneReadonly
@@ -196,51 +193,9 @@ namespace Sq1.Core.StrategyBase {
 					+ alertFilled.PlacedBarIndex + "]; FilledBar=[" + alertFilled.FilledBar + "] PlacedBar=[" + alertFilled.PlacedBar + "]";
 				Assembler.PopupException(msg);
 			}
-			#endregion
 
-			if (quoteFilledThisAlertNullForLive != null) {
-				//BACKTEST
-				if (quoteFilledThisAlertNullForLive.ParentBarStreaming == null) {
-					string msg = "NONSENSE#1";
-					Assembler.PopupException(msg);
-				}
-				if (quoteFilledThisAlertNullForLive.ParentBarStreaming != alertFilled.Bars.BarStreaming_nullUnsafe) {
-					string msg = "NONSENSE#4";
-					Assembler.PopupException(msg);
-				}
-				if (alertFilled.Bars != quoteFilledThisAlertNullForLive.ParentBarStreaming.ParentBars) {
-					string msg = "NONSENSE#2";
-					Assembler.PopupException(msg);
-				}
-				//THIS_ALREADY_IS_A_CLONE alertFilled.QuoteFilledThisAlertDuringBacktestNotLive = quoteFilledThisAlertNullForLive.Clone();	// CLONE_TO_FREEZE_AS_IT_HAPPENED_IGNORING_WHATEVER_HAPPENED_WITH_ORIGINAL_QUOTE_AFTERWARDS
-				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive = quoteFilledThisAlertNullForLive;	// CLONE_TO_FREEZE_AS_IT_HAPPENED_IGNORING_WHATEVER_HAPPENED_WITH_ORIGINAL_QUOTE_AFTERWARDS
-				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive.ItriggeredFillAtBidOrAsk = alertFilled.BidOrAskWillFillMe;
-			} else {
-				//LIVEISM
-				alertFilled.QuoteCurrent_whenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(alertFilled.Symbol);
-				alertFilled.QuoteCurrent_whenThisAlertFilled_deserializable = alertFilled.QuoteCurrent_whenThisAlertFilled.Clone_asCoreQuote();
-			}
 
-			//DILUTED_30_LINES_BELOW
-			//if (priceFill != 0) {
-			//    try {
-			//        alertFilled.FillPositionAffected_entryOrExit_respectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
-			//        if (alertFilled.IsEntryAlert) {
-			//            this.ExecutionDataSnapshot.Positions_OpenNow.AddOpened_step1of2	(alertFilled.PositionAffected, this, "BROKER_FILLED_ENTRY_ALERT__ADDING_TO_POSITIONS_OPEN");
-			//        } else {
-			//            this.ExecutionDataSnapshot.Positions_OpenNow.RemoveUnique		(alertFilled.PositionAffected, this, "BROKER_FILLED_EXIT_ALERT__REMOVING_FROM_POSITIONS_OPEN");
-			//        }
-			//    } catch (Exception ex) {
-			//        string msg = "REMOVE_FILLED_FROM_PENDING? DONT_USE_Bar.ContainsPrice()?";
-			//        Assembler.PopupException(msg + msig, ex);
-			//    }
-			//}
-
-			bool breakIfAbsent = true;
-			int threeSeconds = ConcurrentWatchdog.TIMEOUT_DEFAULT;
-			int forever = -1;
-			bool removed = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alertFilled, this, msig, forever, breakIfAbsent);
-
+			// fresh puff
 			if (priceFill <= 0) {
 				string msg = "REJECTED_ALERTS_SHOULD_BE_PROCESSED_IN_callBackAlertRejected() WONT_MOVE_AROUND: priceFill[" + priceFill + "] <= 0";
 				Assembler.PopupException(msg, null, false);
@@ -280,10 +235,57 @@ namespace Sq1.Core.StrategyBase {
 				if (alertFilled.PositionPrototype != null && closingAlert_wasRejected) {
 					msg = "CLOSING_ALERT_REJECTED__USE_SymbolInfo.EMERGENCY_CLOSE " + msg;
 				}
-				Assembler.PopupException(msg, null, false);
+				Assembler.PopupException(msg);
 				return;
 			}
+			#endregion
 
+
+			if (quoteFilledThisAlert_nullFromOrderProcessorWhenLive != null) {
+				//BACKTEST
+				if (quoteFilledThisAlert_nullFromOrderProcessorWhenLive.ParentBarStreaming == null) {
+					string msg = "NONSENSE#1";
+					Assembler.PopupException(msg);
+				}
+				if (quoteFilledThisAlert_nullFromOrderProcessorWhenLive.ParentBarStreaming != alertFilled.Bars.BarStreaming_nullUnsafe) {
+					string msg = "NONSENSE#4";
+					Assembler.PopupException(msg);
+				}
+				if (alertFilled.Bars != quoteFilledThisAlert_nullFromOrderProcessorWhenLive.ParentBarStreaming.ParentBars) {
+					string msg = "NONSENSE#2";
+					Assembler.PopupException(msg);
+				}
+				//THIS_ALREADY_IS_A_CLONE alertFilled.QuoteFilledThisAlertDuringBacktestNotLive = quoteFilledThisAlertNullForLive.Clone();	// CLONE_TO_FREEZE_AS_IT_HAPPENED_IGNORING_WHATEVER_HAPPENED_WITH_ORIGINAL_QUOTE_AFTERWARDS
+				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive = quoteFilledThisAlert_nullFromOrderProcessorWhenLive;	// CLONE_TO_FREEZE_AS_IT_HAPPENED_IGNORING_WHATEVER_HAPPENED_WITH_ORIGINAL_QUOTE_AFTERWARDS
+				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive.ItriggeredFillAtBidOrAsk = alertFilled.BidOrAskWillFillMe;
+			} else {
+				//LIVEISM
+				alertFilled.QuoteCurrent_whenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(alertFilled.Symbol);
+				alertFilled.QuoteCurrent_whenThisAlertFilled_deserializable = alertFilled.QuoteCurrent_whenThisAlertFilled.Clone_asCoreQuote();
+			}
+
+			//DILUTED_30_LINES_BELOW
+			//if (priceFill != 0) {
+			//    try {
+			//        alertFilled.FillPositionAffected_entryOrExit_respectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
+			//        if (alertFilled.IsEntryAlert) {
+			//            this.ExecutionDataSnapshot.Positions_OpenNow.AddOpened_step1of2	(alertFilled.PositionAffected, this, "BROKER_FILLED_ENTRY_ALERT__ADDING_TO_POSITIONS_OPEN");
+			//        } else {
+			//            this.ExecutionDataSnapshot.Positions_OpenNow.RemoveUnique		(alertFilled.PositionAffected, this, "BROKER_FILLED_EXIT_ALERT__REMOVING_FROM_POSITIONS_OPEN");
+			//        }
+			//    } catch (Exception ex) {
+			//        string msg = "REMOVE_FILLED_FROM_PENDING? DONT_USE_Bar.ContainsPrice()?";
+			//        Assembler.PopupException(msg + msig, ex);
+			//    }
+			//}
+
+			bool breakIfAbsent = true;
+			int forever = -1;
+			bool removed = this.ExecutionDataSnapshot.AlertsUnfilled.Remove(alertFilled, this, msig, forever, breakIfAbsent);
+
+			alertFilled.FillPositionAffected_entryOrExit_respectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
+
+			string msg_order = "AlertsUnfilled.Count[" + this.ExecutionDataSnapshot.AlertsUnfilled.Count + "]:removed[" + removed + "]";
 
 			Position positionOpened_afterAlertFilled = null;
 			Position positionClosed_afterAlertFilled = null;
@@ -292,12 +294,12 @@ namespace Sq1.Core.StrategyBase {
 			PositionList positionsClosed_afterAlertFilled = new PositionList("positionsClosed_afterAlertFilled", this.ExecutionDataSnapshot);
 
 
-			alertFilled.FillPositionAffected_entryOrExit_respectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
-
 			if (alertFilled.IsEntryAlert) {
 				Position positionOpening = alertFilled.PositionAffected;
 				bool duplicateThrows = true;
-				this.ExecutionDataSnapshot.Positions_addNew_incrementPositionSerno(positionOpening);
+				int added2 = this.ExecutionDataSnapshot.Positions_addNew_incrementPositionSerno(positionOpening);
+				msg_order += " Positions_OpenNow.Count[" + this.ExecutionDataSnapshot.Positions_OpenNow.Count + "]:added2[" + added2 + "]";
+
 				if (this.DataSource_fromBars.BrokerAsBacktest_nullUnsafe != null) {
 					this.ExecutionDataSnapshot.Positions_AllBacktested.AddOpened_step1of2(positionOpening, this,
 						"ENTRY_ALERT_GOT_FILL__ADDING_TO_Positions_AllBacktested" + msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, duplicateThrows);
@@ -324,15 +326,22 @@ namespace Sq1.Core.StrategyBase {
 				bool added2 = this.ExecutionDataSnapshot.Positions_OpenNow.AddToClosedDictionary_step2of2(positionClosing, this,
 					"EXIT_ALERT_GOT_FILL__ADDING_TO_Positions_OpenNow_ByBarClosedDictionary" + msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, absenceThrows);
 
-				this.ExecutionDataSnapshot.Positions_OpenNow.RemoveUnique(positionClosing, this,
+				bool removedClosed = this.ExecutionDataSnapshot.Positions_OpenNow.Remove(positionClosing, this,
 					"EXIT_ALERT_GOT_FILL__REMOVING_FROM_Positions_OpenNow" + msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, absenceThrows);
+				msg_order += " Positions_OpenNow.Count[" + this.ExecutionDataSnapshot.Positions_OpenNow.Count + "]:removedClosed[" + removedClosed + "]";
 
 				Position mustBeNull = this.Strategy.Script.LastPosition_OpenNow_nullUnsafe;
 				if (mustBeNull != null) {
-					string msg = "DONT_USE_RemoveUnique()_FOR_POSITIONS_LIST";
-					Assembler.PopupException(msg);
+					string msg = "YOUR_STRATEGY_OPENED_MULTIPLE_POSITIONS???";	//DONT_USE_RemoveUnique()_FOR_POSITIONS_LIST";
+					Assembler.PopupException(msg, null, false);
 				}
 			}
+
+
+			if (alertFilled.OrderFollowed != null) {
+				this.OrderProcessor.AppendMessage_propagateToGui(alertFilled.OrderFollowed, msg_order);
+			}
+
 
 			bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
 
@@ -406,7 +415,7 @@ namespace Sq1.Core.StrategyBase {
 					}
 					#endregion
 
-					Quote quoteHackForLive = quoteFilledThisAlertNullForLive;
+					Quote quoteHackForLive = quoteFilledThisAlert_nullFromOrderProcessorWhenLive;
 					if (quoteHackForLive == null) {
 						quoteHackForLive = alertFilled.QuoteCurrent_whenThisAlertFilled;	// unconditionally filled 130 lines above
 					}
@@ -441,7 +450,7 @@ namespace Sq1.Core.StrategyBase {
 									msg += ": NO_SUCCESS still null!!!";
 									this.PopupException(msg);
 								} else {
-									proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed.appendMessage(msg);
+									proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed.AppendMessage(msg);
 									this.PopupException(msg);
 								}
 							//} else {
@@ -461,7 +470,7 @@ namespace Sq1.Core.StrategyBase {
 									msg += ": NO_SUCCESS still null!!!";
 									this.PopupException(msg);
 								} else {
-									proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed.appendMessage(msg);
+									proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed.AppendMessage(msg);
 									this.PopupException(msg);
 								}
 							//} else {
@@ -543,7 +552,7 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 
-			ReporterPokeUnit pokeUnit_dontForgetToDispose = new ReporterPokeUnit(quoteFilledThisAlertNullForLive, alertsNewAfterAlertFilled,
+			ReporterPokeUnit pokeUnit_dontForgetToDispose = new ReporterPokeUnit(quoteFilledThisAlert_nullFromOrderProcessorWhenLive, alertsNewAfterAlertFilled,
 															 positionsOpened_afterAlertFilled,
 															 positionsClosed_afterAlertFilled,
 															 null
@@ -570,7 +579,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		void closePosition_withAlertClonedFromEntry_backtestEnded(Alert alert) {
 			string msig = " closePositionWithAlertClonedFromEntryBacktestEnded():";
-			this.removePendingExitAlert(alert, msig);
+			this.removePendingExitAlert_backtestEnded(alert, msig);
 			bool checkPositionOpenNow = true;
 			if (this.check_positionCanBeClosed(alert, msig, checkPositionOpenNow) == false) return;
 			if (alert.FilledBar == null) {
@@ -587,7 +596,7 @@ namespace Sq1.Core.StrategyBase {
 			//alertFilled.FillPositionAffectedEntryOrExitRespectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
 
 			bool absenceThrows = true;
-			this.ExecutionDataSnapshot.BacktestEnded_MovePositionOpen_toClosed(alert.PositionAffected, absenceThrows);
+			this.ExecutionDataSnapshot.MovePositionOpen_toClosed_backtestEnded(alert.PositionAffected, absenceThrows);
 		}
 		bool check_positionCanBeClosed(Alert alert, string msig, bool checkPositionOpenNow = true) {
 			if (alert.PositionAffected == null) {

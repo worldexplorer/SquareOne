@@ -50,7 +50,7 @@ namespace Sq1.Core.Broker {
 						}
 						BrokerAdapter broker = ordersOpen[0].Alert.DataSource_fromBars.BrokerAdapter;
 						//ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersOpen });
-						this.orderProcessor.SubmitToBroker_waitForConnected(ordersOpen, broker);
+						this.orderProcessor.SubmitToBroker_inNewThread_waitUntilConnected(ordersOpen, broker);
 					}
 				}
 			}

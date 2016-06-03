@@ -12,7 +12,7 @@ namespace Sq1.Core.Broker {
 			foreach (Order order in orders) {
 				if (this.isOrderEatable(order) == false) {
 					string msg1 = "I_REFUSE_TO_SUBMIT_NON_EDIBLE_ORDER [" + order + "]";
-					order.appendMessage(msg1);
+					order.AppendMessage(msg1);
 					Assembler.PopupException(msg1, null, false);
 					continue;
 				}
@@ -98,7 +98,7 @@ namespace Sq1.Core.Broker {
 					string msg = "I_REFUSE_TO_KILL_AN_ORDER_AFTER_APPRESTART"
 						+ " tree_FormatRow() sets Item.ForeColor=Color.DimGray when "
 						+ " (all JSON-deserialized orders have no chart to get popped-up)";
-					orderToBeKilled.appendMessage(msg);
+					orderToBeKilled.AppendMessage(msg);
 					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}

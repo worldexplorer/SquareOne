@@ -48,8 +48,11 @@ namespace Sq1.Widgets.Execution {
 			this.olvcAccount = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcLastMessage = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.ctxOrder = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.mniPosition_info = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniExitAlert_info = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniOrderPositionClose = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniOrderAlert_removeFromPending = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniKillPendingSelected = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniKillPendingAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniKillPendingAll_stopEmitting = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,6 +100,7 @@ namespace Sq1.Widgets.Execution {
 			this.olvcMessageState = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMessageText = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.splitContainerMessagePane = new System.Windows.Forms.SplitContainer();
+			this.olvcSlippageFilled = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			((System.ComponentModel.ISupportInitialize)(this.OlvOrdersTree)).BeginInit();
 			this.ctxOrder.SuspendLayout();
 			this.ctxColumnsGrouped.SuspendLayout();
@@ -125,6 +129,7 @@ namespace Sq1.Widgets.Execution {
 			this.OlvOrdersTree.AllColumns.Add(this.olvcSpreadSide);
 			this.OlvOrdersTree.AllColumns.Add(this.olvcPriceScript);
 			this.OlvOrdersTree.AllColumns.Add(this.olvcPriceCurBidOrAsk);
+			this.OlvOrdersTree.AllColumns.Add(this.olvcSlippageFilled);
 			this.OlvOrdersTree.AllColumns.Add(this.olvcSlippageApplied);
 			this.OlvOrdersTree.AllColumns.Add(this.olvcPriceEmitted_withSlippageApplied);
 			this.OlvOrdersTree.AllColumns.Add(this.olvcPriceFilled);
@@ -160,6 +165,7 @@ namespace Sq1.Widgets.Execution {
             this.olvcSpreadSide,
             this.olvcPriceScript,
             this.olvcPriceCurBidOrAsk,
+            this.olvcSlippageFilled,
             this.olvcSlippageApplied,
             this.olvcPriceEmitted_withSlippageApplied,
             this.olvcPriceFilled,
@@ -390,8 +396,11 @@ namespace Sq1.Widgets.Execution {
 			// ctxOrder
 			// 
 			this.ctxOrder.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mniPosition_info,
+            this.mniExitAlert_info,
             this.mniOrderPositionClose,
             this.mniOrderAlert_removeFromPending,
+            this.toolStripSeparator5,
             this.mniKillPendingSelected,
             this.mniKillPendingAll,
             this.mniKillPendingAll_stopEmitting,
@@ -413,8 +422,24 @@ namespace Sq1.Widgets.Execution {
             this.mniltbSerializationInterval,
             this.mniSerializeNow});
 			this.ctxOrder.Name = "popupOrders";
-			this.ctxOrder.Size = new System.Drawing.Size(387, 448);
+			this.ctxOrder.Size = new System.Drawing.Size(387, 479);
 			this.ctxOrder.Opening += new System.ComponentModel.CancelEventHandler(this.ctxOrder_Opening);
+			// 
+			// mniPosition_info
+			// 
+			this.mniPosition_info.Enabled = false;
+			this.mniPosition_info.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.mniPosition_info.Name = "mniPosition_info";
+			this.mniPosition_info.Size = new System.Drawing.Size(386, 22);
+			this.mniPosition_info.Text = "Position: BLA BLA BLA";
+			// 
+			// mniExitAlert_info
+			// 
+			this.mniExitAlert_info.Enabled = false;
+			this.mniExitAlert_info.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+			this.mniExitAlert_info.Name = "mniExitAlert_info";
+			this.mniExitAlert_info.Size = new System.Drawing.Size(386, 22);
+			this.mniExitAlert_info.Text = "ExitAlert: BLA BLA BLA";
 			// 
 			// mniOrderPositionClose
 			// 
@@ -429,6 +454,11 @@ namespace Sq1.Widgets.Execution {
 			this.mniOrderAlert_removeFromPending.Size = new System.Drawing.Size(386, 22);
 			this.mniOrderAlert_removeFromPending.Text = "Remove from PendingAlerts (if Order Processor failed)";
 			this.mniOrderAlert_removeFromPending.Click += new System.EventHandler(this.mniRemoveFromPendingAlerts_Click);
+			// 
+			// toolStripSeparator5
+			// 
+			this.toolStripSeparator5.Name = "toolStripSeparator5";
+			this.toolStripSeparator5.Size = new System.Drawing.Size(383, 6);
 			// 
 			// mniKillPendingSelected
 			// 
@@ -745,7 +775,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniltbDelay.InputFieldWidth = 40;
 			this.mniltbDelay.Name = "mniltbDelay";
 			this.mniltbDelay.OffsetTop = 0;
-			this.mniltbDelay.Size = new System.Drawing.Size(240, 18);
+			this.mniltbDelay.Size = new System.Drawing.Size(237, 21);
 			this.mniltbDelay.TextLeft = "UI buffering delay";
 			this.mniltbDelay.TextLeftOffsetX = 0;
 			this.mniltbDelay.TextLeftWidth = 103;
@@ -767,7 +797,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniltbSerializationInterval.InputFieldWidth = 40;
 			this.mniltbSerializationInterval.Name = "mniltbSerializationInterval";
 			this.mniltbSerializationInterval.OffsetTop = 0;
-			this.mniltbSerializationInterval.Size = new System.Drawing.Size(240, 22);
+			this.mniltbSerializationInterval.Size = new System.Drawing.Size(237, 22);
 			this.mniltbSerializationInterval.Text = "mniltbDelaySerializationSync";
 			this.mniltbSerializationInterval.TextLeft = "Serialize every (logrotate)";
 			this.mniltbSerializationInterval.TextLeftOffsetX = 0;
@@ -863,6 +893,10 @@ namespace Sq1.Widgets.Execution {
 			this.splitContainerMessagePane.Size = new System.Drawing.Size(1033, 249);
 			this.splitContainerMessagePane.SplitterDistance = 146;
 			this.splitContainerMessagePane.TabIndex = 22;
+			// 
+			// olvcSlippageFilled
+			// 
+			this.olvcSlippageFilled.Text = "SlippageFilled";
 			// 
 			// ExecutionTreeControl
 			// 
@@ -964,5 +998,9 @@ namespace Sq1.Widgets.Execution {
 		private ToolStripMenuItem mniOrderPositionClose;
 		private ToolStripMenuItem mniOrderAlert_removeFromPending;
 		private ToolStripMenuItem mniSerializeNow;
+		private ToolStripMenuItem mniPosition_info;
+		private ToolStripMenuItem mniExitAlert_info;
+		private ToolStripSeparator toolStripSeparator5;
+		private BrightIdeasSoftware.OLVColumn olvcSlippageFilled;
 	}
 }

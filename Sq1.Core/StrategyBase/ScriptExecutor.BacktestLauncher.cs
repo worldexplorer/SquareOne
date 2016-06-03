@@ -217,9 +217,9 @@ namespace Sq1.Core.StrategyBase {
 
 
 
-		internal void BacktestEnded_closeOpenPositions() {
+		internal void CloseOpenPositions_backtestEnded() {
 			//return;
-			List<Alert> alertsSafe = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, "BacktestEnded_closeOpenPositions(WAIT)");
+			List<Alert> alertsSafe = this.ExecutionDataSnapshot.AlertsUnfilled.SafeCopy(this, "CloseOpenPositions_backtestEnded(WAIT)");
 			foreach (Alert alertPending in alertsSafe) {
 				try {
 					//if (alertPending.IsEntryAlert) {
@@ -235,9 +235,9 @@ namespace Sq1.Core.StrategyBase {
 					this.PopupException(msg, ex, false);
 				}
 			}
-			if (this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count > 0) {
+			if (this.ExecutionDataSnapshot.AlertsUnfilled.Count > 0) {
 				string msg = "KILLING_LEFTOVER_ALERTS_DIDNT_WORK_OUT snap.AlertsPending.Count["
-					+ this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count + "] should be ZERO";
+					+ this.ExecutionDataSnapshot.AlertsUnfilled.Count + "] should be ZERO";
 				Assembler.PopupException(msg, null, false);
 			}
 
@@ -271,7 +271,7 @@ namespace Sq1.Core.StrategyBase {
 
 		internal void LivesimEnded_invalidateUnfilledOrders_ClearPendingAlerts() {
 			string msig = " //LivesimEnded_invalidateUnfilledOrders_ClearPendingAlerts() " + this.ToString();
-			List<Alert> mostLikelyUnfilled = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, msig);
+			List<Alert> mostLikelyUnfilled = this.ExecutionDataSnapshot.AlertsUnfilled.SafeCopy(this, msig);
 			foreach (Alert alertWithUnfilledOrder in mostLikelyUnfilled) {
 				Order unfilled = alertWithUnfilledOrder.OrderFollowed;
 				if (unfilled == null) continue;

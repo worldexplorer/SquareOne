@@ -65,6 +65,8 @@ namespace Sq1.Core.Livesim {
 			if (this.livesimBroker.LivesimBrokerSettings.OrderRejectionEnabled == false) return this.RejectOrderNow;
 
 			int planned_nonRejectedLimit = this.livesimBroker.LivesimBrokerSettings.OrderRejectionHappensOncePerXordersMin;
+			if (planned_nonRejectedLimit == 0) return this.RejectOrderNow;
+
 			if (this.livesimBroker.LivesimBrokerSettings.OrderRejectionHappensOncePerXordersMax > 0) {
 				int range = Math.Abs(this.livesimBroker.LivesimBrokerSettings.OrderRejectionHappensOncePerXordersMin -
 									 this.livesimBroker.LivesimBrokerSettings.OrderRejectionHappensOncePerXordersMax);
@@ -73,11 +75,11 @@ namespace Sq1.Core.Livesim {
 				planned_nonRejectedLimit += rangePart;
 			}
 
-			howManyOrders_wereNotRejected++;
 			if (howManyOrders_wereNotRejected >= planned_nonRejectedLimit) {
 				this.RejectOrderNow = true;
 				howManyOrders_wereNotRejected = 0;
 			}
+			howManyOrders_wereNotRejected++;
 			return this.RejectOrderNow;
 		}
 

@@ -339,13 +339,13 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		//NOW_INLINE void invokeScriptEvents(Alert alertFilled) {}
-		void removePendingExitAlert(Alert alert, string msig) {
+		void removePendingExitAlert_backtestEnded(Alert alert, string msig) {
 			string msg = "";
 			ExecutorDataSnapshot snap = alert.Strategy.Script.Executor.ExecutionDataSnapshot;
 			//this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert);
 			string orderState = (alert.OrderFollowed == null) ? "alert.OrderFollowed=NULL" : alert.OrderFollowed.State.ToString();
-			if (snap.AlertsPending_havingOrderFollowed_notYetFilled.Contains(alert, this, "RemovePendingExitAlert(WAIT)")) {
-				bool removed = snap.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alert, this, "RemovePendingExitAlert(WAIT)");
+			if (snap.AlertsUnfilled.Contains(alert, this, "RemovePendingExitAlert(WAIT)")) {
+				bool removed = snap.AlertsUnfilled.Remove(alert, this, "RemovePendingExitAlert(WAIT)");
 				msg = "REMOVED " + orderState + " Pending alert[" + alert + "] ";
 			} else {
 				msg = "CANT_BE_REMOVED " + orderState + " isn't Pending alert[" + alert + "] ";
@@ -362,7 +362,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void RemovePendingExitAlerts_closePositionsBacktestLeftHanging(Alert alert) {
 			string msig = "RemovePendingExitAlertAndClosePositionAfterBacktestLeftItHanging(): ";
-			this.removePendingExitAlert(alert, msig);
+			this.removePendingExitAlert_backtestEnded(alert, msig);
 			//bool checkPositionOpenNow = true;
 			//if (this.checkPositionCanBeClosed(alert, msig, checkPositionOpenNow) == false) return;
 
@@ -380,7 +380,7 @@ namespace Sq1.Core.StrategyBase {
 			//alert.PositionAffected.ExitAlertAttach(alert);
 
 			bool absenseInPositionsOpenNowIsAnError = true;
-			this.ExecutionDataSnapshot.BacktestEnded_MovePositionOpen_toClosed(alert.PositionAffected, absenseInPositionsOpenNowIsAnError);
+			this.ExecutionDataSnapshot.MovePositionOpen_toClosed_backtestEnded(alert.PositionAffected, absenseInPositionsOpenNowIsAnError);
 		}
 		void removePendingEntry(Alert alert) {
 			string msig = "RemovePendingEntry(): ";

@@ -82,13 +82,13 @@ namespace Sq1.Core.Broker {
 			}
 
 			try {
-				int expiredMillis				= orderExpired_willBeReplaced.Alert.Bars.SymbolInfo.ApplyNextSlippage_ifLimitNotFilledWithin;
+				int expiredMillis				= orderExpired_willBeReplaced.Alert.Bars.SymbolInfo.ReSubmitLimitNotFilledWithinMillis;
 				double slippageNext_NaNunsafe	= orderExpired_willBeReplaced.SlippageNextAvailable_NanWhenNoMore;
 
 				string hookReason = "APPLYING_NEXT_SLIPPAGE__WILL_REPLACE_KILLED_ORDER__ORDER_WAS_NOT_FILLED_WITHIN[" + expiredMillis + "]ms slippageNext_NaNunsafe[" + slippageNext_NaNunsafe + "]";
 				// CHART_IS_PAUSED_TOO__USE_POSITIONS_PENDING_THEY_STAY_STABLE_DURING_REPLACEMENT int paused = streaming.DistributorCharts_substitutedDuringLivesim.TwoPushingPumpsPerSymbol_Pause_forAllSymbol_duringLivesimmingOne(hookReason);
 
-				orderExpired_willBeReplaced.DontRemoveMyPendingAfterImKilled_IwillBeReplaced = true;
+				orderExpired_willBeReplaced.DontRemoveMyPending_afterImKilled_IwillBeReplaced = true;
 
 				OrderPostProcessorStateHook hook_orderOriginal_killed = new OrderPostProcessorStateHook(hookReason,
 					orderExpired_willBeReplaced, OrderState.VictimKilled, this.replaceOrder_withNextSlippage_onOriginalWasKilled);
@@ -173,7 +173,7 @@ namespace Sq1.Core.Broker {
 				replacement.PriceEmitted = priceBasedOnLastQuote;
 				replacement.Alert.SetNewPriceEmitted_fromReplacementOrder(replacement);	// will repaint the circle at the new order-emitted price PanelPrice.Rendering.cs:86
 
-				string verdict = "EMITTING_REPLACEMENT_ORDER diff[" + difference_withExpiredOrder_signInprecise + "] " + replacement;
+				string verdict = "EMITTING_REPLACEMENT_ORDER diffToExpired[" + difference_withExpiredOrder_signInprecise + "] " + replacement;
 				OrderStateMessage osm = new OrderStateMessage(expiredOrderKilled_replaceMe, OrderState.EmittingReplacement, verdict);
 				this.OrderProcessor.AppendOrderMessage_propagateToGui(osm);
 
@@ -247,7 +247,7 @@ namespace Sq1.Core.Broker {
 					replacementOrder, OrderState.WaitingBrokerFill, this.UnpauseAll_signalReplacementComplete);
 				// UNPAUSE_DISABLED_ANYWAY__KOZ_CHART_NEEDS_TO_DISPLAY_QUOTES_WHILE_BROKER_EXECUTES__I_SHOULD_FACE_THE_PROBLEM_FIRST this.OrderProcessor.OPPstatusCallbacks.AddStateChangedHook(hook_replacementOrder_emitted);
 
-				orderSubmitted = this.OrderProcessor.SubmitToBroker_waitForConnected(replacementOrder_oneInTheList, broker, inNewThread);
+				orderSubmitted = this.OrderProcessor.SubmitToBroker_inNewThread_waitUntilConnected(replacementOrder_oneInTheList, broker, inNewThread);
 				return orderSubmitted;
 			} finally {
 				// TOO_EARLY this.replacementOrderEmitted_afterOriginalKilled__orError_multiOrderUnsupported.Set();

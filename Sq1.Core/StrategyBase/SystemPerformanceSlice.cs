@@ -452,7 +452,7 @@ namespace Sq1.Core.StrategyBase {
 				if (positionClosed.ExitAlert.ForcefullyClosedBacktestLastPosition) continue;
 				if (positionsClosedAccounted.Contains(positionClosed)) {
 					string msg = "LIVESIM_ABORTED_WITH_POSITION_OPEN SHOULD_BE_INVOKED_FOR_LIVE_CLOSED_POSITION_ONCE";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
 				}
 				positionsClosedAccounted.Add(positionClosed);
 

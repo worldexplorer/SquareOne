@@ -13,33 +13,33 @@ namespace Sq1.Core.Execution {
 		public bool					IsLong					{ get { return this.PositionLongShort == PositionLongShort.Long; } }
 		public bool					IsShort					{ get { return this.PositionLongShort == PositionLongShort.Short; } }
 		
-		public PositionLongShort	PositionLongShort		{ get; protected set; }
-		public Bars					Bars					{ get; protected set; }
+		public PositionLongShort	PositionLongShort		{ get; private set; }
+		public Bars					Bars					{ get; private set; }
 		public string				Symbol					{ get { return this.Bars.Symbol; } }
-		public double				Shares					{ get; protected set; }
-		public double				QuoteCurrent_forMarketOrStopLimit_implicitPrice;// { get; protected set; }
+		public double				Shares					{ get; private set; }
+		public double				QuoteCurrent_forMarketOrStopLimit_implicitPrice;// { get; private set; }
 
-		public Alert				EntryAlert;				// { get; protected set; }
-		public MarketLimitStop		EntryMarketLimitStop	{ get; protected set; }
-		public int					EntryFilledBarIndex		{ get; protected set; }
+		public Alert				EntryAlert;				// { get; private set; }
+		public MarketLimitStop		EntryMarketLimitStop	{ get; private set; }
+		public int					EntryFilledBarIndex		{ get; private set; }
 		public Bar					EntryBar				{ get { return this.Bars[this.EntryFilledBarIndex]; } }
-		public double				EntryFilled_price		{ get; protected set; }
-		public double				EntryEmitted_price;		// { get; protected set; }
-		private double				EntryFilled_qty;		// { get; protected set; }
-		public double				EntryFilled_slippage	{ get; protected set; }
-		public string				EntrySignal				{ get; protected set; }
-		public double				EntryFilled_commission	{ get; protected set; }
+		public double				EntryFilled_price		{ get; private set; }
+		public double				EntryEmitted_price;		// { get; private set; }
+		private double				EntryFilled_qty;		// { get; private set; }
+		public double				EntryFilled_slippage	{ get; private set; }
+		public string				EntrySignal				{ get; private set; }
+		public double				EntryFilled_commission	{ get; private set; }
 
-		public Alert				ExitAlert;				// { get; protected set; }
-		public MarketLimitStop		ExitMarketLimitStop		{ get; protected set; }
-		public int					ExitFilledBarIndex		{ get; protected set; }
+		public Alert				ExitAlert;				// { get; private set; }
+		public MarketLimitStop		ExitMarketLimitStop		{ get; private set; }
+		public int					ExitFilledBarIndex		{ get; private set; }
 		public Bar					ExitBar					{ get { return this.Bars[this.ExitFilledBarIndex]; } }
-		public double				ExitFilled_price		{ get; protected set; }
-		public double				ExitEmitted_price;		// { get; protected set; }
-		private double				ExitFilled_qty;			// { get; protected set; }
-		public double				ExitFilled_slippage		{ get; protected set; }
-		public string				ExitSignal				{ get; protected set; }
-		public double				ExitFilled_commission	{ get; protected set; }
+		public double				ExitFilled_price		{ get; private set; }
+		public double				ExitEmitted_price;		// { get; private set; }
+		private double				ExitFilled_qty;			// { get; private set; }
+		public double				ExitFilled_slippage		{ get; private set; }
+		public string				ExitSignal				{ get; private set; }
+		public double				ExitFilled_commission	{ get; private set; }
 
 		public string				StrategyID;
 		//public bool NoExitBarOrStreaming { get { return (this.ExitBarIndex == -1 || this.ExitBarIndex == this.Bars.Count); } }
@@ -337,10 +337,8 @@ namespace Sq1.Core.Execution {
 				string alertClosedThisPosition = (this.ExitAlert == null) ? "NO_EXIT_ALERT" : this.ExitAlert.ToString();
 				string msg = "PositionExit was already filled earlier @ExitBar[" + this.ExitFilledBarIndex + "]"
 						+ ", you can't override it with [" + exitBar + "]; alertClosedThisPosition[" + alertClosedThisPosition + "]";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
+				//throw new Exception(msg);
+				Assembler.PopupException(msg + msig, null, false);
 			}
 			this.ExitFilledBarIndex = exitBar.ParentBarsIndex;
 
@@ -452,5 +450,29 @@ namespace Sq1.Core.Execution {
 		}
 
 		public PositionPrototype Prototype { get { return this.EntryAlert.PositionPrototype; } }
+
+		public string ExecutionControl_PositionClose_knowHow { get {
+			string ret = "";
+
+			if (this.ExitFilledBarIndex != -1) {
+				ret = "Position Closed: .ExitFilledBarIndex[" + this.ExitFilledBarIndex + "] .Net[" + this.NetProfit + "]";
+				return ret;
+			}
+
+			if (this.ExitAlert == null) {
+				ret += ": Generate ExitAlert + MarketCloseOrder";
+				return ret;
+			}
+
+			if (this.ExitAlert.OrderFollowed == null) {
+				ret += ": Generate MarketCloseOrder for ExitAlert";
+			} else {
+				ret += ": Replace with MarketCloseOrder"
+						//+ " [" + this.ExitAlert.OrderFollowed + "]"
+						;
+			}
+
+			return ret;
+		} }
 	}
 }

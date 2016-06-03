@@ -74,7 +74,7 @@ namespace Sq1.Core.Broker {
 				}
 			}
 			if (errormsg != "") {
-				order.appendMessage(errormsg);
+				this.AppendMessage_propagateToGui(order, errormsg);
 				exitOrderHasNoErrors = false;
 			}
 			return exitOrderHasNoErrors;
@@ -126,15 +126,15 @@ namespace Sq1.Core.Broker {
 			return newborn;
 		}
 
-		public int SubmitToBroker_waitForConnected(List<Order> orders, BrokerAdapter broker, bool inNewThread = true) {
+		public int SubmitToBroker_inNewThread_waitUntilConnected(List<Order> orders, BrokerAdapter broker, bool inNewThread = true) {
 			int orderSubmitted = 0;
-			string msig = " //SubmitToBrokerAdapter_inNewThread(" + broker + ")";
+			string msig = " //SubmitToBroker_inNewThread_waitUntilConnected(" + broker + ")";
 			if (orders.Count == 0) {
 				string msg = "DONT_SUMBIT_orders.Count==0";
 				Assembler.PopupException(msg);
 			}
 			Order firstOrder = orders[0];
-			msig = " //SubmitToBrokerAdapter_inNewThread(" + firstOrder.Alert.DataSourceName + ", " + broker + ")";
+			msig = " //SubmitToBroker_inNewThread_waitUntilConnected(" + firstOrder.Alert.DataSourceName + ", " + broker + ")";
 
 			bool	wontEmit_cleanPendingAlerts = false;
 			string	wontEmit_reason = "UNKNOWN_wontEmit_reason";
@@ -161,7 +161,7 @@ namespace Sq1.Core.Broker {
 					bool breakIfAbsent = true;
 					int threeSeconds = ConcurrentWatchdog.TIMEOUT_DEFAULT;
 					int forever = -1;
-					bool removed = executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(order.Alert, this, msig, forever, breakIfAbsent);
+					bool removed = executor.ExecutionDataSnapshot.AlertsUnfilled.Remove(order.Alert, this, msig, forever, breakIfAbsent);
 
 					wontEmit_reason = "ALERT_REMOVED_FROM_PENDING[" + removed + "] " + wontEmit_reason;
 					OrderStateMessage osm_brokerDisconnected = new OrderStateMessage(order, OrderState.IRefuseEmitting_BrokerDisconnected, wontEmit_reason);
@@ -206,7 +206,7 @@ namespace Sq1.Core.Broker {
 				return;
 			}
 			Order order = omsg.Order;
-			order.appendOrderMessage(omsg);
+			order.AppendOrderMessage(omsg);
 			if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) return;
 			this.RaiseOrderMessageAdded_executionControlShouldPopulate(this, omsg);
 		}
@@ -253,7 +253,7 @@ namespace Sq1.Core.Broker {
 					OrderStateMessage omg_done_killer = new OrderStateMessage(killerOrder, OrderState.KillerDone, msg_killer + " //postProcess_victimOrder()");
 					this.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(omg_done_killer);
 					double slippageNext = victimOrder.SlippageNextAvailable_NanWhenNoMore;
-					if (victimOrder.DontRemoveMyPendingAfterImKilled_IwillBeReplaced && double.IsNaN(slippageNext) == false) {
+					if (victimOrder.DontRemoveMyPending_afterImKilled_IwillBeReplaced && double.IsNaN(slippageNext) == false) {
 						string msg1 = "SKIPPING_REMOVAL_OF_PENDING_ALERT; I will remove when NoMoreSlippageAvailable";
 						this.AppendMessage_propagateToGui(victimOrder, msg1);
 						break;
@@ -300,7 +300,7 @@ namespace Sq1.Core.Broker {
 		}
 
 		void postProcess_invokeScriptCallback(Order order, double priceFill, double qtyFill) {
-			string msig = " " + order.State + " " + order.LastMessage + " //postProcess_invokeScriptCallbacks_invokeStateHooks()";
+			string msig = " " + order.State + " " + order.LastMessage + " //postProcess_invokeScriptCallback()";
 			//if (order.Alert.isExitAlert || order.IsEmergencyClose) {
 			//	order.State = OrderState.Rejected;
 			//}
@@ -361,8 +361,13 @@ namespace Sq1.Core.Broker {
 				case OrderState.ErrorSubmittingOrder_wrongAccount:
 				case OrderState.ErrorSlippageCalc:
 					Assembler.PopupException("PostProcess(): order.PriceFill=0 " + msig, null, false);
-					order.PriceFilled = 0;
 					//NEVER order.PricePaid = 0;
+					if (order.PriceFilled > 0) {
+						string msg = "!!! ABNORMAL#1 ZEROIFYING_PriceFilled[" + order.PriceFilled + "]=>0";
+						this.AppendMessage_propagateToGui(order, msg);
+						order.FillWith(0);
+					}
+
 					try {
 						//DOESNT_EXPECT_PRICE=0
 						//order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(order.Alert, null,
@@ -375,6 +380,7 @@ namespace Sq1.Core.Broker {
 					break;
 
 				case OrderState.ErrorSubmitting_BrokerTerminalDisconnected:
+				case OrderState.LimitExpired:
 				case OrderState.Rejected:
 				case OrderState.RejectedLimitReached:
 					//bool a = order.IsEmergencyClose;
@@ -396,8 +402,12 @@ namespace Sq1.Core.Broker {
 					}
 					
 					//DONT_LIE Assembler.PopupException("REJECTED_BY_BROKER__FIRST_TIME_NEVER_REPLACED: order.PriceFill=0 " + msig, null, false);
-					order.PriceFilled = 0;
 					//NEVER order.PricePaid = 0;
+					if (order.PriceFilled > 0) {
+						string msg = "!!! ABNORMAL#1 ZEROIFYING_PriceFilled[" + order.PriceFilled + "]=>0";
+						this.AppendMessage_propagateToGui(order, msg);
+						order.FillWith(0);
+					}
 
 					try {
 						//DOESNT_EXPECT_PRICE=0
@@ -412,11 +422,11 @@ namespace Sq1.Core.Broker {
 					if (order.IsEmergencyClose) {
 						this.OPPemergency.CreateEmergencyReplacement_resubmitFor(order);
 					} else {
-						if (order.Alert.IsExitAlert) {
-							this.OPPemergency.AddLockAndCreate_emergencyReplacement_resubmitFor(order);
-						} else {
+						//if (order.Alert.IsExitAlert) {
+						//	this.OPPemergency.AddLockAndCreate_emergencyReplacement_resubmitFor(order);
+						//} else {
 							this.OPPrejected.ReplaceRejected_ifResubmitRejected_setInSymbolInfo(order);
-						}
+						//}
 					}
 					break;
 

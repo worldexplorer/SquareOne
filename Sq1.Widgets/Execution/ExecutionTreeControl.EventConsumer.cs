@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 using BrightIdeasSoftware;
 
@@ -395,57 +396,32 @@ namespace Sq1.Widgets.Execution {
 			this.ctxOrder.Visible = true;	// keep it open
 		}
 
-		void ctxOrder_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
+		void ctxOrder_Opening(object sender, CancelEventArgs e) {
 			bool strategy_hasPendingAlerts = false;
-			string mniOrderAlert_removeFromPending_text = "Remove from PendingAlerts (NO_PENDING_FOUND)";
+			string mniOrderAlert_removeFromPending_text = "Remove from PendingAlerts (NO_PENDING__FOR_DESERIALIZED_ORDER)";
 
 			bool orderOrReplacement_hasPositionOpen = false;
-			string mniOrderPositionClose_text = "Close Position (NO_POSITION_OPEN)";
+			string mniOrderPositionClose_text = "Close Position (NO_POSITION__FOR_DESERIALIZED_ORDER)";
+
+			string mniPosition_info_text = "NO_POSITION_OPEN EntryAlert notYetFilled";
+			string mniExitAlert_info_text = "NO_ExitAlert_YET";
 
 			Order orderRightClicked = this.OlvOrdersTree.SelectedObject as Order;
 			if (orderRightClicked != null) {
-				Alert alert = orderRightClicked.Alert;
-				ScriptExecutor exec = alert.Strategy.Script.Executor;
-				ExecutorDataSnapshot snap = exec.ExecutionDataSnapshot;
+				Alert alertClicked = orderRightClicked.Alert;
+				if (alertClicked != null) {
+					mniOrderPositionClose_text				= alertClicked.ExecutionControl_PositionClose_knowHow;
+					mniOrderAlert_removeFromPending_text	= alertClicked.ExecutionControl_AlertsPendingClear_knowHow;
 
-				if (alert != null && alert.BrokerName != "BARS_NULL") {
-					if (	alert.Strategy					!= null &&
-							alert.Strategy.Script			!= null &&
-							alert.Strategy.Script			!= null &&
-							alert.Strategy.Script.Executor	!= null) {
-						
-						int alertsPendingFound = snap.AlertsPending_havingOrderFollowed_notYetFilled.Count;
-						strategy_hasPendingAlerts = alertsPendingFound > 0;
-						mniOrderAlert_removeFromPending_text = "Remove [" + alertsPendingFound + "] PendingAlerts";
-					}
+					if (alertClicked.PositionAffected != null) {
+						Position pos = alertClicked.PositionAffected;
+						mniPosition_info_text = pos.ToString();
 
-					//strategy_hasPendingAlerts = alert.FilledBarIndex != -1;
-					if (alert.IsEntryAlert) {
-						//string msg = "POSITION_WASNT_OPENED__ENTRY_ALERT_DIDNT_GET_FILL";
-						//string msg = "EntryAlert.[" + alert.FilledBarIndex + "]";
-						string msg = "EntryAlert[q#" + alert.QuoteCreatedThisAlert.IntraBarSerno + "].FilledBarIndex[" + alert.FilledBarIndex + "]";
-						mniOrderPositionClose_text = "No Position "
-							//+ " EntryAlert didnt get fill (" + + ")"
-							+ msg
-							;
-					} else {
-						Position pos = alert.PositionAffected;
-						if (pos != null) {
-							if (alert.IsEntryAlert && pos.ExitAlert == null) {
-								orderOrReplacement_hasPositionOpen = true;
-								mniOrderPositionClose_text = "Close Position [" + alert.ToString_forOrder() + "]";
-							} else {
-								mniOrderPositionClose_text = "Close Position (ALREADY_CLOSED)";
-							}
-						} else {
-							mniOrderPositionClose_text = "Close Position (EntryAlert.PositionAffected=NULL ???)";
+						if (pos.ExitAlert != null) {
+							mniExitAlert_info_text= alertClicked.PositionAffected.ExitAlert.ToString();
 						}
 					}
 				}
-
-				// ALL ordersPending, including CLICKED an derived from alert that I didn't click
-				int	positions_OpenNow = snap.Positions_OpenNow.Count;
-				mniOrderPositionClose_text += " /posOpN" + positions_OpenNow;
 			}
 			this.mniOrderAlert_removeFromPending.Enabled = strategy_hasPendingAlerts;
 			this.mniOrderAlert_removeFromPending.Text	 = mniOrderAlert_removeFromPending_text;
@@ -456,6 +432,9 @@ namespace Sq1.Widgets.Execution {
 			this.mniKillPendingSelected			.Enabled = strategy_hasPendingAlerts;
 			this.mniKillPendingAll_stopEmitting	.Enabled = strategy_hasPendingAlerts;
 			this.mniKillPendingAll				.Enabled = strategy_hasPendingAlerts;
+
+			this.mniPosition_info	.Text = "POSITION    "		+ mniPosition_info_text;
+			this.mniExitAlert_info	.Text = "ExitAlert      "	+ mniExitAlert_info_text;
 		}
 
 		void mniClosePosition_Click(object sender, EventArgs e) {

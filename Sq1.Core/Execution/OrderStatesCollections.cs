@@ -37,6 +37,7 @@ namespace Sq1.Core.Execution {
 		public static OrderStatesCollections InterventionRequired =
 			new OrderStatesCollections(new List<OrderState>() {
 				OrderState.Rejected,
+				OrderState.LimitExpired,
 				OrderState.FilledPartially,
 				OrderState.ErrorMarketPriceZero,
 				OrderState.ErrorSlippageCalc,

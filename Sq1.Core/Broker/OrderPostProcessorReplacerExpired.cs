@@ -17,7 +17,7 @@ namespace Sq1.Core.Broker {
 		bool orderCanBeReplaced_disposeRemoveIfFilled(Order order, string msig_invoker) {
 			bool ret = false;
 
-			int expiredMillis = order.Alert.Bars.SymbolInfo.ApplyNextSlippage_ifLimitNotFilledWithin;
+			int expiredMillis = order.Alert.Bars.SymbolInfo.ReSubmitLimitNotFilledWithinMillis;
 			if (expiredMillis == 0) {
 				string msg = "Symbol[" + order.Alert.Bars.Symbol + "].ApplyNextSlippage_ifLimitNotFilledWithin=[" + expiredMillis +  "]; returning";
 				Assembler.PopupException(msg + msig_invoker, null, false);
@@ -26,7 +26,7 @@ namespace Sq1.Core.Broker {
 
 			string reasonCanNotBeReplaced = "";
 			if (order.QtyFill > 0 || order.PriceFilled > 0) {
-				reasonCanNotBeReplaced += "ORDER_WAS_FILLED ";
+				reasonCanNotBeReplaced += "CAN_NOT_BE_REPLACED ";
 			}
 			if (order.State != OrderState.WaitingBrokerFill) {
 				reasonCanNotBeReplaced += "ORDER_ISNT_WAITING_FOR_FILL_ANYMORE[" + order.State + "] ";
@@ -47,7 +47,7 @@ namespace Sq1.Core.Broker {
 			}
 
 			this.OrderProcessor.AppendMessage_propagateToGui(order, reasonCanNotBeReplaced);
-			this.removeTimer_forOrder(order, reasonCanNotBeReplaced, msig_invoker);
+			this.removeTimer_forOrder(order, msig_invoker);
 			return ret;
 		}
 
@@ -56,22 +56,26 @@ namespace Sq1.Core.Broker {
 			foreach (Alert pending in alertsPending) {
 				if (pending.OrderFollowed == null) continue;
 				bool pumpMustAlreadyStopped_atLivesimEndedOrAborted = false;
-				this.removeTimer_forOrder(pending.OrderFollowed, "", msig, pumpMustAlreadyStopped_atLivesimEndedOrAborted);
+				this.removeTimer_forOrder(pending.OrderFollowed, msig, pumpMustAlreadyStopped_atLivesimEndedOrAborted);
 			}
 		}
 
-		void removeTimer_forOrder(Order order, string reasonCanNotBeReplaced = "", string msig_invoker = "",
-				bool waitForReplacementComplete_andUnpauseAll = true) {
+		void removeTimer_forOrder(Order order, string msig_invoker = "", bool waitForReplacementComplete_andUnpauseAll = true) {
 			// "ORDER_CAN_NOT_BE_REPLACED"
 			if (this.timeredOrders.ContainsKey(order)) {
-				reasonCanNotBeReplaced = "CANCELLING_TIMER " + reasonCanNotBeReplaced;
-				this.OrderProcessor.AppendMessage_propagateToGui(order, reasonCanNotBeReplaced);
+				string reasonCanNotBeReplaced = "CANCELLING_TIMER ";
 
 				// timer exists => now I have to stop & dispose the timer
-				this.timeredOrders[order].Dispose();
+				TimerSimplifiedThreading_withOrder timerItself = this.timeredOrders[order];
+				if (timerItself != null) {
+					reasonCanNotBeReplaced += timerItself.ElapsedVsDelayed_asString;
+					timerItself.Dispose();
+				}
 				this.timeredOrders.Remove(order);
+
+				this.OrderProcessor.AppendMessage_propagateToGui(order, reasonCanNotBeReplaced);
 			} else {
-				reasonCanNotBeReplaced = "NO_TIMER_TO_CANCEL " + reasonCanNotBeReplaced;
+				string reasonCanNotBeReplaced = "NO_TIMER_TO_CANCEL ";
 				this.OrderProcessor.AppendMessage_propagateToGui(order, reasonCanNotBeReplaced);
 
 				string msg2 = "LAST_SLIPPAGE_BASED_ORDER__HAS_NO_TIMER_TO_DELETE";
@@ -91,7 +95,7 @@ namespace Sq1.Core.Broker {
 			bool orderEligible_forReplacement = this.orderCanBeReplaced_disposeRemoveIfFilled(order, msig);
 			if (orderEligible_forReplacement == false) return replacementScheduled;
 
-			int expiredMillis = order.Alert.Bars.SymbolInfo.ApplyNextSlippage_ifLimitNotFilledWithin;
+			int expiredMillis = order.Alert.Bars.SymbolInfo.ReSubmitLimitNotFilledWithinMillis;
 			TimerSimplifiedThreading_withOrder timerForOrder = new TimerSimplifiedThreading_withOrder(order, expiredMillis);
 			timerForOrder.OnLastScheduleExpired += new EventHandler<EventArgs>(timerForOrder_OnLastScheduleExpired);
 			timerForOrder.ScheduleOnce_postponeIfAlreadyScheduled();
@@ -126,8 +130,7 @@ namespace Sq1.Core.Broker {
 				return;
 			}
 
-			//v1 this.removeTimer_forOrder(orderExpired, "ELIGIBLE_FOR_REPLACEMENT", msig, false);
-			string reasonCanNotBeReplaced = "CANCELLING_TIMER ORDER_ELIGIBLE_FOR_REPLACEMENT";
+			string reasonCanNotBeReplaced = "REMOVING_EXPIRED_TIMER after[" + timerForOrder.DelayMillis + "]ms REPLACING_ORDER_WITH_NEXT_SLIPPAGE";
 			this.OrderProcessor.AppendMessage_propagateToGui(orderExpired, reasonCanNotBeReplaced);
 			//NO this.timeredOrders[orderExpired].Dispose();
 			this.timeredOrders.Remove(orderExpired);

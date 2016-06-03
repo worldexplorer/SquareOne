@@ -82,7 +82,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg + msig);
 				throw new Exception(msg + msig);
 			}
-			orderFollowed.appendMessage(msgOrder);
+			orderFollowed.AppendMessage(msgOrder);
 		}
 
 	}

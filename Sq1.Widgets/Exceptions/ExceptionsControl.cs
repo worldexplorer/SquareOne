@@ -20,8 +20,8 @@ namespace Sq1.Widgets.Exceptions {
 				ExceptionsControlDataSnapshot				dataSnapshot;
 				Serializer<ExceptionsControlDataSnapshot>	dataSnapshotSerializer;
 				ConcurrentDictionary<Exception, DateTime>	exceptionTimes;
-		public	ConcurrentList<Exception>					Exceptions				{ get; private set; }
-				ConcurrentList<Exception>					exceptions_notFlushedYet;
+		public	ExceptionList								Exceptions				{ get; private set; }
+				ExceptionList								exceptions_notFlushedYet;
 
 				DateTime			exceptionLastDate_notFlushedYet;
 
@@ -30,8 +30,8 @@ namespace Sq1.Widgets.Exceptions {
 
 		public ExceptionsControl() : base() {
 			exceptionTimes				= new ConcurrentDictionary<Exception, DateTime>("exceptionTimes_delayedGuiFlush");
-			Exceptions					= new ConcurrentList<Exception>("Exceptions_delayedGuiFlush");
-			exceptions_notFlushedYet	= new ConcurrentList<Exception>("exceptions_notFlushedYet");
+			Exceptions					= new ExceptionList("Exceptions_delayedGuiFlush");
+			exceptions_notFlushedYet	= new ExceptionList("exceptions_notFlushedYet");
 			exceptionLastDate_notFlushedYet	= DateTime.MinValue;
 
 			this.InitializeComponent();

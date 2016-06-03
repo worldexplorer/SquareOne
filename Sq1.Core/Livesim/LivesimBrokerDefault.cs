@@ -62,9 +62,9 @@ namespace Sq1.Core.Livesim {
 				return;
 			}
 
-			AlertList willBeFilled_minusAlreadyScheduled_volatilePointer = willBeFilled.Substract_returnClone(base.DataSnapshot.AlertsPending_scheduledForDelayedFill, this, "willBeFilled_minusAlreadyScheduled");
+			AlertList willBeFilled_minusAlreadyScheduled_volatilePointer = willBeFilled.Substract_returnClone(base.DataSnapshot.AlertsUnfilled_scheduledForDelayedFill, this, "willBeFilled_minusAlreadyScheduled");
 
-			AlertList priorDelayedFill = base.ScriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled;
+			AlertList priorDelayedFill = base.ScriptExecutor.ExecutionDataSnapshot.AlertsUnfilled;
 			if (priorDelayedFill.Count == 0) return;
 
 			ManualResetEvent quotePointerCaptured = new ManualResetEvent(false);
@@ -79,7 +79,7 @@ namespace Sq1.Core.Livesim {
 
 				//base.ScriptExecutor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = true;
 				base.LivesimBrokerSpoiler.DelayBeforeFill_threadSleep();
-				AlertList afterDelay = base.ScriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled;
+				AlertList afterDelay = base.ScriptExecutor.ExecutionDataSnapshot.AlertsUnfilled;
 				if (afterDelay.Count == 0) return;
 				if (priorDelayedFill.Count != afterDelay.Count) {
 				    string msg = "COUNT_MIGHT_HAVE_DECREASED_FOR_MULTIPLE_OPEN_POSITIONS/STRATEGY_IN_ANOTHER_FILLING_THREAD WHO_FILLED_WHILE_I_WAS_SLEEPING???";
@@ -117,7 +117,7 @@ namespace Sq1.Core.Livesim {
 
 			//List<Alert> safe = willBeFilled.SafeCopy(this, "//ConsumeQuoteUnattached_toFillPending()");
 			List<Alert> safe = willBeFilled_minusAlreadyScheduled_volatilePointer.SafeCopy(this, msig);
-			base.DataSnapshot.AlertsPending_scheduledForDelayedFill.AddRange(safe, this, msig);
+			base.DataSnapshot.AlertsUnfilled_scheduledForDelayedFill.AddRange(safe, this, msig);
 		} }
 		//void consumeQuoteUnattached_toFillPendingAsync(QuoteGenerated quoteUnattached, AlertList expectingToFill) {
 		void consumeQuoteUnattached_attach_fillPendingAsync(Quote quoteBoundUnattached, AlertList expectingToFill) {
@@ -140,7 +140,7 @@ namespace Sq1.Core.Livesim {
 					return;
 				}
 				ExecutorDataSnapshot snap = base.ScriptExecutor.ExecutionDataSnapshot;
-				if (snap.AlertsPending_havingOrderFollowed_notYetFilled.Count == 0) {
+				if (snap.AlertsUnfilled.Count == 0) {
 					string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //consumeQuoteUnattached_toFillPendingAsync(" + expectingToFill + ")";
 					Assembler.PopupException(msg, null, false);
 					return;
@@ -151,11 +151,11 @@ namespace Sq1.Core.Livesim {
 				quoteBoundAttached.StreamingBar_Replace(barStreaming);
 			}
 
-			int pendingCountPre = base.ScriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
+			int pendingCountPre = base.ScriptExecutor.ExecutionDataSnapshot.AlertsUnfilled.Count;
 			//int pendingFilled = executor.MarketsimBacktest.SimulateFillAllPendingAlerts(
 			int pendingFilled = base.LivesimMarketsim.SimulateFill_allPendingAlerts(quoteBoundAttached,
 					new Action<Alert, Quote, double, double>(this.action_afterAlertFilled_inducePostProcessing_movedAroundOnReturn));
-			int pendingCountNow = base.ScriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
+			int pendingCountNow = base.ScriptExecutor.ExecutionDataSnapshot.AlertsUnfilled.Count;
 			if (pendingCountNow != pendingCountPre - pendingFilled) {
 				string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";
 			}
@@ -175,12 +175,12 @@ namespace Sq1.Core.Livesim {
 			string msig = " //onAlertFilled(WAIT)";
 
 			try {
-				base.DataSnapshot.AlertsPending_scheduledForDelayedFill.WaitAndLockFor(this, msig);
-				if (base.DataSnapshot.AlertsPending_scheduledForDelayedFill.Contains(alertFilled, this, msig)) {
-					base.DataSnapshot.AlertsPending_scheduledForDelayedFill.Remove(alertFilled, this, msig);
+				base.DataSnapshot.AlertsUnfilled_scheduledForDelayedFill.WaitAndLockFor(this, msig);
+				if (base.DataSnapshot.AlertsUnfilled_scheduledForDelayedFill.Contains(alertFilled, this, msig)) {
+					base.DataSnapshot.AlertsUnfilled_scheduledForDelayedFill.Remove(alertFilled, this, msig);
 				}
 			} finally {
-				base.DataSnapshot.AlertsPending_scheduledForDelayedFill.UnLockFor(this, msig);
+				base.DataSnapshot.AlertsUnfilled_scheduledForDelayedFill.UnLockFor(this, msig);
 			}
 			Order order = alertFilled.OrderFollowed;
 			if (order == null && alertFilled.SignalName.StartsWith("proto")) {

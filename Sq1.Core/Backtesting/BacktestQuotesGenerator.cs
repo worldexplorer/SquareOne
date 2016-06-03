@@ -115,7 +115,7 @@ namespace Sq1.Core.Backtesting {
 		public virtual List<QuoteGenerated> InjectQuotes_toFillPendingAlerts_push(
 				QuoteGenerated quoteToReach, Bar bar2simulate, int iterationsLimit = 1) {
 			List<QuoteGenerated> injectedPushed = new List<QuoteGenerated>();
-			int pendingsToFillInitially = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
+			int pendingsToFillInitially = this.backtester.Executor.ExecutionDataSnapshot.AlertsUnfilled.Count;
 			if (pendingsToFillInitially == 0) return injectedPushed;
 
 			// hard to debug but I hate while(){} loops
@@ -158,7 +158,7 @@ namespace Sq1.Core.Backtesting {
 
 				injectedPushed.Add(closestOnOurWay);
 
-				int pendingAfterInjected = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count;
+				int pendingAfterInjected = this.backtester.Executor.ExecutionDataSnapshot.AlertsUnfilled.Count;
 				if (pendingsToFillInitially != pendingAfterInjected) {
 					string msg = " it looks like the quoteInjected triggered something";
 					//Assembler.PopupException(msg, null, false);
@@ -186,7 +186,7 @@ namespace Sq1.Core.Backtesting {
 		QuoteGenerated  generateClosestQuote_forEachPendingAlert_onOurWayTo(QuoteGenerated quoteToReach, Bar bar2simulate) {
 			string msig = " //generateClosestQuote_forEachPendingAlert_onOurWayTo(" + quoteToReach + "," + bar2simulate + ")";
 
-			if (this.backtester.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count == 0) {
+			if (this.backtester.Executor.ExecutionDataSnapshot.AlertsUnfilled.Count == 0) {
 				string msg = "it looks like no Pending alerts are left anymore";
 				return null;
 			}
@@ -257,7 +257,7 @@ namespace Sq1.Core.Backtesting {
 
 			bool scanningDown = quoteToReach.Bid < quoteGenerated.Bid;
 			QuoteGenerated quoteClosest = null;
-			List<Alert> alertsSafe = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, "generateClosestQuote_forEachPendingAlert_onOurWayTo(WAIT)");
+			List<Alert> alertsSafe = this.backtester.Executor.ExecutionDataSnapshot.AlertsUnfilled.SafeCopy(this, "generateClosestQuote_forEachPendingAlert_onOurWayTo(WAIT)");
 
 			int addAbsnoPerSymbol_dueToQuotesFilledAlerts = 0;
 			foreach (Alert alert in alertsSafe) {

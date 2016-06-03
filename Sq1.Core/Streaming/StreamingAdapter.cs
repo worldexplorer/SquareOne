@@ -14,7 +14,14 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public		string					ReasonToExist						{ get; protected set; }
 		[JsonIgnore]	public		Bitmap					Icon								{ get; protected set; }
 		[JsonIgnore]	public		DataSource				DataSource							{ get; protected set; }
-		[JsonIgnore]	public		string					marketName							{ get { return this.DataSource.MarketInfo.Name; } }
+		[JsonProperty]	public		string					DataSourceName_MarketInfoName		{ get {
+			string ret = "DATASOURCE_NULL";
+			if (this.DataSource == null) return ret;
+			ret = this.DataSource.Name;
+			if (this.DataSource.MarketInfo == null) return ret;
+			ret += " :: " + this.DataSource.MarketInfo.Name;
+			return ret;
+		} }
 		[JsonIgnore]	public		StreamingDataSnapshot	StreamingDataSnapshot				{ get; protected set; }
 
 		[JsonProperty]	public		int						Level2RefreshRateMs;

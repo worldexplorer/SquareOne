@@ -362,7 +362,7 @@ namespace Sq1.Core.Backtesting {
 			int exitsFilled = 0;
 			int entriesFilled = 0;
 
-			List<Alert> alertsPendingSafeCopy = this.scriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, "SimulateFill_allPendingAlerts(WAIT)");
+			List<Alert> alertsPendingSafeCopy = this.scriptExecutor.ExecutionDataSnapshot.AlertsUnfilled.SafeCopy(this, "SimulateFill_allPendingAlerts(WAIT)");
 			foreach (Alert alert in alertsPendingSafeCopy) {
 				if (alert.IsFilled_fromPosition && alert.IsExitAlert && alert.PositionPrototype != null) {
 					bool thisAlertWasAnnihilated = false;
@@ -416,8 +416,8 @@ namespace Sq1.Core.Backtesting {
 			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded"
 				+ " logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
 			
-			if (this.scriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Contains(alert, this, "SimulateFillPendingAlert(WAIT)") == true) {
-				bool removedForcibly = this.scriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alert, this, "SimulateFillPendingAlert(WAIT)");
+			if (this.scriptExecutor.ExecutionDataSnapshot.AlertsUnfilled.Contains(alert, this, "SimulateFill_pendingAlert(WAIT)") == true) {
+				bool removedForcibly = this.scriptExecutor.ExecutionDataSnapshot.AlertsUnfilled.Remove(alert, this, "SimulateFill_pendingAlert(WAIT)");
 				string msg = "ALERT_MUST_HAVE_BEEN_REMOVED_FROM_PENDINGS_AFTER_FILL"
 					//+ "; normally, the filled alert should be already removed here by CallbackAlertFilledMoveAroundInvokeScript()"
 					//+ "; AlertsPending.Contains(" + alert + ")=true"
@@ -501,7 +501,7 @@ namespace Sq1.Core.Backtesting {
 				#endif
 				throw new Exception(msg);
 			}
-			if (this.scriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count == 0) {
+			if (this.scriptExecutor.ExecutionDataSnapshot.AlertsUnfilled.Count == 0) {
 				string msg = "Before you call me, Please check this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.Count!=0";
 				#if DEBUG
 				Debugger.Break();
@@ -627,7 +627,7 @@ namespace Sq1.Core.Backtesting {
 		public void StopLoss_simulateMoved(Alert alertToBeKilled) {
 			string msig = " //StopLoss_simulateMoved(WAIT)";
 			Alert replacement = this.scriptExecutor.PositionPrototypeActivator.CreateStopLoss_fromPositionPrototype(alertToBeKilled.PositionAffected);
-			bool removed = this.scriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alertToBeKilled, this, msig);
+			bool removed = this.scriptExecutor.ExecutionDataSnapshot.AlertsUnfilled.Remove(alertToBeKilled, this, msig);
 			//ALREADY_ADDED_BY AlertEnrichedRegister
 			// this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.ByBarExpectedFillAddNoDupe(alertToBeKilled);
 			// this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.AddNoDupe(replacement);
@@ -635,19 +635,19 @@ namespace Sq1.Core.Backtesting {
 		public void TakeProfit_simulateMoved(Alert alertToBeKilled) {
 			string msig = " //TakeProfit_simulateMoved(WAIT)";
 			Alert replacement = this.scriptExecutor.PositionPrototypeActivator.CreateTakeProfit_fromPositionPrototype(alertToBeKilled.PositionAffected);
-			bool removed = this.scriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alertToBeKilled, this, msig);
+			bool removed = this.scriptExecutor.ExecutionDataSnapshot.AlertsUnfilled.Remove(alertToBeKilled, this, msig);
 			//ALREADY_ADDED_BY AlertEnrichedRegister
 			// this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.ByBarExpectedFillAddNoDupe(alertToBeKilled);
 			// this.backtestBroker.ScriptExecutor.ExecutionDataSnapshot.AlertsPending.AddNoDupe(replacement);
 		}
 		public bool AlertCounterparty_annihilate(Alert alert) {
 			string msig = " //AlertCounterparty_annihilate(WAIT)";
-			if (this.scriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Contains(alert, this, msig) == false) {
+			if (this.scriptExecutor.ExecutionDataSnapshot.AlertsUnfilled.Contains(alert, this, msig) == false) {
 				string msg = "ANNIHILATE_COUNTERPARTY_ALREADY_REMOVED " + alert;	//ExecSnap.AlertsPending not synchronized: already removed
 				throw new Exception(msg);
 				//return false;
 			}
-			bool removed = this.scriptExecutor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alert, this, msig);
+			bool removed = this.scriptExecutor.ExecutionDataSnapshot.AlertsUnfilled.Remove(alert, this, msig);
 			// no alert.OrderFollowed here!
 			//this.backtestBroker.ScriptExecutor.RemovePendingAlertClosePosition(alert, "MarketSim:AnnihilateCounterparty(): ");
 			return true;

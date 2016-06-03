@@ -29,7 +29,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg);
 				return null;
 			}
-			Alert similar = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.FindIdentical_notSame_forOrdersPending(alert, this, "BuyOrShortAlertCreateRegister(WAIT)");
+			Alert similar = this.ExecutionDataSnapshot.AlertsUnfilled.FindIdentical_notSame_forOrdersPending(alert, this, "BuyOrShortAlertCreateRegister(WAIT)");
 			if (similar != null) {
 				string msg = "DUPLICATE_ALERT_FOUND similar[" + similar + "]";
 				Assembler.PopupException(msg + msig);
@@ -88,7 +88,7 @@ namespace Sq1.Core.StrategyBase {
 					return position.ExitAlert;
 				}
 
-				List<Alert> pendingSafe = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.SafeCopy(this, "//SellOrCoverAlertCreateRegister(WAIT)");
+				List<Alert> pendingSafe = this.ExecutionDataSnapshot.AlertsUnfilled.SafeCopy(this, "//SellOrCoverAlertCreateRegister(WAIT)");
 				foreach (Alert closingAlertForPosition in pendingSafe) {
 					if (closingAlertForPosition.PositionAffected == position && closingAlertForPosition.IsExitAlert) {
 						string msg = "PENDING_EXIT_ALERT_FOUND_WHILE_POSITION.EXITALERT=NULL"

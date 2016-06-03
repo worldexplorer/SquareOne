@@ -175,11 +175,6 @@ namespace Sq1.Widgets.Execution {
 				if (order == null) return "olvcPriceCurBidOrAsk.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.PriceCurBidOrAsk.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
 			};
-			this.olvcSlippageApplied.AspectGetter = delegate(object o) {
-				var order = o as Order;
-				if (order == null) return "olvcSlippage.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.SlippageApplied.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
-			};
 			this.olvcPriceEmitted_withSlippageApplied.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcPriceEmitted_withSlippageApplied.AspectGetter: order=null";
@@ -190,10 +185,21 @@ namespace Sq1.Widgets.Execution {
 				if (order == null) return "olvcPriceFilled.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.PriceFilled.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
 			};
+			this.olvcSlippageApplied.AspectGetter = delegate(object o) {
+				var order = o as Order;
+				if (order == null) return "olvcSlippageApplied.AspectGetter: order=null";
+				return order.IsKiller ? "" : order.SlippageApplied.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
+			};
+			this.olvcSlippageFilled.AspectGetter = delegate(object o) {
+				var order = o as Order;
+				if (order == null) return "olvcSlippageFilled.AspectGetter: order=null";
+				return order.IsKiller ? "" : order.SlippageFilled.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
+			};
 			this.olvcSlippageFilledMinusApplied.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcSlippageFilledMinusApplied.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.SlippageApplied.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
+				double difference = order.SlippageFilled - order.SlippageApplied;
+				return order.IsKiller ? "" : difference.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
 			};
 			this.olvcCommission.AspectGetter = delegate(object o) {
 				var order = o as Order;

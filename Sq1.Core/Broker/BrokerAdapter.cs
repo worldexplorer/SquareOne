@@ -180,7 +180,7 @@ namespace Sq1.Core.Broker {
 			string msg = "SubmitOrdersThreadEntryDelayed: sleeping [" + millis +
 				"]millis before SubmitOrdersThreadEntry [" + ordersFromAlerts.Count + "]ordersFromAlerts";
 			Assembler.PopupException(msg);
-			ordersFromAlerts[0].appendMessage(msg);
+			ordersFromAlerts[0].AppendMessage(msg);
 			Thread.Sleep(millis);
 			this.SubmitOrders_liveAndLiveSim_fromProcessor_OPPunlockedSequence_threadEntry(ordersFromAlerts);
 		}
@@ -481,7 +481,7 @@ namespace Sq1.Core.Broker {
 					this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 					throw new Exception(msg);
 			}
-			order.appendMessage(msg + msig);
+			order.AppendMessage(msg + msig);
 		}
 
 		public Order ScanEvidentLanes_forGuid_nullUnsafe(string GUID, List<OrderLane> orderLanes = null, char separator = ';') {
@@ -586,8 +586,8 @@ namespace Sq1.Core.Broker {
 				this.EmittingIncapable_mre.Reset();
 			} else {
 			    bool incapable = this.EmittingIncapable_mre.WaitOne(0);
-				this.EmittingIncapable_mre.Reset();
-				this.EmittingCapable_mre.Set();
+				this.EmittingIncapable_mre.Set();
+				this.EmittingCapable_mre.Reset();
 			}
 		}
 

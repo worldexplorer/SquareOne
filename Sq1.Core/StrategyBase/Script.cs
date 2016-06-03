@@ -12,60 +12,12 @@ namespace Sq1.Core.StrategyBase {
 		protected	Bars			Bars								{ get { return this.Executor == null ? null : this.Executor.Bars; } }
 		public		Strategy		Strategy							{ get { return this.Executor.Strategy; } }
 		public		string			StrategyName						{ get { return this.Executor.StrategyName; } }
-		//public		PositionList	Positions_AllBacktested				{ get { return this.Executor.ExecutionDataSnapshot.Positions_AllBacktested; } }
+		//public	PositionList	Positions_AllBacktested				{ get { return this.Executor.ExecutionDataSnapshot.Positions_AllBacktested; } }
 		
 		#region Position-related userland-invokeable parts
-		//public		bool			IsLastPosition_PendingNow			{ get {
-		//    Position lastPosition = this.LastPosition_AllBacktested_nullUnsafe;
-		//    if (lastPosition == null) {
-		//        string msg = "there is no open positions at all => false looks like a legit answer to IsLastPosition_stillOpen? question";
-		//        bool equivalentReplacement_mustBeFalse = (this.LastPosition_AllBacktested_nullUnsafe != null && this.LastPosition_AllBacktested_nullUnsafe.ExitBar != null);
-		//        return false;
-		//    }
-		//    bool lastPosition_isPending = lastPosition.EntryAlert != null && lastPosition.EntryAlert.FilledBarIndex == -1;
-		//    return lastPosition_isPending;
-		//} }
-		//public		bool			IsLastPosition_OpenNow				{ get {
-		//    Position lastPosition = this.LastPosition_AllBacktested_nullUnsafe;
-		//    if (lastPosition == null) {
-		//        string msg = "there is no open positions at all => false looks like a legit answer to IsLastPosition_stillOpen? question";
-		//        bool equivalentReplacement_mustBeFalse = (this.LastPosition_AllBacktested_nullUnsafe != null && this.LastPosition_AllBacktested_nullUnsafe.ExitBar != null);
-		//        return false;
-		//    }
-		//    bool lastPosition_isPending = lastPosition.EntryAlert != null && lastPosition.EntryAlert.FilledBarIndex == -1;
-		//    if (lastPosition_isPending == false) {
-		//        return false;
-		//    }
-		//    bool lastPosition_isOpen = lastPosition.ExitAlert != null && lastPosition.ExitAlert.FilledBarIndex == -1;
-		//    return lastPosition_isOpen;
-		//} }
-		//public		Position		LastPosition_AllBacktested_nullUnsafe		{ get {
-		//        return this.Executor.ExecutionDataSnapshot.Positions_AllBacktested.Last_nullUnsafe(this, "//LastPosition_WAIT");
-		//    } }
-		//public		bool			IsLastOpenPosition_stillOpen				{ get {
-		//    Position lastPosition = this.LastPosition_OpenNow_nullUnsafe;
-		//    if (lastPosition == null) return false;
-		//    bool ret = lastPosition.ExitAlert != null && lastPosition.ExitAlert.FilledBarIndex == -1;
-		//    return ret;
-		//} }
-
-		public		Position		LastPosition_OpenNow_nullUnsafe			{ get {
-			Position lastPosition_openNow = null;
-			//List<Position> positions_OpenNow = this.Executor.ExecutionDataSnapshot.Positions_OpenNow;
-			//if (positions_OpenNow.Count > 0) lastPosition_openNow = positions_OpenNow[positions_OpenNow.Count - 1];
-			lastPosition_openNow = this.Executor.ExecutionDataSnapshot.Positions_OpenNow.Last_nullUnsafe(this, "LastPosition_OpenNow_nullUnsafe");
-			return lastPosition_openNow;
-		} }
-		//public		Position		LastPosition_PendingNow_nullUnsafe		{ get {
-		//        Position lastPosition_pendingNow = null;
-		//        List<Position> positions_PendingNow = this.Executor.ExecutionDataSnapshot.Positions_PendingNow;
-		//        if (positions_PendingNow.Count > 0) lastPosition_pendingNow = positions_PendingNow[positions_PendingNow.Count - 1];
-		//        return lastPosition_pendingNow;
-		//    } }
-		public		bool			HasAlertsPending_flashyWhenReplacingUnfilled		{ get { return this.Executor.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Count > 0; } }
-		//public		bool			HasPositions_PendingOrOpenNow						{ get { return this.Executor.ExecutionDataSnapshot.Positions_OpenNow.Count > 0; } }
-		public		bool			HasPositions_OpenNow								{ get { return this.Executor.ExecutionDataSnapshot.Positions_OpenNow.Count > 0; } }
-		//public		bool			HasPositions_Pending								{ get { return this.Executor.ExecutionDataSnapshot.Positions_PendingNow.Count > 0; } }
+		public		bool			HasAlertsUnfilled					{ get { return this.Executor.ExecutionDataSnapshot.AlertsUnfilled		.Count > 0; } }
+		public		bool			HasPositions_OpenNow				{ get { return this.Executor.ExecutionDataSnapshot.Positions_OpenNow	.Count > 0; } }
+		public		Position		LastPosition_OpenNow_nullUnsafe		{ get { return this.Executor.ExecutionDataSnapshot.Positions_OpenNow	.Last_nullUnsafe(this, "LastPosition_OpenNow_nullUnsafe"); } }
 		#endregion
 		
 		public	string				ScriptParametersAsString		{ get {
@@ -191,38 +143,6 @@ namespace Sq1.Core.StrategyBase {
 			this.Strategy.IndicatorParametersReflected_absorbFromCurrentContext_saveStrategy(true);
 			this.InitializeIndicatorsReflected_withHostPanel();
 		}
-		//internal void Push_changedScriptParameterValue_toScript(IndicatorParameter indicatorParameterChanged_userClickedInSliders) {
-		//    string msig = " //Script.Push_changedScriptParameterValue_toScript(" + indicatorParameterChanged_userClickedInSliders + ")";
-		//    if (indicatorParameterChanged_userClickedInSliders == null) {
-		//        string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT SLIDERS_AUTOGROW_GENERATED_AN_EVENT_WITH_EMPTY_INDICATOR_PARAMETER_INSIDE";
-		//        Assembler.PopupException(msg + msig);
-		//        return;
-		//    }
-		//    SortedDictionary<string, IndicatorParameter> reflectedAll = this.scriptAndIndicatorParameters_reflectedMergedUncloned_forReusableExecutorToCheckByName;
-		//    if (reflectedAll.ContainsKey(indicatorParameterChanged_userClickedInSliders.FullName) == false) {
-		//        string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT STALE_PARAMETER_CLICKED_WHICH_DOESNT_EXIST_IN_RECOMPILED_SCRIPT";
-		//        Assembler.PopupException(msg + msig);
-		//        return;
-		//    }
-		//    IndicatorParameter reflected = reflectedAll[indicatorParameterChanged_userClickedInSliders.FullName];
-		//    if (reflected != indicatorParameterChanged_userClickedInSliders) {
-		//        string msg1 = "SINCE_APR28-2016_SCRIPT_PARAMETERS_MUST_BE_THE_SAME_OBJECTS";
-		//        //string msg1 = "YES_THEY_ARE_THE_SAME_I_DECIDED!!! SCRIPT_PARAMETERS_SEEMS_TO_BE_THE_SAME_OBJECTS_WHILE_INDICATOR_PARAMETERS_ARE_DIFFERENT??? CATCH_DECIDE_COPY_OR_SAME";
-		//        Assembler.PopupException(msg1);
-
-		//        if (reflected.ValueCurrent == indicatorParameterChanged_userClickedInSliders.ValueCurrent) {
-		//            string msg = "SCRIPT_PARAMETER_VALUE_ALREADY_SAME_AS_PROPAGATING NAIL_ANOTHER_SYNC/PUSH_MECHANISM";
-		//            Assembler.PopupException(msg);
-		//            return;
-		//        }
-		//        bool absorbed = reflected.AbsorbCurrent_fixBoundaries_from(indicatorParameterChanged_userClickedInSliders);
-		//        if (absorbed) {
-		//            string msg = "SINCE_APR28-2016_NO_NEED_FOR_ABSORBTION__THIS_INDICATOR_IS_REFLECTED_FROM_SCRIPT__RIGHT?";
-		//            Assembler.PopupException(msg);
-		//        }
-		//        return;
-		//    }
-		//}
 		internal void RecalculateIndicator(IndicatorParameter indicatorParameterChanged_userClickedInSliders) {
 			string msig = " //Script.RecalculateIndicator(" + indicatorParameterChanged_userClickedInSliders + ")";
 			if (this.IndicatorsByName_reflectedCached_primary.ContainsKey(indicatorParameterChanged_userClickedInSliders.IndicatorName) == false) {

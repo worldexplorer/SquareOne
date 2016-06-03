@@ -163,7 +163,7 @@ namespace Sq1.Core.Execution {
 			this.ScriptRunningOnStrategyEmittingOrdersTurnedOn		.Dispose();
 			this.ScriptRunningOnStrategyEmittingOrdersTurnedOff		.Dispose();
 
-			this.AlertsPending_havingOrderFollowed_notYetFilled		.Dispose();
+			this.AlertsUnfilled		.Dispose();
 			//NOT_USED this.AlertsMaster										.Dispose();
 			this.AlertsNewAfterExec									.Dispose();
 			this.Positions_AllBacktested							.Dispose();

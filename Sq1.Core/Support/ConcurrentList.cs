@@ -91,7 +91,9 @@ namespace Sq1.Core.Support {
 				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public virtual bool RemoveUnique(T position, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
+
+		// "protected" forces derived classes to use the wrapper (for narrower debugging)
+		protected virtual bool RemoveUnique(T position, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
 			//lockPurpose += " //" + this.ToString() + ".Remove(" + position.ToString() + ")";
 			bool removed = false;
 			try {
@@ -110,7 +112,9 @@ namespace Sq1.Core.Support {
 			}
 			return removed;
 		}
-		public virtual bool AppendUnique(T alertOrPosition, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+
+		// "protected" forces derived classes to use the wrapper (for narrower debugging)
+		protected virtual bool AppendUnique(T alertOrPosition, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
 			//lockPurpose += " //" + this.ToString() + ".Add(" + alertOrPosition.ToString() + ")";
 			bool added = false;
 			try {
@@ -128,7 +132,9 @@ namespace Sq1.Core.Support {
 			}
 			return added;
 		}
-		public virtual bool InsertUnique(int indexToInsertAt, T alertOrPosition, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+
+		// "protected" forces derived classes to use the wrapper (for narrower debugging)
+		protected virtual bool InsertUnique(int indexToInsertAt, T alertOrPosition, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
 			//lockPurpose += " //" + this.ToString() + ".Add(" + alertOrPosition.ToString() + ")";
 			bool added = false;
 			try {

@@ -157,14 +157,16 @@ namespace Sq1.Strategies.Demo {
 				log("Execute(): " + msg);
 			}
 
+			if (base.HasAlertsUnfilled) return;
+
 			ExecutorDataSnapshot snap = base.Executor.ExecutionDataSnapshot;
 
 			//if (base.HasAlertsPendingOrBeingReplaced_orPositionsOpenNow) {
 			if (base.HasPositions_OpenNow) {
 			//if (base.HasAlertsPendingAndPositionsOpenNow) {
-				if (snap.AlertsPending_havingOrderFollowed_notYetFilled.Count > 0) {
+				if (snap.AlertsUnfilled.Count > 0) {
 					//GOT_OUT_OF_BOUNDADRY_EXCEPTION_ONCE Alert firstPendingAlert = snap.AlertsPending.InnerList[0];
-					Alert firstPendingAlert = snap.AlertsPending_havingOrderFollowed_notYetFilled.Last_nullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
+					Alert firstPendingAlert = snap.AlertsUnfilled.Last_nullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
 					Alert lastPosEntryAlert = lastPos_OpenNow_nullUnsafe != null ? lastPos_OpenNow_nullUnsafe.EntryAlert : null;
 					Alert lastPosExitAlert  = lastPos_OpenNow_nullUnsafe != null ? lastPos_OpenNow_nullUnsafe.ExitAlert : null;
 					if (firstPendingAlert == lastPosEntryAlert) {

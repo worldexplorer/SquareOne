@@ -152,7 +152,7 @@ namespace Sq1.Core.Charting {
 
 		public virtual void PositionsBacktestAdd(List<Position> positionsMaster) { }
 		public virtual void PositionsRealtimeAdd(ReporterPokeUnit pokeUnit) { }
-		public virtual void AlertsPending_stillNotFilled_addForBar(int barIndex, List<Alert> alertsPendingAtCurrentBar_safeCopy) { }
+		public virtual void Alerts_stillUnfilled_addForBar(int barIndex, List<Alert> alertsPendingAtCurrentBar_safeCopy) { }
 
 		public virtual void PendingHistoryBacktestAdd(Dictionary<int, AlertList> alertsPendingHistorySafeCopy) { }
 		public virtual void AlertsPlaced_addRealtime(List<Alert> alertsNewPlaced) { }

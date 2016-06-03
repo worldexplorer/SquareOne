@@ -54,12 +54,12 @@ namespace Sq1.Core.Livesim {
 
 			if (string.IsNullOrEmpty(orderKiller.VictimGUID)) {
 				string msg = "killerOrder.KillerForGUID=EMPTY";
-				orderKiller.appendMessage(msg);
+				orderKiller.AppendMessage(msg);
 				throw new Exception(msg);
 			}
 			if (orderKiller.VictimToBeKilled == null) {
 				string msg = "killerOrder.VictimToBeKilled=null";
-				orderKiller.appendMessage(msg);
+				orderKiller.AppendMessage(msg);
 				throw new Exception(msg);
 			}
 

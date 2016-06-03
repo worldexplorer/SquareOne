@@ -17,6 +17,7 @@ namespace Sq1.Core.Broker {
 			this.BrokerAdapter = brokerAdapterPassed;
 			this.DataSourceEditor = dataSourceEditor;
 			this.initializeEditorFields();
+			this.BrokerAdapter.OnBrokerConnectionStateChanged -= new EventHandler<EventArgs>(this.BrokerAdapter_OnBrokerConnectionStateChanged);
 			this.BrokerAdapter.OnBrokerConnectionStateChanged += new EventHandler<EventArgs>(this.BrokerAdapter_OnBrokerConnectionStateChanged);
 		}
 		// was intended to be abstract but has implementation for Designer to be able to instantiate BrokerEditor
