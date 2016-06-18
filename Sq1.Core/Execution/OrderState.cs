@@ -11,7 +11,6 @@ namespace Sq1.Core.Execution {
 
 		PreSubmit				= 200,
 		Submitting				= 210,
-		//SubmittingAsync		= 220,		// Rejected and other *PostProcessors should consider SubmittingAsync equivalent to Submitting
 		_TransactionStatus		= 215,
 		SubmittingSequenced		= 230,
 		Submitted				= 240,
@@ -34,7 +33,8 @@ namespace Sq1.Core.Execution {
 		KillerSubmitting		= 520,		// KillerSubmitting			<=> VictimsBulletConfirmed		
 		KillerTransSubmittedOK	= 530,		// KillerTransSubmittedOK	<=> VictimsBulletSubmitted		???Limit order that wasn't Filled yet - doesn't need a KillerOrder to be KilledPending
 		KillerBulletFlying		= 540,		// KillerBulletFlying		<=> VictimsBulletFlying
-		KillerDone				= 550,		// KillerDone				<=> VictimKilled				simulated in BrokerQuik: victim is cancelled, no broker callback on a "virtual" KillerOrder
+		KillerBulletArrivedLate	= 550,		// KillerBulletFlying		<=> VictimsBulletFlying
+		KillerDone				= 590,		// KillerDone				<=> VictimKilled				simulated in BrokerQuik: victim is cancelled, no broker callback on a "virtual" KillerOrder
 
 		SLAnnihilating			= 580,
 		SLAnnihilated			= 581,
@@ -45,7 +45,8 @@ namespace Sq1.Core.Execution {
 		VictimBulletConfirmed	= 620,		// KillerSubmitting			<=> VictimsBulletConfirmed		
 		VictimBulletSubmitted	= 630,		// KillerTransSubmittedOK	<=> VictimsBulletSubmitted
 		VictimBulletFlying		= 640,		// KillerBulletFlying		<=> VictimsBulletFlying
-		VictimKilled			= 650,		// KillerDone				<=> VictimKilled
+		VictimBulletArrivedLate	= 650,		// KillerDone				<=> VictimKilled
+		VictimKilled			= 690,		// KillerDone				<=> VictimKilled
 
 
 
@@ -61,9 +62,10 @@ namespace Sq1.Core.Execution {
 		ErrorSubmitting_BrokerDllDisconnected		= 721,
 		IRefuseEmitting_BrokerDisconnected			= 722,
 
-		ErrorSubmittingOrder_classifyMe				= 730,
-		ErrorSubmittingOrder_unexecutableParameters	= 731,
-		ErrorSubmittingOrder_wrongAccount			= 732,
+		ErrorSubmittingOrder_elaborate				= 730,
+		Error_DealPriceOutOfLimit_weird				= 731,
+		Error_accountIsTooSmall						= 732,
+		Error_cantSubscribeToTransactionCallback	= 733,
 
 		SubmittedNoFeedback							= 799,
 

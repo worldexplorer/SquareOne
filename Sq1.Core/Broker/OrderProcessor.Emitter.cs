@@ -206,8 +206,8 @@ namespace Sq1.Core.Broker {
 			string TODO = "trigger the HOOK now against the order NOW!!! 99% chance the SL you wanna move is already ready to be changed";
 			Assembler.PopupException(TODO);
 
-			this.OPPstatusCallbacks.AddStateChangedHook(oppHook_stopLossReceived_WaitingBrokerFill_state);
-			this.OPPstatusCallbacks.AddStateChangedHook(oppHook_stopLossKilled);
+			this.OPPstatusCallbacks.HookRegister(oppHook_stopLossReceived_WaitingBrokerFill_state);
+			this.OPPstatusCallbacks.HookRegister(oppHook_stopLossKilled);
 
 			this.AppendMessage_propagateToGui(proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed, msig + "hooked stopLossReceivedActiveCallback() and stopLossGotKilledHook()");
 		}
@@ -276,8 +276,8 @@ namespace Sq1.Core.Broker {
 			string TODO = "trigger the HOOK now against the order NOW!!! 99% chance the TP you wanna move is already ready to be changed";
 			Assembler.PopupException(TODO);
 
-			this.OPPstatusCallbacks.AddStateChangedHook(oppHook_takeProfitReceived_WaitingForBrokerFill);
-			this.OPPstatusCallbacks.AddStateChangedHook(oppHook_takeProfitKilled);
+			this.OPPstatusCallbacks.HookRegister(oppHook_takeProfitReceived_WaitingForBrokerFill);
+			this.OPPstatusCallbacks.HookRegister(oppHook_takeProfitKilled);
 
 			this.AppendMessage_propagateToGui(proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed, msig + ": hooked takeProfitReceivedActiveCallback() and takeProfitGotKilledHook()");
 		}
@@ -333,7 +333,7 @@ namespace Sq1.Core.Broker {
 			Order killerOrder_withRefToVictim = victimOrder.DeriveKillerOrder();
 			this.DataSnapshot.OrderInsert_notifyGuiAsync(killerOrder_withRefToVictim);
 			//this.RaiseOrderReplacementOrKillerCreatedForVictim(victimOrder);
-			this.RaiseOrderStateOrPropertiesChanged_executionControlShouldPopulate(this, new List<Order>() {victimOrder});
+			this.RaiseOnOrderStateOrPropertiesChanged_executionControlShouldPopulate_immediately(this, new List<Order>() {victimOrder});
 			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
 
 			string msg_victim = "YOUR_KILLER_ORDER_IS [" + killerOrder_withRefToVictim + "]";
@@ -356,7 +356,7 @@ namespace Sq1.Core.Broker {
 			};
 
 			BrokerAdapter broker = killerOrder_withRefToVictim.Alert.DataSource_fromBars.BrokerAdapter;
-			broker.Order_killPending_usingKiller(killerOrder_withRefToVictim);
+			broker.Order_submitKiller_forPending(killerOrder_withRefToVictim);
 			emitted = true;
 			return emitted;
 		}

@@ -100,7 +100,7 @@ namespace Sq1.Core.Support {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				if (this.InnerList.Contains(position) == false) {
 					if (absenceThrowsAnError == true) {
-						string msg = "WASNT_ADDED_OR_REMOVED_EARLIER position[" + position + "] LIVESIM_SHOULD_NOT_FILL_ORDER_THAT_WAS_ALREADY_KILLED";
+						string msg = "WAS_REMOVED_EARLIER__OR_NEVER_ADDED position[" + position + "] LIVESIM_SHOULD_NOT_FILL_ORDER_THAT_WAS_ALREADY_KILLED";
 						Assembler.PopupException(msg + this.ToString());
 					}
 				} else {

@@ -146,7 +146,7 @@ namespace Sq1.Widgets.ScriptEditor {
 			}
 			if (this.splitContainer1.Panel2Collapsed) this.splitContainer1.Panel2Collapsed = false;
 		}
-		public void PopulateCompilerErrors(CompilerErrorCollection compilerErrorCollection) {
+		public void PopulateCompilerErrors(CompilerErrorCollection compilerErrorCollection, bool popupFromAutoHidden = true) {
 			int errorsIgnoreWarnings = 0;
 			string errorsPlainText = "";
 			foreach (var error in compilerErrorCollection) {
@@ -174,7 +174,7 @@ namespace Sq1.Widgets.ScriptEditor {
 			this.txtCompilerErrors.Text = errorsPlainText;
 			//this.txtCompilerErrors.BackColor = Color.LightCoral;
 			this.txtCompilerErrors.BackColor = Color.FromArgb(225, 200, 200);
-			this.parseErrorAndSetEditorCaret();
+			this.parseError_setEditorCaret(popupFromAutoHidden);
 		}
 		void mniWordWrap_Click(object sender, EventArgs e) {
 			this.mniWordWrap.Checked = !this.mniWordWrap.Checked;
@@ -211,14 +211,14 @@ namespace Sq1.Widgets.ScriptEditor {
 				case Keys.PageDown:
 				case Keys.Home:
 				case Keys.End:
-					this.parseErrorAndSetEditorCaret();
+					this.parseError_setEditorCaret();
 					break;
 			}
 		}
 		void txtCompilerErrors_MouseUp(object sender, MouseEventArgs e) {
-			this.parseErrorAndSetEditorCaret();
+			this.parseError_setEditorCaret();
 		}
-		void parseErrorAndSetEditorCaret() {
+		void parseError_setEditorCaret(bool popupFromAutoHidden = true) {
 			if (this.txtCompilerErrors.Text == SCRIPT_COMPILED_OK) return;
 			int errorStartIndex = this.txtCompilerErrors.GetFirstCharIndexOfCurrentLine();
 			int errorLength = this.txtCompilerErrors.Text.Length - errorStartIndex;
@@ -244,7 +244,9 @@ namespace Sq1.Widgets.ScriptEditor {
 				string msg = "regex[" + regex + "] didn't find matches for errorLine[" + errorLine + "]";
 			}
 
-			this.TextEditorControl.Focus();
+			if (popupFromAutoHidden) {
+				this.TextEditorControl.Focus();
+			}
 			Caret caret = this.TextEditorControl.ActiveTextAreaControl.Caret;
 			try {
 				caret.Position = new TextLocation(Int32.Parse(column) - 1, Int32.Parse(row) - 1);

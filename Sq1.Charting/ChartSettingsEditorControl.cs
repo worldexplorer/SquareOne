@@ -64,7 +64,9 @@ namespace Sq1.Charting {
 				this.rebuildingDropdown = false;
 			}
 		}
-		public void PopulatePropertyGrid_withChartsSettings_selectCurrentChart(ChartControl chartControl = null, bool forceRebuild = false) {
+		public void PopulatePropertyGrid_withChartsSettings_selectCurrentChart(ChartControl chartControl = null,
+					bool forceRebuild = false, bool openDropDownAfterSelected_falseWhenSwitching = true) {
+
 			if (chartControl == null) {
 				chartControl = this.chartControlSelected_nullUnsafe;
 			}
@@ -73,9 +75,11 @@ namespace Sq1.Charting {
 				Assembler.PopupException(msg);
 				return;
 			}
+
+			string chartControl_asString = chartControl.ToString();
 			Form parent = base.Parent as Form;
 			if (parent != null) {
-				parent.Text = "Chart Editor :: " + chartControl.ToString();
+				parent.Text = "Chart Editor :: " + chartControl_asString;
 			}
 
 			this.propertyGrid1.SelectedObject = chartControl.ChartSettingsTemplated;
@@ -83,19 +87,27 @@ namespace Sq1.Charting {
 
 			ChartControl selected = this.chartControlSelected_nullUnsafe;
 			if (selected == null) {
-				this.cbxChartsCurrentlyOpen.ComboBox.SelectedItem = chartControl.ToString();		// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelected_nullUnsafe + Initialize()
+				this.cbxChartsCurrentlyOpen.ComboBox.SelectedItem = chartControl_asString;		// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelected_nullUnsafe + Initialize()
 				this.mniSettingsImEditing.Text = chartControl.ChartSettingsTemplated.Name;
 				return;
 			}
-			if (selected.ToString() == chartControl.ToString()) {
+
+
+			if (selected.ToString() == chartControl_asString) {
 				string msg = "DockPanel_ActivateDocument invokes me (and everyone else) twice"
 					+ "; first time with Form that was active BEFORE the click on the other form"
 					+ "; second time with the CLICKED form <= I need only the SECOND one";
 				return;
 			}
-			this.cbxChartsCurrentlyOpen.ComboBox.SelectedItem = chartControl.ToString();		// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelected_nullUnsafe + Initialize()
+
+			object cbxSelected = this.cbxChartsCurrentlyOpen.ComboBox.SelectedItem;
+			if (cbxSelected != chartControl_asString) {
+				//bool bak = this.openDropDownAfterSelected;
+				this.openDropDownAfterSelected = false;
+				this.cbxChartsCurrentlyOpen.ComboBox.SelectedItem = chartControl_asString;		// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelected_nullUnsafe + Initialize()
+				//this.openDropDownAfterSelected = bak;
+			}
 			this.mniSettingsImEditing.Text = chartControl.ChartSettingsTemplated.Name;
-			this.openDropDownAfterSelected = false;
 		}
 	}
 }

@@ -17,16 +17,23 @@ namespace Sq1.Core.Broker {
 		bool orderCanBeReplaced_disposeRemoveIfFilled(Order order, string msig_invoker) {
 			bool ret = false;
 
+			bool shallReplace = order.Alert.Bars.SymbolInfo.ReSubmitLimitNotFilled;
+			if (shallReplace == false) {
+				string msg = "Symbol[" + order.Alert.Bars.Symbol + "].ReSubmitLimitNotFilled=[" + shallReplace +  "]; returning";
+				Assembler.PopupException(msg + msig_invoker, null, false);
+				return ret;
+			}
+
 			int expiredMillis = order.Alert.Bars.SymbolInfo.ReSubmitLimitNotFilledWithinMillis;
-			if (expiredMillis == 0) {
-				string msg = "Symbol[" + order.Alert.Bars.Symbol + "].ApplyNextSlippage_ifLimitNotFilledWithin=[" + expiredMillis +  "]; returning";
+			if (expiredMillis <= 0) {
+				string msg = "Symbol[" + order.Alert.Bars.Symbol + "].ReSubmitLimitNotFilledWithinMillis=[" + expiredMillis +  "]; returning";
 				Assembler.PopupException(msg + msig_invoker, null, false);
 				return ret;
 			}
 
 			string reasonCanNotBeReplaced = "";
 			if (order.QtyFill > 0 || order.PriceFilled > 0) {
-				reasonCanNotBeReplaced += "CAN_NOT_BE_REPLACED ";
+				reasonCanNotBeReplaced += "order.QtyFill[" + order.QtyFill + "] > 0 || order.PriceFilled[" + order.PriceFilled + "] > 0 ";
 			}
 			if (order.State != OrderState.WaitingBrokerFill) {
 				reasonCanNotBeReplaced += "ORDER_ISNT_WAITING_FOR_FILL_ANYMORE[" + order.State + "] ";
@@ -46,7 +53,7 @@ namespace Sq1.Core.Broker {
 				return ret;
 			}
 
-			this.OrderProcessor.AppendMessage_propagateToGui(order, reasonCanNotBeReplaced);
+			this.OrderProcessor.AppendMessage_propagateToGui(order, "CAN_NOT_BE_REPLACED " + reasonCanNotBeReplaced);
 			this.removeTimer_forOrder(order, msig_invoker);
 			return ret;
 		}
@@ -68,6 +75,7 @@ namespace Sq1.Core.Broker {
 				// timer exists => now I have to stop & dispose the timer
 				TimerSimplifiedThreading_withOrder timerItself = this.timeredOrders[order];
 				if (timerItself != null) {
+					timerItself.OnLastScheduleExpired -= new EventHandler<EventArgs>(this.timerForOrder_OnLastScheduleExpired);
 					reasonCanNotBeReplaced += timerItself.ElapsedVsDelayed_asString;
 					timerItself.Dispose();
 				}
@@ -97,7 +105,7 @@ namespace Sq1.Core.Broker {
 
 			int expiredMillis = order.Alert.Bars.SymbolInfo.ReSubmitLimitNotFilledWithinMillis;
 			TimerSimplifiedThreading_withOrder timerForOrder = new TimerSimplifiedThreading_withOrder(order, expiredMillis);
-			timerForOrder.OnLastScheduleExpired += new EventHandler<EventArgs>(timerForOrder_OnLastScheduleExpired);
+			timerForOrder.OnLastScheduleExpired += new EventHandler<EventArgs>(this.timerForOrder_OnLastScheduleExpired);
 			timerForOrder.ScheduleOnce_postponeIfAlreadyScheduled();
 			this.timeredOrders.Add(order, timerForOrder);
 			replacementScheduled = true;

@@ -121,7 +121,7 @@ namespace Sq1.Core.Broker {
 				//	newbornOrderState = OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted;
 				//}
 			}
-			this.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(new OrderStateMessage(newborn, newbornOrderState, newbornMessage));
+			this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(new OrderStateMessage(newborn, newbornOrderState, newbornMessage));
 			this.DataSnapshot.OrderInsert_notifyGuiAsync(newborn);
 			return newborn;
 		}
@@ -207,8 +207,8 @@ namespace Sq1.Core.Broker {
 			}
 			Order order = omsg.Order;
 			order.AppendOrderMessage(omsg);
-			if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) return;
-			this.RaiseOrderMessageAdded_executionControlShouldPopulate(this, omsg);
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush if (order.Alert.GuiHasTime_toRebuildReportersAndExecution == false) return;
+			this.RaiseOnOrderMessageAdded_executionControlShouldPopulate_scheduled(this, omsg);
 		}
 		public void AppendMessage_propagateToGui(Order order, string msg) {
 			if (order == null) {
@@ -218,40 +218,78 @@ namespace Sq1.Core.Broker {
 			this.AppendOrderMessage_propagateToGui(omsg);
 		}
 
-		void postProcess_victimOrder(OrderStateMessage newStateOmsg) {
-			Order victimOrder = newStateOmsg.Order;
-			this.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(newStateOmsg);
+		bool postProcess_victimOrder(OrderStateMessage victimNewStateOmsg) {
+			bool stillTryOrderFill = false;
+
+			Order victimOrder = victimNewStateOmsg.Order;
+
+			bool victimAlreadyFilled = victimOrder.FilledOrPartially_inOrderMessages;
+			if (victimAlreadyFilled) {
+				int replacementOrderCreate_hooksUnregistered = this.OPPstatusCallbacks.HooksUnregister_Uninvoked(victimOrder, OrderState.VictimKilled);
+
+				string msg_victim = "STATUS_DEFLECTED[" + victimNewStateOmsg.State + "]";
+				if (victimNewStateOmsg.State == OrderState.VictimKilled) {
+					msg_victim += " FILLED_CANT_BE_KILLED_RETARDEDLY";
+				} else if (victimNewStateOmsg.State == OrderState.Filled) {
+					msg_victim += " FILL_DUPLICATE";
+				}
+				msg_victim += " replacementOrderCreate_hooksUnregistered[" + replacementOrderCreate_hooksUnregistered + "]"
+					+ " victimOrder[" + victimOrder + "]";
+
+				//v1 will leave status as VictimBulletArrivedLate
+				//this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(
+				//	new OrderStateMessage(victimOrder, OrderState.VictimBulletArrivedLate, msg_victim));
+				this.AppendMessage_propagateToGui(victimOrder, msg_victim);
+				stillTryOrderFill = false;		// because here victimAlreadyFilled=true
+				return stillTryOrderFill;		// and don't create a new replacement order (hook just removed)
+			}
+
+			// WHILE_HAVING_KILLER_FILL_IS_ASSIGNED_HERE_AND_POST_PROCESS_REMOVING_PENDING_ALERT_ISNT_INVOKED this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(victimNewStateOmsg);
 			switch (victimOrder.State) {
 				case OrderState.VictimBulletPreSubmit:
 				case OrderState.VictimBulletSubmitted:
 				case OrderState.VictimBulletConfirmed:
-				case OrderState.VictimBulletFlying:
 				case OrderState.SLAnnihilated:
 				case OrderState.TPAnnihilated:
+				case OrderState.Submitting:
+					this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(victimNewStateOmsg);
 					break;
 
-				case OrderState.Submitting:
+				case OrderState.VictimBulletFlying:
+					// BASTARDO_ESTAVA_AQUI
+					if (victimNewStateOmsg.State == OrderState.Filled) {
+						stillTryOrderFill = true;
+					} else {
+						this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(victimNewStateOmsg);
+					}
+					break;
+
 				case OrderState.WaitingBrokerFill:
+					stillTryOrderFill = true;
+					break;
+
 				case OrderState.Filled:
+					string msg2 = "IM_FILLED_WHILE_BULLET_FLYING___MUST_REMOVE_FROM_PENDING_ALERTS_IN CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably()";
+					this.AppendMessage_propagateToGui(victimOrder, msg2);
+					stillTryOrderFill = true;
 					break;
 
 				case OrderState.VictimKilled:
 					if (victimOrder.FindState_inOrderMessages(OrderState.SLAnnihilating)) {
-						this.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(
+						this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(
 							new OrderStateMessage(victimOrder, OrderState.SLAnnihilated,
 								"PROTOTYPE_FILLED__COUNTERPARTY_ANNIHILATION_SUCCEEDED"));
 					}
 					if (victimOrder.FindState_inOrderMessages(OrderState.TPAnnihilating)) {
-						this.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(
+						this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(
 							new OrderStateMessage(victimOrder, OrderState.TPAnnihilated,
 								"PROTOTYPE_FILLED__COUNTERPARTY_ANNIHILATION_SUCCEEDED"));
 					}
 
 					Order killerOrder = victimOrder.KillerOrder;
-
 					string msg_killer = "orderKiller[" + killerOrder.SernoExchange + "]=>[" + OrderState.KillerDone + "] <= orderVictim[" + victimOrder.SernoExchange + "][" + victimOrder.State + "]";
 					OrderStateMessage omg_done_killer = new OrderStateMessage(killerOrder, OrderState.KillerDone, msg_killer + " //postProcess_victimOrder()");
-					this.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(omg_done_killer);
+					this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(omg_done_killer);
 					double slippageNext = victimOrder.SlippageNextAvailable_NanWhenNoMore;
 					if (victimOrder.DontRemoveMyPending_afterImKilled_IwillBeReplaced && double.IsNaN(slippageNext) == false) {
 						string msg1 = "SKIPPING_REMOVAL_OF_PENDING_ALERT; I will remove when NoMoreSlippageAvailable";
@@ -263,29 +301,50 @@ namespace Sq1.Core.Broker {
 
 				default:
 					string msg = "postProcess_victimOrder() NO_HANDLER_FOR_ORDER_VICTIM [" + victimOrder + "]'s state[" + victimOrder.State + "]"
-						+ "your BrokerAdapter should call for Victim.States:{"
+						//+ "your BrokerAdapter should call for Victim.States:{"
 						//+ OrderState.KillSubmitting + ","
-						+ OrderState.VictimBulletFlying + ","
+						//+ OrderState.VictimBulletFlying + ","
 						//+ OrderState.Killed + ","
 						//+ OrderState.SLAnnihilated + ","
 						//+ OrderState.TPAnnihilated + "}";
 						;
-					Assembler.PopupException(msg, null, false);
+					Assembler.PopupException(msg, null, true);
 					//throw new Exception(msg);
 					break;
 			}
-			this.OPPstatusCallbacks.InvokeHooks_forOrderState_deleteInvoked(victimOrder, null);
+			this.OPPstatusCallbacks.InvokeHooks_forOrderState_unregisterInvoked(victimOrder, null);
+			return stillTryOrderFill;// = true
 		}
-		void postProcess_killerOrder(OrderStateMessage newStateOmsg) {
-			Order killerOrder = newStateOmsg.Order;
+		void postProcess_killerOrder(OrderStateMessage killerNewStateOmsg) {
+			Order killerOrder = killerNewStateOmsg.Order;
+			Order victimOrder = killerOrder.VictimToBeKilled;
+
+			bool victimAlreadyFilled = victimOrder.FilledOrPartially_inOrderMessages;
+			bool killerPossibleStates_forVictimAlreadyFilled =
+				 	killerNewStateOmsg.State == OrderState.KillerTransSubmittedOK
+				 || killerNewStateOmsg.State == OrderState.Submitted
+				 || killerNewStateOmsg.State == OrderState.KillerBulletFlying
+				 ||	killerNewStateOmsg.State == OrderState.KillerDone
+				 ;
+			if (victimAlreadyFilled && killerPossibleStates_forVictimAlreadyFilled) {
+				string msg_killer = "STATUS_DEFLECTED[" + killerNewStateOmsg.State + "] FILLED_CANT_BE_KILLED_RETARDEDLY victimOrder.State[" + victimOrder.State + "]"
+					+ " orderKiller[" + killerOrder + "]";
+				//v1 will leave status as VictimBulletArrivedLate
+				this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(
+				    new OrderStateMessage(killerOrder, OrderState.KillerBulletArrivedLate, msg_killer));
+				//this.AppendMessage_propagateToGui(killerOrder, msg_killer);
+				return;		// and don't create a new replacement order (hook just removed)
+			}
+
 			switch (killerOrder.State) {
 				case OrderState.JustConstructed:
 				case OrderState.KillerPreSubmit:
 				case OrderState.KillerSubmitting:
 				case OrderState.KillerTransSubmittedOK:
 				case OrderState.KillerBulletFlying:
+				case OrderState.Submitted:
 				case OrderState.KillerDone:
-					this.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(newStateOmsg);
+					this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(killerNewStateOmsg);
 					break;
 
 				default:
@@ -308,8 +367,9 @@ namespace Sq1.Core.Broker {
 			//	order.State = OrderState.Filled;
 			//}
 			if (OrderStatesCollections.NoInterventionRequired.Contains(order.State) == false) {
-				this.DataSnapshot.OrdersExpectingBrokerUpdateCount--;
+				this.DataSnapshot.OrdersExpectingBrokerUpdateCount_notUsed--;
 			}
+
 			switch (order.State) {
 				case OrderState.Filled:
 				case OrderState.FilledPartially:
@@ -346,19 +406,24 @@ namespace Sq1.Core.Broker {
 						string msg3 = "PostProcessOrderState caught from CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably() ";
 						Assembler.PopupException(msg3 + msig, ex);
 					}
+
+					if (order.PriceFilled > 0 && this.DataSnapshot.OrdersPending.ContainsGuid(order)) {
+						string msg = "FILLED_ORDER_MUST_DISAPPEAR_FROM_OrdersPending";
+						Assembler.PopupException(msg);
+					}
 					break;
 
 				case OrderState.ErrorCancelReplace:
-					this.DataSnapshot.OrdersRemove(new List<Order>() { order });
-					this.RaiseAsyncOrderRemoved_executionControlShouldRebuildOLV(this, new List<Order>(){order});
+					this.DataSnapshot.OrdersRemoveRange_fromAllLanes(new List<Order>() { order });
+					this.RaiseOnOrdersRemoved_executionControlShouldRebuildOLV_scheduled(this, new List<Order>(){order});
 					Assembler.PopupException(msig);
 					break;
 
 				case OrderState.Error:
 				case OrderState.ErrorMarketPriceZero:
-				case OrderState.ErrorSubmittingOrder_classifyMe:
-				case OrderState.ErrorSubmittingOrder_unexecutableParameters:
-				case OrderState.ErrorSubmittingOrder_wrongAccount:
+				case OrderState.ErrorSubmittingOrder_elaborate:
+				case OrderState.Error_DealPriceOutOfLimit_weird:
+				case OrderState.Error_accountIsTooSmall:
 				case OrderState.ErrorSlippageCalc:
 					Assembler.PopupException("PostProcess(): order.PriceFill=0 " + msig, null, false);
 					//NEVER order.PricePaid = 0;
@@ -397,7 +462,7 @@ namespace Sq1.Core.Broker {
 							//+ "; skipping PostProcess for [" + order + "]"
 							;
 						this.AppendMessage_propagateToGui(order, msg);
-						this.RaiseOrderStateOrPropertiesChanged_executionControlShouldPopulate(this, new List<Order>(){order});
+						this.RaiseOnOrderStateOrPropertiesChanged_executionControlShouldPopulate_immediately(this, new List<Order>(){order});
 						return;
 					}
 					
@@ -459,6 +524,7 @@ namespace Sq1.Core.Broker {
 
 				case OrderState.PreSubmit:
 				case OrderState.VictimBulletPreSubmit:
+				case OrderState.VictimBulletFlying:
 				case OrderState.KillerPreSubmit:
 					break;
 
@@ -472,32 +538,12 @@ namespace Sq1.Core.Broker {
 
 				default:
 					string msg4 = "NO_HANDLER_FOR_order.State[" + order.State + "]";
-					Assembler.PopupException(msg4 + msig, null, false);
+					Assembler.PopupException(msg4 + msig, null, true);
 					break;
 			}
 		}
 		public override string ToString() {
-			string ret = "";
-
-			//int itemsCnt			= this.ExecutionTreeControl.OlvOrdersTree.Items.Count;
-			int allCnt				= this.DataSnapshot.OrdersAll				.Count;
-			int submittingCnt		= this.DataSnapshot.OrdersSubmitting		.Count;
-			int pendingCnt			= this.DataSnapshot.OrdersPending			.Count;
-			int pendingFailedCnt	= this.DataSnapshot.OrdersPendingFailed		.Count;
-			int cemeteryHealtyCnt	= this.DataSnapshot.OrdersCemeteryHealthy	.Count;
-			int cemeterySickCnt		= this.DataSnapshot.OrdersCemeterySick		.Count;
-			int fugitive			= allCnt - (submittingCnt + pendingCnt + pendingFailedCnt + cemeteryHealtyCnt + cemeterySickCnt);
-
-										ret +=		   cemeteryHealtyCnt + " Filled/Killed/Killers";
-										ret += " | " + pendingCnt + " Pending";
-			if (submittingCnt > 0)		ret += " | " + submittingCnt + " Submitting";
-			if (pendingFailedCnt > 0)	ret += " | " + pendingFailedCnt + " PendingFailed";
-			if (cemeterySickCnt > 0)	ret += " | " + cemeterySickCnt + " DeadFromSickness";
-										ret += " :: "+ allCnt + " Total";
-			//if (itemsCnt != allCnt)		ret += " | " + itemsCnt + " Displayed";
-			if (fugitive > 0)			ret += ", " + fugitive + " DeserializedPrevLaunch";
-
-			return ret;
+			return this.DataSnapshot.ToString();
 		}
 	}
 }

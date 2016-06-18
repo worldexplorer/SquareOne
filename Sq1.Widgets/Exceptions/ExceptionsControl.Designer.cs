@@ -27,7 +27,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniShowTimestamps = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniShowHeaders = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.mniltbDelay = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+			this.mniltbFlushToGuiDelayMsec = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mniRefresh = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniCopy = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainerVertical = new System.Windows.Forms.SplitContainer();
@@ -104,16 +104,16 @@ namespace Sq1.Widgets.Exceptions {
 			this.ctxTree.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mniClear,
             this.toolStripSeparator2,
-            this.mniPopupOnIncomingException,
             this.mniRecentAlwaysSelected,
+            this.mniPopupOnIncomingException,
             this.mniShowTimestamps,
             this.mniShowHeaders,
             this.toolStripSeparator1,
-            this.mniltbDelay,
+            this.mniCopy,
             this.mniRefresh,
-            this.mniCopy});
+            this.mniltbFlushToGuiDelayMsec});
 			this.ctxTree.Name = "ctx";
-			this.ctxTree.Size = new System.Drawing.Size(266, 191);
+			this.ctxTree.Size = new System.Drawing.Size(266, 213);
 			// 
 			// mniClear
 			// 
@@ -166,27 +166,27 @@ namespace Sq1.Widgets.Exceptions {
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(262, 6);
 			// 
-			// mniltbDelay
+			// mniltbFlushToGuiDelayMsec
 			// 
-			this.mniltbDelay.BackColor = System.Drawing.Color.Transparent;
-			this.mniltbDelay.InputFieldAlignedRight = false;
-			this.mniltbDelay.InputFieldBackColor = System.Drawing.SystemColors.Info;
-			this.mniltbDelay.InputFieldEditable = true;
-			this.mniltbDelay.InputFieldMultiline = false;
-			this.mniltbDelay.InputFieldOffsetX = 113;
-			this.mniltbDelay.InputFieldValue = "200";
-			this.mniltbDelay.InputFieldWidth = 40;
-			this.mniltbDelay.Name = "mniltbDelay";
-			this.mniltbDelay.OffsetTop = 0;
-			this.mniltbDelay.Size = new System.Drawing.Size(183, 18);
-			this.mniltbDelay.TextLeft = "Delay for buffering";
-			this.mniltbDelay.TextLeftOffsetX = 0;
-			this.mniltbDelay.TextLeftWidth = 108;
-			this.mniltbDelay.TextRed = false;
-			this.mniltbDelay.TextRight = "ms";
-			this.mniltbDelay.TextRightOffsetX = 153;
-			this.mniltbDelay.TextRightWidth = 27;
-			this.mniltbDelay.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDelay_UserTyped);
+			this.mniltbFlushToGuiDelayMsec.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbFlushToGuiDelayMsec.InputFieldAlignedRight = false;
+			this.mniltbFlushToGuiDelayMsec.InputFieldBackColor = System.Drawing.SystemColors.Info;
+			this.mniltbFlushToGuiDelayMsec.InputFieldEditable = true;
+			this.mniltbFlushToGuiDelayMsec.InputFieldMultiline = false;
+			this.mniltbFlushToGuiDelayMsec.InputFieldOffsetX = 120;
+			this.mniltbFlushToGuiDelayMsec.InputFieldValue = "200";
+			this.mniltbFlushToGuiDelayMsec.InputFieldWidth = 40;
+			this.mniltbFlushToGuiDelayMsec.Name = "mniltbFlushToGuiDelayMsec";
+			this.mniltbFlushToGuiDelayMsec.OffsetTop = 0;
+			this.mniltbFlushToGuiDelayMsec.Size = new System.Drawing.Size(190, 18);
+			this.mniltbFlushToGuiDelayMsec.TextLeft = "Flush To GUI Delay";
+			this.mniltbFlushToGuiDelayMsec.TextLeftOffsetX = 0;
+			this.mniltbFlushToGuiDelayMsec.TextLeftWidth = 108;
+			this.mniltbFlushToGuiDelayMsec.TextRed = false;
+			this.mniltbFlushToGuiDelayMsec.TextRight = "ms";
+			this.mniltbFlushToGuiDelayMsec.TextRightOffsetX = 160;
+			this.mniltbFlushToGuiDelayMsec.TextRightWidth = 27;
+			this.mniltbFlushToGuiDelayMsec.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbFlushToGuiDelayMsec_UserTyped);
 			// 
 			// mniRefresh
 			// 
@@ -305,13 +305,13 @@ namespace Sq1.Widgets.Exceptions {
 			this.ctxCallStack.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mniCopyStackPosition});
 			this.ctxCallStack.Name = "ctxCallStack";
-			this.ctxCallStack.Size = new System.Drawing.Size(153, 48);
+			this.ctxCallStack.Size = new System.Drawing.Size(145, 26);
 			// 
 			// mniCopyStackPosition
 			// 
 			this.mniCopyStackPosition.Name = "mniCopyStackPosition";
 			this.mniCopyStackPosition.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.mniCopyStackPosition.Size = new System.Drawing.Size(152, 22);
+			this.mniCopyStackPosition.Size = new System.Drawing.Size(144, 22);
 			this.mniCopyStackPosition.Text = "Copy";
 			this.mniCopyStackPosition.Click += new System.EventHandler(this.mniCopyStackPosition_Click);
 			// 
@@ -323,7 +323,6 @@ namespace Sq1.Widgets.Exceptions {
 			this.Size = new System.Drawing.Size(509, 361);
 			this.ResizeStopped += new System.EventHandler<System.EventArgs>(this.exceptionsControl_ResizeStopped);
 			this.Load += new System.EventHandler(this.form_OnLoad);
-			this.VisibleChanged += new System.EventHandler(this.exceptionsControl_VisibleChanged);
 			((System.ComponentModel.ISupportInitialize)(this.olvTreeExceptions)).EndInit();
 			this.ctxTree.ResumeLayout(false);
 			this.splitContainerVertical.Panel1.ResumeLayout(false);
@@ -353,7 +352,7 @@ namespace Sq1.Widgets.Exceptions {
 		private BrightIdeasSoftware.OLVColumn olvcTime;
 		private System.Windows.Forms.ToolStripMenuItem mniCopyStackPosition;
 		private System.Windows.Forms.ContextMenuStrip ctxCallStack;
-		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbDelay;
+		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbFlushToGuiDelayMsec;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem mniRecentAlwaysSelected;
 		private System.Windows.Forms.ToolStripMenuItem mniCopy;

@@ -249,10 +249,11 @@ namespace Sq1.Widgets {
 				Assembler.PopupException(msg1, null, false);
 				return true;
 			} }
-		public bool MustBeActivated		{ get { return this.IsShown ? this.IsCoveredOrAutoHidden : false; } }
+		public bool IsInFront				{ get { return this.IsShown ? this.IsCoveredOrAutoHidden == false : false; } }
+		public bool MustBeActivated			{ get { return this.IsInFront == false; } }
 
 		// moved from modified WelfenLuoBlaBlaBla.DockHandler to restore release-state of DockContent library (not fully restored, though)
-		public void ActivateDockContentPopupAutoHidden(bool keepAutoHidden = true, bool activate = true) {
+		public void ActivateDockContent_popupAutoHidden(bool keepAutoHidden = true, bool activate = true) {
 			if (this.IsDocked) {
 				//if (keepAutoHidden) this.ToggleAutoHide();
 			} else if (this.IsDockedAutoHide || this.DockState == DockState.Hidden) {
@@ -260,7 +261,13 @@ namespace Sq1.Widgets {
 					this.ToggleAutoHide();
 				}
 			}
-			if (activate) this.Activate();
+			if (activate == false) return;
+			try {
+				this.Activate();
+			} catch (Exception ex) {
+				string msg = "ObjectListView_THREW__ZERO_INVALID_VALUE?";
+				Assembler.PopupException(msg, ex, false);
+			}
 		}
 
 		public void ToggleAutoHide() {

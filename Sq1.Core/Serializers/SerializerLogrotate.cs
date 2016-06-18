@@ -6,14 +6,14 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.Serializers {
 	public class SerializerLogrotate<T> : Serializer<List<T>> {
-		long logRotateSizeLimit;
-		string logRotateDateFormat;
+				long	logRotateSizeLimit;
+				string	logRotateDateFormat;
 
-		Object entityLock;
-		public bool HasChangesToSave;
-		bool currentlySerializing;
-		object itemsBufferedWhileSerializingLock;
-		List<T> itemsBuffered_whileSerializing;
+				Object	entityLock;
+		public	bool	HasChangesToSave;
+				bool	currentlySerializing;
+				object	itemsBufferedWhileSerializingLock;
+				List<T>	itemsBuffered_whileSerializing;
 
 		public SerializerLogrotate() : base() {
 			this.logRotateSizeLimit = 2 * 1024 * 1024;	// 2Mb
@@ -39,15 +39,21 @@ namespace Sq1.Core.Serializers {
 			}
 			return base.EntityDeserialized;
 		}
-		public override void Serialize() {
-			if (this.currentlySerializing == true) return;
-			if (this.HasChangesToSave == false) return;
+		public override int Serialize() {
+			int recordsSerialized = 0;
+			if (this.currentlySerializing == true) {
+				string msg = "WILL_SERIALIZE_NEXT_TIME__PERIODIC_THREAD_WILL_INVOKE_ME_ONCE_AGAIN";
+				Assembler.PopupException(msg, null, false);
+				return recordsSerialized;
+			}
+			if (this.HasChangesToSave == false) return recordsSerialized;
 			this.HasChangesToSave = false;
 
 			try {
 				this.currentlySerializing = true;
 				lock (this.entityLock) {
-					if (base.EntityDeserialized.Count == 0) return;
+					// AFTER_I_DELETED_ALL_I_SHOULD_SAVE_ZERO if (base.EntityDeserialized.Count == 0) return recordsSerialized;
+					recordsSerialized = base.EntityDeserialized.Count;
 					string json = JsonConvert.SerializeObject(base.EntityDeserialized, Formatting.Indented,
 						new JsonSerializerSettings {
 							TypeNameHandling = TypeNameHandling.Objects
@@ -67,6 +73,7 @@ namespace Sq1.Core.Serializers {
 			} finally {
 				this.currentlySerializing = false;
 			}
+			return recordsSerialized;
 		}
 		void safeRotateWriteAll(string fileAbspath, string json) {
 			this.safeLogRotate(fileAbspath);

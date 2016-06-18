@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Broker {
-	public class OrdersAutoTree : OrderLane {
-		OrderLane ordersAll;
+	public class OrdersRootOnly : OrderLane {
+		public OrderLane OrdersAll;
 		
-		public OrdersAutoTree() : base() {
+		public OrdersRootOnly(string reasonToExist) : base(reasonToExist) {
 		}
 		public void InitializeScanDeserialized_moveDerivedsInside_buildTreeShadow(OrderLane ordersAllDeserialized) {
 			base.Clear();
-			this.ordersAll = ordersAllDeserialized;
-			this.scanDeserialized_moveDerivedsInside_buildTreeShadow(this.ordersAll);
+			this.OrdersAll = ordersAllDeserialized;
+			this.scanDeserialized_moveDerivedsInside_buildTreeShadow(this.OrdersAll);
 		}
-		public void InsertUnique_toRoot(Order orderAdded) {
+		public void InsertUnique_onlyToRoot(Order orderAdded) {
 			Order orderParent = orderAdded.DerivedFrom;
 			if (orderParent != null) return;
 			base.InsertUnique(orderAdded);
@@ -81,12 +81,12 @@ namespace Sq1.Core.Broker {
 						continue;
 					}
 					if (popupIfDoesntContain) {
-						string msg = "ORDER_AUTOTREE_DOESNT_CONTAIN_ORDER_YOU_WILLING_TO_REMOVE " + this.ToStringCount() + " orderRemoving" + orderRemoving;
+						string msg = "ORDER_AUTOTREE_DOESNT_CONTAIN_ORDER_YOU_WILLING_TO_REMOVE " + this.ToString() + " orderRemoving" + orderRemoving;
 						Assembler.PopupException(msg);
 					}
 					continue;
 				}
-				base.Remove(orderRemoving);
+				base.RemoveUnique(orderRemoving);
 			}
 		}
 	}

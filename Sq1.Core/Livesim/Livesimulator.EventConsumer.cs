@@ -18,9 +18,9 @@ namespace Sq1.Core.Livesim {
 				if (this.DataSourceAsLivesim_generator_nullUnsafe.BrokerAsLivesim_nullUnsafe != null) {
 					List<Order> ordersStale = this.DataSourceAsLivesim_generator_nullUnsafe.BrokerAsLivesim_nullUnsafe.OrdersSubmitted_forOneLivesimBacktest;
 					if (ordersStale.Count > 0) {
-						int beforeCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll.Count;
-						this.Executor.OrderProcessor.DataSnapshot.OrdersRemove(ordersStale);
-						int afterCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll.Count;
+						int beforeCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll_Count;
+						this.Executor.OrderProcessor.DataSnapshot.OrdersRemoveRange_fromAllLanes(ordersStale);
+						int afterCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll_Count;
 						if (beforeCleanup > 0 && beforeCleanup <= afterCleanup)  {
 							string msg = "STALE_ORDER_CLEANUP_DOESNT_WORK__LIVESIM";
 							Assembler.PopupException(msg);
@@ -32,7 +32,7 @@ namespace Sq1.Core.Livesim {
 					Assembler.PopupException(msg, null, false);
 				}
 				//base.Stopwatch.Restart();
-				var alreadyStartedUpstack = base.Stopwatch;
+				var alreadyStartedUpstack = base.Stopwatch_backtestLasted;
 
 				this.chartShadow.BeginInvoke((MethodInvoker)delegate { this.executor_OnBacktesterContextInitialized_step2of4(sender, e); });
 				return;

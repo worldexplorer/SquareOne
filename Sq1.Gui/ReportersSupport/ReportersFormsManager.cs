@@ -286,7 +286,7 @@ namespace Sq1.Gui.ReportersSupport {
 					return;
 				}
 				// INFINITE_LOOP_HANGAR_NINE_DOOMED_TO_COLLAPSE form.Activate();
-				dockContentImproved.ActivateDockContentPopupAutoHidden(false, true);
+				dockContentImproved.ActivateDockContent_popupAutoHidden(false, true);
 			}
 		}
 
@@ -315,6 +315,14 @@ namespace Sq1.Gui.ReportersSupport {
 				if (each.IsDisposed || each.Disposing) continue;
 				each.Dispose();
 			}
+		}
+
+		public override string ToString() {
+			string msg = "ChartFormsManager_NOT_PASSED_YET";
+			if (this.ChartFormsManager != null) {
+				msg = this.ChartFormsManager.ToString();
+			}
+			return "ReportersFor[" + msg + "]";
 		}
 	}
 }

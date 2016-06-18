@@ -32,7 +32,9 @@ namespace Sq1.Core.Serializers {
 			Stopwatch watch = new Stopwatch();
 			watch.Start();
 			try {
-				base.Serialize();
+				if (base.HasChangesToSave) {
+					int recordsSerialized = base.Serialize();
+				}
 			} catch (Exception ex) {
 				string msig = " SerializerLogrotatePeriodic<" + base.OfWhat + ">::serializerThreadEntry() ";
 				string msg = "JSON serialization problems?";

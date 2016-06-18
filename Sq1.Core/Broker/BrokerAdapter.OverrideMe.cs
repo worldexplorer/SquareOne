@@ -32,7 +32,7 @@ namespace Sq1.Core.Broker {
 		public virtual string Order_modifyType_accordingToMarketOrder_asBrokerSpecificInjection(Order order) {
 			return "";
 		}
-		public virtual void Order_submit_oneThread_forAllNewAlerts(Order order) {
+		public virtual void Order_submit_oneThread_forAllNewAlerts_trampoline(Order order) {
 			throw new Exception("please override BrokerAdapter::Submit() for BrokerAdapter.Name=[" + Name + "]");
 		}
 		public virtual void Order_killPending_replaceWithNew(Order order, Order newOrder) {
@@ -40,7 +40,7 @@ namespace Sq1.Core.Broker {
 			//this.OrderProcessor.Emit_oderPending_replace(order, newOrder);
 		}
 
-		public abstract void Order_killPending_usingKiller(Order killerOrder_withRefToVictim);
+		public abstract void Order_submitKiller_forPending(Order killerOrder_withRefToVictim);
 
 		public virtual void Order_enrichAlert_brokerSpecificInjection(Order order) {
 		}

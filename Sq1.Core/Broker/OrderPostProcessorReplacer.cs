@@ -82,7 +82,15 @@ namespace Sq1.Core.Broker {
 			}
 
 			try {
+				bool shallReplace				= orderExpired_willBeReplaced.Alert.Bars.SymbolInfo.ReSubmitLimitNotFilled;
 				int expiredMillis				= orderExpired_willBeReplaced.Alert.Bars.SymbolInfo.ReSubmitLimitNotFilledWithinMillis;
+
+				if (shallReplace == false || expiredMillis <= 0) {
+					string msg = "MUST_NEVER_HAPPEN (shallReplace==false || expiredMillis<=0)";
+					return;
+				}
+
+
 				double slippageNext_NaNunsafe	= orderExpired_willBeReplaced.SlippageNextAvailable_NanWhenNoMore;
 
 				string hookReason = "APPLYING_NEXT_SLIPPAGE__WILL_REPLACE_KILLED_ORDER__ORDER_WAS_NOT_FILLED_WITHIN[" + expiredMillis + "]ms slippageNext_NaNunsafe[" + slippageNext_NaNunsafe + "]";
@@ -92,7 +100,7 @@ namespace Sq1.Core.Broker {
 
 				OrderPostProcessorStateHook hook_orderOriginal_killed = new OrderPostProcessorStateHook(hookReason,
 					orderExpired_willBeReplaced, OrderState.VictimKilled, this.replaceOrder_withNextSlippage_onOriginalWasKilled);
-				this.OrderProcessor.OPPstatusCallbacks.AddStateChangedHook(hook_orderOriginal_killed);
+				this.OrderProcessor.OPPstatusCallbacks.HookRegister(hook_orderOriginal_killed);
 
 				string verdict = "REPLACING_LIMIT_ORDER__WASNT_FILLED_DURING[" + expiredMillis + "]ms <= SymbolInfo[" + orderExpired_willBeReplaced.Alert.Symbol + "].ApplyNextSlippage_ifLimitNotFilledWithin";
 				OrderStateMessage osm = new OrderStateMessage(orderExpired_willBeReplaced, OrderState.KillingUnfilledExpired, verdict);
@@ -140,7 +148,7 @@ namespace Sq1.Core.Broker {
 
 				double priceStreaming = replacement.Alert.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot
 					.GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteLast(
-						replacement.Alert.Bars.Symbol, replacement.Alert.Direction, out replacement.SpreadSide, true);
+						replacement.Alert.Bars.Symbol, replacement.Alert.Direction, out replacement.SpreadSide, false);
 
 				if (replacement.Alert.PositionAffected != null) {	// alert.PositionAffected = null when order created by chart-click-mni
 					if (replacement.Alert.IsEntryAlert) {
@@ -202,21 +210,21 @@ namespace Sq1.Core.Broker {
 
 			Order replacementOrder = orderExpired_toReplace.DeriveReplacementOrder();
 			this.OrderProcessor.DataSnapshot.OrderInsert_notifyGuiAsync(replacementOrder);
-			this.OrderProcessor.RaiseOrderStateOrPropertiesChanged_executionControlShouldPopulate(this, new List<Order>(){orderExpired_toReplace});
+			this.OrderProcessor.RaiseOnOrderStateOrPropertiesChanged_executionControlShouldPopulate_immediately(this, new List<Order>(){orderExpired_toReplace});
 			//this.orderProcessor.RaiseOrderReplacementOrKillerCreatedForVictim(this, ReplaceExpiredOrderToReplace);
 			return replacementOrder;
 		}
 
 		Order findReplacementOrder_forReplaceExpiredOrder(Order orderReplaceExpired) {
-			OrderLane	suggestedLane = null;
+			OrderLane	suggestedLane_nullUnsafe = null;
 			string		suggestion = "PASS_suggestLane=TRUE";
 			
-			Order ReplaceExpired = this.OrderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(orderReplaceExpired.GUID, out suggestedLane, out suggestion, true);
+			Order ReplaceExpired = this.OrderProcessor.DataSnapshot.OrdersAll.ScanRecent_forOrderGuid(orderReplaceExpired.GUID, out suggestedLane_nullUnsafe, out suggestion, true);
 			if (ReplaceExpired == null) {
 				throw new Exception("OrderReplaceExpired[" + orderReplaceExpired + "] wasn't found!!! suggestion[" + suggestion + "]");
 			}
 			if (string.IsNullOrEmpty(ReplaceExpired.ReplacedByGUID)) return null;
-			Order replacement = this.OrderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(ReplaceExpired.ReplacedByGUID, out suggestedLane, out suggestion, true);
+			Order replacement = this.OrderProcessor.DataSnapshot.OrdersAll.ScanRecent_forOrderGuid(ReplaceExpired.ReplacedByGUID, out suggestedLane_nullUnsafe, out suggestion, true);
 			return replacement;
 		}
 		protected int SubmitReplacementOrder_insteadOfReplaceExpired(Order replacementOrder, bool inNewThread = true) {

@@ -225,7 +225,7 @@ namespace Sq1.Core.Charting {
 
 
 
-		string prePauseWindowsTitle = "";
+		string prePauseWindowTitle = "";
 		internal void PumpPaused_notification_switchLivesimmingThreadToGui() {
 			if (base.ParentForm == null) {
 				string msg = "CANT_SET_CHARTFORM_WINDOW_TITLE //PumpPaused_notification()";
@@ -244,12 +244,12 @@ namespace Sq1.Core.Charting {
 				//Assembler.PopupException(msg);
 				return;
 			}
-			this.prePauseWindowsTitle = base.ParentForm.Text;
-			base.ParentForm.Text = "PAUSED " + this.prePauseWindowsTitle;
+			this.prePauseWindowTitle = base.ParentForm.Text;
+			base.ParentForm.Text = "PAUSED " + this.prePauseWindowTitle;
 			this.raiseOnPumpPaused();
 		}
 		internal void PumpUnPaused_notification_switchLivesimmingThreadToGui() {
-			if (this.prePauseWindowsTitle == "") return;	// I wasn't paused from brother livesimming and I don't wanna reset my title
+			if (this.prePauseWindowTitle == "") return;	// I wasn't paused from brother livesimming and I don't wanna reset my title
 			if (base.ParentForm == null) {
 				string msg = "CANT_SET_CHARTFORM_WINDOW_TITLE //PumpUnPaused_notification()";
 				Assembler.PopupException(msg);
@@ -259,8 +259,8 @@ namespace Sq1.Core.Charting {
 				base.BeginInvoke(new MethodInvoker(this.PumpUnPaused_notification_switchLivesimmingThreadToGui));
 				return;
 			}
-			base.ParentForm.Text = this.prePauseWindowsTitle;
-			this.prePauseWindowsTitle = "";
+			base.ParentForm.Text = this.prePauseWindowTitle;
+			this.prePauseWindowTitle = "";
 			this.raiseOnPumpUnPaused();
 		}
 

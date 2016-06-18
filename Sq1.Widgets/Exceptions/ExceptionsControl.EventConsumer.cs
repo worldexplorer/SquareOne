@@ -78,7 +78,7 @@ namespace Sq1.Widgets.Exceptions {
 		void mniCopyStackPosition_Click(object sender, EventArgs e) {
 			//this.P
 		}
-		void mniltbDelay_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+		void mniltbFlushToGuiDelayMsec_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			MenuItemLabeledTextBox mnilbDelay = sender as MenuItemLabeledTextBox;
 			string typed = e.StringUserTyped;
 			int typedMsec = this.dataSnapshot.FlushToGuiDelayMsec;
@@ -93,7 +93,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.Timed_flushingToGui.DelayMillis = this.dataSnapshot.FlushToGuiDelayMsec;
 			mnilbDelay.TextRed = false;
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
-			this.populateWindowsTitle();
+			this.populateWindowTitle();
 			this.ctxTree.Visible = true;	// keep it open
 		}
 		void mniShowTimestamps_Click(object sender, EventArgs e) {
@@ -135,24 +135,6 @@ namespace Sq1.Widgets.Exceptions {
 				Assembler.PopupException("mniPopupOnEveryIncomingException_Click", ex);
 			}
 		}
-		void exceptionsControl_VisibleChanged(object sender, EventArgs e) {
-			//I_WANTED_TO_CATCH_DockContent.AutoHiddenShownByMouseOver(),AutoHiddenNowDocked_BUT_GOT_WINFORMS_GARBAGE__WILL_USE_IT_THOUGH
-			//DockContentImproved parentAsDockContentImproved = this.parentAsDockContentImproved_nullUnsafe;
-			//if (parentAsDockContentImproved != null) {
-			//	if (parentAsDockContentImproved.IsCoveredOrAutoHidden) return;
-			//}
-			////if (base.Visible == false) return; 
-			string msg = "I_WAS_NOT_FLUSHING_TO_GUI_UNLESS_VISIBLE";
-			////STACK_OVERFLOW_CONGRATS Assembler.PopupException(msg, null, false);
-			//this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(new Exception(msg));
-
-			//v1 this.flushExceptionsToOLV_switchToGuiThread();
-			//v2
-			if (base.Timed_flushingToGui == null) return;	// .Initialize() will be invoked later, with Delay deserialized
-			base.Timed_flushingToGui.ScheduleOnce_postponeIfAlreadyScheduled();
-			//base.Timed_flushingToGui.ScheduleOnce();
-		}
-
 		void exceptionsControl_ResizeStopped(object sender, EventArgs e) {
 			// I ignore 10 seconds after appRestart for setting datasnap => splitter.distance
 			// I postpone all resizes to 2 seconds after the last one

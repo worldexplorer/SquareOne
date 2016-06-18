@@ -148,23 +148,17 @@ namespace Sq1.Core.StrategyBase {
 		public void BacktesterRun_trampoline(Action<ScriptExecutor> executeAfterSimulationEvenIfIFailed = null, bool inNewThread = true) {
 			if (this.Strategy == null) {
 				string msg = "WILL_NOT_EXECUTE_BACKTESTER: Executor.Strategy=null; " + this;
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
 			if (this.Strategy.Script == null) {
 				string msg = "WILL_NOT_EXECUTE_BACKTESTER: Executor.Strategy.Script=null, didn't compile; " + this;
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
 			if (this.Bars == null) {
 				string msg = "WILL_NOT_EXECUTE_BACKTESTER: Bars=null; select 1) TimeFrame 2) Range 3) PositionSize - for corresponding Chart; " + this;
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
 
@@ -182,9 +176,7 @@ namespace Sq1.Core.StrategyBase {
 					string msg = "NOT_SCHEDULING_RUN_SIMULATION QueueUserWorkItem(backtesterRunSimulationThreadEntryPoint)"
 						+ " because threadPoolAvailablePercentage[" + threadPoolAvailablePercentage
 						+ "]<" + threadPoolAvailablePercentageLimit + "%";
-					#if DEBUG
-					Debugger.Break();
-					#endif
+				Assembler.PopupException(msg);
 					throw new Exception(msg);
 				}
 				//this.MainForm.PopupException("SCHEDULING_RUN_SIMULATION for Strategy[" + this.Strategy + "] on Bars[" + this.Bars + "]");

@@ -19,28 +19,28 @@ namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl : UserControl {
 #endif
 
-		public	ExecutionTreeDataSnapshot						dataSnapshot;
-		public	Serializer<ExecutionTreeDataSnapshot>			DataSnapshotSerializer;
+				ExecutionTreeDataSnapshot						dataSnapshot;
+				Serializer<ExecutionTreeDataSnapshot>			dataSnapshotSerializer;
 				Dictionary<ToolStripMenuItem, List<OLVColumn>>	columnsByFilter;
-				OrdersAutoTree									ordersTree;
+				OrdersRootOnly									ordersRoot;
 				OrderProcessor									orderProcessor_forToStringOnly;
-		public	Order											OrderSelected			{ get {
-				if (this.OlvOrdersTree.SelectedObjects.Count != 1) return null;
-				return this.OlvOrdersTree.SelectedObjects[0] as Order;
-			} }
-		public	List<Order>										OrdersSelected			{ get {
+				Order											orderSelected			{ get {
+					if (this.olvOrdersTree.SelectedObjects.Count != 1) return null;
+					return this.olvOrdersTree.SelectedObjects[0] as Order;
+				} }
+				List<Order>										ordersSelected			{ get {
 				List<Order> ret = new List<Order>();
-				foreach (object obj in this.OlvOrdersTree.SelectedObjects) ret.Add(obj as Order);
-				return ret;
-			} }
-		public	List<string>									SelectedAccountNumbers	{ get {
-				var ret = new List<string>();
-				foreach (ToolStripItem mni in this.ctxAccounts.Items) {
-					if (mni.Selected == false) continue;
-					ret.Add(mni.Text);
-				}
-				return ret;
-			} }
+					foreach (object obj in this.olvOrdersTree.SelectedObjects) ret.Add(obj as Order);
+					return ret;
+				} }
+				List<string>									selectedAccountNumbers	{ get {
+					var ret = new List<string>();
+					foreach (ToolStripItem mni in this.ctxAccounts.Items) {
+						if (mni.Selected == false) continue;
+						ret.Add(mni.Text);
+					}
+					return ret;
+				} }
 
 		public ExecutionTreeControl() {
 			this.InitializeComponent();
@@ -51,14 +51,13 @@ namespace Sq1.Widgets.Execution {
 			this.olvOrderTree_customize();
 			this.olvMessages_customize();
 
-
 			// THROWS this.olvMessages.AllColumns.AddRange(new List<OLVColumn>() {
 			//	this.colheMessageDateTime,
 			//	this.colheMessageState,
 			//	this.colheMessageText});
 			// DOESNT_BUILD this.olvMessages.RebuildColumns();	// hoping to eliminate RebuildColumns() in populateMessagesFor()
 			
-			WindowsFormsUtils.SetDoubleBuffered(this.OlvOrdersTree);
+			WindowsFormsUtils.SetDoubleBuffered(this.olvOrdersTree);
 			WindowsFormsUtils.SetDoubleBuffered(this.olvMessages);
 			WindowsFormsUtils.SetDoubleBuffered(this);
 		}
@@ -74,7 +73,7 @@ namespace Sq1.Widgets.Execution {
 				Orientation newOrientation = this.dataSnapshot.ShowMessagePaneSplittedHorizontally ? Orientation.Horizontal : Orientation.Vertical;			
 				try {
 					if (this.splitContainerMessagePane.Orientation != newOrientation) {
-						this.splitContainerMessagePane.Orientation =  newOrientation;
+						this.splitContainerMessagePane.Orientation  = newOrientation;
 					}
 				} catch (Exception ex) {
 					string msg = "TRYING_TO_LOCALIZE_SPLITTER_MUST_BE_BETWEEN_0_AND_PANEL_MIN";
@@ -99,18 +98,16 @@ namespace Sq1.Widgets.Execution {
 							if (this.dataSnapshot.MessagePaneSplitDistanceHorizontal > 0) {
 								string msg = "+67_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_HORIZONTAL";
 								int newDistance = this.dataSnapshot.MessagePaneSplitDistanceHorizontal;	// + 67 this.splitContainerMessagePane.SplitterWidth;
-				//Debugger.Break();
 								if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
-									this.splitContainerMessagePane.SplitterDistance =  newDistance;
+									this.splitContainerMessagePane.SplitterDistance  = newDistance;
 								}
 							}
 						} else {
 							if (this.dataSnapshot.MessagePaneSplitDistanceVertical > 0) {
 								string msg = "+151_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_VERTICAL";
 								int newDistance = this.dataSnapshot.MessagePaneSplitDistanceVertical;		// + 151 this.splitContainerMessagePane.SplitterWidth;
-				//Debugger.Break();
 								if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
-									this.splitContainerMessagePane.SplitterDistance =  newDistance;
+									this.splitContainerMessagePane.SplitterDistance  = newDistance;
 								}
 							}
 						}
@@ -127,6 +124,7 @@ namespace Sq1.Widgets.Execution {
 				this.ResumeLayout(true);
 			}
 			
+			this.mniRecentAlwaysSelected		.Checked = this.dataSnapshot.RecentAlwaysSelected;
 			this.mniToggleBrokerTime			.Checked = this.dataSnapshot.ShowBrokerTime;
 			this.mniToggleCompletedOrders		.Checked = this.dataSnapshot.ShowCompletedOrders;
 			this.mniToggleSyncWithChart			.Checked = this.dataSnapshot.SingleClickSyncWithChart;
@@ -136,19 +134,18 @@ namespace Sq1.Widgets.Execution {
 			this.olvOrdersTree_customizeColors();
 			this.olvMessages_customizeColors();
 			
-			this.dataSnapshot.FirstRowShouldStaySelected = true;
-			this.RebuildAllTree_focusOnTopmost();
+			this.RebuildAllTree_focusOnRecent();
 		}
-		public void InitializeWith_shadowTreeRebuilt(OrdersAutoTree ordersTree, OrderProcessor orderProcessor) {
-			this.ordersTree = ordersTree;
+		public void InitializeWith_shadowTreeRebuilt(OrdersRootOnly ordersTree, OrderProcessor orderProcessor) {
+			this.ordersRoot = ordersTree;
 			this.orderProcessor_forToStringOnly = orderProcessor;
 			// NOPE_DOCK_CONTENT_HASNT_BEEN_DESERIALiZED_YET_I_DONT_KNOW_IF_IM_SHOWN_OR_NOT this.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
 
-			this.DataSnapshotSerializer = new Serializer<ExecutionTreeDataSnapshot>();
-			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
+			this.dataSnapshotSerializer = new Serializer<ExecutionTreeDataSnapshot>();
+			bool createdNewFile = this.dataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 				"Sq1.Widgets.Execution.ExecutionTreeDataSnapshot.json", "Workspaces" ,
 				Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded);
-			this.dataSnapshot = this.DataSnapshotSerializer.Deserialize();
+			this.dataSnapshot = this.dataSnapshotSerializer.Deserialize();
 			if (createdNewFile) {
 				this.dataSnapshot.ShowMessagePaneSplittedHorizontally = (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) ? true : false;
 				//this.DataSnapshot.MessagePaneSplitDistanceHorizontal = this.splitContainerMessagePane.SplitterDistance;
@@ -174,7 +171,7 @@ namespace Sq1.Widgets.Execution {
 				// http://stackoverflow.com/questions/11743160/how-do-i-encode-and-decode-a-base64-string
 				if (this.dataSnapshot.OrdersTreeOlvStateBase64.Length > 0) {
 					byte[] olvStateBinary = ObjectListViewStateSerializer.Base64Decode(this.dataSnapshot.OrdersTreeOlvStateBase64);
-					this.OlvOrdersTree.RestoreState(olvStateBinary);
+					this.olvOrdersTree.RestoreState(olvStateBinary);
 				}
 
 				this.mniltbSerializationInterval.InputFieldValue = this.dataSnapshot.SerializationInterval.ToString();
@@ -183,8 +180,8 @@ namespace Sq1.Widgets.Execution {
 
 			//base.TimedTask_flushingToGui.Delay = this.dataSnapshot.TreeRefreshDelayMsec;	// may be already started?
 
-			//base.Initialize_periodicFlushing("FLUSH_EXECUTION_CONTROL",
-			//	new Action(this.RebuildAllTree_focusOnTopmost), this.dataSnapshot.FlushToGuiDelayMsec);
+			base.Initialize_periodicFlushing("FLUSH_EXECUTION_CONTROL",
+				new Action(this.RebuildAllTree_focusOnRecent), this.dataSnapshot.FlushToGuiDelayMsec);
 			//base.Timed_flushingToGui.Start();
 		}
 		public void PopulateMenuAccounts_fromBrokerAdapter(ToolStripMenuItem[] ctxAccountsAllCheckedFromUnderlyingBrokerAdapters) {
@@ -193,41 +190,43 @@ namespace Sq1.Widgets.Execution {
 			this.ctxAccounts.Items.AddRange(ctxAccountsAllCheckedFromUnderlyingBrokerAdapters);
 			this.ctxAccounts.ResumeLayout();
 		}	
-		public void OlvOrdersTree_updateState_forOrders(List<Order> orders) {
-			if (orders.Count == 0) return;
-			foreach (Order order in orders) {
-				this.OlvOrdersTree.RefreshObject(order);
-			}
+		public void OlvOrdersTree_updateState_immediate(List<Order> ordersWithStateChanged) {
+			if (ordersWithStateChanged.Count == 0) return;
+			//this.OlvOrdersTree.RefreshObjects(orders);
+
 			// without Invalidate/Refresh, I'll see status change only after mouseover the row with updated Status... :(
-			this.OlvOrdersTree.Invalidate();
+			//this.OlvOrdersTree.Invalidate();
 			//this.OrdersTree.Refresh();
-			Order firstOrNull =  (orders.Count > 0) ? orders[0] : null;
-			this.SelectOrder_populateMessages(firstOrNull);
+			//Order firstOrNull =  (orders.Count > 0) ? orders[0] : null;
+			//this.SelectOrder_populateMessages(firstOrNull);
 			//this.lvOrders_SelectedIndexChanged(this.lvOrders, EventArgs.Empty);
+
+			//foreach (Order order in ordersWithStateChanged) { }
+			this.olvOrdersTree.RefreshObjects(ordersWithStateChanged);		// naive??
 		}
-		public void SelectOrder_populateMessages(Order order_nullMeansClearMessages) {
-			bool firstRowShouldStaySelected = (this.dataSnapshot != null) ? this.dataSnapshot.FirstRowShouldStaySelected : true;
-			if (firstRowShouldStaySelected) {
-				//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectObject(orderTopmost, true);
-				//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectedIndex = 0;
-				// as far as I remember, this doesn't work: this.OrdersTreeOLV.SelectedItem = orderNullMeansClear;
-				int indexToSelect = this.OlvOrdersTree.IndexOf(order_nullMeansClearMessages);
-				if (indexToSelect == -1) {
-					this.populateMessagesFor(null);
-					return;
-				}
-				this.OlvOrdersTree.EnsureVisible(indexToSelect);
-				this.OlvOrdersTree.Expand(order_nullMeansClearMessages);
-				this.OlvOrdersTree.SelectedIndex = indexToSelect;
-				this.OlvOrdersTree.RefreshSelectedObjects();
-				// SelectedIndex=X above will invoke ordersTree_SelectedIndexChanged() => populateMessagesFor(theSameOrderWeJustSelected) 
+
+		
+		public void OnOrderMessageAppended_immediate(OrderStateMessage orderStateMessage) {
+			if (orderStateMessage.Order != this.orderSelected) {
+				string msg = "I keep only last-inserted order => selected; closing order is in the middle of the tree; the rest are ignored; KILLERS?...";
+				return;
 			}
-			this.populateMessagesFor(order_nullMeansClearMessages);
+			this.populateMessagesFor(orderStateMessage.Order);
 		}
+
+		public void OnOrdersRemoved_asyncAutoFlush(List<Order> ordersRemoved) {
+			base.Timed_flushingToGui.ScheduleOnce_dontPostponeIfAlreadyScheduled();
+		}
+
+		public void OnOrdersInserted_asyncAutoFlush(List<Order> ordersAdded) {
+			base.Timed_flushingToGui.ScheduleOnce_dontPostponeIfAlreadyScheduled();
+		}
+
 		void populateMessagesFor(Order order_nullMeansClearMessages) {
 			string msig = " populateMessagesFor(" + order_nullMeansClearMessages + ")";
 			if (order_nullMeansClearMessages == null) {
-				this.olvMessages.Clear();
+				// DOESNT_CLEAR!!! this.olvMessages.Clear();
+				this.olvMessages.SetObjects(null);
 				//CLICKED_ORDERS_STOPPED_TO_POPULATE??? AFTER_I_CLICK_DELETE_I_WANNA_KEEP_IT_CLEAR
 				this.olvMessages.RebuildColumns();	// after appRestart, olv header is missing
 				return;
@@ -236,115 +235,81 @@ namespace Sq1.Widgets.Execution {
 			if (this.splitContainerMessagePane.Panel2Collapsed == true) return;
 
 			ConcurrentStack<OrderStateMessage> orderMessages = order_nullMeansClearMessages.MessagesSafeCopy;
-			if (orderMessages == null) {
-			    string msg = "MUST_BE_AT_LEAST_EMPTY_LIST order.MessagesSafeCopy=null";
-			    //throw new Exception(msg);
-			    Assembler.PopupException(msg + msig);
-			    return;
-			}
-			if (orderMessages.Count == 0) {
-			    string msg = "NO_MESSAGES_TO_POPULATE order.MessagesSafeCopy.Count==0";
-			    //throw new Exception(msg);
-			    Assembler.PopupException(msg + msig);
-			    return;
-			}
-			// TODO: neutralize Sort() downstack 
 			this.olvMessages.SetObjects(orderMessages, true);
-
-			// SetObjects() doesn't require Invalidate(), unlike RefreshObject()  
-			//this.lvMessages.Invalidate();
-			this.olvMessages.Refresh();
 
 			bool wasEmpty = this.olvMessages.GetItemCount() == 0;
 			if (wasEmpty && orderMessages.Count > 0) {
-				this.olvMessages.RebuildColumns();	// TIRED_OF_FORGETTING_THAT_SET_OBJECTS_DOESNT_REFRESH_ITSELF
-			}
-			//	order.Messages.Sort((x, y) => y.DateTime.CompareTo(x.DateTime));
-		}
-		public void OlvOrdersTree_insertOrder(Order order) {
-			//if (this.OrdersTreeOLV.Items.Count == 0) {
-			//	this.RebuildAllTreeFocusOnTopmost();
-			//	return;
-			//}
-			//if (order.DerivedFrom == null) {
-			//	// copypaste from BuildList()
-			//	this.OrdersTreeOLV.BeginUpdate();
-			//	try {
-			//		OLVListItem lvi = new OLVListItem(order);
-			//		this.OrdersTreeOLV.Items.Insert(0, lvi);
-			//	} finally {
-			//		this.OrdersTreeOLV.EndUpdate();
-			//	}
-			//	this.SelectOrderAndOrPopulateMessages(order);
-			//} else {
-			//	int index = this.OrdersTreeOLV.TreeModel.GetObjectIndex(order.DerivedFrom);
-			//	if (index == -1) {
-			//		this.RebuildAllTreeFocusOnTopmost();
-			//		return;
-			//	}
-			//	// copypaste from BuildList()
-			//	try {
-			//		OLVListItem lvi = new OLVListItem(order);
-			//		// when in virtual mode, use model :(
-			//		this.OrdersTreeOLV.Items.Insert(index + 1, lvi);
-			//	} finally {
-			//		this.OrdersTreeOLV.EndUpdate();
-			//	}
-			//	this.SelectOrderAndOrPopulateMessages(order);
-			//	this.RebuildOneRootNodeChildAdded(order.DerivedFrom);
-			//}
-			//v2
-			try {
-				//this.OrdersTreeOLV.SetObjects(this.ordersTree.SafeCopy);
-				string msg = "DID_YOU_INSERT????";
-				this.OlvOrdersTree.Refresh();
-				//this.selectLastOrderPopulateMessagesSafe();
-			} catch (Exception ex) {
-				string msg = " //ExecutionTreeControl.OrderInsertToListView()";
-				Assembler.PopupException(msg, ex, false);
+				this.olvMessages.RebuildColumns();
 			}
 		}
+		//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush 
+		//public void OlvOrdersTree_insertOrder(Order order) {
+		//    string msig = " //ExecutionTreeControl.OlvOrdersTree_insertOrder()";
+		//    try {
+		//        //this.OrdersTreeOLV.SetObjects(this.ordersTree.SafeCopy);
+		//        string msg = "DID_YOU_INSERT????";
+		//        this.olvOrdersTree.Refresh();
+		//        //this.selectLastOrderPopulateMessagesSafe();
+		//    } catch (Exception ex) {
+		//        Assembler.PopupException(msig, ex, false);
+		//    }
+		//}
 		public void OrderRemoved_alreadyFromBothLists_rebuildOrdersTree_cleanMessagesView(List<Order> orders) {
+			string msig = " //ExecutionTreeControl.OrderRemoved_alreadyFromBothLists_rebuildOrdersTree_cleanMessagesView()";
 			try {
 				if (orders.Count == 0) {
 					string msg = "WILL_JUST_OrdersTreeOLV.RebuildAll(true)_IN_OrderRemoveFromListView()";
 				} else {
 					//AREADY_REMOVED_EH??? this.ordersTree.RemoveAll(orders);
-					this.OlvOrdersTree.RemoveObjects(orders);
+					this.olvOrdersTree.RemoveObjects(orders);
 				}
-				//v1 this.RebuildAllTreeFocusOnTopmost();
-				this.SelectOrder_populateMessages(null);
+				this.RebuildAllTree_focusOnRecent();
 			} catch (Exception ex) {
-				string msg = " //ExecutionTreeControl.OrderRemoveFromListView()";
-				Assembler.PopupException(msg, ex, false);
+				Assembler.PopupException(msig, ex, false);
 			}
 		}
-		public void RebuildAllTree_focusOnTopmost() {
+		public void RebuildAllTree_focusOnRecent() {
+			string msig = " //ExecutionTreeControl.RebuildAllTree_focusOnRecent()";
 			try {
-				this.OlvOrdersTree.SetObjects(this.ordersTree.SafeCopy);
+				base.HowLongTreeRebuilds.Restart();
+
+				this.olvOrdersTree.SetObjects(this.ordersRoot.SafeCopy);
 				//this.OrdersTreeOLV.RebuildAll();	//, true we will refocus
-				this.OlvOrdersTree.Refresh();
+				this.olvOrdersTree.Refresh();
 				//this.OrdersTreeOLV.RebuildColumns();
 				//foreach (var order in this.ordersShadowTree) this.OrdersTree.ToggleExpansion(order);
-				this.OlvOrdersTree.ExpandAll();
-				this.SelectOrder_populateMessages(null);
+				this.olvOrdersTree.ExpandAll();
+
+
+				if (this.dataSnapshot.RecentAlwaysSelected == false) return;
+
+				Order recentOrder_includingKillers = this.ordersRoot.OrdersAll.MostRecent_nullUnsafe;
+				if (recentOrder_includingKillers == null) {
+					string msg = "Initialize() with zero deserialized?? Removed all deserialized? DONT_INVOKE_ME_THEN";
+					//Assembler.PopupException(msg + msig, null, false);
+					//return;
+					this.populateMessagesFor(null);
+				}
+				int indexToSelect = this.olvOrdersTree.IndexOf(recentOrder_includingKillers);
+				if (indexToSelect == -1) {
+					this.populateMessagesFor(null);
+					return;
+				}
+				this.olvOrdersTree.EnsureVisible(indexToSelect);
+				this.olvOrdersTree.Expand(recentOrder_includingKillers);
+				this.olvOrdersTree.SelectedIndex = indexToSelect;					// will invoke ordersTree_SelectedIndexChanged() => populateMessagesFor(theSameOrderWeJustSelected)
+				this.olvOrdersTree.SelectedObject = recentOrder_includingKillers;	// will invoke ordersTree_SelectedIndexChanged() => populateMessagesFor(theSameOrderWeJustSelected)
+				//this.olvOrdersTree.RefreshSelectedObjects();
+				this.populateMessagesFor(recentOrder_includingKillers);
 			} catch (Exception ex) {
-				string msg = " //ExecutionTreeControl.RebuildAllTreeFocusOnTopmost()";
-				Assembler.PopupException(msg, ex, false);
+				Assembler.PopupException(msig, ex, false);
+			} finally {
+				base.HowLongTreeRebuilds.Stop();
+				this.PopulateWindowTitle();
 			}
-		}
-		void selectLastOrder_populateMessagesSafe() {
-			//NOPE I WANT TO CLEAR MESSAGES AFTER I WIPED OUT ALL THE ORDERS if (this.ordersTree.InnerOrderList.Count == 0) return;
-			if (this.ordersTree.Count == 0) {
-				//DONT_MIX_RESPONSIBILITIES this.OrdersTreeOLV.Clear();
-				this.SelectOrder_populateMessages(null);
-				return;
-			}
-			var orderTopmost = this.ordersTree.First_nullUnsafe;
-			this.SelectOrder_populateMessages(orderTopmost);
 		}
 
-		public void PopulateWindowsTitle() {
+		public void PopulateWindowTitle() {
 			Form parentForm = this.Parent as Form;
 			if (parentForm == null) {
 				string msg = "all that was probably needed for messy LivesimControl having splitContainer3<splitContainer1<LivesimControl - deleted; otherwize no idea why so many nested splitters";
@@ -360,28 +325,14 @@ namespace Sq1.Widgets.Execution {
 
 			ret += this.orderProcessor_forToStringOnly.ToString();
 
-			int itemsCnt			= this.OlvOrdersTree.Items.Count;
+			int itemsCnt = this.olvOrdersTree.Items.Count;
 			ret += "   " + itemsCnt.ToString("000");
 			//if (this.exceptions_notFlushedYet.Count > 0)
 			ret += "/" 
 				+ "000" //+ this.exceptions_notFlushedYet.Count.ToString("000")
 				+ "buffered";
-			//ret += base.FlushingStats;
+			ret += base.FlushingStats;
 			return ret;
 		}
-		
-		//public void RebuildOneRootNodeChildAdded(Order orderParentToRepaint) {
-		//    this.OrdersTreeOLV.RefreshObject(orderParentToRepaint);
-		//    // apparently, a node with a child, doesn't require RebuildAdd/Invalidate/Refresh...
-		//    //this.OrdersTree.RebuildAll(true);
-		//    //this.OrdersTree.Invalidate();
-		//    this.OrdersTreeOLV.Expand(orderParentToRepaint);
-		//}
-		//public void SplitterDistance_resetToSaved() {
-		//    this.splitContainerMessagePane.SplitterDistance = 
-		//        this.splitContainerMessagePane.Orientation == Orientation.Horizontal
-		//        ? this.DataSnapshot.MessagePaneSplitDistanceHorizontal
-		//        : this.DataSnapshot.MessagePaneSplitDistanceVertical;
-		//}
 	}
 }

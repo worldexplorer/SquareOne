@@ -22,7 +22,7 @@ namespace Sq1.Gui.Singletons {
 			this.ChartSettingsEditorControl.RebuildChartsDropdown();
 		}
 		public void PopulateWithChartSettings(ChartControl chartControl) {
-			this.ChartSettingsEditorControl.PopulatePropertyGrid_withChartsSettings_selectCurrentChart(chartControl);
+			this.ChartSettingsEditorControl.PopulatePropertyGrid_withChartsSettings_selectCurrentChart(chartControl, false, false);
 		}
 	}
 }

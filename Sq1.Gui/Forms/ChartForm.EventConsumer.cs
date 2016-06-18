@@ -21,16 +21,16 @@ namespace Sq1.Gui.Forms {
 		}
 		void ctxChart_Opening(object sender, CancelEventArgs e) {
 			if (this.MniShowSourceCodeEditor.Enabled == false) return;	// don't show ScriptEditor for Strategy.ActivatedFromDll
-			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
+			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorInstantiated_andInFront; 
 			//this.editBarToolStripMenuItem.Enabled = this.AllowEditBarData;
 			//_preCalcPricesHandleTradeMenuItemsGuiThread();
 		}
 		void ctxStrategy_Opening(object sender, CancelEventArgs e) {
-			this.MniShowLivesim		.Checked = this.ChartFormManager.LivesimFormIsOnSurface;
-			this.MniShowSequencer	.Checked = this.ChartFormManager.SequencerIsOnSurface;
-			this.MniShowCorrelator	.Checked = this.ChartFormManager.CorrelatorFormIsOnSurface;
+			this.MniShowLivesim		.Checked = this.ChartFormManager.LivesimFormInstantiated_andInFront;
+			this.MniShowSequencer	.Checked = this.ChartFormManager.SequencerInstantiated_andInFront;
+			this.MniShowCorrelator	.Checked = this.ChartFormManager.CorrelatorFormInstantiated_andInFront;
 			if (this.MniShowSourceCodeEditor.Enabled == false) return;	// don't show ScriptEditor for Strategy.ActivatedFromDll
-			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
+			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorInstantiated_andInFront; 
 		}
 		void ctxBacktest_Opening(object sender, CancelEventArgs e) {
 		}
@@ -65,7 +65,7 @@ namespace Sq1.Gui.Forms {
 				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.ScriptEditorForm)) {
 					string msg = "YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_SCRIPT_EDITOR_FORM_WAS_CLOSED_BY_X";
 					Assembler.PopupException(msg, null, false);
-					this.ChartFormManager.ScriptEditorFormConditionalInstance.Show(this.DockPanel);
+					this.ChartFormManager.ScriptEditorFormSingletonized_nullUnsafe.Show(this.DockPanel);
 				} else {
 					this.ChartFormManager.ScriptEditorForm.Close();
 				}
@@ -98,9 +98,9 @@ namespace Sq1.Gui.Forms {
 			if (this.MniShowCorrelator.Checked == false) {
 				this.MniShowCorrelator.Checked = true;
 				if (this.ChartFormManager.CorrelatorForm == null) {
-					this.ChartFormManager.CorrelatorFormConditionalInstance.Initialize(this.ChartFormManager);
+					this.ChartFormManager.CorrelatorFormSingletonized_nullUnsafe.Initialize(this.ChartFormManager);
 					//this.ChartFormManager.CorrelatorFormConditionalInstance.PopulateSequencedHistory(this.ChartFormManager.SequencerFormConditionalInstance.SequencerControl.Seq.SequencedBacktests);
-					this.ChartFormManager.SequencerFormConditionalInstance.SequencerControl.RaiseOnCorrelatorShouldPopulateBacktestsIhave();
+					this.ChartFormManager.SequencerFormSingletonized_nullUnsafe.SequencerControl.RaiseOnCorrelatorShouldPopulateBacktestsIhave();
 				}
 				this.ChartFormManager.CorrelatorFormShow(false);		// if autohidden => popup and keepAutoHidden=false
 				this.ChartFormManager.MainForm.MainFormSerialize();
@@ -248,7 +248,7 @@ namespace Sq1.Gui.Forms {
 				context.ScaleInterval = scaleIntervalUserEntered;
 				
 				this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("mniltbAll_UserTyped");
-				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpen_propagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniltbMinutes_UserTyped()", ex);
 			}
@@ -299,7 +299,7 @@ namespace Sq1.Gui.Forms {
 				this.mniShowBarRange_Click(sender, null);
 
 				this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("mnitlbShowLastBars_UserTyped");
-				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpen_propagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbShowLastBars_UserTyped()", ex);
 			}
@@ -345,7 +345,7 @@ namespace Sq1.Gui.Forms {
 				this.selectOneDeselectResetOthers(this.DdbBacktest.DropDownItems, sender, this.GroupPositionSizeLabeledTextboxes);
 
 				this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("mnitlbPositionSizeSharesConstant_UserTyped");
-				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpen_propagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbPositionSizeSharesConstant_UserTyped()", ex);
 			}
@@ -370,7 +370,7 @@ namespace Sq1.Gui.Forms {
 				this.selectOneDeselectResetOthers(this.DdbBacktest.DropDownItems, sender, this.GroupPositionSizeLabeledTextboxes);
 
 				this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped");
-				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpen_propagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped()", ex);
 			}
@@ -406,7 +406,7 @@ namespace Sq1.Gui.Forms {
 				}
 
 				this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("mnitlbSpreadGeneratorPct_UserTyped");
-				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpen_propagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbSpreadGeneratorPct_UserTyped()", ex);
 			}
@@ -588,7 +588,7 @@ namespace Sq1.Gui.Forms {
 
 			SymbolInfoEditorForm.Instance.SymbolEditorControl.PopulateWithSymbol_findOrCreateSymbolInfo(symbol);
 			SymbolInfoEditorForm.Instance.Show();
-			SymbolInfoEditorForm.Instance.ActivateDockContentPopupAutoHidden(false, true);
+			SymbolInfoEditorForm.Instance.ActivateDockContent_popupAutoHidden(false, true);
 		}
 	}
 }

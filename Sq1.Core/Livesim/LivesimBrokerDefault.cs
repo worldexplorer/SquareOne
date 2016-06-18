@@ -69,7 +69,7 @@ namespace Sq1.Core.Livesim {
 
 			ManualResetEvent quotePointerCaptured = new ManualResetEvent(false);
 			Task t = new Task(delegate() {
-				string threadName = "DELAYED_FILL delayBeforeFill[" + delayBeforeFill + "]ms " + quoteBoundUnattached_volatilePointer;
+				string threadName = "LIVESIM_BROKER_DEFAULT__DELAYED_FILL delayBeforeFill[" + delayBeforeFill + "]ms " + quoteBoundUnattached_volatilePointer;
 				Assembler.SetThreadName(threadName, "CANT_SET_THREAD_NAME" + msig);
 
 				AlertList willBeFilled_minusAlreadyScheduled_localScoped = willBeFilled_minusAlreadyScheduled_volatilePointer;
@@ -196,11 +196,11 @@ namespace Sq1.Core.Livesim {
 			OrderProcessor orderProcessor = Assembler.InstanceInitialized.OrderProcessor;
 			orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(osm, priceFilled, qtyFilled);
 			
-			if (alertFilled.PriceFilledThroughPosition != priceFilled) {
+			if (alertFilled.PriceFilled_fromPosition != priceFilled) {
 				string msg = "WHO_FILLS_POSITION_PRICE_FILLED_THEN?";
 				Assembler.PopupException(msg);
 			}
-			if (alertFilled.QtyFilledThroughPosition != qtyFilled) {
+			if (alertFilled.QtyFilled_fromPosition != qtyFilled) {
 				string msg = "WHO_FILLS_POSITION_QTY_FILLED_THEN?";
 				Assembler.PopupException(msg);
 			}

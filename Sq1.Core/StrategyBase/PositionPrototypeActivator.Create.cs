@@ -163,7 +163,7 @@ namespace Sq1.Core.StrategyBase {
 		//    }
 		//}
 		string reasonWhy_placingProto_doesntMakeSense(PositionPrototype proto, bool internalCallee = false) {
-			double lastPrice = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetPriceForMarketOrder_notAligned_fromQuoteLast(proto.Symbol);
+			double lastPrice = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetPriceForMarketOrder_notAligned_fromQuoteLast_NOT_RELIABLE(proto.Symbol);
 			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(proto.Symbol);
 			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteLast(proto.Symbol, proto.LongShort);
 			bool willBeExecutedImmediately = false;

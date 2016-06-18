@@ -23,7 +23,7 @@ namespace Sq1.Core.Support {
 				this.timerResizeStopped.OnLastScheduleExpired += new EventHandler<EventArgs>(this.timerResizeStopped_OnLastScheduleExpired);
 			}
 		    if (this.timerResizeStopped.Scheduled) return;
-		    this.timerResizeStopped.ScheduleOnce_postponeIfAlreadyScheduled();	
+		    this.timerResizeStopped.ScheduleOnce_dontPostponeIfAlreadyScheduled();	
 		}
 
 		void timerResizeStopped_OnLastScheduleExpired(object sender, EventArgs e) {

@@ -171,7 +171,7 @@ namespace Sq1.Core.Execution {
 				}
 				if (positionOpened.EntryDateBarTimeOpen == DateTime.MinValue) {
 					string msg = "POSITION_ATBAR_HAS_NO_ENTRY_DATE"
-						+ " while EntryAlert.FilledBar.DateTimeOpen[" + positionOpened.EntryAlert.FilledBar.DateTimeOpen + "]";
+						+ " while EntryAlert.FilledBar.DateTimeOpen[" + positionOpened.EntryAlert.FilledBar_live.DateTimeOpen + "]";
 					Assembler.PopupException(msg);
 					return added;
 				}
@@ -218,7 +218,7 @@ namespace Sq1.Core.Execution {
 				}
 				if (positionClosed.ExitDateBarTimeOpen == DateTime.MinValue) {
 					string msg = "POSITION_ATBAR_HAS_NO_EXIT_DATE"
-						+ " while ExitAlert.FilledBar.DateTimeOpen[" + positionClosed.ExitAlert.FilledBar.DateTimeOpen + "]";
+						+ " while ExitAlert.FilledBar.DateTimeOpen[" + positionClosed.ExitAlert.FilledBar_live.DateTimeOpen + "]";
 					Assembler.PopupException(msg);
 					return added;
 				}

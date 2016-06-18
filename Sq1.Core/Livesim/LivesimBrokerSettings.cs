@@ -17,6 +17,18 @@ namespace Sq1.Core.Livesim {
 		[JsonProperty]	public	int		OrderRejectionHappensOncePerXordersMax;
 		[JsonProperty]	public	bool	OrderRejectionEnabled;
 
+		[JsonProperty]	public	int		TransactionStatusAfterOrderStatusDelayAfterFillMin;
+		[JsonProperty]	public	int		TransactionStatusAfterOrderStatusDelayAfterFillMax;
+		[JsonProperty]	public	int		TransactionStatusAfterOrderStatusHappensOncePerOrdersMin;
+		[JsonProperty]	public	int		TransactionStatusAfterOrderStatusHappensOncePerOrdersMax;
+		[JsonProperty]	public	bool	TransactionStatusAfterOrderStatusEnabled;
+		
+		[JsonProperty]	public	int		KillerTransactionCallbackAfterVictimFilledHappensOncePerKillersMin;
+		[JsonProperty]	public	int		KillerTransactionCallbackAfterVictimFilledHappensOncePerKillersMax;
+		[JsonProperty]	public	int		KillerTransactionCallbackAfterVictimFilledDelayMax;
+		[JsonProperty]	public	int		KillerTransactionCallbackAfterVictimFilledDelayMin;
+		[JsonProperty]	public	bool	KillerTransactionCallbackAfterVictimFilledEnabled;
+
 		[JsonProperty]	public	int		PartialFillHappensOncePerQuoteMin;
 		[JsonProperty]	public	int		PartialFillHappensOncePerQuoteMax;
 		[JsonProperty]	public	int		PartialFillPercentageFilledMin;
@@ -43,13 +55,15 @@ namespace Sq1.Core.Livesim {
 
 		public LivesimBrokerSettings(Strategy strategy) : base() {
 			base.Initialize(strategy);
-			DelayBeforeFillEnabled					= true;
-			KillPendingDelayEnabled					= true;
-			OrderRejectionEnabled					= true;
-			PartialFillEnabled						= true;
-			OutOfOrderFillEnabled					= true;
-			PriceDeviationForMarketOrdersEnabled	= true;
-			AdaperDisconnectEnabled					= true;
+			DelayBeforeFillEnabled						= true;
+			KillPendingDelayEnabled						= true;
+			OrderRejectionEnabled						= true;
+			TransactionStatusAfterOrderStatusEnabled	= true;
+			KillerTransactionCallbackAfterVictimFilledEnabled	= true;
+			PartialFillEnabled							= true;
+			OutOfOrderFillEnabled						= true;
+			PriceDeviationForMarketOrdersEnabled		= true;
+			AdaperDisconnectEnabled						= true;
 		}
 	}
 }

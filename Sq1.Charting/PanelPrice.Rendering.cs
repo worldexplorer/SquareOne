@@ -112,7 +112,8 @@ namespace Sq1.Charting {
 				}
 
 				//v1 SHOWS_ONLY_CURRENT_NO_HISTORY double alertPending_priceScript_zeroForMarket = pending.PriceEmitted;
-				List<double> orderReplacements_pricesEmitted_forBar = pending.GetEmittedPrice_forBarIndex(barIndex);
+				List<double> orderReplacements_pricesEmitted_forBar = pending.GetEmittedPrice_forBarIndex_nullUnsafe(barIndex);
+				if (orderReplacements_pricesEmitted_forBar == null) continue;
 
 				foreach (double alertPending_priceScript_zeroForMarket in orderReplacements_pricesEmitted_forBar) {
 					int pendingY = base.ValueToYinverted(alertPending_priceScript_zeroForMarket);

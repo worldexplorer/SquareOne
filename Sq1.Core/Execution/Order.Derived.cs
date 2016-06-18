@@ -26,11 +26,9 @@ namespace Sq1.Core.Execution {
 			killer.VictimToBeKilled = this;
 			killer.VictimGUID = this.GUID;
 			killer.Alert.SignalName = "IAM_KILLER_FOR " + this.Alert.SignalName;
-			killer.IsKiller = true;
 
 			this.KillerOrder = killer;
 			this.KillerGUID = killer.GUID;
-			this.IsVictim = true;
 			
 			this.DerivedOrdersAdd(killer);
 			

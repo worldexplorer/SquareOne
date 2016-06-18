@@ -50,7 +50,7 @@ namespace Sq1.Core.Backtesting {
 		public bool						ImRunningChartless_backtestOrSequencing	{ get { return this.ImBacktestingOrLivesimming == true && this.IsLivesimulator == false; } }
 		public bool						ImRunningLivesim						{ get { return this.ImBacktestingOrLivesimming == true && this.IsLivesimulator == true; } }
 
-		public bool						WasBacktestAborted				{ get {
+		public bool						WasBacktestAborted						{ get {
 				if (this.QuotesGenerator == null) {
 					string msg = "ABORTION_IS_A_FLAG_IRRELEVANT_TO_QUOTE_GENERATOR_LIFECYCLE WORKED_FOR_BACKTEST_BUT_SPOILED_LATE_LIVESIM_CHECK";
 					return false;
@@ -59,7 +59,7 @@ namespace Sq1.Core.Backtesting {
 				return signalled;
 			} }
 		public int						ExceptionsHappenedSinceBacktestStarted;
-		public Stopwatch				Stopwatch						{ get; private set; }
+		public Stopwatch				Stopwatch_backtestLasted				{ get; private set; }
 
 		Backtester() {
 			BacktestWasAbortedByUserInGui	= false;
@@ -69,7 +69,7 @@ namespace Sq1.Core.Backtesting {
 			BacktestDataSource				= new BacktestDataSource();
 			ExceptionsHappenedSinceBacktestStarted = 0;
 			//this.QuotesGenerator = BacktestQuotesGeneratorFourStroke.CreateForQuotesPerBarAndInitialize(BacktestQuotesPerBar.FourStrokeOHLC, this);
-			Stopwatch						= new Stopwatch();
+			Stopwatch_backtestLasted		= new Stopwatch();
 		}
 		public Backtester(ScriptExecutor executor) : this() {
 			this.Executor = executor;
@@ -288,7 +288,7 @@ namespace Sq1.Core.Backtesting {
 				distr.ConsumerQuoteUnsubscribe	(this.backtestQuoteBarConsumer);
 				distr.ConsumerBarUnsubscribe	(this.backtestQuoteBarConsumer);
 
-				double sec = Math.Round(this.Stopwatch.ElapsedMilliseconds / 1000d, 2);
+				double sec = Math.Round(this.Stopwatch_backtestLasted.ElapsedMilliseconds / 1000d, 2);
 				string strokesPerBar = this.QuotesGenerator.BacktestStrokesPerBar + "/Bar";
 				string stats = "Backtest took [" + sec + "]sec at " + strokesPerBar;
 				this.Executor.LastBacktestStatus = stats + this.Executor.LastBacktestStatus;
@@ -418,7 +418,7 @@ namespace Sq1.Core.Backtesting {
 
 		public void Initialize_runSimulation_backtestAndLivesim_step1of2() {
 			this.Executor.LastBacktestStatus = "INITIALIZING";
-			this.Stopwatch.Restart();
+			this.Stopwatch_backtestLasted.Restart();
 			this.Create_quoteGenerator_eachBacktesterSimulation();
 			this.Executor.LastBacktestStatus = "SUBSTITUTING_BARS";
 			this.SimulationPreBarsSubstitute_overrideable();
@@ -437,7 +437,7 @@ namespace Sq1.Core.Backtesting {
 				string msg = "IN_ORDER_TO_SIGNAL_FLAGGED_I_HAVE_TO_SET_INSTEAD_OF_RESET";
 				Assembler.PopupException(msg);
 			}
-			this.Stopwatch.Stop();
+			this.Stopwatch_backtestLasted.Stop();
 		}
 
 		public void SetQuoteGeneratorAndConditionallyRebacktest_invokedInGuiThread(BacktestQuotesGenerator clone) {

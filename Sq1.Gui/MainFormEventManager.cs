@@ -70,8 +70,8 @@ namespace Sq1.Gui {
 		internal void StrategiesTree_OnStrategyRenamed(object sender, StrategyEventArgs e) {
 			foreach (ChartFormManager chartFormsManager in this.mainForm.GuiDataSnapshot.ChartFormManagers.Values) {
 				if (chartFormsManager.Strategy != e.Strategy) continue;
-				if (chartFormsManager.ScriptEditorFormConditionalInstance != null) {
-					chartFormsManager.ScriptEditorFormConditionalInstance.Text = e.Strategy.Name;
+				if (chartFormsManager.ScriptEditorFormSingletonized_nullUnsafe != null) {
+					chartFormsManager.ScriptEditorFormSingletonized_nullUnsafe.Text = e.Strategy.Name;
 				}
 				if (chartFormsManager.ChartForm != null) {
 					//v1 chartFormsManager.ChartForm.Text = e.Strategy.Name;
@@ -111,7 +111,7 @@ namespace Sq1.Gui {
 				ChartForm chartFormClosed = sender as ChartForm;
 				ChartFormManager chartFormManager = chartFormClosed.ChartFormManager;
 
-				if (DockContentImproved.IsNullOrDisposed(chartFormManager.ScriptEditorForm) == false) chartFormManager.ScriptEditorFormConditionalInstance.Close();
+				if (DockContentImproved.IsNullOrDisposed(chartFormManager.ScriptEditorForm) == false) chartFormManager.ScriptEditorFormSingletonized_nullUnsafe.Close();
 
 				string msg = null;
 				var mgrs = this.mainForm.GuiDataSnapshot.ChartFormManagers;
@@ -155,7 +155,7 @@ namespace Sq1.Gui {
 		public void ChartForm_OnBarsEditorClicked(object sender, DataSourceSymbolEventArgs e) {
 			string msig = " //ChartForm_OnBarsEditorClicked()";
 			if (BarsEditorForm.Instance.IsShown) {
-				BarsEditorForm.Instance.ActivateDockContentPopupAutoHidden(false, true);
+				BarsEditorForm.Instance.ActivateDockContent_popupAutoHidden(false, true);
 			} else {
 				BarsEditorForm.Instance.ShowStackedHinted(this.mainForm.DockPanel);
 			}
@@ -185,7 +185,7 @@ namespace Sq1.Gui {
 				// ON_WORKSPACE_LOAD__ActiveDocumentChanged_IS_NOT_INVOKED_NO_NEED_TO_MOVE_5_LINES_UP
 				DataSourceEditorForm dataSourceEditorFormClicked = this.mainForm.DockPanel.ActiveDocument as DataSourceEditorForm;
 				if (dataSourceEditorFormClicked != null) {
-					DataSourcesForm.Instance.ActivateDockContentPopupAutoHidden(false, true);
+					DataSourcesForm.Instance.ActivateDockContent_popupAutoHidden(false, true);
 					string dsNameToSelect = dataSourceEditorFormClicked.DataSourceEditorControl.DataSourceName;
 					DataSourcesForm.Instance.DataSourcesTreeControl.SelectDatasource(dsNameToSelect);
 				}
@@ -280,7 +280,7 @@ namespace Sq1.Gui {
 		internal void DataSourcesTree_OnBarsEditorClicked(object sender, DataSourceSymbolEventArgs e) {
 			string msig = " //DataSourcesTree_OnBarsEditorClicked()";
 			if (BarsEditorForm.Instance.IsShown) {
-				BarsEditorForm.Instance.ActivateDockContentPopupAutoHidden(false, true);
+				BarsEditorForm.Instance.ActivateDockContent_popupAutoHidden(false, true);
 			} else {
 				BarsEditorForm.Instance.ShowStackedHinted(this.mainForm.DockPanel);
 			}
@@ -289,7 +289,7 @@ namespace Sq1.Gui {
 		internal void DataSourcesTree_OnSymbolInfoEditorClicked(object sender, DataSourceSymbolEventArgs e) {
 			string msig = " //DataSourcesTree_OnSymbolInfoEditorClicked()";
 			if (SymbolInfoEditorForm.Instance.IsShown) {
-				SymbolInfoEditorForm.Instance.ActivateDockContentPopupAutoHidden(false, true);
+				SymbolInfoEditorForm.Instance.ActivateDockContent_popupAutoHidden(false, true);
 			} else {
 				SymbolInfoEditorForm.Instance.Show();
 			}

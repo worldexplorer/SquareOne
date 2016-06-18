@@ -39,7 +39,6 @@ namespace Sq1.Core.Execution {
 					+ " this is how I removed Order parameter from UpdateOrderState_postProcess(Order)";
 				Assembler.PopupException(msg, null, false);
 			}
-			return ;
 		}
 		
 		public override string ToString() {

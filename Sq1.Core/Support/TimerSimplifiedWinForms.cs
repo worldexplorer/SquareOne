@@ -86,6 +86,16 @@ namespace Sq1.Core.Support {
 			this.reschedule();
 		}
 
+		public void ScheduleOnce_dontPostponeIfAlreadyScheduled() {
+			if (this.Scheduled) {
+				//this.timer.Enabled = false;
+				//this.timer.Stop();
+				//this.Scheduled = false;
+				return;
+			}
+			this.reschedule();
+		}
+
 		public override string ToString() {
 			return this.reasonToExist;
 		}

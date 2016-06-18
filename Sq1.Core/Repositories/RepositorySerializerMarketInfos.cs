@@ -25,7 +25,7 @@ namespace Sq1.Core.Repositories {
 			this.TimeZonesWithUTC = this.parseCsv_MicrosoftTimeZones(this.AbsFilenameTimeZonesCsv, ",");
 			return createdNewFile;
 		}
-		public new void Serialize() {
+		public override int Serialize() {
 			base.Serialize();
 			this.trimHolidaysToYMD();
 			string fixes = this.adjustIfClearingTimespanOutsideOpenClose();
@@ -33,12 +33,14 @@ namespace Sq1.Core.Repositories {
 			if (string.IsNullOrEmpty(fixes) == false) {
 				throw new Exception("ClearingTimespans fixes: ");
 			}
+			return base.EntityDeserialized.Count;
 		}
-		public new void Deserialize() {
+		public override Dictionary<string, MarketInfo> Deserialize() {
 			base.Deserialize();
 			if (base.EntityDeserialized.Count == 0) base.EntityDeserialized = this.MarketsDefault;
 			this.trimHolidaysToYMD();
 			this.adjustIfClearingTimespanOutsideOpenClose();
+			return base.EntityDeserialized;
 		}
 		void trimHolidaysToYMD() {
 			foreach (MarketInfo market in base.EntityDeserialized.Values) {

@@ -72,10 +72,10 @@ namespace Sq1.Widgets.Execution {
 //			} else {
 //				this.DataSnapshot.ColumnsShown[oLVColumn.Text] = oLVColumn.IsVisible;
 //			}
-			byte[] olvStateBinary = this.OlvOrdersTree.SaveState();
+			byte[] olvStateBinary = this.olvOrdersTree.SaveState();
 			this.dataSnapshot.OrdersTreeOlvStateBase64 = ObjectListViewStateSerializer.Base64Encode(olvStateBinary);
 			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
-			this.DataSnapshotSerializer.Serialize();
+			this.dataSnapshotSerializer.Serialize();
 		}
 
 		void olvOrderTree_customize() {
@@ -83,21 +83,21 @@ namespace Sq1.Widgets.Execution {
 
 			// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
 			List<OLVColumn> allColumns = new List<OLVColumn>();
-			foreach (ColumnHeader columnHeader in this.OlvOrdersTree.Columns) {
+			foreach (ColumnHeader columnHeader in this.olvOrdersTree.Columns) {
 				OLVColumn oLVColumn = columnHeader as OLVColumn; 
 				oLVColumn.VisibilityChanged += oLVColumn_VisibilityChanged;
 				if (oLVColumn == null) continue;
 				//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
-				if (this.OlvOrdersTree.AllColumns.Contains(oLVColumn)) continue;
+				if (this.olvOrdersTree.AllColumns.Contains(oLVColumn)) continue;
 				allColumns.Add(oLVColumn);
 			}
 			if (allColumns.Count > 0) {
 				//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
-				this.OlvOrdersTree.AllColumns.AddRange(allColumns);
+				this.olvOrdersTree.AllColumns.AddRange(allColumns);
 			}
 
 			//	http://stackoverflow.com/questions/9802724/how-to-create-a-multicolumn-treeview-like-this-in-c-sharp-winforms-app/9802753#9802753
-			this.OlvOrdersTree.CanExpandGetter = delegate(object o) {
+			this.olvOrdersTree.CanExpandGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) {
 					Assembler.PopupException("treeListView.CanExpandGetter: order=null");
@@ -105,7 +105,7 @@ namespace Sq1.Widgets.Execution {
 				}
 				return order.DerivedOrders.Count > 0;
 			};
-			this.OlvOrdersTree.ChildrenGetter = delegate(object o) {
+			this.olvOrdersTree.ChildrenGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) {
 					Assembler.PopupException("treeListView.ChildrenGetter: order=null");
@@ -158,12 +158,23 @@ namespace Sq1.Widgets.Execution {
 			this.olvcOrderType.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcOrderType.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.Alert.MarketLimitStop.ToString();
+				//v1 return order.IsKiller ? "" : order.Alert.MarketLimitStop.ToString();
+				if (order.IsKiller == false) return order.Alert.MarketLimitStop.ToString();
+				bool thisKillerReplacesLimitExpired = order.VictimToBeKilled != null && string.IsNullOrEmpty(order.VictimToBeKilled.ReplacedByGUID) == false;
+				return thisKillerReplacesLimitExpired ? "LimitExpired" : "";
 			};
 			this.olvcSpreadSide.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcSpreadSide.AspectGetter: order=null";
-				return order.IsKiller ? "" : formatOrderPriceSpreadSide(order, this.dataSnapshot.PricingDecimalForSymbol);
+				//v1 return order.IsKiller ? "" : formatOrderPriceSpreadSide(order, this.dataSnapshot.PricingDecimalForSymbol);
+				if (order.IsKiller == false) return formatOrderPriceSpreadSide(order, this.dataSnapshot.PricingDecimalForSymbol);
+				bool thisKillerReplacesLimitExpired = order.VictimToBeKilled != null && string.IsNullOrEmpty(order.VictimToBeKilled.ReplacedByGUID) == false;
+				if (thisKillerReplacesLimitExpired == false) return "";
+				double nextSlippage = order.VictimToBeKilled.SlippageNextAvailable_NanWhenNoMore;
+				string msg = double.IsNaN(nextSlippage)
+					? "noMoreSlippagesAvailable"
+					: "nextSlip[" + nextSlippage.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol) + "]";
+				return msg;
 			};
 			this.olvcPriceScript.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -354,12 +365,12 @@ namespace Sq1.Widgets.Execution {
 			this.colorBackgroundGreen_forPositionProfit	= Assembler.InstanceInitialized.ColorBackgroundGreen_forPositionProfit;
 
 			// unconditional because Font=bold is set for order.InState_expectingBrokerCallback
-			this.OlvOrdersTree.FormatRow += new EventHandler<FormatRowEventArgs>(this.olvOrdersTree_FormatRow);
+			this.olvOrdersTree.FormatRow += new EventHandler<FormatRowEventArgs>(this.olvOrdersTree_FormatRow);
 
 			if (this.dataSnapshot.ColorifyOrderTree_positionNet) {
-				this.OlvOrdersTree.UseCellFormatEvents = true;
+				this.olvOrdersTree.UseCellFormatEvents = true;
 			} else {
-				this.OlvOrdersTree.UseCellFormatEvents = false;
+				this.olvOrdersTree.UseCellFormatEvents = false;
 			}
 		}
 
@@ -404,7 +415,7 @@ namespace Sq1.Widgets.Execution {
 			// replaced with new column if (order.Alert.MyBrokerIsLivesim) e.Item.BackColor = Color.Gainsboro;
 
 			// I already set if when unclicked but didn't unsubscribe from the event... hm...
-			if (this.OlvOrdersTree.UseCellFormatEvents == false) return;
+			if (this.olvOrdersTree.UseCellFormatEvents == false) return;
 
 			if (order.Alert == null) return;
 			if (order.Alert.PositionAffected == null) return;

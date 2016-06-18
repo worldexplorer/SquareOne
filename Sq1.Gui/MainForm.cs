@@ -221,26 +221,26 @@ namespace Sq1.Gui {
 					if (cfmgr.ChartForm == null) continue;
 
 					if (cfmgr.SequencerForm != null) {
-						if (cfmgr.SequencerFormConditionalInstance.IsShown	== false) cfmgr.SequencerFormShow(true);
+						if (cfmgr.SequencerFormSingletonized_nullUnsafe.IsShown	== false) cfmgr.SequencerFormShow(true);
 					} else {
 						string msg = "SequencerForm wasn't mentioned in [" + this.LayoutXml + "]";
 					}
 
 					if (cfmgr.CorrelatorForm != null) {
-						if (cfmgr.CorrelatorFormConditionalInstance.IsShown == false) cfmgr.CorrelatorFormShow(true);
+						if (cfmgr.CorrelatorFormSingletonized_nullUnsafe.IsShown == false) cfmgr.CorrelatorFormShow(true);
 					} else {
 						string msg = "CorrelatorForm wasn't mentioned in [" + this.LayoutXml + "]";
 					}
 
 					if (cfmgr.LivesimForm != null) {
-						if (cfmgr.LivesimFormConditionalInstance.IsShown	== false) cfmgr.LivesimFormShow(true);
+						if (cfmgr.LivesimFormSingletonized_nullUnsafe.IsShown	== false) cfmgr.LivesimFormShow(true);
 					} else {
 						string msg = "LivesimForm wasn't mentioned in [" + this.LayoutXml + "]";
 					}
 
 					// if sequencer instantiated first and fired, then correlator instantiated and didn't get the bullet; vice versa is even worse
 					if (cfmgr.Executor.Strategy != null) {
-						cfmgr.SequencerFormConditionalInstance.SequencerControl.RaiseOnCorrelatorShouldPopulate_usedByMainFormAfterBothAreInstantiated();
+						cfmgr.SequencerFormSingletonized_nullUnsafe.SequencerControl.RaiseOnCorrelatorShouldPopulate_usedByMainFormAfterBothAreInstantiated();
 					}
 
 					cfmgr.ChartFormShow();
@@ -260,7 +260,7 @@ namespace Sq1.Gui {
 						continue;
 					}
 					if (cfmgr.ChartForm.MniShowSourceCodeEditor.Enabled) {		//set to true in InitializeWithStrategy() << DeserializeDockContent() 20 lines above
-						cfmgr.ChartForm.MniShowSourceCodeEditor.Checked = cfmgr.ScriptEditorIsOnSurface;
+						cfmgr.ChartForm.MniShowSourceCodeEditor.Checked = cfmgr.ScriptEditorInstantiated_andInFront;
 					}
 
 					//ADDED_ANOTHER_FOREACH_AFTER_ResumeLayout(true) cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
@@ -313,7 +313,7 @@ namespace Sq1.Gui {
 				//NOPE ExecutionForm.Instance.ExecutionTreeControl.MoveStateColumnToLeftmost();
 				if (ExecutionForm.Instance.IsShown) {
 					// MOVED_TO_AFTER_MAINFORM_RESUMELAYOUT ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized();
-					ExecutionForm.Instance.PopulateWindowsTitle();
+					ExecutionForm.Instance.PopulateWindowTitle();
 				}
 				if (ExceptionsForm.Instance.IsShown) {
 					// MOVED_TO_AFTER_MAINFORM_RESUMELAYOUT ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
@@ -413,7 +413,7 @@ namespace Sq1.Gui {
 				}
 				if (DataSourceEditorForm.Instance.IsShown) {
 					// ON_WORKSPACE_LOAD__ActiveDocumentChanged_IS_NOT_INVOKED
-					DataSourcesForm.Instance.ActivateDockContentPopupAutoHidden(false, true);
+					DataSourcesForm.Instance.ActivateDockContent_popupAutoHidden(false, true);
 					string dsNameToSelect = DataSourceEditorForm.Instance.DataSourceEditorControl.DataSourceName;
 					DataSourcesForm.Instance.DataSourcesTreeControl.SelectDatasource(dsNameToSelect);
 				}

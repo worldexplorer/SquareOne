@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Drawing;
 
 using Newtonsoft.Json;
 
@@ -13,7 +14,6 @@ using Sq1.Core.Backtesting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Support;
-using System.Drawing;
 
 namespace Sq1.Core.Livesim {
 	// I_WANT_LIVESIM_STREAMING_BROKER_BE_AUTOASSIGNED_AND_VISIBLE_IN_DATASOURCE_EDITOR [SkipInstantiationAt(Startup = true)]
@@ -59,6 +59,7 @@ namespace Sq1.Core.Livesim {
 				string msg = "LIVESIM_BROKER_ALREADY_REFERRING_TO_STREAMING_ORIGINAL_DDE THATS_WHAT_I_WANTED";
 				Assembler.PopupException(msg, null, false);
 				base.InitializeDataSource_inverse(this.LivesimDataSource, this.LivesimDataSource.StreamingAdapter, orderProcessor);
+				orderProcessor.DataSnapshot.Clear_onLivesimStart__TODO_saveAndRestoreIfLivesimLaunchedDuringLive();
 				return;
 			}
 			//v2
@@ -67,6 +68,8 @@ namespace Sq1.Core.Livesim {
 			} else {
 				base.InitializeDataSource_inverse(this.LivesimDataSource, this.LivesimDataSource.StreamingAsLivesim_nullUnsafe, orderProcessor);
 			}
+			// mirroring 10 lines above; but when does it run?...
+			orderProcessor.DataSnapshot.Clear_onLivesimStart__TODO_saveAndRestoreIfLivesimLaunchedDuringLive();
 		}
 		internal void InitializeMarketsim(ScriptExecutor scriptExecutor) {
 			this.ScriptExecutor = scriptExecutor;

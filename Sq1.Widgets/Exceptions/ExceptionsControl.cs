@@ -130,7 +130,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.splitContainerHorizontal.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerHorizontal_SplitterMoved);
 
 			this.mniRecentAlwaysSelected.Checked = this.dataSnapshot.RecentAlwaysSelected;
-			this.mniltbDelay.InputFieldValue = this.dataSnapshot.FlushToGuiDelayMsec.ToString();		// I will be stuck here - if ExceptionsForm.Instance was created from non-GUI thread, by Assembler.PopupException() while MainForm haven't got Window Handle yet
+			this.mniltbFlushToGuiDelayMsec.InputFieldValue = this.dataSnapshot.FlushToGuiDelayMsec.ToString();		// I will be stuck here - if ExceptionsForm.Instance was created from non-GUI thread, by Assembler.PopupException() while MainForm haven't got Window Handle yet
 			this.mniShowTimestamps.Checked = this.dataSnapshot.TreeShowTimestamps;
 
 			//this.flushExceptionsToOLV_switchToGuiThread();
@@ -218,14 +218,14 @@ namespace Sq1.Widgets.Exceptions {
 			this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(ex);
 			this.exceptionLastDate_notFlushedYet = DateTime.Now;
 
-			this.populateWindowsTitle();
+			this.populateWindowTitle();
 			//if (base.Timed_flushingToGui.Scheduled) return;
 
 			// http://stackoverflow.com/questions/2475435/c-sharp-timer-wont-tick
 			// Always stop/start a System.Windows.Forms.Timer on the UI thread, apparently! –  user145426
 			//v1 this.flushExceptionsToOLV_switchToGuiThread();
 			//v2
-			base.Timed_flushingToGui.ScheduleOnce_postponeIfAlreadyScheduled();
+			base.Timed_flushingToGui.ScheduleOnce_dontPostponeIfAlreadyScheduled();
 			//base.Timed_flushingToGui.ScheduleOnce();
 		}
 
@@ -268,7 +268,7 @@ namespace Sq1.Widgets.Exceptions {
 			string msg = "if we are in GUI thread, go on timer immediately (correlator throwing thousands at startup, or chart.OnPaint() doing something wrong)";
 			try {
 				if (base.Visible == false) {
-					this.populateWindowsTitle();
+					this.populateWindowTitle();
 					return;
 				}
 
@@ -325,11 +325,11 @@ namespace Sq1.Widgets.Exceptions {
 				Assembler.PopupException(msg3 + msig);		// any Assembler.PopupException() will go to this.exceptionsNotFlushedYet()
 			} finally {
 				base.HowLongTreeRebuilds.Stop();
-				this.populateWindowsTitle();
+				this.populateWindowTitle();
 			}
 		}
 
-		void populateWindowsTitle() {
+		void populateWindowTitle() {
 			Form parentForm = this.Parent as Form;
 			if (parentForm == null) {
 				string msg = "all that was probably needed for messy LivesimControl having splitContainer3<splitContainer1<LivesimControl - deleted; otherwize no idea why so many nested splitters";

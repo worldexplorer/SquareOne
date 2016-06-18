@@ -18,6 +18,12 @@ namespace Sq1.Core.Livesim {
 			} else if (whatIchecked == this.cbx_OrderRejectionEnabled) {
 				this.livesimBrokerSettings.OrderRejectionEnabled = whatIchecked.Checked;
 
+			} else if (whatIchecked == this.cbx_TransactionStatusAfterOrderStatusEnabled) {
+				this.livesimBrokerSettings.TransactionStatusAfterOrderStatusEnabled = whatIchecked.Checked;
+
+			} else if (whatIchecked == this.cbx_KillerTransactionCallbackAfterVictimFilled_enabled) {
+				this.livesimBrokerSettings.KillerTransactionCallbackAfterVictimFilledEnabled = whatIchecked.Checked;
+
 			} else if (whatIchecked == this.cbx_PartialFillEnabled) {
 				this.livesimBrokerSettings.PartialFillEnabled = whatIchecked.Checked;
 
@@ -40,15 +46,15 @@ namespace Sq1.Core.Livesim {
 			this.livesimBrokerSettings.SaveStrategy();
 		}
 
-		void anyTextBox_Enter(object sender, EventArgs e) {
-			TextBox whereIfocused = sender as TextBox;
-			if (whereIfocused == null) {
-				string msg = "HANDLER_WRONGLY_ATTACHED_SENDER_MUST_BE_A_TextBox LivesimBrokerEditor.anyTextBox_Enter(sender[" + sender.ToString() + "])";
-				Assembler.PopupException(msg);
-				return;
-			}
-			whereIfocused.SelectAll();		//WHY_SELECTALL_DOESNT_SELECT_ANYTHING???
-		}
+		//void anyTextBox_Enter(object sender, EventArgs e) {
+		//    TextBox whereIfocused = sender as TextBox;
+		//    if (whereIfocused == null) {
+		//        string msg = "HANDLER_WRONGLY_ATTACHED_SENDER_MUST_BE_A_TextBox LivesimBrokerEditor.anyTextBox_Enter(sender[" + sender.ToString() + "])";
+		//        Assembler.PopupException(msg);
+		//        return;
+		//    }
+		//    whereIfocused.SelectAll();		//WHY_SELECTALL_DOESNT_SELECT_ANYTHING???
+		//}
 		void anyTextBox_KeyUp(object sender, KeyEventArgs e) {
 			TextBox whereItyped = sender as TextBox;
 			if (whereItyped == null) {
@@ -78,6 +84,36 @@ namespace Sq1.Core.Livesim {
 			} else if (whereItyped == this.txt_OrderRejectionHappensOncePerXordersMax) {
 				this.livesimBrokerSettings.OrderRejectionHappensOncePerXordersMax = parsedInt;
 
+
+			// QUIK sending "OrderFilled Transaction SUCCESS" after "OrderStatus filled" - simulating this async
+			} else if (whereItyped == this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMin) {
+				this.livesimBrokerSettings.TransactionStatusAfterOrderStatusHappensOncePerOrdersMin = parsedInt;
+
+			} else if (whereItyped == this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMax) {
+				this.livesimBrokerSettings.TransactionStatusAfterOrderStatusHappensOncePerOrdersMax = parsedInt;
+			
+			} else if (whereItyped == this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMin) {
+				this.livesimBrokerSettings.TransactionStatusAfterOrderStatusDelayAfterFillMin = parsedInt;
+
+			} else if (whereItyped == this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMax) {
+				this.livesimBrokerSettings.TransactionStatusAfterOrderStatusDelayAfterFillMax = parsedInt;
+
+			
+			// QUIK sending "Killer Transaction SUCCESS" after "OrderStatus filled" - simulating this async
+			} else if (whereItyped == this.txt_KillerTransactionCallbackAfterVictimFilled_happensMin) {
+				this.livesimBrokerSettings.KillerTransactionCallbackAfterVictimFilledHappensOncePerKillersMin = parsedInt;
+
+			} else if (whereItyped == this.txt_KillerTransactionCallbackAfterVictimFilled_happensMax) {
+				this.livesimBrokerSettings.KillerTransactionCallbackAfterVictimFilledHappensOncePerKillersMax = parsedInt;
+			
+			} else if (whereItyped == this.txt_KillerTransactionCallbackAfterVictimFilled_delayMin) {
+				this.livesimBrokerSettings.KillerTransactionCallbackAfterVictimFilledDelayMin = parsedInt;
+
+			} else if (whereItyped == this.txt_KillerTransactionCallbackAfterVictimFilled_delayMax) {
+				this.livesimBrokerSettings.KillerTransactionCallbackAfterVictimFilledDelayMax = parsedInt;
+
+
+			
 			} else if (whereItyped == this.txt_PartialFillHappensOncePerQuoteMin) {
 				this.livesimBrokerSettings.PartialFillHappensOncePerQuoteMin = parsedInt;
 

@@ -6,6 +6,7 @@ using System.Threading;
 using Newtonsoft.Json;
 
 using Sq1.Core.Streaming;
+using Sq1.Core.Broker;
 
 namespace Sq1.Core.Execution {
 	public partial class Order {
@@ -34,12 +35,13 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	string		EmergencyReplacementForGUID;	// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; private set; }
 		[JsonProperty]	public	string		EmergencyReplacedByGUID;		// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; private set; }
 
-		[JsonProperty]	public	bool		IsKiller					{ get; private set; }
-		[JsonProperty]	public	bool		IsVictim					{ get; private set; }
 		[JsonProperty]	public	string		VictimGUID					{ get; private set; }
 		[JsonIgnore]	public	Order		VictimToBeKilled			{ get; private set; }
+		[JsonProperty]	public	bool		IsKiller					{ get { return this.VictimToBeKilled != null && string.IsNullOrEmpty(this.VictimGUID) == false; } }
+
 		[JsonProperty]	public	string		KillerGUID					{ get; private set; }
 		[JsonIgnore]	public	Order		KillerOrder					{ get; private set; }
+		[JsonProperty]	public	bool		IsVictim					{ get { return this.KillerOrder != null && string.IsNullOrEmpty(this.KillerGUID) == false; } }
 
 		[JsonProperty]	public	DateTime	DateServerLastFillUpdate;	// SET_IN_BROKER_QUIK	{ get; private set; }
 		[JsonProperty]	public	bool		EmittedByScript 			{ get; private set; }
@@ -118,6 +120,12 @@ namespace Sq1.Core.Execution {
 				this.messages = new ConcurrentStack<OrderStateMessage>(value);
 			}
 		}
+
+		[JsonIgnore]	public bool FilledOrPartially_inOrderMessages { get {
+			bool filled				= this.FindState_inOrderMessages(OrderState.Filled);
+			bool partiallyFilled	= this.FindState_inOrderMessages(OrderState.FilledPartially);
+			return filled || partiallyFilled;
+		} }
 
 		// no search among lvOrders.Items[] is required to populate the order update
 		//[JsonIgnore]	public ListViewItem		ListViewItemInExecutionForm	{ get; private set; }
@@ -217,17 +225,21 @@ namespace Sq1.Core.Execution {
 			ReplacementForGUID	= "";
 			ReplacedByGUID		= "";
 
-			IsKiller		= false;
 			VictimGUID		= "";
 			KillerGUID		= "";
 
 			//StateImageIndex = 0;
 			StateUpdateLastTimeLocal = DateTime.MinValue;
 			EmittedByScript	= false;
+
+			// Alert() applies first slippage (for the backtester to use it);
+			// Broker.Order_modifyOrderType_priceRequesting_accordingToMarketOrderAs() will set it to 0;
+			// replacement will pick that up and ++
+			SlippageAppliedIndex = -1;
 			SlippageApplied	= 0;
-			SlippageAppliedIndex = 0;
-			CurrentAsk		= 0;
-			CurrentBid		= 0;
+
+			CurrentAsk		= double.NaN;
+			CurrentBid		= double.NaN;
 			SpreadSide		= SpreadSide.Unknown;
 			DerivedOrders	= new List<Order>();
 			DerivedOrdersGuids = new List<string>();
@@ -254,14 +266,20 @@ namespace Sq1.Core.Execution {
 			//    this.CurrentBid = alert.DataSource.StreamingAdapter.StreamingDataSnapshot.BestBid_getForMarketOrder(alert.Symbol);
 			//    this.CurrentAsk = alert.DataSource.StreamingAdapter.StreamingDataSnapshot.BestAsk_getForMarketOrder(alert.Symbol);
 			//}
-			this.CurrentBid				= alert.CurrentBid;
-			this.CurrentAsk				= alert.CurrentAsk;
 
 			this.SpreadSide				= alert.SpreadSide;
 
+			// too late => Market Alert became Limit already
+			//if (alert.Check_sumIsZero_BidAsk_SlippageApplied_PriceEmitted == false) {
+			//    string msg = "ALERT_PriceEmitted_MISALIGNED";
+			//    Assembler.PopupException(msg, null, false);
+			//}
+
+			this.CurrentBid				= alert.CurrentBid;
+			this.CurrentAsk				= alert.CurrentAsk;
 			this.PriceEmitted			= alert.PriceEmitted;
-			this.SlippageAppliedIndex	= 0;
 			this.SlippageApplied		= alert.SlippageApplied;
+			this.SlippageAppliedIndex	= alert.SlippageAppliedIndex;	// first slippage already applied inside the Alert
 
 			this.EmittedByScript		= emittedByScript;
 			//due to serverTime lagging, replacements orders are born before the original order... this.TimeCreatedServer = alert.TimeCreatedLocal;
@@ -329,6 +347,10 @@ namespace Sq1.Core.Execution {
 			ret += " " + this.Qty;
 			ret += "@" + this.PriceEmitted.ToString(formatPrice);
 			ret += " " + this.State;
+
+			if (this.IsVictim)				ret += " Victim";
+			if (this.IsKiller)				ret += " Killer";
+
 			if (this.SernoSession	!= 0)	ret += " SernoSession[" + this.SernoSession + "]";
 			//if (GUID				!= "")	ret += " GUID["			+ GUID + "]";
 			//if (SernoExchange		!= 0)	ret += " SernoExchange["+ SernoExchange + "]";
@@ -393,9 +415,11 @@ namespace Sq1.Core.Execution {
 			}
 			return ret;
 		}
-		public void AbsorbCurrentBidAsk_fromStreamingSnapshot(StreamingDataSnapshot snap) {
+		public void AbsorbCurrentBidAsk_fromStreamingSnapshot_ifNotPropagatedFromAlert(StreamingDataSnapshot snap) {
+			bool shouldGetFromLastQuote = double.IsNaN(this.CurrentBid) || double.IsNaN(this.CurrentAsk);
+			if (shouldGetFromLastQuote == false) return;
 			this.CurrentBid = snap.GetBestBid_notAligned_forMarketOrder_fromQuoteLast(this.Alert.Symbol);
-			this.CurrentAsk = snap.GetBestAsk_notAligned_forMarketOrder_fromQuoteCurrent(this.Alert.Symbol);
+			this.CurrentAsk = snap.GetBestAsk_notAligned_forMarketOrder_fromQuoteLast(this.Alert.Symbol);
 		}
 
 		internal void SetState_localTime_fromMessage(OrderStateMessage newStateWithReason) {
@@ -407,6 +431,33 @@ namespace Sq1.Core.Execution {
 		void setState_localTime(OrderState newOrderState, DateTime localTime_updated) {
 			this.State						= newOrderState;
 			this.StateUpdateLastTimeLocal	= localTime_updated;
+		}
+
+		public Order EnsureOrder_isLiveOrLivesim_nullIfDeserialized(BrokerAdapter broker = null) {
+			string brokerName = broker != null ? broker.Name : "NO_BROKER_PASSED__WONT_ASSIGN_TO_ORPHAN_ORDERS";
+			string msig = " //EnsureOrder_isLiveOrLivesim_nullIfDeserialized(" + this + "," + brokerName + ")";
+
+			if (this.Alert == null) {
+				string msg = "ORDER_FOUND_HAS_ALERT_NULL_UNRECOVERABLE__RETURNING_ORDER_NULL";
+				Assembler.PopupException(msg + msig);
+				return null; 
+			}
+			if (this.Alert.Bars == null) {
+				string msg = "UNREPAIRABLE__ORDER_FOUND_HAS_Bars_NULL";
+				Assembler.PopupException(msg + msig);
+				return null;
+			}
+			if (this.Alert.DataSource_fromBars == null) {
+				string msg = "UNREPAIRABLE__ORDER_FOUND_HAS_DataSource_NULL";
+				Assembler.PopupException(msg + msig);
+				return null;
+			}
+			if (this.Alert.DataSource_fromBars.BrokerAdapter == null) {
+				string msg = "ORDER_FOUND_HAS_BROKER_NULL__ASSIGNING";
+				Assembler.PopupException(msg + msig);
+				this.Alert.DataSource_fromBars.BrokerAdapter = broker;
+			}
+			return this;
 		}
 
 		[JsonIgnore]	public	bool				IsDisposed;

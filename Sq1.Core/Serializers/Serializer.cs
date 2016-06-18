@@ -107,7 +107,8 @@ namespace Sq1.Core.Serializers {
 			}
 			return this.EntityDeserialized;
 		}
-		public virtual void Serialize() {
+		public virtual int Serialize() {
+			int recordsSerialized = 1;
 			string json;
 			try {
 				json = JsonConvert.SerializeObject(this.EntityDeserialized, Formatting.Indented,
@@ -121,6 +122,7 @@ namespace Sq1.Core.Serializers {
 				if (this.AbsPath != null) msg += "_WITH_this.JsonAbsFile[" + this.JsonAbsFile + "]";
 				Assembler.PopupException(msg + msig, ex);
 			}
+			return recordsSerialized;
 		}
 		public virtual void DeleteJsonFile() {
 			try {

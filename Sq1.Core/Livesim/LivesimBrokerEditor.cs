@@ -13,16 +13,34 @@ namespace Sq1.Core.Livesim {
 
 			this.cbx_DelayBeforeFillEnabled					.Checked = this.livesimBrokerSettings.DelayBeforeFillEnabled;
 			this.cbx_OrderRejectionEnabled					.Checked = this.livesimBrokerSettings.OrderRejectionEnabled;
+
+			this.cbx_TransactionStatusAfterOrderStatusEnabled.Checked = this.livesimBrokerSettings.TransactionStatusAfterOrderStatusEnabled;
+			this.cbx_KillPendingDelayEnabled				.Checked = this.livesimBrokerSettings.KillerTransactionCallbackAfterVictimFilledEnabled;
+
 			this.cbx_PartialFillEnabled						.Checked = this.livesimBrokerSettings.PartialFillEnabled;
 			this.cbx_OutOfOrderFillEnabled					.Checked = this.livesimBrokerSettings.OutOfOrderFillEnabled;
 			this.cbx_PriceDeviationForMarketOrdersEnabled	.Checked = this.livesimBrokerSettings.PriceDeviationForMarketOrdersEnabled;
 			this.cbx_KillPendingDelayEnabled				.Checked = this.livesimBrokerSettings.KillPendingDelayEnabled;
 			this.cbx_AdaperDisconnectEnabled				.Checked = this.livesimBrokerSettings.AdaperDisconnectEnabled;
 
+
+
 			this.txt_DelayBeforeFillMillisMin								.Text = this.livesimBrokerSettings.DelayBeforeFillMillisMin									.ToString();
 			this.txt_DelayBeforeFillMillisMax								.Text = this.livesimBrokerSettings.DelayBeforeFillMillisMax									.ToString();
 			this.txt_OrderRejectionHappensOncePerXordersMin					.Text = this.livesimBrokerSettings.OrderRejectionHappensOncePerXordersMin					.ToString();
 			this.txt_OrderRejectionHappensOncePerXordersMax					.Text = this.livesimBrokerSettings.OrderRejectionHappensOncePerXordersMax					.ToString();
+
+			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMin	.Text = this.livesimBrokerSettings.TransactionStatusAfterOrderStatusHappensOncePerOrdersMin	.ToString();
+			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMax	.Text = this.livesimBrokerSettings.TransactionStatusAfterOrderStatusHappensOncePerOrdersMax	.ToString();
+			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMin			.Text = this.livesimBrokerSettings.TransactionStatusAfterOrderStatusDelayAfterFillMin		.ToString();
+			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMax			.Text = this.livesimBrokerSettings.TransactionStatusAfterOrderStatusDelayAfterFillMax		.ToString();
+
+			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMin		.Text = this.livesimBrokerSettings.KillerTransactionCallbackAfterVictimFilledHappensOncePerKillersMin	.ToString();
+			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMax		.Text = this.livesimBrokerSettings.KillerTransactionCallbackAfterVictimFilledHappensOncePerKillersMax	.ToString();
+			this.txt_KillerTransactionCallbackAfterVictimFilled_delayMin		.Text = this.livesimBrokerSettings.KillerTransactionCallbackAfterVictimFilledDelayMin					.ToString();
+			this.txt_KillerTransactionCallbackAfterVictimFilled_delayMax		.Text = this.livesimBrokerSettings.KillerTransactionCallbackAfterVictimFilledDelayMax					.ToString();
+
+
 			this.txt_PartialFillHappensOncePerQuoteMin						.Text = this.livesimBrokerSettings.PartialFillHappensOncePerQuoteMin						.ToString();
 			this.txt_PartialFillHappensOncePerQuoteMax						.Text = this.livesimBrokerSettings.PartialFillHappensOncePerQuoteMax						.ToString();
 			this.txt_PartialFillPercentageFilledMin							.Text = this.livesimBrokerSettings.PartialFillPercentageFilledMin							.ToString();

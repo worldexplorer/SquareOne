@@ -7,94 +7,68 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Gui.Singletons {
 	public partial class ExecutionForm {
-		public void orderProcessor_OrderAdded(object sender, OrdersListEventArgs e) {
+		public void orderProcessor_OnOrderAdded(object sender, OrdersListEventArgs eventOrderList) {
+			if (base.IsDisposed) return;
 			if (this.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { orderProcessor_OrderAdded(sender, e); });
+				base.BeginInvoke((MethodInvoker)delegate { orderProcessor_OnOrderAdded(sender, eventOrderList); });
 				return;
 			}
-			//WDYM? this.ShowPopupSwitchToGuiThreadRunDelegateInIt();
-			//if (e.Order.State == OrderState.AutoSubmitNotEnabled) return;
-			if (base.IsCoveredOrAutoHidden) return;
-			//if (this.executionTree.SelectedAccountNumbers.Contains(e.Order.Alert.AccountNumber) == false) return;
-			//if (this.ExecutionTreeControl.DataSnapshot.ToggleSingleClickSyncWithChart) {
-			//	this.executionTree_OnOrderDoubleClickedChartFormNotification(sender, e);
-			//}
-			if (e.Orders.Count == 0) return;
+			if (eventOrderList.Orders.Count == 0) return;
 			
-			this.PopulateWindowsTitle();
-			
-			//v1 when in virtual mode, use model :(
-			foreach (Order o in e.Orders) {
-				this.ExecutionTreeControl.OlvOrdersTree_insertOrder(o);
-			}
-			//v2 ADDED_anyHasTime_FILTER__SAFE_ENOUGH_TO_SKIP_SOME_SINCE_ENDOFBACKTEST_WILL_RUIBUILD_FULLY  TOO_SLOW
-			//bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = false;
-			//foreach (Order order in e.Orders) {
-			//	if (order.Alert.IsBacktestingLivesimNow_FalseIfNoBacktester == false) break;
-			//	if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) continue;
-			//	safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = true;
-			//	break;
-			//}
-			//if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
+			this.ExecutionTreeControl.OnOrdersInserted_asyncAutoFlush(eventOrderList.Orders);
 
-			this.ExecutionTreeControl.RebuildAllTree_focusOnTopmost();
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush 
+			//foreach (Order orderAdded in eventOrderList.Orders) {
+			//    this.ExecutionTreeControl.OlvOrdersTree_insertOrder(o);
+			//}
+			
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush this.PopulateWindowTitle();
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush if (base.IsCoveredOrAutoHidden) return;
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush this.ExecutionTreeControl.RebuildAllTree_focusOnTopmost();
 		}
-		void orderProcessor_OrderMessageAdded(object sender, OrderStateMessageEventArgs e) {
+		void orderProcessor_OnOrderMessageAdded(object sender, OrderStateMessageEventArgs eventOsm) {
 			if (base.IsDisposed) return;
 			if (this.InvokeRequired) {
 				if (base.IsDisposed) return;
-				base.BeginInvoke((MethodInvoker)delegate { this.orderProcessor_OrderMessageAdded(sender, e); });
+				base.BeginInvoke((MethodInvoker)delegate { this.orderProcessor_OnOrderMessageAdded(sender, eventOsm); });
 				return;
 			}
-			if (base.IsCoveredOrAutoHidden) return;
-			//this.executionTree.OrderInsertMessage(e.OrderStateMessage);
-			//this.executionTree.PopulateMessagesFromSelectedOrder(e.OrderStateMessage.Order);
 
-			this.PopulateWindowsTitle();
-
-			//Alert alert = e.OrderStateMessage.Order.Alert;
-			//bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = (alert.IsBacktestingLivesimNow_FalseIfNoBacktester == true && alert.GuiHasTimeRebuildReportersAndExecution == false);
-			//if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
-
-			this.ExecutionTreeControl.SelectOrder_populateMessages(e.OrderStateMessage.Order);
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush this.PopulateWindowTitle();
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush if (base.IsCoveredOrAutoHidden) return;
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush this.ExecutionTreeControl.SelectOrder_populateMessages(e.OrderStateMessage.Order);
+			//v2
+			this.ExecutionTreeControl.OnOrderMessageAppended_immediate(eventOsm.OrderStateMessage);
 		}
-		void orderProcessor_OrderStateChanged(object sender, OrdersListEventArgs e) {
+		void orderProcessor_OnOrderStateChanged(object sender, OrdersListEventArgs eventOrderList) {
 			if (base.IsDisposed) return;
 			if (this.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.orderProcessor_OrderStateChanged(sender, e); });
+				base.BeginInvoke((MethodInvoker)delegate { this.orderProcessor_OnOrderStateChanged(sender, eventOrderList); });
 				return;
 			}
-			if (base.IsCoveredOrAutoHidden) return;	// could've been checked before switching to gui thread?...
-
-			this.PopulateWindowsTitle();
-
-			//bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = false;
-			//foreach (Order order in e.Orders) {
-			//	if (order.Alert.IsBacktestingLivesimNow_FalseIfNoBacktester == false) break;
-			//	//if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) continue;
-			//	safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = true;
-			//	break;
-			//}
-			//if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
-
-			this.ExecutionTreeControl.OlvOrdersTree_updateState_forOrders(e.Orders);
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush this.PopulateWindowTitle();
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush if (base.IsCoveredOrAutoHidden) return;	// could've been checked before switching to gui thread?...
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush
+			this.ExecutionTreeControl.OlvOrdersTree_updateState_immediate(eventOrderList.Orders);
 		}
-		void orderProcessor_OrderRemoved(object sender, OrdersListEventArgs e) {
+		void orderProcessor_OnOrdersRemoved(object sender, OrdersListEventArgs eventOrderList) {
+			if (base.IsDisposed) return;
 			if (this.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { orderProcessor_OrderRemoved(sender, e); });
+				base.BeginInvoke((MethodInvoker)delegate { this.orderProcessor_OnOrdersRemoved(sender, eventOrderList); });
 				return;
 			}
-			if (base.IsCoveredOrAutoHidden) return;
-			this.ExecutionTreeControl.OrderRemoved_alreadyFromBothLists_rebuildOrdersTree_cleanMessagesView(e.Orders);
-			this.PopulateWindowsTitle();
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush if (base.IsCoveredOrAutoHidden) return;
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush this.ExecutionTreeControl.OrderRemoved_alreadyFromBothLists_rebuildOrdersTree_cleanMessagesView(eventOrderList.Orders);
+			//v1 BEFORE_INHERITED_FROM_UserControlPeriodicFlush sthis.PopulateWindowTitle();
+			this.ExecutionTreeControl.OnOrdersRemoved_asyncAutoFlush(eventOrderList.Orders);
 		}
-		void orderProcessor_OnDelaylessLivesimEndedShouldRebuildOLV(object sender, EventArgs e) {
+		void orderProcessor_OnDelaylessLivesimEnded_shouldRebuildExecutionOLV(object sender, EventArgs e) {
+			if (base.IsDisposed) return;
 			if (this.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { orderProcessor_OnDelaylessLivesimEndedShouldRebuildOLV(sender, e); });
+				base.BeginInvoke((MethodInvoker)delegate { orderProcessor_OnDelaylessLivesimEnded_shouldRebuildExecutionOLV(sender, e); });
 				return;
 			}
-			this.ExecutionTreeControl.RebuildAllTree_focusOnTopmost();
-			this.PopulateWindowsTitle();
+			this.ExecutionTreeControl.RebuildAllTree_focusOnRecent();
 		}
 		void executionTree_OnOrderSingleClicked_ChartControlShouldPopupPosition(object sender, OrderEventArgs e) {
 			try {
@@ -107,25 +81,25 @@ namespace Sq1.Gui.Singletons {
 			}
 		}
 		void executionForm_Load(object sender, EventArgs e) {
-			this.orderProcessor.OnAsyncOrderAdded_executionControlShouldRebuildOLV				+= this.orderProcessor_OrderAdded;
-			this.orderProcessor.OnAsyncOrderRemoved_executionControlShouldRebuildOLV			+= this.orderProcessor_OrderRemoved;
-			this.orderProcessor.OnOrderStateOrPropertiesChanged_executionControlShouldPopulate	+= this.orderProcessor_OrderStateChanged;
-			this.orderProcessor.OnOrderMessageAdded_executionControlShouldPopulate				+= this.orderProcessor_OrderMessageAdded;
-			this.orderProcessor.OnDelaylessLivesimEnded_shouldRebuildOLV						+= this.orderProcessor_OnDelaylessLivesimEndedShouldRebuildOLV;
-
-			//this.ExecutionTreeControl.OnOrderStatsChangedRecalculateWindowTitleExecutionFormNotification += delegate { this.PopulateWindowText(); };
-			this.ExecutionTreeControl.OnOrderSingleClicked_ChartControlShouldPopupPosition += this.executionTree_OnOrderSingleClicked_ChartControlShouldPopupPosition;
+			this.orderProcessor.OnOrderAdded_executionControlShouldRebuildOLV_scheduled						+= this.orderProcessor_OnOrderAdded;
+			this.orderProcessor.OnOrdersRemoved_executionControlShouldRebuildOLV_scheduled					+= this.orderProcessor_OnOrdersRemoved;
+			this.orderProcessor.OnOrderStateOrPropertiesChanged_executionControlShouldPopulate_immediately	+= this.orderProcessor_OnOrderStateChanged;
+			this.orderProcessor.OnOrderMessageAdded_executionControlShouldPopulate_scheduled				+= this.orderProcessor_OnOrderMessageAdded;
+			this.orderProcessor.OnDelaylessLivesimEnded_shouldRebuildOLV_immediately						+= this.orderProcessor_OnDelaylessLivesimEnded_shouldRebuildExecutionOLV;
+			this.ExecutionTreeControl.OnOrderSingleClicked_ChartControlShouldPopupPosition					+= this.executionTree_OnOrderSingleClicked_ChartControlShouldPopupPosition;
 		}
 		void executionForm_Closed(object sender, FormClosedEventArgs e) {
 			string msg = "ExecutionForm_Closed(): all self-hiding singletons are closed() on MainForm.Close()?";
 			//ExecutionForm.Instance = null;
 		}
 		void executionForm_Closing(object sender, FormClosingEventArgs e) {
-			this.orderProcessor.OnAsyncOrderAdded_executionControlShouldRebuildOLV -= this.orderProcessor_OrderAdded;
-			this.orderProcessor.OnAsyncOrderRemoved_executionControlShouldRebuildOLV -= this.orderProcessor_OrderRemoved;
-			this.orderProcessor.OnOrderStateOrPropertiesChanged_executionControlShouldPopulate -= this.orderProcessor_OrderStateChanged;
-			this.orderProcessor.OnOrderMessageAdded_executionControlShouldPopulate -= this.orderProcessor_OrderMessageAdded;
-			string msg = "ExecutionForm_Closed(): unsubscribed from orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderAddedExecutionFormNotification";
+			this.orderProcessor.OnOrderAdded_executionControlShouldRebuildOLV_scheduled						-= this.orderProcessor_OnOrderAdded;
+			this.orderProcessor.OnOrdersRemoved_executionControlShouldRebuildOLV_scheduled					-= this.orderProcessor_OnOrdersRemoved;
+			this.orderProcessor.OnOrderStateOrPropertiesChanged_executionControlShouldPopulate_immediately	-= this.orderProcessor_OnOrderStateChanged;
+			this.orderProcessor.OnOrderMessageAdded_executionControlShouldPopulate_scheduled				-= this.orderProcessor_OnOrderMessageAdded;
+			this.ExecutionTreeControl.OnOrderSingleClicked_ChartControlShouldPopupPosition					-= this.executionTree_OnOrderSingleClicked_ChartControlShouldPopupPosition;
+
+			string msg = "ExecutionForm_Closing(): unsubscribed from orderProcessor.OnOrder{Added/Removed/StateChanged/MessageAdded}";
 			Assembler.PopupException(msg);
 		}
 	}

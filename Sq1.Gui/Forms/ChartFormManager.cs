@@ -36,22 +36,19 @@ namespace Sq1.Gui.Forms {
 		public	MainForm							MainForm;
 		public	ChartFormDataSnapshot				DataSnapshot;
 		public	Serializer<ChartFormDataSnapshot>	DataSnapshotSerializer;
-		public	bool								StrategyFoundDuringDeserialization		{ get; private set; }
+		public	bool								StrategyFoundDuringDeserialization			{ get; private set; }
 		public	Strategy							Strategy;
 		public	ScriptExecutor						Executor;
 		public	ReportersFormsManager				ReportersFormsManager;
 		public	ChartForm							ChartForm;
-				DockPanel							dockPanel								{ get { return this.MainForm.DockPanel; } }
+				DockPanel							dockPanel									{ get { return this.MainForm.DockPanel; } }
 				ScriptEditorFormFactory				scriptEditorFormFactory;
 				
 		public	ScriptEditorForm					ScriptEditorForm;
-		public	ScriptEditorForm					ScriptEditorFormConditionalInstance		{ get {
+		public	ScriptEditorForm					ScriptEditorFormSingletonized_nullUnsafe	{ get {
 				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm)) {
 					if (this.Strategy == null) return null;
 					if (this.Strategy.ActivatedFromDll == true) return null;
-						#if DEBUG
-						//Debugger.Break();
-						#endif
 					if (this.scriptEditorFormFactory == null) {
 						this.scriptEditorFormFactory = new ScriptEditorFormFactory(this);
 					}
@@ -62,24 +59,13 @@ namespace Sq1.Gui.Forms {
 				}
 				return this.ScriptEditorForm;
 			} }
-		public	bool								ScriptEditorIsOnSurface					{ get {
-				bool editorMustBeActivated = true;
-				ScriptEditorForm editor = this.ScriptEditorForm;
-				bool editorNotInstantiated = DockContentImproved.IsNullOrDisposed(editor);
-				if (editorNotInstantiated) return editorMustBeActivated;
-				
-				//bool hidden = editor.IsHidden;
-				//SHOULD_INCLUDE_FLOATWINDOW_OR_DOCKED_BUT_COVERED_BY_OTHER_FELLAS bool undockToOpen = editor.IsDocked || editor.IsDockedAutoHide;
-				//for DockedRightAutoHide+Folded, Control.Active=true (seems illogical)
-				//for DockedRightAutoHide+Folded, DockContent.IsHidden=false (seems illogical)
-				editorMustBeActivated = editor.MustBeActivated;
-				return !editorMustBeActivated;
-			} }
+		public	bool								ScriptEditorInstantiated					{ get { return DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm) == false; } }
+		public	bool								ScriptEditorInstantiated_andInFront			{ get { return this.ScriptEditorInstantiated ? this.ScriptEditorForm.IsInFront : false; } }
 		
 		
 				SequencerFormFactory				sequencerFormFactory;
 		public	SequencerForm						SequencerForm;
-		public	SequencerForm						SequencerFormConditionalInstance		{ get {
+		public	SequencerForm						SequencerFormSingletonized_nullUnsafe		{ get {
 				if (DockContentImproved.IsNullOrDisposed(this.SequencerForm)) {
 					if (this.Strategy == null) return null;
 					if (this.sequencerFormFactory == null) {
@@ -95,46 +81,34 @@ namespace Sq1.Gui.Forms {
 				}
 				return this.SequencerForm;
 			} }
-		public	bool								SequencerIsOnSurface				{ get {
-				SequencerForm sequencer = this.SequencerForm;
-				if (DockContentImproved.IsNullOrDisposed(sequencer)) return false;
-				if (sequencer.IsShown == false) return false;
-				return sequencer.MustBeActivated == false;
-			} }
+		public	bool								SequencerInstantiated						{ get { return DockContentImproved.IsNullOrDisposed(this.SequencerForm) == false; } }
+		public	bool								SequencerInstantiated_andInFront			{ get { return this.SequencerInstantiated ? this.SequencerForm.IsInFront : false; } }
 
-		public	LivesimForm LivesimForm;
-		public	LivesimForm LivesimFormConditionalInstance { get {
+		public	LivesimForm							LivesimForm;
+		public	LivesimForm							LivesimFormSingletonized_nullUnsafe			{ get {
 				if (DockContentImproved.IsNullOrDisposed(this.LivesimForm)) {
 					if (this.Strategy == null) return null;
 					this.LivesimForm = new LivesimForm(this);
 				}
 				return this.LivesimForm;
 			} }
-		public	bool								LivesimFormIsOnSurface				{ get {
-				LivesimForm livesim = this.LivesimForm;
-				if (DockContentImproved.IsNullOrDisposed(livesim)) return false;
-				if (livesim.IsShown == false) return false;
-				return livesim.MustBeActivated == false;
-			} }
+		public	bool								LivesimFormInstantiated						{ get { return DockContentImproved.IsNullOrDisposed(this.LivesimForm) == false; } }
+		public	bool								LivesimFormInstantiated_andInFront			{ get { return this.LivesimFormInstantiated ? this.LivesimForm.IsInFront : false; } }
 
-		public	CorrelatorForm CorrelatorForm;
-		public	CorrelatorForm CorrelatorFormConditionalInstance { get {
+		public	CorrelatorForm						CorrelatorForm;
+		public	CorrelatorForm						CorrelatorFormSingletonized_nullUnsafe		{ get {
 				if (DockContentImproved.IsNullOrDisposed(this.CorrelatorForm)) {
 					if (this.Strategy == null) return null;
 					this.CorrelatorForm = new CorrelatorForm(this);
 				}
 				return this.CorrelatorForm;
 			} }
-		public	bool								CorrelatorFormIsOnSurface				{ get {
-				CorrelatorForm correlator = this.CorrelatorForm;
-				if (DockContentImproved.IsNullOrDisposed(correlator)) return false;
-				if (correlator.IsShown == false) return false;
-				return correlator.MustBeActivated == false;
-			} }
+		public	bool								CorrelatorFormInstantiated					{ get { return DockContentImproved.IsNullOrDisposed(this.CorrelatorForm) == false; } }
+		public	bool								CorrelatorFormInstantiated_andInFront		{ get { return this.CorrelatorFormInstantiated ? this.CorrelatorForm.IsInFront : false; } }
 		
 		public	ChartFormInterformEventsConsumer	InterformEventsConsumer;
 		
-		public	Dictionary<string, DockContentImproved>	FormsAllRelated						{ get {
+		public	Dictionary<string, DockContentImproved>	FormsAllRelated							{ get {
 				var ret = new Dictionary<string, DockContentImproved>();
 				if (this.ChartForm			!= null) ret.Add("Chart",		this.ChartForm);
 				if (this.ScriptEditorForm	!= null) ret.Add("Source Code",	this.ScriptEditorForm);
@@ -146,7 +120,7 @@ namespace Sq1.Gui.Forms {
 				}
 				return ret;
 			} }
-		public	string								StreamingButtonIdent				{ get {
+		public	string								StreamingButtonIdent						{ get {
 				if (this.ContextCurrentChartOrStrategy == null) {
 					string msg = "StreamingButtonIdent_UNKNOWN__INVOKED_TOO_EARLY_ContextChart_WASNT_INITIALIZED_YET";
 					//Assembler.PopupException(msg);
@@ -163,10 +137,10 @@ namespace Sq1.Gui.Forms {
 
 				return emptyChartOrStrategy + subscribed + triggering;
 			} }
-		public	ContextChart						ContextCurrentChartOrStrategy		{ get {
+		public	ContextChart						ContextCurrentChartOrStrategy				{ get {
 				return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart; } }
 
-		public string WhoImServing_moveMeToExecutor { get {
+		public	string								WhoImServing_moveMeToExecutor				{ get {
 			string ret = "EMPTY_CHART";
 
 			if (this.Strategy != null) {
@@ -377,10 +351,10 @@ namespace Sq1.Gui.Forms {
 			this.Executor.Initialize(this.Strategy, this.ChartForm.ChartControl, false);
 
 			try {
-				// Click on strategy should open new chart,  
-				if (this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == true && this.Strategy.Script == null) {		// && this.Strategy.ActivatedFromDll == false
-					this.StrategyCompileActivate_populateSlidersShow();
-				}
+				// Click on strategy should open new chart,
+				//v1 if (this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == true && this.Strategy.Script == null) {		// && this.Strategy.ActivatedFromDll == false
+				if (this.Strategy.CompileOnChartInit) this.StrategyCompileActivate_populateSlidersShow();
+
 				//I'm here via Persist.Deserialize() (=> Reporters haven't been restored yet => backtest should be postponed); will backtest in InitializeStrategyAfterDeserialization
 				// STRATEGY_CLICK_TO_CHART_DOESNT_BACKTEST this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true);
 				// ALL_SORT_OF_STARTUP_ERRORS this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, false);
@@ -388,7 +362,7 @@ namespace Sq1.Gui.Forms {
 				this.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy(msig, loadNewBars, skipBacktestDuringDeserialization, saveStrategyRequired);
 				if (skipBacktestDuringDeserialization == false) {
 					string msg = "YOU_DID_NOT_SWITCH_TO_GUI_THREAD...";
-					this.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+					this.SequencerFormIfOpen_propagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 				}
 				//v1 if (this.Strategy.ScriptContextCurrent.IsStreaming) {
 				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
@@ -782,33 +756,34 @@ namespace Sq1.Gui.Forms {
 		}
 		public void EditorFormShow(bool keepAutoHidden = true) {
 			if (this.Strategy.ActivatedFromDll == true) return;
-			this.ScriptEditorFormConditionalInstance.Initialize(this);
+			this.ScriptEditorFormSingletonized_nullUnsafe.Initialize(this);
+			this.ScriptEditorFormSingletonized_nullUnsafe.ScriptEditorControl.PopulateCompilerSuccess();
 
-			DockPanel mainPanelOrAnotherEditorsPanel = this.dockPanel;
+			DockPanel mainPanel_orOnTopOf_anotherExistingEditorsPanel = this.dockPanel;
 			ScriptEditorForm anotherEditor = null;
 			foreach (DockContent form in this.dockPanel.Contents) {
 				anotherEditor = form as ScriptEditorForm;
 				if (anotherEditor == null) continue;
 				if (anotherEditor.Pane == null) continue;
-				mainPanelOrAnotherEditorsPanel = anotherEditor.Pane.DockPanel;
+				mainPanel_orOnTopOf_anotherExistingEditorsPanel = anotherEditor.Pane.DockPanel;
 				break;
 			}
 
-			this.ScriptEditorFormConditionalInstance.Show(mainPanelOrAnotherEditorsPanel);
-			this.ScriptEditorFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+			this.ScriptEditorFormSingletonized_nullUnsafe.Show(mainPanel_orOnTopOf_anotherExistingEditorsPanel);
+			this.ScriptEditorFormSingletonized_nullUnsafe.ActivateDockContent_popupAutoHidden(keepAutoHidden, true);
 			//this.ScriptEditorFormConditionalInstance.Show(this.dockPanel, DockState.Document);
 			//useless: will be re-calculated in ctxStrategy_Opening(); this.ChartForm.MniShowSourceCodeEditor.Checked = this.ScriptEditorIsOnSurface;
 		}
 		public void SequencerFormShow(bool keepAutoHidden = true) {
-			if (this.SequencerFormConditionalInstance.Initialized == false) {
-				this.SequencerFormConditionalInstance.Initialize(this);
+			if (this.SequencerFormSingletonized_nullUnsafe.Initialized == false) {
+				this.SequencerFormSingletonized_nullUnsafe.Initialize(this);
 			} else {
-				this.SequencerFormConditionalInstance.SequencerControl.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
+				this.SequencerFormSingletonized_nullUnsafe.SequencerControl.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
 				// I dont know why it's a second call (must be first) during app startup, but I wanna get CHECKED to shrink full backtests list
 				//since I just restored CHECKED in Correlator, I want only sequencer's backtests checked in Correlator!
 				//v1 DOESNT_SHOW_ALL_AFTER_RESTART this.CorrelatorForm.CorrelatorControl.Correlator.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
 				//v2  copypaste from correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt(object sender, SequencedBacktestsEventArgs e)
-				SequencerControl sequencerControl = this.SequencerFormConditionalInstance.SequencerControl;
+				SequencerControl sequencerControl = this.SequencerFormSingletonized_nullUnsafe.SequencerControl;
 				//v2 MOVED_TO_BacktestsReplaceWithCorrelated()
 				//if (sequencerControl.ShowOnlyCorrelatorChosenBacktests) {
 				//	CorrelatorControl correlatorControl = this.CorrelatorFormConditionalInstance.CorrelatorControl;
@@ -817,7 +792,7 @@ namespace Sq1.Gui.Forms {
 				//} else {
 				//	sequencerControl.BacktestsShowAll_regardlessWhatIsChosenInCorrelator();
 				//}
-				CorrelatorControl correlatorControl = this.CorrelatorFormConditionalInstance.CorrelatorControl;
+				CorrelatorControl correlatorControl = this.CorrelatorFormSingletonized_nullUnsafe.CorrelatorControl;
 				if (correlatorControl.Correlator.SequencedBacktestOriginal != null) {
 					SequencedBacktests chosenOnly = correlatorControl.Correlator.SequencedBacktestsOriginalMinusParameterValuesUnchosen;
 					sequencerControl.BacktestsReplaceWithCorrelated(chosenOnly);
@@ -826,8 +801,8 @@ namespace Sq1.Gui.Forms {
 				}
 			}
 
-			if (this.SequencerFormConditionalInstance.MustBeActivated) {
-				this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+			if (this.SequencerFormSingletonized_nullUnsafe.MustBeActivated) {
+				this.SequencerFormSingletonized_nullUnsafe.ActivateDockContent_popupAutoHidden(keepAutoHidden, true);
 				return;			// NOT_SURE
 			}
 			DockPanel mainPanelOrAnotherSequencerPanel = this.dockPanel;
@@ -842,21 +817,21 @@ namespace Sq1.Gui.Forms {
 				break;
 			}
 			if (anotherSequencerPane != null) {
-				this.SequencerFormConditionalInstance.Show(anotherSequencerPane, null);	// will place new sequencer into the same panel as (at right of) the previous & found
+				this.SequencerFormSingletonized_nullUnsafe.Show(anotherSequencerPane, null);	// will place new sequencer into the same panel as (at right of) the previous & found
 			} else {
-				this.SequencerFormConditionalInstance.Show(mainPanelOrAnotherSequencerPanel);
+				this.SequencerFormSingletonized_nullUnsafe.Show(mainPanelOrAnotherSequencerPanel);
 			}
-			this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+			this.SequencerFormSingletonized_nullUnsafe.ActivateDockContent_popupAutoHidden(keepAutoHidden, true);
 			//this.SequencerFormConditionalInstance.SequencerControl.Refresh();	// olvBacktest doens't repaint while having results?...
 			//this.SequencerFormConditionalInstance.SequencerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
 		}
 		public void CorrelatorFormShow(bool keepAutoHidden = true) {
 			//MUST_BE_INVOKED_SINCE_SECOND_INITIALIZATION_WILL_POPULATE_DESERIALIZED if (this.CorrelatorFormConditionalInstance.Initialized == false) {
-				this.CorrelatorFormConditionalInstance.Initialize(this);
+				this.CorrelatorFormSingletonized_nullUnsafe.Initialize(this);
 			//}
 
-			if (this.CorrelatorFormConditionalInstance.MustBeActivated) {
-				this.CorrelatorFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+			if (this.CorrelatorFormSingletonized_nullUnsafe.MustBeActivated) {
+				this.CorrelatorFormSingletonized_nullUnsafe.ActivateDockContent_popupAutoHidden(keepAutoHidden, true);
 				return;			// NOT_SURE
 			}
 
@@ -873,19 +848,19 @@ namespace Sq1.Gui.Forms {
 				break;
 			}
 			if (anotherCorrelatorPane != null) {
-				this.CorrelatorFormConditionalInstance.Show(anotherCorrelatorPane, null);	// will place new correlator into the same panel as (at right of) the previous & found
+				this.CorrelatorFormSingletonized_nullUnsafe.Show(anotherCorrelatorPane, null);	// will place new correlator into the same panel as (at right of) the previous & found
 			} else {
 				if (mainPanelOrAnotherCorrelatorPanel == this.dockPanel) {
-					if (this.SequencerFormConditionalInstance.Pane == null) {
+					if (this.SequencerFormSingletonized_nullUnsafe.Pane == null) {
 						this.SequencerFormShow(false);
 					}
-					if (this.SequencerFormConditionalInstance.Pane == null) {
+					if (this.SequencerFormSingletonized_nullUnsafe.Pane == null) {
 						string msg = "STILL_NULL_AFTER_OPENING_SEQUENCER__AVOIDING_NPE"
 							+ " this.SequencerFormConditionalInstance.Pane=null ATER this.SequencerFormShow(false)";
 						Assembler.PopupException(msg);
 						return;
 					}
-					DockPane landingPane = this.SequencerFormConditionalInstance.Pane;
+					DockPane landingPane = this.SequencerFormSingletonized_nullUnsafe.Pane;
 					bool autoHide = landingPane.DockState == DockState.DockBottomAutoHide
 								 || landingPane.DockState == DockState.DockLeftAutoHide
 								 || landingPane.DockState == DockState.DockRightAutoHide
@@ -894,17 +869,17 @@ namespace Sq1.Gui.Forms {
 					if (autoHide) {
 						string msg = "CANT_ADD_PANE_RELATIVELY_TO_AUTOHIDE_PANE ADDING_TO_RIGHT__NOT_BEST_SOLUTION_BUT_DOESNT_THROW";
 						Assembler.PopupException(msg, null, false);
-						this.CorrelatorFormConditionalInstance.Show(this.dockPanel, DockState.DockRight);
+						this.CorrelatorFormSingletonized_nullUnsafe.Show(this.dockPanel, DockState.DockRight);
 					} else {
-						this.CorrelatorFormConditionalInstance.Show(this.SequencerFormConditionalInstance.Pane, DockAlignment.Bottom, 0.6);
+						this.CorrelatorFormSingletonized_nullUnsafe.Show(this.SequencerFormSingletonized_nullUnsafe.Pane, DockAlignment.Bottom, 0.6);
 					}
 				} else {
 					string msg = "UNKNOWN_CASE__REMOVE_ME_IF_YOU_NEVER_SEE_ME";
 					Assembler.PopupException(msg);
-					this.CorrelatorFormConditionalInstance.Show(mainPanelOrAnotherCorrelatorPanel);
+					this.CorrelatorFormSingletonized_nullUnsafe.Show(mainPanelOrAnotherCorrelatorPanel);
 				}
 			}
-			this.CorrelatorFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, !keepAutoHidden);
+			this.CorrelatorFormSingletonized_nullUnsafe.ActivateDockContent_popupAutoHidden(keepAutoHidden, !keepAutoHidden);
 
 			// WILL_RAISE_BUT_AND_CORRELATOR_ALREADY_CATCHES_IT this.SequencerFormConditionalInstance.SequencerControl.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
 			//NEXT_LINE_RAISE_WILL_PUSH_IT_BUT_SECOND_CLICK_WILL_SHOW_ZEROES this.CorrelatorFormConditionalInstance.PopulateSequencedHistory(this.SequencerFormConditionalInstance.SequencerControl.PushToCorrelator);
@@ -913,7 +888,7 @@ namespace Sq1.Gui.Forms {
 			//this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(false, true);
 		}
 		public void LivesimFormShow(bool keepAutoHidden = true) {
-			this.LivesimFormConditionalInstance.Initialize(this);
+			this.LivesimFormSingletonized_nullUnsafe.Initialize(this);
 
 			DockPanel mainPanelOrAnotherLivesimsPanel = this.dockPanel;
 			LivesimForm anotherLivesim = null;
@@ -924,8 +899,8 @@ namespace Sq1.Gui.Forms {
 				mainPanelOrAnotherLivesimsPanel = anotherLivesim.Pane.DockPanel;
 				break;
 			}
-			this.LivesimFormConditionalInstance.Show(mainPanelOrAnotherLivesimsPanel);
-			this.LivesimFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+			this.LivesimFormSingletonized_nullUnsafe.Show(mainPanelOrAnotherLivesimsPanel);
+			this.LivesimFormSingletonized_nullUnsafe.ActivateDockContent_popupAutoHidden(keepAutoHidden, true);
 			//this.LivesimFormConditionalInstance.SequencerControl.Refresh();	// olvBacktest doens't repaint while having results?...
 			//this.LivesimFormConditionalInstance.SequencerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
 		}
@@ -950,7 +925,7 @@ namespace Sq1.Gui.Forms {
 				this.LivesimForm.WindowTitlePullFromStrategy();
 			}
 		}
-		public void StrategyCompileActivate_beforeShow() {
+		public void StrategyCompileInstantiate_beforeShow() {
 			if (this.Strategy.ActivatedFromDll) {
 				string msg = "WONT_COMPILE_STRATEGY_ACTIVATED_FROM_DLL_SHOULD_HAVE_NO_OPTION_IN_UI_TO_COMPILE_IT " + this.Strategy.ToString();
 				Assembler.PopupException(msg);
@@ -963,13 +938,19 @@ namespace Sq1.Gui.Forms {
 			}
 			this.Strategy.CompileInstantiate();
 			if (this.Strategy.Script == null) {
-				//POPUP_ANYWAY_KOZ_THATS_THE_ONLY_WAY_TO_SHOW_AND_FIX_COMPILATION_ERRORS if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm) == false) {
-				this.EditorFormShow(false);
-				this.ScriptEditorFormConditionalInstance.ScriptEditorControl.PopulateCompilerErrors(this.Strategy.ScriptCompiler.CompilerErrors);
-				//}
+				//NO!!!__BY_FORCING_EditorFormShow()_YOU_MOVE_EditorForm_BEFORE_CHART_FORM POPUP_ANYWAY_KOZ_THATS_THE_ONLY_WAY_TO_SHOW_AND_FIX_COMPILATION_ERRORS
+				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm) == false) {
+					string msg = "BY_FORCING_EditorFormShow()_YOU_MOVE_EditorForm_BEFORE_CHART_FORM"
+						+ "DONT_REMOVE_THIS_CONDITION__EditorForm_MUST_BE_MENTIONED_IN_Sq1.Gui.Layout.xml_AFTER_ChartForm";
+					this.EditorFormShow(false);
+					this.ScriptEditorFormSingletonized_nullUnsafe.ScriptEditorControl.PopulateCompilerErrors(this.Strategy.ScriptCompiler.CompilerErrors);
+				}
 			} else {
 				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm) == false) {
-					this.ScriptEditorFormConditionalInstance.ScriptEditorControl.PopulateCompilerSuccess();
+					this.ScriptEditorFormSingletonized_nullUnsafe.ScriptEditorControl.PopulateCompilerSuccess();
+				} else {
+					string msg = "[" + this.Strategy.Script.GetType().Name + "]: compiled , no errors //WorkspaceLoad()";
+					Assembler.DisplayStatus(msg);
 				}
 				this.Strategy.Script.Initialize(this.Executor);
 				this.Executor.Sequencer.RaiseScriptRecompiledUpdateHeaderPostponeColumnsRebuild();
@@ -981,7 +962,7 @@ namespace Sq1.Gui.Forms {
 		}
 		public void StrategyCompileActivate_populateSlidersShow() {
 			if (this.Strategy.ActivatedFromDll == false) {
-				this.StrategyCompileActivate_beforeShow();
+				this.StrategyCompileInstantiate_beforeShow();
 			}
 
 			if (this.Strategy.Script == null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
@@ -1002,12 +983,19 @@ namespace Sq1.Gui.Forms {
 			if (SlidersForm.Instance.Visible == false) {		// don't activate the tab if user has docked another Form on top of SlidersForm
 				//FOR_CHART_NO_STRATEGY_BRINGS_EMPTY_SLIDERS_UP SlidersForm.Instance.Show(this.dockPanel);
 				bool bringUp = this.Strategy != null;
-				SlidersForm.Instance.ActivateDockContentPopupAutoHidden(!bringUp, bringUp);
+				SlidersForm.Instance.ActivateDockContent_popupAutoHidden(!bringUp, bringUp);
 			}
 		}
 		public override string ToString() {
 			//v1: NullRef return "Strategy[" + this.Strategy.Name + "], Chart [" + this.ChartForm.ToString() + "]";
-			return this.StreamingButtonIdent;
+			//v2 return this.StreamingButtonIdent;
+			string ret = this.StreamingButtonIdent;
+			if (this.ChartForm != null) {
+				if (this.ChartForm.ChartControl != null) {
+					ret = this.ChartForm.ChartControl.ToString();
+				}
+			}
+			return null;
 		}
 		public void PopulateThroughMainForm_symbolStrategyTree_andSliders() {
 			ContextChart ctxScript = this.ContextCurrentChartOrStrategy;
@@ -1030,10 +1018,15 @@ namespace Sq1.Gui.Forms {
 				StrategiesForm.Instance.StrategiesTreeControl.UnSelectStrategy();
 			}
 			this.PopulateSliders();
+
+
+			if (this.LivesimFormInstantiated) {
+				if (this.LivesimForm.MustBeActivated) this.LivesimForm.Activate();
+			}
 		}
 
 		
-		public void SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory(bool deleteSequencedBacktest = false) {
+		public void SequencerFormIfOpen_propagateTextboxesOrMarkStaleResultsAndDeleteHistory(bool deleteSequencedBacktest = false) {
 			if (deleteSequencedBacktest) {
 				//v1 this.Strategy.SequencedResultsByContextIdent.Clear();
 				if (this.SequencerForm != null) {
@@ -1060,7 +1053,7 @@ namespace Sq1.Gui.Forms {
 			}
 
 			//v1
-			SequencerControl control = this.SequencerFormConditionalInstance.SequencerControl;
+			SequencerControl control = this.SequencerFormSingletonized_nullUnsafe.SequencerControl;
 			control.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
 			//v2 NO!!! I_SELECTED_SIXTEEN_STROKE_AND_I_EXPECT_this.populateTextboxesFromExecutorsState() olvHistory_ItemActivate will do a better job
 
@@ -1095,7 +1088,7 @@ namespace Sq1.Gui.Forms {
 			this.ReportersFormsManager.LivesimEndedOrStoppedOrPaused_RestoreHiddenReporters();
 			ExecutionForm exec = ExecutionForm.Instance;
 			if (exec.IsCoveredOrAutoHidden == true) exec.ToggleAutoHide();
-			exec.ExecutionTreeControl.RebuildAllTree_focusOnTopmost();
+			exec.ExecutionTreeControl.RebuildAllTree_focusOnRecent();
 		}
 		public void Dispose_workspaceReloading() {
 			string msig = " //ChartFormsManager.Dispose_workspaceReloading()";
@@ -1168,7 +1161,7 @@ namespace Sq1.Gui.Forms {
 			}
 			this.Executor.SetBars(barsUserSelected, this.ContextCurrentChartOrStrategy.DownstreamSubscribed);
 			this.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("ChartRangeBar_AnyValueChanged");
-			this.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+			this.SequencerFormIfOpen_propagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 		}
 
 		internal bool Shutdown_mainFormClosing() {

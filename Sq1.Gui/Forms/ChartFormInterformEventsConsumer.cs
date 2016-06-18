@@ -109,7 +109,7 @@ namespace Sq1.Gui.Forms {
 
 				DataSourcesForm.Instance.DataSourcesTreeControl.Refresh();
 
-				this.chartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.chartFormManager.SequencerFormIfOpen_propagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 
 				//copypaste from MainFormEventManager.DockPanel_ActiveDocumentChanged()
 				ChartForm chartFormCurrentlyOpen = this.chartFormManager.ChartForm;
@@ -124,7 +124,7 @@ namespace Sq1.Gui.Forms {
 		}
 		internal void MainForm_ActivateDocumentPane_WithChart(object sender, EventArgs e) {
 			if (this.chartFormManager.Strategy != null && this.chartFormManager.Strategy.ActivatedFromDll == false) {
-				this.chartFormManager.ScriptEditorFormConditionalInstance.ActivateDockContentPopupAutoHidden(true, true);
+				this.chartFormManager.ScriptEditorFormSingletonized_nullUnsafe.ActivateDockContent_popupAutoHidden(true, true);
 			}
 
 			this.chartFormManager.ReportersFormsManager.PopupReporters_OnParentChartActivated(sender, e);

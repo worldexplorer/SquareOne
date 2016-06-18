@@ -173,7 +173,7 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		public double GetPriceForMarketOrder_notAligned_fromQuoteLast(string symbol) {
+		public double GetPriceForMarketOrder_notAligned_fromQuoteLast_NOT_RELIABLE(string symbol) {
 			Quote quoteLast = this.GetQuoteLast_forSymbol_nullUnsafe(symbol);
 			if (quoteLast == null) return 0;
 			if (quoteLast.TradedAt == BidOrAsk.UNKNOWN) {
@@ -195,7 +195,7 @@ namespace Sq1.Core.Streaming {
 			ret = quoteLast.Bid;
 			return ret;
 		} 
-		public double GetBestAsk_notAligned_forMarketOrder_fromQuoteCurrent(string symbol) {
+		public double GetBestAsk_notAligned_forMarketOrder_fromQuoteLast(string symbol) {
 			double ret = -1;
 			Quote quoteLast = this.GetQuoteLast_forSymbol_nullUnsafe(symbol);
 			if (quoteLast == null) {
@@ -213,21 +213,21 @@ namespace Sq1.Core.Streaming {
 				throw new Exception(msg);
 			}
 			double price = (direction == PositionLongShort.Long)
-				? this.GetBestBid_notAligned_forMarketOrder_fromQuoteLast(Symbol) : this.GetBestAsk_notAligned_forMarketOrder_fromQuoteCurrent(Symbol);
+				? this.GetBestBid_notAligned_forMarketOrder_fromQuoteLast(Symbol) : this.GetBestAsk_notAligned_forMarketOrder_fromQuoteLast(Symbol);
 			return price;
 		}
 		public virtual double GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteLast(string symbol, Direction direction
 				, out SpreadSide oss, bool forceCrossMarket) {
 			string msig = " //GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteCurrent(" + symbol + ", " + direction + ")";
-			double priceLastQuote = this.GetPriceForMarketOrder_notAligned_fromQuoteLast(symbol);
+			double priceLastQuote = this.GetPriceForMarketOrder_notAligned_fromQuoteLast_NOT_RELIABLE(symbol);
 			if (priceLastQuote == 0) {
 				string msg = "QuickCheck ZERO priceLastQuote=" + priceLastQuote + " for Symbol=[" + symbol + "]"
 					+ " from streamingAdapter[" + this.streamingAdapter.Name + "].StreamingDataSnapshot";
 				Assembler.PopupException(msg, null, false);
 				//throw new Exception(msg);
 			}
+			double currentAsk = this.GetBestAsk_notAligned_forMarketOrder_fromQuoteLast(symbol);
 			double currentBid = this.GetBestBid_notAligned_forMarketOrder_fromQuoteLast(symbol);
-			double currentAsk = this.GetBestAsk_notAligned_forMarketOrder_fromQuoteCurrent(symbol);
 			if (currentBid == 0) {
 				string msg = "ZERO currentBid=" + currentBid + " for Symbol=[" + symbol + "]"
 					+ " while priceLastQuote=[" + priceLastQuote + "]"
@@ -266,12 +266,12 @@ namespace Sq1.Core.Streaming {
 				case Direction.Cover:
 					switch (spreadSide) {
 						case MarketOrderAs.LimitTidal:
-							oss = SpreadSide.BidTidal;
-							price = currentBid;
+							oss = SpreadSide.AskTidal;
+							price = currentAsk;
 							break;
 						case MarketOrderAs.LimitCrossMarket:
-							oss = SpreadSide.AskCrossed;
-							price = currentAsk;		// Unknown (Order default) becomes CrossMarket
+							oss = SpreadSide.BidCrossed;
+							price = currentBid;		// Unknown (Order default) becomes CrossMarket
 							break;
 						case MarketOrderAs.MarketMinMaxSentToBroker:
 							oss = SpreadSide.MaxPrice;
@@ -294,12 +294,12 @@ namespace Sq1.Core.Streaming {
 				case Direction.Sell:
 					switch (spreadSide) {
 						case MarketOrderAs.LimitTidal:
-							oss = SpreadSide.AskTidal;
-							price = currentAsk;
+							oss = SpreadSide.BidTidal;
+							price = currentBid;
 							break;
 						case MarketOrderAs.LimitCrossMarket:
-							oss = SpreadSide.BidCrossed;
-							price = currentBid;		// Unknown (Order default) becomes CrossMarket
+							oss = SpreadSide.AskCrossed;
+							price = currentAsk;		// Unknown (Order default) becomes CrossMarket
 							break;
 						case MarketOrderAs.MarketMinMaxSentToBroker:
 							oss = SpreadSide.MinPrice;

@@ -53,7 +53,7 @@ namespace Sq1.Gui.FormFactories {
 			}
 			try {
 				this.chartFormManager.StrategyCompileActivate_populateSlidersShow();
-				this.chartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory(true);
+				this.chartFormManager.SequencerFormIfOpen_propagateTextboxesOrMarkStaleResultsAndDeleteHistory(true);
 			} catch (Exception ex) {
 				string msg = "COMPILING_STRATEGY_SOURCE_CODE_FAILED //ScriptEditorControl_OnCompile() << StrategyCompileActivatePopulateSlidersShow() has thrown";
 				Assembler.PopupException(msg, ex, false);

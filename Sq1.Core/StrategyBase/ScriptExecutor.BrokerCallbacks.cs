@@ -76,7 +76,7 @@ namespace Sq1.Core.StrategyBase {
 
 				if (this.ExecutionDataSnapshot.AlertsUnfilled.Contains(alertKilled, this, msig)) {
 					bool removed = this.ExecutionDataSnapshot.AlertsUnfilled.Remove(alertKilled, this, msig);
-					if (removed) alertKilled.IsKilled = true;
+					if (removed) alertKilled.StoreKilledInfo(this.Bars.BarLast);
 				} else {
 					string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsPending DELETED_EARLIER_OR_NEVER_BEEN_ADDED;"
 						+ " PositionCloseImmediately() kills all PositionPrototype-based PendingAlerts"
@@ -89,7 +89,7 @@ namespace Sq1.Core.StrategyBase {
 
 				if (this.ExecutionDataSnapshot.AlertsDoomed.Contains(alertKilled, this, msig)) {
 					bool removed = this.ExecutionDataSnapshot.AlertsDoomed.Remove(alertKilled, this, msig);
-					if (removed) alertKilled.IsKilled = true;
+					if (removed) alertKilled.StoreKilledInfo(this.Bars.BarLast, true);
 				} else {
 					string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed DELETED_EARLIER_OR_NEVER_BEEN_ADDED";
 					Assembler.PopupException(msg, null, false);
@@ -190,7 +190,7 @@ namespace Sq1.Core.StrategyBase {
 			// Limit might get a Fill 2 bars after it was placed; PlacedBarIndex=BarStreaming.ParentIndex = now for past bar signals => not "PlacedBarIndex-1"
 			if (barFillRelno < alertFilled.PlacedBarIndex) {
 				string msg = "I_REFUSE_MOVE_AROUND__FILLED_BEFORE_PLACED barFillRelno[" + barFillRelno + "] < PlacedBarIndex["
-					+ alertFilled.PlacedBarIndex + "]; FilledBar=[" + alertFilled.FilledBar + "] PlacedBar=[" + alertFilled.PlacedBar + "]";
+					+ alertFilled.PlacedBarIndex + "]; FilledBar=[" + alertFilled.FilledBar_live + "] PlacedBar=[" + alertFilled.PlacedBar + "]";
 				Assembler.PopupException(msg);
 			}
 
@@ -257,7 +257,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				//THIS_ALREADY_IS_A_CLONE alertFilled.QuoteFilledThisAlertDuringBacktestNotLive = quoteFilledThisAlertNullForLive.Clone();	// CLONE_TO_FREEZE_AS_IT_HAPPENED_IGNORING_WHATEVER_HAPPENED_WITH_ORIGINAL_QUOTE_AFTERWARDS
 				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive = quoteFilledThisAlert_nullFromOrderProcessorWhenLive;	// CLONE_TO_FREEZE_AS_IT_HAPPENED_IGNORING_WHATEVER_HAPPENED_WITH_ORIGINAL_QUOTE_AFTERWARDS
-				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive.ItriggeredFillAtBidOrAsk = alertFilled.BidOrAskWillFillMe;
+				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive.ItriggeredFillAtBidOrAsk = alertFilled.BidOrAsk_willFillMe;
 			} else {
 				//LIVEISM
 				alertFilled.QuoteCurrent_whenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(alertFilled.Symbol);
@@ -568,7 +568,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				if (positionClosed_afterAlertFilled != null) {
 					this.PerformanceAfterBacktest.BuildReportIncremental_brokerFilledAlertsClosing_forPositions_step3of3(positionClosed_afterAlertFilled);
-					if (alertFilled.GuiHasTimeRebuildReportersAndExecution) {
+					if (alertFilled.GuiHasTime_toRebuildReportersAndExecution) {
 						// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
 						this.EventGenerator.RaiseOnBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit_dontForgetToDispose);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
 					}
@@ -582,7 +582,7 @@ namespace Sq1.Core.StrategyBase {
 			this.removePendingExitAlert_backtestEnded(alert, msig);
 			bool checkPositionOpenNow = true;
 			if (this.check_positionCanBeClosed(alert, msig, checkPositionOpenNow) == false) return;
-			if (alert.FilledBar == null) {
+			if (alert.FilledBar_live == null) {
 				string msg = "BACKTEST_ENDED_ALERT_UNFILLED strategy[" + this.Strategy.ToString() + "] alert[" + alert + "]";
 				Assembler.PopupException(msg + msig);
 				return;
@@ -592,7 +592,7 @@ namespace Sq1.Core.StrategyBase {
 			//alertExitClonedStub.Direction = MarketConverter.ExitDirectionFromLongShort(alert.PositionLongShortFromDirection);
 			//// REFACTORED_POSITION_HAS_AN_ALERT_AFTER_ALERTS_CONSTRUCTOR we can exit by TP or SL - position doesn't have an ExitAlert assigned until Position.EntryAlert was filled!!!
 			//alert.PositionAffected.ExitAlertAttach(alertExitClonedStub);
-			alert.PositionAffected.FillExitWith(alert.FilledBar, alert.PriceEmitted, alert.Qty, 0, 0);
+			alert.PositionAffected.FillExitWith(alert.FilledBar_live, alert.PriceEmitted, alert.Qty, 0, 0);
 			//alertFilled.FillPositionAffectedEntryOrExitRespectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
 
 			bool absenceThrows = true;

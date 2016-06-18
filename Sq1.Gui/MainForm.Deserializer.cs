@@ -137,28 +137,28 @@ namespace Sq1.Gui {
 					//return "ScriptEditor:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
 					parentChart = this.GuiDataSnapshot.FindChartFormsManager_bySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
-					ret = parentChart.ScriptEditorFormConditionalInstance;
+					ret = parentChart.ScriptEditorFormSingletonized_nullUnsafe;
 					break;
 
 				case ("Sequencer"):
 					//return "Sequencer:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
 					parentChart = this.GuiDataSnapshot.FindChartFormsManager_bySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
-					ret = parentChart.SequencerFormConditionalInstance;
+					ret = parentChart.SequencerFormSingletonized_nullUnsafe;
 					break;
 
 				case ("LiveSim"):
 					//return "Livesim:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
 					parentChart = this.GuiDataSnapshot.FindChartFormsManager_bySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
-					ret = parentChart.LivesimFormConditionalInstance;
+					ret = parentChart.LivesimFormSingletonized_nullUnsafe;
 					break;
 
 				case ("Correlator"):
 					//return "Livesim:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
 					parentChart = this.GuiDataSnapshot.FindChartFormsManager_bySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
-					ret = parentChart.CorrelatorFormConditionalInstance;
+					ret = parentChart.CorrelatorFormSingletonized_nullUnsafe;
 					break;
 
 				case ("DataSourceEditor"):

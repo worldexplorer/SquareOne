@@ -212,5 +212,15 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.Script.RecalculateIndicator(indicatorParameterChanged_userClickedInSliders);
 		}
+
+		public bool CompileOnChartInit { get {
+			bool ret = false;
+			if (this.ActivatedFromDll		== true) return ret;
+			if (this.Script					!= null) return ret;
+			if (this.ScriptContextCurrent	== null) return ret;
+			ret =	this.ScriptContextCurrent.BacktestOnSelectorsChange ||
+					this.ScriptContextCurrent.StreamingIsTriggeringScript;
+			return ret;
+		} }
 	}
 }

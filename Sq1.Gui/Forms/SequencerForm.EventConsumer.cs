@@ -26,7 +26,7 @@ namespace Sq1.Gui.Forms {
 			this.chartFormsManager.SequencerForm = null;
 		}
 		void sequencer_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt(object sender, SequencedBacktestsEventArgs e) {
-			this.chartFormsManager.SequencerFormConditionalInstance.SequencerControl.BacktestsReplaceWithCorrelated(e.SequencedBacktests);
+			this.chartFormsManager.SequencerFormSingletonized_nullUnsafe.SequencerControl.BacktestsReplaceWithCorrelated(e.SequencedBacktests);
 		}
 
 	}

@@ -166,7 +166,7 @@ namespace Sq1.Core.StrategyBase {
 					if (proto.StopLossAlert_forMoveAndAnnihilation != null) slDirectionAssumedOrActualIfFilled = proto.StopLossAlert_forMoveAndAnnihilation.Direction;
 					switch (slDirectionAssumedOrActualIfFilled) {
 						case Direction.Sell:
-							double ask = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBestAsk_notAligned_forMarketOrder_fromQuoteCurrent(proto.Symbol);
+							double ask = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBestAsk_notAligned_forMarketOrder_fromQuoteLast(proto.Symbol);
 							if (newStopLossPrice > ask) {
 								msg = "NEW_STOP_PRICE_BELOW_ASK_WILL_BE_REJECTED_BY_MARKET"
 									+ " newStopLossPrice[" + newStopLossPrice + "] < Ask[" + ask + "] " + ident2

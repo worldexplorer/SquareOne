@@ -242,7 +242,7 @@ namespace Sq1.Core.Livesim {
 					//	streamingBacktest, base.BarsOriginal.Symbol, base.BarsOriginal.ScaleInterval);
 				}
 
-				double sec = Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 2);
+				double sec = Math.Round(base.Stopwatch_backtestLasted.ElapsedMilliseconds / 1000d, 2);
 				string strokesPerBar = base.QuotesGenerator.BacktestStrokesPerBar + "/Bar";
 				string stats = "Livesim took [" + sec + "]sec at " + strokesPerBar;
 				this.Executor.LastBacktestStatus = stats + this.Executor.LastBacktestStatus;
@@ -279,7 +279,7 @@ namespace Sq1.Core.Livesim {
 
 				//if (this.DataSourceAsLivesim_nullUnsafe.StreamingAsLivesim_nullUnsafe.settings.DelayBetweenSerialQuotesEnabled) {
 				if (base.Executor.Strategy.LivesimStreamingSettings.DelayBetweenSerialQuotesEnabled == false) {
-					base.Executor.OrderProcessor.RaiseDelaylessLivesimEnded_shouldRebuildOLV(this);
+					base.Executor.OrderProcessor.RaiseOnDelaylessLivesimEnded_shouldRebuildOLV_immediately(this);
 				}
 			} catch (Exception e) {
 				#if DEBUG
@@ -389,7 +389,7 @@ namespace Sq1.Core.Livesim {
 					this.chartShadow.Initialize(base.Executor.Bars, false, true);
 				}
 
-				float seconds = (float)Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 2);
+				float seconds = (float)Math.Round(base.Stopwatch_backtestLasted.ElapsedMilliseconds / 1000d, 2);
 				this.btnPauseResume.Text = seconds.ToString() + " sec";
 				this.btnPauseResume.Enabled = false;
 			});

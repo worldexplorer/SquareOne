@@ -32,10 +32,10 @@ namespace Sq1.Gui.FormFactories {
 				string msg = "don't force Correlator showup if I clicked only mniShowSequencer and it wasn't restored from XML";
 				return;
 			}
-			CorrelatorForm correlatorForm = this.chartFormManager.CorrelatorFormConditionalInstance;
+			CorrelatorForm correlatorForm = this.chartFormManager.CorrelatorFormSingletonized_nullUnsafe;
 			correlatorForm.PopulateSequencedHistory(e.SequencedBacktests);
 			if (this.chartFormManager.SequencerForm.Visible) {
-				correlatorForm.ActivateDockContentPopupAutoHidden(false);
+				correlatorForm.ActivateDockContent_popupAutoHidden(false);
 			}
 
 			//DockState designedDockState = allParametersForm.ShowHint;

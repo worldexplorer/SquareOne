@@ -83,13 +83,13 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	string			SlippagesTidalCsv				{ get; set; }
 
 		[Category("3. Pre-OrderProcessor"), DefaultValue(true), Description("")]
-		[JsonProperty]	public	bool			UseFirstSlippageForBacktest	{ get; set; }
+		[JsonProperty]	public	bool			UseFirstSlippageForMarketAlertsAsLimit	{ get; set; }
 
 		[Category("3. Pre-OrderProcessor"), DefaultValue(true), Description("For StopSell + ")]
-		[JsonProperty]	public	bool			ReplaceTidalWithCrossMarket	{ get; set; }
+		[JsonProperty]	public	bool			NOT_USED_ReplaceTidalWithCrossMarket	{ get; set; }
 
 		[Category("3. Pre-OrderProcessor"), DefaultValue(100), Description("")]
-		[JsonProperty]	public	int				ReplaceTidalMillis			{ get; set; }
+		[JsonProperty]	public	int				NOT_USED_ReplaceTidalMillis			{ get; set; }
 
 		[Category("3. Pre-OrderProcessor"), DefaultValue(false), Description("")]
 		[JsonProperty]	public	bool			MarketOrders_priceFill_bringBackFromOutrageous			{ get; set; }
@@ -106,21 +106,24 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	bool			CheckForSimilarAlreadyPending { get; set; }
 
 
+		[Category("5. OrderPostProcessor:ReplacerExpired,Emergency"), DefaultValue(true), Description("OrderPostProcessorEmergency and OrderPostProcessorEmergency will increase the distance (=> decrease the profit) by using next available from SlippagesBuy/SlippagesSell")]
+		[JsonProperty]	public	bool			ReSubmitWithNextSlippage	{ get; set; }
 
-		[Category("5. Post-OrderProcessor"), DefaultValue(5), Description("EmergencyClose is PostProcessor's thread that kicks in when triggers when Position's Close was Rejected (Ctrl+Shift+F: InStateErrorComplementaryEmergencyState)")]
-		[JsonProperty]	public	int				EmergencyCloseAttemptsMax	{ get; set; }
-
-		[Category("5. Post-OrderProcessor"), DefaultValue(100), Description("EmergencyClose will sleep EmergencyCloseInterAttemptDelayMillis in its thread and repeat Closing of a Rejected ExitOrder, until ExitOrder.Clone will be returned by the BrokerAdapter as Filled, EmergencyCloseAttemptsMax times max")]
-		[JsonProperty]	public	int				EmergencyCloseInterAttemptDelayMillis	{ get; set; }
-
-		[Category("5. Post-OrderProcessor"), DefaultValue(-1),		Description("if!=-1: 1) Kill Pending Limit + wait it's killed, 2) use SlippagesCrossMarketCsv for CrossMarket and SlippagesTidalCsv for Tidal, 3) send replacement order with more cutting-through slippage")]
+		[Category("5.1 OrderPostProcessor:ReplacerExpired"), DefaultValue(-1),		Description("if!=-1: 1) Kill Pending Limit + wait it's killed, 2) use SlippagesCrossMarketCsv for CrossMarket and SlippagesTidalCsv for Tidal, 3) send replacement order with more cutting-through slippage")]
 		[JsonProperty]	public	int				ReSubmitLimitNotFilledWithinMillis		{ get; set; }
 
-		[Category("5. Post-OrderProcessor"), DefaultValue(true), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry")]
-		[JsonProperty]	public	bool			ReSubmitRejected			{ get; set; }
+		[Category("5.1 OrderPostProcessor:ReplacerExpired"), DefaultValue(true), Description("Kill->Wait->SubmitReplacement using {SlippagesCrossMarketCsv/SlippagesTidalCsv} after ReSubmitLimitNotFilledWithinMillis")]
+		[JsonProperty]	public	bool			ReSubmitLimitNotFilled		{ get; set; }
 
-		[Category("5. Post-OrderProcessor"), DefaultValue(true), Description("OrderPostProcessorRejected and OrderPostProcessorEmergency will increase the distance (=> decrease the profit) by using next available from SlippagesBuy/SlippagesSell")]
-		[JsonProperty]	public	bool			ReSubmitWithNextSlippage	{ get; set; }
+
+		[Category("5.9 OrderPostProcessor:Emergency (almost DEPRECATED)"), DefaultValue(5), Description("EmergencyClose is PostProcessor's thread that kicks in when triggers when Position's Close was Rejected (Ctrl+Shift+F: InStateErrorComplementaryEmergencyState)")]
+		[JsonProperty]	public	int				EmergencyCloseAttemptsMax	{ get; set; }
+
+		[Category("5.9 OrderPostProcessor:Emergency (almost DEPRECATED)"), DefaultValue(100), Description("EmergencyClose will sleep EmergencyCloseInterAttemptDelayMillis in its thread and repeat Closing of a Rejected ExitOrder, until ExitOrder.Clone will be returned by the BrokerAdapter as Filled, EmergencyCloseAttemptsMax times max")]
+		[JsonProperty]	public	int				EmergencyCloseInterAttemptDelayMillis	{ get; set; }
+
+		[Category("5.9 OrderPostProcessor:Emergency (almost DEPRECATED)"), DefaultValue(true), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry")]
+		[JsonProperty]	public	bool			ReSubmitRejected			{ get; set; }
 
 
 
@@ -161,14 +164,18 @@ namespace Sq1.Core.DataTypes {
 			this.SameBarPolarCloseThenOpen		= true;
 			this.SequencedOpeningAfterClosedDelayMillis = 1000;
 			this.MarketOrderAs					= MarketOrderAs.Unknown;
-			this.ReplaceTidalWithCrossMarket	= false;
-			this.ReplaceTidalMillis				= 0;
+			this.NOT_USED_ReplaceTidalWithCrossMarket	= false;
+			this.NOT_USED_ReplaceTidalMillis				= 0;
 			this.SlippagesCrossMarketCsv		= "";
 			this.SlippagesTidalCsv				= "";
 			this.ReSubmitRejected				= false;
 			this.ReSubmitWithNextSlippage		= false;
-			this.UseFirstSlippageForBacktest	= true;
+			this.UseFirstSlippageForMarketAlertsAsLimit	= false;
 			this.EmergencyCloseInterAttemptDelayMillis		= 8000;
+
+			this.ReSubmitLimitNotFilledWithinMillis	= 2000;
+			this.ReSubmitLimitNotFilled				= false;
+
 			this.EmergencyCloseAttemptsMax		= 5;
 
 			this.Level2AskShowHoles				= true;
@@ -226,7 +233,8 @@ namespace Sq1.Core.DataTypes {
 		//    return this.GetSlippage_signAware_forLimitOrdersOnly(alert.PriceScriptAligned, alert.Direction, alert.MarketOrderAs, slippageIndex, isStreaming);
 		//}
 
-		public double GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(Direction direction, MarketOrderAs crossOrTidal, int slippageIndex=0, bool NaN_whenNoMoreSlippagesAvailable = true) {
+		public double GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(Direction direction, MarketOrderAs crossOrTidal,
+					int slippageIndex=0, bool NaN_whenNoMoreSlippagesAvailable = true) {
 			double ret = 0;
 			List<double> slippagesAvailable = this.GetSlippages_forLimitOrdersOnly(crossOrTidal);
 			if (slippagesAvailable.Count == 0) return ret;

@@ -34,7 +34,12 @@ namespace Sq1.Core.StrategyBase {
 			string ret = "";
 			if (quoteForAlertsCreated	== null) ret += "QUOTE_IS_NULL ";
 			if (this.Strategy			== null) ret += "STRATEGY_IS_NULL ";
-			if (this.Strategy.Script	== null) ret += "SCRIPT_IS_NULL ";
+			if (this.Strategy.Script	== null) {
+				ret += "SCRIPT_IS_NULL ";
+				if (this.Strategy.CompileOnChartInit == false) {
+					ret += "YOU_DIDNT_COMPLIE_ME_ON_WORKSPACE_LOAD()?...";
+				}
+			}
 			if (string.IsNullOrEmpty(ret)) return;	// peace!
 			throw new Exception(msig + ret);		// war :(
 		}
@@ -84,6 +89,19 @@ namespace Sq1.Core.StrategyBase {
 					this.fillPendings_onEachQuote_onlyForLivesimBrokerDefault(quote_fromStreaming);
 				}
 			} else {
+				List<Alert> extendPriceEmitted_toCurrentBar_forOrdersReplaced = this.ExecutionDataSnapshot.AlertsUnfilled.SafeCopy(
+																					this, "alertToPropagatePriceEmitted_onEachNewBar");
+				if (extendPriceEmitted_toCurrentBar_forOrdersReplaced.Count > 1) {
+					string msg = "ARE_YO_RUNNING_STRATEGY_WITH__MULTIPLE_ALERTS_OPEN??? [" + extendPriceEmitted_toCurrentBar_forOrdersReplaced.Count + "]";
+					Assembler.PopupException(msg, null, false);
+				}
+				foreach (Alert alertToPropagatePriceEmitted_onEachNewBar in extendPriceEmitted_toCurrentBar_forOrdersReplaced) {
+					int extendedToBars = alertToPropagatePriceEmitted_onEachNewBar.FillPriceEmitted_fromLastChangeTillBar();
+					if (extendedToBars > 1) {
+						string msg = "IMPOSSIBLE__YOU_MISSED_BARS[" + extendedToBars + "]";
+						Assembler.PopupException(msg);
+					}
+				}
 				scriptInvocationError = this.invokeScript_onNewBar_indicatorsAlready(quote_fromStreaming);
 			}
 			if (string.IsNullOrEmpty(scriptInvocationError) == false) {

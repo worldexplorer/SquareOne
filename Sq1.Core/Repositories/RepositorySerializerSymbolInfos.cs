@@ -103,6 +103,11 @@ namespace Sq1.Core.Repositories {
 		}
 
 
+		public override int Serialize() {
+			base.Serialize();
+			return base.EntityDeserialized.Count;
+		}
+
 		bool deserializedOnce_nowSyncOnly = false;
 		public override SymbolInfoList Deserialize() {
 			if (base.EntityDeserialized == null) base.EntityDeserialized = new SymbolInfoList();

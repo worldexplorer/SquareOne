@@ -6,7 +6,7 @@ using Sq1.Core.Broker;
 
 namespace Sq1.Core.Livesim {
 	public sealed partial class LivesimBrokerDefault {
-		public override void Order_submit_oneThread_forAllNewAlerts(Order order) {
+		public override void Order_submit_oneThread_forAllNewAlerts_trampoline(Order order) {
 			string msig = " //LivesimBrokerDefault.Order_submit()";
 
 			this.OrdersSubmitted_forOneLivesimBacktest.Add(order);
@@ -20,7 +20,7 @@ namespace Sq1.Core.Livesim {
 			base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg_confirmed);
 		}
 
-		public override void Order_killPending_usingKiller(Order orderKiller) {
+		public override void Order_submitKiller_forPending(Order orderKiller) {
 			string msig = " //LivesimBrokerDefault.Order_killPending_usingKiller(WAIT)";
 
 			int delayBeforeKill = this.LivesimBrokerSpoiler.DelayBeforeKill_calculate();
@@ -30,7 +30,7 @@ namespace Sq1.Core.Livesim {
 			}
 
 			Task t = new Task(delegate() {
-				string threadName = "DELAYED_KILL delayBeforeKill[" + delayBeforeKill + "]ms " + orderKiller;
+				string threadName = "LIVESIM_BROKER_DEFAULT__DELAYED_KILL delayBeforeKill[" + delayBeforeKill + "]ms " + orderKiller;
 				Assembler.SetThreadName(threadName, "CANT_SET_THREAD_NAME" + msig);
 
 				this.ScriptExecutor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = true;
@@ -94,7 +94,8 @@ namespace Sq1.Core.Livesim {
 
 			msigHead = " orderVictim[" + orderVictim.SernoExchange + "]=>[" + OrderState.VictimBulletFlying + "] <= orderKiller[" + orderKiller.SernoExchange + "][" + orderKiller.State + "]";
 			OrderStateMessage omsg_waitingFill_victim = new OrderStateMessage(orderVictim, OrderState.VictimBulletFlying, "SIMULATING_WAITING_KILL_DELAY_ON_BROKER_SIDE__VICTIM_SHOULD_KNOW" + msigHead);
-			base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg_waitingFill_victim);
+			//base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg_waitingFill_victim);
+			base.OrderProcessor.AppendOrderMessage_propagateToGui(omsg_waitingFill_victim);
 
 
 			//KillerDone is set in victim_PostProcessing on VictimKilled

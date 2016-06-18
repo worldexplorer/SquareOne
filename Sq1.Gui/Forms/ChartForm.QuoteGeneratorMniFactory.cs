@@ -85,7 +85,7 @@ namespace Sq1.Gui.Forms {
 				}
 				// to inform SequencerControl of new strokes selected
 				this.ChartFormManager.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("ChartForm_OnBacktestStrokesClicked");
-				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpen_propagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				string msg = "REBACKTEST_FAILED?";
 				Assembler.PopupException(msg, ex, false);

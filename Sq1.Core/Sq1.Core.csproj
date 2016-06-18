@@ -113,7 +113,7 @@
     <Compile Include="Broker\OrderProcessor.GuiCommands.cs">
       <DependentUpon>OrderProcessor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Broker\OrdersAutoTree.cs" />
+    <Compile Include="Broker\OrdersRootOnly.cs" />
     <Compile Include="Charting\ChartSettingsTemplated.cs" />
     <Compile Include="Charting\ChartShadow.DataSourceTreeControl.ChartUnderSymbol.cs">
       <DependentUpon>ChartShadow.cs</DependentUpon>
@@ -538,7 +538,7 @@
     <Compile Include="Support\UserControlInner.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Support\UserControlImprovedFlush.cs">
+    <Compile Include="Support\UserControlPeriodicFlush.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Support\UserControlInner.Designer.cs">

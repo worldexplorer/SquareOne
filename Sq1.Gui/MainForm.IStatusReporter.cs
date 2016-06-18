@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 using Sq1.Core;
 using Sq1.Core.DataTypes;
@@ -36,19 +37,23 @@ namespace Sq1.Gui {
 			}
 
 			bool mainThreadGotHandle = Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete
-				&& Thread.CurrentThread.ManagedThreadId == 1
+				//THROWING_EXCEPTION_FROM_DELAYED_FILL_THREAD_DOESNT_SHOW_UP && Thread.CurrentThread.ManagedThreadId == 1
+				|| Thread.CurrentThread.ManagedThreadId == 1
 				//&& base.InvokeRequired
 				;
+
+			int alreadyThere = -1;
+			List<Exception> aa = Assembler.InstanceInitialized.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle;
+			if (aa != null) alreadyThere = aa.Count;
 
 			if (mainThreadGotHandle == false && Assembler.InstanceInitialized.ExceptionsFormInstance_safelyCreated == false) {
 				if (msg != null) exc = new Exception(msg, exc);
 				Assembler.InstanceInitialized.Exceptions_duringApplicationStartup_Insert(exc);
-				#if DEBUG
-				if (debuggingBreak) {
-					Debugger.Break();
-				}
-				#endif
-
+				//#if DEBUG
+				//if (debuggingBreak) {
+				//    Debugger.Break();
+				//}
+				//#endif
 				return;
 			}
 			

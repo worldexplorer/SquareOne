@@ -10,24 +10,12 @@ namespace Sq1.Core.Execution {
 		internal void SetNewPriceEmitted_fromReplacementOrder(Order replacementOrder) {
 			this.OrdersFollowed_killedAndReplaced.Add(this.OrderFollowed);
 			this.OrderFollowed = replacementOrder;
+			this.PriceEmitted = replacementOrder.PriceEmitted;
 
-			double replacementOrder_PriceRequested = replacementOrder.PriceEmitted;
+			int barLast_index = this.Bars.BarLast.ParentBarsIndex;
 
-			this.PriceEmitted = replacementOrder_PriceRequested;
-
-			// POSITION_DOESNT_EXIST_UNTIL_ENTRY_ALERT_GOT_FILL
-			//if (this.PositionAffected == null) {
-			//    string msg = "POSITION_AFFECTED_MUST_NOT_BE_NULL WHEN_ORDER_IS_REPLACED_INSTEAD_OF_REJECTED alert[" + this.ToString() + "]";
-			//    Assembler.PopupException(msg);
-			//    return;
-			//}
-			//if (this.IsEntryAlert) {
-			//    this.PositionAffected.EntryEmitted_price = this.PriceEmitted;
-			//} else {
-			//    this.PositionAffected.ExitEmitted_price = this.PriceEmitted;
-			//}
-
-			int howManyAdded = this.fillPriceEmitted_fromLastChangeTillBar(this.Bars.Count - 2);
+			//MOVED_TO_ScriptExecutor.InvokeScript_onNewBar_onNewQuote()
+			//int howManyAdded = this.FillPriceEmitted_fromLastChangeTillBar(this.Bars.Count - 2);
 
 			int barIndex_current = this.Bars.Count - 1;
 			if (this.PricesEmitted_byBarIndex.ContainsKey(barIndex_current) == false) {
@@ -36,57 +24,73 @@ namespace Sq1.Core.Execution {
 			List<double> pricesForSameBar = this.PricesEmitted_byBarIndex[barIndex_current];
 			pricesForSameBar.Add(this.PriceEmitted);
 		}
-		public List<double> GetEmittedPrice_forBarIndex(int barIndex_beingPainted) {
-			List<double> ret = new List<double>();
-			ret.Add(this.PriceEmitted);
-
-			if (this.PricesEmitted_byBarIndex.Count == 0) return ret;
+		public List<double> GetEmittedPrice_forBarIndex_nullUnsafe(int barIndex_beingPainted) {
+			if (this.PricesEmitted_byBarIndex.Count == 0) {
+				List<double> singlePriceForBar = new List<double>();
+				singlePriceForBar.Add(this.PriceEmitted);
+				return singlePriceForBar;
+			}
 
 			List<int> barIndexes = new List<int>(this.PricesEmitted_byBarIndex.Keys);
-			if (this.FilledBarIndex != -1) {
-				if (barIndexes.Contains(this.FilledBarIndex) == false) {
-					int howManyAdded = this.fillPriceEmitted_fromLastChangeTillBar(this.FilledBarIndex);
-					barIndexes = new List<int>(this.PricesEmitted_byBarIndex.Keys);
-				}
-			} else {
-				int howManyAdded = this.fillPriceEmitted_fromLastChangeTillBar();
-				barIndexes = new List<int>(this.PricesEmitted_byBarIndex.Keys);
-			}
+			//MOVED_TO_ScriptExecutor.InvokeScript_onNewBar_onNewQuote()
+			//if (this.FilledOrKilled) {
+			//    if (barIndexes.Contains(this.FilledOrKilled_barIndex) == false) {
+			//        int howManyAdded = this.FillPriceEmitted_fromLastChangeTillBar(this.FilledOrKilled_barIndex);
+			//        barIndexes = new List<int>(this.PricesEmitted_byBarIndex.Keys);
+			//    }
+			////} else {
+			////    int howManyAdded = this.fillPriceEmitted_fromLastChangeTillBar();
+			////    barIndexes = new List<int>(this.PricesEmitted_byBarIndex.Keys);
+			//}
 
 			if (barIndexes.Contains(barIndex_beingPainted) == false) {
-				string msg = "PANEL_PRICE_SHOULD_NOT_ASK_ME_ABOUT_Alert.PriceEmitted_FOR_BAR_WHERE_ALERT_DIDNT_EXIST";
-				Assembler.PopupException(msg);
-				return ret;
+			    string msg = "PANEL_PRICE_SHOULD_NOT_ASK_ME_ABOUT_Alert.PriceEmitted_FOR_BAR_WHERE_ALERT_DIDNT_EXIST";
+			    //Assembler.PopupException(msg);
+			    return null;
 			}
 
-			ret = this.PricesEmitted_byBarIndex[barIndex_beingPainted];
+			List<double> ret = this.PricesEmitted_byBarIndex[barIndex_beingPainted];
 			return ret;
 		}
-		int fillPriceEmitted_fromLastChangeTillBar(int barTill_streamingOrBarFilled = -1) {
-			int howManyAdded = 0;
-			if (this.Bars == null) return howManyAdded;
+		public int FillPriceEmitted_fromLastChangeTillBar(int barTill_streamingOrBarFilled = -1) {
+		    int howManyAdded = 0;
+		    if (this.Bars == null) return howManyAdded;
 
-			List<int> barIndexes = new List<int>(this.PricesEmitted_byBarIndex.Keys);
-			if (barIndexes.Count == 0) return howManyAdded;
-			int barIndex_last = barIndexes[barIndexes.Count-1];
+		    List<int> barIndexes = new List<int>(this.PricesEmitted_byBarIndex.Keys);
+		    if (barIndexes.Count == 0) return howManyAdded;
+		    int barIndex_last = barIndexes[barIndexes.Count-1];
 
-			List<double> pricesEmitted_forLastBar = this.PricesEmitted_byBarIndex[barIndex_last];
+		    List<double> pricesEmitted_last = this.PricesEmitted_byBarIndex[barIndex_last];
 
-			int barIndex_current = this.Bars.Count - 1;
-			if (barTill_streamingOrBarFilled == -1) barTill_streamingOrBarFilled = barIndex_current;
-			//lastBarIndex++;
-			if (barIndex_last >= barTill_streamingOrBarFilled) return howManyAdded;
-			for (int i = barIndex_last; i <= barTill_streamingOrBarFilled; i++) {
-				if (this.PricesEmitted_byBarIndex.ContainsKey(i)) {
-					string msg = "";
-					continue;
-				}
-				List<double> addingSinglePrice = new List<double>();
-				addingSinglePrice.AddRange(pricesEmitted_forLastBar);
-				this.PricesEmitted_byBarIndex.Add(i, addingSinglePrice);
-				howManyAdded++;
+		    int barIndex_current = this.Bars.Count - 1;
+		    if (barTill_streamingOrBarFilled == -1) barTill_streamingOrBarFilled = barIndex_current;
+		    int barIndex_next = barIndex_last + 1;
+
+		    if (barIndex_next > barTill_streamingOrBarFilled) {
+				string msg = "ALREADY_EXTENDED_PRICE_EMITTED_FOR_CURRENT_BAR.COUNT__DONT_INVOKE_ME_TWICE_FOR_SAME_BAR";
+				Assembler.PopupException(msg);
+				return howManyAdded;
 			}
-			return howManyAdded;
+			int mustBeOne = barTill_streamingOrBarFilled - barIndex_next;
+		    if (mustBeOne > 1) {
+				string msg = "I_EXTEND_PRICE_EMITTED_TO_NEXT_BAR__EACH_BAR__CAN_NOT_BE_TWO_BARS";
+				Assembler.PopupException(msg);
+				return howManyAdded;
+			}
+
+		    for (int i = barIndex_next; i <= barTill_streamingOrBarFilled; i++) {
+		        if (this.PricesEmitted_byBarIndex.ContainsKey(i)) {
+		            string msg = "ON_NEW_BAR__YOU_ADD_FROM_LAST_CHANGE_TO_NOW__BUT_JOB_IS_DONE_ONLY_FOR_FRESH_BAR_ADDED";
+					Assembler.PopupException(msg);
+		            continue;
+		        }
+		        List<double> addingSinglePrice = new List<double>();
+		        //addingSinglePrice.AddRange(pricesEmitted_last);
+				addingSinglePrice.Add(this.PriceEmitted);
+		        this.PricesEmitted_byBarIndex.Add(i, addingSinglePrice);
+		        howManyAdded++;
+		    }
+		    return howManyAdded;
 		}
 	}
 }

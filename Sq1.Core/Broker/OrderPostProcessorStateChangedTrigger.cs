@@ -18,7 +18,7 @@ namespace Sq1.Core.Broker {
 			this.orderProcessor = orderProcessor;
 		}
 
-		public void AddStateChangedHook(OrderPostProcessorStateHook orderWithState) { lock (this.hooksLock) {
+		public void HookRegister(OrderPostProcessorStateHook orderWithState) { lock (this.hooksLock) {
 			if (this.hooks.Contains(orderWithState)) {
 				string msg = "TRIGGER_ALREADY_ADDED: " + orderWithState;
 				throw new Exception(msg);
@@ -26,7 +26,7 @@ namespace Sq1.Core.Broker {
 			this.hooks.Add(orderWithState);
 		} }
 
-		public int InvokeHooks_forOrderState_deleteInvoked(Order order, ReporterPokeUnit pokeUnit_nullUnsafe) { lock (this.hooksLock) {
+		public int InvokeHooks_forOrderState_unregisterInvoked(Order order, ReporterPokeUnit pokeUnit_nullUnsafe) { lock (this.hooksLock) {
 			int hooksInvoked = 0;
 			List<OrderPostProcessorStateHook> safeForModification = new List<OrderPostProcessorStateHook>(this.hooks);
 			foreach (OrderPostProcessorStateHook hook in safeForModification) {
@@ -47,7 +47,7 @@ namespace Sq1.Core.Broker {
 
 				hooksInvoked++;
 			}
-			int hooksRemoved = this.RemoveAllInvoked();
+			int hooksRemoved = this.HooksUnregister_AllInvoked();
 			if (hooksRemoved != hooksInvoked) {
 				string msg = "hooksRemoved[" + hooksRemoved + "] != hooksInvoked[" + hooksInvoked + "]; I don't wanna be stuck on threading issues...";
 				throw new Exception(msg);
@@ -55,8 +55,8 @@ namespace Sq1.Core.Broker {
 			return hooksInvoked;
 		} }
 
-		public int RemoveAllInvoked() { lock (this.hooksLock) {
-			int hooksRemoved = 0;
+		public int HooksUnregister_AllInvoked() { lock (this.hooksLock) {
+			int hooksUnregistered = 0;
 			List<OrderPostProcessorStateHook> hooksInvoked = new List<OrderPostProcessorStateHook>();
 			foreach (OrderPostProcessorStateHook hook in this.hooks) {
 				if (hook.InvokedThusCanBeDeleted == false) continue;
@@ -64,9 +64,29 @@ namespace Sq1.Core.Broker {
 			}
 			foreach (OrderPostProcessorStateHook hookInvoked in hooksInvoked) {
 				hooks.Remove(hookInvoked);
-				hooksRemoved++;
+				hooksUnregistered++;
 			}
-			return hooksRemoved;
+			return hooksUnregistered;
+		} }
+
+		public int HooksUnregister_Uninvoked(Order order, OrderState orderState) { lock (this.hooksLock) {
+			int hooksUnregistered = 0;
+			List<OrderPostProcessorStateHook> hooksToRemove = new List<OrderPostProcessorStateHook>();
+			foreach (OrderPostProcessorStateHook hook in this.hooks) {
+				if (hook.Order != order) continue;
+				if (hook.InvokedThusCanBeDeleted) {
+					string msg = "I_REFUSE_TO_UNREGISTER_INVOKED_HOOK";
+					if (hook.OrderState == OrderState.VictimKilled) msg += " WEIRD!!! replacementOrderCreate is being executed now, will be autoremoved after completion";
+					Assembler.PopupException(msg);
+					continue;
+				}
+				hooksToRemove.Add(hook);
+			}
+			foreach (OrderPostProcessorStateHook hookToRemove in hooksToRemove) {
+				hooks.Remove(hookToRemove);
+				hooksUnregistered++;
+			}
+			return hooksUnregistered;
 		} }
 	}
 }

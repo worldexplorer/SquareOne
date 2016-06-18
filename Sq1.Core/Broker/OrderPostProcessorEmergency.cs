@@ -152,7 +152,7 @@ namespace Sq1.Core.Broker {
 
 				double priceScript = replacement.Alert.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot
 					.GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteLast(
-					replacement.Alert.Bars.Symbol, replacement.Alert.Direction, out replacement.SpreadSide, true);
+						replacement.Alert.Bars.Symbol, replacement.Alert.Direction, out replacement.SpreadSide, true);
 				replacement.Alert.PositionAffected.ExitEmitted_price = priceScript;
 
 				if (replacement.Alert.Bars.SymbolInfo.ReSubmitWithNextSlippage == true) {
@@ -223,18 +223,18 @@ namespace Sq1.Core.Broker {
 			emergencyReplacement.CreatedBrokerTime = serverTimeNow;
 
 			this.orderProcessor.DataSnapshot.OrderInsert_notifyGuiAsync(emergencyReplacement);
-			this.orderProcessor.RaiseOrderStateOrPropertiesChanged_executionControlShouldPopulate(this, new List<Order>(){rejectedOrderToReplace});
+			this.orderProcessor.RaiseOnOrderStateOrPropertiesChanged_executionControlShouldPopulate_immediately(this, new List<Order>(){rejectedOrderToReplace});
 	
 			return emergencyReplacement;
 		}
 		Order findEmergencyReplacement_forRejectedOrder(Order orderRejected) {
-			OrderLane	suggestedLane = null;
+			OrderLane	suggestedLane_nullUnsafe = null;
 			string		suggestion = "PASS_suggestLane=TRUE";
-			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(orderRejected.GUID, out suggestedLane, out suggestion, true);
+			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forOrderGuid(orderRejected.GUID, out suggestedLane_nullUnsafe, out suggestion, true);
 			if (rejected == null) {
 				throw new Exception("OrderRejected[" + orderRejected + "] wasn't found!!! suggestion[" + suggestion + "]");
 			}
-			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forGuid(rejected.EmergencyReplacedByGUID, out suggestedLane, out suggestion, true);
+			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forOrderGuid(rejected.EmergencyReplacedByGUID, out suggestedLane_nullUnsafe, out suggestion, true);
 			return replacement;
 		}
 		void throwLog_ifNotRejected_closingOrder(Order order) {

@@ -8,10 +8,10 @@ namespace Sq1.Gui.Singletons {
 
 		protected override void Dispose(bool disposing) {
 			if (this.orderProcessor != null) {
-				this.orderProcessor.OnAsyncOrderAdded_executionControlShouldRebuildOLV -= this.orderProcessor_OrderAdded;
-				this.orderProcessor.OnAsyncOrderRemoved_executionControlShouldRebuildOLV -= this.orderProcessor_OrderRemoved;
-				this.orderProcessor.OnOrderStateOrPropertiesChanged_executionControlShouldPopulate -= this.orderProcessor_OrderStateChanged;
-				this.orderProcessor.OnOrderMessageAdded_executionControlShouldPopulate -= this.orderProcessor_OrderMessageAdded;
+				this.orderProcessor.OnOrderAdded_executionControlShouldRebuildOLV_scheduled -= this.orderProcessor_OnOrderAdded;
+				this.orderProcessor.OnOrdersRemoved_executionControlShouldRebuildOLV_scheduled -= this.orderProcessor_OnOrdersRemoved;
+				this.orderProcessor.OnOrderStateOrPropertiesChanged_executionControlShouldPopulate_immediately -= this.orderProcessor_OnOrderStateChanged;
+				this.orderProcessor.OnOrderMessageAdded_executionControlShouldPopulate_scheduled -= this.orderProcessor_OnOrderMessageAdded;
 //				this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderAddedExecutionFormNotification -= this.orderProcessor_OrderAdded;
 //				this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderRemovedExecutionFormNotification -= this.orderProcessor_OrderRemoved;
 //				this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderStateChangedExecutionFormNotification -= this.orderProcessor_OrderStateChanged;

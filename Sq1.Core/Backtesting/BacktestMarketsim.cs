@@ -654,7 +654,7 @@ namespace Sq1.Core.Backtesting {
 		}
 		
 		public void AlertPending_simulateKill(Alert alert) {
-			alert.IsKilled = true;
+			alert.StoreKilledInfo();
 			this.scriptExecutor.CallbackAlertKilled_invokeScript_nonReenterably(alert);
 		}
 	}

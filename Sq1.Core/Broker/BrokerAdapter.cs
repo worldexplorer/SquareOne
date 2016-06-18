@@ -241,7 +241,7 @@ namespace Sq1.Core.Broker {
 					continue;
 				}
 				//this.OrderProcessor.DataSnapshot.SwitchLanes_forOrder_postStatusUpdate(order);
-				this.Order_submit_oneThread_forAllNewAlerts(order);
+				this.Order_submit_oneThread_forAllNewAlerts_trampoline(order);
 			}
 		} }
 
@@ -251,7 +251,7 @@ namespace Sq1.Core.Broker {
 					string msg = "Backtesting orders should not be routed to MockBrokerAdapters, but simulated using MarketSim; victimOrder=[" + victimOrder + "]";
 					throw new Exception(msg);
 				}
-				this.Order_killPending_usingKiller(victimOrder);
+				this.Order_submitKiller_forPending(victimOrder);
 			}
 		}
 
@@ -290,8 +290,9 @@ namespace Sq1.Core.Broker {
 					//Assembler.PopupException(msg1 + msg_order + msig, null, false);
 
 					if (lane_withSimilarOrder == null) lane_withSimilarOrder = this.OrderProcessor.DataSnapshot.OrdersAll;
-
-					orderSimilar = lane_withSimilarOrder.ScanRecent_forSimilarPendingOrder_notSame(order, out lane_withSimilarOrder, out suggestion_SimilarOrder);
+					if (lane_withSimilarOrder != null) {
+						orderSimilar = lane_withSimilarOrder.ScanRecent_forSimilarPendingOrder_notSame(order, out lane_withSimilarOrder, out suggestion_SimilarOrder);
+					}
 				}
 
 				if (orderSimilar != null) {
@@ -305,7 +306,7 @@ namespace Sq1.Core.Broker {
 			}
 
 
-			order.AbsorbCurrentBidAsk_fromStreamingSnapshot(this.StreamingAdapter.StreamingDataSnapshot);
+			order.AbsorbCurrentBidAsk_fromStreamingSnapshot_ifNotPropagatedFromAlert(this.StreamingAdapter.StreamingDataSnapshot);
 			this.Order_enrichAlert_brokerSpecificInjection(order);
 
 			if (order.Alert.Strategy.Script == null) return;
@@ -332,7 +333,7 @@ namespace Sq1.Core.Broker {
 				+ " SernoSession[" + order.SernoSession + "]";
 			string msg = "";
 
-			order.AbsorbCurrentBidAsk_fromStreamingSnapshot(this.StreamingAdapter.StreamingDataSnapshot);
+			order.AbsorbCurrentBidAsk_fromStreamingSnapshot_ifNotPropagatedFromAlert(this.StreamingAdapter.StreamingDataSnapshot);
 
 			Alert alert = order.Alert;
 			double priceBestBidAsk = this.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteLast(
@@ -341,11 +342,11 @@ namespace Sq1.Core.Broker {
 			SymbolInfo symbolInfo = alert.Bars.SymbolInfo;
 			switch (alert.MarketLimitStop) {
 				case MarketLimitStop.Market:
-					//if (order.PriceRequested != 0) {
-					//	string msg1 = Name + "::OrderSubmit(): order[" + order + "] is MARKET, dropping Price[" + order.PriceRequested + "] replacing with current Bid/Ask ";
+					//if (order.PriceEmitted != 0) {
+					//	string msg1 = Name + "::OrderSubmit(): order[" + order + "] is MARKET, dropping Price[" + order.PriceEmitted + "] replacing with current Bid/Ask ";
 					//	order.addMessage(new OrderStateMessage(order, msg1));
 					//	Assembler.PopupException(msg1);
-					//	order.PriceRequested = 0;
+					//	order.PriceEmitted = 0;
 					//}
 					if (alert.Bars == null) {
 						msg = "order.Bars=null; can't align order and get Slippage; returning with error // " + msg;
@@ -381,11 +382,17 @@ namespace Sq1.Core.Broker {
 							msg = "";
 							if (alert.Slippage_maxIndex_forLimitOrdersOnly > 0) {
 								//double slippage = symbolInfo.GetSlippage_signAware_forLimitAlertsOnly(alert, 0);
-								double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(0);
-								order.PriceEmitted += slippage;
-								msg += "ADDED_FIRST_SLIPPAGE[" + slippage + "]";
+								// BEGIN yes this is a mess here
+								//int firstSlippageIndex = 0;
+								//order.SlippageAppliedIndex = firstSlippageIndex;
+								//double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(firstSlippageIndex);
+								//if (order.SlippageApplied != slippage) {
+								//    order.PriceEmitted += slippage;
+								//    msg += "ADDED_FIRST_TIDAL_SLIPPAGE[" + slippage + "]";
+								//}
+								// END yes this is a mess here
 								if (order.Alert.PriceEmitted != order.PriceEmitted) {
-									msg += "!=Alert.PriceRequested[" + order.Alert.PriceEmitted + "]";
+									msg += "!=Alert.PriceEmitted[" + order.Alert.PriceEmitted + "]";
 								}
 							} else {
 								msg += "SLIPPAGES_NOT_DEFINED__SymbolInfo[" + symbolInfo.Symbol + "].SlippagesCrossMarketCsv";
@@ -399,11 +406,17 @@ namespace Sq1.Core.Broker {
 							msg = "";
 							if (alert.Slippage_maxIndex_forLimitOrdersOnly > 0) {
 								//double slippage = symbolInfo.GetSlippage_signAware_forLimitAlertsOnly(alert, 0);
-								double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(0);
-								order.PriceEmitted += slippage;
-								msg += "ADDED_FIRST_SLIPPAGE[" + slippage + "]";
+								// END yes this is a mess here
+								//int firstSlippageIndex = 0;
+								//order.SlippageAppliedIndex = firstSlippageIndex;
+								//double slippage = alert.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(firstSlippageIndex);
+								//if (order.SlippageApplied != slippage) {
+								//    order.PriceEmitted += slippage;
+								//    msg += "ADDED_FIRST_TIDAL_SLIPPAGE[" + slippage + "]";
+								//}
+								// END yes this is a mess here
 								if (order.Alert.PriceEmitted != order.PriceEmitted) {
-									msg += "!=Alert.PriceRequested[" + order.Alert.PriceEmitted + "]";
+									msg += "!=Alert.PriceEmitted[" + order.Alert.PriceEmitted + "]";
 								}
 							} else {
 								msg += "DOING_NOTHING__AS_SymbolInfo[" + symbolInfo.Symbol + "].SlippagesTidalCsv_ARE_NOT_DEFINED";
@@ -419,11 +432,11 @@ namespace Sq1.Core.Broker {
 					}
 					//if (alert.Bars.SymbolInfo.OverrideMarketPriceToZero == true) {
 					//} else {
-					//	if (order.PriceRequested == 0) {
+					//	if (order.PriceEmitted == 0) {
 					//		base.StreamingAdapter.StreamingDataSnapshot.BidOrAsk_getAligned_forTidalOrCrossMarket_fromStreamingSnap(
-					//			alert.Symbol, alert.Direction, out order.PriceRequested, out order.SpreadSide, ???);
-					//		order.PriceRequested += order.Slippage;
-					//		order.PriceRequested = alert.Bars.alignOrderPriceToPriceLevel(order.PriceRequested, alert.Direction, alert.MarketLimitStop);
+					//			alert.Symbol, alert.Direction, out order.PriceEmitted, out order.SpreadSide, ???);
+					//		order.PriceEmitted += order.Slippage;
+					//		order.PriceEmitted = alert.Bars.alignOrderPriceToPriceLevel(order.PriceEmitted, alert.Direction, alert.MarketLimitStop);
 					//	}
 					//}
 					//order.addMessage(new OrderStateMessage(order, msg));
@@ -482,65 +495,6 @@ namespace Sq1.Core.Broker {
 					throw new Exception(msg);
 			}
 			order.AppendMessage(msg + msig);
-		}
-
-		public Order ScanEvidentLanes_forGuid_nullUnsafe(string GUID, List<OrderLane> orderLanes = null, char separator = ';') {
-			string msig = " //" + this.Name;
-			string orderLanesSearchedAsString = "";
-			Order orderFound = null;
-			
-			if (orderLanes == null) {
-				var snap = this.OrderProcessor.DataSnapshot;
-				orderLanes = new List<OrderLane>() {snap.OrdersPending, snap.OrdersSubmitting, snap.OrdersAll};
-			}
-			foreach (OrderLane orderLane in orderLanes) {
-				orderLanesSearchedAsString += orderLane.GetType().Name.Substring(5) + separator;	// removing "Orders" from "OrdersSubmitting"
-				OrderLane	suggestedLane = null;
-				string		suggestion = "PASS_suggestLane=TRUE";
-				orderFound = orderLane.ScanRecent_forGuid(GUID, out suggestedLane, out suggestion, false);
-				if (orderFound != null) break;
-			}
-			orderLanesSearchedAsString = orderLanesSearchedAsString.TrimEnd(separator);
-			msig += ".FindOrderLaneOptimized_nullUnsafe(" + GUID + "),orderLanesSearchedAsString[" + orderLanesSearchedAsString + "]";
-			
-			if (orderFound == null) {
-				string msg = "PENDING_ORDER_NOT_FOUND__RETURNING_ORDER_NULL";
-				//msg		  += "; OrdersAll.SessionSernos[" + this.OrderProcessor.DataSnapshot.OrdersAll.SessionSernos + "]";
-				Assembler.PopupException(msg + msig, null, true);
-				return null; 
-			}
-			if (orderFound.Alert == null) {
-				string msg = "ORDER_FOUND_HAS_ALERT_NULL_UNRECOVERABLE__RETURNING_ORDER_NULL orderFound[" + orderFound.ToString() + "]";
-				Assembler.PopupException(msg + msig);
-				return null; 
-			}
-//			if (orderFound.Alert.DataSource == null) {
-//				string msg = "ORDER_FOUND_HAS_DATASOURCE_NULL__ASSIGNING_MINE orderFound[" + orderFound.ToString()
-//					+ "] this.DataSource[" + this.DataSource.ToString() + "]";
-//				Assembler.PopupException(msg + msig);
-//				orderFound.Alert.DataSource = this.DataSource;
-//			}
-			if (orderFound.Alert.Bars == null) {
-				string msg = "UNREPAIRABLE__ORDER_FOUND_HAS_Bars_NULL orderFound[" + orderFound.ToString()
-					+ "] this[" + this.ToString() + "]";
-				Assembler.PopupException(msg + msig, null, false);
-				//orderFound.Alert.Bars = orderFound.;
-				return orderFound;
-			}
-			if (orderFound.Alert.DataSource_fromBars == null) {
-				string msg = "UNREPAIRABLE__ORDER_FOUND_HAS_DataSource_NULL orderFound[" + orderFound.ToString()
-					+ "] this[" + this.ToString() + "]";
-				Assembler.PopupException(msg + msig, null, false);
-				//orderFound.Alert.DataSource = this.DataSource;
-				return orderFound;
-			}
-			if (orderFound.Alert.DataSource_fromBars.BrokerAdapter == null) {
-				string msg = "ORDER_FOUND_HAS_BROKER_NULL__ASSIGNING_MYSELF orderFound[" + orderFound.ToString()
-					+ "] this[" + this.ToString() + "]";
-				Assembler.PopupException(msg + msig, null, false);
-				orderFound.Alert.DataSource_fromBars.BrokerAdapter = this;
-			}
-			return orderFound;
 		}
 
 		public override string ToString() {

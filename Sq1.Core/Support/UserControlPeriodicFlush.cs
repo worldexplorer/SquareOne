@@ -6,16 +6,34 @@ using System.Threading;
 
 namespace Sq1.Core.Support {
 	public class UserControlPeriodicFlush : UserControlImproved {
-		protected Stopwatch			HowLongTreeRebuilds;
+		protected Stopwatch					HowLongTreeRebuilds;
 
 		protected TimerSimplifiedWinForms	Timed_flushingToGui;
-		//protected TimeredBlockTask	Timed_flushingToGui;
-		protected int				Timed_flushingToGui_Delay = 200;
+		//protected TimeredBlockTask		Timed_flushingToGui;
+		protected int						Timed_flushingToGui_Delay = 200;
 
 		Action flushMethod_invokedAfter_lastScheduleExpired;
 
 		public UserControlPeriodicFlush() {
 			this.HowLongTreeRebuilds	= new Stopwatch();
+			this.VisibleChanged += new System.EventHandler(this.exceptionsControl_VisibleChanged);
+		}
+		void exceptionsControl_VisibleChanged(object sender, EventArgs e) {
+			//I_WANTED_TO_CATCH_DockContent.AutoHiddenShownByMouseOver(),AutoHiddenNowDocked_BUT_GOT_WINFORMS_GARBAGE__WILL_USE_IT_THOUGH
+			//DockContentImproved parentAsDockContentImproved = this.parentAsDockContentImproved_nullUnsafe;
+			//if (parentAsDockContentImproved != null) {
+			//	if (parentAsDockContentImproved.IsCoveredOrAutoHidden) return;
+			//}
+			////if (base.Visible == false) return; 
+			string msg = "I_WAS_NOT_FLUSHING_TO_GUI_UNLESS_VISIBLE";
+			////STACK_OVERFLOW_CONGRATS Assembler.PopupException(msg, null, false);
+			//this.insertTo_exceptionsNotFlushedYet_willReportIfBlocking(new Exception(msg));
+
+			//v1 this.flushExceptionsToOLV_switchToGuiThread();
+			//v2
+			if (this.Timed_flushingToGui == null) return;	// .Initialize() will be invoked later, with Delay deserialized
+			this.Timed_flushingToGui.ScheduleOnce_postponeIfAlreadyScheduled();
+			//base.Timed_flushingToGui.ScheduleOnce();
 		}
 		
 		protected void Initialize_periodicFlushing(string threadName, Action flushingMethod_invokedFrom_timeredTask, int delay = 200) {

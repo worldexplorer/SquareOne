@@ -17,16 +17,16 @@ namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
 		void olvOrdersTree_SelectedIndexChanged(object sender, EventArgs e) {
 			try {
-				this.dataSnapshot.FirstRowShouldStaySelected = (this.OlvOrdersTree.SelectedIndex == 0) ? true : false;
-				int selectedIndex = this.OlvOrdersTree.SelectedIndex;
+				//this.dataSnapshot.RecentOrderShouldStaySelected = (this.olvOrdersTree.SelectedIndex == 0) ? true : false;
+				int selectedIndex = this.olvOrdersTree.SelectedIndex;
 				if (selectedIndex == -1) {
-					// PRESSING_DEL_KEY_DOESNT_TREAT_LOST_SELECTION_AS_CHANGED??? this.olvMessages.Clear();
+					// PRESSING_DEL_KEY_DOESNT_TREAT_LOST_SELECTION_AS_CHANGED??? this.olvMessages.SetObjects(null);
 					return;		// when selection changes, old selected is unselected; we got here twice on every click
 				}
 				
 				//this.OrdersTreeOLV.RedrawItems(selectedIndex, selectedIndex, true);
-				this.OlvOrdersTree.RefreshSelectedObjects();
-				this.populateMessagesFor(this.OlvOrdersTree.SelectedObject as Order);
+				//this.olvOrdersTree.RefreshSelectedObjects();
+				this.populateMessagesFor(this.olvOrdersTree.SelectedObject as Order);
 				
 				/*bool removeEmergencyLockEnabled = false;
 				foreach (Order selectedOrder in this.OrdersSelected) {
@@ -42,7 +42,7 @@ namespace Sq1.Widgets.Execution {
 					this.olvOrdersTree_DoubleClick(this, null);
 				}
 			} catch (Exception ex) {
-				Assembler.PopupException("ordersTree_SelectedIndexChanged()", ex);
+				Assembler.PopupException("olvOrdersTree_SelectedIndexChanged()", ex);
 			}
 		}
 		void ctxColumnsGrouped_ItemClicked(object sender, ToolStripItemClickedEventArgs e)	{
@@ -61,9 +61,6 @@ namespace Sq1.Widgets.Execution {
 					return;
 				}
 				bool newCheckedState = mni.Checked;
-				// F4.CheckOnClick=true mni.Checked = newState;
-	//			this.settingsManager.Set("ExecutionForm." + mni.Name + ".Checked", mni.Checked);
-	//			this.settingsManager.SaveSettings();
 
 				List<OLVColumn> columns = columnsByFilter[mni];
 				if (columns.Count == 0) return;
@@ -71,7 +68,7 @@ namespace Sq1.Widgets.Execution {
 				foreach (OLVColumn column in columns) {
 					column.IsVisible = newCheckedState;
 				}
-				this.OlvOrdersTree.RebuildColumns();
+				this.olvOrdersTree.RebuildColumns();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //ctxColumnsGrouped_ItemClicked", ex);
 			} finally {
@@ -79,12 +76,24 @@ namespace Sq1.Widgets.Execution {
 				this.ctxColumnsGrouped.Show();
 			}
 		}
+		void mniRecentAlwaysSelected_Click(object sender, EventArgs e) {
+			try {
+				this.dataSnapshot.RecentAlwaysSelected = this.mniRecentAlwaysSelected.Checked;
+				this.dataSnapshotSerializer.Serialize();
+				this.RebuildAllTree_focusOnRecent();
+			} catch (Exception ex) {
+				Assembler.PopupException(" //mniRecentAlwaysSelected_Click", ex);
+			} finally {
+				//this.ctxOrder.Show();
+				this.ctxToggles.Show();
+			}
+		}
 		void mniToggleBrokerTime_Click(object sender, EventArgs e) {
 			try {
 				// F4.CheckOnClick=True this.mniBrokerTime.Checked = !this.mniBrokerTime.Checked; 
 				this.dataSnapshot.ShowBrokerTime = this.mniToggleBrokerTime.Checked;
-				this.DataSnapshotSerializer.Serialize();
-				this.RebuildAllTree_focusOnTopmost();
+				this.dataSnapshotSerializer.Serialize();
+				this.RebuildAllTree_focusOnRecent();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleBrokerTime_Click", ex);
 			} finally {
@@ -95,7 +104,7 @@ namespace Sq1.Widgets.Execution {
 		void mniToggleSyncWithChart_Click(object sender, EventArgs e) {
 			try {
 				this.dataSnapshot.SingleClickSyncWithChart = this.mniToggleSyncWithChart.Checked;
-				this.DataSnapshotSerializer.Serialize();
+				this.dataSnapshotSerializer.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleSyncWithChart_Click", ex);
 			} finally {
@@ -107,7 +116,7 @@ namespace Sq1.Widgets.Execution {
 			try {
 				this.splitContainerMessagePane.Panel2Collapsed = !this.mniToggleMessagesPane.Checked;
 				this.dataSnapshot.ShowMessagesPane = this.mniToggleMessagesPane.Checked;
-				this.DataSnapshotSerializer.Serialize();
+				this.dataSnapshotSerializer.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleMessagesPane_Click", ex);
 			} finally {
@@ -116,18 +125,25 @@ namespace Sq1.Widgets.Execution {
 			}
 		}
 		void mniToggleMessagesPaneSplitHorizontally_Click(object sender, EventArgs e) {
-			Orientation newOrientation = this.mniToggleMessagesPaneSplitHorizontally.Checked
-					? Orientation.Horizontal : Orientation.Vertical;
-			this.splitContainerMessagePane.Orientation = newOrientation;
-			this.dataSnapshot.ShowMessagePaneSplittedHorizontally = this.mniToggleMessagesPaneSplitHorizontally.Checked;
-			this.DataSnapshotSerializer.Serialize();
+			try {
+				Orientation newOrientation = this.mniToggleMessagesPaneSplitHorizontally.Checked
+						? Orientation.Horizontal : Orientation.Vertical;
+				this.splitContainerMessagePane.Orientation = newOrientation;
+				this.dataSnapshot.ShowMessagePaneSplittedHorizontally = this.mniToggleMessagesPaneSplitHorizontally.Checked;
+				this.dataSnapshotSerializer.Serialize();
+			} catch (Exception ex) {
+				Assembler.PopupException(" //mniToggleMessagesPaneSplitHorizontally_Click", ex);
+			} finally {
+				//this.ctxOrder.Show();
+				this.ctxToggles.Show();
+			}
 		}		
 		void mniToggleCompletedOrders_Click(object sender, EventArgs e) {
 			try {
 				// do something with filters
-				this.RebuildAllTree_focusOnTopmost();
+				this.RebuildAllTree_focusOnRecent();
 				this.dataSnapshot.ShowCompletedOrders = this.mniToggleCompletedOrders.Checked;
-				this.DataSnapshotSerializer.Serialize();
+				this.dataSnapshotSerializer.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleCompletedOrders_Click", ex);
 			} finally {
@@ -139,9 +155,9 @@ namespace Sq1.Widgets.Execution {
 		void mniToggleColorifyOrdersTree_Click(object sender, EventArgs e) {
 			try {
 				this.dataSnapshot.ColorifyOrderTree_positionNet = this.mniToggleColorifyOrdersTree.Checked;
-				this.DataSnapshotSerializer.Serialize();
+				this.dataSnapshotSerializer.Serialize();
 				this.olvOrdersTree_customizeColors();
-				this.RebuildAllTree_focusOnTopmost();
+				this.RebuildAllTree_focusOnRecent();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleColorifyOrdersTree_Click", ex);
 			} finally {
@@ -152,9 +168,9 @@ namespace Sq1.Widgets.Execution {
 		void mniToggleColorifyMessages_Click(object sender, EventArgs e) {
 			try {
 				this.dataSnapshot.ColorifyMessages_askBrokerProvider = this.mniToggleColorifyMessages.Checked;
-				this.DataSnapshotSerializer.Serialize();
+				this.dataSnapshotSerializer.Serialize();
 				this.olvMessages_customizeColors();
-				this.RebuildAllTree_focusOnTopmost();
+				this.RebuildAllTree_focusOnRecent();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleColorifyMessages_Click", ex);
 			} finally {
@@ -174,7 +190,7 @@ namespace Sq1.Widgets.Execution {
 		}
 		void mniEmergencyLockRemove_Click(object sender, EventArgs e) {
 			try {
-				foreach (Order selectedOrder in this.OrdersSelected) {
+				foreach (Order selectedOrder in this.ordersSelected) {
 					Order reason4lock = Assembler.InstanceInitialized.OrderProcessor.OPPemergency.GetReasonForLock(selectedOrder);
 					if (reason4lock != null) {
 						Assembler.InstanceInitialized.OrderProcessor.OPPemergency.RemoveEmergencyLock_userInterrupted(reason4lock);
@@ -193,13 +209,14 @@ namespace Sq1.Widgets.Execution {
 		void mniOrdersRemoveSelected_Click(object sender, EventArgs e) {
 			try {
 				List<Order> ordersNonPending = new List<Order>();
-				foreach (Order eachNonPending in this.OrdersSelected) {
+				foreach (Order eachNonPending in this.ordersSelected) {
 					if (eachNonPending.InState_expectingBrokerCallback || eachNonPending.InState_emergency) continue;
 					ordersNonPending.Add(eachNonPending);
 				}
 				if (ordersNonPending.Count == 0) return;
-				Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.OrdersRemove(ordersNonPending);
-				this.RebuildAllTree_focusOnTopmost();
+				Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.OrdersRemoveRange_fromAllLanes(ordersNonPending);
+				//this.OrderRemoved_alreadyFromBothLists_rebuildOrdersTree_cleanMessagesView();
+				this.RebuildAllTree_focusOnRecent();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniOrdersRemoveSelected_Click", ex);
 			} finally {
@@ -216,8 +233,8 @@ namespace Sq1.Widgets.Execution {
 		void mniOrdersRemoveCompleted_Click(object sender, EventArgs e) {
 			try {
 				Assembler.InstanceInitialized.OrderProcessor.DataSnapshot
-					.OrdersRemove_nonPending_forAccounts(this.SelectedAccountNumbers);
-				this.RebuildAllTree_focusOnTopmost();
+					.OrdersRemove_forAccounts_nonPending(this.selectedAccountNumbers);
+				this.RebuildAllTree_focusOnRecent();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniOrdersRemoveCompleted_Click", ex);
 			} finally {
@@ -227,14 +244,14 @@ namespace Sq1.Widgets.Execution {
 		void mniOrderReplace_Click(object sender, EventArgs e) {
 			string msig = " //mniOrdersRemoveCompleted_Click";
 			try {
-				if (this.OlvOrdersTree.SelectedObjects.Count != 0) {
-					string msg = "SELECTED_OBJECT_MUST_BE_AN_ORDER got[" + this.OlvOrdersTree.SelectedObject + "]";
+				if (this.olvOrdersTree.SelectedObjects.Count != 0) {
+					string msg = "SELECTED_OBJECT_MUST_BE_AN_ORDER got[" + this.olvOrdersTree.SelectedObject + "]";
 					Assembler.PopupException(msg + msig, null, false);
 				}
 
-				Order order = this.OlvOrdersTree.SelectedObject as Order;
+				Order order = this.olvOrdersTree.SelectedObject as Order;
 				if (order == null) {
-					string msg = "SELECTED_OBJECT_MUST_BE_AN_ORDER got[" + this.OlvOrdersTree.SelectedObject + "]";
+					string msg = "SELECTED_OBJECT_MUST_BE_AN_ORDER got[" + this.olvOrdersTree.SelectedObject + "]";
 					Assembler.PopupException(msg + msig, null, false);
 				}
 				Assembler.InstanceInitialized.OrderProcessor.GuiClick_orderReplace(order);
@@ -247,8 +264,8 @@ namespace Sq1.Widgets.Execution {
 		void mniKillPendingSelected_Click(object sender, EventArgs e) {
 			string msig = " //mniOrderKill_Click";
 			try {
-				if (this.OrdersSelected.Count == 0) return;
-				Assembler.InstanceInitialized.OrderProcessor.GuiClick_killPendingSelected(this.OrdersSelected);
+				if (this.ordersSelected.Count == 0) return;
+				Assembler.InstanceInitialized.OrderProcessor.GuiClick_killPendingSelected(this.ordersSelected);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			} finally {
@@ -282,7 +299,7 @@ namespace Sq1.Widgets.Execution {
 		}
 		void olvOrdersTree_DoubleClick(object sender, EventArgs e) {
 			//if (this.mniOrderEdit.Enabled) this.mniOrderEdit_Click(sender, e);
-			if (this.OlvOrdersTree.SelectedItem == null) {
+			if (this.olvOrdersTree.SelectedItem == null) {
 				string msg = "OrdersTree.SelectedItem == null";
 				Assembler.PopupException(msg);
 				return;
@@ -295,14 +312,14 @@ namespace Sq1.Widgets.Execution {
 			//    return;
 			//}
 			//otherwize if you'll see REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR - dont forget to use Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.ExitAlert);
-			this.raiseOnOrderDoubleClicked_OrderProcessorShouldKillOrder(this, this.OlvOrdersTree.SelectedObject as Order);
+			this.raiseOnOrderDoubleClicked_OrderProcessorShouldKillOrder(this, this.olvOrdersTree.SelectedObject as Order);
 		}
 
 
 		void mniTreeCollapseAll_Click(object sender, EventArgs e) {
 			string msig = " //mniTreeCollapseAll_Click";
 			try {
-				this.OlvOrdersTree.CollapseAll();
+				this.olvOrdersTree.CollapseAll();
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			} finally {
@@ -312,7 +329,7 @@ namespace Sq1.Widgets.Execution {
 		void mniTreeExpandAll_Click(object sender, EventArgs e) {
 			string msig = " //mniTreeExpandAll_Click";
 			try {
-				this.OlvOrdersTree.ExpandAll();
+				this.olvOrdersTree.ExpandAll();
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			} finally {
@@ -322,7 +339,7 @@ namespace Sq1.Widgets.Execution {
 		void mniTreeRebuildAll_Click(object sender, EventArgs e) {
 			string msig = " //mniTreeRebuildAll_Click";
 			try {
-				this.RebuildAllTree_focusOnTopmost();
+				this.RebuildAllTree_focusOnRecent();
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			} finally {
@@ -357,7 +374,7 @@ namespace Sq1.Widgets.Execution {
 				if (this.dataSnapshot.MessagePaneSplitDistanceVertical == this.splitContainerMessagePane.SplitterDistance) return;
 					this.dataSnapshot.MessagePaneSplitDistanceVertical =  this.splitContainerMessagePane.SplitterDistance;
 			}
-			this.DataSnapshotSerializer.Serialize();
+			this.dataSnapshotSerializer.Serialize();
 		}
 
 		void mniltbDelaySerializationSync_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
@@ -365,7 +382,7 @@ namespace Sq1.Widgets.Execution {
 			try {
 				int userTyped = e.IntegerUserTyped;		// makes it red if failed to parse; "an event is a passive POCO" concept is broken here
 				this.dataSnapshot.SerializationInterval = userTyped;
-				this.DataSnapshotSerializer.Serialize();
+				this.dataSnapshotSerializer.Serialize();
 
 				SerializerLogrotatePeriodic<Order> logrotate = Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders;
 				logrotate.PeriodMillis = this.dataSnapshot.SerializationInterval;
@@ -377,7 +394,7 @@ namespace Sq1.Widgets.Execution {
 				this.ctxOrder.Show();
 			}
 		}
-		void mniltbDelay_UserTyped(object sender, LabeledTextBox.LabeledTextBoxUserTypedArgs e) {
+		void mniltbFlushToGuiDelayMsec_UserTyped(object sender, LabeledTextBox.LabeledTextBoxUserTypedArgs e) {
 			MenuItemLabeledTextBox mnilbDelay = sender as MenuItemLabeledTextBox;
 			string typed = e.StringUserTyped;
 			int typedMsec = this.dataSnapshot.FlushToGuiDelayMsec;
@@ -388,11 +405,11 @@ namespace Sq1.Widgets.Execution {
 				return;
 			}
 			this.dataSnapshot.FlushToGuiDelayMsec = typedMsec;
-			this.DataSnapshotSerializer.Serialize();
-			//this.Timed_flushingToGui.Delay = this.dataSnapshot.FlushToGuiDelayMsec;
+			this.dataSnapshotSerializer.Serialize();
+			this.Timed_flushingToGui.DelayMillis = this.dataSnapshot.FlushToGuiDelayMsec;
 			mnilbDelay.TextRed = false;
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
-			this.PopulateWindowsTitle();
+			this.PopulateWindowTitle();
 			this.ctxOrder.Visible = true;	// keep it open
 		}
 
@@ -406,7 +423,7 @@ namespace Sq1.Widgets.Execution {
 			string mniPosition_info_text = "NO_POSITION_OPEN EntryAlert notYetFilled";
 			string mniExitAlert_info_text = "NO_ExitAlert_YET";
 
-			Order orderRightClicked = this.OlvOrdersTree.SelectedObject as Order;
+			Order orderRightClicked = this.olvOrdersTree.SelectedObject as Order;
 			if (orderRightClicked != null) {
 				Alert alertClicked = orderRightClicked.Alert;
 				if (alertClicked != null) {
@@ -447,7 +464,10 @@ namespace Sq1.Widgets.Execution {
 
 
 		void mniSerializeNow_Click(object sender, EventArgs e) {
-			Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders.Serialize();
+			SerializerLogrotatePeriodic<Order> slo = Assembler.InstanceInitialized.OrderProcessor.DataSnapshot
+				.SerializerLogrotateOrders;
+			slo.HasChangesToSave = true;
+			slo.Serialize();
 		}
 	}
 }
