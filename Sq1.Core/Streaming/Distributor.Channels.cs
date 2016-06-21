@@ -20,7 +20,8 @@ namespace Sq1.Core.Streaming {
 			// second-deserialized: chartNoStrategy on RIM3_20-minutes => Pump/Thread should be started as well
 
 			int dontWait = 0;	// -1 was a REASON_FOR_SLOW_STARTUP
-			if (symbolChannel.QuotePump_nullUnsafe != null && symbolChannel.QuotePump_nullUnsafe.Paused) symbolChannel.QuotePump_nullUnsafe.PusherUnpause_waitUntilUnpaused(dontWait);
+			if (symbolChannel.QuotePump_nullUnsafe != null && symbolChannel.QuotePump_nullUnsafe.Paused)
+				symbolChannel.QuotePump_nullUnsafe.PusherUnpause_waitUntilUnpaused(dontWait);
 
 			if (this.StreamingAdapter.UpstreamIsSubscribed(symbol) == false) {
 				this.StreamingAdapter.UpstreamSubscribe(symbol);
@@ -117,7 +118,8 @@ namespace Sq1.Core.Streaming {
 			// first-deserialized: Strategy on RIM3_5-minutes => Pump/Thread should be started as well
 
 			int dontWait = 0;	// -1 was a REASON_FOR_SLOW_STARTUP
-			if (symbolChannel.QuotePump_nullUnsafe != null && symbolChannel.QuotePump_nullUnsafe.Paused) symbolChannel.QuotePump_nullUnsafe.PusherUnpause_waitUntilUnpaused(dontWait);
+			if (symbolChannel.QuotePump_nullUnsafe != null && symbolChannel.QuotePump_nullUnsafe.Paused)
+				symbolChannel.QuotePump_nullUnsafe.PusherUnpause_waitUntilUnpaused(dontWait);
 
 			if (this.StreamingAdapter.UpstreamIsSubscribed(symbol) == false) {
 				this.StreamingAdapter.UpstreamSubscribe(symbol);

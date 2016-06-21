@@ -44,6 +44,7 @@ namespace Sq1.Widgets.Livesim
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.TssBtnStartStop = new System.Windows.Forms.ToolStripButton();
 			this.TssBtnPauseResume = new System.Windows.Forms.ToolStripButton();
+			this.cbxClearExcepExec = new Sq1.Widgets.ToolStripImproved.ToolStripItemCheckBox();
 			this.TssLblStrategyAsString = new System.Windows.Forms.ToolStripStatusLabel();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -99,6 +100,7 @@ namespace Sq1.Widgets.Livesim
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.TssBtnStartStop,
             this.TssBtnPauseResume,
+            this.cbxClearExcepExec,
             this.TssLblStrategyAsString});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 571);
 			this.statusStrip1.Name = "statusStrip1";
@@ -118,18 +120,28 @@ namespace Sq1.Widgets.Livesim
 			// TssBtnPauseResume
 			// 
 			this.TssBtnPauseResume.CheckOnClick = true;
+			this.TssBtnPauseResume.Enabled = false;
 			this.TssBtnPauseResume.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.TssBtnPauseResume.Name = "TssBtnPauseResume";
 			this.TssBtnPauseResume.Size = new System.Drawing.Size(42, 20);
 			this.TssBtnPauseResume.Text = "Pause";
-			this.TssBtnPauseResume.Enabled = false;
+			// 
+			// cbxClearExcepExec
+			// 
+			this.cbxClearExcepExec.CheckBoxChecked = false;
+			this.cbxClearExcepExec.CheckBoxText = "Clear Exceptions,Execution";
+			this.cbxClearExcepExec.Name = "cbxClearExcepExec";
+			this.cbxClearExcepExec.Size = new System.Drawing.Size(166, 20);
+			this.cbxClearExcepExec.Text = "Clear Exceptions,Execution";
+			this.cbxClearExcepExec.Visible = false;
+			this.cbxClearExcepExec.CheckBoxCheckedChanged += new System.EventHandler<System.EventArgs>(this.cbxClearExcepExec_CheckBoxCheckedChanged);
 			// 
 			// TssLblStrategyAsString
 			// 
 			this.TssLblStrategyAsString.Name = "TssLblStrategyAsString";
 			this.TssLblStrategyAsString.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
 			this.TssLblStrategyAsString.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.TssLblStrategyAsString.Size = new System.Drawing.Size(566, 17);
+			this.TssLblStrategyAsString.Size = new System.Drawing.Size(400, 17);
 			this.TssLblStrategyAsString.Spring = true;
 			this.TssLblStrategyAsString.Text = "EntryEveryBar Default MAfast[10] MAslow[40] SLtype[3]";
 			this.TssLblStrategyAsString.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -165,5 +177,6 @@ namespace Sq1.Widgets.Livesim
 		public System.Windows.Forms.ToolStripButton TssBtnPauseResume;
 		public System.Windows.Forms.ToolStripStatusLabel TssLblStrategyAsString;
 		private System.Windows.Forms.ToolTip toolTip1;
+		private ToolStripImproved.ToolStripItemCheckBox cbxClearExcepExec;
 	}
 }

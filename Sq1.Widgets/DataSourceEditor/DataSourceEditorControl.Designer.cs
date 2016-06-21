@@ -371,6 +371,7 @@
 			this.tsiLtbSymbols.TextRight = "";
 			this.tsiLtbSymbols.TextRightOffsetX = 253;
 			this.tsiLtbSymbols.TextRightWidth = 4;
+			this.tsiLtbSymbols.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.tsiLtbSymbols_UserTyped);
 			// 
 			// DataSourceEditorControl
 			// 

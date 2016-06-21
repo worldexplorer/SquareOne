@@ -46,20 +46,20 @@ namespace Sq1.Core.Repositories {
 			itemCandidate.SymbolsRebuild_readDataSourceSubFolder_afterDeserialization();
 		}
 		public override void ItemDeleteCascade(DataSource itemStored, object sender = null) {
-			itemStored.DataSourceFolderDeleteWithSymbols();
+			itemStored.DataSourceFolder_delete_withAllSymbols();
 		}
 		public override void ItemCanBeDeletedCascade(NamedObjectJsonEventArgs<DataSource> args, object sender = null) {
 		}
 		public override bool ItemRenameCascade(DataSource itemToRename, string newName, object sender = null) {
-			return itemToRename.DataSourceFolderRename(newName);
+			return itemToRename.DataSourceFolder_rename(newName);
 		}
 
-		public void SymbolAdd(DataSource dataSource, string symbolToAdd, object sender = null, bool skipSerialize_invokerWillSerialize_atTheEndOfBactchUpdate = false) {
+		public void SymbolAdd(DataSource dataSource, string symbolToAdd, object sender = null, bool skipSerialize_invokerWillSerialize_atTheEndOfBatchUpdate = false) {
 			if (sender == null) sender = this;
 			string msig = " RepositoryJsonDataSource.SymbolAdd(" + dataSource + ", " + symbolToAdd + "): ";
 			try {
 				dataSource.SymbolAdd(symbolToAdd);
-				if (skipSerialize_invokerWillSerialize_atTheEndOfBactchUpdate == false) {
+				if (skipSerialize_invokerWillSerialize_atTheEndOfBatchUpdate == false) {
 					base.SerializeSingle(dataSource);
 				}
 				this.RaiseOnSymbolAdded(sender, dataSource, symbolToAdd);
@@ -73,7 +73,7 @@ namespace Sq1.Core.Repositories {
 			this.RaiseOnSymbolCanBeDeleted(sender, args);
 			return args;
 		}
-		public void SymbolRemove(DataSource dataSource, string symbolToDelete, object sender = null, bool skipSerialize_invokerWillSerialize_atTheEndOfBactchUpdate = false) {
+		public void SymbolRemove(DataSource dataSource, string symbolToDelete, object sender = null, bool skipSerialize_invokerWillSerialize_atTheEndOfBatchUpdate = false) {
 			if (sender == null) sender = this;
 			string msig = " RepositoryJsonDataSource.SymbolRemove(" + symbolToDelete + "): ";
 			DataSourceSymbolEventArgs args = null;
@@ -89,7 +89,7 @@ namespace Sq1.Core.Repositories {
 			}
 			// sorry for the mess
 			try {
-				if (skipSerialize_invokerWillSerialize_atTheEndOfBactchUpdate == false) {
+				if (skipSerialize_invokerWillSerialize_atTheEndOfBatchUpdate == false) {
 					base.SerializeSingle(dataSource);
 				}
 				if (args != null) {

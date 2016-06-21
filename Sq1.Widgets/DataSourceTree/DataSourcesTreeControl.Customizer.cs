@@ -31,6 +31,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.OlvTree.ChildrenGetter = delegate(object o) {
 				DataSource dataSource = o as DataSource;
 				if (dataSource != null) return dataSource.ChartsOpenForSymbol.Keys;
+				//if (dataSource != null) return dataSource.Symbols;
 					
 				//string symbol = o as string;
 				//if (symbol != null && dataSource.ChartsOpenForSymbol.ContainsKey(symbol)) return dataSource.ChartsOpenForSymbol[symbol];

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace Sq1.Core.Charting {
 	public class DictionaryManyToOne<CHART, ALERTS> {
+		Type ofWhat { get { return typeof(CHART); } }
+
 		Dictionary<CHART, List<ALERTS>> lookup;
 		Dictionary<ALERTS, CHART> reverse;
 
@@ -15,7 +17,7 @@ namespace Sq1.Core.Charting {
 			this.reverse = new Dictionary<ALERTS, CHART>();
 		}
 		
-		public void Register(CHART chart) {
+		public void Register(CHART chart, bool checkNoSimilarKey_asString = true) {
 			string msig = " //DictionaryManyToOne::Register()";
 			if (this.lookup.ContainsKey(chart)) {
 				string msg = "ALREADY_REGISTERED_IN_this.Lookup chart[" + chart + "]";
@@ -27,6 +29,10 @@ namespace Sq1.Core.Charting {
 //				Assembler.PopupException(msg + msig);
 //				return;
 //			}
+			if (checkNoSimilarKey_asString) {
+				CHART found = this.FindSimilarKey(chart);
+				if (found != null) return;
+			}
 			this.lookup.Add(chart, new List<ALERTS>());
 		}
 		
@@ -42,7 +48,7 @@ namespace Sq1.Core.Charting {
 //				Assembler.PopupException(msg + msig);
 //				return;
 //			}
-			this.lookup.Add(chart, new List<ALERTS>());
+			this.lookup.Remove(chart);
 		}
 		
 		public void ClearDependantsFor(CHART chart) {
@@ -197,14 +203,22 @@ namespace Sq1.Core.Charting {
 			foreach (CHART existingKey in this.lookup.Keys) {
 				if (existingKey.ToString() == anotherInstance.ToString()) return existingKey;
 			}
-			return default(CHART);		// I_HOPE_IT_IS_NULL
+			CHART hopefullyNull = default(CHART);
+			if (hopefullyNull != null) {
+				string msg = "MUST_BE_OBJECT_NOT_PRIMITIVE ofWhat[" + this.ofWhat + "]";
+				Assembler.PopupException(msg);
+			}
+			return hopefullyNull;		// I_HOPE_IT_IS_NULL
 		}
-		internal List<ALERTS> FindContentsForSimilarKey__nullUnsafe(CHART anotherInstance) {
+		internal List<ALERTS> FindContentsForSimilarKey__nullUnsafe(CHART anotherInstance, bool popupIfNoChartsOpenForSymbolFound = true) {
 			string msig = " //DictionaryManyToOne::FindContentsForSimilarKey(chart[" + anotherInstance + "])";
 			CHART existingKeyFound = this.FindSimilarKey(anotherInstance);
 			if (existingKeyFound == null) {
-				string msg = "NEVER_REGISTERED_IN_this.Lookup_WITH_SAME_.ToString() anotherInstance[" + anotherInstance.ToString() + "]";
-				Assembler.PopupException(msg + msig);
+				if (popupIfNoChartsOpenForSymbolFound) {
+					string msg = "NEVER_REGISTERED_IN_this.Lookup_WITH_SAME_.ToString() anotherInstance[" + anotherInstance.ToString() + "]";
+					Assembler.PopupException(msg + msig);
+				}
+				return null;
 			}
 			if (this.lookup.ContainsKey(existingKeyFound) == false) {
 				string msg = "NEVER_REGISTERED_IN_this.Lookup existingKeyFound[" + existingKeyFound + "]";

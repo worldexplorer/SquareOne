@@ -377,6 +377,9 @@
     <Compile Include="SteppingSlider\SteppingSliderComboControl.Designer.cs">
       <DependentUpon>SteppingSliderComboControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="ToolStripWidgets\ToolStripItemCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ToolStripWidgets\ToolStripItemLabeledTextBox.cs">
       <SubType>Component</SubType>
     </Compile>

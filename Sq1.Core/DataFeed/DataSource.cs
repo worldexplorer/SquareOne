@@ -104,7 +104,7 @@ namespace Sq1.Core.DataFeed {
 				//this.ChartsOpenForSymbol.Add(symbol, new List<ChartShadow>());
 				this.ChartsOpenForSymbol.Register(new SymbolOfDataSource(symbol, this));
 
-				if (this.BarsRepository.DataFileExistsForSymbol(symbol)) {
+				if (this.BarsRepository.SymbolDataFile_exists_forSymbol(symbol)) {
 					string msg = "NO_NEED_TO_CREATE__BAR_DATA_FILE_FOR_SYMBOL [" + symbol + "] in DataSource[" + this.Name + "]";
 					continue;
 				}
@@ -253,7 +253,7 @@ namespace Sq1.Core.DataFeed {
 			return ret;
 		}
 
-		public void Symbols_syncWithBarFiles(List<string> symbols_possiblyChanged) {
+		public void Symbols_syncWithBarFiles_serialize(List<string> symbols_possiblyChanged) {
 			List<string> symbolsToAdd;
 			List<string> symbolsToRemove;
 			Sq1.Core.Support.GenericsUtil.SyncToEthalon<string>(symbols_possiblyChanged, this.Symbols, out symbolsToAdd, out symbolsToRemove);

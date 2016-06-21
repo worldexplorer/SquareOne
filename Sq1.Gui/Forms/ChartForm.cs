@@ -201,18 +201,24 @@ namespace Sq1.Gui.Forms {
 				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = SystemColors.Control;
 				this.DdbBars.BackColor = SystemColors.Control;
 
+				string mniSubscribedText = "YOU_JUST_ADDED_SYMBOL_BARS_FILE_SIZE_MUST_BE>0";
 				DataSource dataSource = this.ChartFormManager.Executor.DataSource_fromBars;
-				string mniSubscribedText = "Subscribed to [" + dataSource.StreamingAdapterName + "]";
-				mniSubscribedText += dataSource.StreamingAdapter != null ? "[" + dataSource.StreamingAdapter.UpstreamConnectionState + "]" : "[StreamingAdapter_NULL]";
+				if (dataSource != null) {
+					mniSubscribedText = "Subscribed to [" + dataSource.StreamingAdapterName + "]";
+					mniSubscribedText += dataSource.StreamingAdapter != null ? "[" + dataSource.StreamingAdapter.UpstreamConnectionState + "]" : "[StreamingAdapter_NULL]";
+				}
 				this.mniSubscribedToStreamingAdapterQuotesBars.Text = mniSubscribedText;
 			} else {
 				this.mniSubscribedToStreamingAdapterQuotesBars.Checked = false;
 				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = Color.LightSalmon;
 				this.DdbBars.BackColor = Color.LightSalmon;
 
+				string mniSubscribedText = "YOU_JUST_ADDED_SYMBOL_BARS_FILE_SIZE_MUST_BE>0";
 				DataSource dataSource = this.ChartFormManager.Executor.DataSource_fromBars;
-				string mniSubscribedText = "NOT Subscribed to [" + dataSource.StreamingAdapterName + "]";
-				mniSubscribedText += dataSource.StreamingAdapter != null ? "[" + dataSource.StreamingAdapter.UpstreamConnectionState + "]" : "[StreamingAdapter_NULL]";
+				if (dataSource != null) {
+					mniSubscribedText = "NOT Subscribed to [" + dataSource.StreamingAdapterName + "]";
+					mniSubscribedText += dataSource.StreamingAdapter != null ? "[" + dataSource.StreamingAdapter.UpstreamConnectionState + "]" : "[StreamingAdapter_NULL]";
+				}
 				this.mniSubscribedToStreamingAdapterQuotesBars.Text = mniSubscribedText;
 			}
 		}

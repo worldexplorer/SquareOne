@@ -188,5 +188,56 @@ namespace Sq1.Core.Livesim {
 			Thread.Sleep(this.DelayKillerTransactionCallbackAfterVictimFilled);
 		}
 
+
+
+	
+		public bool Disconnect_happensNow = false;
+		int howManyOrders_wereNotDisconnected = 0;
+		public int DelayReconnect_USELESS;
+		public bool Disconnect_happensNow_calculate() {
+			this.Disconnect_happensNow = false;
+			if (this.livesimBroker.LivesimBrokerSettings.AdapterDisconnectEnabled == false) return this.Disconnect_happensNow;
+			
+			int planned_notHappeningNow = this.livesimBroker.LivesimBrokerSettings.AdapterDisconnectHappensOncePerOrderMin;
+			if (planned_notHappeningNow == 0) return this.Disconnect_happensNow;
+
+			if (this.livesimBroker.LivesimBrokerSettings.OrderRejectionHappensOncePerXordersMax > 0) {
+				int range = Math.Abs(this.livesimBroker.LivesimBrokerSettings.AdapterDisconnectHappensOncePerOrderMin -
+									 this.livesimBroker.LivesimBrokerSettings.AdapterDisconnectHappensOncePerOrderMax);
+				double rnd0to1 = new Random().NextDouble();
+				int rangePart = (int)Math.Round(range * rnd0to1);
+				planned_notHappeningNow += rangePart;
+			}
+
+			if (this.howManyOrders_wereNotDisconnected >= planned_notHappeningNow) {
+				this.Disconnect_happensNow = true;
+				this.howManyOrders_wereNotDisconnected = 0;
+			}
+			this.howManyOrders_wereNotDisconnected++;
+			return this.Disconnect_happensNow;
+		}
+		//public int DelayDisconnect_calculate() {
+		//    this.DelayReconnect_USELESS = 0;
+		//    //will be part of disconnect_happensNow_calculate()
+		//    //if (this.livesimBroker.LivesimBrokerSettings.AdapterDisconnectEnabled == false)
+		//    //    return this.DelayReconnect_USELESS;
+		//    if (this.disconnect_happensNow_calculate() == false)
+		//        return this.DelayReconnect_USELESS;
+		//    this.DelayReconnect_USELESS = this.livesimBroker.LivesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMin;
+		//    if (this.livesimBroker.LivesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMax > 0) {
+		//        int range = Math.Abs(this.livesimBroker.LivesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMin -
+		//                                this.livesimBroker.LivesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMax);
+		//        double rnd0to1 = new Random().NextDouble();
+		//        int rangePart = (int)Math.Round(range * rnd0to1);
+		//        this.DelayReconnect_USELESS += rangePart;
+		//    }
+		//    return this.DelayReconnect_USELESS;
+		//}
+		//public void Reconnect_threadSleep() {
+		//    if (this.DelayReconnect_USELESS <= 0) return;
+		//    //Application.DoEvents();
+		//    Thread.Sleep(this.DelayReconnect_USELESS);
+		//}
+
 	}
 }

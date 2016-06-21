@@ -334,5 +334,10 @@ namespace Sq1.Widgets.Execution {
 			ret += base.FlushingStats;
 			return ret;
 		}
+
+		public void Clear() {
+			OrderProcessorDataSnapshot snap = this.orderProcessor_forToStringOnly.DataSnapshot;
+			snap.OrdersRemoveRange_fromAllLanes(snap.OrdersAll.SafeCopy);
+		}
 	}
 }

@@ -86,9 +86,9 @@ namespace Sq1.Core.Broker {
 				}
 			}
 		}
-		[JsonProperty]	public	virtual	bool			UpstreamConnect_onAppRestart		{ get; protected set; }
-		[JsonProperty]	public			bool			UpstreamConnect_onFirstOrder;//		{ get; internal  set; } internal will help if you won't throw in BrokerAdapter.PushEditedSettingsToBrokerAdapter()
-		[JsonIgnore]	public			bool			UpstreamConnected					{ get {
+		[JsonProperty]	public	virtual	bool			UpstreamConnect_onAppRestart		{ get; set; }	// NEEDED_TO_ACCESS_QUIK_ORIGINAL_FROM_OWN_LIVESIM_IMPL protected set
+		[JsonProperty]	public	virtual	bool			UpstreamConnect_onFirstOrder		{ get; set; }	// { get; internal  set; } internal will help if you won't throw in BrokerAdapter.PushEditedSettingsToBrokerAdapter()
+		[JsonIgnore]	public	virtual	bool			UpstreamConnected					{ get {
 		    bool ret = false;
 		    switch (this.UpstreamConnectionState) {
 		        case ConnectionState.UnknownConnectionState:						ret = false;	break;
@@ -121,7 +121,7 @@ namespace Sq1.Core.Broker {
 		    return ret;
 		} }
 
-		[JsonIgnore]	public LivesimBroker	LivesimBroker_ownImplementation				{ get; protected set; }
+		[JsonIgnore]	public	LivesimBroker	LivesimBroker_ownImplementation				{ get; protected set; }
 		[JsonIgnore]	public	bool			ImBeingTested_byOwnLivesimImplementation	{ get; private set; }
 		[JsonIgnore]	public	string			ImBeingTested_PREFIX						{ get { return this.ImBeingTested_byOwnLivesimImplementation ? BrokerAdapter.TESTING_BY_OWN_LIVESIM : ""; } }
 		public void ImBeingTested_byOwnLivesimImplementation_set(bool setIn_SimulationPreBarsSubstitute) {
@@ -193,9 +193,9 @@ namespace Sq1.Core.Broker {
 				Order firstOrder = ordersFromAlerts[0];
 				Assembler.SetThreadName(firstOrder.ToString(), "can not set Thread.CurrentThread.Name=[" + firstOrder + "]");
 				this.SubmitOrders_ownOneThread_forAllNewAlerts(ordersFromAlerts);
-			} catch (Exception e) {
+			} catch (Exception exc) {
 				string msg = "SubmitOrdersThreadEntry default Exception Handler";
-				Assembler.PopupException(msg, e);
+				Assembler.PopupException(msg, exc);
 			}
 		}
 		public virtual void SubmitOrders_ownOneThread_forAllNewAlerts(List<Order> orders) { lock (this.lockSubmitOrders) {
@@ -523,15 +523,19 @@ namespace Sq1.Core.Broker {
 		[JsonIgnore]	protected	ManualResetEvent	EmittingIncapable_mre;
 
 		public bool ConnectionState_waitFor_emittingCapable(int waitMillis = -1) {
+			//bool connectTimerScheduled = this.EmittingCapable_mre.WaitOne(0);
+			//if (connectTimerScheduled == false) {
+			//    this.Broker_connect();
+			//}
 			bool capable =	this.EmittingCapable_mre.WaitOne(waitMillis);
 			if (capable)	this.EmittingCapable_mre.Reset();		// it's a MANUAL reset, not AUTO
 			return capable;
 		}
-		public bool ConnectionState_waitFor_emittingIncapable(int waitMillis = -1) {
-		    bool incapable =	this.EmittingIncapable_mre.WaitOne(waitMillis);
-			if (incapable)		this.EmittingIncapable_mre.Reset();		// it's a MANUAL reset, not AUTO
-		    return incapable;
-		}
+		//public bool ConnectionState_waitFor_emittingIncapable(int waitMillis = -1) {
+		//    bool incapable =	this.EmittingIncapable_mre.WaitOne(waitMillis);
+		//    if (incapable)		this.EmittingIncapable_mre.Reset();		// it's a MANUAL reset, not AUTO
+		//    return incapable;
+		//}
 		public void ConnectionState_update(ConnectionState state, string message) {
 			this.UpstreamConnectionState = state;
 			Assembler.DisplayConnectionStatus(state, message);

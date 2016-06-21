@@ -8,16 +8,28 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.DataFeed {
 	public partial class DataSource {
-
 		// internal => use only RepositoryJsonDataSource.SymbolAdd() which will notify subscribers about add operation
 		internal void SymbolAdd(string symbolToAdd) {
 			if (this.Symbols.Contains(symbolToAdd)) {
 				throw new Exception("ALREADY_EXISTS[" + symbolToAdd + "]");
 			}
-			this.BarsRepository.SymbolDataFileAdd(symbolToAdd);
-			this.Symbols.Add(symbolToAdd);
+			this.BarsRepository.SymbolDataFile_createOrTruncate(symbolToAdd, true);
+			RepositoryBarsFile fileToSaveTo = this.BarsRepository.DataFileForSymbol(symbolToAdd);
+			Bars barsEmpty_butWithHeader = new Bars(symbolToAdd, this.ScaleInterval, "USER_TYPED_NEW_IN_DataSourceTree");
+			int barsSaved = fileToSaveTo.BarsSave_threadSafe(barsEmpty_butWithHeader);
+			if (barsSaved != 0) Assembler.PopupException("NONSENSE barsSaved[" + barsSaved + "] for new SymbolAdded[" + symbolToAdd + "]");
+
 			//NOPE_POSTPONED_AS_ATOMIC_KEY+FIRST_CONTENT this.ChartsOpenForSymbol.Add(symbolToAdd, new List<ChartShadow>());
 			// RepositoryJsonDataSource.RaiseOnSymbolAdded()_WILL_NOTIFY_DATASOURCE_TREE_UPSTACK this.DataSourceEdited_treeShouldRebuild(this);
+
+			this.Symbols.Add(symbolToAdd);
+
+			SymbolOfDataSource secondLevel = new SymbolOfDataSource(symbolToAdd, this);
+			SymbolOfDataSource exisingSymbolOfDataSource = this.ChartsOpenForSymbol.FindSimilarKey(secondLevel);
+			if (exisingSymbolOfDataSource == null) {
+				this.ChartsOpenForSymbol.Register(secondLevel);
+			}
+			//this.Symbols = this.BarsRepository.SymbolsInScaleIntervalSubFolder;
 		}
 		// internal => use only RepositoryJsonDataSource.SymbolRemove() which will notify subscribers about remove operation
 		internal void SymbolRemove(string symbolToDelete) {
@@ -25,17 +37,16 @@ namespace Sq1.Core.DataFeed {
 				throw new Exception("ALREADY_DELETED[" + symbolToDelete + "] in [" + this.Name + "]");
 			}
 			this.Symbols.Remove(symbolToDelete);
-			this.BarsRepository.SymbolDataFileDelete(symbolToDelete);
+			this.BarsRepository.SymbolDataFile_delete(symbolToDelete);
 
 			List<ChartShadow> chartsForOldSymbol = this.ChartsOpenForSymbol.FindContentsForSimilarKey__nullUnsafe(new SymbolOfDataSource(symbolToDelete, this));
-			if (chartsForOldSymbol != null) {
+			if (chartsForOldSymbol != null && chartsForOldSymbol.Count > 0) {
 				string msg = "SHOULD_I_CLOSE_THE_CHARTS_OPEN_WITH_SYMBOL? symbolToDelete[" + symbolToDelete + "]";
 				Assembler.PopupException(msg);
-			} else {
-				//this.ChartsOpenForSymbol.Remove(symbolToDelete);
-				this.ChartsOpenForSymbol.UnRegisterSimilar(new SymbolOfDataSource(symbolToDelete, this));
-				// RepositoryJsonDataSource.RaiseOnSymbolRemovedDone()_WILL_NOTIFY_DATASOURCE_TREE_UPSTACK this.DataSourceEdited_treeShouldRebuild(this);
 			}
+			//this.ChartsOpenForSymbol.Remove(symbolToDelete);
+			this.ChartsOpenForSymbol.UnRegisterSimilar(new SymbolOfDataSource(symbolToDelete, this));
+			// RepositoryJsonDataSource.RaiseOnSymbolRemovedDone()_WILL_NOTIFY_DATASOURCE_TREE_UPSTACK this.DataSourceEdited_treeShouldRebuild(this);
 		}
 
 		internal void SymbolCopyOrCompressFrom(DataSource dataSourceFrom, string symbolToCopy, DataSource dataSourceTo) {
@@ -48,13 +59,13 @@ namespace Sq1.Core.DataFeed {
 			}
 			if (dataSourceFrom.ScaleInterval.AsTimeSpanInSeconds == dataSourceTo.ScaleInterval.AsTimeSpanInSeconds) {
 				string abspathSource = dataSourceFrom.BarsRepository.AbspathForSymbol(symbolToCopy);
-				this.BarsRepository.SymbolDataFileCopy(symbolToCopy, abspathSource);
+				this.BarsRepository.SymbolDataFile_copy(symbolToCopy, abspathSource);
 				RepositoryBarsFile filePickedUp = this.BarsRepository.DataFileForSymbol(symbolToCopy);
 				Assembler.PopupException("BARS_SAVED_UNCOMPRESSED: " + filePickedUp.BarsLoadAll_nullUnsafe_threadSafe().Count + msig, null, false);
 			} else {
 				string millisElapsedLoadCompress;
 				Bars barsCompressed = dataSourceFrom.BarsLoadAndCompress(symbolToCopy, dataSourceTo.ScaleInterval, out millisElapsedLoadCompress);
-				this.BarsRepository.SymbolDataFileAdd(symbolToCopy, true);
+				this.BarsRepository.SymbolDataFile_createOrTruncate(symbolToCopy, true);
 				RepositoryBarsFile fileToSaveTo = this.BarsRepository.DataFileForSymbol(symbolToCopy);
 				int barsSaved = fileToSaveTo.BarsSave_threadSafe(barsCompressed);
 				Assembler.PopupException("BARS_SAVED_COMPRESSED: " + barsSaved + msig + millisElapsedLoadCompress, null, false);
@@ -74,7 +85,7 @@ namespace Sq1.Core.DataFeed {
 				bool executorProhibitedRenaming = this.RaiseOnSymbolRenamed_eachExecutorShouldRenameItsBars_saveStrategyIfNotNull(oldSymbolName, newSymbolName);
 				if (executorProhibitedRenaming) return;	// event handlers are responsible to Assembler.PopupException(), I reported MY errors above
 	
-				this.BarsRepository.SymbolDataFileRename(oldSymbolName, newSymbolName);
+				this.BarsRepository.SymbolDataFile_rename(oldSymbolName, newSymbolName);
 
 				// DUMB_AND_ERROR_PRONE
 				//List<ChartShadow> chartsForOldSymbol = this.ChartsOpenForSymbol[oldSymbolName];
@@ -97,10 +108,10 @@ namespace Sq1.Core.DataFeed {
 		}
 
 		// Initialize() creates the folder, now create empty files for non-file-existing-symbols
-		internal int CreateDeleteBarFilesToSymbolsDeserialized() {
+		internal int BarFilesCreateDelete_toMatchSymbolsDeserialized() {
 			foreach (string symbolToAdd in this.Symbols) {
-				if (this.BarsRepository.DataFileExistsForSymbol(symbolToAdd)) continue;
-				this.BarsRepository.SymbolDataFileAdd(symbolToAdd);
+				if (this.BarsRepository.SymbolDataFile_exists_forSymbol(symbolToAdd)) continue;
+				this.BarsRepository.SymbolDataFile_createOrTruncate(symbolToAdd);
 			}
 			List<string> symbolsToDelete = new List<string>();
 			foreach (string symbolWhateverCase in this.BarsRepository.SymbolsInScaleIntervalSubFolder) {
@@ -109,11 +120,11 @@ namespace Sq1.Core.DataFeed {
 				symbolsToDelete.Add(symbol);
 			}
 			foreach (string symbolToDelete in symbolsToDelete) {
-				this.BarsRepository.SymbolDataFileDelete(symbolToDelete);
+				this.BarsRepository.SymbolDataFile_delete(symbolToDelete);
 			}
 			return symbolsToDelete.Count;
 		}
-		internal void DataSourceFolderDeleteWithSymbols() {
+		internal void DataSourceFolder_delete_withAllSymbols() {
 			if (this.BarsRepository == null) {
 				string msg = "DATASOURCE_INITIALIZE_NOT_INVOKED_YET //DataSourceFolderDeleteWithSymbols()";
 				Assembler.PopupException(msg);
@@ -121,7 +132,7 @@ namespace Sq1.Core.DataFeed {
 			this.BarsRepository.DeleteAllDataFilesAllSymbols();
 			Directory.Delete(this.DataSourceAbspath);
 		}
-		internal bool DataSourceFolderRename(string newName) {
+		internal bool DataSourceFolder_rename(string newName) {
 			bool ret = false;
 			string msig = " DataSourceFolderRename(" + this.Name + "=>" + newName + ")";
 			if (Directory.Exists(this.DataSourceAbspath) == false) {

@@ -399,11 +399,11 @@ namespace Sq1.Gui {
 		#endregion SlidersForm.Instance.SlidersAutoGrow
 
 
-		internal void DataSourceEditorControl_DataSourceEdited_updateDataSourcesTreeControl(object sender, DataSourceEventArgs e) {
-			// mouseover DataSource tree refreshes the OLV and the icon disappears after DataSourceEditor => change Streaming (even without Save, but Save is an official "event trigger")
-			// WEIRD_BUT_NOT_ENOUGH DataSourcesForm.Instance.DataSourcesTreeControl.Invalidate();
-			DataSourcesForm.Instance.DataSourcesTreeControl.Refresh();
-		}
+		//internal void DataSourceEditorControl_DataSourceEdited_updateDataSourcesTreeControl(object sender, DataSourceEventArgs e) {
+		//    // mouseover DataSource tree refreshes the OLV and the icon disappears after DataSourceEditor => change Streaming (even without Save, but Save is an official "event trigger")
+		//    // WEIRD_BUT_NOT_ENOUGH DataSourcesForm.Instance.DataSourcesTreeControl.Invalidate();
+		//    DataSourcesForm.Instance.DataSourcesTreeControl.Refresh();
+		//}
 
 	}
 }

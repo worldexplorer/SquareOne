@@ -11,7 +11,11 @@ namespace Sq1.Core.Streaming {
 
 		protected virtual int Quote_incrementAbsnoPerSymbol_fixServerTime_minusOneQuotePrevNewerThanCurrent_munisTwoWrongTimezone(Quote quoteUU) {
 			int changesMade = 0;
-			string msig = " //StreamingAdapter.Quote_fixServerTime_absnoPerSymbol(" + quoteUU + ")" + this.ToString();
+			string msig = " //StreamingAdapter.Quote_fixServerTime_absnoPerSymbol("
+#if VERBOSE_STRINGS_SLOW
+				+ quoteUU
+#endif
+				+ ")" + this.ToString();
 
 			Quote quoteLast	= this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(quoteUU.Symbol);
 			if (quoteLast == null) {
@@ -129,12 +133,21 @@ namespace Sq1.Core.Streaming {
 			return changesMade;
 		}
 		public virtual void PushQuoteReceived_positiveSize(Quote quoteUnboundUnattached_absnoPerSymbolMinusOne) {
-			string msig = " //StreamingAdapter.PushQuoteReceived_positiveSize()" + this.ToString();
+			string msig = " //StreamingAdapter.PushQuoteReceived_positiveSize("
+#if VERBOSE_STRINGS_SLOW
+				+ quoteUnboundUnattached_absnoPerSymbolMinusOne
+#endif
+				+ ")" + this.ToString();
 
 			if (this.DistributorCharts_substitutedDuringLivesim.ChannelsBySymbol.Count == 0) {
 				this.RaiseOnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange(quoteUnboundUnattached_absnoPerSymbolMinusOne);
 
-				string msg = "I_REFUSE_TO_PUSH_QUOTE NO_CHARTS_SUBSCRIBED";
+				string symbol_fromQuote = quoteUnboundUnattached_absnoPerSymbolMinusOne != null
+							  ? quoteUnboundUnattached_absnoPerSymbolMinusOne.Symbol
+							  : "QUOTE_NULL__BAD_SIGN";
+
+				string msg = "THERE_MUST_BE_AT_LEAST_SOLIDIFIER_FOR_SYMBOL[" + symbol_fromQuote + "] YOUR_BAR_FILE_IS_ZERO_SIZE_WHILE_MUST_CONTAIN_HEADER"
+					+ " I_REFUSE_TO_PUSH_QUOTE NO_CHANNELS_SUBSCRIBED";
 				if (		this.LivesimStreaming_ownImplementation != null
 						 && this.LivesimStreaming_ownImplementation.DataSource != null
 						 && this.LivesimStreaming_ownImplementation.Livesimulator != null
@@ -238,12 +251,24 @@ namespace Sq1.Core.Streaming {
 
 			string symbol = quoteUU.Symbol;
 			SymbolChannel<StreamingConsumerSolidifier> channelForSymbol = this.DistributorSolidifiers_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(symbol);
-			bool okayForDistribSolidifiers_toBe_empty = this.DistributorSolidifiers_substitutedDuringLivesim.ReasonIwasCreated.Contains(Distributor<StreamingConsumerSolidifier>.SUBSTITUTED_LIVESIM_STARTED);
+			bool solidifiers_areEmpty_duringLivesim = this.DistributorSolidifiers_substitutedDuringLivesim.ReasonIwasCreated.Contains(Distributor<StreamingConsumerSolidifier>.SUBSTITUTED_LIVESIM_STARTED);
 			if (channelForSymbol == null) {
-				if (okayForDistribSolidifiers_toBe_empty) return;
-				string msg = "YOUR_BARS_ARE_NOT_SAVED__SOLIDIFIERS_ARE_NOT_SUBSCRIBED_TO symbol[" + symbol + "]";
-				//Assembler.PopupException(msg + msig);
-				return;
+				if (solidifiers_areEmpty_duringLivesim) return;
+				if (this.CreateNewSymbolsIfMissing_fromDde == false) {
+					string msg = "YOUR_BARS_ARE_NOT_SAVED__SOLIDIFIERS_ARE_NOT_SUBSCRIBED_TO symbol[" + symbol + "] this.CreateNewSymbolsIfMissing_fromDde==false";
+					//Assembler.PopupException(msg + msig);
+					return;
+				}
+
+				try {
+					if (this.DataSource.Symbols.Contains(symbol) == false) this.DataSource.SymbolAdd(symbol);
+				} catch (Exception ex) {
+					string msg = "MAKE_SURE_YOU_SWITCHED_TO_GUI_THREAD_WHILE_POPULATING_DataSourceTree";
+					Assembler.PopupException(msg + msig, ex);
+				}
+
+				this.solidifierSubscribe_oneSymbol(symbol);
+				channelForSymbol = this.DistributorSolidifiers_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(symbol);
 			}
 			try {
 				this.DistributorSolidifiers_substitutedDuringLivesim	.Push_quoteUnboundUnattached_toChannel(quoteUU);

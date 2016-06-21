@@ -28,6 +28,8 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public		bool					QuotePumpSeparatePushingThreadEnabled	{ get; protected set; }
 		[JsonIgnore]	public		LivesimStreaming		LivesimStreaming_ownImplementation		{ get; protected set; }
 
+		[JsonProperty]	public		bool					CreateNewSymbolsIfMissing_fromDde;
+
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public StreamingAdapter() {
 			ReasonToExist							= "DUMMY_FOR_LIST_OF_STREAMING_PROVIDERS_IN_DATASOURCE_EDITOR";
@@ -42,6 +44,7 @@ namespace Sq1.Core.Streaming {
 			LivesimStreaming_ownImplementation		= null;		// be careful addressing it! valid only for StreamingAdapter-derived!!!
 			//if (this is LivesimStreaming) return;
 			//NULL_UNTIL_QUIK_PROVIDES_OWN_DDE_REDIRECTOR LivesimStreamingImplementation					= new LivesimStreamingDefault(true, "USED_FOR_LIVESIM_ON_DATASOURCES_WITHOUT_ASSIGNED_STREAMING");	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
+			CreateNewSymbolsIfMissing_fromDde		= true;
 		}
 
 		public StreamingAdapter(string reasonToExist) : this() {

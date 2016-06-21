@@ -293,6 +293,17 @@ namespace Sq1.Widgets.DataSourceEditor {
 
 		}
 
+
+		void pushSymbolsToStreamingAdapter_rebuildTree_serialize(string symbolsUserTyped) {
+			try {
+				List<string> symbols_possiblyChanged = this.ParseSymbols(symbolsUserTyped);
+				this.dataSourceIamEditing.Symbols_syncWithBarFiles_serialize(symbols_possiblyChanged);
+			} catch (Exception ex) {
+				string msg = "SOMETHING_HAPPENED_WHILE_repositoryJsonDataSource.SerializeSingle(" + this.dataSourceIamEditing + ")";
+				Assembler.PopupException(msg, ex);
+			}
+
+		}
 		public void PushEditedSettingsToAdapters_initializeDataSource_updateDataSourceTree_rebacktestCharts() {
 			if (this.tsiLtbDataSourceName.InputFieldValue == "") {
 				string msg = "Please provide Name for this new DataSet";
@@ -302,19 +313,17 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 			this.dataSourceIamEditing.Name = this.tsiLtbDataSourceName.InputFieldValue;
 
-			List<string> symbols_possiblyChanged = this.ParseSymbols(this.tsiLtbSymbols.InputFieldValue);
-			this.dataSourceIamEditing.Symbols_syncWithBarFiles(symbols_possiblyChanged);
+			this.pushSymbolsToStreamingAdapter_rebuildTree_serialize(this.tsiLtbSymbols.InputFieldValue);
 
 			this.dataSourceIamEditing.ScaleInterval.StringsCachedInvalidate();
 
-			if (this.dataSourceIamEditing.StreamingAdapter	!= null) this.dataSourceIamEditing.StreamingAdapter	.EditorInstance.PushEditedSettings_toStreamingAdapter_serializeDataSource();
-			if (this.dataSourceIamEditing.BrokerAdapter		!= null) this.dataSourceIamEditing.BrokerAdapter	.EditorInstance.PushEditedSettings_toBrokerAdapter_serializeDataSource();
-
 			try {
-				this.repositoryJsonDataSource.SerializeSingle(dataSourceIamEditing);
+				if (this.dataSourceIamEditing.StreamingAdapter	!= null) this.dataSourceIamEditing.StreamingAdapter	.EditorInstance.PushEditedSettings_toStreamingAdapter_serializeDataSource();
+				if (this.dataSourceIamEditing.BrokerAdapter		!= null) this.dataSourceIamEditing.BrokerAdapter	.EditorInstance.PushEditedSettings_toBrokerAdapter_serializeDataSource();
+			    this.repositoryJsonDataSource.SerializeSingle(dataSourceIamEditing);
 			} catch (Exception ex) {
-				string msg = "SOMETHING_HAPPENED_WHILE_repositoryJsonDataSource.SerializeSingle(" + this.dataSourceIamEditing + ")";
-				Assembler.PopupException(msg, ex);
+			    string msg = "SOMETHING_HAPPENED_WHILE_repositoryJsonDataSource.SerializeSingle(" + this.dataSourceIamEditing + ")";
+			    Assembler.PopupException(msg, ex);
 			}
 
 			// for DataSource, nothing changed, but providers were assigned by user clicks, so DS will Initialize() each
@@ -325,12 +334,12 @@ namespace Sq1.Widgets.DataSourceEditor {
 				Assembler.PopupException(msg, ex);
 			}
 
-			try {
-				this.RaiseDataSourceEdited_updateDataSourcesTreeControl();
-			} catch (Exception ex) {
-				string msg = "SOMETHING_HAPPENED_TO_DataSourcesTreeControl.PopulateIconForDataSource()";
-				Assembler.PopupException(msg, ex);
-			}
+			//try {
+			//    this.RaiseDataSourceEdited_updateDataSourcesTreeControl();
+			//} catch (Exception ex) {
+			//    string msg = "SOMETHING_HAPPENED_TO_DataSourcesTreeControl.PopulateIconForDataSource()";
+			//    Assembler.PopupException(msg, ex);
+			//}
 
 			try {
 				//LOOKS_LIKE_STARTS_BACKTESTING_BEFORE_DSEDITOR_CLOSED

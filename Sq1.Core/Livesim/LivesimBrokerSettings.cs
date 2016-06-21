@@ -47,11 +47,12 @@ namespace Sq1.Core.Livesim {
 		[JsonProperty]	public	int		PriceDeviationForMarketOrdersPercentageOfBestPriceMax;
 		[JsonProperty]	public	bool	PriceDeviationForMarketOrdersEnabled;
 
-		[JsonProperty]	public	int		AdaperDisconnectHappensOncePerQuoteMin;
-		[JsonProperty]	public	int		AdaperDisconnectHappensOncePerQuoteMax;
-		[JsonProperty]	public	int		AdaperDisconnectReconnectsAfterMillisMin;
-		[JsonProperty]	public	int		AdaperDisconnectReconnectsAfterMillisMax;
-		[JsonProperty]	public	bool	AdaperDisconnectEnabled;
+		[JsonProperty]	public	int		AdapterDisconnectHappensOncePerOrderMin;
+		[JsonProperty]	public	int		AdapterDisconnectHappensOncePerOrderMax;
+		[JsonProperty]	public	int		AdapterDisconnectReconnectsAfterMillisMin;
+		[JsonProperty]	public	int		AdapterDisconnectReconnectsAfterMillisMax;
+		[JsonProperty]	public	bool	AdapterDisconnectEnabled;
+		[JsonProperty]	public	bool	ClearExecutionExceptions;
 
 		public LivesimBrokerSettings(Strategy strategy) : base() {
 			base.Initialize(strategy);
@@ -63,7 +64,8 @@ namespace Sq1.Core.Livesim {
 			PartialFillEnabled							= true;
 			OutOfOrderFillEnabled						= true;
 			PriceDeviationForMarketOrdersEnabled		= true;
-			AdaperDisconnectEnabled						= true;
+			AdapterDisconnectEnabled					= true;
+			ClearExecutionExceptions					= false;
 		}
 	}
 }

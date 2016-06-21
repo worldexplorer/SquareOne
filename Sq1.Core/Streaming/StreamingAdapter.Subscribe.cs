@@ -132,7 +132,7 @@ namespace Sq1.Core.Streaming {
 			this.DistributorSolidifiers_substitutedDuringLivesim.SetQuotePumpThreadName_sinceNoMoreSubscribersWillFollowFor(symbol);
 		}
 
-		void solidifierUnsubscribe_oneSymbol_useMe_whenAddingRenamingSymbols_inDataSource(string symbol) {
+		void solidifierUnsubscribe_oneSymbol_useMe_whenRenamingSymbols_inDataSource(string symbol) {
 			if (symbol == null) {
 				symbol  = this.LivesimStreaming_ownImplementation.DataSource.Symbols[0];
 			}

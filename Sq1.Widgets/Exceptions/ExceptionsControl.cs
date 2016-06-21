@@ -353,5 +353,9 @@ namespace Sq1.Widgets.Exceptions {
 			ret += base.FlushingStats;
 			return ret;
 		}
+
+		public void Clear() {
+			this.mniClear_Click(this, new EventArgs());
+		}
 	}
 }

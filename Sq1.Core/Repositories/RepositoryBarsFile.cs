@@ -50,11 +50,11 @@ namespace Sq1.Core.Repositories {
 			return ret;
 		} }
 		
-		public RepositoryBarsFile(RepositoryBarsSameScaleInterval barsFolder, string symbol, bool throwIfDoesntExist = true, bool createIfDoesntExist = false) {
+		public RepositoryBarsFile(RepositoryBarsSameScaleInterval barsFolder, string symbol, bool throwIfFolderDoesntExist = true, bool createEmptyBarsFileIfDoesntExist = false) {
 			fileReadWriteSequentialLock = new object();
 			this.barsRepository = barsFolder;
 			this.Symbol = symbol;
-			this.Abspath = this.barsRepository.AbspathForSymbol(this.Symbol, throwIfDoesntExist, createIfDoesntExist);
+			this.Abspath = this.barsRepository.AbspathForSymbol(this.Symbol, throwIfFolderDoesntExist, createEmptyBarsFileIfDoesntExist);
 		}
 
 		public Bars BarsLoadAll_nullUnsafe_threadSafe(bool saveBarsIfThereWasFailedCheckOHLCV = true) { lock(this.fileReadWriteSequentialLock) {

@@ -7,6 +7,16 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Repositories {
 	public class RepositoryBarsSameScaleInterval {
 		public	string				DataSourceAbspath	{ get; protected set; }
+		public	string				DataSourceRelpath	{ get {
+			string dataFolder_abspath = Assembler.InstanceInitialized.AppDataPath;
+			//int matchUntil = DataSourceAbspath.IndexOf(dataFolder_abspath);
+			//if (matchUntil != -1) {
+			string difference = Path.GetDirectoryName(this.DataSourceAbspath);
+			if (this.DataSourceAbspath.Length > dataFolder_abspath.Length) {
+				difference = this.DataSourceAbspath.Substring(dataFolder_abspath.Length+1);
+			}
+			return difference;
+		} }
 		public	string				Extension			{ get; protected set; }
 		public	BarScaleInterval	ScaleInterval		{ get; protected set; }
 		
@@ -77,11 +87,11 @@ namespace Sq1.Core.Repositories {
 			} }
 
 		//FILE.OPEN_FILE_CANT_BE_ACCESSED_FIXED_BY_ROUTING_ALL_FILE_ACCESS_THROUGH_ONE_SYNCHRONIZED_INSTANCE
-		Dictionary<string, RepositoryBarsFile> barsForDataSourceSymbols;
+		Dictionary<string, RepositoryBarsFile> barsFilesCached_forSymbols_inDataSource;
 		object barsForDataSourceSymbolsLock;
 
 		RepositoryBarsSameScaleInterval() {
-			barsForDataSourceSymbols = new Dictionary<string, RepositoryBarsFile>();
+			barsFilesCached_forSymbols_inDataSource = new Dictionary<string, RepositoryBarsFile>();
 			barsForDataSourceSymbolsLock = new object();
 		}
 		public RepositoryBarsSameScaleInterval(string dataSourceAbspath, BarScaleInterval scaleInterval, bool createNonExistingSubfolder = true, string extension = "bar") : this() {
@@ -92,20 +102,18 @@ namespace Sq1.Core.Repositories {
 			this.ScaleInterval = scaleInterval;
 			this.createNonExistingSubfolder = createNonExistingSubfolder;
 		}
-		public bool DataFileExistsForSymbol(string symbol) {
-			string symbolAbspath = this.AbspathForSymbol(symbol, false, false);
-			bool exists = File.Exists(symbolAbspath);
-			return exists;
-		}
-		public string AbspathForSymbol(string symbol, bool throwIfDoesntExist = false, bool createIfDoesntExist = false) {
+		public string AbspathForSymbol(string symbol, bool throwIfFolderDoesntExist = false, bool createEmptyBarsFileIfDoesntExist = false) {
 			if (String.IsNullOrEmpty(symbol)) throw new ArgumentException("Symbol must not be blank");
 			string fileAbspath = Path.Combine(this.SubfolderAbspath, this.FileNameForSymbol(symbol));
-			if (File.Exists(fileAbspath) == false && createIfDoesntExist) {
+			if (File.Exists(fileAbspath) == false && createEmptyBarsFileIfDoesntExist) {
 				FileStream fs = File.Create(fileAbspath);
 				fs.Close();
+				fs.Dispose();
+				//STACK_OVERFLOW Bars empty = new Bars(symbol, this.ScaleInterval, "CANT_LEAVE_ZERO_LENGTH__MUST_HAVE_HEADER");
+				//STACK_OVERFLOW empty.Save();
 				Assembler.PopupException("CREATED_NON_EXISTING_BAR_FILE [" + fileAbspath + "]", null, false);
 			}
-			if (File.Exists(fileAbspath) == false && throwIfDoesntExist) {
+			if (File.Exists(fileAbspath) == false && throwIfFolderDoesntExist) {
 				string msg = "AbspathForSymbol(" + symbol + "): File.Exists(" + fileAbspath + ")=false";
 				throw new Exception(msg);
 			}
@@ -116,22 +124,28 @@ namespace Sq1.Core.Repositories {
 			// Data-debug\DataSources\Mock-debug\Minute-1\RIM3_Minute-1.BAR
 			return symbol + "_" + this.SubfolderScaleInterval + "." + this.Extension;
 		}
-		public void SymbolDataFileAdd(string symbolToAdd, bool silentlyOverwriteExisting_dontThrow = false) {
+		public bool SymbolDataFile_exists_forSymbol(string symbol) {
+			string symbolAbspath = this.AbspathForSymbol(symbol, false, false);
+			bool exists = File.Exists(symbolAbspath);
+			return exists;
+		}
+		public void SymbolDataFile_createOrTruncate(string symbolToAdd, bool silentlyOverwriteExisting_dontThrow = false) {
 			string abspath = this.AbspathForSymbol(symbolToAdd, false, false);
 			if (File.Exists(abspath) && silentlyOverwriteExisting_dontThrow == false) {
 				throw new Exception("ADD__FILE_ALREADY_EXISTS[" + abspath + "]" + " SymbolDataFileAdd(" + symbolToAdd + ")");
 			}
-			var fs = File.Create(abspath);
+			FileStream fs = File.Create(abspath);
 			fs.Close();
+			fs.Dispose();
 		}
-		public void SymbolDataFileCopy(string symbolToCopy, string abspathFromOtherRepositoryBars, bool overwriteIfExistsDontThrow = false) {
+		public void SymbolDataFile_copy(string symbolToCopy, string abspathFromOtherRepositoryBars, bool overwriteIfExistsDontThrow = false) {
 			string abspathOfTheCopy = this.AbspathForSymbol(symbolToCopy);
 			if (File.Exists(abspathOfTheCopy)) {
 				throw new Exception("COPY__FILE_ALREADY_EXISTS[" + abspathOfTheCopy + "]" + " SymbolDataFileCopy(" + symbolToCopy + ")");
 			}
 			File.Copy(abspathFromOtherRepositoryBars, abspathOfTheCopy);
 		}
-		public void SymbolDataFileRename(string oldSymbolName, string newSymbolName) {
+		public void SymbolDataFile_rename(string oldSymbolName, string newSymbolName) {
 			string msig = " SymbolDataFileRename(" + oldSymbolName + "=>" + newSymbolName + ")";
 			string abspathOldSymbolName = this.AbspathForSymbol(oldSymbolName);
 			if (File.Exists(abspathOldSymbolName) == false) {
@@ -143,7 +157,7 @@ namespace Sq1.Core.Repositories {
 			}
 			File.Move(abspathOldSymbolName, abspathNewSymbolName);
 		}
-		public void SymbolDataFileDelete(string symbolToDelete) {
+		public void SymbolDataFile_delete(string symbolToDelete) {
 			string abspath = this.AbspathForSymbol(symbolToDelete);
 			if (File.Exists(abspath) == false) {
 				throw new Exception("FILE_ALREADY_DELETED[" + abspath + "]" + " SymbolDataFileDelete(" + symbolToDelete + ")");
@@ -153,22 +167,27 @@ namespace Sq1.Core.Repositories {
 		public int DeleteAllDataFilesAllSymbols() {
 			int ret = 0;
 			foreach (string symbolToDelete in this.SymbolsInScaleIntervalSubFolder) {
-				this.SymbolDataFileDelete(symbolToDelete);
+				this.SymbolDataFile_delete(symbolToDelete);
 			}
 			// PREVENTS_CREATING_WITH_SAME_NAME this.createNonExistingSubfolder = false;
 			Directory.Delete(this.SubfolderAbspath);
 			return ret;
 		}
 
-		public RepositoryBarsFile DataFileForSymbol(string symbol, bool throwIfDoesntExist = true, bool createIfDoesntExist = false) {
+		public RepositoryBarsFile DataFileForSymbol(string symbol, bool throwIfDoesntExist = true, bool createFolderIfDoesntExist = false) {
 			// NO_NEED__PUMP_WAITS_FOR_END_OF_QUOTE_PROCESSING_WE_DO_HERE lock (barsForDataSourceSymbolsLock) {   //FILE.OPEN_FILE_CANT_BE_ACCESSED_FIXED_BY_ROUTING_ALL_FILE_ACCESS_THROUGH_ONE_SYNCHRONIZED_INSTANCE
-				if (this.barsForDataSourceSymbols.ContainsKey(symbol) == false) {
-					RepositoryBarsFile barsFileNew = new RepositoryBarsFile(this, symbol, throwIfDoesntExist, createIfDoesntExist);
-					this.barsForDataSourceSymbols.Add(symbol, barsFileNew);
+				if (this.barsFilesCached_forSymbols_inDataSource.ContainsKey(symbol) == false) {
+					RepositoryBarsFile barsFileNew = new RepositoryBarsFile(this, symbol, throwIfDoesntExist, createFolderIfDoesntExist);
+					this.barsFilesCached_forSymbols_inDataSource.Add(symbol, barsFileNew);
 				}
-				RepositoryBarsFile barsFile = this.barsForDataSourceSymbols[symbol];
+				RepositoryBarsFile barsFile = this.barsFilesCached_forSymbols_inDataSource[symbol];
 				return barsFile;
 			//}
+		}
+
+		public override string ToString() {
+			string ret = this.DataSourceRelpath + ":" + this.barsFilesCached_forSymbols_inDataSource.Count;
+			return ret;
 		}
 	}
 }

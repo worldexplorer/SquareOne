@@ -413,6 +413,11 @@ namespace Sq1.Core.Broker {
 					}
 					break;
 
+				case OrderState.ErrorSubmittingOrder_elaborate:
+					string msg5 = "ErrorSubmittingOrder_elaborate";
+					Assembler.PopupException(msg5 + msig);
+					break;
+
 				case OrderState.ErrorCancelReplace:
 					this.DataSnapshot.OrdersRemoveRange_fromAllLanes(new List<Order>() { order });
 					this.RaiseOnOrdersRemoved_executionControlShouldRebuildOLV_scheduled(this, new List<Order>(){order});
@@ -421,7 +426,6 @@ namespace Sq1.Core.Broker {
 
 				case OrderState.Error:
 				case OrderState.ErrorMarketPriceZero:
-				case OrderState.ErrorSubmittingOrder_elaborate:
 				case OrderState.Error_DealPriceOutOfLimit_weird:
 				case OrderState.Error_accountIsTooSmall:
 				case OrderState.ErrorSlippageCalc:

@@ -33,11 +33,14 @@ namespace Sq1.Core.Livesim {
 			} else if (whatIchecked == this.cbx_PriceDeviationForMarketOrdersEnabled) {
 				this.livesimBrokerSettings.PriceDeviationForMarketOrdersEnabled = whatIchecked.Checked;
 
-			} else if (whatIchecked == this.cbx_AdaperDisconnectEnabled) {
-				this.livesimBrokerSettings.AdaperDisconnectEnabled = whatIchecked.Checked;
-
 			} else if (whatIchecked == this.cbx_KillPendingDelayEnabled) {
 				this.livesimBrokerSettings.KillPendingDelayEnabled = whatIchecked.Checked;
+
+			} else if (whatIchecked == this.cbx_AdaperDisconnectEnabled) {
+				this.livesimBrokerSettings.AdapterDisconnectEnabled = whatIchecked.Checked;
+
+			} else if (whatIchecked == this.cbx_ClearExecutionExceptions) {
+				this.livesimBrokerSettings.ClearExecutionExceptions = whatIchecked.Checked;
 
 			} else {
 				Assembler.PopupException("ADD_TARGET_FOR_CLICK_PROPAGATION_FOR_whatIchecked[" + whatIchecked.Name + "]");
@@ -126,6 +129,7 @@ namespace Sq1.Core.Livesim {
 			} else if (whereItyped == this.txt_PartialFillPercentageFilledMax) {
 				this.livesimBrokerSettings.PartialFillPercentageFilledMax = parsedInt;
 
+
 			} else if (whereItyped == this.txt_OutOfOrderFillHappensOncePerQuoteMin) {
 				this.livesimBrokerSettings.OutOfOrderFillHappensOncePerQuoteMin = parsedInt;
 
@@ -137,6 +141,7 @@ namespace Sq1.Core.Livesim {
 
 			} else if (whereItyped == this.txt_OutOfOrderFillDeliveredXordersLaterMax) {
 				this.livesimBrokerSettings.OutOfOrderFillDeliveredXordersLaterMax = parsedInt;
+
 
 			} else if (whereItyped == this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin) {
 				this.livesimBrokerSettings.PriceDeviationForMarketOrdersHappensOncePerXordersMin = parsedInt;
@@ -150,23 +155,25 @@ namespace Sq1.Core.Livesim {
 			} else if (whereItyped == this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax) {
 				this.livesimBrokerSettings.PriceDeviationForMarketOrdersPercentageOfBestPriceMax = parsedInt;
 
+
 			} else if (whereItyped == this.txt_KillPendingDelay_min) {
 				this.livesimBrokerSettings.KillPendingDelayMillisMin = parsedInt;
 
 			} else if (whereItyped == this.txt_KillPendingDelay_max) {
 				this.livesimBrokerSettings.KillPendingDelayMillisMax = parsedInt;
 
-			} else if (whereItyped == this.txt_AdaperDisconnectHappensOncePerQuoteMin) {
-				this.livesimBrokerSettings.AdaperDisconnectHappensOncePerQuoteMin = parsedInt;
 
-			} else if (whereItyped == this.txt_AdaperDisconnectHappensOncePerQuoteMax) {
-				this.livesimBrokerSettings.AdaperDisconnectHappensOncePerQuoteMax = parsedInt;
+			} else if (whereItyped == this.txt_AdapterDisconnectHappensOncePerOrderMin) {
+				this.livesimBrokerSettings.AdapterDisconnectHappensOncePerOrderMin = parsedInt;
 
-			} else if (whereItyped == this.txt_AdaperDisconnectReconnectsAfterMillisMin) {
-				this.livesimBrokerSettings.AdaperDisconnectReconnectsAfterMillisMin = parsedInt;
+			} else if (whereItyped == this.txt_AdapterDisconnectHappensOncePerOrderMax) {
+				this.livesimBrokerSettings.AdapterDisconnectHappensOncePerOrderMax = parsedInt;
 
-			} else if (whereItyped == this.txt_AdaperDisconnectReconnectsAfterMillisMax) {
-				this.livesimBrokerSettings.AdaperDisconnectReconnectsAfterMillisMax = parsedInt;
+			} else if (whereItyped == this.txt_AdapterDisconnectReconnectsAfterMillisMin) {
+				this.livesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMin = parsedInt;
+
+			} else if (whereItyped == this.txt_AdapterDisconnectReconnectsAfterMillisMax) {
+				this.livesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMax = parsedInt;
 
 			} else {
 				Assembler.PopupException("ADD_TARGET_FOR_TYPING_PROPAGATION_FOR whereItyped[" + whereItyped.Text + "]/[" + whereItyped.Name + "]");

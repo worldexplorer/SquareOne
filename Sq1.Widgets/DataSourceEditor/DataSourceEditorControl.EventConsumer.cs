@@ -99,7 +99,11 @@ namespace Sq1.Widgets.DataSourceEditor {
 				return;
 			}
 			if (this.tsiLtbSymbols.InputFieldValue == e.DataSource.SymbolsCSV) return;
-				this.tsiLtbSymbols.InputFieldValue = e.DataSource.SymbolsCSV;
+				this.tsiLtbSymbols.InputFieldValue  = e.DataSource.SymbolsCSV;
+		}
+
+		void tsiLtbSymbols_UserTyped(object sender, LabeledTextBox.LabeledTextBoxUserTypedArgs e) {
+			this.pushSymbolsToStreamingAdapter_rebuildTree_serialize(e.StringUserTyped);
 		}
 	}
 }

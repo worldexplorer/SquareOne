@@ -12,7 +12,7 @@ namespace Sq1.Core.Repositories {
 
 		public void RaiseOnSymbolAdded(object sender, DataSource dataSource, string symbolToAdd) {
 			if (this.OnSymbolAdded == null) return;
-			this.OnSymbolAdded(sender, new DataSourceSymbolEventArgs(dataSource, symbolToAdd));
+			this.OnSymbolAdded(sender, new DataSourceSymbolEventArgs(dataSource, symbolToAdd, true));
 		}
 		public void RaiseOnSymbolRenamed(object sender, DataSource dataSource, string newSymbolName, string oldSymbolName) {
 			if (this.OnSymbolRenamed == null) return;

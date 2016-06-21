@@ -25,7 +25,7 @@ namespace Sq1.Core.Broker {
 		public virtual void Broker_connect() {
 			throw new Exception("please override BrokerAdapter::Connect() for BrokerAdapter.Name=[" + Name + "]");
 		}
-		public virtual void Broker_disconnect() {
+		public virtual void Broker_disconnect(string reasonToDisconnect = "UNKNOWN_reasonToDisconnect") {
 			throw new Exception("please override BrokerAdapter::Connect() for BrokerAdapter.Name=[" + Name + "]");
 		}
 

@@ -159,6 +159,8 @@ namespace Sq1.Core {
 
 			ColorBackgroundRed_forPositionLoss		= Color.FromArgb(255, 230, 230);
 			ColorBackgroundGreen_forPositionProfit	= Color.FromArgb(230, 255, 230);
+
+			Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle = new List<Exception>();
 		}
 		public Assembler Initialize(IStatusReporter mainForm, bool usedOnlyToPopupExceptions_NPEunsafe = false) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {
@@ -328,9 +330,6 @@ namespace Sq1.Core {
 				Debugger.Break();
 				#endif
 				return;
-			}
-			if (this.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle == null) {
-				this.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle = new List<Exception>();
 			}
 			this.Exceptions_duringApplicationStartup_beforeMainForm_gotWindowHandle.Insert(0, exc);
 		}

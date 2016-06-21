@@ -7,6 +7,7 @@ using Sq1.Core;
 using Sq1.Core.Repositories;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
+
 using Sq1.Widgets.RangeBar;
 
 namespace Sq1.Widgets.FuturesMerger {
@@ -25,10 +26,10 @@ namespace Sq1.Widgets.FuturesMerger {
 				Bars						barsClonedReversed;
 
 		public	string						DataSourceName					{ get {
-			return this.barsCloned == null ? "BARS_NOT_LOADED_INVOKE_LoadBars()" : this.barsCloned.DataSource.Name;
+			return this.barsCloned == null ? "BarsEditorUserControl/DataSourceName::BARS_NOT_LOADED_INVOKE_LoadBars()" : this.barsCloned.DataSource.Name;
 		} }
 		public	string						Symbol							{ get {
-			return this.barsCloned == null ? "BARS_NOT_LOADED_INVOKE_LoadBars()" : this.barsCloned.Symbol;
+			return this.barsCloned == null ? "BarsEditorUserControl/Symbol::BARS_NOT_LOADED_INVOKE_LoadBars()" : this.barsCloned.Symbol;
 		} }
 
 		[Browsable(false)]

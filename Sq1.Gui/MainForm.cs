@@ -478,7 +478,7 @@ namespace Sq1.Gui {
 			SlidersForm.Instance.SteppingSlidersAutoGrowControl.ScriptContextLoadRequestedSubscriberImplementsCurrentSwitch += this.MainFormEventManager.SlidersAutoGrow_OnScriptContextLoadClicked;
 			SlidersForm.Instance.SteppingSlidersAutoGrowControl.ScriptContextRenamed				+= this.MainFormEventManager.SlidersAutoGrow_OnScriptContextRenamed;
 
-			DataSourceEditorForm.Instance.DataSourceEditorControl.DataSourceEdited_updateDataSourcesTreeControl += new EventHandler<DataSourceEventArgs>(this.MainFormEventManager.DataSourceEditorControl_DataSourceEdited_updateDataSourcesTreeControl);
+			//DataSourceEditorForm.Instance.DataSourceEditorControl.DataSourceEdited_updateDataSourcesTreeControl += new EventHandler<DataSourceEventArgs>(this.MainFormEventManager.DataSourceEditorControl_DataSourceEdited_updateDataSourcesTreeControl);
 		}
 		void mainFormEventManagerInitializeAfterDockingDeserialized() {
 			// too frequent

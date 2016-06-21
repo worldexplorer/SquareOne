@@ -6,5 +6,9 @@ namespace Sq1.Widgets.Livesim {
 		public LivesimControl() {
 			InitializeComponent();
 		}
+
+		void cbxClearExcepExec_CheckBoxCheckedChanged(object sender, EventArgs e) {
+			this.BrokerLivesimEditor.PushEditedSettings_toBrokerAdapter_serializeDataSource();
+		}
 	}
 }

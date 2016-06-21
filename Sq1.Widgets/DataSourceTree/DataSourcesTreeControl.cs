@@ -79,6 +79,15 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.PopulateDataSourcesIntoTreeListView();
 			this.populateDataSnapshotDeserialized();
 			
+			this.dataSourceRepository.OnItemAdded			-= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(	dataSourceRepository_OnDataSourceAdded);
+			this.dataSourceRepository.OnItemRenamed			-= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(	dataSourceRepository_OnDataSourceRenamed);
+			this.dataSourceRepository.OnItemCanBeRemoved	-= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(	dataSourceRepository_OnDataSourceCanBeRemoved);
+			this.dataSourceRepository.OnItemRemovedDone		-= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(	dataSourceRepository_OnDataSourceRemovedDone);
+			this.dataSourceRepository.OnSymbolAdded			-= new EventHandler<DataSourceSymbolEventArgs>(				dataSourceRepository_OnSymbolAdded);
+			this.dataSourceRepository.OnSymbolRenamed		-= new EventHandler<DataSourceSymbolRenamedEventArgs>(		dataSourceRepository_OnSymbolRenamed);
+			this.dataSourceRepository.OnSymbolCanBeRemoved	-= new EventHandler<DataSourceSymbolEventArgs>(				dataSourceRepository_OnSymbolCanBeRemoved);
+			this.dataSourceRepository.OnSymbolRemovedDone	-= new EventHandler<DataSourceSymbolEventArgs>(				dataSourceRepository_OnSymbolRemovedDone);
+
 			// TODO MULTIPLE_INITIALIZATIONS_WILL_INVOKE_YOUR_HANDLERS_MULTIPLE_TIMES
 			this.dataSourceRepository.OnItemAdded			+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(	dataSourceRepository_OnDataSourceAdded);
 			this.dataSourceRepository.OnItemRenamed			+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(	dataSourceRepository_OnDataSourceRenamed);
@@ -116,6 +125,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 				StreamingAdapter provider = ds.StreamingAdapter;
 				if (provider == null) continue;
 				this.PopulateIconForDataSource(ds);
+				if (this.DataSourceSelected != null && this.DataSourceSelected != ds) continue;
+				List<string> rescanned_always = ds.BarsRepository.SymbolsInScaleIntervalSubFolder;
 			}
 			this.OlvTree.SetObjects(dataSources);
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = true;

@@ -4,6 +4,9 @@ using System.Windows.Forms;
 using Sq1.Core;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
+using Sq1.Core.Livesim;
+
+using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui.Forms {
 	public partial class LivesimForm {
@@ -14,6 +17,14 @@ namespace Sq1.Gui.Forms {
 			if (clickedStart) {
 				btnStartStop.Text = "Starting";
 				btnStartStop.Enabled = false;
+
+				LivesimDataSource ds = this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesim_generator_nullUnsafe;
+				if (ds != null && true) {
+					//if (MainForm.ExceptionsForm != null && DockContentImproved.
+					ExceptionsForm.Instance.ExceptionControl.Clear();
+					ExecutionForm.Instance.ExecutionTreeControl.Clear();
+				}
+
 				this.chartFormManager.LivesimStartedOrUnpaused_HideReportersAndExecution();
 				this.chartFormManager.Executor.Livesimulator.Start_invokedFromGuiThread(btnStartStop, btnPauseResume, this.chartFormManager.ChartForm.ChartControl);
 				btnStartStop.Text = "Stop";

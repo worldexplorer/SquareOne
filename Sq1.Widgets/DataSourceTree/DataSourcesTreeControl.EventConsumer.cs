@@ -42,6 +42,9 @@ namespace Sq1.Widgets.DataSourcesTree {
 				this.mniltbSymbolAdd		.Visible = false;
 				this.toolStripSeparator1	.Visible = false;
 				this.ContextMenuStrip = this.ctxDataSource;
+
+				List<DataSource> dataSources = Assembler.InstanceInitialized.RepositoryJsonDataSources.ItemsCachedAsList;
+				this.mniRefresh.Text = "Refresh [" + dataSources.Count + "] DataSources from Repositories";
 				return;
 			}
 			this.syncSymbolAndDataSourceSelectedFromRowIndexClicked(e.RowIndex);
@@ -85,7 +88,12 @@ namespace Sq1.Widgets.DataSourcesTree {
 				this.mniltbSymbolAdd		.Visible = true;
 				this.toolStripSeparator1	.Visible = true;
 
-				if (this.DataSourceSelected == null) return;
+				if (this.DataSourceSelected == null) {
+					List<DataSource> dataSources = Assembler.InstanceInitialized.RepositoryJsonDataSources.ItemsCachedAsList;
+					this.mniRefresh.Text = "Refresh [" + dataSources.Count + "] DataSources from Repositories";
+					return;
+				}
+				this.mniRefresh.Text = "Rescan [" + this.DataSourceSelected.BarsRepository.DataSourceRelpath + "\\*.bars]";
 				this.mniDataSourceBrief		.Text = "DataSource [" + this.DataSourceSelected.Name + "]"
 						+ "[" + this.DataSourceSelected.ScaleInterval + "], [" + this.DataSourceSelected.Symbols.Count + "]Symbols";
 				this.mniDataSourceEdit		.Enabled = (subscribersPolled.DoNotDeleteItsUsedElsewhere == false);
@@ -237,13 +245,14 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.dataSnapshot.DataSourceFoldersExpanded.Remove(dataSourceCollapsedName);
 			this.dataSnapshotSerializer.Serialize();
 		}
+
 		void mniltbSymbolAdd_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			//this.dataSourceRepository.SymbolAdd(this.DataSourceSelected, e.StringUserTyped);
 			if (this.DataSourceSelected == null) {
 				Assembler.PopupException("mniltbSymbolAdd_UserTyped(): this.DataSourceSelected=null");
 				return;
 			}
-			this.dataSourceRepository.SymbolAdd(this.DataSourceSelected, e.StringUserTyped, this);
+			this.dataSourceRepository.SymbolAdd(this.DataSourceSelected, e.StringUserTyped, this);		// will invoke this.dataSourceRepository_OnSymbolAdded()
 			this.SelectSymbol(this.DataSourceSelected.Name, e.StringUserTyped);
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
 		}
@@ -301,7 +310,6 @@ namespace Sq1.Widgets.DataSourcesTree {
 			//REPOSITORY_WILL_NOTIFY_ME_USING_EVENT this.SelectSymbol(this.DataSourceSelected.Name, e.StringUserTyped);
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
 		}
-
 		void mniltbDataSourceAddNew_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string newDataSourceName = e.StringUserTyped;
 			DataSource foundWithSameName = this.dataSourceRepository.ItemFind(newDataSourceName);
@@ -328,9 +336,10 @@ namespace Sq1.Widgets.DataSourcesTree {
 		}
 
 		void dataSourceRepository_OnSymbolAdded(object sender, DataSourceSymbolEventArgs e) {
-			if (sender == this) {
-				this.OlvTree.RefreshObject(this.DataSourceSelected);
-				this.OlvTree.Expand(e.DataSource);
+			//if (sender == this) {
+			if (e.ReScanFolderForBarsFiles == false) {
+			    this.OlvTree.RefreshObject(this.DataSourceSelected);
+			    this.OlvTree.Expand(e.DataSource);
 			} else {
 				//this.populateDataSourcesIntoTreeListView();
 				this.OlvTree.RebuildAll(true);
@@ -382,6 +391,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void dataSourceRepository_OnDataSourceCanBeRemoved(object sender, NamedObjectJsonEventArgs<DataSource> e) {
 			e.DoNotDeleteItsUsedElsewhere = false;
 		}
+
 		void mniRefresh_Click(object sender, EventArgs e) {
 			Cursor.Current = Cursors.WaitCursor;
 			this.PopulateDataSourcesIntoTreeListView();

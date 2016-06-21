@@ -21,7 +21,21 @@ namespace Sq1.Core.Streaming {
 		protected	bool				unPauseRequested;
 					ManualResetEvent	confirmPaused;		// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 					ManualResetEvent	confirmUnpaused;	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
-		public override bool			Paused { get { return this.confirmPaused.WaitOne(0); } }
+		public override bool			Paused { get {
+			string msig = " //PumpPerSymbol.Paused_get()";
+			try {
+				return this.confirmPaused.WaitOne(0);
+			} catch (Exception ex) {
+				string msg = "WHOLE_PUMP_ALREADY_DISPOSED ";
+				if (this.IsDisposed == false) {
+					msg = confirmPaused == null
+						? "NULLIFIED_confirmPaused[" + confirmPaused + "]"
+						: "DISPOSED_WHILE_WAITING confirmPaused[" + confirmPaused + "]!=null";
+				}
+				Assembler.PopupException(msg + ex.Message + msig);
+			}
+			return false;
+		} }
 
 					Task	bufferPusher;
 					int		bufferPusherThreadId;

@@ -57,14 +57,14 @@ namespace Sq1.Core.Livesim {
 		private System.Windows.Forms.GroupBox grp_BrokerAdapterDisconnect;
 		private System.Windows.Forms.Label label22;
 		private System.Windows.Forms.Label label23;
-		private System.Windows.Forms.TextBox txt_AdaperDisconnectReconnectsAfterMillisMax;
-		private System.Windows.Forms.TextBox txt_AdaperDisconnectReconnectsAfterMillisMin;
+		private System.Windows.Forms.TextBox txt_AdapterDisconnectReconnectsAfterMillisMax;
+		private System.Windows.Forms.TextBox txt_AdapterDisconnectReconnectsAfterMillisMin;
 		private System.Windows.Forms.Label label24;
 		private System.Windows.Forms.Label label25;
 		private System.Windows.Forms.CheckBox cbx_AdaperDisconnectEnabled;
 		private System.Windows.Forms.Label label26;
-		private System.Windows.Forms.TextBox txt_AdaperDisconnectHappensOncePerQuoteMax;
-		private System.Windows.Forms.TextBox txt_AdaperDisconnectHappensOncePerQuoteMin;
+		private System.Windows.Forms.TextBox txt_AdapterDisconnectHappensOncePerOrderMax;
+		private System.Windows.Forms.TextBox txt_AdapterDisconnectHappensOncePerOrderMin;
 		private System.Windows.Forms.Label label27;
 		private System.Windows.Forms.GroupBox gbx_DelayBeforeFill;
 		private System.Windows.Forms.Label label28;
@@ -115,14 +115,14 @@ namespace Sq1.Core.Livesim {
 			this.grp_BrokerAdapterDisconnect = new System.Windows.Forms.GroupBox();
 			this.label22 = new System.Windows.Forms.Label();
 			this.label23 = new System.Windows.Forms.Label();
-			this.txt_AdaperDisconnectReconnectsAfterMillisMax = new System.Windows.Forms.TextBox();
-			this.txt_AdaperDisconnectReconnectsAfterMillisMin = new System.Windows.Forms.TextBox();
+			this.txt_AdapterDisconnectReconnectsAfterMillisMax = new System.Windows.Forms.TextBox();
+			this.txt_AdapterDisconnectReconnectsAfterMillisMin = new System.Windows.Forms.TextBox();
 			this.label24 = new System.Windows.Forms.Label();
 			this.label25 = new System.Windows.Forms.Label();
 			this.cbx_AdaperDisconnectEnabled = new System.Windows.Forms.CheckBox();
 			this.label26 = new System.Windows.Forms.Label();
-			this.txt_AdaperDisconnectHappensOncePerQuoteMax = new System.Windows.Forms.TextBox();
-			this.txt_AdaperDisconnectHappensOncePerQuoteMin = new System.Windows.Forms.TextBox();
+			this.txt_AdapterDisconnectHappensOncePerOrderMax = new System.Windows.Forms.TextBox();
+			this.txt_AdapterDisconnectHappensOncePerOrderMin = new System.Windows.Forms.TextBox();
 			this.label27 = new System.Windows.Forms.Label();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.label3 = new System.Windows.Forms.Label();
@@ -174,6 +174,7 @@ namespace Sq1.Core.Livesim {
 			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMax = new System.Windows.Forms.TextBox();
 			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMin = new System.Windows.Forms.TextBox();
 			this.label44 = new System.Windows.Forms.Label();
+			this.cbx_ClearExecutionExceptions = new System.Windows.Forms.CheckBox();
 			this.groupBox2.SuspendLayout();
 			this.grp_orderRejectionRate.SuspendLayout();
 			this.groupBox4.SuspendLayout();
@@ -496,16 +497,15 @@ namespace Sq1.Core.Livesim {
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.label22);
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.label23);
-			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdaperDisconnectReconnectsAfterMillisMax);
-			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdaperDisconnectReconnectsAfterMillisMin);
+			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdapterDisconnectReconnectsAfterMillisMax);
+			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdapterDisconnectReconnectsAfterMillisMin);
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.label24);
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.label25);
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.cbx_AdaperDisconnectEnabled);
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.label26);
-			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdaperDisconnectHappensOncePerQuoteMax);
-			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdaperDisconnectHappensOncePerQuoteMin);
+			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdapterDisconnectHappensOncePerOrderMax);
+			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdapterDisconnectHappensOncePerOrderMin);
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.label27);
-			this.grp_BrokerAdapterDisconnect.Enabled = false;
 			this.grp_BrokerAdapterDisconnect.Location = new System.Drawing.Point(3, 651);
 			this.grp_BrokerAdapterDisconnect.Name = "grp_BrokerAdapterDisconnect";
 			this.grp_BrokerAdapterDisconnect.Size = new System.Drawing.Size(356, 94);
@@ -529,21 +529,21 @@ namespace Sq1.Core.Livesim {
 			this.label23.TabIndex = 27;
 			this.label23.Text = "to";
 			// 
-			// txt_AdaperDisconnectReconnectsAfterMillisMax
+			// txt_AdapterDisconnectReconnectsAfterMillisMax
 			// 
-			this.txt_AdaperDisconnectReconnectsAfterMillisMax.Location = new System.Drawing.Point(183, 45);
-			this.txt_AdaperDisconnectReconnectsAfterMillisMax.Name = "txt_AdaperDisconnectReconnectsAfterMillisMax";
-			this.txt_AdaperDisconnectReconnectsAfterMillisMax.Size = new System.Drawing.Size(33, 20);
-			this.txt_AdaperDisconnectReconnectsAfterMillisMax.TabIndex = 54;
-			this.txt_AdaperDisconnectReconnectsAfterMillisMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_AdapterDisconnectReconnectsAfterMillisMax.Location = new System.Drawing.Point(183, 45);
+			this.txt_AdapterDisconnectReconnectsAfterMillisMax.Name = "txt_AdapterDisconnectReconnectsAfterMillisMax";
+			this.txt_AdapterDisconnectReconnectsAfterMillisMax.Size = new System.Drawing.Size(33, 20);
+			this.txt_AdapterDisconnectReconnectsAfterMillisMax.TabIndex = 54;
+			this.txt_AdapterDisconnectReconnectsAfterMillisMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// txt_AdaperDisconnectReconnectsAfterMillisMin
+			// txt_AdapterDisconnectReconnectsAfterMillisMin
 			// 
-			this.txt_AdaperDisconnectReconnectsAfterMillisMin.Location = new System.Drawing.Point(129, 45);
-			this.txt_AdaperDisconnectReconnectsAfterMillisMin.Name = "txt_AdaperDisconnectReconnectsAfterMillisMin";
-			this.txt_AdaperDisconnectReconnectsAfterMillisMin.Size = new System.Drawing.Size(30, 20);
-			this.txt_AdaperDisconnectReconnectsAfterMillisMin.TabIndex = 53;
-			this.txt_AdaperDisconnectReconnectsAfterMillisMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_AdapterDisconnectReconnectsAfterMillisMin.Location = new System.Drawing.Point(129, 45);
+			this.txt_AdapterDisconnectReconnectsAfterMillisMin.Name = "txt_AdapterDisconnectReconnectsAfterMillisMin";
+			this.txt_AdapterDisconnectReconnectsAfterMillisMin.Size = new System.Drawing.Size(30, 20);
+			this.txt_AdapterDisconnectReconnectsAfterMillisMin.TabIndex = 53;
+			this.txt_AdapterDisconnectReconnectsAfterMillisMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label24
 			// 
@@ -583,21 +583,21 @@ namespace Sq1.Core.Livesim {
 			this.label26.TabIndex = 22;
 			this.label26.Text = "to";
 			// 
-			// txt_AdaperDisconnectHappensOncePerQuoteMax
+			// txt_AdapterDisconnectHappensOncePerOrderMax
 			// 
-			this.txt_AdaperDisconnectHappensOncePerQuoteMax.Location = new System.Drawing.Point(183, 19);
-			this.txt_AdaperDisconnectHappensOncePerQuoteMax.Name = "txt_AdaperDisconnectHappensOncePerQuoteMax";
-			this.txt_AdaperDisconnectHappensOncePerQuoteMax.Size = new System.Drawing.Size(33, 20);
-			this.txt_AdaperDisconnectHappensOncePerQuoteMax.TabIndex = 52;
-			this.txt_AdaperDisconnectHappensOncePerQuoteMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_AdapterDisconnectHappensOncePerOrderMax.Location = new System.Drawing.Point(183, 19);
+			this.txt_AdapterDisconnectHappensOncePerOrderMax.Name = "txt_AdapterDisconnectHappensOncePerOrderMax";
+			this.txt_AdapterDisconnectHappensOncePerOrderMax.Size = new System.Drawing.Size(33, 20);
+			this.txt_AdapterDisconnectHappensOncePerOrderMax.TabIndex = 52;
+			this.txt_AdapterDisconnectHappensOncePerOrderMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// txt_AdaperDisconnectHappensOncePerQuoteMin
+			// txt_AdapterDisconnectHappensOncePerOrderMin
 			// 
-			this.txt_AdaperDisconnectHappensOncePerQuoteMin.Location = new System.Drawing.Point(129, 19);
-			this.txt_AdaperDisconnectHappensOncePerQuoteMin.Name = "txt_AdaperDisconnectHappensOncePerQuoteMin";
-			this.txt_AdaperDisconnectHappensOncePerQuoteMin.Size = new System.Drawing.Size(30, 20);
-			this.txt_AdaperDisconnectHappensOncePerQuoteMin.TabIndex = 51;
-			this.txt_AdaperDisconnectHappensOncePerQuoteMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_AdapterDisconnectHappensOncePerOrderMin.Location = new System.Drawing.Point(129, 19);
+			this.txt_AdapterDisconnectHappensOncePerOrderMin.Name = "txt_AdapterDisconnectHappensOncePerOrderMin";
+			this.txt_AdapterDisconnectHappensOncePerOrderMin.Size = new System.Drawing.Size(30, 20);
+			this.txt_AdapterDisconnectHappensOncePerOrderMin.TabIndex = 51;
+			this.txt_AdapterDisconnectHappensOncePerOrderMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label27
 			// 
@@ -605,7 +605,7 @@ namespace Sq1.Core.Livesim {
 			this.label27.Name = "label27";
 			this.label27.Size = new System.Drawing.Size(93, 17);
 			this.label27.TabIndex = 20;
-			this.label27.Text = "quotes generated";
+			this.label27.Text = "orders processed";
 			// 
 			// groupBox1
 			// 
@@ -1098,11 +1098,25 @@ namespace Sq1.Core.Livesim {
 			this.label44.TabIndex = 20;
 			this.label44.Text = "killer orders";
 			// 
+			// cbx_ClearExecutionExceptions
+			// 
+			this.cbx_ClearExecutionExceptions.AutoSize = true;
+			this.cbx_ClearExecutionExceptions.Checked = true;
+			this.cbx_ClearExecutionExceptions.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbx_ClearExecutionExceptions.Location = new System.Drawing.Point(9, 751);
+			this.cbx_ClearExecutionExceptions.Name = "cbx_ClearExecutionExceptions";
+			this.cbx_ClearExecutionExceptions.Size = new System.Drawing.Size(227, 17);
+			this.cbx_ClearExecutionExceptions.TabIndex = 43;
+			this.cbx_ClearExecutionExceptions.Text = "Clear Execution Exceptions at StartLivesim";
+			this.cbx_ClearExecutionExceptions.UseVisualStyleBackColor = true;
+			this.cbx_ClearExecutionExceptions.CheckedChanged += new System.EventHandler(this.anyCheckBox_CheckedChanged);
+			// 
 			// LivesimBrokerEditor
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.AutoScroll = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Controls.Add(this.cbx_ClearExecutionExceptions);
 			this.Controls.Add(this.gbx_KillerTransactionCallbackAfterVictimFilled);
 			this.Controls.Add(this.gbx_TransactionStatusAfterOrderStatus);
 			this.Controls.Add(this.grp_KillPendingDelay);
@@ -1113,7 +1127,7 @@ namespace Sq1.Core.Livesim {
 			this.Controls.Add(this.grp_orderRejectionRate);
 			this.Controls.Add(this.groupBox2);
 			this.Name = "LivesimBrokerEditor";
-			this.Size = new System.Drawing.Size(362, 746);
+			this.Size = new System.Drawing.Size(362, 772);
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
 			this.grp_orderRejectionRate.ResumeLayout(false);
@@ -1133,6 +1147,7 @@ namespace Sq1.Core.Livesim {
 			this.gbx_KillerTransactionCallbackAfterVictimFilled.ResumeLayout(false);
 			this.gbx_KillerTransactionCallbackAfterVictimFilled.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		protected override void Dispose(bool disposing) {
@@ -1167,5 +1182,6 @@ namespace Sq1.Core.Livesim {
 		private System.Windows.Forms.TextBox txt_KillerTransactionCallbackAfterVictimFilled_happensMax;
 		private System.Windows.Forms.TextBox txt_KillerTransactionCallbackAfterVictimFilled_happensMin;
 		private System.Windows.Forms.Label label44;
+		private System.Windows.Forms.CheckBox cbx_ClearExecutionExceptions;
 	}
 }

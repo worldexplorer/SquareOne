@@ -21,7 +21,8 @@ namespace Sq1.Core.Livesim {
 			this.cbx_OutOfOrderFillEnabled					.Checked = this.livesimBrokerSettings.OutOfOrderFillEnabled;
 			this.cbx_PriceDeviationForMarketOrdersEnabled	.Checked = this.livesimBrokerSettings.PriceDeviationForMarketOrdersEnabled;
 			this.cbx_KillPendingDelayEnabled				.Checked = this.livesimBrokerSettings.KillPendingDelayEnabled;
-			this.cbx_AdaperDisconnectEnabled				.Checked = this.livesimBrokerSettings.AdaperDisconnectEnabled;
+			this.cbx_AdaperDisconnectEnabled				.Checked = this.livesimBrokerSettings.AdapterDisconnectEnabled;
+			this.cbx_ClearExecutionExceptions				.Checked = this.livesimBrokerSettings.ClearExecutionExceptions;
 
 
 
@@ -45,10 +46,12 @@ namespace Sq1.Core.Livesim {
 			this.txt_PartialFillHappensOncePerQuoteMax						.Text = this.livesimBrokerSettings.PartialFillHappensOncePerQuoteMax						.ToString();
 			this.txt_PartialFillPercentageFilledMin							.Text = this.livesimBrokerSettings.PartialFillPercentageFilledMin							.ToString();
 			this.txt_PartialFillPercentageFilledMax							.Text = this.livesimBrokerSettings.PartialFillPercentageFilledMax							.ToString();
+
 			this.txt_OutOfOrderFillHappensOncePerQuoteMin					.Text = this.livesimBrokerSettings.OutOfOrderFillHappensOncePerQuoteMin						.ToString();
 			this.txt_OutOfOrderFillHappensOncePerQuoteMax					.Text = this.livesimBrokerSettings.OutOfOrderFillHappensOncePerQuoteMax						.ToString();
 			this.txt_OutOfOrderFillDeliveredXordersLaterMin					.Text = this.livesimBrokerSettings.OutOfOrderFillDeliveredXordersLaterMin					.ToString();
 			this.txt_OutOfOrderFillDeliveredXordersLaterMax					.Text = this.livesimBrokerSettings.OutOfOrderFillDeliveredXordersLaterMax					.ToString();
+
 			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin	.Text = this.livesimBrokerSettings.PriceDeviationForMarketOrdersHappensOncePerXordersMin	.ToString();
 			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax	.Text = this.livesimBrokerSettings.PriceDeviationForMarketOrdersHappensOncePerXordersMax	.ToString();
 			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin	.Text = this.livesimBrokerSettings.PriceDeviationForMarketOrdersPercentageOfBestPriceMin	.ToString();
@@ -57,10 +60,10 @@ namespace Sq1.Core.Livesim {
 			this.txt_KillPendingDelay_min									.Text = this.livesimBrokerSettings.KillPendingDelayMillisMin								.ToString();
 			this.txt_KillPendingDelay_max									.Text = this.livesimBrokerSettings.KillPendingDelayMillisMax								.ToString();
 
-			this.txt_AdaperDisconnectHappensOncePerQuoteMin					.Text = this.livesimBrokerSettings.AdaperDisconnectHappensOncePerQuoteMin					.ToString();
-			this.txt_AdaperDisconnectHappensOncePerQuoteMax					.Text = this.livesimBrokerSettings.AdaperDisconnectHappensOncePerQuoteMax					.ToString();
-			this.txt_AdaperDisconnectReconnectsAfterMillisMin				.Text = this.livesimBrokerSettings.AdaperDisconnectReconnectsAfterMillisMin					.ToString();
-			this.txt_AdaperDisconnectReconnectsAfterMillisMax				.Text = this.livesimBrokerSettings.AdaperDisconnectReconnectsAfterMillisMax					.ToString();
+			this.txt_AdapterDisconnectHappensOncePerOrderMin				.Text = this.livesimBrokerSettings.AdapterDisconnectHappensOncePerOrderMin					.ToString();
+			this.txt_AdapterDisconnectHappensOncePerOrderMax				.Text = this.livesimBrokerSettings.AdapterDisconnectHappensOncePerOrderMax					.ToString();
+			this.txt_AdapterDisconnectReconnectsAfterMillisMin				.Text = this.livesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMin				.ToString();
+			this.txt_AdapterDisconnectReconnectsAfterMillisMax				.Text = this.livesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMax				.ToString();
 		}
 	}
 }

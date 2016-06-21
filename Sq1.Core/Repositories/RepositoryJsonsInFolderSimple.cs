@@ -77,7 +77,7 @@ namespace Sq1.Core.Repositories {
 		public void RescanFolderStoreNamesFound() {
 			if (string.IsNullOrEmpty(this.AbsPath)) {
 				string msg = "PRIOR_TO_CHANGING/COMPILING_STRATEGY_FOR_CHART__YOU_DIDNT_INITIALIZE_HIDDEN_SequencerControl.cs:line136";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 			this.ItemsFound.Clear();
