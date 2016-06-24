@@ -30,6 +30,10 @@ namespace Sq1.Core.DataFeed {
 				this.ChartsOpenForSymbol.Register(secondLevel);
 			}
 			//this.Symbols = this.BarsRepository.SymbolsInScaleIntervalSubFolder;
+
+			if (this.StreamingAdapter != null) {
+				this.StreamingAdapter.SymbolCreated_solidifierSubscribe(symbolToAdd);
+			}
 		}
 		// internal => use only RepositoryJsonDataSource.SymbolRemove() which will notify subscribers about remove operation
 		internal void SymbolRemove(string symbolToDelete) {
@@ -47,6 +51,10 @@ namespace Sq1.Core.DataFeed {
 			//this.ChartsOpenForSymbol.Remove(symbolToDelete);
 			this.ChartsOpenForSymbol.UnRegisterSimilar(new SymbolOfDataSource(symbolToDelete, this));
 			// RepositoryJsonDataSource.RaiseOnSymbolRemovedDone()_WILL_NOTIFY_DATASOURCE_TREE_UPSTACK this.DataSourceEdited_treeShouldRebuild(this);
+
+			if (this.StreamingAdapter != null) {
+				this.StreamingAdapter.SymbolDeleted_solidifierUnsubscribe(symbolToDelete);
+			}
 		}
 
 		internal void SymbolCopyOrCompressFrom(DataSource dataSourceFrom, string symbolToCopy, DataSource dataSourceTo) {

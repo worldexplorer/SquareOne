@@ -32,30 +32,31 @@ namespace Sq1.Gui {
 		public	bool							MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad;
 		public	bool							dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace { get; private set; }
 
-		public ChartForm ChartFormActive_nullUnsafe { get {
-				if (this.DockPanel.ActiveDocument == null) {
-					string msg = "MainForm.DockPanel.ActiveDocument is not a ChartForm; no charts open or drag your chart into DOCUMENT docking area";
-					Assembler.PopupException(msg, null, false);
-					return null;
-				}
-
-				ChartForm ret = this.DockPanel.ActiveDocument as ChartForm;
-				if (ret == null) {
-					string msg = "NO_WORRIES__DATA_SOURCE_EDITOR_TAB_IS_CURRENTLY_DISPLAYED_IN_DOCUMENT_PANE"
-						+ " MainForm.DockPanel.ActiveDocument is [" + this.DockPanel.ActiveDocument + "]";
-					#if DEBUG_HEAVY
-					Assembler.PopupException(msg2;
-					#endif
-					return null;
-				}
-				foreach (ChartFormManager chartFormDataSnap in this.GuiDataSnapshot.ChartFormManagers.Values) {
-					if (chartFormDataSnap.ChartForm == ret) return ret;
-				}
-				string msg2 = "MainForm.DockPanel.ActiveDocument is [" + this.DockPanel.ActiveDocument + "] but it's not found among MainForm.ChartFormsManagers registry;"
-					+ "1) did you forget to add? 2) MainForm.ChartFormsManagers doesn't have DockContent-restored Forms added?";
-				Assembler.PopupException(msg2);
-				return null;
-			} }
+		//v1
+		//public ChartForm ChartForm_inActiveDocument_nullUnsafe { get {
+			//if (this.DockPanel.ActiveDocument == null) {
+			//    string msg = "MainForm.DockPanel.ActiveDocument is not a ChartForm; no charts open or drag your chart into DOCUMENT docking area";
+			//    Assembler.PopupException(msg, null, false);
+			//    return null;
+			//}
+			//ChartForm ret = this.DockPanel.ActiveDocument as ChartForm;
+			//if (ret == null) {
+			//    string msg = "NO_WORRIES__DATA_SOURCE_EDITOR_TAB_IS_CURRENTLY_DISPLAYED_IN_DOCUMENT_PANE"
+			//        + " MainForm.DockPanel.ActiveDocument is [" + this.DockPanel.ActiveDocument + "]";
+			//    #if DEBUG_HEAVY
+			//    Assembler.PopupException(msg2;
+			//    #endif
+			//    return null;
+			//}
+			//foreach (ChartFormManager chartFormDataSnap in this.GuiDataSnapshot.ChartFormManagers.Values) {
+			//    if (chartFormDataSnap.ChartForm == ret) return ret;
+			//}
+			//string msg2 = "MainForm.DockPanel.ActiveDocument is [" + this.DockPanel.ActiveDocument + "] but it's not found among MainForm.ChartFormsManagers registry;"
+			//    + "1) did you forget to add? 2) MainForm.ChartFormsManagers doesn't have DockContent-restored Forms added?";
+			//Assembler.PopupException(msg2);
+			//return null;
+		//} }
+		public	ChartForm						ChartForm_lastActivatedContent_nullUnsafe;
 
 		public MainForm() {
 			InitializeComponent();
@@ -199,12 +200,12 @@ namespace Sq1.Gui {
 
 	
 				this.initializeMainFromDeserializedDataSnapshot();
-				this.mainFormEventManagerInitializeAfterDockingDeserialized();
+				this.mainFormEventManagerInitialize_afterDockingDeserialized();
 	
 				//this.PropagateSelectorsForCurrentChart();
 				//WHY???this.MainFormEventManager.DockPanel_ActiveDocumentChanged(this, EventArgs.Empty);
-				if (this.ChartFormActive_nullUnsafe != null) {
-					this.ChartFormActive_nullUnsafe.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
+				if (this.ChartForm_lastActivatedContent_nullUnsafe != null) {
+					this.ChartForm_lastActivatedContent_nullUnsafe.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
 					// onStartup, current chart is blank - MAY_FAIL when PANEL_HEIGHT_MUST_BE_POSITIVE but works otherwize
 					//this.ChartFormActive_nullUnsafe.Invalidate();
 					//BARS_ARE_STILL_NOT_PAINTER_ON_APPRESTART__MOVED_TO_SECOND_CFMGR_LOOP_180_LINES_BELOW this.ChartFormActive_nullUnsafe.ChartControl.InvalidateAllPanels();
@@ -400,9 +401,9 @@ namespace Sq1.Gui {
 				//}
 			}
 			
-			if (this.ChartFormActive_nullUnsafe != null) {
+			if (this.ChartForm_lastActivatedContent_nullUnsafe != null) {
 				//MainFrom.Deserializer on apprestart, Document.Active (ChartForm) doesn't paint Bars
-				this.ChartFormActive_nullUnsafe.ChartControl.InvalidateAllPanels();
+				this.ChartForm_lastActivatedContent_nullUnsafe.ChartControl.InvalidateAllPanels();
 			}
 			try {
 				if (ExecutionForm.Instance.IsShown) {
@@ -446,7 +447,18 @@ namespace Sq1.Gui {
 			SlidersForm				.Instance.VisibleChanged	+= delegate { this.mniSliders				.Checked = SlidersForm				.Instance.Visible; };
 			StrategiesForm			.Instance.VisibleChanged	+= delegate { this.mniStrategies			.Checked = StrategiesForm			.Instance.Visible; };
 			ExecutionForm			.Instance.VisibleChanged	+= delegate { this.mniExecution				.Checked = ExecutionForm			.Instance.Visible; };
-			CsvImporterForm			.Instance.VisibleChanged	+= delegate { this.mniCsvImporter			.Checked = CsvImporterForm			.Instance.Visible; };
+			//v1 CsvImporterForm			.Instance.VisibleChanged	+= delegate { this.mniCsvImporter			.Checked = CsvImporterForm			.Instance.Visible; };
+			//v2
+			//if (CsvImporterForm.ImNullOrDisposed == false) {
+			//    CsvImporterForm.Instance.SubscribeVisibleChanged_onlyOnce(delegate(bool visibleReceived) {
+			//        this.mniCsvImporter.Checked = visibleReceived;
+			//    });
+			//}
+			//v3
+			bool subscribed = CsvImporterForm.SubscribeTo_VisibleChanged_ifInstanceCreated(delegate(bool visibleReceived) {
+			    this.mniCsvImporter.Checked = visibleReceived;
+			});
+
 			SymbolInfoEditorForm	.Instance.VisibleChanged	+= delegate { this.mniSymbolInfoEditor		.Checked = SymbolInfoEditorForm		.Instance.Visible; };
 			ChartSettingsEditorForm	.Instance.VisibleChanged	+= delegate { this.mniChartSettingsEditor	.Checked = ChartSettingsEditorForm	.Instance.Visible; };
 			BarsEditorForm			.Instance.VisibleChanged	+= delegate { this.mniBarsEditor			.Checked = BarsEditorForm			.Instance.Visible; };
@@ -480,11 +492,9 @@ namespace Sq1.Gui {
 
 			//DataSourceEditorForm.Instance.DataSourceEditorControl.DataSourceEdited_updateDataSourcesTreeControl += new EventHandler<DataSourceEventArgs>(this.MainFormEventManager.DataSourceEditorControl_DataSourceEdited_updateDataSourcesTreeControl);
 		}
-		void mainFormEventManagerInitializeAfterDockingDeserialized() {
-			// too frequent
-			//this.DockPanel.ActiveContentChanged += this.MainFormEventManager.DockPanel_ActiveContentChanged;
-			// just as often as I needed!
-			this.DockPanel.ActiveDocumentChanged += this.MainFormEventManager.DockPanel_ActiveDocumentChanged;
+		void mainFormEventManagerInitialize_afterDockingDeserialized() {
+			this.DockPanel.ActiveContentChanged		+= this.MainFormEventManager.DockPanel_ActiveContentChanged;	// too frequent
+			//this.DockPanel.ActiveDocumentChanged	+= this.MainFormEventManager.DockPanel_ActiveDocumentChanged;	// just as often as I needed!
 		}
 		public void MainFormSerialize() {
 			if (this.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace) return;

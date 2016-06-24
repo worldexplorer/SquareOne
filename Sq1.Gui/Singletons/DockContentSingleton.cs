@@ -30,6 +30,13 @@ namespace Sq1.Gui.Singletons {
 
 		protected static bool instanceBeingConstructedUseForDesignMode { get; private set; }
 		protected static T instance;
+		public static bool ImNullOrDisposed { get { 
+			bool IamNotYetCreated = DockContentSingleton<T>.instance == null;
+			if (IamNotYetCreated) return true;
+			bool IamDisposed = DockContentSingleton<T>.instance.IsDisposed;
+			if (IamDisposed) return true;
+			return false;
+		} }
 		public static T Instance { get {
 				// without "where T : new()" in class declaration above, "new T()" below can not be compiled
 				bool IamNotYetCreated = DockContentSingleton<T>.instance == null;
@@ -53,7 +60,7 @@ namespace Sq1.Gui.Singletons {
 		public string OfWhat { get { return typeof(T).Name; } }
 		
 		public DockContentSingleton() : base() {
-			base.HideOnClose = true;
+			//base.HideOnClose = true;
 			if (DockContentSingleton<T>.instance == null) return;
 			if (DockContentSingleton<T>.instanceBeingConstructedUseForDesignMode == true) return;
 			string msg = "Don't invoke ctor(), use " + this.OfWhat + ".Instance instead" +
@@ -77,10 +84,10 @@ namespace Sq1.Gui.Singletons {
 			//v1
 //			base.Hide();
 //			e.Cancel = true;
-//			base.OnFormClosing(e);
+			base.OnFormClosing(e);
 //			e.Cancel = false;	// without it, <Content IsHidden="True"> will be added
 			//v2 ctor() has base.HideOnClose = true; whatever we close we DONT close!!
-			e.Cancel = false;	// without it, <Content IsHidden="True"> will be added
+			//e.Cancel = false;	// without it, <Content IsHidden="True"> will be added
 			return;
 		}
 		//protected override void OnFormClosing(FormClosingEventArgs e) {
@@ -89,6 +96,10 @@ namespace Sq1.Gui.Singletons {
 		//	base.Hide();
 		//	e.Cancel = true;
 		//}
+		protected override void OnFormClosed(FormClosedEventArgs e) {
+			base.OnFormClosed(e);
+			DockContentSingleton<T>.instance = null;
+		}
 
 //		public new bool Enabled {
 //			get { return base.Enabled; }
@@ -97,6 +108,10 @@ namespace Sq1.Gui.Singletons {
 //				//this.dataSourceTreeView.Enabled = base.Enabled;
 //			}
 //		}
-
+		public static bool SubscribeTo_VisibleChanged_ifInstanceCreated(Action<bool> onVisibleChanged_action) {
+		    if (DockContentSingleton<T>.ImNullOrDisposed) return false;
+		    DockContentSingleton<T>.Instance.SubscribeVisibleChanged_onlyOnce(onVisibleChanged_action);	//CATCH_22_HEHE
+		    return true;
+		}
 	}
 }

@@ -40,7 +40,7 @@
 			this.ClientSize = new System.Drawing.Size(205, 393);
 			this.Controls.Add(this.SymbolEditorControl);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.HideOnClose = true;
+			this.HideOnClose = false;
 			this.Name = "SymbolInfoEditorForm";
 			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockRight;
 			this.Text = "Symbol Editor";

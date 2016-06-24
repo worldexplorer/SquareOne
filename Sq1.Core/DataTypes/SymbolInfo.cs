@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 using Sq1.Core.Execution;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Sq1.Core.DataTypes {
 	public partial class SymbolInfo {
@@ -409,9 +410,48 @@ namespace Sq1.Core.DataTypes {
 			ret += "(" + Enum.GetName(typeof(SecurityType), this.SecurityType) + ")";
 			return ret;
 		}
-		// I_HATE_SUCH_INTRANSPARENCY__ALMOST_INTRODUCED_FOR_List<Symbol>__BUT_IMPLEMENTED__MY_WAY_TO_AVOID_OVERRIDING_EQUALS
+
+		//v1 I_HATE_SUCH_INTRANSPARENCY__ALMOST_INTRODUCED_FOR_List<Symbol>__BUT_IMPLEMENTED__MY_WAY_TO_AVOID_OVERRIDING_EQUALS
 		//public override bool Equals(object obj) {
 		//	return this.Symbol == (((SymbolInfo))obj));
 		//}
+		//v2 OK_LETS_TRY
+		public override bool Equals(object obj) {
+			if (obj == null) return false;
+			SymbolInfo obj_asSymbolInfo = obj as SymbolInfo;
+			if (obj_asSymbolInfo == null) {
+				string msg = "DONT_COMPARE_APPLES_TO_ORANGES_UPSTACK";
+				//Assembler.PopupException(msg);
+				return false;
+			}
+			return obj_asSymbolInfo.Symbol == this.Symbol;
+		}
+
+		public int AbsorbEvery_JsonProperty_exceptSymbol_from(SymbolInfo symbolInfo_imPullingFrom) {
+			int ret = 0;
+			if (symbolInfo_imPullingFrom == null) {
+				string msg = "CAN_NOT_ABSORB_FROM_SymbolInfo=null //AbsorbEvery_JsonProperty_exceptSymbol_from(NULL)";
+				Assembler.PopupException(msg);
+				return ret;
+			}
+			PropertyInfo[] props = this.GetType().GetProperties();
+			foreach (PropertyInfo prop in props) {
+				//bool propHasJsonAttribute = false;
+				//foreach (prop.Attributes) {
+				//}
+				if (prop.CanWrite == false) continue;
+				if (prop.Name.ToUpper() == "SYMBOL") continue;
+
+				try {
+					object value_imPullingFrom = prop.GetValue(symbolInfo_imPullingFrom, null);
+					prop.SetValue(this, value_imPullingFrom, null);
+					ret++;
+				} catch (Exception ex) {
+					string msg = "GET/SET_REFLECTED_VALUE_ERROR_FOR_PROPERTY[" + prop.Name + "]";
+					Assembler.PopupException(msg, ex);
+				}
+			}
+			return ret;
+		}
 	}
 }

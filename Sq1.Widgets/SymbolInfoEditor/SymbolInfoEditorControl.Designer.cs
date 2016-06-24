@@ -34,14 +34,18 @@ namespace Sq1.Widgets.SymbolEditor {
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniltbRename = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mniltbDuplicate = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+			this.mniPushTo = new System.Windows.Forms.ToolStripMenuItem();
+			this.triangleTriggerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniPullFrom = new System.Windows.Forms.ToolStripMenuItem();
+			this.triangleTriggerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.statusStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// propertyGrid1
 			// 
-			this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.propertyGrid1.CommandsVisibleIfAvailable = false;
 			this.propertyGrid1.Location = new System.Drawing.Point(0, -27);
 			this.propertyGrid1.Name = "propertyGrid1";
@@ -65,7 +69,9 @@ namespace Sq1.Widgets.SymbolEditor {
 			// 
 			this.tsiCbxSymbols.ComboBoxDropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.tsiCbxSymbols.ComboBoxFormattingEnabled = true;
+			this.tsiCbxSymbols.ComboBoxLocation = new System.Drawing.Point(1, 3);
 			this.tsiCbxSymbols.ComboBoxSelectedIndex = -1;
+			this.tsiCbxSymbols.ComboBoxSize = new System.Drawing.Size(140, 21);
 			this.tsiCbxSymbols.ComboBoxSorted = true;
 			this.tsiCbxSymbols.Name = "tsiCbxSymbols";
 			this.tsiCbxSymbols.Size = new System.Drawing.Size(140, 23);
@@ -80,84 +86,127 @@ namespace Sq1.Widgets.SymbolEditor {
             this.mniltbAddNew,
             this.toolStripSeparator1,
             this.mniltbRename,
-            this.mniltbDuplicate});
+            this.mniltbDuplicate,
+            this.mniPushTo,
+            this.mniPullFrom});
 			this.tsmniModify.Image = ((System.Drawing.Image)(resources.GetObject("tsmniModify.Image")));
 			this.tsmniModify.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsmniModify.Name = "tsmniModify";
 			this.tsmniModify.Size = new System.Drawing.Size(58, 23);
 			this.tsmniModify.Text = "Modify";
 			this.tsmniModify.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.tsmniModify.DropDownOpening += new System.EventHandler(this.tsmniModify_DropDownOpening);
 			// 
 			// mniDeleteSymbol
 			// 
 			this.mniDeleteSymbol.Name = "mniDeleteSymbol";
-			this.mniDeleteSymbol.Size = new System.Drawing.Size(308, 22);
+			this.mniDeleteSymbol.Size = new System.Drawing.Size(211, 22);
 			this.mniDeleteSymbol.Text = "Delete [RIM3]";
+			this.mniDeleteSymbol.Click += new System.EventHandler(this.mniDeleteSymbol_Click);
 			// 
 			// mniltbAddNew
 			// 
 			this.mniltbAddNew.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbAddNew.InputFieldAlignedRight = false;
+			this.mniltbAddNew.InputFieldBackColor = System.Drawing.SystemColors.Info;
 			this.mniltbAddNew.InputFieldEditable = true;
+			this.mniltbAddNew.InputFieldMultiline = true;
 			this.mniltbAddNew.InputFieldOffsetX = 80;
 			this.mniltbAddNew.InputFieldValue = "RIM3";
-			this.mniltbAddNew.InputFieldWidth = 160;
+			this.mniltbAddNew.InputFieldWidth = 60;
 			this.mniltbAddNew.Name = "mniltbAddNew";
-			this.mniltbAddNew.Size = new System.Drawing.Size(248, 21);
+			this.mniltbAddNew.OffsetTop = 0;
+			this.mniltbAddNew.Size = new System.Drawing.Size(150, 21);
 			this.mniltbAddNew.Text = "Add New:";
 			this.mniltbAddNew.TextLeft = "Add New:";
 			this.mniltbAddNew.TextLeftOffsetX = 0;
 			this.mniltbAddNew.TextLeftWidth = 61;
 			this.mniltbAddNew.TextRed = false;
 			this.mniltbAddNew.TextRight = "";
-			this.mniltbAddNew.TextRightOffsetX = 243;
-			this.mniltbAddNew.TextRightWidth = 2;
+			this.mniltbAddNew.TextRightOffsetX = 143;
+			this.mniltbAddNew.TextRightWidth = 4;
 			this.mniltbAddNew.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbAddNew_UserTyped);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(305, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(208, 6);
 			// 
 			// mniltbRename
 			// 
 			this.mniltbRename.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbRename.InputFieldAlignedRight = false;
+			this.mniltbRename.InputFieldBackColor = System.Drawing.SystemColors.Info;
 			this.mniltbRename.InputFieldEditable = true;
+			this.mniltbRename.InputFieldMultiline = true;
 			this.mniltbRename.InputFieldOffsetX = 80;
 			this.mniltbRename.InputFieldValue = "RIM3";
-			this.mniltbRename.InputFieldWidth = 160;
+			this.mniltbRename.InputFieldWidth = 60;
 			this.mniltbRename.Name = "mniltbRename";
-			this.mniltbRename.Size = new System.Drawing.Size(248, 21);
+			this.mniltbRename.OffsetTop = 0;
+			this.mniltbRename.Size = new System.Drawing.Size(150, 21);
 			this.mniltbRename.Text = "Rename To:";
 			this.mniltbRename.TextLeft = "Rename To:";
 			this.mniltbRename.TextLeftOffsetX = 0;
 			this.mniltbRename.TextLeftWidth = 72;
 			this.mniltbRename.TextRed = false;
 			this.mniltbRename.TextRight = "";
-			this.mniltbRename.TextRightOffsetX = 243;
-			this.mniltbRename.TextRightWidth = 2;
+			this.mniltbRename.TextRightOffsetX = 143;
+			this.mniltbRename.TextRightWidth = 4;
 			this.mniltbRename.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbRename_UserTyped);
 			// 
 			// mniltbDuplicate
 			// 
 			this.mniltbDuplicate.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbDuplicate.InputFieldAlignedRight = false;
+			this.mniltbDuplicate.InputFieldBackColor = System.Drawing.SystemColors.Info;
 			this.mniltbDuplicate.InputFieldEditable = true;
+			this.mniltbDuplicate.InputFieldMultiline = true;
 			this.mniltbDuplicate.InputFieldOffsetX = 80;
 			this.mniltbDuplicate.InputFieldValue = "RIM3";
-			this.mniltbDuplicate.InputFieldWidth = 160;
+			this.mniltbDuplicate.InputFieldWidth = 60;
 			this.mniltbDuplicate.Name = "mniltbDuplicate";
-			this.mniltbDuplicate.Size = new System.Drawing.Size(248, 21);
+			this.mniltbDuplicate.OffsetTop = 0;
+			this.mniltbDuplicate.Size = new System.Drawing.Size(150, 21);
 			this.mniltbDuplicate.Text = "Duplicate To:";
 			this.mniltbDuplicate.TextLeft = "Duplicate To:";
 			this.mniltbDuplicate.TextLeftOffsetX = 0;
 			this.mniltbDuplicate.TextLeftWidth = 79;
 			this.mniltbDuplicate.TextRed = false;
 			this.mniltbDuplicate.TextRight = "";
-			this.mniltbDuplicate.TextRightOffsetX = 243;
-			this.mniltbDuplicate.TextRightWidth = 2;
+			this.mniltbDuplicate.TextRightOffsetX = 143;
+			this.mniltbDuplicate.TextRightWidth = 4;
 			this.mniltbDuplicate.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDuplicate_UserTyped);
+			// 
+			// mniPushTo
+			// 
+			this.mniPushTo.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.triangleTriggerToolStripMenuItem});
+			this.mniPushTo.Name = "mniPushTo";
+			this.mniPushTo.Size = new System.Drawing.Size(211, 22);
+			this.mniPushTo.Text = "Push To Existing Symbol";
+			this.mniPushTo.DropDownOpening += new System.EventHandler(this.mniPushTo_DropDownOpening);
+			// 
+			// triangleTriggerToolStripMenuItem
+			// 
+			this.triangleTriggerToolStripMenuItem.Name = "triangleTriggerToolStripMenuItem";
+			this.triangleTriggerToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			this.triangleTriggerToolStripMenuItem.Text = "TriangleTrigger";
+			// 
+			// mniPullFrom
+			// 
+			this.mniPullFrom.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.triangleTriggerToolStripMenuItem1});
+			this.mniPullFrom.Name = "mniPullFrom";
+			this.mniPullFrom.Size = new System.Drawing.Size(211, 22);
+			this.mniPullFrom.Text = "Pull From Existing Symbol";
+			this.mniPullFrom.DropDownOpening += new System.EventHandler(this.mniPullFrom_DropDownOpening);
+			// 
+			// triangleTriggerToolStripMenuItem1
+			// 
+			this.triangleTriggerToolStripMenuItem1.Name = "triangleTriggerToolStripMenuItem1";
+			this.triangleTriggerToolStripMenuItem1.Size = new System.Drawing.Size(155, 22);
+			this.triangleTriggerToolStripMenuItem1.Text = "TriangleTrigger";
 			// 
 			// SymbolInfoEditorControl
 			// 
@@ -185,5 +234,9 @@ namespace Sq1.Widgets.SymbolEditor {
 		private LabeledTextBox.MenuItemLabeledTextBox mniltbDuplicate;
 		private LabeledTextBox.MenuItemLabeledTextBox mniltbAddNew;
 		private ToolStripImproved.ToolStripItemComboBox tsiCbxSymbols;
+		private ToolStripMenuItem mniPushTo;
+		private ToolStripMenuItem mniPullFrom;
+		private ToolStripMenuItem triangleTriggerToolStripMenuItem;
+		private ToolStripMenuItem triangleTriggerToolStripMenuItem1;
 	}
 }

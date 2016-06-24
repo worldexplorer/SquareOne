@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 
 using Sq1.Widgets.LabeledTextBox;
+using Sq1.Core.Repositories;
 
 namespace Sq1.Widgets.SymbolEditor {
 	public partial class SymbolInfoEditorControl {
@@ -15,7 +17,7 @@ namespace Sq1.Widgets.SymbolEditor {
 				if (rebuildToRemove_noSymbolSelected == false) return;
 				this.PopulateWithSymbolInfo(this.symbolInfoSelected_nullUnsafe, rebuildToRemove_noSymbolSelected);
 			} else {
-				this.rebuildDropdown();
+				this.rebuildDropdown_select();
 			}
 		}
 		void toolStripItemComboBox1_SelectedIndexChanged(object sender, EventArgs e) {
@@ -61,8 +63,16 @@ namespace Sq1.Widgets.SymbolEditor {
 			this.PopulateWithSymbolInfo(renamed, true);
 		}
 		void mniDeleteSymbol_Click(object sender, EventArgs e) {
+			//if (this.symbolInfoSelected_nullUnsafe == null) return;
+			//SymbolInfo priorToDeleted = null;
+			//foreach (SymbolInfo each in Assembler.InstanceInitialized.RepositorySymbolInfos.EntityDeserialized) {
+			//    if (this.symbolInfoSelected_nullUnsafe == each) break;
+			//    priorToDeleted = each;
+			//}
+			//if (priorToDeleted == this.symbolInfoSelected_nullUnsafe) priorToDeleted = null;	// we are deleting firstInList => search for "next" instead
+
 			SymbolInfo priorToDeleted = this.repositorySerializerSymbolInfo.Delete(this.symbolInfoSelected_nullUnsafe);
-			if (priorToDeleted == null) return;
+			// make it still clear property editor and rebuild if (priorToDeleted == null) return;
 			this.PopulateWithSymbolInfo(priorToDeleted, true);
 			this.tsiCbxSymbols.ComboBox.DroppedDown = true;
 		}
@@ -101,5 +111,83 @@ namespace Sq1.Widgets.SymbolEditor {
 			Assembler.PopupException(msg + msig, null, false);
 			this.CleanPropertyEditor();
 		}
+
+		void tsmniModify_DropDownOpening(object sender, EventArgs e) {
+			bool pushAndPull_enabled =
+					this.symbolInfoSelected_nullUnsafe != null
+				 && this.tsiCbxSymbols.ComboBoxItems.Count >= 2;
+			this.mniPullFrom.Enabled = pushAndPull_enabled;
+			this.mniPushTo	.Enabled = pushAndPull_enabled;
+		}
+
+		void mniPullFrom_DropDownOpening(object sender, EventArgs e) {
+			RepositorySerializerSymbolInfos repo = Assembler.InstanceInitialized.RepositorySymbolInfos;
+			List<ToolStripItem> dropDownItems = repo		//.Tsi_Dynamic_Collection(this.mniPullFrom,
+				.Tsi_Dynamic_MniList(
+					"mniPullFrom_", 
+					null,
+					this.mniPullFromSymbol_Click,
+					this.symbolInfoSelected_nullUnsafe,
+					this.symbolInfoSelected_nullUnsafe);
+			this.mniPullFrom.DropDownItems.Clear();
+			this.mniPullFrom.DropDownItems.AddRange(dropDownItems.ToArray());
+		}
+
+		void mniPullFromSymbol_Click(object sender, EventArgs e) {
+			ToolStripMenuItem mniPullFrom_clicked = sender as ToolStripMenuItem;
+			if (mniPullFrom_clicked == null) {
+				string msg = "sender_MUST_BE_ToolStripMenuItem mniPullFrom_clicked=null sender[" + sender + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			SymbolInfo symbolInfo_toPullFrom = mniPullFrom_clicked.Tag as SymbolInfo;
+			if (symbolInfo_toPullFrom == null) {
+				string msg = "Tag_MUST_BE_SymbolInfo mniPullFrom_clicked[" + mniPullFrom_clicked.Text + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			
+			int absorbed = this.symbolInfoSelected_nullUnsafe.AbsorbEvery_JsonProperty_exceptSymbol_from(symbolInfo_toPullFrom);
+			string msg1 = "PROPERTIES_ABSORBED[" + absorbed + "] [" + this.symbolInfoSelected_nullUnsafe + "]<=[" + symbolInfo_toPullFrom + "]";
+			Assembler.PopupException(msg1, null, false);
+
+			this.PopulateWithSymbolInfo(this.symbolInfoSelected_nullUnsafe, true);
+		}
+
+
+		void mniPushTo_DropDownOpening(object sender, EventArgs e) {
+			RepositorySerializerSymbolInfos repo = Assembler.InstanceInitialized.RepositorySymbolInfos;
+			List<ToolStripItem> dropDownItems = repo		//.Tsi_Dynamic_Collection(this.mniPushTo,
+				.Tsi_Dynamic_MniList(
+					"mniPushTo_", 
+					null,
+					this.mniPushToSymbol_Click,
+					this.symbolInfoSelected_nullUnsafe,
+					this.symbolInfoSelected_nullUnsafe);
+			this.mniPushTo.DropDownItems.Clear();
+			this.mniPushTo.DropDownItems.AddRange(dropDownItems.ToArray());
+		}
+
+		void mniPushToSymbol_Click(object sender, EventArgs e) {
+			ToolStripMenuItem mniPushTo_clicked = sender as ToolStripMenuItem;
+			if (mniPushTo_clicked == null) {
+				string msg = "sender_MUST_BE_ToolStripMenuItem mniPushTo_clicked=null sender[" + sender + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			SymbolInfo symbolInfo_toPushTo = mniPushTo_clicked.Tag as SymbolInfo;
+			if (symbolInfo_toPushTo == null) {
+				string msg = "Tag_MUST_BE_SymbolInfo mniPushTo_clicked[" + mniPushTo_clicked.Text + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			
+			int absorbed = symbolInfo_toPushTo.AbsorbEvery_JsonProperty_exceptSymbol_from(this.symbolInfoSelected_nullUnsafe);
+			string msg1 = "PROPERTIES_ABSORBED[" + absorbed + "] [" + this.symbolInfoSelected_nullUnsafe + "]=>[" + symbolInfo_toPushTo + "]";
+			Assembler.PopupException(msg1, null, false);
+
+			this.rebuildDropdown_select(this.symbolInfoSelected_nullUnsafe);
+		}
+
 	}
 }

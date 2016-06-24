@@ -305,7 +305,7 @@ namespace Sq1.Core.Livesim {
 				string msg1 = "WHEN_ARE_SYMBOLS_DIFFERENT??..";
 				Assembler.PopupException(msg1);
 			}
-			List<SymbolScaleStream<StreamingConsumerChart>> mustBeOneTimeframe = distr.GetStreams_allScaleIntervals_forSymbol(symbol);
+			List<SymbolScaleStream<StreamingConsumerChart>> mustBeOneTimeframe = distr.GetSymbolScaleStreams_allScaleIntervals_forSymbol(symbol);
 			if (mustBeOneTimeframe.Count != 1) {
 				string msg1 = "USER_DIDNT_CLICK_CHART>BARS>SUBSCRIBE [" + symbol + "] STARTING_LIVESIM_FOR:" + executor.ToString()
 					//+ " BAD_JOB#1_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()"

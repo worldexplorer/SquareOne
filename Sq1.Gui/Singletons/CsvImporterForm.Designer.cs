@@ -30,6 +30,7 @@
 			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.Document;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "CsvImporter";
+			this.HideOnClose = false;
 			this.ResumeLayout(false);
 		}
 		private Sq1.Widgets.CsvImporter.CsvImporterControl csvImporterControl;

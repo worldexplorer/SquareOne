@@ -738,7 +738,8 @@ namespace Sq1.Gui.Forms {
 		}
 
 		public void ChartFormShow(string scriptContext = null) {
-			this.ChartForm.ShowAsDocumentTabNotPane(this.dockPanel);
+			//v1 this.ChartForm.ShowAsDocumentTabNotPane(this.dockPanel);
+			this.ChartForm.Show(this.dockPanel);
 
 			// FOR_SURE_NEEDED_AT_DESERIALIZATION__RUNTINE_CREATION_NOT_TESTED
 			this.ChartForm.PerformLayout();

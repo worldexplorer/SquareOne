@@ -336,18 +336,30 @@ namespace Sq1.Widgets.DataSourcesTree {
 		}
 
 		void dataSourceRepository_OnSymbolAdded(object sender, DataSourceSymbolEventArgs e) {
+			if (base.InvokeRequired) {
+				string msg = "StreamingProvider pushed newly auto-subscribed Symbol";
+				base.Invoke((MethodInvoker) delegate() { this.dataSourceRepository_OnSymbolAdded(sender, e); });
+				return;
+			}
+
 			//if (sender == this) {
-			if (e.ReScanFolderForBarsFiles == false) {
-			    this.OlvTree.RefreshObject(this.DataSourceSelected);
-			    this.OlvTree.Expand(e.DataSource);
-			} else {
-				//this.populateDataSourcesIntoTreeListView();
+			//if (e.ReScanFolderForBarsFiles == false) {
+			//    this.OlvTree.RefreshObject(this.DataSourceSelected);
+			//    this.OlvTree.Expand(e.DataSource);
+			//} else {
+				this.PopulateDataSourcesIntoTreeListView();
 				this.OlvTree.RebuildAll(true);
 				this.OlvTree.Expand(e.DataSource);
 				this.SelectSymbol(e.DataSource.Name, e.Symbol);
-			}
+			//}
 		}
 		void dataSourceRepository_OnSymbolRenamed(object sender, DataSourceSymbolRenamedEventArgs e) {
+			//if (base.InvokeRequired) {
+			//    string msg = "StreamingProvider doesn't delete Symbols yet...";
+			//    base.Invoke((MethodInvoker) delegate() { this.dataSourceRepository_OnSymbolRenamed(sender, e); });
+			//    return;
+			//}
+
 			this.OlvTree.RefreshObject(this.DataSourceSelected);
 			if (sender != this) {
 				//RefreshObject()WORKS_FINE this.populateDataSourcesIntoTreeListView();
@@ -360,17 +372,23 @@ namespace Sq1.Widgets.DataSourcesTree {
 			e.DoNotDeleteItsUsedElsewhere = false;
 		}
 		void dataSourceRepository_OnSymbolRemovedDone(object sender, DataSourceSymbolEventArgs e) {
+			//if (base.InvokeRequired) {
+			//    string msg = "StreamingProvider doesn't delete Symbols yet...";
+			//    base.Invoke((MethodInvoker) delegate() { this.dataSourceRepository_OnSymbolRemovedDone(sender, e); });
+			//    return;
+			//}
+
 			string symbolAlreadyDeletedFromRepoAndDisk = e.Symbol;
-			if (sender == this) {
-				this.OlvTree.RebuildAll(true);
-				this.OlvTree.Expand(this.DataSourceSelected);
-				this.SelectSymbol(this.DataSourceSelected.Name, null);
-			} else {
+			//if (sender == this) {
+			//    this.OlvTree.RebuildAll(true);
+			//    this.OlvTree.Expand(this.DataSourceSelected);
+			//    this.SelectSymbol(this.DataSourceSelected.Name, null);
+			//} else {
 				this.PopulateDataSourcesIntoTreeListView();
 				this.OlvTree.RebuildAll(true);	//roots not changed, no need to call this.populateDataSourcesIntoTreeListView();
 				this.OlvTree.Expand(e.DataSource);
 				this.SelectSymbol(e.DataSource.Name, null);
-			}
+			//}
 		}
 		
 		void dataSourceRepository_OnDataSourceAdded(object sender, NamedObjectJsonEventArgs<DataSource> e) {

@@ -197,6 +197,7 @@
     <Compile Include="Repositories\DllScanner.cs" />
     <Compile Include="Repositories\DllScannerAllInFolder.cs" />
     <Compile Include="Repositories\DllScannerExplicit.cs" />
+    <Compile Include="Repositories\SerializerList.cs" />
     <Compile Include="Sequencing\SequencerSnapshot.cs" />
     <Compile Include="Correlation\KPIsAveraged.cs" />
     <Compile Include="Correlation\OneParameterAllValuesAveraged.cs" />
@@ -232,7 +233,6 @@
     <Compile Include="DataTypes\BarsUnscaledEventArgs.cs" />
     <Compile Include="DataTypes\BarsUnscaledListTwins.cs" />
     <Compile Include="DataTypes\BidOrAsk.cs" />
-    <Compile Include="DataTypes\SymbolInfoList.cs" />
     <Compile Include="DoubleBuffered\PanelDoubleBuffered.cs">
       <SubType>Component</SubType>
     </Compile>

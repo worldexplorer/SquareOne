@@ -149,13 +149,11 @@ namespace Sq1.Core.Streaming {
 				string msg = "IGNORE_ME_IF_YOU_ARE_STARTED_LIVESIM SOLIDIFIER_NOT_SUBSCRIBED_QUOTES symbol[" + symbol + "] ScaleInterval[" + this.DataSource.ScaleInterval + "]";
 				Assembler.PopupException(msg, null, false);
 			}
-			SymbolChannel<StreamingConsumerSolidifier> channel = this.DistributorSolidifiers_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(symbol);
-			if (channel == null) {
-				string msg = "I_START_LIVESIM_WITHOUT_ANY_PRIOR_SUBSCRIBED_SOLIDIFIERS symbol[" + symbol + "]";
+			SymbolChannel<StreamingConsumerSolidifier> channel = this.DistributorSolidifiers_substitutedDuringLivesim.GetSymbolChannelFor_nullMeansWasntSubscribed(symbol);
+			if (channel != null) {
+				string msg = "CHANNEL_MUST_BE_DISPOSED_FOR_symbol[" + symbol + "]";
 				Assembler.PopupException(msg, null, false);
-				return;
 			}
-			channel.QueueWhenBacktesting_PumpForLiveAndLivesim.PusherPause_waitUntilPaused();
 		}
 
 		public void UpstreamSubscribeRegistryHelper(string symbol) {
@@ -195,13 +193,13 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public void UpstreamSubscribedToSymbolPokeConsumersHelper(string symbol) {
-			List<SymbolScaleStream<StreamingConsumerChart>> channels = this.DistributorCharts_substitutedDuringLivesim.GetStreams_allScaleIntervals_forSymbol(symbol);
+			List<SymbolScaleStream<StreamingConsumerChart>> channels = this.DistributorCharts_substitutedDuringLivesim.GetSymbolScaleStreams_allScaleIntervals_forSymbol(symbol);
 			foreach (var channel in channels) {
 				channel.UpstreamSubscribedToSymbol_pokeConsumers(symbol);
 			}
 		}
 		public void UpstreamUnSubscribedFromSymbolPokeConsumersHelper(string symbol) {
-			List<SymbolScaleStream<StreamingConsumerChart>> channels = this.DistributorCharts_substitutedDuringLivesim.GetStreams_allScaleIntervals_forSymbol(symbol);
+			List<SymbolScaleStream<StreamingConsumerChart>> channels = this.DistributorCharts_substitutedDuringLivesim.GetSymbolScaleStreams_allScaleIntervals_forSymbol(symbol);
 			Quote quoteLastReceived = this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(symbol);
 			foreach (var channel in channels) {
 				channel.UpstreamUnSubscribedFromSymbol_pokeConsumers(symbol, quoteLastReceived);
@@ -258,6 +256,26 @@ namespace Sq1.Core.Streaming {
 				//Assembler.PopupException("UnSubscribing LevelTwoFrozensConsumer [" + this + "] to " + this.ToString() + " (was subscribed)");
 				this.DistributorCharts_substitutedDuringLivesim.ConsumerLevelTwoFrozenUnsubscribe(chartStreamingConsumer);
 			}
+		}
+
+		public SymbolChannel<StreamingConsumerSolidifier> SymbolCreated_solidifierSubscribe(string symbol) {
+			this.solidifierSubscribe_oneSymbol(symbol);
+			SymbolChannel<StreamingConsumerSolidifier> channelForSymbol = this.DistributorSolidifiers_substitutedDuringLivesim.GetSymbolChannelFor_nullMeansWasntSubscribed(symbol);
+			if (channelForSymbol == null) {
+				string msg = "MUST_BE_CREATED channelForSymbol[" + channelForSymbol + "] FOR symbol[" + symbol + "]";
+				Assembler.PopupException(msg, null, false);
+			}
+			return channelForSymbol;
+		}
+
+		public SymbolChannel<StreamingConsumerSolidifier> SymbolDeleted_solidifierUnsubscribe(string symbol) {
+			this.solidifierUnsubscribe_oneSymbol_useMe_whenRenamingSymbols_inDataSource(symbol);
+			SymbolChannel<StreamingConsumerSolidifier> channelForSymbol = this.DistributorSolidifiers_substitutedDuringLivesim.GetSymbolChannelFor_nullMeansWasntSubscribed(symbol);
+			if (channelForSymbol != null) {
+				string msg = "MUST_BE_EMPTY channelForSymbol[" + channelForSymbol + "] FOR symbol[" + symbol + "]";
+				Assembler.PopupException(msg, null, false);
+			}
+			return channelForSymbol;
 		}
 
 	}

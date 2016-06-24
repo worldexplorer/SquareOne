@@ -2,10 +2,11 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 using WeifenLuo.WinFormsUI.Docking;
+
 using Sq1.Core;
-using System.Collections.Generic;
 
 namespace Sq1.Widgets {
 	public class DockContentImproved : DockContent {
@@ -338,6 +339,25 @@ namespace Sq1.Widgets {
 			if (form == null) return true;
 			if (form.IsDisposed) return true;
 			return false;	//!this.chartForm.IsHidden;
+		}
+
+
+		// this crazy thing emulating TaskBar-like behaviour....
+		Action<bool> onVisibleChanged_setMniChecked_inMainForm = null;
+		public void SubscribeVisibleChanged_onlyOnce(Action<bool> onVisibleChanged) {
+			if (this.onVisibleChanged_setMniChecked_inMainForm != null) return;
+			this.onVisibleChanged_setMniChecked_inMainForm = onVisibleChanged;
+		}
+		protected override void OnVisibleChanged(EventArgs e) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
+			base.OnVisibleChanged(e);
+			if (this.onVisibleChanged_setMniChecked_inMainForm == null) return;
+			this.onVisibleChanged_setMniChecked_inMainForm(base.Visible);
+		}
+		public void ShowHinted_ActivateIfAutoHidden_SubscribeToVisibleChanged(DockPanel panel, Action<bool> onVisibleChanged_action) {
+			base.Show(this.DockPanel);
+			this.SubscribeVisibleChanged_onlyOnce(onVisibleChanged_action);
+			this.ActivateDockContent_popupAutoHidden(false, true);
 		}
 	}
 }

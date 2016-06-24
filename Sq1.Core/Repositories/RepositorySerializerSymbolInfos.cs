@@ -5,10 +5,11 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Serializers;
 
 namespace Sq1.Core.Repositories {
-	public class RepositorySerializerSymbolInfos : Serializer<SymbolInfoList> {
+	public class RepositorySerializerSymbolInfos : SerializerList<SymbolInfo> {
 		public RepositorySerializerSymbolInfos() : base() {}
 
-		public SymbolInfoList SymbolInfos { get { return base.EntityDeserialized; } }
+		//public List<SymbolInfo> SymbolInfos { get { return base.EntityDeserialized; } }
+		public List<SymbolInfo> SymbolInfos { get { return base.EntityDeserialized; } }
 
 		public SymbolInfo FindSymbolInfo_nullUnsafe(string symbol) {
 			SymbolInfo ret = null;
@@ -109,9 +110,9 @@ namespace Sq1.Core.Repositories {
 		}
 
 		bool deserializedOnce_nowSyncOnly = false;
-		public override SymbolInfoList Deserialize() {
-			if (base.EntityDeserialized == null) base.EntityDeserialized = new SymbolInfoList();
-			SymbolInfoList backup = base.EntityDeserialized;
+		public override List<SymbolInfo> Deserialize() {
+			if (base.EntityDeserialized == null) base.EntityDeserialized = new List<SymbolInfo>();
+			List<SymbolInfo> backup = base.EntityDeserialized;
 			base.Deserialize();
 
 			if (this.deserializedOnce_nowSyncOnly == false) {
@@ -119,7 +120,7 @@ namespace Sq1.Core.Repositories {
 				return base.EntityDeserialized;
 			}
 
-			SymbolInfoList dontOverwriteInstancesKozSubscribersWillLooseEventGenerators = base.EntityDeserialized;
+			List<SymbolInfo> dontOverwriteInstancesKozSubscribersWillLooseEventGenerators = base.EntityDeserialized;
 			base.EntityDeserialized = backup;
 
 			string msg = "YOU_SHOULD_NOT_DESERIALIZE_TWICE__RepositorySerializerSymbolInfo.Deserialize()";
@@ -129,11 +130,13 @@ namespace Sq1.Core.Repositories {
 			List<SymbolInfo> toBeAdded = new List<SymbolInfo>();
 			List<SymbolInfo> toBeDeleted = new List<SymbolInfo>();
 			foreach (SymbolInfo eachExisting in base.EntityDeserialized) {
-				if (backup.ContainsSymbol(eachExisting.Symbol)) continue;
+				//if (backup.ContainsSymbol(eachExisting.Symbol)) continue;
+				if (backup.Contains(eachExisting)) continue;
 				toBeAdded.Add(eachExisting);
 			}
 			foreach (SymbolInfo eachDeserialized in dontOverwriteInstancesKozSubscribersWillLooseEventGenerators) {
-				if (this.SymbolInfos.ContainsSymbol(eachDeserialized.Symbol)) continue;
+				//if (this.SymbolInfos.ContainsSymbol(eachDeserialized.Symbol)) continue;
+				if (this.SymbolInfos.Contains(eachDeserialized)) continue;
 				toBeDeleted.Add(eachDeserialized);
 			}
 			foreach (var deleteEach in toBeDeleted) {

@@ -133,47 +133,39 @@ namespace Sq1.Core.Streaming {
 			return changesMade;
 		}
 		public virtual void PushQuoteReceived_positiveSize(Quote quoteUnboundUnattached_absnoPerSymbolMinusOne) {
-			string msig = " //StreamingAdapter.PushQuoteReceived_positiveSize("
+			bool quotePushable = this.prepareQuoteReceived_forPushing(quoteUnboundUnattached_absnoPerSymbolMinusOne);
+			Quote quoteUU = quoteUnboundUnattached_absnoPerSymbolMinusOne;		// same pointer but AbsnoPerSymbol is fixed now
+			if (quotePushable == false) {
+				this.RaiseOnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange(quoteUU);
+			}
+			this.StreamingDataSnapshot.SetQuoteLast_forSymbol(quoteUU);
+			this.pushQuoteReceived_toSolidifier_step1of2(quoteUU);
+			this.pushQuoteReceived_toCharts_step2of2(quoteUU);
+		}
+
+		bool prepareQuoteReceived_forPushing(Quote quoteUnboundUnattached_absnoPerSymbolMinusOne) {
+			string msig = " //StreamingAdapter.prepareQuoteReceived_forPushing("
 #if VERBOSE_STRINGS_SLOW
 				+ quoteUnboundUnattached_absnoPerSymbolMinusOne
 #endif
 				+ ")" + this.ToString();
 
-			if (this.DistributorCharts_substitutedDuringLivesim.ChannelsBySymbol.Count == 0) {
-				this.RaiseOnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange(quoteUnboundUnattached_absnoPerSymbolMinusOne);
-
-				string symbol_fromQuote = quoteUnboundUnattached_absnoPerSymbolMinusOne != null
-							  ? quoteUnboundUnattached_absnoPerSymbolMinusOne.Symbol
-							  : "QUOTE_NULL__BAD_SIGN";
-
-				string msg = "THERE_MUST_BE_AT_LEAST_SOLIDIFIER_FOR_SYMBOL[" + symbol_fromQuote + "] YOUR_BAR_FILE_IS_ZERO_SIZE_WHILE_MUST_CONTAIN_HEADER"
-					+ " I_REFUSE_TO_PUSH_QUOTE NO_CHANNELS_SUBSCRIBED";
-				if (		this.LivesimStreaming_ownImplementation != null
-						 && this.LivesimStreaming_ownImplementation.DataSource != null
-						 && this.LivesimStreaming_ownImplementation.Livesimulator != null
-						 && this.LivesimStreaming_ownImplementation.Livesimulator.ImRunningLivesim) {
-					this.LivesimStreaming_ownImplementation.Livesimulator.AbortRunningBacktest_waitAborted(msg, 0);
-				}
-				if (this is LivesimStreaming) return;	//already reported "USER_DIDNT_CLICK_CHART>BARS>SUBSCRIBE"
-				Assembler.PopupException(msg + msig, null, false);
-				//NO_TOO_MANY_CHANGES_TO_LOOSEN_ALL_CHECKS GO_AND_DO_IT__I_WILL_SEE_ORANGE_BACKGROUNG_IN_DATASOURCE_TREE
-				return;
-			}
+			bool quotePushable = false;
 
 			if (quoteUnboundUnattached_absnoPerSymbolMinusOne.Size <= 0) {
 				string msg = "I_REFUSE_TO_PUSH_QUOTE.Size<=0__USE_StreamingAdapter.PushLevelTwoReceived_alreadyInStreamingSnap()_INSTEAD"
 					+ " ONLY_QUOTES_WITH_POSITIVE_SIZE_FORM_BAR_OHLCV QUOTES_WITHOUT_DEAL_MIGHT_APPEAR_AS_FREQUENT_AS_YOU_WANT BUT_MUST_NOT_BE_STORED_IN_BARS"
 					;
-				Assembler.PopupException(msg, null, false);
-				return;
+				Assembler.PopupException(msg + msig, null, false);
+				return quotePushable;
 			}
 
 			Quote quoteUU = quoteUnboundUnattached_absnoPerSymbolMinusOne;		// same pointer but AbsnoPerSymbol is fixed now
 			int changesMade = this.Quote_incrementAbsnoPerSymbol_fixServerTime_minusOneQuotePrevNewerThanCurrent_munisTwoWrongTimezone(quoteUnboundUnattached_absnoPerSymbolMinusOne);
 			if (changesMade <= -1) {
 				string msg = "skipping_TIME_BACK[" + quoteUU.Symbol + " " + quoteUU.ServerTime + "]";
-				Assembler.PopupException(msg, null, false);
-				return;
+				Assembler.PopupException(msg + msig, null, false);
+				return quotePushable;
 			}
 
 			if (changesMade == 0 || quoteUU.AbsnoPerSymbol == -1) {
@@ -184,14 +176,14 @@ namespace Sq1.Core.Streaming {
 				//v1 quote.ServerTime = this.DataSource.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
 				string msg = "IM_NOT_PUSHING_FURTHER SERVER_TIME_HAS_TO_BE_FILLED_BY_STREAMING_DERIVED";
 				Assembler.PopupException(msg + msig, null, false);
-				return;
+				return quotePushable;
 			}
 
 			if (quoteUU.AbsnoPerSymbol == 0) {
 				string msg = "I_DONT_WANT_TO_DELIVER_FIRST_EVER_QUOTE_TO_STRATEGY_AND_SOLIDIFIERS[" + quoteUU + "]";
 				//Assembler.PopupException(msg, null, false);
 				this.StreamingDataSnapshot.SetQuoteLast_forSymbol(quoteUU);
-				return;
+				return quotePushable;
 			}
 
 			Quote quoteLast = this.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(quoteUU.Symbol);
@@ -199,7 +191,7 @@ namespace Sq1.Core.Streaming {
 				string msg = "QUIK_JUST_CONNECTED_AND_SENDS_NONSENSE[" + quoteUU + "]";
 				Assembler.PopupException(msg + msig, null, false);
 				this.StreamingDataSnapshot.SetQuoteLast_forSymbol(quoteUU);
-				return;
+				return quotePushable;
 			}
 
 			//v1 HAS_NO_MILLISECONDS_FROM_QUIK if (quote.ServerTime > lastQuote.ServerTime) {
@@ -216,20 +208,48 @@ namespace Sq1.Core.Streaming {
 						+ ": DDE lagged somewhere?..."
 						;
 					Assembler.PopupException(msg + msig, null, false);
-					return;
+					return quotePushable;
 				//}
 			}
-
 
 			string reasonMarketIsClosedNow  = this.DataSource.MarketInfo.GetReason_ifMarket_closedOrSuspended_at(quoteUU.ServerTime);
 			if (string.IsNullOrEmpty(reasonMarketIsClosedNow) == false) {
 				string msg = "[" + this.DataSource.MarketInfo.Name + "]NOT_PUSHING_QUOTE " + reasonMarketIsClosedNow + " quote=[" + quoteUU + "]";
 				Assembler.PopupException(msg + msig, null, false);
 				Assembler.DisplayStatus(msg + msig);
+				return quotePushable;
+			}
+			quotePushable = true;
+			return quotePushable;
+		}
+
+		void pushQuoteReceived_toCharts_step2of2(Quote quoteUU) {
+			string msig = " //StreamingAdapter.pushQuoteReceived_toCharts("
+#if VERBOSE_STRINGS_SLOW
+				+ quoteUnboundUnattached_absnoPerSymbolMinusOne
+#endif
+				+ ")" + this.ToString();
+
+			if (this.DistributorCharts_substitutedDuringLivesim.ChannelsBySymbol.Count == 0) {
+				this.RaiseOnQuoteReceived_butWasntPushedAnywhere_dueToZeroSubscribers_blinkDataSourceTreeWithOrange(quoteUU);
+
+				string symbol_fromQuote = quoteUU != null
+							  ? quoteUU.Symbol
+							  : "QUOTE_NULL__BAD_SIGN";
+
+				string msg = "THERE_MUST_BE_AT_LEAST_SOLIDIFIER_FOR_SYMBOL[" + symbol_fromQuote + "] YOUR_BAR_FILE_IS_ZERO_SIZE_WHILE_MUST_CONTAIN_HEADER"
+					+ " I_REFUSE_TO_PUSH_QUOTE NO_CHANNELS_SUBSCRIBED";
+				if (		this.LivesimStreaming_ownImplementation != null
+						 && this.LivesimStreaming_ownImplementation.DataSource != null
+						 && this.LivesimStreaming_ownImplementation.Livesimulator != null
+						 && this.LivesimStreaming_ownImplementation.Livesimulator.ImRunningLivesim) {
+					this.LivesimStreaming_ownImplementation.Livesimulator.AbortRunningBacktest_waitAborted(msg, 0);
+				}
+				if (this is LivesimStreaming) return;	//already reported "USER_DIDNT_CLICK_CHART>BARS>SUBSCRIBE"
+				Assembler.PopupException(msg + msig, null, false);
+				//NO_TOO_MANY_CHANGES_TO_LOOSEN_ALL_CHECKS GO_AND_DO_IT__I_WILL_SEE_ORANGE_BACKGROUNG_IN_DATASOURCE_TREE
 				return;
 			}
-
-			this.StreamingDataSnapshot.SetQuoteLast_forSymbol(quoteUU);
 
 			try {
 				this.DistributorCharts_substitutedDuringLivesim.Push_quoteUnboundUnattached_toChannel(quoteUU);
@@ -237,7 +257,16 @@ namespace Sq1.Core.Streaming {
 				string msg = "CHART_OR_STRATEGY__FAILED_INSIDE Distributor.PushQuoteToDistributionChannels(" + quoteUU + ")";
 				Assembler.PopupException(msg + msig, ex);
 			}
+		}
 
+		void pushQuoteReceived_toSolidifier_step1of2(Quote quoteUU) {
+			string msig = " //StreamingAdapter.pushQuoteReceived_toSolidifier("
+#if VERBOSE_STRINGS_SLOW
+				+ quoteUnboundUnattached_absnoPerSymbolMinusOne
+#endif
+				+ ")" + this.ToString();
+
+			string symbol = quoteUU.Symbol;
 			if (this.DistributorSolidifiers_substitutedDuringLivesim == null) {
 				if (this is Backtesting.BacktestStreaming) {
 					string msg = "YES_I_NULLIFY_SOLIDIFIERS_IN_BACKTEST_STREAMING";
@@ -249,8 +278,7 @@ namespace Sq1.Core.Streaming {
 				return;
 			}
 
-			string symbol = quoteUU.Symbol;
-			SymbolChannel<StreamingConsumerSolidifier> channelForSymbol = this.DistributorSolidifiers_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(symbol);
+			SymbolChannel<StreamingConsumerSolidifier> channelForSymbol = this.DistributorSolidifiers_substitutedDuringLivesim.GetSymbolChannelFor_nullMeansWasntSubscribed(symbol);
 			bool solidifiers_areEmpty_duringLivesim = this.DistributorSolidifiers_substitutedDuringLivesim.ReasonIwasCreated.Contains(Distributor<StreamingConsumerSolidifier>.SUBSTITUTED_LIVESIM_STARTED);
 			if (channelForSymbol == null) {
 				if (solidifiers_areEmpty_duringLivesim) return;
@@ -261,17 +289,16 @@ namespace Sq1.Core.Streaming {
 				}
 
 				try {
-					if (this.DataSource.Symbols.Contains(symbol) == false) this.DataSource.SymbolAdd(symbol);
+					//v1 DOESNT_NOTIFY_DataSourceTree if (this.DataSource.Symbols.Contains(symbol) == false) this.DataSource.SymbolAdd(symbol);
+					Assembler.InstanceInitialized.RepositoryJsonDataSources.SymbolAdd(this.DataSource, symbol);
 				} catch (Exception ex) {
 					string msg = "MAKE_SURE_YOU_SWITCHED_TO_GUI_THREAD_WHILE_POPULATING_DataSourceTree";
 					Assembler.PopupException(msg + msig, ex);
 				}
-
-				this.solidifierSubscribe_oneSymbol(symbol);
-				channelForSymbol = this.DistributorSolidifiers_substitutedDuringLivesim.GetChannelFor_nullMeansWasntSubscribed(symbol);
+				channelForSymbol = this.SymbolCreated_solidifierSubscribe(symbol);
 			}
 			try {
-				this.DistributorSolidifiers_substitutedDuringLivesim	.Push_quoteUnboundUnattached_toChannel(quoteUU);
+				this.DistributorSolidifiers_substitutedDuringLivesim.Push_quoteUnboundUnattached_toChannel(quoteUU);
 			} catch (Exception ex) {
 				string msg = "SOLIDIFIER__FAILED_INSIDE"
 					+ " DistributorSolidifiers.PushQuoteToDistributionChannels(" + quoteUU + ")";

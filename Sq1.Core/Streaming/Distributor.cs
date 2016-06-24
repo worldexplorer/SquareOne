@@ -37,7 +37,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException("quote[" + quoteUnboundUnattached + "]'se Symbol is null or empty, returning");
 				return;
 			}
-			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.GetChannelFor_nullMeansWasntSubscribed(quoteUnboundUnattached.Symbol);
+			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.GetSymbolChannelFor_nullMeansWasntSubscribed(quoteUnboundUnattached.Symbol);
 			if (channel == null) {
 				string msg = "I_REFUSE_TO_PUSH_QUOTE_FOR_UNSUBSCRIBED_SYMBOL quoteUnboundUnattached.Symbol[" + quoteUnboundUnattached.Symbol + "]"
 					+ " DO_YOU_PUSH_QUOTE_TO_DISTRIB_SOLIDIFIERS_THAT_IS_EMPTY_DURING_LIVESIM???";
@@ -57,7 +57,7 @@ namespace Sq1.Core.Streaming {
 
 
 		public virtual void Push_levelTwoFrozen_toChannel(string symbol, LevelTwoFrozen l2frozen) {
-		    SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.GetChannelFor_nullMeansWasntSubscribed(symbol);
+		    SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.GetSymbolChannelFor_nullMeansWasntSubscribed(symbol);
 		    if (channel == null) {
 		        string msg = "I_REFUSE_TO_PUSH_QUOTE_FOR_UNSUBSCRIBED_SYMBOL symbol[" + symbol + "]"
 		            + " DO_YOU_PUSH_QUOTE_TO_DISTRIB_SOLIDIFIERS_THAT_IS_EMPTY_DURING_LIVESIM???";

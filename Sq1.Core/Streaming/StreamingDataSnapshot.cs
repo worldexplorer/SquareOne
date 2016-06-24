@@ -84,8 +84,8 @@ namespace Sq1.Core.Streaming {
 					return;
 				}
 				if (quoteLast == quoteUnboundUnattached) {
-					string msg = "DONT_PUT_SAME_QUOTE_TWICE";
-					Assembler.PopupException(msg + msig);
+					string msg = "STARTING_LIVESIM?... DONT_PUT_SAME_QUOTE_TWICE";
+					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}
 

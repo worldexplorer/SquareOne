@@ -33,7 +33,7 @@ namespace Sq1.Widgets.SymbolEditor {
 		public void Initialize(RepositorySerializerSymbolInfos repositorySerializerSymbolInfo, RepositoryJsonDataSources repositoryJsonDataSource) {
 			this.repositorySerializerSymbolInfo = repositorySerializerSymbolInfo;
 			this.repositoryJsonDataSource = repositoryJsonDataSource;
-			this.rebuildDropdown();
+			this.rebuildDropdown_select();
 			if (this.repositorySerializerSymbolInfo.SymbolInfos.Count > 0) {
 				this.PopulateWithSymbolInfo(this.repositorySerializerSymbolInfo.SymbolInfos[0]);
 			}
@@ -51,12 +51,31 @@ namespace Sq1.Widgets.SymbolEditor {
 			repositoryJsonDataSource.OnSymbolRenamed += new EventHandler<DataSourceSymbolRenamedEventArgs>(repositoryJsonDataSource_OnSymbolRenamed_refresh);
 		}
 
-		void rebuildDropdown() {
+		void rebuildDropdown_select(SymbolInfo symbolInfo_toSelect = null) {
 			this.rebuildingDropdown = true;
 			try {
 				this.tsiCbxSymbols.ComboBox.Items.Clear();
 				foreach (SymbolInfo symbolInfo in this.repositorySerializerSymbolInfo.SymbolInfos) {
 					this.tsiCbxSymbols.ComboBox.Items.Add(symbolInfo);
+				}
+
+				if (symbolInfo_toSelect != null) {
+					SymbolInfo symbolInfo_found = null;
+					foreach (SymbolInfo eachSymbolInfo in this.tsiCbxSymbols.ComboBox.Items) {
+						if (eachSymbolInfo.ToString() != symbolInfo_toSelect.ToString()) continue;
+						symbolInfo_found = eachSymbolInfo;
+						break;
+					}
+
+					this.openDropDownAfterSelected = false;
+					if (symbolInfo_found == null) {
+						string msg = "I_REFUSE_TO_SELECT_NOT_YET_ADDED";
+						Assembler.PopupException(msg);
+						return;
+					}
+					if (this.tsiCbxSymbols.ComboBox.SelectedItem == symbolInfo_found) return;
+					this.ignoreEvent_SelectedIndexChanged_resetInHandler = true;
+					this.tsiCbxSymbols.ComboBox.SelectedItem = symbolInfo_found;	// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelected_nullUnsafe + Initialize()
 				}
 			} finally {
 				this.rebuildingDropdown = false;
@@ -68,11 +87,11 @@ namespace Sq1.Widgets.SymbolEditor {
 			// that's it! nothing else is needed to be done: once any other symbol is selected,
 			// toolStripItemComboBox1_SelectedIndexChanged() will do this.PopulateWithSymbolInfo(this.symbolInfoSelected_nullUnsafe, true);
 		}
-		public void PopulateWithSymbolInfo(SymbolInfo symbolInfo, bool rebuildDropdown = false) {
+		public void PopulateWithSymbolInfo(SymbolInfo symbolInfo, bool rebuildDropdown = false, bool selectPopulated_afterRebuild = true) {
 			if (symbolInfo == null) {
-				string msg = "I_REFUSE_TO_INITIALIZE_WITH_NULL_SYMBOL_INFO";
-				Assembler.PopupException(msg);
-				return;
+				string msg = "SHOULD_CLEAR_PROPERTY_EDITOR";
+				Assembler.PopupException(msg, null, false);
+				//return;
 			}
 
 			if (this.tsiCbxSymbols.ComboBox.SelectedItem != symbolInfo) {
@@ -97,18 +116,9 @@ namespace Sq1.Widgets.SymbolEditor {
 
 			this.propertyGrid1.SelectedObject = symbolInfo;
 
-			if (rebuildDropdown) this.rebuildDropdown();
-			if (this.symbolInfoSelected_nullUnsafe != null && this.symbolInfoSelected_nullUnsafe.ToString() == symbolInfo.ToString()) {
-				return;
-			}
-			foreach (SymbolInfo eachSymbolInfo in this.tsiCbxSymbols.ComboBox.Items) {
-				if (eachSymbolInfo.ToString() != symbolInfo.ToString()) continue;
-				this.openDropDownAfterSelected = false;
-				if (this.tsiCbxSymbols.ComboBox.SelectedItem == eachSymbolInfo) break;
-				this.ignoreEvent_SelectedIndexChanged_resetInHandler = true;
-				this.tsiCbxSymbols.ComboBox.SelectedItem = eachSymbolInfo;	// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelected_nullUnsafe + Initialize()
-				break;
-			}
+			if (rebuildDropdown == false) return;
+			SymbolInfo symbolInfo_toSelect = selectPopulated_afterRebuild ? symbolInfo : null;
+			this.rebuildDropdown_select(symbolInfo_toSelect);
 		}
 		public void PopulateRenamedSymbol_rebuildDropdown(DataSourceSymbolRenamedEventArgs e) {
 			string msig = " //PopulateRenamedSymbol_rebuildDropdown(" + e.SymbolOld + "=>" + e.Symbol + ")";

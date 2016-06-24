@@ -26,7 +26,7 @@ namespace Sq1.Core.Streaming {
 				return ret;
 			}
 
-			SymbolScaleStream<StreamingConsumerSolidifier> channel_nullUnsafe = base.GetStreamFor_nullUnsafe(symbol, scaleInterval);
+			SymbolScaleStream<StreamingConsumerSolidifier> channel_nullUnsafe = base.GetSymbolScaleStreamFor_nullUnsafe(symbol, scaleInterval);
 			if (channel_nullUnsafe != null && channel_nullUnsafe.ConsumersBarCount > 0) {
 				string msg = "I_REFUSE_TO_REGISTER_MULTIPLE_SOLIDIFIERS_FOR_SAME_SYMBOL";
 				Assembler.PopupException(msg + msig);
@@ -59,7 +59,7 @@ namespace Sq1.Core.Streaming {
 				return ret;
 			}
 
-			SymbolScaleStream<StreamingConsumerSolidifier> channel_nullUnsafe = base.GetStreamFor_nullUnsafe(symbol, scaleInterval);
+			SymbolScaleStream<StreamingConsumerSolidifier> channel_nullUnsafe = base.GetSymbolScaleStreamFor_nullUnsafe(symbol, scaleInterval);
 			if (channel_nullUnsafe != null && channel_nullUnsafe.ConsumersQuoteCount > 0) {
 				string msg = "I_REFUSE_TO_REGISTER_MULTIPLE_SOLIDIFIERS_FOR_SAME_SYMBOL";
 				Assembler.PopupException(msg + msig);

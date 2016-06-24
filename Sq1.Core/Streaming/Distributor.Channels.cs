@@ -35,15 +35,8 @@ namespace Sq1.Core.Streaming {
 				return true;
 			}
 			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbol];
-			bool removed = channel.ConsumerQuoteRemove(scaleInterval, quoteConsumer);
-			if (channel.ConsumersBarCount == 0 && channel.ConsumersQuoteCount == 0) {
-				//Assembler.PopupException("QuoteConsumer [" + consumer + "] was the last one using [" + symbol + "]; removing QuoteBarDistributor[" + channel + "]");
-				if (channel.QuotePump_nullUnsafe != null) channel.QuotePump_nullUnsafe.PushingThread_StopDispose_waitConfirmed();
-				this.ChannelsBySymbol.Remove(symbol);
-				//Assembler.PopupException("...UpstreamUnSubscribing [" + symbol + "]");
-				this.StreamingAdapter.UpstreamUnSubscribe(symbol);
-				return true;
-			}
+			bool removedQuoteConsumer = channel.ConsumerQuoteRemove(scaleInterval, quoteConsumer);
+			bool removedChannel = this.quoteOrLevel2_PumpStopDispose_ChannelForSymbolRemove_StreamingUpstreamUnsubscribe(symbol, quoteConsumer, true);
 			return false;
 		} }
 		public virtual bool ConsumerQuoteIsSubscribed_solidifiers(string symbol, BarScaleInterval scaleInterval, STREAMING_CONSUMER_CHILD quoteConsumer) {
@@ -134,18 +127,8 @@ namespace Sq1.Core.Streaming {
 				return false;
 			}
 			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbol];
-			bool removed = channel.ConsumerBarRemove(scaleInterval, barConsumer);
-			if (channel.ConsumersBarCount == 0 && channel.ConsumersQuoteCount == 0) {
-				//Assembler.PopupException("BarConsumer [" + consumer + "] was the last one using [" + symbol + "]; removing QuoteBarDistributor[" + distributor + "]");
-				if (channel.QuotePump_nullUnsafe != null) channel.QuotePump_nullUnsafe.PushingThread_StopDispose_waitConfirmed();
-				//Assembler.PopupException("BarConsumer [" + scaleInterval + "] was the last one listening for [" + symbol + "]");
-				//Assembler.PopupException("...removing[" + symbol + "] from this.ChannelsBySymbol[" + this.ChannelsBySymbol + "]");
-				channel.Dispose();
-				this.ChannelsBySymbol.Remove(symbol);
-				//Assembler.PopupException("...UpstreamUnSubscribing [" + symbol + "]");
-				this.StreamingAdapter.UpstreamUnSubscribe(symbol);
-				return true;
-			}
+			bool removedBarConsumer = channel.ConsumerBarRemove(scaleInterval, barConsumer);
+			bool removedChannel = this.quoteOrLevel2_PumpStopDispose_ChannelForSymbolRemove_StreamingUpstreamUnsubscribe(symbol, barConsumer, true);
 			return false;
 		} }
 		public virtual bool ConsumerBarIsSubscribed_solidifiers(string symbol, BarScaleInterval scaleInterval,
@@ -203,18 +186,8 @@ namespace Sq1.Core.Streaming {
 				return false;
 			}
 			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbol];
-			bool removed = channel.ConsumerLevelTwoFrozenRemove(scaleInterval, levelTwoFrozenConsumer);
-			if (channel.ConsumersLevelTwoFrozenCount == 0 && channel.ConsumersQuoteCount == 0) {
-				//Assembler.PopupException("LevelTwoFrozenConsumer [" + consumer + "] was the last one using [" + symbol + "]; removing QuoteLevelTwoFrozenDistributor[" + distributor + "]");
-				if (channel.PumpLevelTwo != null) channel.PumpLevelTwo.PushingThread_StopDispose_waitConfirmed();
-				//Assembler.PopupException("LevelTwoFrozenConsumer [" + scaleInterval + "] was the last one listening for [" + symbol + "]");
-				//Assembler.PopupException("...removing[" + symbol + "] from this.ChannelsBySymbol[" + this.ChannelsBySymbol + "]");
-				channel.Dispose();
-				this.ChannelsBySymbol.Remove(symbol);
-				//Assembler.PopupException("...UpstreamUnSubscribing [" + symbol + "]");
-				this.StreamingAdapter.UpstreamUnSubscribe(symbol);
-				return true;
-			}
+			bool removedLevelTwo = channel.ConsumerLevelTwoFrozenRemove(scaleInterval, levelTwoFrozenConsumer);
+			bool removedChannel = this.quoteOrLevel2_PumpStopDispose_ChannelForSymbolRemove_StreamingUpstreamUnsubscribe(symbol, levelTwoFrozenConsumer, false);
 			return false;
 		} }
 		public virtual bool ConsumerLevelTwoFrozenIsSubscribed_solidifiers(string symbol, BarScaleInterval scaleInterval,
@@ -229,7 +202,7 @@ namespace Sq1.Core.Streaming {
 			return subscribed;
 		}
 
-		public SymbolChannel<STREAMING_CONSUMER_CHILD> GetChannelFor_nullMeansWasntSubscribed(string symbol) {
+		public SymbolChannel<STREAMING_CONSUMER_CHILD> GetSymbolChannelFor_nullMeansWasntSubscribed(string symbol) {
 			if (this.ChannelsBySymbol.ContainsKey(symbol) == false) {
 				string msg = "LIVESIM_WITH_OWN_IMPLEMENTATION_SHOULD_HAVE_BEEN_SUBSCRIBED_TO_LIVESIMMING_BARS"
 					+ " YOU_REQUESTED_CHANNEL_THAT_YOU_DIDNT_TELL_ME_TO_CREATE";
@@ -239,7 +212,7 @@ namespace Sq1.Core.Streaming {
 			SymbolChannel<STREAMING_CONSUMER_CHILD> ret = this.ChannelsBySymbol[symbol];
 			return ret;
 		}
-		public List<SymbolScaleStream<STREAMING_CONSUMER_CHILD>> GetStreams_allScaleIntervals_forSymbol(string symbol) { lock (this.lockConsumersBySymbol) {
+		public List<SymbolScaleStream<STREAMING_CONSUMER_CHILD>> GetSymbolScaleStreams_allScaleIntervals_forSymbol(string symbol) { lock (this.lockConsumersBySymbol) {
 			List<SymbolScaleStream<STREAMING_CONSUMER_CHILD>> streams = new List<SymbolScaleStream<STREAMING_CONSUMER_CHILD>>();
 			if (this.ChannelsBySymbol.ContainsKey(symbol) == false) {
 				string msg = "STARTING_LIVESIM:CLICK_CHART>BARS>SUBSCRIBE symbol[" + symbol + "]"
@@ -252,7 +225,7 @@ namespace Sq1.Core.Streaming {
 			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbol];
 			return channel.AllStreams_safeCopy;
 		} }
-		public SymbolScaleStream<STREAMING_CONSUMER_CHILD> GetStreamFor_nullUnsafe(string symbol, BarScaleInterval barScaleInterval) { lock (this.lockConsumersBySymbol) {
+		public SymbolScaleStream<STREAMING_CONSUMER_CHILD> GetSymbolScaleStreamFor_nullUnsafe(string symbol, BarScaleInterval barScaleInterval) { lock (this.lockConsumersBySymbol) {
 			if (this.ChannelsBySymbol.ContainsKey(symbol) == false) {
 				string msg = "NO_SYMBOL_SUBSCRIBED Distributor[" + this + "].ChannelsBySymbol.ContainsKey(" + symbol + ")=false INVOKER_NULL_CHECK_EYEBALLED";
 				//Assembler.PopupException(msg, null, false);
@@ -267,7 +240,7 @@ namespace Sq1.Core.Streaming {
 			}
 			return channel.StreamsByScaleInterval[barScaleInterval];
 		} }
-		public List<SymbolScaleStream<STREAMING_CONSUMER_CHILD>> GetStreams_forSymbol_exceptForChartLivesimming(string symbol
+		public List<SymbolScaleStream<STREAMING_CONSUMER_CHILD>> GetSymbolScaleStreams_forSymbol_exceptForChartLivesimming(string symbol
 					, BarScaleInterval scaleIntervalOnly_anyIfNull, STREAMING_CONSUMER_CHILD chartShadowToExclude) { lock (this.lockConsumersBySymbol) {
 			List<SymbolScaleStream<STREAMING_CONSUMER_CHILD>> ret = new List<SymbolScaleStream<STREAMING_CONSUMER_CHILD>>();
 			if (this.ChannelsBySymbol.ContainsKey(symbol) == false) {
@@ -310,6 +283,33 @@ namespace Sq1.Core.Streaming {
 			if (this.StreamingAdapter.QuotePumpSeparatePushingThreadEnabled) {
 				channel.QueueWhenBacktesting_PumpForLiveAndLivesim.UpdateThreadNameAfterMaxConsumersSubscribed = true;
 			}
+		}
+
+		bool quoteOrLevel2_PumpStopDispose_ChannelForSymbolRemove_StreamingUpstreamUnsubscribe(string symbol, STREAMING_CONSUMER_CHILD quoteOrBar_orLevel2_Consumer, bool quoteTrue_level2False) {
+			if (this.ChannelsBySymbol.ContainsKey(symbol) == false) {
+				string msg = "I_REFUSE_TO_REMOVE_UNSUBSCRIBED_SYMBOL symbol[" + symbol + "] for quoteOrBar_orLevel2_Consumer[" + quoteOrBar_orLevel2_Consumer + "]";
+				Assembler.PopupException(msg);
+				return false;
+			}
+			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbol];
+			if (channel.ConsumersBarCount > 0 || channel.ConsumersQuoteCount > 0) return false;
+			//Assembler.PopupException("QuoteConsumer [" + consumer + "] was the last one using [" + symbol + "]; removing QuoteBarDistributor[" + channel + "]");
+			if (quoteTrue_level2False == true) {
+				if (channel.QuotePump_nullUnsafe	!= null) channel.QuotePump_nullUnsafe	.PushingThread_StopDispose_waitConfirmed();
+			} else {
+				if (channel.PumpLevelTwo			!= null) channel.PumpLevelTwo			.PushingThread_StopDispose_waitConfirmed();
+			}
+			if (channel.QuotePump_nullUnsafe != null && channel.QuotePump_nullUnsafe.IsDisposed == false) {
+				return false;
+			}
+			if (channel.PumpLevelTwo != null && channel.PumpLevelTwo.IsDisposed == false) {
+				return false;
+			}
+			channel.Dispose();
+			this.ChannelsBySymbol.Remove(symbol);
+			//Assembler.PopupException("...UpstreamUnSubscribing [" + symbol + "]");
+			this.StreamingAdapter.UpstreamUnSubscribe(symbol);
+			return true;
 		}
 
 	}

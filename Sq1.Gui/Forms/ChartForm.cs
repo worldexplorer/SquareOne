@@ -396,7 +396,7 @@ namespace Sq1.Gui.Forms {
 			}
 
 			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete) {
-				ChartForm chartForm_nullUnsafe = this.ChartFormManager.MainForm.ChartFormActive_nullUnsafe;
+				ChartForm chartForm_nullUnsafe = this.ChartFormManager.MainForm.ChartForm_lastActivatedContent_nullUnsafe;
 				if (chartForm_nullUnsafe == null) {
 					string msg2 = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET WE_ARE_HERE_WHEN_I_SWITCH_ACTIVE_DOCUMENT_TAB_FROM_DataSourceEditor_TO_ChartForm";
 					//#if DEBUG_HEAVY

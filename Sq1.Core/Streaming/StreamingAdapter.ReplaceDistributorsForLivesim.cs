@@ -139,7 +139,7 @@ namespace Sq1.Core.Streaming {
 		public string ReasonWhy_livesimCanNotBeStarted_forSymbol(string symbol, ChartShadow chartShadow) {
 			string ret = null;
 			List<SymbolScaleStream<StreamingConsumerChart>> channelsCloned = this.DistributorCharts_substitutedDuringLivesim
-				.GetStreams_forSymbol_exceptForChartLivesimming(symbol, null, chartShadow.ChartStreamingConsumer);
+				.GetSymbolScaleStreams_forSymbol_exceptForChartLivesimming(symbol, null, chartShadow.ChartStreamingConsumer);
 			if (channelsCloned == null) {
 				ret = "YOU_MUST_HAVE_CHART_SUBSCRIBED_TO_SYMBOL_BEFORE_STARTING_LIVESIM";
 			} else {

@@ -17,7 +17,7 @@ using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui {
 	public class MainFormEventManager {
-		private MainForm mainForm;
+		MainForm	mainForm;
 
 		public MainFormEventManager(MainForm mainForm) {
 			this.mainForm = mainForm;
@@ -54,7 +54,7 @@ namespace Sq1.Gui {
 		}
 		internal void StrategiesTree_OnStrategyLoadClicked(object sender, StrategyEventArgs e) {
 			Strategy strategy = e.Strategy;
-			ChartForm active = this.mainForm.ChartFormActive_nullUnsafe;
+			ChartForm active = this.mainForm.ChartForm_lastActivatedContent_nullUnsafe;
 			if (active == null) {
 				ChartFormManager msg = this.chartCreateShow_populateSelectorsSliders_fromStrategy(strategy);
 				active = msg.ChartForm;
@@ -162,37 +162,148 @@ namespace Sq1.Gui {
 			BarsEditorForm.Instance.BarsEditorUserControl.LoadBars(e.DataSource.Name, e.Symbol);
 		}
 		#endregion
-		//v1
-		internal void DockPanel_ActiveDocumentChanged(object sender, EventArgs e) {
-			if (this.mainForm.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) {
-				string msg = "onAppClose getting invoked for each [mosaically] visible document, right? nope just once per Close()";
-				return;
-			}
-			if (this.mainForm.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace) {
-				string msg = "onAppClose getting invoked for each [mosaically] visible document, right? nope just once per Close()";
-				return;
-			}
-			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
-				string msg = "dont save ChartSernoLastKnownHadFocus";
+
+		//bool ignoreActiveDocumentChanged_imActivatingChart_afterLastReporterPoppedUp_preventingStackOverflow = false;
+		//internal void DockPanel_ActiveDocumentChanged(object sender, EventArgs e) {
+		//	string msig = "DockPanel_ActiveDocumentChanged()";
+		//	if (this.ignoreActiveDocumentChanged_imActivatingChart_afterLastReporterPoppedUp_preventingStackOverflow) {
+		//		this.ignoreActiveDocumentChanged_imActivatingChart_afterLastReporterPoppedUp_preventingStackOverflow = false;
+		//		return;
+		//	}
+
+		//	if (this.mainForm.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) {
+		//		string msg = "onAppClose getting invoked for each [mosaically] visible document, right? nope just once per Close()";
+		//		return;
+		//	}
+		//	if (this.mainForm.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace) {
+		//		string msg = "onAppClose getting invoked for each [mosaically] visible document, right? nope just once per Close()";
+		//		return;
+		//	}
+		//	if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
+		//		string msg = "dont save ChartSernoLastKnownHadFocus";
+		//		return;
+		//	}
+
+		//	ChartForm chartFormClicked = this.mainForm.DockPanel.ActiveDocument as ChartForm;
+		//	if (chartFormClicked == null) {
+		//		this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = -1;
+		//		string msg = "focus might have moved away from a document to Docked Panel"
+		//			+ "; I'm here after having focused on ExceptionsForm docked into Documents pane";
+		//		// ON_WORKSPACE_LOAD__ActiveDocumentChanged_IS_NOT_INVOKED_NO_NEED_TO_MOVE_5_LINES_UP
+		//		DataSourceEditorForm dataSourceEditorFormClicked = this.mainForm.DockPanel.ActiveDocument as DataSourceEditorForm;
+		//		if (dataSourceEditorFormClicked != null) {
+		//			DataSourcesForm.Instance.ActivateDockContent_popupAutoHidden(false, true);
+		//			string dsNameToSelect = dataSourceEditorFormClicked.DataSourceEditorControl.DataSourceName;
+		//			DataSourcesForm.Instance.DataSourcesTreeControl.SelectDatasource(dsNameToSelect);
+		//		}
+		//		return;
+		//	}
+		//	//if (chartFormClicked.IsActivated == false) return;	//NOUP ActiveDocumentChanged is invoked twice: 1) for a form loosing control, 2) for a form gaining control
+		//	try {
+		//		chartFormClicked.ChartFormManager.InterformEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
+		//		if (this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus != chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno) {
+		//			this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus  = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
+		//			//v1 should be enough
+		//			this.mainForm.GuiDataSnapshotSerializer.Serialize();
+		//			//v2 EXCESSIVE_FOR_SAVING.ChartSernoLastKnownHadFocus this.mainForm.MainFormSerialize();		// serialises Snap and XML
+		//		}
+				
+		//		//v1: DOESNT_POPULATE_SYMBOL_AND_SCRIPT_PARAMETERS 
+		//		//if (chartFormClicked.ChartFormManager.Strategy == null) {
+		//		//	StrategiesForm.Instance.StrategiesTreeControl.UnSelectStrategy();
+		//		//} else {
+		//		//	StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(chartFormClicked.ChartFormManager.Strategy);
+		//		//}
+		//		chartFormClicked.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
+		//		if (this.mainForm.DockPanel.ActiveDocument != chartFormClicked) {
+		//			this.ignoreActiveDocumentChanged_imActivatingChart_afterLastReporterPoppedUp_preventingStackOverflow = true;
+		//			chartFormClicked.Activate();	// IF_REPORTERS_ARE_ALSO_IN_DOCUMENT_PANE__THEY_GOT_ACTIVE__WITH_BOLDED_TAB INFINITE_LOOP__IT_IS_ALREADY_ACTIVE
+		//			this.ignoreActiveDocumentChanged_imActivatingChart_afterLastReporterPoppedUp_preventingStackOverflow = false;
+		//			chartFormClicked.Focus();		// FLOATING_FORM_CANT_BE_RESIZED_WITHOUT_FOCUS FOCUS_WAS_PROBABLY_STOLEN_BY_SOME_OTHER_FORM(MAIN?)_LAZY_TO_DEBUG
+		//		}
+		//		ChartSettingsEditorForm.Instance.PopulateWithChartSettings(chartFormClicked.ChartControl);
+		//		if (chartFormClicked.ChartFormManager.Executor.Bars != null) {
+		//			SymbolInfoEditorForm.Instance.SymbolEditorControl.PopulateWithSymbolInfo(chartFormClicked.ChartFormManager.Executor.Bars.SymbolInfo);
+		//		}
+		//	} catch (Exception ex) {
+		//		if (ex.Message == "The previous pane is invalid. It can not be null, and its docking state must not be auto-hide.") {
+		//			foreach (DockPane eachPane in this.mainForm.DockPanel.Panes) {
+		//				bool autoHide = eachPane.DockState == DockState.DockBottomAutoHide
+		//							 || eachPane.DockState == DockState.DockLeftAutoHide
+		//							 || eachPane.DockState == DockState.DockRightAutoHide
+		//							 || eachPane.DockState == DockState.DockTopAutoHide;
+		//				if (autoHide == false) continue;
+		//				string whosInside = "";
+		//				foreach (IDockContent outlaw in eachPane.DisplayingContents) {
+		//					if (whosInside != "") whosInside += ",";
+		//					whosInside += outlaw.ToString();
+		//				}
+		//				string msg = "FIXED_AS:CANT_ADD_PANE_RELATIVELY_TO_AUTOHIDE_PANE ADD_THOSE_AS_NON_AUTO_HIDDENS [" + whosInside + "]";
+		//				Assembler.PopupException(msg + msig, null, false);
+		//			}
+		//		}
+		//		Assembler.PopupException(msig, ex);
+		//	}
+		//}
+
+		bool ignoreActiveContentChanged_imActivatingChart_afterLastReporterPoppedUp_preventingStackOverflow = false;
+		internal void DockPanel_ActiveContentChanged(object sender, EventArgs e) {
+			string msig = "DockPanel_ActiveContentChanged()";
+
+			if (this.ignoreActiveContentChanged_imActivatingChart_afterLastReporterPoppedUp_preventingStackOverflow) {
+				this.ignoreActiveContentChanged_imActivatingChart_afterLastReporterPoppedUp_preventingStackOverflow = false;
 				return;
 			}
 
-			ChartForm chartFormClicked = this.mainForm.DockPanel.ActiveDocument as ChartForm;
-			if (chartFormClicked == null) {
-				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = -1;
-				string msg = "focus might have moved away from a document to Docked Panel"
-					+ "; I'm here after having focused on ExceptionsForm docked into Documents pane";
-				// ON_WORKSPACE_LOAD__ActiveDocumentChanged_IS_NOT_INVOKED_NO_NEED_TO_MOVE_5_LINES_UP
-				DataSourceEditorForm dataSourceEditorFormClicked = this.mainForm.DockPanel.ActiveDocument as DataSourceEditorForm;
-				if (dataSourceEditorFormClicked != null) {
-					DataSourcesForm.Instance.ActivateDockContent_popupAutoHidden(false, true);
-					string dsNameToSelect = dataSourceEditorFormClicked.DataSourceEditorControl.DataSourceName;
-					DataSourcesForm.Instance.DataSourcesTreeControl.SelectDatasource(dsNameToSelect);
-				}
+			if (this.mainForm.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) {
+				string msg = "onAppClose getting invoked for each [mosaically] visible content, right? nope just once per Close()";
 				return;
 			}
-			//if (chartFormClicked.IsActivated == false) return;	//NOUP ActiveDocumentChanged is invoked twice: 1) for a form loosing control, 2) for a form gaining control
+			if (this.mainForm.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace) {
+				string msg = "onAppClose getting invoked for each [mosaically] visible content, right? nope just once per Close()";
+				return;
+			}
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) {
+				string msg = "TOO_EARLY_TO_HANDLE_THIS_EVENT I_NEED_TO_SET_GuiDataSnapshot.ChartSernoLastKnownHadFocus";
+				return;
+			}
+
+			ChartForm chartFormClicked = this.mainForm.DockPanel.ActiveContent as ChartForm;
+			//if (chartFormClicked == null) {
+			//    string msg = "focus might have moved away from a document to Docked Panel"
+			//        + "; I'm here after having focused on ExceptionsForm docked into Documents pane";
+			//    // ON_WORKSPACE_LOAD__ActiveDocumentChanged_IS_NOT_INVOKED_NO_NEED_TO_MOVE_5_LINES_UP
+			//    DataSourceEditorForm dataSourceEditorFormClicked = this.mainForm.DockPanel.ActiveDocument as DataSourceEditorForm;
+			//    if (dataSourceEditorFormClicked != null) {
+			//        DataSourcesForm.Instance.ActivateDockContent_popupAutoHidden(false, true);
+			//        string dsNameToSelect = dataSourceEditorFormClicked.DataSourceEditorControl.DataSourceName;
+			//        DataSourcesForm.Instance.DataSourcesTreeControl.SelectDatasource(dsNameToSelect);
+			//    }
+			//    return;
+			//}
+			if (chartFormClicked == null) {
+				//this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = -1;
+				string msg = "DockContent-derived activated by user isn't a ChartForm; I won't sync DataSourcesTree,StrategiesTree,Splitters to hightlight relevant";
+				return;
+			}
+			if (chartFormClicked == this.mainForm.ChartForm_lastActivatedContent_nullUnsafe) {
+				string msg = "THIS_IS_A_GARBAGE_EVENT_INVOCATIOIN__DOCK_CONTENT_GENERATES_TOO_MANY";
+				return;
+			}
+
 			try {
+				//string whoIsActive = sender.ToString();
+				//DockPanel panelActivated = sender as DockPanel;
+				//if (panelActivated != null) {
+				//    if (panelActivated.ActiveDocument != null) {
+				//        whoIsActive = panelActivated.ActiveDocument.ToString();
+				//    } else {
+				//        whoIsActive = "WHERE_ARE_YOU_THEN?? panelActivated.ActiveContent[" + panelActivated.ActiveContent + "]";
+				//    }
+				//}
+				//Assembler.PopupException("lastChartActive[" + whoIsActive + "] " + msig, null, false);
+
+				this.mainForm.ChartForm_lastActivatedContent_nullUnsafe = chartFormClicked;
 				chartFormClicked.ChartFormManager.InterformEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
 				if (this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus != chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno) {
 					this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus  = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
@@ -208,8 +319,12 @@ namespace Sq1.Gui {
 				//	StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(chartFormClicked.ChartFormManager.Strategy);
 				//}
 				chartFormClicked.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
-				//chartFormClicked.Activate();	// IT_IS_ALREADY_ACTIVE
-				chartFormClicked.Focus();		// FLOATING_FORM_CANT_BE_RESIZED_WITHOUT_FOCUS FOCUS_WAS_PROBABLY_STOLEN_BY_SOME_OTHER_FORM(MAIN?)_LAZY_TO_DEBUG
+				if (this.mainForm.DockPanel.ActiveDocument != chartFormClicked) {
+					this.ignoreActiveContentChanged_imActivatingChart_afterLastReporterPoppedUp_preventingStackOverflow = true;
+					chartFormClicked.Activate();	// STACK_OVERFLOW IF_REPORTERS_ARE_ALSO_IN_DOCUMENT_PANE__THEY_GOT_ACTIVE__WITH_BOLDED_TAB INFINITE_LOOP__IT_IS_ALREADY_ACTIVE
+					chartFormClicked.Focus();		// STACK_OVERFLOW FLOATING_FORM_CANT_BE_RESIZED_WITHOUT_FOCUS FOCUS_WAS_PROBABLY_STOLEN_BY_SOME_OTHER_FORM(MAIN?)_LAZY_TO_DEBUG
+					this.ignoreActiveContentChanged_imActivatingChart_afterLastReporterPoppedUp_preventingStackOverflow = false;
+				}
 				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(chartFormClicked.ChartControl);
 				if (chartFormClicked.ChartFormManager.Executor.Bars != null) {
 					SymbolInfoEditorForm.Instance.SymbolEditorControl.PopulateWithSymbolInfo(chartFormClicked.ChartFormManager.Executor.Bars.SymbolInfo);
@@ -228,51 +343,10 @@ namespace Sq1.Gui {
 							whosInside += outlaw.ToString();
 						}
 						string msg = "FIXED_AS:CANT_ADD_PANE_RELATIVELY_TO_AUTOHIDE_PANE ADD_THOSE_AS_NON_AUTO_HIDDENS [" + whosInside + "]";
-						Assembler.PopupException(msg, null, false);
+						Assembler.PopupException(msg + msig, null, false);
 					}
 				}
-				Assembler.PopupException("DockPanel_ActiveDocumentChanged()", ex);
-			}
-		}
-		//v2
-		internal void DockPanel_ActiveContentChanged(object sender, EventArgs e) {
-			if (this.mainForm.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) {
-				string msg = "onAppClose getting invoked for each [mosaically] visible content, right? nope just once per Close()";
-				return;
-			}
-			if (this.mainForm.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace) {
-				string msg = "onAppClose getting invoked for each [mosaically] visible content, right? nope just once per Close()";
-				return;
-			}
-
-			ChartForm chartFormClicked = this.mainForm.DockPanel.ActiveContent as ChartForm;
-			if (chartFormClicked == null) {
-				string msig = " DockPanel_ActiveContentChanged() is looking for mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus["
-					+ this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus + "]";
-				int lastKnownHadFocus = this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus;
-				ChartFormManager lastKnownChartFormManager = this.mainForm.GuiDataSnapshot.FindChartFormsManager_bySerno(lastKnownHadFocus, msig, false);
-				if (lastKnownChartFormManager == null) {
-					string msg = "DOCK_ACTIVE_CONTENT_CHANGED_BUT_CANT_FIND_LAST_CHART lastKnownChartSerno[" + lastKnownHadFocus + "]";
-					// INFINITE_LOOP_HANGAR_NINE_DOOMED_TO_COLLAPSE Assembler.PopupException(msg + msig);
-					return;
-				}
-				ChartForm lastKnownChartForm = lastKnownChartFormManager.ChartForm;
-				chartFormClicked = lastKnownChartForm;
-			}
-			if (chartFormClicked == null) {
-				//this.mainForm.GuiDataSnapshot.ChartSernoHasFocus = -1;
-				string msg = "DockContent-derived activated by user isn't a ChartForm; I won't sync DataSourcesTree,StrategiesTree,Splitters to hightlight relevant";
-				return;
-			}
-			try {
-				chartFormClicked.ChartFormManager.InterformEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
-				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
-				//v1 this.mainForm.GuiDataSnapshotSerializer.Serialize();
-				//v2
-				this.mainForm.MainFormSerialize();
-				chartFormClicked.ChartFormManager.PopulateThroughMainForm_symbolStrategyTree_andSliders();
-			} catch (Exception ex) {
-				Assembler.PopupException("DockPanel_ActiveContentChanged()", ex);
+				Assembler.PopupException(msig, ex);
 			}
 		}
 
@@ -312,7 +386,7 @@ namespace Sq1.Gui {
 				if (DataSourceEditorForm.Instance.IsCoveredOrAutoHidden) {
 					DataSourceEditorForm.Instance.ShowPopupSwitchToGuiThreadRunDelegateInIt();
 				}
-				//DataSourceEditorForm.Instance.ShowAsDocumentTabNotPane(this.mainForm.DockPanel);
+				//v1 IT_WILL_FOLLOW_DockContent.ShowHint__REMOVED_DockPanel_ActiveDocumentChanged() DataSourceEditorForm.Instance.ShowAsDocumentTabNotPane(this.mainForm.DockPanel);
 				DataSourceEditorForm.Instance.Show(this.mainForm.DockPanel);		// as DockRight (Designer)
 				this.mainForm.MainFormSerialize();	// after appRestart, DataSourceEditor was loosing last edited datasource
 			} catch (Exception exc) {
@@ -341,7 +415,7 @@ namespace Sq1.Gui {
 					return;
 				}
 				// mainForm.ChartFormActive will already throw if Documents have no Charts selected; no need to check
-				this.mainForm.ChartFormActive_nullUnsafe.ChartFormManager.InterformEventsConsumer.DataSourcesTree_OnSymbolSelected(sender, e);
+				this.mainForm.ChartForm_lastActivatedContent_nullUnsafe.ChartFormManager.InterformEventsConsumer.DataSourcesTree_OnSymbolSelected(sender, e);
 			} catch (Exception ex) {
 				Assembler.PopupException(null, ex);
 			}
@@ -356,7 +430,7 @@ namespace Sq1.Gui {
 			//v1 SlidersForm.Instance.PopulateFormTitle(strategy);
 			//v2 WILLBEDONE_BY_PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy() SlidersForm.Instance.Initialize(strategy);
 			try {
-				this.mainForm.ChartFormActive_nullUnsafe.ChartFormManager
+				this.mainForm.ChartForm_lastActivatedContent_nullUnsafe.ChartFormManager
 					.PopulateSelectors_fromCurrentChartOrScriptContext_loadBars_saveStrategyOrCtx_backtestIfStrategy("StrategiesTree_OnScriptContextLoadClicked()");
 			} catch (Exception ex) {
 				Assembler.PopupException("StrategiesTree_OnScriptContextLoadClicked()", ex);
@@ -369,7 +443,7 @@ namespace Sq1.Gui {
 		}
 		// TYPE_MANGLING_INSIDE_WARNING NOTICE_THAT_BOTH_PARAMETER_SCRIPT_AND_INDICATOR_VALUE_CHANGED_EVENTS_ARE_HANDLED_BY_SINGLE_HANDLER
 		internal void SlidersAutoGrow_SliderValueChanged(object sender, IndicatorParameterEventArgs indicatorParamChangedArg) {
-			ChartForm chartFormActive = this.mainForm.ChartFormActive_nullUnsafe;
+			ChartForm chartFormActive = this.mainForm.ChartForm_lastActivatedContent_nullUnsafe;
 			if (chartFormActive == null) {
 				string msg = "DRAG_CHART_INTO_DOCUMENT_AREA";
 				Assembler.PopupException(msg);
@@ -400,10 +474,9 @@ namespace Sq1.Gui {
 
 
 		//internal void DataSourceEditorControl_DataSourceEdited_updateDataSourcesTreeControl(object sender, DataSourceEventArgs e) {
-		//    // mouseover DataSource tree refreshes the OLV and the icon disappears after DataSourceEditor => change Streaming (even without Save, but Save is an official "event trigger")
-		//    // WEIRD_BUT_NOT_ENOUGH DataSourcesForm.Instance.DataSourcesTreeControl.Invalidate();
-		//    DataSourcesForm.Instance.DataSourcesTreeControl.Refresh();
+		//	// mouseover DataSource tree refreshes the OLV and the icon disappears after DataSourceEditor => change Streaming (even without Save, but Save is an official "event trigger")
+		//	// WEIRD_BUT_NOT_ENOUGH DataSourcesForm.Instance.DataSourcesTreeControl.Invalidate();
+		//	DataSourcesForm.Instance.DataSourcesTreeControl.Refresh();
 		//}
-
 	}
 }

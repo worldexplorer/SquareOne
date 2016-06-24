@@ -286,14 +286,14 @@ namespace Sq1.Core.Charting {
 			// TUNNELLED_TO_CHART_FORMS_MANAGER chartFormSafe.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(quote);
 			this.Executor.EventGenerator.RaiseOnStrategyPreExecute_oneQuote(quote_clonedBoundAttached);
 
-			base.Executor_nullReported.InvokeIndicators_onNewBar_onNewQuote(null, quote_clonedBoundAttached, true);
-
 			if (this.Executor.Strategy == null) {
 				string msg = "CHART_WITHOUT_ANY_STRATEGY__JUST_INVALIDATE_AND_EXIT__NO_SCRIPT_TO_INVOKE";
 				//Assembler.PopupException(msg);
 				base.ChartShadow_nullReported.PushQuote_toExecutorObjects_fromStreamingDataSnapshot_triggerInvalidateAll();
 				return;
 			}
+
+			base.Executor_nullReported.InvokeIndicators_onNewBar_onNewQuote(null, quote_clonedBoundAttached, true);
 
 			// #2/4 execute strategy in the thread of a StreamingAdapter (DDE server for MockQuickProvider)
 

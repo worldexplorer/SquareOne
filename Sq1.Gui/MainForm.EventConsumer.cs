@@ -141,9 +141,22 @@ namespace Sq1.Gui {
 		void mniCsvImporter_Click(object sender, System.EventArgs e) {
 			try {
 				if (this.mniCsvImporter.Checked == false) {
-					CsvImporterForm.Instance.ShowAsDocumentTabNotPane(this.DockPanel);
+					//v1 IT_WILL_FOLLOW_DockContent.ShowHint__REMOVED_DockPanel_ActiveDocumentChanged() CsvImporterForm.Instance.ShowAsDocumentTabNotPane(this.DockPanel);
+					//this.mniCsvImporter.Checked = true;
+					//v2
+					//CsvImporterForm.Instance.Show(this.DockPanel);
+					//CsvImporterForm.Instance.SubscribeVisibleChanged_onlyOnce(delegate(bool visibleReceived) {
+					//    this.mniCsvImporter.Checked = visibleReceived;
+					//});
+					//CsvImporterForm.Instance.ActivateDockContent_popupAutoHidden(false, true);
+
+					CsvImporterForm.Instance.ShowHinted_ActivateIfAutoHidden_SubscribeToVisibleChanged(this.DockPanel, delegate(bool visibleReceived) {
+						this.mniCsvImporter.Checked = visibleReceived;
+					});
 				} else {
-					CsvImporterForm.Instance.Hide();
+					//YOU_CAN_CLOSE_IT_WITH_X__HERE_IT_WORKS_AS_TASKBAR_MINIMIZING_INTO_DOCKED_STATE CsvImporterForm.Instance.Close();
+					//NO_NEED this.mniCsvImporter.Checked = false;
+					CsvImporterForm.Instance.ToggleAutoHide();
 				}
 				this.MainFormSerialize();
 				this.ctxTools.Show();

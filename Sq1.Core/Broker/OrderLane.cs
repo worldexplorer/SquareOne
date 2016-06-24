@@ -203,6 +203,7 @@ namespace Sq1.Core.Broker {
 			foreach (Order orderSimilar in this.InnerOrderList_recentFirst) {
 				if (orderSimilar.Alert == null) continue;	// orders deserialized might have no alerts attached
 				if (order == orderSimilar) continue;
+				if (order.Alert == orderSimilar.Alert) continue;		// killer has been derived from original; both have the same opening/closing Alert (here it was throwing up)
 				if (order.Alert.IsIdentical_forOrdersPending(orderSimilar.Alert) == false) continue;
 				found = orderSimilar;
 				break;
