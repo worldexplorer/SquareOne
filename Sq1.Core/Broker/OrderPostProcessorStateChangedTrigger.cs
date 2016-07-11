@@ -35,7 +35,8 @@ namespace Sq1.Core.Broker {
 				if (hook.OrderState != order.State)	continue;
 
 				string msg = "HOOK_[" + hook + "] PROCESSING...";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
+				this.orderProcessor.AppendMessage_propagateToGui(order, msg);
 
 				hook.CurrentlyExecuting = true;
 				hook.ActionOnState_broughByBroker(order, pokeUnit_nullUnsafe);
@@ -43,7 +44,8 @@ namespace Sq1.Core.Broker {
 				hook.InvokedThusCanBeDeleted = true;
 
 				msg = "HOOK_[" + hook + "] PROCESSING_DONE";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
+				this.orderProcessor.AppendMessage_propagateToGui(order, msg);
 
 				hooksInvoked++;
 			}

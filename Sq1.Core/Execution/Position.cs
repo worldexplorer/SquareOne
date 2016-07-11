@@ -459,15 +459,16 @@ namespace Sq1.Core.Execution {
 				return ret;
 			}
 
+			ret = "Close Position: ";
 			if (this.ExitAlert == null) {
-				ret += ": Generate ExitAlert + MarketCloseOrder";
+				ret += "Generate ExitAlert + MarketCloseOrder";
 				return ret;
 			}
 
 			if (this.ExitAlert.OrderFollowed == null) {
-				ret += ": Generate MarketCloseOrder for ExitAlert";
+				ret += "Generate MarketCloseOrder for ExitAlert";
 			} else {
-				ret += ": Replace with MarketCloseOrder"
+				ret += "Replace with MarketCloseOrder"
 						//+ " [" + this.ExitAlert.OrderFollowed + "]"
 						;
 			}

@@ -93,10 +93,10 @@ namespace Sq1.Core.Broker {
 		    switch (this.UpstreamConnectionState) {
 		        case ConnectionState.UnknownConnectionState:						ret = false;	break;
 
-		        case ConnectionState.Broker_DllConnected:							ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
+		        case ConnectionState.Broker_DllConnected_12:							ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
 		        case ConnectionState.Broker_DllConnecting:							ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
 		        case ConnectionState.Broker_DllDisconnected:						ret = false;	break;
-		        case ConnectionState.Broker_TerminalConnected:						ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
+		        case ConnectionState.Broker_TerminalConnected_22:						ret = true;		break;	// will trigger UpstreamConnect OnAppRestart
 		        case ConnectionState.Broker_TerminalDisconnected:					ret = true;		break;	// set by callback after first order?... I want the button in Editor pressed, linked to DllConnected only
 
 		        // used in QuikBrokerAdapter
@@ -300,7 +300,7 @@ namespace Sq1.Core.Broker {
 						+ " I should drop this order since similar is not executed yet [" + orderSimilar + "]";
 					this.OrderProcessor.AppendMessage_propagateToGui(order			, msg + msg_order + msig);
 					this.OrderProcessor.AppendMessage_propagateToGui(orderSimilar	, msg + msg_order + msig);
-					Assembler.PopupException(msg + msig);
+					Assembler.PopupException(msg + msig, null, false);
 					//continue;
 				}
 			}
@@ -395,9 +395,12 @@ namespace Sq1.Core.Broker {
 									msg += "!=Alert.PriceEmitted[" + order.Alert.PriceEmitted + "]";
 								}
 							} else {
-								msg += "SLIPPAGES_NOT_DEFINED__SymbolInfo[" + symbolInfo.Symbol + "].SlippagesCrossMarketCsv";
+								msg += "SLIPPAGES_NOT_DEFINED__SymbolInfo[" + symbolInfo.Symbol + "].SlippagesCrossMarketCsv ";
 							}
-							msg += " PreSubmit_LimitCrossMarket: Alert.MarketOrderAs=[" + alert.MarketOrderAs + "] ";
+							msg += "PreSubmit_LimitCrossMarket: Alert.MarketOrderAs=[" + alert.MarketOrderAs + "] ";
+							OrderStateMessage omsg1 = new OrderStateMessage(order, OrderState.PreSubmit, msg);
+							this.OrderProcessor.AppendOrderMessage_propagateToGui(omsg1);
+							msg = "";
 							break;
 
 						case MarketOrderAs.LimitTidal:
@@ -416,12 +419,15 @@ namespace Sq1.Core.Broker {
 								//}
 								// END yes this is a mess here
 								if (order.Alert.PriceEmitted != order.PriceEmitted) {
-									msg += "!=Alert.PriceEmitted[" + order.Alert.PriceEmitted + "]";
+									msg += "!=Alert.PriceEmitted[" + order.Alert.PriceEmitted + "] ";
 								}
 							} else {
-								msg += "DOING_NOTHING__AS_SymbolInfo[" + symbolInfo.Symbol + "].SlippagesTidalCsv_ARE_NOT_DEFINED";
+								msg += "DOING_NOTHING__AS_SymbolInfo[" + symbolInfo.Symbol + "].SlippagesTidalCsv_ARE_NOT_DEFINED ";
 							}
-							msg += " PreSubmit_LimitTidal: Alert.MarketOrderAs=[" + alert.MarketOrderAs + "] ";
+							msg += "PreSubmit_LimitTidal: Alert.MarketOrderAs=[" + alert.MarketOrderAs + "] ";
+							OrderStateMessage omsg2 = new OrderStateMessage(order, OrderState.PreSubmit, msg);
+							this.OrderProcessor.AppendOrderMessage_propagateToGui(omsg2);
+							msg = "";
 							break;
 
 						default:
@@ -494,6 +500,7 @@ namespace Sq1.Core.Broker {
 					this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 					throw new Exception(msg);
 			}
+			if (string.IsNullOrEmpty(msg)) return;
 			order.AppendMessage(msg + msig);
 		}
 

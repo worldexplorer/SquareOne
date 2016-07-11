@@ -50,13 +50,13 @@ namespace Sq1.Core.Execution {
 				OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted,
 				OrderState.EmitOrdersNotClicked,
 				OrderState.MarketClosed,
-				OrderState.RejectedLimitReached,
+				OrderState.LimitExpiredRejected,
 				OrderState.Filled,
 				OrderState.KillerDone,
 				OrderState.KillerTransSubmittedOK,
 				OrderState.SLAnnihilated,
 				OrderState.TPAnnihilated,
-				OrderState.RejectedLimitReached,
+				OrderState.LimitExpiredRejected,
 				OrderState.EmergencyCloseSheduledForNoReason,
 				OrderState.EmergencyCloseSheduledForRejected,
 				OrderState.EmergencyCloseSheduledForRejectedLimitReached,
@@ -72,7 +72,8 @@ namespace Sq1.Core.Execution {
 				OrderState.ErrorOrderInconsistent,
 				OrderState.ErrorSubmittingOrder_elaborate,
 				OrderState.Error_DealPriceOutOfLimit_weird,
-				OrderState.Error_accountIsTooSmall,
+				OrderState.Error_AccountTooSmall,
+				OrderState.Error_NotTradedNow_ProbablyClearing,
 				OrderState.ErrorSubmittingNotEatable,
 				OrderState.SubmittedNoFeedback,
 				OrderState.IRefuseToCloseNonStreamingPosition,
@@ -86,9 +87,13 @@ namespace Sq1.Core.Execution {
 
 		public static OrderStatesCollections CanBeKilled =
 			new OrderStatesCollections(new List<OrderState>() {
+				OrderState.Submitting,
+				OrderState.Submitted,
 				OrderState.WaitingBrokerFill,
 				OrderState.SLAnnihilating,
 				OrderState.TPAnnihilating,
+				OrderState.Rejected,
+				OrderState.LimitExpiredRejected,
 			}, "CanBeKilled");
 	
 		

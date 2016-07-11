@@ -200,7 +200,7 @@ namespace Sq1.Gui {
 
 	
 				this.initializeMainFromDeserializedDataSnapshot();
-				this.mainFormEventManagerInitialize_afterDockingDeserialized();
+				this.mainFormEventManager_initialize_afterDockingDeserialized();
 	
 				//this.PropagateSelectorsForCurrentChart();
 				//WHY???this.MainFormEventManager.DockPanel_ActiveDocumentChanged(this, EventArgs.Empty);
@@ -492,7 +492,7 @@ namespace Sq1.Gui {
 
 			//DataSourceEditorForm.Instance.DataSourceEditorControl.DataSourceEdited_updateDataSourcesTreeControl += new EventHandler<DataSourceEventArgs>(this.MainFormEventManager.DataSourceEditorControl_DataSourceEdited_updateDataSourcesTreeControl);
 		}
-		void mainFormEventManagerInitialize_afterDockingDeserialized() {
+		void mainFormEventManager_initialize_afterDockingDeserialized() {
 			this.DockPanel.ActiveContentChanged		+= this.MainFormEventManager.DockPanel_ActiveContentChanged;	// too frequent
 			//this.DockPanel.ActiveDocumentChanged	+= this.MainFormEventManager.DockPanel_ActiveDocumentChanged;	// just as often as I needed!
 		}

@@ -30,9 +30,9 @@
 			WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient6 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
 			WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient7 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
 			this.ctxTools = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.mniVersionsAndCredits = new System.Windows.Forms.ToolStripMenuItem();
-			this.ctxVersionsCredits = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.menuItemVersionsCredits = new Sq1.Widgets.VersionsCredits.MenuItemVersionsCredits();
+			this.mniDllVersions = new System.Windows.Forms.ToolStripMenuItem();
+			this.ctxDllVersions = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.menuItemDllVersions = new Sq1.Widgets.DllVersions.MenuItemDllVersions();
 			this.mniSaveScreenshot = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniDistributedBacktester = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,7 +68,7 @@
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctxTools.SuspendLayout();
-			this.ctxVersionsCredits.SuspendLayout();
+			this.ctxDllVersions.SuspendLayout();
 			this.mainFormStatusStrip.SuspendLayout();
 			this.CtxWorkspacesModify.SuspendLayout();
 			this.SuspendLayout();
@@ -76,7 +76,7 @@
 			// ctxTools
 			// 
 			this.ctxTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniVersionsAndCredits,
+            this.mniDllVersions,
             this.mniSaveScreenshot,
             this.toolStripSeparator4,
             this.mniDistributedBacktester,
@@ -98,29 +98,29 @@
 			// 
 			// mniVersionsAndCredits
 			// 
-			this.mniVersionsAndCredits.DropDown = this.ctxVersionsCredits;
-			this.mniVersionsAndCredits.Name = "mniVersionsAndCredits";
-			this.mniVersionsAndCredits.Size = new System.Drawing.Size(229, 22);
-			this.mniVersionsAndCredits.Text = "Versions and Credits";
+			this.mniDllVersions.DropDown = this.ctxDllVersions;
+			this.mniDllVersions.Name = "mniDllVersions";
+			this.mniDllVersions.Size = new System.Drawing.Size(229, 22);
+			this.mniDllVersions.Text = "DLL Versions";
 			// 
-			// ctxVersionsCredits
+			// ctxDllVersions
 			// 
-			this.ctxVersionsCredits.AutoSize = false;
-			this.ctxVersionsCredits.BackColor = System.Drawing.SystemColors.ControlDark;
-			this.ctxVersionsCredits.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItemVersionsCredits});
-			this.ctxVersionsCredits.Name = "ctxVersionsCredits";
-			this.ctxVersionsCredits.OwnerItem = this.mniVersionsAndCredits;
-			this.ctxVersionsCredits.ShowImageMargin = false;
-			this.ctxVersionsCredits.Size = new System.Drawing.Size(816, 306);
+			this.ctxDllVersions.AutoSize = false;
+			this.ctxDllVersions.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.ctxDllVersions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemDllVersions});
+			this.ctxDllVersions.Name = "ctxDllVersions";
+			this.ctxDllVersions.OwnerItem = this.mniDllVersions;
+			this.ctxDllVersions.ShowImageMargin = false;
+			this.ctxDllVersions.Size = new System.Drawing.Size(816, 306);
 			// 
-			// menuItemVersionsCredits
+			// menuItemDllVersions
 			// 
-			this.menuItemVersionsCredits.AutoSize = false;
-			this.menuItemVersionsCredits.Name = "menuItemVersionsCredits";
-			this.menuItemVersionsCredits.Padding = new System.Windows.Forms.Padding(0, 10, 0, 0);
-			this.menuItemVersionsCredits.Size = new System.Drawing.Size(800, 300);
-			this.menuItemVersionsCredits.Text = "menuItemVersionsCredits";
+			this.menuItemDllVersions.AutoSize = false;
+			this.menuItemDllVersions.Name = "menuItemDllVersions";
+			this.menuItemDllVersions.Padding = new System.Windows.Forms.Padding(0, 10, 0, 0);
+			this.menuItemDllVersions.Size = new System.Drawing.Size(800, 300);
+			this.menuItemDllVersions.Text = "menuItemDllVersions";
 			// 
 			// mniSaveScreenshot
 			// 
@@ -486,7 +486,7 @@
 			this.ResizeEnd += new System.EventHandler(this.mainForm_ResizeEnd);
 			this.LocationChanged += new System.EventHandler(this.mainForm_LocationChanged);
 			this.ctxTools.ResumeLayout(false);
-			this.ctxVersionsCredits.ResumeLayout(false);
+			this.ctxDllVersions.ResumeLayout(false);
 			this.mainFormStatusStrip.ResumeLayout(false);
 			this.mainFormStatusStrip.PerformLayout();
 			this.CtxWorkspacesModify.ResumeLayout(false);
@@ -525,11 +525,11 @@
 		public System.Windows.Forms.ToolStripSeparator MniWorkspacesToolStripSeparator;
 		public Widgets.LabeledTextBox.MenuItemLabeledTextBox MniltbWorklspaceNewBlank;
 		public System.Windows.Forms.ToolStripMenuItem MniWorkspaceDelete;
-		private System.Windows.Forms.ToolStripMenuItem mniVersionsAndCredits;
+		private System.Windows.Forms.ToolStripMenuItem mniDllVersions;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-		private System.Windows.Forms.ContextMenuStrip ctxVersionsCredits;
-		private Widgets.VersionsCredits.MenuItemVersionsCredits menuItemVersionsCredits;
+		private System.Windows.Forms.ContextMenuStrip ctxDllVersions;
+		private Widgets.DllVersions.MenuItemDllVersions menuItemDllVersions;
 		private System.Windows.Forms.ToolStripMenuItem mniSaveScreenshot;
 		private System.Windows.Forms.ToolStripMenuItem mniBarsEditor;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;

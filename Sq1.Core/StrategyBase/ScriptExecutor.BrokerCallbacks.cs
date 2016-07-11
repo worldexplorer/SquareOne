@@ -45,7 +45,7 @@ namespace Sq1.Core.StrategyBase {
 			this.ChartShadow.OrderKilled_addForBar(barIndex_streamingNow, expiredOrderKilled_replaceMe);
 		}
 
-		public void CallbackOrderReplaced_invokeScript_nonReenterably(Order expiredOrderKilled_replaceMe, Order replacement, int orderSubmitted) {
+		public void CallbackOrderReplaced_invokeScript_nonReenterably(Order expiredOrderKilled_replaceMe, Order replacement, bool orderScheduled) {
 			string msig = " //CallbackOrderReplaced_invokeScript_nonReenterably(WAIT)";
 
 			if (this.Strategy.Script != replacement.Alert.Strategy.Script) {
@@ -72,7 +72,16 @@ namespace Sq1.Core.StrategyBase {
 				//v1 NO!!! DIRECT_KILLED_TO_EXECUTOR_UPSTACK alert.Strategy.Script.OnAlertKilledCallback(alert);
 				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig);
 
-				Order orderKilled = alertKilled.OrderFollowed;
+				Order victimKilled = alertKilled.OrderFollowed;
+
+				#region ALERT_PENDING_REMOVAL_FOR_REJECTED__POSTPONED_FOR_REPLACEMENT_GETS_FILL
+				bool killedAfterRejected						= victimKilled.FindState_inOrderMessages(OrderState.Rejected);
+				bool replacementShouldHaveAlreadyBeenSubmitted	= victimKilled.Alert.Bars.SymbolInfo.RejectedResubmit;
+				bool replacementWasSubmitted					= victimKilled.FindFirstMessageContaining_inOrderMessages_nullUnsafe("REPLACEMENT_FOR_REJECTED") != null;
+
+				bool replacementFilledWillRemove = killedAfterRejected && replacementShouldHaveAlreadyBeenSubmitted && replacementWasSubmitted;
+				if (replacementFilledWillRemove) return;
+				#endregion
 
 				if (this.ExecutionDataSnapshot.AlertsUnfilled.Contains(alertKilled, this, msig)) {
 					bool removed = this.ExecutionDataSnapshot.AlertsUnfilled.Remove(alertKilled, this, msig);
@@ -82,8 +91,8 @@ namespace Sq1.Core.StrategyBase {
 						+ " PositionCloseImmediately() kills all PositionPrototype-based PendingAlerts"
 						+ " => killing those using AlertKillPending() before/after PositionCloseImmediately() is wrong!";
 					Assembler.PopupException(msg, null, false);
-					if (orderKilled != null) {
-						this.OrderProcessor.AppendMessage_propagateToGui(orderKilled, msg);
+					if (victimKilled != null) {
+						this.OrderProcessor.AppendMessage_propagateToGui(victimKilled, msg);
 					}
 				}
 
@@ -91,16 +100,22 @@ namespace Sq1.Core.StrategyBase {
 					bool removed = this.ExecutionDataSnapshot.AlertsDoomed.Remove(alertKilled, this, msig);
 					if (removed) alertKilled.StoreKilledInfo(this.Bars.BarLast, true);
 				} else {
-					string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed DELETED_EARLIER_OR_NEVER_BEEN_ADDED";
-					Assembler.PopupException(msg, null, false);
-					if (orderKilled != null) {
-						this.OrderProcessor.AppendMessage_propagateToGui(orderKilled, msg);
+					//string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed DELETED_EARLIER_OR_NEVER_BEEN_ADDED";
+					string msg = "";
+					if (alertKilled.OrderFollowed.State == OrderState.Rejected) {
+						msg = "REJECTED_KILLED_WITHOUT_HOOK KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed";
+					} else {
+						msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed DELETED_EARLIER_OR_NEVER_BEEN_ADDED";
+						Assembler.PopupException(msg, null, false);
+					}
+					if (victimKilled != null) {
+						this.OrderProcessor.AppendMessage_propagateToGui(victimKilled, msg);
 					}
 				}
 
-				bool removingAlert_afterLastSlippaged_replacementOrderExpired =	orderKilled != null &&
-																				orderKilled.HasSlippagesDefined &&
-																   double.IsNaN(orderKilled.SlippageNextAvailable_NanWhenNoMore);
+				bool removingAlert_afterLastSlippaged_replacementOrderExpired =	victimKilled != null &&
+																				victimKilled.HasSlippagesDefined &&
+																   double.IsNaN(victimKilled.SlippageNextAvailable_forLimitAlertsOnly_NanWhenNoMore);
 				if (removingAlert_afterLastSlippaged_replacementOrderExpired) {
 					if (alertKilled.BuyOrShort) {
 						this.ExecutionDataSnapshot.Positions_OpenNow.Remove(alertKilled.PositionAffected, this,
@@ -119,7 +134,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 
-		public void CallbackOrderExpired(Order orderExpired) {
+		public void Callback_OrderLimit_Expired(Order orderExpired) {
 #if VERBOSE_STRINGS_SLOW
 			string msig = " //CallbackOrderExpired(" + orderExpired + ", " + quoteFilledThisAlert_nullForLive + ")";
 #else
@@ -128,36 +143,39 @@ namespace Sq1.Core.StrategyBase {
 
 		}
 
-		public void CallbackOrderError(Order orderExpired) {
+		public void Callback_OrderMarketLimitStop_Error(Order order_withErrorState) {
 #if VERBOSE_STRINGS_SLOW
-			string msig = " //CallbackOrderExpired(" + orderExpired + ")";
+			string msig = " //CallbackOrderError(" + order_withErrorState + ")";
 #else
 			string msig = " //CallbackOrderError(WAIT)";
 #endif
 
 		}
 
-		public void CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(Alert alertFilled, Quote quoteFilledThisAlert_nullForLive,
-																			double priceFill, double qtyFill, double slippageFill, double commissionFill) {
+		public void CallbackAlertFilled_moveAround_invokeScriptCallback_reenterablyProtected(
+							Alert alertFilled, Quote quoteFilledThisAlert_nullForLive,
+							double priceFill, double qtyFill, double slippageFill, double commissionFill) {
 #if VERBOSE_STRINGS_SLOW
-			string msig = " //CallbackAlertFilledMoveAroundInvokeScript(" + alertFilled + ", " + quoteFilledThisAlert_nullForLive + ")";
+			string msig = " //CallbackAlertFilled_moveAround_invokeScriptCallback_reenterablyProtected(" + alertFilled + ", " + quoteFilledThisAlert_nullForLive + ")";
 #else
-			string msig = " //CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(WAIT)";
+			string msig = " //CallbackAlertFilled_moveAround_invokeScriptCallback_reenterablyProtected(WAIT)";
 #endif
 
 			//avoiding two alertsFilled and messing script-overrides; despite all script invocations downstack are sequential, guaranteed for 1 alertFilled
 			try {
 				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig);
-				this.callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(alertFilled, quoteFilledThisAlert_nullForLive,
-																					 priceFill, qtyFill, slippageFill, commissionFill);
+				this.callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(
+							alertFilled, quoteFilledThisAlert_nullForLive,
+							priceFill, qtyFill, slippageFill, commissionFill);
 			} finally {
 				this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msig);
 			}
 			// filled alerts should be immediately be reflected with an arrow on PricePanel
 			this.ChartShadow.InvalidateAllPanels();
 		}
-		void callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(Alert alertFilled, Quote quoteFilledThisAlert_nullFromOrderProcessorWhenLive,
-																			 double priceFill, double qtyFill, double slippageFill, double commissionFill) {
+		void callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(
+							Alert alertFilled, Quote quoteFilledThisAlert_nullFromOrderProcessorWhenLive,
+							double priceFill, double qtyFill, double slippageFill, double commissionFill) {
 			//SLOW string msig = " callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
 			string msig = " //callbackAlertFilled_moveAround_invokeScript_reenterablyUnprotected(" + alertFilled + ", " + quoteFilledThisAlert_nullFromOrderProcessorWhenLive + ")";
 
@@ -213,7 +231,7 @@ namespace Sq1.Core.StrategyBase {
 						filledIndeed_notRejected_willAddPosition_toExecutionSnapshot = true;
 						break;
 
-					case OrderState.RejectedLimitReached:
+					case OrderState.LimitExpiredRejected:
 						string msg2 = "SHOULD_NOT_ADD_REJECTED_POSITION_OPEN_ANYWHERE";
 						filledIndeed_notRejected_willAddPosition_toExecutionSnapshot = false;
 						break;
@@ -280,6 +298,9 @@ namespace Sq1.Core.StrategyBase {
 			//}
 
 			bool breakIfAbsent = true;
+			//bool wasOnceRejected_nowCanBeFilled = alertFilled.OrderFollowed.FindState_inOrderMessages(OrderState.Rejected);
+			//bool replacementForRejectedFilled = alertFilled.OrderFollowed.FindState_inOrderMessages("REPLACEMENT_FOR_REJECTED");
+			//if (replacementForRejectedFilled) breakIfAbsent = false;
 			int forever = -1;
 			bool removed = this.ExecutionDataSnapshot.AlertsUnfilled.Remove(alertFilled, this, msig, forever, breakIfAbsent);
 

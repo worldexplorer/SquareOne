@@ -4,7 +4,9 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.Execution {
 	public partial class Alert  {
-		[JsonProperty]	public	List<Order>							OrdersFollowed_killedAndReplaced	{ get; private set; }
+		// Json throws with Self referencing error > JsonIgnore
+		[JsonIgnore]	public	List<Order>							OrdersFollowed_killedAndReplaced	{ get; private set; }
+
 		[JsonProperty]	public	SortedDictionary<int, List<double>> PricesEmitted_byBarIndex			{ get; private set; }
 
 		internal void SetNewPriceEmitted_fromReplacementOrder(Order replacementOrder) {

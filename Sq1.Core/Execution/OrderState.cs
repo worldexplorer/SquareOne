@@ -18,10 +18,11 @@ namespace Sq1.Core.Execution {
 		_OrderStatus			= 255,
 
 		Rejected				= 300,
-		LimitExpired			= 305,
-		KillingUnfilledExpired	= 310,
-		EmittingReplacement		= 320,
-		RejectedLimitReached	= 330,
+		RejectedKilled			= 310,
+		LimitExpired			= 320,
+		KillingUnfilledExpired	= 330,
+		EmittingReplacement		= 340,
+		LimitExpiredRejected	= 350,
 
 
 		Filled					= 400,
@@ -60,12 +61,13 @@ namespace Sq1.Core.Execution {
 
 		ErrorSubmitting_BrokerTerminalDisconnected	= 720,
 		ErrorSubmitting_BrokerDllDisconnected		= 721,
-		IRefuseEmitting_BrokerDisconnected			= 722,
+		Error_CantSubscribe_toTransactionCallback	= 722,
+		IRefuseEmitting_BrokerDisconnected			= 723,
 
 		ErrorSubmittingOrder_elaborate				= 730,
 		Error_DealPriceOutOfLimit_weird				= 731,
-		Error_accountIsTooSmall						= 732,
-		Error_cantSubscribeToTransactionCallback	= 733,
+		Error_AccountTooSmall						= 732,
+		Error_NotTradedNow_ProbablyClearing			= 733,
 
 		SubmittedNoFeedback							= 799,
 

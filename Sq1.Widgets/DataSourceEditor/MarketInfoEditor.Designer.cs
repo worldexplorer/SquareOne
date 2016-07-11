@@ -53,7 +53,7 @@
 			this.colClearingTimespansResumes = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.colClearingTimespansDaysOfWeek = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.lblClearingTimespans = new System.Windows.Forms.Label();
-			this.lnkIntradayInterruptsDelete = new System.Windows.Forms.LinkLabel();
+			this.lnkClearingTimespanDelete = new System.Windows.Forms.LinkLabel();
 			this.txtMarketDaysOfWeek = new System.Windows.Forms.TextBox();
 			this.lblMarketDaysOfWeek = new System.Windows.Forms.Label();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -183,6 +183,7 @@
 			this.dgMarketName.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
 			this.dgMarketName.Size = new System.Drawing.Size(71, 139);
 			this.dgMarketName.TabIndex = 38;
+			this.dgMarketName.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgMarketName_CellContentDoubleClick);
 			this.dgMarketName.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgMarketName_CellValueChanged);
 			// 
 			// colMarketName
@@ -361,7 +362,7 @@
 			// 
 			// colClearingTimespansSuspends
 			// 
-			this.colClearingTimespansSuspends.HeaderText = "Closes";
+			this.colClearingTimespansSuspends.HeaderText = "Suspends";
 			this.colClearingTimespansSuspends.Name = "colClearingTimespansSuspends";
 			this.colClearingTimespansSuspends.Width = 45;
 			// 
@@ -386,18 +387,18 @@
 			this.lblClearingTimespans.TabIndex = 45;
 			this.lblClearingTimespans.Text = "Clearing Timespans";
 			// 
-			// lnkIntradayInterruptsDelete
+			// lnkClearingTimespanDelete
 			// 
-			this.lnkIntradayInterruptsDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lnkIntradayInterruptsDelete.AutoSize = true;
-			this.lnkIntradayInterruptsDelete.Enabled = false;
-			this.lnkIntradayInterruptsDelete.Location = new System.Drawing.Point(118, 0);
-			this.lnkIntradayInterruptsDelete.Name = "lnkIntradayInterruptsDelete";
-			this.lnkIntradayInterruptsDelete.Size = new System.Drawing.Size(23, 13);
-			this.lnkIntradayInterruptsDelete.TabIndex = 46;
-			this.lnkIntradayInterruptsDelete.TabStop = true;
-			this.lnkIntradayInterruptsDelete.Text = "Delete";
-			this.lnkIntradayInterruptsDelete.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkIntradayInterruptsDelete_LinkClicked);
+			this.lnkClearingTimespanDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.lnkClearingTimespanDelete.AutoSize = true;
+			this.lnkClearingTimespanDelete.Enabled = false;
+			this.lnkClearingTimespanDelete.Location = new System.Drawing.Point(118, 0);
+			this.lnkClearingTimespanDelete.Name = "lnkClearingTimespanDelete";
+			this.lnkClearingTimespanDelete.Size = new System.Drawing.Size(23, 13);
+			this.lnkClearingTimespanDelete.TabIndex = 46;
+			this.lnkClearingTimespanDelete.TabStop = true;
+			this.lnkClearingTimespanDelete.Text = "Delete";
+			this.lnkClearingTimespanDelete.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkClearingTimespanDelete_LinkClicked);
 			// 
 			// txtMarketDaysOfWeek
 			// 
@@ -462,7 +463,7 @@
 			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 110F));
 			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel3.Controls.Add(this.lblClearingTimespans, 0, 0);
-			this.tableLayoutPanel3.Controls.Add(this.lnkIntradayInterruptsDelete, 1, 0);
+			this.tableLayoutPanel3.Controls.Add(this.lnkClearingTimespanDelete, 1, 0);
 			this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel3.Location = new System.Drawing.Point(80, 3);
 			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -588,7 +589,7 @@
 		private System.Windows.Forms.LinkLabel lnkShortDaysDelete;
 		private System.Windows.Forms.DataGridView dgClearingTimespans;
 		private System.Windows.Forms.Label lblClearingTimespans;
-		private System.Windows.Forms.LinkLabel lnkIntradayInterruptsDelete;
+		private System.Windows.Forms.LinkLabel lnkClearingTimespanDelete;
 		private System.Windows.Forms.TextBox txtMarketDaysOfWeek;
 		private System.Windows.Forms.Label lblMarketDaysOfWeek;
 		private System.Windows.Forms.DataGridViewTextBoxColumn colMarketName;

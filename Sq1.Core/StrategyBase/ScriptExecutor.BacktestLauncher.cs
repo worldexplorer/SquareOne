@@ -221,7 +221,7 @@ namespace Sq1.Core.StrategyBase {
 					//	this.RemovePendingExitAlertPastDueClosePosition(alertPending);
 					//}
 					//bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertPending);
-					this.AlertPending_kill(alertPending);
+					this.AlertPendingKill_appendToDoomed_willBeSubmitted_afterScriptInovcationReturned(alertPending);
 				} catch (Exception ex) {
 					string msg = "NOT_AN_ERROR BACKTEST_POSITION_FINALIZER: check innerException: most likely you got POSITION_ALREADY_CLOSED on counterparty alert's force-close?";
 					this.PopupException(msg, ex, false);

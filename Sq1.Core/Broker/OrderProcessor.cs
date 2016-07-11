@@ -219,7 +219,7 @@ namespace Sq1.Core.Broker {
 		}
 
 		bool postProcess_victimOrder(OrderStateMessage victimNewStateOmsg) {
-			bool stillTryOrderFill = false;
+			bool stillTryOrderFill = true;
 
 			Order victimOrder = victimNewStateOmsg.Order;
 
@@ -274,7 +274,9 @@ namespace Sq1.Core.Broker {
 					stillTryOrderFill = true;
 					break;
 
+				case OrderState.Rejected:		// Livesimming killing-without-hook a Rejected
 				case OrderState.VictimKilled:
+				case OrderState.RejectedKilled:
 					if (victimOrder.FindState_inOrderMessages(OrderState.SLAnnihilating)) {
 						this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(
 							new OrderStateMessage(victimOrder, OrderState.SLAnnihilated,
@@ -290,7 +292,7 @@ namespace Sq1.Core.Broker {
 					string msg_killer = "orderKiller[" + killerOrder.SernoExchange + "]=>[" + OrderState.KillerDone + "] <= orderVictim[" + victimOrder.SernoExchange + "][" + victimOrder.State + "]";
 					OrderStateMessage omg_done_killer = new OrderStateMessage(killerOrder, OrderState.KillerDone, msg_killer + " //postProcess_victimOrder()");
 					this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(omg_done_killer);
-					double slippageNext = victimOrder.SlippageNextAvailable_NanWhenNoMore;
+					double slippageNext = victimOrder.SlippageNextAvailable_forLimitAlertsOnly_NanWhenNoMore;
 					if (victimOrder.DontRemoveMyPending_afterImKilled_IwillBeReplaced && double.IsNaN(slippageNext) == false) {
 						string msg1 = "SKIPPING_REMOVAL_OF_PENDING_ALERT; I will remove when NoMoreSlippageAvailable";
 						this.AppendMessage_propagateToGui(victimOrder, msg1);
@@ -400,7 +402,8 @@ namespace Sq1.Core.Broker {
 					}
 					this.OPPsequencer.OrderFilled_unlockSequence_submitOpening(order);
 					try {
-						order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(order.Alert, null,
+						order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptCallback_reenterablyProtected(
+							order.Alert, null,
 							order.PriceFilled, order.QtyFill, order.SlippageFilled, order.CommissionFill);
 					} catch (Exception ex) {
 						string msg3 = "PostProcessOrderState caught from CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably() ";
@@ -427,12 +430,16 @@ namespace Sq1.Core.Broker {
 				case OrderState.Error:
 				case OrderState.ErrorMarketPriceZero:
 				case OrderState.Error_DealPriceOutOfLimit_weird:
-				case OrderState.Error_accountIsTooSmall:
+				case OrderState.Error_NotTradedNow_ProbablyClearing:
+				case OrderState.Error_AccountTooSmall:
 				case OrderState.ErrorSlippageCalc:
-					Assembler.PopupException("PostProcess(): order.PriceFill=0 " + msig, null, false);
+					string msg1 = "HERE_I_SHOULD_DELETE_PENDING_ALERT_FOR_FAILED_ORDER ";
+					Assembler.PopupException(msg1 + msig, null, false);
+					this.AppendMessage_propagateToGui(order, msg1 + msig);
+
 					//NEVER order.PricePaid = 0;
 					if (order.PriceFilled > 0) {
-						string msg = "!!! ABNORMAL#1 ZEROIFYING_PriceFilled[" + order.PriceFilled + "]=>0";
+						string msg = "!!! ABNORMAL~ERROR ZEROIFYING_PriceFilled[" + order.PriceFilled + "]=>0";
 						this.AppendMessage_propagateToGui(order, msg);
 						order.FillWith(0);
 					}
@@ -441,17 +448,15 @@ namespace Sq1.Core.Broker {
 						//DOESNT_EXPECT_PRICE=0
 						//order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(order.Alert, null,
 						//	order.PriceFilled, order.QtyFill, order.SlippageFilled, order.CommissionFill);
-						order.Alert.Strategy.Script.Executor.CallbackOrderError(order);
+						order.Alert.Strategy.Script.Executor.Callback_OrderMarketLimitStop_Error(order);
 					} catch (Exception ex) {
-						string msg3 = "PostProcessOrderState caught from CallbackAlertFilledMoveAroundInvokeScript() ";
+						string msg3 = "PostProcessOrderState caught from Callback_OrderMarketLimitStop_Error() ";
 						Assembler.PopupException(msg3 + msig, ex);
 					}
 					break;
 
-				case OrderState.ErrorSubmitting_BrokerTerminalDisconnected:
 				case OrderState.LimitExpired:
-				case OrderState.Rejected:
-				case OrderState.RejectedLimitReached:
+				case OrderState.LimitExpiredRejected:
 					//bool a = order.IsEmergencyClose;
 					bool replacementOrder	= string.IsNullOrEmpty(order.EmergencyReplacedByGUID) == false;
 					bool orderBeingReplaced	= string.IsNullOrEmpty(order.ReplacedByGUID) == false;
@@ -470,10 +475,8 @@ namespace Sq1.Core.Broker {
 						return;
 					}
 					
-					//DONT_LIE Assembler.PopupException("REJECTED_BY_BROKER__FIRST_TIME_NEVER_REPLACED: order.PriceFill=0 " + msig, null, false);
-					//NEVER order.PricePaid = 0;
 					if (order.PriceFilled > 0) {
-						string msg = "!!! ABNORMAL#1 ZEROIFYING_PriceFilled[" + order.PriceFilled + "]=>0";
+						string msg = "!!! ABNORMAL~LIMIT_EXPIRED WHY_IS_IT_NEEDED?? ZEROIFYING_PriceFilled[" + order.PriceFilled + "]=>0";
 						this.AppendMessage_propagateToGui(order, msg);
 						order.FillWith(0);
 					}
@@ -482,19 +485,24 @@ namespace Sq1.Core.Broker {
 						//DOESNT_EXPECT_PRICE=0
 						//order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(order.Alert, null,
 						//	order.PriceFilled, order.QtyFill, order.SlippageFilled, order.CommissionFill);
-						order.Alert.Strategy.Script.Executor.CallbackOrderExpired(order);
+						order.Alert.Strategy.Script.Executor.Callback_OrderLimit_Expired(order);
 					} catch (Exception ex) {
-						string msg3 = "I_FAILED_TO_REMOVE_FROM_AlertsPending_FOR_REJECTED_ORDER CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably() ";
+						string msg3 = "I_FAILED_TO_REMOVE_FROM_AlertsPending_FOR_REJECTED_ORDER Callback_OrderLimit_Expired() ";
 						Assembler.PopupException(msg3 + msig, ex);
 					}
 
+					bool emitted = this.OPPexpired.LimitExpired_replaceWith_nextSlippage(order);
+					break;
+
+				case OrderState.ErrorSubmitting_BrokerTerminalDisconnected:
+				case OrderState.Rejected:
 					if (order.IsEmergencyClose) {
 						this.OPPemergency.CreateEmergencyReplacement_resubmitFor(order);
 					} else {
 						//if (order.Alert.IsExitAlert) {
 						//	this.OPPemergency.AddLockAndCreate_emergencyReplacement_resubmitFor(order);
 						//} else {
-							this.OPPrejected.ReplaceRejected_ifResubmitRejected_setInSymbolInfo(order);
+							bool emitted2 = this.OPPrejected.Replace_AnyOrderRejected_ifRejectedResubmit(order);
 						//}
 					}
 					break;
@@ -527,9 +535,11 @@ namespace Sq1.Core.Broker {
 					break;
 
 				case OrderState.PreSubmit:
+				case OrderState.KillerPreSubmit:
 				case OrderState.VictimBulletPreSubmit:
 				case OrderState.VictimBulletFlying:
-				case OrderState.KillerPreSubmit:
+				case OrderState.VictimKilled:
+				case OrderState.RejectedKilled:
 					break;
 
 				case OrderState.JustConstructed:
@@ -542,7 +552,8 @@ namespace Sq1.Core.Broker {
 
 				default:
 					string msg4 = "NO_HANDLER_FOR_order.State[" + order.State + "]";
-					Assembler.PopupException(msg4 + msig, null, true);
+					Assembler.PopupException(msg4 + msig, null, false);
+					this.AppendMessage_propagateToGui(order, msg4 + msig);
 					break;
 			}
 		}

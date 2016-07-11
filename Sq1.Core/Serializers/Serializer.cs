@@ -6,8 +6,9 @@ using Newtonsoft.Json;
 namespace Sq1.Core.Serializers {
 	// http://stackoverflow.com/questions/1727346/what-is-the-use-of-default-keyword-in-c
 	public class Serializer<T> where T : new() {
-		public	string			OfWhat			{ get; private set; }
-		
+		public	string			OfWhat			{ get; protected set; }
+		public	string			ClassIdent		{ get { return this.GetType().Name + "<" + this.OfWhat + ">"; } }
+
 		public	string			RootPath		{ get; protected set; }
 		public	string			Subfolder		{ get; protected set; }
 		public	string			WorkspaceName	{ get; protected set; }
@@ -135,7 +136,7 @@ namespace Sq1.Core.Serializers {
 		}
 
 		public override string ToString() {
-			return "Serializer<" + this.OfWhat + "> FnameRelpath[" + this.FnameRelpath + "]";
+			return this.ClassIdent + " FnameRelpath[" + this.FnameRelpath + "]";
 		}
 	}
 }

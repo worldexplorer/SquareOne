@@ -103,6 +103,9 @@ namespace Sq1.Widgets.Execution {
 					Assembler.PopupException("treeListView.CanExpandGetter: order=null");
 					return false;
 				}
+				if (this.dataSnapshot.ShowKillerOrders == false) {
+					return order.DerivedOrders_noKillers.Count > 0;
+				}
 				return order.DerivedOrders.Count > 0;
 			};
 			this.olvOrdersTree.ChildrenGetter = delegate(object o) {
@@ -110,6 +113,9 @@ namespace Sq1.Widgets.Execution {
 				if (order == null) {
 					Assembler.PopupException("treeListView.ChildrenGetter: order=null");
 					return null;
+				}
+				if (this.dataSnapshot.ShowKillerOrders == false) {
+					return order.DerivedOrders_noKillers;
 				}
 				return order.DerivedOrders;
 			};
@@ -119,11 +125,16 @@ namespace Sq1.Widgets.Execution {
 				if (order == null) return "olvcAccount.AspectGetter: order=null";
 				return order.Alert.AccountNumber;
 			};
+
 			this.olvcBarNum.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcBarNum.AspectGetter: order=null";
-				return order.Alert.PlacedBarIndex.ToString();
+				//v1 SORTING_GOES_WRONG__STRINGS_COMPARED return order.Alert.PlacedBarIndex.ToString();
+				//v2 SORTING_GOES_RIGHT__INTEGERS_COMPARED
+				return order.Alert.PlacedBarIndex;
 			};
+			this.olvcBarNum.AspectToStringFormat = "{0:N0}";
+
 			this.olvcOrderCreated.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcDatetime.AspectGetter: order=null";
@@ -138,7 +149,7 @@ namespace Sq1.Widgets.Execution {
 						orderCreated = order.CreatedBrokerTime;
 					}
 				}
-				return orderCreated.ToString(Assembler.DateTimeFormatLong);
+				return orderCreated.ToString(Assembler.DateTimeFormat_toMillis);
 			};
 			this.olvcSymbol.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -170,7 +181,7 @@ namespace Sq1.Widgets.Execution {
 				if (order.IsKiller == false) return formatOrderPriceSpreadSide(order, this.dataSnapshot.PricingDecimalForSymbol);
 				bool thisKillerReplacesLimitExpired = order.VictimToBeKilled != null && string.IsNullOrEmpty(order.VictimToBeKilled.ReplacedByGUID) == false;
 				if (thisKillerReplacesLimitExpired == false) return "";
-				double nextSlippage = order.VictimToBeKilled.SlippageNextAvailable_NanWhenNoMore;
+				double nextSlippage = order.VictimToBeKilled.SlippageNextAvailable_forLimitAlertsOnly_NanWhenNoMore;
 				string msg = double.IsNaN(nextSlippage)
 					? "noMoreSlippagesAvailable"
 					: "nextSlip[" + nextSlippage.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol) + "]";
@@ -220,7 +231,7 @@ namespace Sq1.Widgets.Execution {
 			this.olvcStateTime.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcStateTime.AspectGetter: order=null";
-				return order.StateUpdateLastTimeLocal.ToString(Assembler.DateTimeFormatLong);
+				return order.StateUpdateLastTimeLocal.ToString(Assembler.DateTimeFormat_toMillis);
 			};
 			this.olvcState.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -252,16 +263,25 @@ namespace Sq1.Widgets.Execution {
 				if (order == null) return "olvcQtyFilled.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.QtyFill.ToString();
 			};
+
 			this.olvcSernoSession.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "olvcSernoSession.AspectGetter: order=null";
-				return order.SernoSession.ToString();
+				if (order == null) return "olvcSernoSession.AspectGetter: order=null";				
+				//v1 SORTING_GOES_WRONG__STRINGS_COMPARED return order.SernoSession.ToString();;
+				//v2 SORTING_GOES_RIGHT__INTEGERS_COMPARED
+				return order.SernoSession;
 			};
+			this.olvcSernoSession.AspectToStringFormat = "{0:N0}";
+
 			this.olvcSernoExchange.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcSernoExchange.AspectGetter: order=null";
-				return order.SernoExchange.ToString();
+				//v1 SORTING_GOES_WRONG__STRINGS_COMPARED return order.SernoExchange.ToString();;
+				//v2 SORTING_GOES_RIGHT__INTEGERS_COMPARED
+				return order.SernoExchange;
 			};
+			this.olvcSernoExchange.AspectToStringFormat = "{0:N0}";
+
 			this.olvcGUID.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcGUID.AspectGetter: order=null";
@@ -354,7 +374,7 @@ namespace Sq1.Widgets.Execution {
 			this.olvcMessageDateTime.AspectGetter = delegate(object o) {
 				var omsg = o as OrderStateMessage;
 				if (omsg == null) return "olvcMessageDateTime.AspectGetter: omsg=null";
-				return omsg.DateTime.ToString(Assembler.DateTimeFormatLong);
+				return omsg.DateTime.ToString(Assembler.DateTimeFormat_toMillis);
 			};
 		}
 
@@ -388,6 +408,7 @@ namespace Sq1.Widgets.Execution {
 			if (osm													== null) return;
 			if (osm.Order											== null) return;
 			if (osm.Order.Alert										== null) return;
+			if (osm.Order.Alert.Bars								== null) return;
 			if (osm.Order.Alert.DataSource_fromBars					== null) return;
 			if (osm.Order.Alert.DataSource_fromBars.BrokerAdapter	== null) return;
 			BrokerAdapter broker = osm.Order.Alert.DataSource_fromBars.BrokerAdapter;

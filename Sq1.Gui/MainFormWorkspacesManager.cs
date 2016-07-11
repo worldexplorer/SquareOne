@@ -35,7 +35,7 @@ namespace Sq1.Gui {
 		
 		void rescanFolders_BuildWorkspacesMenuItemsWithHandlersFromRepository() {
 			foreach (ToolStripMenuItem mni in this.workspaceMenuItemsWithHandlers) {
-				mni.Click -= new EventHandler(mniWorkspaceLoad_Click);
+				mni.Click -= new EventHandler(this.mniWorkspaceLoad_Click);
 			}
 			this.workspaceMenuItemsWithHandlers.Clear();
 			this.repository.RescanFoldersAndSort();
@@ -43,9 +43,10 @@ namespace Sq1.Gui {
 				var mni = new ToolStripMenuItem();
 				mni.Text = workspace;
 				mni.Name = MainFormWorkspacesManager.prefix + workspace; 
-				mni.Click += new EventHandler(mniWorkspaceLoad_Click);
+				mni.Click += new EventHandler(this.mniWorkspaceLoad_Click);
 				mni.CheckOnClick = true;
-				mni.DropDownOpening += new EventHandler(mniWorkspaceItem_DropDownOpening);
+				mni.DropDownOpening += new EventHandler(this.mniWorkspaceItem_DropDownOpening);
+				mni.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { new ToolStripMenuItem("WILL_BE_CLEARED_IN_this.mniWorkspaceItem_DropDownOpening()__JUST_ADDS_A_TRIANGLE") });
 				this.workspaceMenuItemsWithHandlers.Add(mni);
 			}
 		}

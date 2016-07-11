@@ -42,6 +42,9 @@ namespace Sq1.Core.Livesim {
 			} else if (whatIchecked == this.cbx_ClearExecutionExceptions) {
 				this.livesimBrokerSettings.ClearExecutionExceptions = whatIchecked.Checked;
 
+			} else if (whatIchecked == this.cbx_OrderSickEnabled) {
+				this.livesimBrokerSettings.OrderSickEnabled = whatIchecked.Checked;
+
 			} else {
 				Assembler.PopupException("ADD_TARGET_FOR_CLICK_PROPAGATION_FOR_whatIchecked[" + whatIchecked.Name + "]");
 			}
@@ -80,6 +83,7 @@ namespace Sq1.Core.Livesim {
 
 			} else if (whereItyped == this.txt_DelayBeforeFillMillisMax) {
 				this.livesimBrokerSettings.DelayBeforeFillMillisMax = parsedInt;
+
 
 			} else if (whereItyped == this.txt_OrderRejectionHappensOncePerXordersMin) {
 				this.livesimBrokerSettings.OrderRejectionHappensOncePerXordersMin = parsedInt;
@@ -174,6 +178,14 @@ namespace Sq1.Core.Livesim {
 
 			} else if (whereItyped == this.txt_AdapterDisconnectReconnectsAfterMillisMax) {
 				this.livesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMax = parsedInt;
+
+
+			} else if (whereItyped == this.txt_OrderSickHappensOncePerXordersMin) {
+				this.livesimBrokerSettings.OrderSickHappensOncePerXordersMin = parsedInt;
+
+			} else if (whereItyped == this.txt_OrderSickHappensOncePerXordersMax) {
+				this.livesimBrokerSettings.OrderSickHappensOncePerXordersMax = parsedInt;
+
 
 			} else {
 				Assembler.PopupException("ADD_TARGET_FOR_TYPING_PROPAGATION_FOR whereItyped[" + whereItyped.Text + "]/[" + whereItyped.Name + "]");

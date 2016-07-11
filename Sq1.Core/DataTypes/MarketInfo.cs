@@ -90,6 +90,7 @@ namespace Sq1.Core.DataTypes {
 					this.MarketOpen_serverTime.Hour, this.MarketOpen_serverTime.Minute, 0);
 				return dateTimeServer;
 			} }
+		
 		public bool IsTradeableDayServerTime(DateTime dateServer) {
 			bool isHoliday = this.isHoliday(dateServer);
 			bool isDayOfWeekOpen = this.isTradeableDayOfWeek(dateServer);
@@ -608,5 +609,117 @@ namespace Sq1.Core.DataTypes {
 			return this.GetReason_ifMarket_closedOrSuspended_at(serverTime_plusSeconds);
 		}
 
+		public string FixPotentialErrors(bool popup = false) {
+			string fixes = "";
+			this.trimHolidaysToYMD();
+
+			int clearingTimespans_swapped = this.clearingTimespans_swapSuspendResume();
+			if (clearingTimespans_swapped > 0) fixes += "clearingTimespans_swapped[" + clearingTimespans_swapped + "] ";
+
+			this.clearingTimespans_sortBySuspendTime();
+
+			fixes += this.clearingTimespans_adjustEachIfOutsideOpenClose();
+			fixes += this.clearingTimespans_rewindResume_ifOverlapping_afterSorting();
+			if (string.IsNullOrEmpty(fixes)) return fixes;
+			if (popup == false) return fixes;
+			Assembler.PopupException("FIXED: " + fixes + " //marketInfo[" + this + "]");
+
+			return fixes;
+		}
+		void trimHolidaysToYMD() {
+			if (this.HolidaysYMD000 == null) return;
+			if (this.HolidaysYMD000.Count == 0) return;
+			List<DateTime> holidaysTrimmed = new List<DateTime>();
+			foreach (DateTime holidayToTrim in this.HolidaysYMD000) {
+				holidaysTrimmed.Add(holidayToTrim.Date);
+			}
+			this.HolidaysYMD000 = holidaysTrimmed;
+		}
+		int clearingTimespans_swapSuspendResume() {
+			int ret = 0;
+			foreach (MarketClearingTimespan clearing in this.ClearingTimespans) {
+				if (clearing.SuspendServerTimeOfDay < clearing.ResumeServerTimeOfDay) continue;
+				DateTime tmp = clearing.SuspendServerTimeOfDay;
+				clearing.SuspendServerTimeOfDay = clearing.ResumeServerTimeOfDay;
+				clearing.ResumeServerTimeOfDay = tmp;
+				ret++;
+			}
+			return ret;
+		}
+		string clearingTimespans_adjustEachIfOutsideOpenClose() {
+			string ret = "";
+			if (this.ClearingTimespans == null) return ret;
+			if (this.ClearingTimespans.Count == 0) return ret;
+
+			foreach (MarketClearingTimespan clearing in this.ClearingTimespans) {
+				if (clearing.SuspendServerTimeOfDay.TimeOfDay < this.MarketOpen_serverTime.TimeOfDay) {
+					ret += "SUSPEND_MOVED_FORWARD_TO_MARKET_OPEN["
+						+ clearing.SuspendServerTimeOfDay.TimeOfDay + "]=>["
+						+ this.MarketOpen_serverTime.TimeOfDay + "]";
+					clearing.SuspendServerTimeOfDay = this.MarketOpen_serverTime;
+				}
+				if (clearing.ResumeServerTimeOfDay.TimeOfDay < this.MarketOpen_serverTime.TimeOfDay) {
+					ret += " RESUME_MOVED_FORWARD_TO_MARKET_OPEN["
+						+ clearing.ResumeServerTimeOfDay.TimeOfDay + "]=>["
+						+ this.MarketOpen_serverTime.TimeOfDay + "]";
+					clearing.ResumeServerTimeOfDay = this.MarketOpen_serverTime;
+				}
+				if (clearing.SuspendServerTimeOfDay.TimeOfDay > this.MarketClose_serverTime.TimeOfDay) {
+					ret += " SUSPEND_MOVED_BACKWARD_TO_MARKET_CLOSE["
+						+ clearing.SuspendServerTimeOfDay.TimeOfDay + "]=>["
+						+ this.MarketClose_serverTime.TimeOfDay + "]";
+					clearing.SuspendServerTimeOfDay = this.MarketClose_serverTime;
+				}
+				if (clearing.ResumeServerTimeOfDay.TimeOfDay > this.MarketClose_serverTime.TimeOfDay) {
+					ret += " RESUME_MOVED_BACKWARD_TO_MARKET_CLOSE["
+						+ clearing.ResumeServerTimeOfDay.TimeOfDay + "]=>["
+						+ this.MarketClose_serverTime.TimeOfDay + "]";
+					clearing.ResumeServerTimeOfDay = this.MarketClose_serverTime;
+				}
+			}
+			return ret;
+		}
+		int clearingTimespans_sortBySuspendTime() {
+			int ret = 0;	// number of swap operations?... lazy to implement sorting algos with tracking, using SortedDictionary
+			SortedDictionary<DateTime, MarketClearingTimespan> clearing_bySuspendTime = new SortedDictionary<DateTime,MarketClearingTimespan>();
+			foreach (MarketClearingTimespan clearing in this.ClearingTimespans) {
+				clearing_bySuspendTime.Add(clearing.SuspendServerTimeOfDay, clearing);
+			}
+			this.ClearingTimespans.Clear();									// same list object
+			this.ClearingTimespans.AddRange(clearing_bySuspendTime.Values);	// same pointers inside, just sorted
+			return ret;
+		}
+		string clearingTimespans_rewindResume_ifOverlapping_afterSorting() {
+			string ret = "";
+			DateTime mustAlwaysIncrease = DateTime.MinValue;
+			//v1 fastForwardNext_ifOverlapping
+			// 10:00 - 14:02		10:00 - 14:02
+			// 11:30 - 16:10		14:02 - 16:10
+			// 12:05 - 12:05		16:10 - 16:10
+
+			//v2 rewindResume_ifOverlapping
+			// 10:00 - 14:02		10:00 - 11:30
+			// 11:30 - 16:10		11:30 - 12:05
+			// 12:05 - 12:05		12:05 - 12:05
+			
+			//v3 no this is too crazy
+			return ret;
+
+
+			foreach (MarketClearingTimespan clearing in this.ClearingTimespans) {
+				if (mustAlwaysIncrease < clearing.SuspendServerTimeOfDay) {
+					mustAlwaysIncrease = clearing.SuspendServerTimeOfDay;
+				}
+				if (mustAlwaysIncrease > clearing.ResumeServerTimeOfDay) {
+					clearingTimespans_swapSuspendResume();
+					if (mustAlwaysIncrease > clearing.ResumeServerTimeOfDay) {
+						string msg = "FIXME_CANT_CONTINUE__clearingTimespans_swapSuspendResume()__DIDNT_SWAP mustAlwaysIncrease > clearing.ResumeServerTimeOfDay";
+						Assembler.PopupException(msg);
+						return msg;
+					}
+				}
+			}
+			return ret;
+		}
 	}
 }

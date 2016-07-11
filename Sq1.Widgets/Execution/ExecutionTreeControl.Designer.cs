@@ -84,11 +84,13 @@ namespace Sq1.Widgets.Execution {
 			this.mniToggleMessagesPane = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniToggleMessagesPaneSplitHorizontally = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniToggleSyncWithChart = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniToggleKillerOrders = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniToggleColorifyOrdersTree = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniToggleColorifyMessages = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniRemoveSeleted = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniDeleteAllLogrotatedOrderJsons = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniExpandAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniCollapseAll = new System.Windows.Forms.ToolStripMenuItem();
@@ -419,6 +421,7 @@ namespace Sq1.Widgets.Execution {
             this.mniToggles,
             this.toolStripSeparator1,
             this.mniRemoveSeleted,
+            this.mniDeleteAllLogrotatedOrderJsons,
             this.toolStripSeparator2,
             this.mniExpandAll,
             this.mniCollapseAll,
@@ -427,7 +430,7 @@ namespace Sq1.Widgets.Execution {
             this.mniltbSerializationInterval,
             this.mniSerializeNow});
 			this.ctxOrder.Name = "popupOrders";
-			this.ctxOrder.Size = new System.Drawing.Size(387, 498);
+			this.ctxOrder.Size = new System.Drawing.Size(420, 520);
 			this.ctxOrder.Opening += new System.ComponentModel.CancelEventHandler(this.ctxOrder_Opening);
 			// 
 			// mniPosition_info
@@ -435,7 +438,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniPosition_info.Enabled = false;
 			this.mniPosition_info.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.mniPosition_info.Name = "mniPosition_info";
-			this.mniPosition_info.Size = new System.Drawing.Size(386, 22);
+			this.mniPosition_info.Size = new System.Drawing.Size(419, 22);
 			this.mniPosition_info.Text = "Position: BLA BLA BLA";
 			// 
 			// mniExitAlert_info
@@ -443,59 +446,59 @@ namespace Sq1.Widgets.Execution {
 			this.mniExitAlert_info.Enabled = false;
 			this.mniExitAlert_info.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.mniExitAlert_info.Name = "mniExitAlert_info";
-			this.mniExitAlert_info.Size = new System.Drawing.Size(386, 22);
+			this.mniExitAlert_info.Size = new System.Drawing.Size(419, 22);
 			this.mniExitAlert_info.Text = "ExitAlert: BLA BLA BLA";
 			// 
 			// mniOrderPositionClose
 			// 
 			this.mniOrderPositionClose.Name = "mniOrderPositionClose";
-			this.mniOrderPositionClose.Size = new System.Drawing.Size(386, 22);
+			this.mniOrderPositionClose.Size = new System.Drawing.Size(419, 22);
 			this.mniOrderPositionClose.Text = "Close Position";
 			this.mniOrderPositionClose.Click += new System.EventHandler(this.mniClosePosition_Click);
 			// 
 			// mniOrderAlert_removeFromPending
 			// 
 			this.mniOrderAlert_removeFromPending.Name = "mniOrderAlert_removeFromPending";
-			this.mniOrderAlert_removeFromPending.Size = new System.Drawing.Size(386, 22);
+			this.mniOrderAlert_removeFromPending.Size = new System.Drawing.Size(419, 22);
 			this.mniOrderAlert_removeFromPending.Text = "Remove from PendingAlerts (if Order Processor failed)";
 			this.mniOrderAlert_removeFromPending.Click += new System.EventHandler(this.mniRemoveFromPendingAlerts_Click);
 			// 
 			// toolStripSeparator5
 			// 
 			this.toolStripSeparator5.Name = "toolStripSeparator5";
-			this.toolStripSeparator5.Size = new System.Drawing.Size(383, 6);
+			this.toolStripSeparator5.Size = new System.Drawing.Size(416, 6);
 			// 
 			// mniKillPendingSelected
 			// 
 			this.mniKillPendingSelected.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.mniKillPendingSelected.Name = "mniKillPendingSelected";
-			this.mniKillPendingSelected.Size = new System.Drawing.Size(386, 22);
-			this.mniKillPendingSelected.Text = "Kill Pending Selected, Continue Emitting    [Double Click]";
+			this.mniKillPendingSelected.Size = new System.Drawing.Size(419, 22);
+			this.mniKillPendingSelected.Text = "Kill Pending Selected[1],        Continue Emitting    [Double Click]";
 			this.mniKillPendingSelected.Click += new System.EventHandler(this.mniKillPendingSelected_Click);
 			// 
 			// mniKillPendingAll
 			// 
 			this.mniKillPendingAll.Name = "mniKillPendingAll";
-			this.mniKillPendingAll.Size = new System.Drawing.Size(386, 22);
-			this.mniKillPendingAll.Text = "Kill Pending All,             Continue Emitting";
+			this.mniKillPendingAll.Size = new System.Drawing.Size(419, 22);
+			this.mniKillPendingAll.Text = "Kill Pending AllForStrat[0],      Continue Emitting";
 			this.mniKillPendingAll.Click += new System.EventHandler(this.mniKillPendingAll_Click);
 			// 
 			// mniKillPendingAll_stopEmitting
 			// 
 			this.mniKillPendingAll_stopEmitting.Name = "mniKillPendingAll_stopEmitting";
-			this.mniKillPendingAll_stopEmitting.Size = new System.Drawing.Size(386, 22);
-			this.mniKillPendingAll_stopEmitting.Text = "Kill Pending All,             Stop Emitting - PANIC";
+			this.mniKillPendingAll_stopEmitting.Size = new System.Drawing.Size(419, 22);
+			this.mniKillPendingAll_stopEmitting.Text = "Kill Pending AllForStrat[0],              Stop Emitting - PANIC";
 			this.mniKillPendingAll_stopEmitting.Click += new System.EventHandler(this.mniKillPendingAll_stopEmitting_Click);
 			// 
 			// sepCancel
 			// 
 			this.sepCancel.Name = "sepCancel";
-			this.sepCancel.Size = new System.Drawing.Size(383, 6);
+			this.sepCancel.Size = new System.Drawing.Size(416, 6);
 			// 
 			// mniOrderReplace
 			// 
 			this.mniOrderReplace.Name = "mniOrderReplace";
-			this.mniOrderReplace.Size = new System.Drawing.Size(386, 22);
+			this.mniOrderReplace.Size = new System.Drawing.Size(419, 22);
 			this.mniOrderReplace.Text = "Replace NYI";
 			this.mniOrderReplace.Visible = false;
 			this.mniOrderReplace.Click += new System.EventHandler(this.mniOrderReplace_Click);
@@ -503,7 +506,7 @@ namespace Sq1.Widgets.Execution {
 			// mniStopEmergencyClose
 			// 
 			this.mniStopEmergencyClose.Name = "mniStopEmergencyClose";
-			this.mniStopEmergencyClose.Size = new System.Drawing.Size(386, 22);
+			this.mniStopEmergencyClose.Size = new System.Drawing.Size(419, 22);
 			this.mniStopEmergencyClose.Text = "Stop Emergency Close";
 			this.mniStopEmergencyClose.Visible = false;
 			this.mniStopEmergencyClose.Click += new System.EventHandler(this.mniEmergencyLockRemove_Click);
@@ -511,14 +514,14 @@ namespace Sq1.Widgets.Execution {
 			// toolStripSeparator3
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(383, 6);
+			this.toolStripSeparator3.Size = new System.Drawing.Size(416, 6);
 			this.toolStripSeparator3.Visible = false;
 			// 
 			// mniFilterColumns
 			// 
 			this.mniFilterColumns.DropDown = this.ctxColumnsGrouped;
 			this.mniFilterColumns.Name = "mniFilterColumns";
-			this.mniFilterColumns.Size = new System.Drawing.Size(386, 22);
+			this.mniFilterColumns.Size = new System.Drawing.Size(419, 22);
 			this.mniFilterColumns.Text = "Filter Columns";
 			// 
 			// ctxColumnsGrouped
@@ -615,7 +618,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniFilterOrderStates.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem4});
 			this.mniFilterOrderStates.Name = "mniFilterOrderStates";
-			this.mniFilterOrderStates.Size = new System.Drawing.Size(386, 22);
+			this.mniFilterOrderStates.Size = new System.Drawing.Size(419, 22);
 			this.mniFilterOrderStates.Text = "Filter Order States";
 			this.mniFilterOrderStates.Visible = false;
 			// 
@@ -629,7 +632,7 @@ namespace Sq1.Widgets.Execution {
 			// 
 			this.mniFilterAccounts.DropDown = this.ctxAccounts;
 			this.mniFilterAccounts.Name = "mniFilterAccounts";
-			this.mniFilterAccounts.Size = new System.Drawing.Size(386, 22);
+			this.mniFilterAccounts.Size = new System.Drawing.Size(419, 22);
 			this.mniFilterAccounts.Text = "Filter Accounts";
 			// 
 			// ctxAccounts
@@ -643,7 +646,7 @@ namespace Sq1.Widgets.Execution {
 			// 
 			this.mniToggles.DropDown = this.ctxToggles;
 			this.mniToggles.Name = "mniToggles";
-			this.mniToggles.Size = new System.Drawing.Size(386, 22);
+			this.mniToggles.Size = new System.Drawing.Size(419, 22);
 			this.mniToggles.Text = "Toggles";
 			// 
 			// ctxToggles
@@ -655,12 +658,13 @@ namespace Sq1.Widgets.Execution {
             this.mniToggleMessagesPane,
             this.mniToggleMessagesPaneSplitHorizontally,
             this.mniToggleSyncWithChart,
+            this.mniToggleKillerOrders,
             this.toolStripSeparator4,
             this.mniToggleColorifyOrdersTree,
             this.mniToggleColorifyMessages});
 			this.ctxToggles.Name = "ctxToggles";
 			this.ctxToggles.OwnerItem = this.mniToggles;
-			this.ctxToggles.Size = new System.Drawing.Size(349, 186);
+			this.ctxToggles.Size = new System.Drawing.Size(349, 208);
 			// 
 			// mniRecentAlwaysSelected
 			// 
@@ -710,6 +714,14 @@ namespace Sq1.Widgets.Execution {
 			this.mniToggleSyncWithChart.Text = "Show PositionAffected On Chart";
 			this.mniToggleSyncWithChart.Click += new System.EventHandler(this.mniToggleSyncWithChart_Click);
 			// 
+			// mniToggleKillerOrders
+			// 
+			this.mniToggleKillerOrders.CheckOnClick = true;
+			this.mniToggleKillerOrders.Name = "mniToggleKillerOrders";
+			this.mniToggleKillerOrders.Size = new System.Drawing.Size(348, 22);
+			this.mniToggleKillerOrders.Text = "Show KILLER orders";
+			this.mniToggleKillerOrders.Click += new System.EventHandler(this.mniToggleKillerOrders_click);
+			// 
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
@@ -734,26 +746,33 @@ namespace Sq1.Widgets.Execution {
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(383, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(416, 6);
 			// 
 			// mniRemoveSeleted
 			// 
 			this.mniRemoveSeleted.Name = "mniRemoveSeleted";
 			this.mniRemoveSeleted.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.mniRemoveSeleted.Size = new System.Drawing.Size(386, 22);
+			this.mniRemoveSeleted.Size = new System.Drawing.Size(419, 22);
 			this.mniRemoveSeleted.Text = "Remove Selected Non-Pending";
 			this.mniRemoveSeleted.Click += new System.EventHandler(this.mniOrdersRemoveSelected_Click);
+			// 
+			// mniDeleteAllLogrotatedOrderJsons
+			// 
+			this.mniDeleteAllLogrotatedOrderJsons.Name = "mniDeleteAllLogrotatedOrderJsons";
+			this.mniDeleteAllLogrotatedOrderJsons.Size = new System.Drawing.Size(419, 22);
+			this.mniDeleteAllLogrotatedOrderJsons.Text = "Delete All[x] logrotated Order*.json";
+			this.mniDeleteAllLogrotatedOrderJsons.Click += new System.EventHandler(this.mniDeleteAllLogrotatedJsons_Click);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(383, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(416, 6);
 			// 
 			// mniExpandAll
 			// 
 			this.mniExpandAll.Name = "mniExpandAll";
 			this.mniExpandAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
-			this.mniExpandAll.Size = new System.Drawing.Size(386, 22);
+			this.mniExpandAll.Size = new System.Drawing.Size(419, 22);
 			this.mniExpandAll.Text = "Expand All";
 			this.mniExpandAll.Click += new System.EventHandler(this.mniTreeExpandAll_Click);
 			// 
@@ -761,7 +780,7 @@ namespace Sq1.Widgets.Execution {
 			// 
 			this.mniCollapseAll.Name = "mniCollapseAll";
 			this.mniCollapseAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
-			this.mniCollapseAll.Size = new System.Drawing.Size(386, 22);
+			this.mniCollapseAll.Size = new System.Drawing.Size(419, 22);
 			this.mniCollapseAll.Text = "Collapse All";
 			this.mniCollapseAll.Click += new System.EventHandler(this.mniTreeCollapseAll_Click);
 			// 
@@ -769,7 +788,7 @@ namespace Sq1.Widgets.Execution {
 			// 
 			this.mniRebuildAll.Name = "mniRebuildAll";
 			this.mniRebuildAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.R)));
-			this.mniRebuildAll.Size = new System.Drawing.Size(386, 22);
+			this.mniRebuildAll.Size = new System.Drawing.Size(419, 22);
 			this.mniRebuildAll.Text = "Rebuild All";
 			this.mniRebuildAll.Click += new System.EventHandler(this.mniTreeRebuildAll_Click);
 			// 
@@ -821,7 +840,7 @@ namespace Sq1.Widgets.Execution {
 			// mniSerializeNow
 			// 
 			this.mniSerializeNow.Name = "mniSerializeNow";
-			this.mniSerializeNow.Size = new System.Drawing.Size(386, 22);
+			this.mniSerializeNow.Size = new System.Drawing.Size(419, 22);
 			this.mniSerializeNow.Text = "Serialize now";
 			this.mniSerializeNow.Click += new System.EventHandler(this.mniSerializeNow_Click);
 			// 
@@ -1009,5 +1028,7 @@ namespace Sq1.Widgets.Execution {
 		private ToolStripSeparator toolStripSeparator5;
 		private BrightIdeasSoftware.OLVColumn olvcSlippageFilled;
 		private ToolStripMenuItem mniRecentAlwaysSelected;
+		private ToolStripMenuItem mniToggleKillerOrders;
+		private ToolStripMenuItem mniDeleteAllLogrotatedOrderJsons;
 	}
 }

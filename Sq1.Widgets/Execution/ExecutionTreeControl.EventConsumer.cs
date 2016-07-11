@@ -10,6 +10,7 @@ using Sq1.Core;
 using Sq1.Core.Execution;
 using Sq1.Core.Serializers;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Broker;
 
 using Sq1.Widgets.LabeledTextBox;
 
@@ -124,11 +125,18 @@ namespace Sq1.Widgets.Execution {
 				this.ctxToggles.Show();
 			}
 		}
+
+		bool splitterDistance_ignoreDueToChangeOrientation = false;
 		void mniToggleMessagesPaneSplitHorizontally_Click(object sender, EventArgs e) {
 			try {
 				Orientation newOrientation = this.mniToggleMessagesPaneSplitHorizontally.Checked
 						? Orientation.Horizontal : Orientation.Vertical;
+
+				this.splitterDistance_ignoreDueToChangeOrientation = true;
 				this.splitContainerMessagePane.Orientation = newOrientation;
+				this.splitContainerMessagePane_populate_splitterDistance_forOrientation();
+				this.splitterDistance_ignoreDueToChangeOrientation = false;
+
 				this.dataSnapshot.ShowMessagePaneSplittedHorizontally = this.mniToggleMessagesPaneSplitHorizontally.Checked;
 				this.dataSnapshotSerializer.Serialize();
 			} catch (Exception ex) {
@@ -173,6 +181,18 @@ namespace Sq1.Widgets.Execution {
 				this.RebuildAllTree_focusOnRecent();
 			} catch (Exception ex) {
 				Assembler.PopupException(" //mniToggleColorifyMessages_Click", ex);
+			} finally {
+				this.ctxToggles.Show();
+			}
+		}
+
+		void mniToggleKillerOrders_click(object sender, EventArgs e) {
+			try {
+				this.dataSnapshot.ShowKillerOrders = this.mniToggleKillerOrders.Checked;
+				this.dataSnapshotSerializer.Serialize();
+				this.RebuildAllTree_focusOnRecent();
+			} catch (Exception ex) {
+				Assembler.PopupException(" //mniToggleKillerOrders_click", ex);
 			} finally {
 				this.ctxToggles.Show();
 			}
@@ -223,6 +243,18 @@ namespace Sq1.Widgets.Execution {
 				//this.ctxOrder.Show();
 			}
 		}
+		void mniDeleteAllLogrotatedJsons_Click(object sender, EventArgs e) {
+			try {
+				OrderProcessorDataSnapshot snap = Assembler.InstanceInitialized.OrderProcessor.DataSnapshot;
+				snap.SerializerLogrotateOrders.FindAndDelete_allLogrotatedFiles_butNotMainJson();
+			} catch (Exception ex) {
+				Assembler.PopupException(" //mniDeleteAllLogrotatedJsons_Click", ex);
+			} finally {
+				this.ctxOrder.Show();
+			}
+		}
+
+
 		void olvOrdersTree_KeyDown(object sender, KeyEventArgs e) {
 			// .Del is already assigned to mniRemoveSelectedPending in .Designer.cs
 			//if (e.KeyCode == Keys.Delete) {
@@ -264,8 +296,9 @@ namespace Sq1.Widgets.Execution {
 		void mniKillPendingSelected_Click(object sender, EventArgs e) {
 			string msig = " //mniOrderKill_Click";
 			try {
-				if (this.ordersSelected.Count == 0) return;
-				Assembler.InstanceInitialized.OrderProcessor.GuiClick_killPendingSelected(this.ordersSelected);
+				List<Order> selectedKillable = this.OrdersSelected_killable_unfilled;
+				if (selectedKillable.Count == 0) return;
+				Assembler.InstanceInitialized.OrderProcessor.GuiClick_killPendingSelected(selectedKillable);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			} finally {
@@ -363,16 +396,17 @@ namespace Sq1.Widgets.Execution {
 			//}
 			//v3 NOT_UNDER_WINDOWS if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) return;
 			//Debugger.Break();
+			if (this.splitterDistance_ignoreDueToChangeOrientation) return;
 			if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
 				//if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal == e.SplitY) return;
 				//this.DataSnapshot.MessagePaneSplitDistanceHorizontal = e.SplitY;
-				if (this.dataSnapshot.MessagePaneSplitDistanceHorizontal == this.splitContainerMessagePane.SplitterDistance) return;
-					this.dataSnapshot.MessagePaneSplitDistanceHorizontal =  this.splitContainerMessagePane.SplitterDistance;
+				if (this.dataSnapshot.MessagePane_splitDistance_horizontal == this.splitContainerMessagePane.SplitterDistance) return;
+					this.dataSnapshot.MessagePane_splitDistance_horizontal =  this.splitContainerMessagePane.SplitterDistance;
 			} else {
 				//if (this.DataSnapshot.MessagePaneSplitDistanceVertical == e.SplitX) return;
 				//this.DataSnapshot.MessagePaneSplitDistanceVertical = e.SplitX;
-				if (this.dataSnapshot.MessagePaneSplitDistanceVertical == this.splitContainerMessagePane.SplitterDistance) return;
-					this.dataSnapshot.MessagePaneSplitDistanceVertical =  this.splitContainerMessagePane.SplitterDistance;
+				if (this.dataSnapshot.MessagePane_splitDistance_vertical == this.splitContainerMessagePane.SplitterDistance) return;
+					this.dataSnapshot.MessagePane_splitDistance_vertical =  this.splitContainerMessagePane.SplitterDistance;
 			}
 			this.dataSnapshotSerializer.Serialize();
 		}
@@ -415,6 +449,7 @@ namespace Sq1.Widgets.Execution {
 
 		void ctxOrder_Opening(object sender, CancelEventArgs e) {
 			bool strategy_hasPendingAlerts = false;
+			bool orderClicked_hasPendingAlert = false;
 			string mniOrderAlert_removeFromPending_text = "Remove from PendingAlerts (NO_PENDING__FOR_DESERIALIZED_ORDER)";
 
 			bool orderOrReplacement_hasPositionOpen = false;
@@ -423,6 +458,8 @@ namespace Sq1.Widgets.Execution {
 			string mniPosition_info_text = "NO_POSITION_OPEN EntryAlert notYetFilled";
 			string mniExitAlert_info_text = "NO_ExitAlert_YET";
 
+			int pendingAlertsFound_inExecutorDataSnap_forAlertClicked = 0;
+
 			Order orderRightClicked = this.olvOrdersTree.SelectedObject as Order;
 			if (orderRightClicked != null) {
 				Alert alertClicked = orderRightClicked.Alert;
@@ -430,12 +467,20 @@ namespace Sq1.Widgets.Execution {
 					mniOrderPositionClose_text				= alertClicked.ExecutionControl_PositionClose_knowHow;
 					mniOrderAlert_removeFromPending_text	= alertClicked.ExecutionControl_AlertsPendingClear_knowHow;
 
+					pendingAlertsFound_inExecutorDataSnap_forAlertClicked = alertClicked.PendingFound_inMyExecutorsDataSnap;
+					strategy_hasPendingAlerts				= true;
+
 					if (alertClicked.PositionAffected != null) {
 						Position pos = alertClicked.PositionAffected;
 						mniPosition_info_text = pos.ToString();
 
 						if (pos.ExitAlert != null) {
-							mniExitAlert_info_text= alertClicked.PositionAffected.ExitAlert.ToString();
+							mniExitAlert_info_text = pos.ExitAlert.ToString();
+							if (pos.IsExitFilled == false) {
+								orderOrReplacement_hasPositionOpen = true;
+							}
+						} else {
+							orderOrReplacement_hasPositionOpen = true;
 						}
 					}
 				}
@@ -447,18 +492,75 @@ namespace Sq1.Widgets.Execution {
 			this.mniOrderPositionClose			.Text	 = mniOrderPositionClose_text;
 
 			this.mniKillPendingSelected			.Enabled = strategy_hasPendingAlerts;
-			this.mniKillPendingAll_stopEmitting	.Enabled = strategy_hasPendingAlerts;
-			this.mniKillPendingAll				.Enabled = strategy_hasPendingAlerts;
 
 			this.mniPosition_info	.Text = "POSITION    "		+ mniPosition_info_text;
 			this.mniExitAlert_info	.Text = "ExitAlert      "	+ mniExitAlert_info_text;
+
+
+			//DO_YOU_WANT_TO_STOP_EMITTING_EVERY_STRATEGY??? int pendingAllCount = this.orderProcessor_forToStringOnly.DataSnapshot.OrdersPending.Count;
+
+			this.mniKillPendingAll				.Enabled	= pendingAlertsFound_inExecutorDataSnap_forAlertClicked > 0;
+			this.mniKillPendingAll				.Text		= "Kill Pending AllForAllStrat[" + pendingAlertsFound_inExecutorDataSnap_forAlertClicked + "],  Continue Emitting";
+			this.mniKillPendingAll_stopEmitting	.Enabled	= pendingAlertsFound_inExecutorDataSnap_forAlertClicked > 0;
+			this.mniKillPendingAll_stopEmitting	.Text		= "Kill Pending AllForAllStrat[" + pendingAlertsFound_inExecutorDataSnap_forAlertClicked + "],  Stop Emitting - PANIC";
+
+			int selectedKillable = this.OrdersSelected_killable_unfilled.Count;
+			this.mniKillPendingSelected			.Enabled	= selectedKillable > 0;
+			this.mniKillPendingSelected			.Text		= "Kill Pending Selected[" + selectedKillable + "],        Continue Emitting    [Double Click]";
+
+			SerializerLogrotatePeriodic<Order> logrotator = Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders;
+			int logrotates = logrotator.AllLogrotatedAbsFnames_butNotMainJson_scanned.Count;
+			this.mniDeleteAllLogrotatedOrderJsons.Text		= "Delete All[" + logrotates + "] logrotated Order*.json";
+			this.mniDeleteAllLogrotatedOrderJsons.Enabled	= logrotates > 0;
+
 		}
 
 		void mniClosePosition_Click(object sender, EventArgs e) {
-
+			string msig = " //mniClosePosition_Click()";
+			Order orderRightClicked = this.olvOrdersTree.SelectedObject as Order;
+			if (orderRightClicked == null) {
+				string msg = "ORDER SELECTED GOT LOST";
+				Assembler.PopupException(msg);
+				return;
+			}
+			//Alert exitPlaced = base.ExitAtMarket(barStreaming, lastPos_OpenNow_nullUnsafe, msg);
+			//Assembler.InstanceInitialized.OrderProcessor.SubmitToBroker_inNewThread_waitUntilConnected(alertClicked.OrderFollowed, msig + msg1);
 		}
 
 		void mniRemoveFromPendingAlerts_Click(object sender, EventArgs e) {
+			string msig = " //mniRemoveFromPendingAlerts_Click()";
+			Order orderRightClicked = this.olvOrdersTree.SelectedObject as Order;
+			if (orderRightClicked == null) {
+				string msg = "ORDER SELECTED GOT LOST";
+				Assembler.PopupException(msg);
+				return;
+			}
+			Alert alertClicked = orderRightClicked.Alert;
+			if (alertClicked == null) {
+				string msg = "ALERT CLICKED MUST NOT BE NULL deserialized?";
+				Assembler.PopupException(msg);
+				return;
+			}
+
+
+		//void removePendingExitAlert_backtestEnded(Alert alert, string msig) {
+			string msg1 = "";
+			ExecutorDataSnapshot snap = alertClicked.Strategy.Script.Executor.ExecutionDataSnapshot;
+			//this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert);
+			string orderState = (alertClicked.OrderFollowed == null) ? "alert.OrderFollowed=NULL" : alertClicked.OrderFollowed.State.ToString();
+			if (snap.AlertsUnfilled.Contains(alertClicked, this, "RemovePendingExitAlert(WAIT)")) {
+				bool removed = snap.AlertsUnfilled.Remove(alertClicked, this, "RemovePendingExitAlert(WAIT)");
+				msg1 = "REMOVED " + orderState + " Pending alert[" + alertClicked + "] ";
+			} else {
+				msg1 = "CANT_BE_REMOVED " + orderState + " isn't Pending alert[" + alertClicked + "] ";
+			}
+			if (alertClicked.OrderFollowed == null) {
+				Assembler.PopupException("NONSENSE alertClicked.OrderFollowed==null " + msg1);
+				return;
+			}
+			// OrderFollowed=null when executeStrategyBacktestEntryPoint() is in the call stack
+			Assembler.InstanceInitialized.OrderProcessor.AppendMessage_propagateToGui(alertClicked.OrderFollowed, msig + msg1);
+		//}
 
 		}
 

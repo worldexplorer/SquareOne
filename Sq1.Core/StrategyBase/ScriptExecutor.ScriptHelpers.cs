@@ -130,7 +130,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 
-		public void AlertPending_kill(Alert alert) {
+		public void AlertPendingKill_appendToDoomed_willBeSubmitted_afterScriptInovcationReturned(Alert alert) {
 			string msig = " //AlertPending_kill(WAIT)";
 			bool doomedAlready = this.ExecutionDataSnapshot.AlertsDoomed.Contains(alert, this, msig);
 			if (doomedAlready) {
@@ -206,7 +206,7 @@ namespace Sq1.Core.StrategyBase {
 				alertsSubmittedToKill = this.PositionPrototype_killWhateverIsPending(position.Prototype, signalName);
 				return alertsSubmittedToKill;
 			}
-			this.AlertPending_kill(position.ExitAlert);
+			this.AlertPendingKill_appendToDoomed_willBeSubmitted_afterScriptInovcationReturned(position.ExitAlert);
 			alertsSubmittedToKill.Add(position.ExitAlert);
 			return alertsSubmittedToKill;
 		}
@@ -214,11 +214,11 @@ namespace Sq1.Core.StrategyBase {
 		public List<Alert> PositionPrototype_killWhateverIsPending(PositionPrototype proto, string signalName) {
 			List<Alert> alertsSubmittedToKill = new List<Alert>();
 			if (proto.StopLossAlert_forMoveAndAnnihilation != null) {
-				this.AlertPending_kill(proto.StopLossAlert_forMoveAndAnnihilation);
+				this.AlertPendingKill_appendToDoomed_willBeSubmitted_afterScriptInovcationReturned(proto.StopLossAlert_forMoveAndAnnihilation);
 				alertsSubmittedToKill.Add(proto.StopLossAlert_forMoveAndAnnihilation);
 			}
 			if (proto.TakeProfitAlert_forMoveAndAnnihilation != null) {
-				this.AlertPending_kill(proto.TakeProfitAlert_forMoveAndAnnihilation);
+				this.AlertPendingKill_appendToDoomed_willBeSubmitted_afterScriptInovcationReturned(proto.TakeProfitAlert_forMoveAndAnnihilation);
 				alertsSubmittedToKill.Add(proto.TakeProfitAlert_forMoveAndAnnihilation);
 			}
 			return alertsSubmittedToKill;

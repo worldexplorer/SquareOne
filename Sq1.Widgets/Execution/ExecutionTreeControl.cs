@@ -93,28 +93,7 @@ namespace Sq1.Widgets.Execution {
 						Assembler.PopupException(msg);
 					}
 				} else {
-					try {
-						if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
-							if (this.dataSnapshot.MessagePaneSplitDistanceHorizontal > 0) {
-								string msg = "+67_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_HORIZONTAL";
-								int newDistance = this.dataSnapshot.MessagePaneSplitDistanceHorizontal;	// + 67 this.splitContainerMessagePane.SplitterWidth;
-								if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
-									this.splitContainerMessagePane.SplitterDistance  = newDistance;
-								}
-							}
-						} else {
-							if (this.dataSnapshot.MessagePaneSplitDistanceVertical > 0) {
-								string msg = "+151_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_VERTICAL";
-								int newDistance = this.dataSnapshot.MessagePaneSplitDistanceVertical;		// + 151 this.splitContainerMessagePane.SplitterWidth;
-								if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
-									this.splitContainerMessagePane.SplitterDistance  = newDistance;
-								}
-							}
-						}
-					} catch (Exception ex) {
-						string msg = "TRYING_TO_LOCALIZE_SPLITTER_MUST_BE_BETWEEN_0_AND_PANEL_MIN";
-						Assembler.PopupException(msg, ex);
-					}
+					this.splitContainerMessagePane_populate_splitterDistance_forOrientation();
 				}
 				//late binding prevents SplitterMoved() induced by DockContent layouting LoadAsXml()ed docked forms
 				//unbinding just in case, to avoid double handling in case of multiple PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized()
@@ -130,11 +109,37 @@ namespace Sq1.Widgets.Execution {
 			this.mniToggleSyncWithChart			.Checked = this.dataSnapshot.SingleClickSyncWithChart;
 			this.mniToggleColorifyOrdersTree	.Checked = this.dataSnapshot.ColorifyOrderTree_positionNet;
 			this.mniToggleColorifyMessages		.Checked = this.dataSnapshot.ColorifyMessages_askBrokerProvider;
+			this.mniToggleKillerOrders			.Checked = this.dataSnapshot.ShowKillerOrders;
 
 			this.olvOrdersTree_customizeColors();
 			this.olvMessages_customizeColors();
 			
 			this.RebuildAllTree_focusOnRecent();
+		}
+
+		void splitContainerMessagePane_populate_splitterDistance_forOrientation() {
+			try {
+				if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
+					if (this.dataSnapshot.MessagePane_splitDistance_horizontal > 0) {
+						string msg = "+67_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_HORIZONTAL";
+						int newDistance = this.dataSnapshot.MessagePane_splitDistance_horizontal;	// + 67 this.splitContainerMessagePane.SplitterWidth;
+						if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
+							this.splitContainerMessagePane.SplitterDistance  = newDistance;
+						}
+					}
+				} else {
+					if (this.dataSnapshot.MessagePane_splitDistance_vertical > 0) {
+						string msg = "+151_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_VERTICAL";
+						int newDistance = this.dataSnapshot.MessagePane_splitDistance_vertical;		// + 151 this.splitContainerMessagePane.SplitterWidth;
+						if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
+							this.splitContainerMessagePane.SplitterDistance  = newDistance;
+						}
+					}
+				}
+			} catch (Exception ex) {
+				string msg = "TRYING_TO_LOCALIZE_SPLITTER_MUST_BE_BETWEEN_0_AND_PANEL_MIN";
+				Assembler.PopupException(msg, ex);
+			}
 		}
 		public void InitializeWith_shadowTreeRebuilt(OrdersRootOnly ordersTree, OrderProcessor orderProcessor) {
 			this.ordersRoot = ordersTree;
@@ -339,5 +344,34 @@ namespace Sq1.Widgets.Execution {
 			OrderProcessorDataSnapshot snap = this.orderProcessor_forToStringOnly.DataSnapshot;
 			snap.OrdersRemoveRange_fromAllLanes(snap.OrdersAll.SafeCopy);
 		}
+
+		public List<Order> OrdersSelected { get {
+			List<Order> ret = new List<Order>();
+			foreach (object objectSelected in this.olvOrdersTree.SelectedObjects) {
+				Order orderSelected = objectSelected as Order;
+				if (orderSelected == null) {
+					string msg = "MUST_BE_ORDER__GOT[" + objectSelected.GetType() + "] [" + objectSelected + "]";
+					Assembler.PopupException(msg);
+					continue;
+				}
+				ret.Add(orderSelected);
+			}
+			return ret;
+		} }
+		public List<Order> OrdersSelected_killable_unfilled { get {
+			List<Order> ret = new List<Order>();
+			foreach (Order order in this.OrdersSelected) {
+				if (order.IsKiller) continue;	// for QUIK, killer is a fake order, without its own GUID=ExchangeSerno, it's a parasite on Victim's GUID=ExchangeSerno
+				bool canBeKilled = OrderStatesCollections.CanBeKilled.Contains(order.State);
+				if (canBeKilled == false) {
+					string msg = "I_REFUSE_TO_MANUAL_KILL__STATE[" + order.State + "] NOT_IN{" + OrderStatesCollections.CanBeKilled.ToString() + "}";
+					order.AppendMessage(msg);
+					Assembler.PopupException("?RIGHT_CLICK__" + msg, null, false);
+					continue;
+				}
+				ret.Add(order);
+			}
+			return ret;
+		} }
 	}
 }

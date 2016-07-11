@@ -27,7 +27,7 @@ namespace Sq1.Widgets.CsvImporter {
 			}
 		} }
 		public string LastWriteTime { get {
-			string format = Assembler.DateTimeFormatLongFilename.Replace('_', ' ');
+			string format = Assembler.DateTimeFormat_toMillisFilename.Replace('_', ' ');
 			return this.FSI.LastWriteTime.ToString(format);
 		} }
 		public bool ParsingFailedHightlightRed;

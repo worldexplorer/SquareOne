@@ -111,8 +111,11 @@ namespace Sq1.Reporters {
 			this.olvcEntryDate.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "olvcEntryDate.AspectGetter: position=null";
-				string format = (position.Bars.IsIntraday) ? "dd-MMM-yyyy HH:mm:ss" : "dd-MMM-yyyy";
-				return position.EntryDateBarTimeOpen.ToString(format);
+				//v1 string format = (position.Bars.IsIntraday) ? "dd-MMM-yyyy HH:mm:ss" : "dd-MMM-yyyy";
+				string dateFormat_entryExit = (position.Bars.IsIntraday)
+					? Assembler.DateTimeFormat_toSeconds_dayFirst
+					: Assembler.DateTimeFormat_toDays_dayFirst;
+				return position.EntryDateBarTimeOpen.ToString(dateFormat_entryExit);
 				//return position.EntryDateBarTimeOpen;
 			};
 			//this.olvcEntryDate.AspectToStringConverter = delegate(object o) {
@@ -145,9 +148,13 @@ namespace Sq1.Reporters {
 				var position = o as Position;
 				if (position == null) return "olvcExitDate.AspectGetter: position=null";
 				if (position.ExitDateBarTimeOpen == DateTime.MinValue) return "STILL_OPEN";
-				string format = (position.Bars.IsIntraday) ? "dd-MMM-yyyy HH:mm:ss" : "dd-MMM-yyyy";
-				return position.EntryDateBarTimeOpen.ToString(format);
+				//v1 string format = (position.Bars.IsIntraday) ? "dd-MMM-yyyy HH:mm:ss" : "dd-MMM-yyyy";
+				string dateFormat_entryExit = (position.Bars.IsIntraday)
+					? Assembler.DateTimeFormat_toSeconds_dayFirst
+					: Assembler.DateTimeFormat_toDays_dayFirst;
+				return position.EntryDateBarTimeOpen.ToString(dateFormat_entryExit);
 			};
+
 			this.olvcExitPrice.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "olvcExitPrice.AspectGetter: position=null";

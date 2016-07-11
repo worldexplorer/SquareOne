@@ -11,13 +11,14 @@ namespace Sq1.Widgets.Execution {
 		[JsonProperty]	public bool		ShowCompletedOrders						= true;
 		[JsonProperty]	public bool		ShowMessagesPane						= true;
 		[JsonProperty]	public bool		ShowMessagePaneSplittedHorizontally		= false;
+		[JsonProperty]	public bool		ShowKillerOrders						= true;
 		[JsonProperty]	public bool		SingleClickSyncWithChart				= false;
 
 		[JsonProperty]	public bool		ColorifyOrderTree_positionNet			= true;
 		[JsonProperty]	public bool		ColorifyMessages_askBrokerProvider		= true;
 		
-		[JsonProperty]	public int		MessagePaneSplitDistanceHorizontal		= 0;
-		[JsonProperty]	public int		MessagePaneSplitDistanceVertical		= 0;
+		[JsonProperty]	public int		MessagePane_splitDistance_horizontal	= 0;
+		[JsonProperty]	public int		MessagePane_splitDistance_vertical		= 0;
 		[JsonProperty]	public int		FlushToGuiDelayMsec						= 200;
 		[JsonProperty]	public int		SerializationInterval					= 3000;
 		

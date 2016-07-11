@@ -155,7 +155,7 @@ namespace Sq1.Core.Broker {
 						replacement.Alert.Bars.Symbol, replacement.Alert.Direction, out replacement.SpreadSide, true);
 				replacement.Alert.PositionAffected.ExitEmitted_price = priceScript;
 
-				if (replacement.Alert.Bars.SymbolInfo.ReSubmitWithNextSlippage == true) {
+				if (replacement.Alert.Bars.SymbolInfo.RejectedResubmitWithNextSlippage == true) {
 					replacement.SlippageAppliedIndex++;
 				}
 
@@ -288,7 +288,7 @@ namespace Sq1.Core.Broker {
 				+ "; Order will have slippageIndexMax[" + slippageIndexMax + "]";
 			Assembler.PopupException(msg2);
 			//orderProcessor.updateOrderStatusError(orderExecuted, OrderState.RejectedLimitReached, msg2);
-			OrderStateMessage newOrderStateRejected = new OrderStateMessage(order, OrderState.RejectedLimitReached, msg2);
+			OrderStateMessage newOrderStateRejected = new OrderStateMessage(order, OrderState.LimitExpiredRejected, msg2);
 			this.orderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderStateRejected);
 		}
 	}

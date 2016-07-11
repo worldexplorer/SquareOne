@@ -24,10 +24,11 @@ namespace Sq1.Core.Execution {
 		} }
 
 		[JsonIgnore]	public string ExecutionControl_PositionClose_knowHow { get {
-			string ret = "Close Position ";
+			string ret = "";
 
 			Position positionClicked = this.PositionAffected;
 			if (positionClicked == null) {
+				ret = "Close Position: ";
 				ret += "IMPOSSIBLE[PositionAffected_MUST_NOT_BE_NULL]";
 				if (this.IsEntryAlert) {
 					ret += " for_EntryAlert";
@@ -38,7 +39,7 @@ namespace Sq1.Core.Execution {
 				return ret;
 			}
 
-			ret += positionClicked.ExecutionControl_PositionClose_knowHow;
+			ret = positionClicked.ExecutionControl_PositionClose_knowHow;
 
 			if (this.IsEntryAlert && positionClicked.IsEntryFilled) {
 				string msg = " EntryAlert[createdQ#" + this.QuoteCreatedThisAlert.IntraBarSerno + "]"

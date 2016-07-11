@@ -172,7 +172,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public OrderState		InState_errorOrRejected_convertToComplementaryEmergencyState { get {
 				OrderState newState = OrderState.Error;
 				if (this.State == OrderState.Rejected)										newState = OrderState.EmergencyCloseSheduledForRejected;
-				if (this.State == OrderState.RejectedLimitReached)							newState = OrderState.EmergencyCloseSheduledForRejectedLimitReached;
+				if (this.State == OrderState.LimitExpiredRejected)							newState = OrderState.EmergencyCloseSheduledForRejectedLimitReached;
 				if (this.State == OrderState.ErrorSubmitting_BrokerTerminalDisconnected)	newState = OrderState.EmergencyCloseSheduledForErrorSubmittingBroker;
 				return newState;
 			} }
@@ -298,11 +298,15 @@ namespace Sq1.Core.Execution {
 					string msig = " alert.OrderFollowed.State[" + alert.OrderFollowed.State + "] alert[" + alert + "]";
 					if (alert.OrderFollowed.State == OrderState.VictimKilled) {
 						msg = "I_ASSIGN_A_REPLACEMENT_ORDER_INSTEAD_OF_EXPIRED_KILLED";
+					} else if (alert.OrderFollowed.State == OrderState.Rejected) {
+						msg = "I_ASSIGN_A_REPLACEMENT_ORDER_INSTEAD_OF_REJECTED";
+					} else if (alert.OrderFollowed.State == OrderState.RejectedKilled) {
+						msg = "I_ASSIGN_A_REPLACEMENT_ORDER_INSTEAD_OF_REJECTED_KILLED";
 					} else {
 						msg = "ONLY_REPLACEMENT_ORDER_CAN_OVERWRITE_THE_KILLED_EXPIRED";
 					}
 					alert.OrderFollowed.AppendMessage(msg + msig);
-					Assembler.PopupException(msg + msig, null, false);
+					//TESTED_OK Assembler.PopupException(msg + msig, null, false);
 				}
 				alert.OrderFollowed = this;
 				alert.OrderFollowed_isAssignedNow_Mre.Set();	// simple alert submission is single threaded, including proto.StopLossAlertForAnnihilation!

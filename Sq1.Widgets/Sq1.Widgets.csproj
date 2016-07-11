@@ -127,7 +127,23 @@
     <Compile Include="DataSourceEditor\MarketInfoEditor.Designer.cs">
       <DependentUpon>MarketInfoEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataSourceEditor\MarketInfoEditor.EventConsumer.ClearingTimespans.cs">
+      <DependentUpon>MarketInfoEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="DataSourceEditor\MarketInfoEditor.EventConsumer.cs">
+      <DependentUpon>MarketInfoEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataSourceEditor\MarketInfoEditor.EventConsumer.Holidays.cs">
+      <DependentUpon>MarketInfoEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataSourceEditor\MarketInfoEditor.EventConsumer.MarketNames.cs">
+      <DependentUpon>MarketInfoEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataSourceEditor\MarketInfoEditor.EventConsumer.ShortDays.cs">
       <DependentUpon>MarketInfoEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
@@ -441,14 +457,14 @@
     <Compile Include="ToolStripWidgets\ToolStripItemComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="VersionsCredits\MenuItemVersionsCredits.cs">
+    <Compile Include="DllVersions\MenuItemDllVersions.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="VersionsCredits\VersionsCreditsUserControl.cs">
+    <Compile Include="DllVersions\DllVersionsUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="VersionsCredits\VersionsCreditsUserControl.Designer.cs">
-      <DependentUpon>VersionsCreditsUserControl.cs</DependentUpon>
+    <Compile Include="DllVersions\DllVersionsUserControl.Designer.cs">
+      <DependentUpon>DllVersionsUserControl.cs</DependentUpon>
     </Compile>
     <Compile Include="WalkForward\WalkForwardControl.cs">
       <SubType>UserControl</SubType>
@@ -537,8 +553,8 @@
     <EmbeddedResource Include="SymbolInfoEditor\SymbolInfoEditorControl.resx">
       <DependentUpon>SymbolInfoEditorControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="VersionsCredits\VersionsCreditsUserControl.resx">
-      <DependentUpon>VersionsCreditsUserControl.cs</DependentUpon>
+    <EmbeddedResource Include="DllVersions\DllVersionsUserControl.resx">
+      <DependentUpon>DllVersionsUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WalkForward\WalkForwardControl.resx">
       <DependentUpon>WalkForwardControl.cs</DependentUpon>

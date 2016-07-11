@@ -38,16 +38,20 @@ namespace Sq1.Core {
 		public RepositoryJsonChartSettings				RepositoryJsonChartSettings;
 
 		public	const string							DateTimeFormatIndicatorHasNoValuesFor	= "yyyy-MMM-dd ddd HH:mm";
-		public	const string							DateTimeFormatToDays					= "yyyy-MMM-dd";
+		public	const string							DateTimeFormat_toDays					= "yyyy-MMM-dd";
+		public	const string							DateTimeFormat_toDays_dayFirst			= "dd-MMM-yyyy";
 		//public	const string							DateTimeFormatToHours					= "yyyy-MMM-dd HH";
-		public	const string							DateTimeFormatToMinutes					= "yyyy-MMM-dd HH:mm";
-		public	const string							DateTimeFormatToMinutes_noYear			= "MMM-dd HH:mm:ss";
-		public	const string							DateTimeFormatToMinutesSeconds_noYear	= "MMM-dd HH:mm:ss";
-		public	const string							DateTimeFormatLong						= "HH:mm:ss.fff ddd dd MMM yyyy";
-		public	const string							DateTimeFormatLongFilename				= "yyyy-MMM-dd_ddd_HH.mm.ss";
+		public	const string							DateTimeFormat_toMinutes				= "yyyy-MMM-dd HH:mm";
+
+		public	const string							DateTimeFormat_toSeconds_noYear			= "MMM-dd HH:mm:ss";
+		public	const string							DateTimeFormat_toSeconds_dayFirst		= "dd-MMM-yyyy HH:mm:ss";
+
+		public	const string							DateTimeFormat_toMillis_noDate			= "HH:mm:ss.fff";
+		public	const string							DateTimeFormat_toMillis					= "HH:mm:ss.fff ddd dd MMM yyyy";
+		public	const string							DateTimeFormat_toMillisFilename			= "yyyy-MMM-dd_ddd_HH.mm.ss";
 		
 		public	static string FormattedLongFilename(DateTime dt) {
-			return dt.ToString(Assembler.DateTimeFormatLongFilename);
+			return dt.ToString(Assembler.DateTimeFormat_toMillisFilename);
 		}
 
 		public	bool									MainFormClosingIgnoreReLayoutDockedForms = false;

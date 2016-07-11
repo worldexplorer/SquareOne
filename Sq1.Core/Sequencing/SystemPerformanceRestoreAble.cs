@@ -112,7 +112,7 @@ namespace Sq1.Core.Sequencing {
 				return null;
 			}
 			SystemPerformanceRestoreAble ret = this.CloneForSubset("Below" + WATERLINE + "("
-				+ waterlineDateTime.ToString(Assembler.DateTimeFormatToMinutes) + ")");
+				+ waterlineDateTime.ToString(Assembler.DateTimeFormat_toMinutes) + ")");
 			ret.AbsorbFrom(lastBelowWaterlineFound);
 			if (this.NetProfit == ret.NetProfit && ret.NetProfit > 0) {	// inline test
 				TimeSpan lesser = this.KPIsCumulativeDateLast_DateTimeMaxUnsafe.Subtract(waterlineDateTime);
@@ -123,7 +123,7 @@ namespace Sq1.Core.Sequencing {
 		}
 		internal SystemPerformanceRestoreAble CreateSubsetAboveWaterline__nullUnsafe(DateTime waterlineDateTime) {
 			SystemPerformanceRestoreAble ret = this.CloneForSubset("Above" + WATERLINE + "("
-				+ waterlineDateTime.ToString(Assembler.DateTimeFormatToMinutes) + ")");
+				+ waterlineDateTime.ToString(Assembler.DateTimeFormat_toMinutes) + ")");
 			SystemPerformanceRestoreAble lastBelowWaterlineFound = this.CreateSubsetBelowWaterline__nullUnsafe(waterlineDateTime);
 			if (lastBelowWaterlineFound == null) {
 				return null;		//MORE_MEANINGFUL_MESSAGE_UPSTACK

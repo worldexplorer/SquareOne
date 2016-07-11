@@ -175,6 +175,13 @@ namespace Sq1.Core.Livesim {
 			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMin = new System.Windows.Forms.TextBox();
 			this.label44 = new System.Windows.Forms.Label();
 			this.cbx_ClearExecutionExceptions = new System.Windows.Forms.CheckBox();
+			this.gbxCemeterySickInjections = new System.Windows.Forms.GroupBox();
+			this.label45 = new System.Windows.Forms.Label();
+			this.cbx_OrderSickEnabled = new System.Windows.Forms.CheckBox();
+			this.label46 = new System.Windows.Forms.Label();
+			this.txt_OrderSickHappensOncePerXordersMax = new System.Windows.Forms.TextBox();
+			this.txt_OrderSickHappensOncePerXordersMin = new System.Windows.Forms.TextBox();
+			this.label47 = new System.Windows.Forms.Label();
 			this.groupBox2.SuspendLayout();
 			this.grp_orderRejectionRate.SuspendLayout();
 			this.groupBox4.SuspendLayout();
@@ -184,6 +191,7 @@ namespace Sq1.Core.Livesim {
 			this.grp_KillPendingDelay.SuspendLayout();
 			this.gbx_TransactionStatusAfterOrderStatus.SuspendLayout();
 			this.gbx_KillerTransactionCallbackAfterVictimFilled.SuspendLayout();
+			this.gbxCemeterySickInjections.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// groupBox2
@@ -334,7 +342,7 @@ namespace Sq1.Core.Livesim {
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_OrderRejectionEnabled.Checked = true;
 			this.cbx_OrderRejectionEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbx_OrderRejectionEnabled.Location = new System.Drawing.Point(6, 40);
+			this.cbx_OrderRejectionEnabled.Location = new System.Drawing.Point(6, 42);
 			this.cbx_OrderRejectionEnabled.Name = "cbx_OrderRejectionEnabled";
 			this.cbx_OrderRejectionEnabled.Size = new System.Drawing.Size(344, 17);
 			this.cbx_OrderRejectionEnabled.TabIndex = 35;
@@ -451,7 +459,7 @@ namespace Sq1.Core.Livesim {
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_PriceDeviationForMarketOrdersEnabled.Checked = true;
 			this.cbx_PriceDeviationForMarketOrdersEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbx_PriceDeviationForMarketOrdersEnabled.Location = new System.Drawing.Point(6, 70);
+			this.cbx_PriceDeviationForMarketOrdersEnabled.Location = new System.Drawing.Point(6, 69);
 			this.cbx_PriceDeviationForMarketOrdersEnabled.Name = "cbx_PriceDeviationForMarketOrdersEnabled";
 			this.cbx_PriceDeviationForMarketOrdersEnabled.Size = new System.Drawing.Size(344, 17);
 			this.cbx_PriceDeviationForMarketOrdersEnabled.TabIndex = 50;
@@ -567,7 +575,7 @@ namespace Sq1.Core.Livesim {
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_AdaperDisconnectEnabled.Checked = true;
 			this.cbx_AdaperDisconnectEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbx_AdaperDisconnectEnabled.Location = new System.Drawing.Point(6, 70);
+			this.cbx_AdaperDisconnectEnabled.Location = new System.Drawing.Point(6, 72);
 			this.cbx_AdaperDisconnectEnabled.Name = "cbx_AdaperDisconnectEnabled";
 			this.cbx_AdaperDisconnectEnabled.Size = new System.Drawing.Size(344, 17);
 			this.cbx_AdaperDisconnectEnabled.TabIndex = 55;
@@ -755,7 +763,7 @@ namespace Sq1.Core.Livesim {
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_DelayBeforeFillEnabled.Checked = true;
 			this.cbx_DelayBeforeFillEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbx_DelayBeforeFillEnabled.Location = new System.Drawing.Point(6, 41);
+			this.cbx_DelayBeforeFillEnabled.Location = new System.Drawing.Point(6, 42);
 			this.cbx_DelayBeforeFillEnabled.Name = "cbx_DelayBeforeFillEnabled";
 			this.cbx_DelayBeforeFillEnabled.Size = new System.Drawing.Size(344, 17);
 			this.cbx_DelayBeforeFillEnabled.TabIndex = 32;
@@ -826,7 +834,7 @@ namespace Sq1.Core.Livesim {
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_KillPendingDelayEnabled.Checked = true;
 			this.cbx_KillPendingDelayEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbx_KillPendingDelayEnabled.Location = new System.Drawing.Point(6, 41);
+			this.cbx_KillPendingDelayEnabled.Location = new System.Drawing.Point(6, 42);
 			this.cbx_KillPendingDelayEnabled.Name = "cbx_KillPendingDelayEnabled";
 			this.cbx_KillPendingDelayEnabled.Size = new System.Drawing.Size(344, 17);
 			this.cbx_KillPendingDelayEnabled.TabIndex = 32;
@@ -1103,7 +1111,7 @@ namespace Sq1.Core.Livesim {
 			this.cbx_ClearExecutionExceptions.AutoSize = true;
 			this.cbx_ClearExecutionExceptions.Checked = true;
 			this.cbx_ClearExecutionExceptions.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbx_ClearExecutionExceptions.Location = new System.Drawing.Point(9, 751);
+			this.cbx_ClearExecutionExceptions.Location = new System.Drawing.Point(9, 816);
 			this.cbx_ClearExecutionExceptions.Name = "cbx_ClearExecutionExceptions";
 			this.cbx_ClearExecutionExceptions.Size = new System.Drawing.Size(227, 17);
 			this.cbx_ClearExecutionExceptions.TabIndex = 43;
@@ -1111,11 +1119,83 @@ namespace Sq1.Core.Livesim {
 			this.cbx_ClearExecutionExceptions.UseVisualStyleBackColor = true;
 			this.cbx_ClearExecutionExceptions.CheckedChanged += new System.EventHandler(this.anyCheckBox_CheckedChanged);
 			// 
+			// gbxCemeterySickInjections
+			// 
+			this.gbxCemeterySickInjections.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.gbxCemeterySickInjections.Controls.Add(this.label45);
+			this.gbxCemeterySickInjections.Controls.Add(this.cbx_OrderSickEnabled);
+			this.gbxCemeterySickInjections.Controls.Add(this.label46);
+			this.gbxCemeterySickInjections.Controls.Add(this.txt_OrderSickHappensOncePerXordersMax);
+			this.gbxCemeterySickInjections.Controls.Add(this.txt_OrderSickHappensOncePerXordersMin);
+			this.gbxCemeterySickInjections.Controls.Add(this.label47);
+			this.gbxCemeterySickInjections.Location = new System.Drawing.Point(3, 746);
+			this.gbxCemeterySickInjections.Name = "gbxCemeterySickInjections";
+			this.gbxCemeterySickInjections.Size = new System.Drawing.Size(356, 64);
+			this.gbxCemeterySickInjections.TabIndex = 36;
+			this.gbxCemeterySickInjections.TabStop = false;
+			this.gbxCemeterySickInjections.Text = "Order State from CemeterySick";
+			// 
+			// label45
+			// 
+			this.label45.Location = new System.Drawing.Point(6, 20);
+			this.label45.Name = "label45";
+			this.label45.Size = new System.Drawing.Size(107, 17);
+			this.label45.TabIndex = 34;
+			this.label45.Text = "Happens once per";
+			// 
+			// cbx_OrderSickEnabled
+			// 
+			this.cbx_OrderSickEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_OrderSickEnabled.Checked = true;
+			this.cbx_OrderSickEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbx_OrderSickEnabled.Location = new System.Drawing.Point(6, 42);
+			this.cbx_OrderSickEnabled.Name = "cbx_OrderSickEnabled";
+			this.cbx_OrderSickEnabled.Size = new System.Drawing.Size(344, 17);
+			this.cbx_OrderSickEnabled.TabIndex = 35;
+			this.cbx_OrderSickEnabled.Text = "Enable Random Order State Sick injection";
+			this.cbx_OrderSickEnabled.UseVisualStyleBackColor = true;
+			this.cbx_OrderSickEnabled.CheckedChanged += new System.EventHandler(this.anyCheckBox_CheckedChanged);
+			// 
+			// label46
+			// 
+			this.label46.Location = new System.Drawing.Point(165, 20);
+			this.label46.Name = "label46";
+			this.label46.Size = new System.Drawing.Size(16, 15);
+			this.label46.TabIndex = 33;
+			this.label46.Text = "to";
+			// 
+			// txt_OrderSickHappensOncePerXordersMax
+			// 
+			this.txt_OrderSickHappensOncePerXordersMax.Location = new System.Drawing.Point(183, 17);
+			this.txt_OrderSickHappensOncePerXordersMax.Name = "txt_OrderSickHappensOncePerXordersMax";
+			this.txt_OrderSickHappensOncePerXordersMax.Size = new System.Drawing.Size(33, 20);
+			this.txt_OrderSickHappensOncePerXordersMax.TabIndex = 34;
+			this.txt_OrderSickHappensOncePerXordersMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			// 
+			// txt_OrderSickHappensOncePerXordersMin
+			// 
+			this.txt_OrderSickHappensOncePerXordersMin.Location = new System.Drawing.Point(129, 17);
+			this.txt_OrderSickHappensOncePerXordersMin.Name = "txt_OrderSickHappensOncePerXordersMin";
+			this.txt_OrderSickHappensOncePerXordersMin.Size = new System.Drawing.Size(30, 20);
+			this.txt_OrderSickHappensOncePerXordersMin.TabIndex = 33;
+			this.txt_OrderSickHappensOncePerXordersMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			// 
+			// label47
+			// 
+			this.label47.Location = new System.Drawing.Point(222, 20);
+			this.label47.Name = "label47";
+			this.label47.Size = new System.Drawing.Size(89, 17);
+			this.label47.TabIndex = 31;
+			this.label47.Text = "orders processed";
+			// 
 			// LivesimBrokerEditor
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.AutoScroll = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Controls.Add(this.gbxCemeterySickInjections);
 			this.Controls.Add(this.cbx_ClearExecutionExceptions);
 			this.Controls.Add(this.gbx_KillerTransactionCallbackAfterVictimFilled);
 			this.Controls.Add(this.gbx_TransactionStatusAfterOrderStatus);
@@ -1127,7 +1207,7 @@ namespace Sq1.Core.Livesim {
 			this.Controls.Add(this.grp_orderRejectionRate);
 			this.Controls.Add(this.groupBox2);
 			this.Name = "LivesimBrokerEditor";
-			this.Size = new System.Drawing.Size(362, 772);
+			this.Size = new System.Drawing.Size(362, 843);
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
 			this.grp_orderRejectionRate.ResumeLayout(false);
@@ -1146,6 +1226,8 @@ namespace Sq1.Core.Livesim {
 			this.gbx_TransactionStatusAfterOrderStatus.PerformLayout();
 			this.gbx_KillerTransactionCallbackAfterVictimFilled.ResumeLayout(false);
 			this.gbx_KillerTransactionCallbackAfterVictimFilled.PerformLayout();
+			this.gbxCemeterySickInjections.ResumeLayout(false);
+			this.gbxCemeterySickInjections.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -1183,5 +1265,12 @@ namespace Sq1.Core.Livesim {
 		private System.Windows.Forms.TextBox txt_KillerTransactionCallbackAfterVictimFilled_happensMin;
 		private System.Windows.Forms.Label label44;
 		private System.Windows.Forms.CheckBox cbx_ClearExecutionExceptions;
+		private System.Windows.Forms.GroupBox gbxCemeterySickInjections;
+		private System.Windows.Forms.Label label45;
+		private System.Windows.Forms.CheckBox cbx_OrderSickEnabled;
+		private System.Windows.Forms.Label label46;
+		private System.Windows.Forms.TextBox txt_OrderSickHappensOncePerXordersMax;
+		private System.Windows.Forms.TextBox txt_OrderSickHappensOncePerXordersMin;
+		private System.Windows.Forms.Label label47;
 	}
 }

@@ -22,12 +22,14 @@ namespace Sq1.Core.Livesim {
 			this.cbx_PriceDeviationForMarketOrdersEnabled	.Checked = this.livesimBrokerSettings.PriceDeviationForMarketOrdersEnabled;
 			this.cbx_KillPendingDelayEnabled				.Checked = this.livesimBrokerSettings.KillPendingDelayEnabled;
 			this.cbx_AdaperDisconnectEnabled				.Checked = this.livesimBrokerSettings.AdapterDisconnectEnabled;
+			this.cbx_OrderSickEnabled						.Checked = this.livesimBrokerSettings.OrderSickEnabled;
 			this.cbx_ClearExecutionExceptions				.Checked = this.livesimBrokerSettings.ClearExecutionExceptions;
 
 
 
 			this.txt_DelayBeforeFillMillisMin								.Text = this.livesimBrokerSettings.DelayBeforeFillMillisMin									.ToString();
 			this.txt_DelayBeforeFillMillisMax								.Text = this.livesimBrokerSettings.DelayBeforeFillMillisMax									.ToString();
+
 			this.txt_OrderRejectionHappensOncePerXordersMin					.Text = this.livesimBrokerSettings.OrderRejectionHappensOncePerXordersMin					.ToString();
 			this.txt_OrderRejectionHappensOncePerXordersMax					.Text = this.livesimBrokerSettings.OrderRejectionHappensOncePerXordersMax					.ToString();
 
@@ -64,6 +66,10 @@ namespace Sq1.Core.Livesim {
 			this.txt_AdapterDisconnectHappensOncePerOrderMax				.Text = this.livesimBrokerSettings.AdapterDisconnectHappensOncePerOrderMax					.ToString();
 			this.txt_AdapterDisconnectReconnectsAfterMillisMin				.Text = this.livesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMin				.ToString();
 			this.txt_AdapterDisconnectReconnectsAfterMillisMax				.Text = this.livesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMax				.ToString();
+
+			this.txt_OrderSickHappensOncePerXordersMin						.Text = this.livesimBrokerSettings.OrderSickHappensOncePerXordersMin						.ToString();
+			this.txt_OrderSickHappensOncePerXordersMax						.Text = this.livesimBrokerSettings.OrderSickHappensOncePerXordersMax						.ToString();
+
 		}
 	}
 }

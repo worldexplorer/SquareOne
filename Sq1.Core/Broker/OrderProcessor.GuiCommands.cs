@@ -54,10 +54,10 @@ namespace Sq1.Core.Broker {
 				bool emitted = this.Emit_killOrderPending_usingKiller(pendingOrder, msig);
 			}
 		}
-		public void GuiClick_killPendingSelected(List<Order> ordersSelected) {
+		public void GuiClick_killPendingSelected(List<Order> selectedKillable) {
 			string msig = " //GuiClick_killPendingSelected()";
-			if (ordersSelected.Count == 0) return;
-			foreach (Order pendingOrder in ordersSelected) {
+			if (selectedKillable.Count == 0) return;
+			foreach (Order pendingOrder in selectedKillable) {
 				//this.Emit_killOrderPending_withoutKiller(pendingOrder, msig);
 				bool emitted = this.Emit_killOrderPending_usingKiller(pendingOrder, msig);
 			}

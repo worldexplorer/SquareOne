@@ -104,7 +104,7 @@ namespace Sq1.Core.Livesim {
 			string msg = "LIVESIM_CHILDREN_SHOULD_NEVER_RECEIVE_UpstreamConnect()";
 			//Assembler.PopupException(msg + msig, null, false);
 			string why = "I simulate Terminal_Connected on first order, and each next spoiledDisconnect(); but LivesimDataSource.json doesnt exist";
-			base.ConnectionState_update(ConnectionState.Broker_TerminalConnected, msig);
+			base.ConnectionState_update(ConnectionState.Broker_TerminalConnected_22, msig);
 		}
 		public override void Broker_disconnect(string reasonForDisconnect = "UNKNONWN_reasonForDisconnect") {
 			string msig = " //Broker_disconnect(" + this.ToString() + ")";

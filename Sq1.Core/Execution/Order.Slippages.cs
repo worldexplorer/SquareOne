@@ -66,7 +66,7 @@ namespace Sq1.Core.Execution {
 				bool noMoreSlippagesLeft = slippagesLeftAvailable <= 0;	// last slippage is still a valid slippage; 0 is okay
 				return noMoreSlippagesLeft;
 			} }
-		[JsonIgnore]	public	double			SlippageNextAvailable_NanWhenNoMore { get {
+		[JsonIgnore]	public	double			SlippageNextAvailable_forLimitAlertsOnly_NanWhenNoMore { get {
 			return this.Alert.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(this.SlippageAppliedIndex + 1, true);
 		} }
 	}

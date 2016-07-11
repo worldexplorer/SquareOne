@@ -38,9 +38,9 @@ namespace Sq1.Core.DataFeed {
 		[JsonIgnore]	public BacktestBroker		BrokerAsBacktest_nullUnsafe		{ get { return this.BrokerAdapter	as BacktestBroker; } }
 		[JsonIgnore]	public LivesimBroker		BrokerAsLivesim_nullUnsafe		{ get { return this.BrokerAdapter	as LivesimBroker; } }
 
-		[JsonProperty]	public string				MarketName;
-		[JsonIgnore]	public MarketInfo			marketInfo;
-		[JsonIgnore]	public MarketInfo			MarketInfo {
+		[JsonProperty]	public	string				MarketName;
+		[JsonIgnore]	private	MarketInfo			marketInfo;
+		[JsonIgnore]	public	MarketInfo			MarketInfo {
 			get { return this.marketInfo; }
 			set {
 				this.marketInfo = value;

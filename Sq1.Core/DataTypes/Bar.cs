@@ -258,7 +258,7 @@ namespace Sq1.Core.DataTypes {
 			}
 			if (string.IsNullOrEmpty(msg)) return msg;
 			if (tryToFix == false) throw new Exception(msg);
-			Assembler.PopupException(msg + " " + this.ToString(), null, false);
+			//TOO_NOISY__WILL_FIGURE_WHY_TradedAt_IS_SET_WRONG Assembler.PopupException(msg + " " + this.ToString(), null, false);
 			return msg;
 		}
 		public bool HasSameDOHLCVas(Bar bar, string barIdent, string thisIdent, ref string errRef) {

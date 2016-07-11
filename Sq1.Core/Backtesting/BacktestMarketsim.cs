@@ -573,7 +573,8 @@ namespace Sq1.Core.Backtesting {
 			}
 			if (this.broker_backtestOrLivesim is BacktestBroker) {
 				// YIELDED_TO_postProcess_invokeScriptCallback()
-				this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(alert, quote,
+				this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptCallback_reenterablyProtected(
+					alert, quote,
 					priceFill, alert.Qty, slippageFill, entryCommission);
 				return filled;
 			}
@@ -615,7 +616,8 @@ namespace Sq1.Core.Backtesting {
 			}
 			if (this.broker_backtestOrLivesim is BacktestBroker) {
 				// YIELDED_TO_postProcess_invokeScriptCallback()
-				this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(alert, quote,
+				this.scriptExecutor.CallbackAlertFilled_moveAround_invokeScriptCallback_reenterablyProtected(
+					alert, quote,
 					priceFill, alert.Qty, slippageFill, exitCommission);
 				return filled;
 			}

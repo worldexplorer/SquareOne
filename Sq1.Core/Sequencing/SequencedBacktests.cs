@@ -55,7 +55,7 @@ namespace Sq1.Core.Sequencing {
 						= eachBacktest.CreateSubsetBelowWaterline__nullUnsafe(this.SubsetWaterLineDateTime);
 					if (fromBeginningTillWaterline == null) {
 						string msg = "NO_POSITIONS_CLOSED_BELOW_WATERLINE["
-							+ this.SubsetWaterLineDateTime.ToString(Assembler.DateTimeFormatToMinutes)
+							+ this.SubsetWaterLineDateTime.ToString(Assembler.DateTimeFormat_toMinutes)
 							+ "] eachBacktest[" + eachBacktest.ToString() + "]";
 						Assembler.PopupException(msg, null, false);
 						continue;

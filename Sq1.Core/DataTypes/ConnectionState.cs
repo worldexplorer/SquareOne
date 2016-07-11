@@ -22,9 +22,9 @@ namespace Sq1.Core.DataTypes {
 
 		
 		// used in QuikBroker
-		Broker_TerminalConnected		= 50,
+		Broker_TerminalConnected_22		= 50,	// step2of2, where 1=Sq1 connected to QUIK terminal, 2=Quik connected to server
 		Broker_TerminalDisconnected		= 51,
-		Broker_DllConnected				= 55,
+		Broker_DllConnected_12			= 55,	// step1of2, where 1=Sq1 connected to QUIK terminal, 2=Quik connected to server
 		Broker_DllConnecting			= 56,
 		Broker_DllDisconnected			= 57,
 

@@ -121,11 +121,11 @@ namespace Sq1.Core.Backtesting {
 			sb.Append("}traded");
 			if (ServerTime != null) {
 				sb.Append(" SERVER[");
-				sb.Append(ServerTime.ToString("HH:mm:ss.fff"));
+				sb.Append(ServerTime.ToString(Assembler.DateTimeFormat_toMillis_noDate));
 				sb.Append("]");
 			}
 			sb.Append("[");
-			sb.Append(LocalTime.ToString("HH:mm:ss.fff"));
+			sb.Append(LocalTime.ToString(Assembler.DateTimeFormat_toMillis_noDate));
 			sb.Append("]LOCAL");
 			if (string.IsNullOrEmpty(this.Source) == false) {
 				sb.Append(" ");

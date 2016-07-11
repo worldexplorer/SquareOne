@@ -27,70 +27,24 @@ namespace Sq1.Core.Repositories {
 		}
 		public override int Serialize() {
 			base.Serialize();
-			this.trimHolidaysToYMD();
-			string fixes = this.adjustIfClearingTimespanOutsideOpenClose();
-			fixes += this.adjustIfClearingTimespansOverlap();
-			if (string.IsNullOrEmpty(fixes) == false) {
-				throw new Exception("ClearingTimespans fixes: ");
-			}
+			string errorsFixed = this.FixPotentialErrors(true);
 			return base.EntityDeserialized.Count;
 		}
 		public override Dictionary<string, MarketInfo> Deserialize() {
 			base.Deserialize();
 			if (base.EntityDeserialized.Count == 0) base.EntityDeserialized = this.MarketsDefault;
-			this.trimHolidaysToYMD();
-			this.adjustIfClearingTimespanOutsideOpenClose();
+			string errorsFixed = this.FixPotentialErrors();
 			return base.EntityDeserialized;
 		}
-		void trimHolidaysToYMD() {
-			foreach (MarketInfo market in base.EntityDeserialized.Values) {
-				if (market.HolidaysYMD000 == null) continue;
-				if (market.HolidaysYMD000.Count == 0) continue;
-				List<DateTime> holidaysTrimmed = new List<DateTime>();
-				foreach (DateTime holidayToTrim in market.HolidaysYMD000) {
-					holidaysTrimmed.Add(holidayToTrim.Date);
-				}
-				market.HolidaysYMD000 = holidaysTrimmed;
-			}
-		}
-		string adjustIfClearingTimespanOutsideOpenClose() {
+		public string FixPotentialErrors(bool popup = false) {
 			string ret = "";
-			foreach (MarketInfo market in base.EntityDeserialized.Values) {
-				if (market.ClearingTimespans == null) continue;
-				if (market.ClearingTimespans.Count == 0) continue;
-				List<DateTime> holidaysTrimmed = new List<DateTime>();
-				foreach (MarketClearingTimespan clearing in market.ClearingTimespans) {
-					if (clearing.SuspendServerTimeOfDay.TimeOfDay < market.MarketOpen_serverTime.TimeOfDay) {
-						ret += " adjusting: clearing[" + clearing + "].SuspendServerTimeOfDay.TimeOfDay["
-							+ clearing.SuspendServerTimeOfDay.TimeOfDay + "] < market.MarketOpenServerTime.TimeOfDay["
-							+ market.MarketOpen_serverTime.TimeOfDay + "]";
-						clearing.SuspendServerTimeOfDay = market.MarketOpen_serverTime;
-					}
-					if (clearing.ResumeServerTimeOfDay.TimeOfDay < market.MarketOpen_serverTime.TimeOfDay) {
-						ret += " adjusting: clearing[" + clearing + "].ResumeServerTimeOfDay.TimeOfDay["
-							+ clearing.ResumeServerTimeOfDay.TimeOfDay + "] < market.MarketOpenServerTime.TimeOfDay["
-							+ market.MarketOpen_serverTime.TimeOfDay + "]";
-						clearing.ResumeServerTimeOfDay = market.MarketOpen_serverTime;
-					}
-					if (clearing.SuspendServerTimeOfDay.TimeOfDay > market.MarketClose_serverTime.TimeOfDay) {
-						ret += " adjusting: clearing[" + clearing + "].SuspendServerTimeOfDay.TimeOfDay["
-							+ clearing.SuspendServerTimeOfDay.TimeOfDay + "] > market.MarketCloseServerTime.TimeOfDay["
-							+ market.MarketClose_serverTime.TimeOfDay + "]";
-						clearing.SuspendServerTimeOfDay = market.MarketClose_serverTime;
-					}
-					if (clearing.ResumeServerTimeOfDay.TimeOfDay > market.MarketClose_serverTime.TimeOfDay) {
-						ret += " adjusting: clearing[" + clearing + "].ResumeServerTimeOfDay.TimeOfDay["
-							+ clearing.ResumeServerTimeOfDay.TimeOfDay + "] > market.MarketCloseServerTime.TimeOfDay["
-							+ market.MarketClose_serverTime.TimeOfDay + "]";
-						clearing.ResumeServerTimeOfDay = market.MarketClose_serverTime;
-					}
-				}
+			foreach (MarketInfo marketInfo in base.EntityDeserialized.Values) {
+				marketInfo.FixPotentialErrors(popup);
 			}
 			return ret;
 		}
-		string adjustIfClearingTimespansOverlap() {
-			return "";
-		}
+
+
 		public MarketInfo FindMarketInfo(string marketName) {
 			if (string.IsNullOrEmpty(marketName)) return null;
 			foreach (string market in EntityDeserialized.Keys) {

@@ -68,8 +68,8 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		#region Kill pending alert
-		public void AlertPending_kill(Alert alert) {
-			this.Executor.AlertPending_kill(alert);
+		public void AlertPendingKill_appendToDoomed_inExecutorSnap(Alert alert) {
+			this.Executor.AlertPendingKill_appendToDoomed_willBeSubmitted_afterScriptInovcationReturned(alert);
 		}
 		public List<Alert> PositionClose_immediately(Position position, string signalName, bool annotateAtBars_forEachClosedPosition = false) {
 			return this.Executor.PositionClose_immediately(position, signalName, annotateAtBars_forEachClosedPosition);

@@ -760,7 +760,8 @@ namespace Sq1.Core.Execution {
 				if (alreadyFilled_withSameInfo == false) {
 					string msg = "MUST_HAVE_BEEN_alreadyFilled_withSameInfo[" + alreadyFilled_withSameInfo + "]"
 						+ " during doomedRemoved_duplicateCall[" + doomedRemoved_duplicateCall + "]";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
+					Assembler.InstanceInitialized.OrderProcessor.AppendMessage_propagateToGui(this.OrderFollowed, msg);
 				}
 				return;
 			}
@@ -804,6 +805,18 @@ namespace Sq1.Core.Execution {
 
 			bool sumIsZero = sum == 0;
 			return sumIsZero;
+		} }
+
+		public int PendingFound_inMyExecutorsDataSnap { get { 
+			int ret = -1;
+			if (this.Strategy == null) return ret;
+			if (this.Strategy.Script == null) return ret;
+			if (this.Strategy.Script.Executor == null) return ret;
+			if (this.Strategy.Script.Executor.ExecutionDataSnapshot == null) return ret;
+
+			ExecutorDataSnapshot snap = this.Strategy.Script.Executor.ExecutionDataSnapshot;
+			ret = snap.AlertsUnfilled.Count;
+			return ret;
 		} }
 	}
 }

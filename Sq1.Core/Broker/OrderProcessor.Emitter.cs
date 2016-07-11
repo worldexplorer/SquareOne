@@ -316,13 +316,23 @@ namespace Sq1.Core.Broker {
 				return emitted;
 			}
 
+			if (victimOrder.IsKiller) {
+				string msg = "KILLER_IS_NOT_KILLABLE_ITSELF"
+					+ " for QUIK, killer is a fake order, without its own GUID=ExchangeSerno, it's a parasite on Victim's GUID=ExchangeSerno";
+				victimOrder.AppendMessage(msg + msig);
+				Assembler.PopupException(msg + msig);
+				return emitted;
+			}
+
 			bool canBeKilled = OrderStatesCollections.CanBeKilled.Contains(victimOrder.State);
 				//victimOrder.State == OrderState.WaitingBrokerFill ||
 				//victimOrder.State == OrderState.SLAnnihilating ||
 				//victimOrder.State == OrderState.TPAnnihilating;
 
 			if (canBeKilled == false) {
-				string msg = "I_REFUSE_TO_KILL__STATE_NOT_IN {" + OrderStatesCollections.CanBeKilled.ToString() + "} [" + victimOrder + "]";
+				string msg = "I_REFUSE_TO_KILL__STATE[" + victimOrder.State + "] NOT_IN{" + OrderStatesCollections.CanBeKilled.ToString() + "}"
+					+ " [" + victimOrder + "]"
+					;
 				victimOrder.AppendMessage(msg + msig);
 				Assembler.PopupException(msg + msig, null, false);
 				return emitted;
@@ -358,6 +368,11 @@ namespace Sq1.Core.Broker {
 			BrokerAdapter broker = killerOrder_withRefToVictim.Alert.DataSource_fromBars.BrokerAdapter;
 			broker.Order_submitKiller_forPending(killerOrder_withRefToVictim);
 			emitted = true;
+
+			// Doomed are picked up each Quote; forking hundreds of Killers this way!!! handling NOT_FOUND_IN_DOOMED otherwise
+			//ScriptExecutor executor = victimOrder.Alert.Strategy.Script.Executor;
+			//executor.AlertPendingKill_appendToDoomed_willBeSubmitted_afterScriptInovcationReturned(killerOrder_withRefToVictim.Alert);
+
 			return emitted;
 		}
 
@@ -420,22 +435,26 @@ namespace Sq1.Core.Broker {
 			return ret;
 		}
 		bool emit_alertPending_kill(Alert alert) {
-			string msig = " //OrderProcessor.Emit_alertsPending_kill(" + alert + ")";
+			string msig = " //OrderProcessor.emit_alertPending_kill(" + alert + ")";
 			bool emitted = false;
 
 			Order victim = alert.OrderFollowed;
 			if (victim == null) {
-				string msg = "ALERT_MUST_HAVE_ORDER_NON_NULL";
+				string msg = "TO_KILL_THE_ALERT_MUST_HAVE_ORDER_NON_NULL";
 				Assembler.PopupException(msg + msig, null, false);
 				return emitted;
 			}
 			if (victim.IsKiller) {
-				string msg = "ALERT_MUST_HAVE_ORDER_NON_NULL";
+				string msg = "I_REFUSE_TO_EMIT_KILLALERT_FOR_KILLER";
 				//Assembler.PopupException(msg + msig);
 				return false;
 			}
-			if (victim.State != OrderState.WaitingBrokerFill) {
-				string msg = "ALERTS_ORDER_MUST_HAVE_KILLABLE_STATUS {" + victim.State + "}MUST_BE{" + OrderState.WaitingBrokerFill + "}";
+
+			// if (victim.State != OrderState.WaitingBrokerFill) {				string msg = " {" + victim.State + "}MUST_BE{" + OrderState.WaitingBrokerFill + "}";
+			bool canBeKilled = OrderStatesCollections.CanBeKilled.Contains(victim.State);
+			if (canBeKilled == false) {
+				string msg = "NOT_EMITTING_KILLER_FOR_UNKILLABLE_VICTIM[" + victim.State + "] MUST_BE{" + OrderStatesCollections.CanBeKilled.ToString() + "}";
+				victim.AppendMessage(msg);
 				Assembler.PopupException(msg + msig, null, false);
 				return emitted;
 			}

@@ -1,5 +1,5 @@
-﻿namespace Sq1.Widgets.VersionsCredits {
-	partial class VersionsCreditsUserControl {
+﻿namespace Sq1.Widgets.DllVersions {
+	partial class DllVersionsUserControl {
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
@@ -23,7 +23,7 @@
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-			this.olvVersionsCredits = new BrightIdeasSoftware.ObjectListView();
+			this.olvDllVersions = new BrightIdeasSoftware.ObjectListView();
 			this.olvcResource = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcVersion = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcSize = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -32,21 +32,21 @@
 			this.olvcLicense = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcCommit = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcForkMe = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			((System.ComponentModel.ISupportInitialize)(this.olvVersionsCredits)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.olvDllVersions)).BeginInit();
 			this.SuspendLayout();
 			// 
-			// olvVersionsCredits
+			// olvDllVersions
 			// 
-			this.olvVersionsCredits.AllColumns.Add(this.olvcResource);
-			this.olvVersionsCredits.AllColumns.Add(this.olvcVersion);
-			this.olvVersionsCredits.AllColumns.Add(this.olvcSize);
-			this.olvVersionsCredits.AllColumns.Add(this.olvcDate);
-			this.olvVersionsCredits.AllColumns.Add(this.olvcAuthors);
-			this.olvVersionsCredits.AllColumns.Add(this.olvcLicense);
-			this.olvVersionsCredits.AllColumns.Add(this.olvcCommit);
-			this.olvVersionsCredits.AllColumns.Add(this.olvcForkMe);
-			this.olvVersionsCredits.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.olvVersionsCredits.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this.olvDllVersions.AllColumns.Add(this.olvcResource);
+			this.olvDllVersions.AllColumns.Add(this.olvcVersion);
+			this.olvDllVersions.AllColumns.Add(this.olvcSize);
+			this.olvDllVersions.AllColumns.Add(this.olvcDate);
+			this.olvDllVersions.AllColumns.Add(this.olvcAuthors);
+			this.olvDllVersions.AllColumns.Add(this.olvcLicense);
+			this.olvDllVersions.AllColumns.Add(this.olvcCommit);
+			this.olvDllVersions.AllColumns.Add(this.olvcForkMe);
+			this.olvDllVersions.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.olvDllVersions.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.olvcResource,
             this.olvcVersion,
             this.olvcSize,
@@ -54,24 +54,24 @@
             this.olvcLicense,
             this.olvcCommit,
             this.olvcForkMe});
-			this.olvVersionsCredits.Cursor = System.Windows.Forms.Cursors.Default;
-			this.olvVersionsCredits.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.olvVersionsCredits.HideSelection = false;
-			this.olvVersionsCredits.IncludeColumnHeadersInCopy = true;
-			this.olvVersionsCredits.Location = new System.Drawing.Point(0, 0);
-			this.olvVersionsCredits.Name = "olvVersionsCredits";
-			this.olvVersionsCredits.ShowCommandMenuOnRightClick = true;
-			this.olvVersionsCredits.ShowGroups = false;
-			this.olvVersionsCredits.Size = new System.Drawing.Size(800, 300);
-			this.olvVersionsCredits.TabIndex = 0;
-			this.olvVersionsCredits.TintSortColumn = true;
-			this.olvVersionsCredits.UseCompatibleStateImageBehavior = false;
-			this.olvVersionsCredits.UseFilterIndicator = true;
-			this.olvVersionsCredits.UseHotItem = true;
-			this.olvVersionsCredits.UseHyperlinks = true;
-			this.olvVersionsCredits.UseTranslucentHotItem = true;
-			this.olvVersionsCredits.UseTranslucentSelection = true;
-			this.olvVersionsCredits.View = System.Windows.Forms.View.Details;
+			this.olvDllVersions.Cursor = System.Windows.Forms.Cursors.Default;
+			this.olvDllVersions.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.olvDllVersions.HideSelection = false;
+			this.olvDllVersions.IncludeColumnHeadersInCopy = true;
+			this.olvDllVersions.Location = new System.Drawing.Point(0, 0);
+			this.olvDllVersions.Name = "olvDllVersions";
+			this.olvDllVersions.ShowCommandMenuOnRightClick = true;
+			this.olvDllVersions.ShowGroups = false;
+			this.olvDllVersions.Size = new System.Drawing.Size(800, 300);
+			this.olvDllVersions.TabIndex = 0;
+			this.olvDllVersions.TintSortColumn = true;
+			this.olvDllVersions.UseCompatibleStateImageBehavior = false;
+			this.olvDllVersions.UseFilterIndicator = true;
+			this.olvDllVersions.UseHotItem = true;
+			this.olvDllVersions.UseHyperlinks = true;
+			this.olvDllVersions.UseTranslucentHotItem = true;
+			this.olvDllVersions.UseTranslucentSelection = true;
+			this.olvDllVersions.View = System.Windows.Forms.View.Details;
 			// 
 			// olvcResource
 			// 
@@ -115,21 +115,21 @@
 			this.olvcForkMe.Text = "Fork";
 			this.olvcForkMe.Width = 40;
 			// 
-			// VersionsCreditsUserControl
+			// DllVersionsUserControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.olvVersionsCredits);
-			this.Name = "VersionsCreditsUserControl";
+			this.Controls.Add(this.olvDllVersions);
+			this.Name = "DllVersionsUserControl";
 			this.Size = new System.Drawing.Size(800, 300);
-			((System.ComponentModel.ISupportInitialize)(this.olvVersionsCredits)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.olvDllVersions)).EndInit();
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
 
-		private BrightIdeasSoftware.ObjectListView olvVersionsCredits;
+		private BrightIdeasSoftware.ObjectListView olvDllVersions;
 		private BrightIdeasSoftware.OLVColumn olvcResource;
 		private BrightIdeasSoftware.OLVColumn olvcVersion;
 		private BrightIdeasSoftware.OLVColumn olvcCommit;

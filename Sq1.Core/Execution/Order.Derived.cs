@@ -7,8 +7,16 @@ using Newtonsoft.Json;
 namespace Sq1.Core.Execution {
 	public partial class Order {		
 		[JsonIgnore]	public	List<Order>		DerivedOrders				{ get; protected set; }		// rebuilt on app restart from	DerivedOrdersGuids 
+		[JsonIgnore]	public	List<Order>		DerivedOrders_noKillers		{ get {						// ACCELERATE-ABLE
+			List<Order> ret = new List<Order>();
+			foreach (Order eachOrder in this.DerivedOrders) {
+				if (eachOrder.IsKiller) continue;
+				ret.Add(eachOrder);
+			}
+			return ret;
+		} }
 		[JsonProperty]	public	List<string>	DerivedOrdersGuids			{ get; protected set; }
-		[JsonProperty]	public	Order			DerivedFrom	;				// SET_IN_OrdersShadowTreeDerived	{ get; protected set; }		// one parent with possibly its own parent, but not too deep; lazy to restore from DerivedFromGui only to rebuild Tree after restart
+		[JsonIgnore]	public	Order			DerivedFrom;				// SET_IN_OrdersShadowTreeDerived	{ get; protected set; }		// one parent with possibly its own parent, but not too deep; lazy to restore from DerivedFromGui only to rebuild Tree after restart
 
 
 		public Order DeriveKillerOrder() {

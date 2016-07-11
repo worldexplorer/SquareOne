@@ -37,6 +37,10 @@ namespace Sq1.Core.Broker {
 			//OrdersByAccount			= new Dictionary<Account, List<Order>>();
 
 			SerializerLogrotateOrders	= new SerializerLogrotatePeriodic<Order>();
+			if (SerializerLogrotateOrders.OfWhat != "Order") {
+				string msg = "SerializerLogrotateOrders.OfWhat[" + SerializerLogrotateOrders.OfWhat + "] != [Order]";
+				Assembler.PopupException(msg);
+			}
 			OrdersRootOnly				= new OrdersRootOnly("OrdersRootOnly");
 			orderSwitchingLanesLock		= new object();
 		}
@@ -326,7 +330,7 @@ namespace Sq1.Core.Broker {
 			if (msig_invoker == null) msig_invoker = " //ScanLanes_bySernoExchange_forBrokerCallbackTradeStatusTestable_nullUnsafe(" + sernoExchange + ")";
 			if (lanesToScan == null) lanesToScan = this.SuggestedLanes_forBrokerCallbackOrderState;
 
-			Order ret = this.scanLanes_forSernoExchange(sernoExchange, lanesToScan, out log_orEmptyWhenFound, msig_invoker);
+			Order ret = this.scanLanes_forSernoExchange(sernoExchange, lanesToScan, out log_orEmptyWhenFound, msig_invoker, false, false);
 
 			log_orEmptyWhenFound += ret == null
 				? " NOT_FOUND_BY_SERNO_EXCHANGE[" + sernoExchange + "] [" + log_orEmptyWhenFound + "]"
@@ -395,11 +399,11 @@ namespace Sq1.Core.Broker {
 			if (msig_invoker == null) msig_invoker = " //ScanLanes_byOrderGuid_forBrokerCallbackOrderState_nullUnsafe(" + orderGuid + ")";
 			if (lanesToScan == null) lanesToScan = this.SuggestedLanes_forBrokerCallbackOrderState;
 
-			Order ret = this.scanLanes_forOrderGuid(orderGuid, lanesToScan, out log_orEmptyWhenFound, msig_invoker);
+			Order ret = this.scanLanes_forOrderGuid(orderGuid, lanesToScan, out log_orEmptyWhenFound, msig_invoker, false, false);
 
 			log_orEmptyWhenFound += ret == null
 				? " NOT_FOUND_BY_GUID[" + orderGuid + "] [" + log_orEmptyWhenFound + "]"
-				: " FOUND_BY_GUID[" + orderGuid + "] [" + log_orEmptyWhenFound + "] order[" + ret + "]";
+				: " FOUND_BY_GUID[" + orderGuid + "] order[" + ret + "]";
 
 			return ret;
 
@@ -435,7 +439,8 @@ namespace Sq1.Core.Broker {
 
 			log_orEmptyWhenFound += ret == null
 				? " NOT_FOUND_BY_GUID[" + orderGuid + "] [" + log_orEmptyWhenFound + "]"
-				: " FOUND_BY_GUID[" + orderGuid + "] [" + log_orEmptyWhenFound + "] order[" + ret + "]";
+				: " FOUND_BY_GUID[" + orderGuid + "] order[" + ret + "]";
+
 			return ret;
 
 			//OrderLane	suggestedLane_nullUnsafe = null;

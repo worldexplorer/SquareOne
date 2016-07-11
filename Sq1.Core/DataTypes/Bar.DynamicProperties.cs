@@ -30,25 +30,25 @@ namespace Sq1.Core.DataTypes {
 			return symbolInfo != null ? symbolInfo.PriceFormat : "N0";
 		} }
 		[JsonIgnore]	protected	string		DateTimeFormat	{ get {
-			string ret = Assembler.DateTimeFormatToMinutesSeconds_noYear;	// less than a minute
+			string ret = Assembler.DateTimeFormat_toSeconds_noYear;	// less than a minute
 			switch (this.ScaleInterval.Scale) {
 				case BarScale.Unknown:
 				case BarScale.Tick:
-				case BarScale.Second:		ret = Assembler.DateTimeFormatToMinutesSeconds_noYear; break;
+				case BarScale.Second:		ret = Assembler.DateTimeFormat_toSeconds_noYear; break;
 
 				case BarScale.Minute:
-				case BarScale.Hour:			ret = Assembler.DateTimeFormatToMinutes_noYear; break;
+				case BarScale.Hour:			ret = Assembler.DateTimeFormat_toSeconds_noYear; break;
 				
 				case BarScale.Daily:
 				case BarScale.Weekly:
 				case BarScale.Monthly:
 				case BarScale.Quarterly:
-				case BarScale.Yearly:		ret = Assembler.DateTimeFormatToDays; break;
+				case BarScale.Yearly:		ret = Assembler.DateTimeFormat_toDays; break;
 
 				default: 
 					string msg = "YOU_ADDED_NEW_TIMEFRAME_BUT_DIDNT_DEFINE_DATETIME_FORMAT_FOR_IT";
 					Assembler.PopupException(msg);
-					ret = Assembler.DateTimeFormatToMinutesSeconds_noYear;
+					ret = Assembler.DateTimeFormat_toSeconds_noYear;
 					break;
 			}
 			return ret;

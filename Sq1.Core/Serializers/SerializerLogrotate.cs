@@ -23,6 +23,8 @@ namespace Sq1.Core.Serializers {
 			this.currentlySerializing = false;
 			this.itemsBufferedWhileSerializingLock = new object();
 			this.itemsBuffered_whileSerializing = new List<T>();
+
+			base.OfWhat = typeof(T).Name;
 		}
 
 		public override List<T> Deserialize() {
@@ -33,7 +35,7 @@ namespace Sq1.Core.Serializers {
 					base.Deserialize();
 				}
 			} catch (Exception e) {
-				string msig = " LogrotateSerializer<" + base.OfWhat + ">::Deserialize(): ";
+				string msig = " //" + base.ToString() + "::Deserialize()";
 				string msg = "FAILED_DeserializeLogrotate_WITH_base.JsonAbsFile[" + base.JsonAbsFile + "]";
 				throw new Exception(msg + msig, e);
 			}
@@ -67,7 +69,7 @@ namespace Sq1.Core.Serializers {
 					}
 				}
 			} catch (Exception ex) {
-				string msig = " LogrotateSerializer<" + base.OfWhat + ">::Serialize(): ";
+				string msig = "  //" + base.ToString() + "::Serialize()";
 				string msg = "FAILED_SerializeLogrotate_WITH_this.JsonAbsFile[" + base.JsonAbsFile + "]";
 				Assembler.PopupException(msg + msig, ex, false);
 			} finally {
@@ -80,7 +82,7 @@ namespace Sq1.Core.Serializers {
 			File.WriteAllText(fileAbspath, json);
 		}
 		void safeLogRotate(string fileAbspath) {
-			string msig = " LogrotateSerializer<" + base.OfWhat + ">::safeLogRotate(fileAbspath=[" + fileAbspath + "]): ";
+			string msig = " //" + base.ToString() + "::safeLogRotate(fileAbspath=[" + fileAbspath + "])";
 			string relpath = Path.GetDirectoryName(fileAbspath);
 			if (Directory.Exists(relpath) == false) {
 				try {
@@ -95,7 +97,7 @@ namespace Sq1.Core.Serializers {
 			long size = new FileInfo(fileAbspath).Length;
 			if (size < logRotateSizeLimit) return;
 			string fileNameWithDate = Path.GetFileNameWithoutExtension(fileAbspath)
-				+ "-" + DateTime.Now.ToString(this.logRotateDateFormat);
+				+ "-" + DateTime.Now.ToString(this.logRotateDateFormat);	// Orders-2016-07-05_10-58-48#448.json
 			string fileAbsNameWithDate = Path.GetDirectoryName(fileAbspath) + Path.DirectorySeparatorChar 
 				 + fileNameWithDate + Path.GetExtension(fileAbspath);
 			try {
@@ -119,12 +121,54 @@ namespace Sq1.Core.Serializers {
 			this.HasChangesToSave = true;
 		}
 		public void Remove(List<T> ordersToRemove) { lock (this.entityLock) {
-				foreach (T orderRemoving in ordersToRemove) {
-					if (base.EntityDeserialized.Contains(orderRemoving)) {
-						base.EntityDeserialized.Remove(orderRemoving);
-					}
+			foreach (T orderRemoving in ordersToRemove) {
+				if (base.EntityDeserialized.Contains(orderRemoving)) {
+					base.EntityDeserialized.Remove(orderRemoving);
 				}
+			}
 			this.HasChangesToSave = true;
 		} }
+
+		public List<string> AllLogrotatedAbsFnames_butNotMainJson_scanned { get {
+			List<string> logrotatedAbsFnames = new List<string>();
+			if (Directory.Exists(base.AbsPath) == false) {
+				return logrotatedAbsFnames;
+			}
+
+			string mask = this.OfWhat + "s-*.json";		// Orders-2016-07-05_10-58-48#448.json
+			string[] absFileNames = Directory.GetFiles(this.AbsPath, mask);
+			for (int i = 0; i < absFileNames.Length; i++) {
+				string absFileName = absFileNames[i];
+				string thisOne = "[" + absFileName + "]=[" + i + "]/[" + absFileNames.Length + "]";
+				logrotatedAbsFnames.Add(absFileName);
+			}
+
+			return logrotatedAbsFnames;
+		} }
+		public int FindAndDelete_allLogrotatedFiles_butNotMainJson() {
+			string msig = " //" + base.ClassIdent + "::FindAndDelete_allLogrotatedFiles_butNotMainJson()";
+			int filesDeleted = 0;
+
+			List<string> logrotatedAbsFnames = this.AllLogrotatedAbsFnames_butNotMainJson_scanned;
+			if (logrotatedAbsFnames.Count == 0) {
+				string msg = "YOU_SHOULD_HAVE_ANALYZED_this.AllLogrotatedFiles_butNotMainJson_BEFORE_INVOKING_FindAndDelete";
+				Assembler.PopupException(msg);
+				return filesDeleted;
+			}
+			foreach (string logrotatedAbsFname in logrotatedAbsFnames) {
+				try {
+					File.Delete(logrotatedAbsFname);
+					filesDeleted++;
+				} catch (Exception ex) {
+					string msg = "YOU_MUST_HAVE_UNZIPPED_WITH_INEFFECTIVE_PERMISSIONS[" + logrotatedAbsFname + "]";
+					Assembler.PopupException(msg + msig, ex);
+				}
+			}
+			if (this.AllLogrotatedAbsFnames_butNotMainJson_scanned.Count > 0) {
+				string msg = "NO_LOGROTATED_FILE_MUST_BE_LEFT";
+				Assembler.PopupException(msg + msig);
+			}
+			return filesDeleted;
+		}
 	}
 }

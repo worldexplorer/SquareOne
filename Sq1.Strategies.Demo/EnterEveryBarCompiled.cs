@@ -190,7 +190,8 @@ namespace Sq1.Strategies.Demo {
 				return;
 			}
 
-			if (barStaticFormed.Close > barStaticFormed.Open) {
+			// trend following is unprofitable if (barStaticFormed.Close > barStaticFormed.Open) {
+			if (barStaticFormed.Close < barStaticFormed.Open) {
 				string msg = "BuyAtMarket@" + barStaticFormed.ParentBarsIdent;
 				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
 				Alert buyPlaced = base.BuyAtMarket(barStreaming, msg);
@@ -245,13 +246,13 @@ namespace Sq1.Strategies.Demo {
 			int ordersNumber_thatTried_toFillAlert = alertKilled.OrderFollowed == null ? 0 : 1;
 			ordersNumber_thatTried_toFillAlert += alertKilled.OrdersFollowed_killedAndReplaced.Count;
 			string msg = "OnAlertKilled_callback ordersNumber_thatTried_toFillAlert[" + ordersNumber_thatTried_toFillAlert + "]";
-			Assembler.PopupException(msg, null, false);
+			//Assembler.PopupException(msg, null, false);
 		}
 		public override void OnOrderReplaced_callback(Order orderKilled, Order orderReplacement) {
 			//int ordersNumber_thatTried_toFillAlert = alertKilled.OrderFollowed == null ? 0 : 1;
 			//ordersNumber_thatTried_toFillAlert += alertKilled.OrdersFollowed_killedAndReplaced.Count;
 			string msg = "OnOrderReplaced_callback";		// ordersNumber_thatTried_toFillAlert[" + ordersNumber_thatTried_toFillAlert + "]";
-			Assembler.PopupException(msg, null, false);
+			//Assembler.PopupException(msg, null, false);
 		}
 		public override void OnAlertNotSubmitted_callback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
 			string msg = "OnAlertNotSubmitted_callback";

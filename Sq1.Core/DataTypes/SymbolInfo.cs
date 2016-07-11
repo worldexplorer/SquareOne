@@ -107,25 +107,28 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	bool			CheckForSimilarAlreadyPending { get; set; }
 
 
-		[Category("5. OrderPostProcessor:ReplacerExpired,Emergency"), DefaultValue(true), Description("OrderPostProcessorEmergency and OrderPostProcessorEmergency will increase the distance (=> decrease the profit) by using next available from SlippagesBuy/SlippagesSell")]
-		[JsonProperty]	public	bool			ReSubmitWithNextSlippage	{ get; set; }
+		[Category("5.1 OrderPostProcessor:Replace Limit Orders after Expiration"), DefaultValue(-1),		Description("if!=-1: 1) Kill Pending Limit + wait it's killed, 2) use SlippagesCrossMarketCsv for CrossMarket and SlippagesTidalCsv for Tidal, 3) send replacement order with more cutting-through slippage")]
+		[JsonProperty]	public	int				LimitExpiresAfterMillis		{ get; set; }
 
-		[Category("5.1 OrderPostProcessor:ReplacerExpired"), DefaultValue(-1),		Description("if!=-1: 1) Kill Pending Limit + wait it's killed, 2) use SlippagesCrossMarketCsv for CrossMarket and SlippagesTidalCsv for Tidal, 3) send replacement order with more cutting-through slippage")]
-		[JsonProperty]	public	int				ReSubmitLimitNotFilledWithinMillis		{ get; set; }
-
-		[Category("5.1 OrderPostProcessor:ReplacerExpired"), DefaultValue(true), Description("Kill->Wait->SubmitReplacement using {SlippagesCrossMarketCsv/SlippagesTidalCsv} after ReSubmitLimitNotFilledWithinMillis")]
-		[JsonProperty]	public	bool			ReSubmitLimitNotFilled		{ get; set; }
+		[Category("5.1 OrderPostProcessor:Replace Limit Orders after Expiration"), DefaultValue(true), Description("Kill->Wait->SubmitReplacement using {SlippagesCrossMarketCsv/SlippagesTidalCsv} after ReSubmitLimitNotFilledWithinMillis")]
+		[JsonProperty]	public	bool			LimitExpiredResubmit		{ get; set; }
 
 
-		[Category("5.9 OrderPostProcessor:Emergency (almost DEPRECATED)"), DefaultValue(5), Description("EmergencyClose is PostProcessor's thread that kicks in when triggers when Position's Close was Rejected (Ctrl+Shift+F: InStateErrorComplementaryEmergencyState)")]
-		[JsonProperty]	public	int				EmergencyCloseAttemptsMax	{ get; set; }
+		[Category("5.2 OrderPostProcessor:ReplaceRejected"), DefaultValue(true), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry")]
+		[JsonProperty]	public	bool			RejectedResubmit					{ get; set; }
 
-		[Category("5.9 OrderPostProcessor:Emergency (almost DEPRECATED)"), DefaultValue(100), Description("EmergencyClose will sleep EmergencyCloseInterAttemptDelayMillis in its thread and repeat Closing of a Rejected ExitOrder, until ExitOrder.Clone will be returned by the BrokerAdapter as Filled, EmergencyCloseAttemptsMax times max")]
+		[Category("5.2 OrderPostProcessor:ReplaceRejected"), DefaultValue(true), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry")]
+		[JsonProperty]	public	bool			RejectedKill						{ get; set; }
+
+		[Category("5.2 OrderPostProcessor:ReplaceRejected"), DefaultValue(false), Description("OrderPostProcessorEmergency and OrderPostProcessorEmergency will increase the distance (=> decrease the profit) by using next available from SlippagesBuy/SlippagesSell")]
+		[JsonProperty]	public	bool			RejectedResubmitWithNextSlippage	{ get; set; }
+
+
+		[Category("5.9 OrderPostProcessor:Emergency"), DefaultValue(5), Description("EmergencyClose is PostProcessor's thread that kicks in when triggers when Position's Close was Rejected (Ctrl+Shift+F: InStateErrorComplementaryEmergencyState)")]
+		[JsonProperty]	public	int				EmergencyCloseAttemptsMax				{ get; set; }
+
+		[Category("5.9 OrderPostProcessor:Emergency"), DefaultValue(100), Description("EmergencyClose will sleep EmergencyCloseInterAttemptDelayMillis in its thread and repeat Closing of a Rejected ExitOrder, until ExitOrder.Clone will be returned by the BrokerAdapter as Filled, EmergencyCloseAttemptsMax times max")]
 		[JsonProperty]	public	int				EmergencyCloseInterAttemptDelayMillis	{ get; set; }
-
-		[Category("5.9 OrderPostProcessor:Emergency (almost DEPRECATED)"), DefaultValue(true), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry")]
-		[JsonProperty]	public	bool			ReSubmitRejected			{ get; set; }
-
 
 
 		[Category("6. Other"), DefaultValue(true), Description("")]
@@ -169,13 +172,16 @@ namespace Sq1.Core.DataTypes {
 			this.NOT_USED_ReplaceTidalMillis				= 0;
 			this.SlippagesCrossMarketCsv		= "";
 			this.SlippagesTidalCsv				= "";
-			this.ReSubmitRejected				= false;
-			this.ReSubmitWithNextSlippage		= false;
-			this.UseFirstSlippageForMarketAlertsAsLimit	= false;
-			this.EmergencyCloseInterAttemptDelayMillis		= 8000;
 
-			this.ReSubmitLimitNotFilledWithinMillis	= 2000;
-			this.ReSubmitLimitNotFilled				= false;
+			this.RejectedKill							= true;
+			this.RejectedResubmit						= true;
+			this.RejectedResubmitWithNextSlippage		= false;
+
+			this.UseFirstSlippageForMarketAlertsAsLimit	= false;
+			this.EmergencyCloseInterAttemptDelayMillis	= 8000;
+
+			this.LimitExpiresAfterMillis		= 2000;
+			this.LimitExpiredResubmit			= false;
 
 			this.EmergencyCloseAttemptsMax		= 5;
 
