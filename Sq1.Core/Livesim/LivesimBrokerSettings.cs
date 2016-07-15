@@ -53,11 +53,11 @@ namespace Sq1.Core.Livesim {
 		[JsonProperty]	public	int		AdapterDisconnectReconnectsAfterMillisMax;
 		[JsonProperty]	public	bool	AdapterDisconnectEnabled;
 
-		[JsonProperty]	public	int		OrderSickHappensOncePerXordersMin;
-		[JsonProperty]	public	int		OrderSickHappensOncePerXordersMax;
-		[JsonProperty]	public	bool	OrderSickEnabled;
+		[JsonProperty]	public	int		BrokerDeniedSubmission_HappensOncePerXorders_Min;
+		[JsonProperty]	public	int		BrokerDeniedSubmission_HappensOncePerXorders_Max;
+		[JsonProperty]	public	bool	BrokerDeniedSubmission_injectionEnabled;
 
-		[JsonProperty]	public	bool	ClearExecutionExceptions;
+		[JsonProperty]	public	bool	ClearExecutionExceptions_beforeLivesim;
 
 		public LivesimBrokerSettings(Strategy strategy) : base() {
 			base.Initialize(strategy);
@@ -70,8 +70,8 @@ namespace Sq1.Core.Livesim {
 			OutOfOrderFillEnabled						= true;
 			PriceDeviationForMarketOrdersEnabled		= true;
 			AdapterDisconnectEnabled					= true;
-			OrderSickEnabled							= true;
-			ClearExecutionExceptions					= false;
+			BrokerDeniedSubmission_injectionEnabled		= true;
+			ClearExecutionExceptions_beforeLivesim		= false;
 		}
 	}
 }

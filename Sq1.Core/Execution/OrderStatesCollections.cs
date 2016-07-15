@@ -39,7 +39,7 @@ namespace Sq1.Core.Execution {
 				OrderState.Rejected,
 				OrderState.LimitExpired,
 				OrderState.FilledPartially,
-				OrderState.ErrorMarketPriceZero,
+				OrderState.Error_MarketPriceZero,
 				OrderState.ErrorSlippageCalc,
 				OrderState.ErrorCancelReplace,
 				OrderState.ErrorSubmitting_BrokerTerminalDisconnected,
@@ -66,15 +66,29 @@ namespace Sq1.Core.Execution {
 				OrderState.EmergencyCloseLimitReached,
 			}, "CemeteryHealthy");
 
-		public static OrderStatesCollections CemeterySick =
+		public static OrderStatesCollections BrokerDeniedSumbitting =
 			new OrderStatesCollections(new List<OrderState>() {
-				OrderState.Error,
-				OrderState.ErrorOrderInconsistent,
-				OrderState.ErrorSubmittingOrder_elaborate,
+				//OrderState.Error_MarketPriceZero,
 				OrderState.Error_DealPriceOutOfLimit_weird,
 				OrderState.Error_AccountTooSmall,
 				OrderState.Error_NotTradedNow_ProbablyClearing,
+			}, "BrokerDeniedSumbitting");
+
+		public static OrderStatesCollections CemeterySick =
+			new OrderStatesCollections(new List<OrderState>() {
+				#region copypaste from CemeterySick_BrokerDeniedSumbitting (static must be fully initialized, no later .AddRange()s)
+				OrderState.Error_MarketPriceZero,
+				OrderState.Error_DealPriceOutOfLimit_weird,
+				OrderState.Error_AccountTooSmall,
+				OrderState.Error_NotTradedNow_ProbablyClearing,
+				#endregion
+
+				OrderState.Error,
+				OrderState.ErrorOrderInconsistent,
+				OrderState.ErrorSubmittingOrder_elaborate,
 				OrderState.ErrorSubmittingNotEatable,
+				OrderState.ErrorSlippageCalc,
+
 				OrderState.SubmittedNoFeedback,
 				OrderState.IRefuseToCloseNonStreamingPosition,
 				OrderState.IRefuseToCloseUnfilledEntry,

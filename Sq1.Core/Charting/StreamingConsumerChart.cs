@@ -293,6 +293,9 @@ namespace Sq1.Core.Charting {
 				return;
 			}
 
+			bool isScriptInvokable_avoidNPEdownstack = this.Executor.Strategy.CompileInstantiate(true, "ON_QUOTE");
+			if (isScriptInvokable_avoidNPEdownstack == false) return;
+
 			base.Executor_nullReported.InvokeIndicators_onNewBar_onNewQuote(null, quote_clonedBoundAttached, true);
 
 			// #2/4 execute strategy in the thread of a StreamingAdapter (DDE server for MockQuickProvider)

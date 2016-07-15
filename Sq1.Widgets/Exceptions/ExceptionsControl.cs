@@ -81,6 +81,10 @@ namespace Sq1.Widgets.Exceptions {
 			base.Initialize_periodicFlushing("FLUSH_EXCEPTIONS_CONTROL",
 				new Action(this.flushExceptionsToOLV_switchToGuiThread), this.dataSnapshot.FlushToGuiDelayMsec);
 			//base.Timed_flushingToGui.Start();
+
+			this.pnlSearch.Visible = this.dataSnapshot.ShowSearchbar;
+			this.olvcTimesOccured.IsVisible = this.dataSnapshot.ShowTimesOccured;
+			this.olvcTimestamp.IsVisible = this.dataSnapshot.ShowTimestamps;
 		}
 
 		public void PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized() {
@@ -131,7 +135,7 @@ namespace Sq1.Widgets.Exceptions {
 
 			this.mniRecentAlwaysSelected.Checked = this.dataSnapshot.RecentAlwaysSelected;
 			this.mniltbFlushToGuiDelayMsec.InputFieldValue = this.dataSnapshot.FlushToGuiDelayMsec.ToString();		// I will be stuck here - if ExceptionsForm.Instance was created from non-GUI thread, by Assembler.PopupException() while MainForm haven't got Window Handle yet
-			this.mniShowTimestamps.Checked = this.dataSnapshot.TreeShowTimestamps;
+			this.mniShowTimestamps.Checked = this.dataSnapshot.ShowTimestamps;
 
 			//this.flushExceptionsToOLV_switchToGuiThread();
 		}
@@ -263,6 +267,8 @@ namespace Sq1.Widgets.Exceptions {
 				return;
 			}
 
+			if (this.pnlSearch.Visible && string.IsNullOrWhiteSpace(this.txtSearch.Text) == false) return;
+
 			base.HowLongTreeRebuilds.Restart();
 
 			string msg = "if we are in GUI thread, go on timer immediately (correlator throwing thousands at startup, or chart.OnPaint() doing something wrong)";
@@ -357,5 +363,6 @@ namespace Sq1.Widgets.Exceptions {
 		public void Clear() {
 			this.mniClear_Click(this, new EventArgs());
 		}
+
 	}
 }

@@ -254,13 +254,13 @@ namespace Sq1.Core.Charting {
 
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public Color	OrderKilledCircleColor									{ get; set; }
+		[JsonProperty]	public Color	OrderKilledCrossColor									{ get; set; }
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public int		OrderKilledCircleColorAlpha								{ get; set; }
+		[JsonProperty]	public int		OrderKilledCrossColorAlpha								{ get; set; }
 
 		[Category("4. Alerts and Positions"), Description("description to be composed")]
-		[JsonProperty]	public int		OrderKilledCirclePenWidth								{ get; set; }
+		[JsonProperty]	public int		OrderKilledCrossPenWidth								{ get; set; }
 
 		
 
@@ -632,12 +632,12 @@ namespace Sq1.Core.Charting {
 			} }
 			
 		[Browsable(false)]
-		[JsonIgnore]	Pen penOrderKilledCircle;
+		[JsonIgnore]	Pen penOrderKilledCross;
 		[Browsable(false)]
-		[JsonIgnore]	public Pen PenOrderKilledCircle { get {
-				if (this.penOrderKilledCircle == null) this.penOrderKilledCircle =
-					new Pen(Color.FromArgb(this.OrderKilledCircleColorAlpha, this.OrderKilledCircleColor), this.OrderKilledCirclePenWidth);
-				return this.penOrderKilledCircle;
+		[JsonIgnore]	public Pen PenOrderKilledCross { get {
+				if (this.penOrderKilledCross == null) this.penOrderKilledCross =
+					new Pen(Color.FromArgb(this.OrderKilledCrossColorAlpha, this.OrderKilledCrossColor), this.OrderKilledCrossPenWidth);
+				return this.penOrderKilledCross;
 			} }
 
 
@@ -847,9 +847,9 @@ namespace Sq1.Core.Charting {
 			AlertPendingShortSellCirclePenWidth = 2;
 			AlertPendingCircleRadius = 3;
 
-			OrderKilledCircleColor = Color.DarkGray;
-			OrderKilledCircleColorAlpha = 180;
-			OrderKilledCirclePenWidth = 2;
+			OrderKilledCrossColor = Color.Gray;
+			OrderKilledCrossColorAlpha = 180;
+			OrderKilledCrossPenWidth = 3;
 
 			AlertPendingProtoTakeProfitCircleColor = Color.Green;
 			AlertPendingProtoTakeProfitCircleColorAlpha = 100;
@@ -916,7 +916,7 @@ namespace Sq1.Core.Charting {
 		public void DisposeAllGDIs_handlesLeakHunter() {
 			if (this.penAlertPendingBuyCoverCircle				!= null) { this.penAlertPendingBuyCoverCircle			.Dispose(); this.penAlertPendingBuyCoverCircle				= null; }
 			if (this.penAlertPendingShortSellCircle				!= null) { this.penAlertPendingShortSellCircle			.Dispose(); this.penAlertPendingShortSellCircle				= null; }
-			if (this.penOrderKilledCircle						!= null) { this.penOrderKilledCircle					.Dispose(); this.penOrderKilledCircle						= null; }
+			if (this.penOrderKilledCross						!= null) { this.penOrderKilledCross					.Dispose(); this.penOrderKilledCross						= null; }
 			if (this.penAlertPendingProtoStopLossEllipse		!= null) { this.penAlertPendingProtoStopLossEllipse		.Dispose(); this.penAlertPendingProtoStopLossEllipse		= null; }
 			if (this.penAlertPendingProtoTakeProfitEllipse		!= null) { this.penAlertPendingProtoTakeProfitEllipse	.Dispose(); this.penAlertPendingProtoTakeProfitEllipse		= null; }
 			if (this.penGridlinesHorizontal						!= null) { this.penGridlinesHorizontal					.Dispose(); this.penGridlinesHorizontal						= null; }

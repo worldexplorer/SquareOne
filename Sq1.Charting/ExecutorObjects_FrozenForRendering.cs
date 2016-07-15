@@ -203,10 +203,9 @@ namespace Sq1.Charting {
 		}
 		public void AlertsPending_stillNotFilled_addForBar(int barIndexStillNotFilled, List<Alert> alertsPendingAtCurrentBar_safeCopy) {
 			if (this.AlertsPlaced_byBar.ContainsKey(barIndexStillNotFilled) == false) {
-				string msg = "MOST_LIKELY_INVOKED_FROM_CALLBACK_WITH_PREVIOUS_BAR_INDEX MUST_HAVE_BEEN_ADDED_BY_AlertsPlacedRealtimeAdd(): AlertsPlacedByBar[" + barIndexStillNotFilled + "]";
+				//string msg = "MOST_LIKELY_INVOKED_FROM_CALLBACK_WITH_PREVIOUS_BAR_INDEX MUST_HAVE_BEEN_ADDED_BY_AlertsPlacedRealtimeAdd(): AlertsPlaced_byBar[" + barIndexStillNotFilled + "]";
 				//Assembler.PopupException(msg);
 				this.AlertsPlaced_byBar.Add(barIndexStillNotFilled, new AlertList("ALERTS_FOR_barIndexStillNotFilled[" + barIndexStillNotFilled + "]", null, null));
-				//return;
 			}
 			AlertList pendingsForBar = this.AlertsPlaced_byBar[barIndexStillNotFilled];
 			pendingsForBar.AddRange(alertsPendingAtCurrentBar_safeCopy, this
@@ -215,10 +214,9 @@ namespace Sq1.Charting {
 		}
 		public virtual void OrderKilled_addForBar(int barIndex, Order orderKilled) {
 			if (this.OrdersKilled_byBar.ContainsKey(barIndex) == false) {
-				string msg = "MOST_LIKELY_INVOKED_FROM_CALLBACK_WITH_PREVIOUS_BAR_INDEX MUST_HAVE_BEEN_ADDED_BY_AlertsPlacedRealtimeAdd(): AlertsPlacedByBar[" + barIndex + "]";
+				//string msg = "MOST_LIKELY_INVOKED_FROM_CALLBACK_WITH_PREVIOUS_BAR_INDEX MUST_HAVE_BEEN_ADDED_BY_OrderKilled_addForBar(): OrdersKilled_byBar[" + barIndex + "]";
 				//Assembler.PopupException(msg);
 				this.OrdersKilled_byBar.Add(barIndex, new OrderList("ORDERLISTS_FOR_barIndexStillNotFilled[" + barIndex + "]", null, null));
-				//return;
 			}
 			OrderList victimsForBar = this.OrdersKilled_byBar[barIndex];
 			victimsForBar.AddNoDupe(orderKilled, this

@@ -144,11 +144,11 @@ namespace Sq1.Charting {
 		public override void AlertsPlaced_addRealtime(List<Alert> alertsNewPlaced) {
 			this.ExecutorObjects_frozenForRendering.AlertsPlacedRealtime_add(alertsNewPlaced);
 		}
+		public override void OrderKilled_addForBar(int barIndex, Order orderKilled) {
+			this.ExecutorObjects_frozenForRendering.OrderKilled_addForBar(barIndex, orderKilled);
+		}
 		public override void Alerts_stillUnfilled_addForBar(int barIndex, List<Alert> alertsPendingAtCurrentBar_safeCopy) {
 			this.ExecutorObjects_frozenForRendering.AlertsPending_stillNotFilled_addForBar(barIndex, alertsPendingAtCurrentBar_safeCopy);
-		}
-		public virtual void OrderKilled_addForBar(int barIndex, Order orderKilled) {
-			this.ExecutorObjects_frozenForRendering.OrderKilled_addForBar(barIndex, orderKilled);
 		}
 		
 		Dictionary<Indicator, PanelIndicator> PanelsByIndicator = new Dictionary<Indicator, PanelIndicator>();

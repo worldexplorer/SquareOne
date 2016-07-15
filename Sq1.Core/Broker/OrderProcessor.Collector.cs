@@ -229,11 +229,23 @@ namespace Sq1.Core.Broker {
 		//	}
 		//}
 		public void BrokerCallback_pendingKilled_withKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(Order orderPending_victimKilled, string msigInvoker) {
+			Alert alert_forVictim = orderPending_victimKilled.Alert;
+			if (alert_forVictim == null) {
+				string msg = "orderPending_victimKilled.Alert=null; dunno what to remove from PendingAlerts";
+				orderPending_victimKilled.AppendMessage(msg + msigInvoker + " " + orderPending_victimKilled);
+				Assembler.PopupException(msg);
+				return;
+			}
+			ScriptExecutor executor = alert_forVictim.Strategy.Script.Executor;
+
 			#region ALERT_PENDING_REMOVAL_FOR_REJECTED__POSTPONED_FOR_REPLACEMENT_GETS_FILL
 			bool killedAfterRejected		= orderPending_victimKilled.State == OrderState.Rejected;
 			bool replacementWillBeSubmitted	= orderPending_victimKilled.Alert.Bars.SymbolInfo.RejectedResubmit;
 			bool replacementFilledWillRemove = killedAfterRejected && replacementWillBeSubmitted;
-			if (replacementFilledWillRemove) return;
+			if (replacementFilledWillRemove) {
+				executor.CallbackOrderKilled_orBrokerDeniedSubmission_addGrayCross_onChart(orderPending_victimKilled);
+				return;
+			}
 			#endregion
 
 			bool inRightState =
@@ -252,16 +264,7 @@ namespace Sq1.Core.Broker {
 				return;
 			}
 
-			Alert alert_forVictim = orderPending_victimKilled.Alert;
-			if (alert_forVictim == null) {
-				string msg = "orderPending_victimKilled.Alert=null; dunno what to remove from PendingAlerts";
-				orderPending_victimKilled.AppendMessage(msg + msigInvoker + " " + orderPending_victimKilled);
-				return;
-			}
-			ScriptExecutor executor = alert_forVictim.Strategy.Script.Executor;
 			try {
-				executor.CallbackOrderKilled_addGrayCircle_onChart(orderPending_victimKilled);
-
 				executor.CallbackAlertKilled_invokeScript_nonReenterably(alert_forVictim);
 				string msg = orderPending_victimKilled.State + " => AlertsPending.Remove.Remove(orderExecuted.Alert)'d ";
 				orderPending_victimKilled.AppendMessage(msg + msigInvoker);

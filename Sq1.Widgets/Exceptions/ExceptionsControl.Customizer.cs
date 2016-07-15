@@ -15,7 +15,7 @@ namespace Sq1.Widgets.Exceptions {
 				if (ex == null) return null;
 				return new Exception[] { ex.InnerException };
 			};
-			this.olvcTime.AspectGetter = delegate(object o) {
+			this.olvcTimestamp.AspectGetter = delegate(object o) {
 				var ex = o as Exception;
 				if (ex == null) return o.ToString();
 				string timeOrName = "";

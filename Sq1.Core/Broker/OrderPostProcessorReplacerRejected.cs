@@ -77,6 +77,10 @@ namespace Sq1.Core.Broker {
 					string msg4 = "ANOTHER_BRANCH_TO_GET_EMERGENCY_SETTINGS";
 					break;
 
+				case OrderState.RejectedKilled:
+					string msg5 = "OKAY_NOW_I_CAN_RESUBMIT_THE_ORIGINAL_REJECTED_CLONE";
+					break;
+
 				case OrderState.Filled:
 				case OrderState.FilledPartially:
 					string msg2 = "ORDER_FILLED_WHILE_I_WAS_PREPARING_TO_REPLACE_IT";

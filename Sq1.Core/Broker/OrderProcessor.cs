@@ -416,27 +416,20 @@ namespace Sq1.Core.Broker {
 					}
 					break;
 
-				case OrderState.ErrorSubmittingOrder_elaborate:
-					string msg5 = "ErrorSubmittingOrder_elaborate";
-					Assembler.PopupException(msg5 + msig);
-					break;
-
 				case OrderState.ErrorCancelReplace:
 					this.DataSnapshot.OrdersRemoveRange_fromAllLanes(new List<Order>() { order });
 					this.RaiseOnOrdersRemoved_executionControlShouldRebuildOLV_scheduled(this, new List<Order>(){order});
 					Assembler.PopupException(msig);
 					break;
 
+
 				case OrderState.Error:
-				case OrderState.ErrorMarketPriceZero:
+				case OrderState.ErrorSlippageCalc:
+				case OrderState.Error_MarketPriceZero:
 				case OrderState.Error_DealPriceOutOfLimit_weird:
 				case OrderState.Error_NotTradedNow_ProbablyClearing:
 				case OrderState.Error_AccountTooSmall:
-				case OrderState.ErrorSlippageCalc:
-					string msg1 = "HERE_I_SHOULD_DELETE_PENDING_ALERT_FOR_FAILED_ORDER ";
-					Assembler.PopupException(msg1 + msig, null, false);
-					this.AppendMessage_propagateToGui(order, msg1 + msig);
-
+				case OrderState.ErrorSubmittingOrder_elaborate:
 					//NEVER order.PricePaid = 0;
 					if (order.PriceFilled > 0) {
 						string msg = "!!! ABNORMAL~ERROR ZEROIFYING_PriceFilled[" + order.PriceFilled + "]=>0";
@@ -448,11 +441,21 @@ namespace Sq1.Core.Broker {
 						//DOESNT_EXPECT_PRICE=0
 						//order.Alert.Strategy.Script.Executor.CallbackAlertFilled_moveAround_invokeScriptCallback_nonReenterably(order.Alert, null,
 						//	order.PriceFilled, order.QtyFill, order.SlippageFilled, order.CommissionFill);
-						order.Alert.Strategy.Script.Executor.Callback_OrderMarketLimitStop_Error(order);
+						order.Alert.Strategy.Script.Executor.Callback_BrokerDeniedSubmission(order);
+						//order.Alert.Strategy.Script.Executor.Callback_OrderMarketLimitStop_Error(order);
 					} catch (Exception ex) {
-						string msg3 = "PostProcessOrderState caught from Callback_OrderMarketLimitStop_Error() ";
+						string msg3 = "PostProcessOrderState caught from Callback_BrokerDeniedSubmission() ";
 						Assembler.PopupException(msg3 + msig, ex);
 					}
+
+#if DEBUG
+					string msg1 = "HERE_I_SHOULD_HAVE_DELETED__PENDING_ALERT_FOR__BROKER_DENIED_ORDER ";
+					if (order.Alert.Strategy.Script.Executor.ExecutionDataSnapshot
+							.AlertsUnfilled.Contains(order.Alert, this, msg1)) {
+						Assembler.PopupException(msg1 + msig, null, false);
+						this.AppendMessage_propagateToGui(order, msg1 + msig);
+					}
+#endif
 					break;
 
 				case OrderState.LimitExpired:

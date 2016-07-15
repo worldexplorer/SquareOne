@@ -18,19 +18,26 @@ namespace Sq1.Widgets.Exceptions {
 			this.components = new System.ComponentModel.Container();
 			this.olvTreeExceptions = new BrightIdeasSoftware.TreeListView();
 			this.olvcException = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcTime = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcTimestamp = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcTimesOccured = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.ctxTree = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniClear = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.mniPopupOnIncomingException = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniRecentAlwaysSelected = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniPopupOnIncomingException = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.mniShowHeader = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniShowTimestamps = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniShowHeaders = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniShowCounterAndGroup = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniShowSearchbar = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.mniltbFlushToGuiDelayMsec = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
-			this.mniRefresh = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniCopy = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniRefresh = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniltbFlushToGuiDelayMsec = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.splitContainerVertical = new System.Windows.Forms.SplitContainer();
+			this.pnlSearch = new System.Windows.Forms.TableLayoutPanel();
+			this.txtSearch = new System.Windows.Forms.TextBox();
+			this.btnSearchClose = new System.Windows.Forms.Button();
 			this.splitContainerHorizontal = new System.Windows.Forms.SplitContainer();
 			this.txtExceptionMessage = new System.Windows.Forms.TextBox();
 			this.olvStackTrace = new System.Windows.Forms.ListView();
@@ -40,12 +47,14 @@ namespace Sq1.Widgets.Exceptions {
 			this.lvhFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.ctxCallStack = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniCopyStackPosition = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnSearchClear = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.olvTreeExceptions)).BeginInit();
 			this.ctxTree.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerVertical)).BeginInit();
 			this.splitContainerVertical.Panel1.SuspendLayout();
 			this.splitContainerVertical.Panel2.SuspendLayout();
 			this.splitContainerVertical.SuspendLayout();
+			this.pnlSearch.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerHorizontal)).BeginInit();
 			this.splitContainerHorizontal.Panel1.SuspendLayout();
 			this.splitContainerHorizontal.Panel2.SuspendLayout();
@@ -56,12 +65,13 @@ namespace Sq1.Widgets.Exceptions {
 			// olvTreeExceptions
 			// 
 			this.olvTreeExceptions.AllColumns.Add(this.olvcException);
-			this.olvTreeExceptions.AllColumns.Add(this.olvcTime);
+			this.olvTreeExceptions.AllColumns.Add(this.olvcTimestamp);
+			this.olvTreeExceptions.AllColumns.Add(this.olvcTimesOccured);
 			this.olvTreeExceptions.AllowColumnReorder = true;
 			this.olvTreeExceptions.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.olvTreeExceptions.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.olvcException,
-            this.olvcTime});
+            this.olvcTimestamp});
 			this.olvTreeExceptions.ContextMenuStrip = this.ctxTree;
 			this.olvTreeExceptions.CopySelectionOnControlC = false;
 			this.olvTreeExceptions.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -94,10 +104,17 @@ namespace Sq1.Widgets.Exceptions {
 			this.olvcException.FillsFreeSpace = true;
 			this.olvcException.Text = "Exception";
 			// 
-			// olvcTime
+			// olvcTimestamp
 			// 
-			this.olvcTime.Text = "Occured";
-			this.olvcTime.Width = 80;
+			this.olvcTimestamp.Text = "Occured";
+			this.olvcTimestamp.Width = 80;
+			// 
+			// olvcTimesOccured
+			// 
+			this.olvcTimesOccured.DisplayIndex = 2;
+			this.olvcTimesOccured.IsVisible = false;
+			this.olvcTimesOccured.Text = "Times";
+			this.olvcTimesOccured.Width = 40;
 			// 
 			// ctxTree
 			// 
@@ -106,14 +123,17 @@ namespace Sq1.Widgets.Exceptions {
             this.toolStripSeparator2,
             this.mniRecentAlwaysSelected,
             this.mniPopupOnIncomingException,
+            this.toolStripSeparator3,
+            this.mniShowHeader,
             this.mniShowTimestamps,
-            this.mniShowHeaders,
+            this.mniShowCounterAndGroup,
+            this.mniShowSearchbar,
             this.toolStripSeparator1,
             this.mniCopy,
             this.mniRefresh,
             this.mniltbFlushToGuiDelayMsec});
 			this.ctxTree.Name = "ctx";
-			this.ctxTree.Size = new System.Drawing.Size(266, 213);
+			this.ctxTree.Size = new System.Drawing.Size(266, 244);
 			// 
 			// mniClear
 			// 
@@ -128,6 +148,15 @@ namespace Sq1.Widgets.Exceptions {
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(262, 6);
 			// 
+			// mniRecentAlwaysSelected
+			// 
+			this.mniRecentAlwaysSelected.CheckOnClick = true;
+			this.mniRecentAlwaysSelected.Name = "mniRecentAlwaysSelected";
+			this.mniRecentAlwaysSelected.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.R)));
+			this.mniRecentAlwaysSelected.Size = new System.Drawing.Size(265, 22);
+			this.mniRecentAlwaysSelected.Text = "Recent Always Selected";
+			this.mniRecentAlwaysSelected.Click += new System.EventHandler(this.mniRecentAlwaysSelected_Click);
+			// 
 			// mniPopupOnIncomingException
 			// 
 			this.mniPopupOnIncomingException.CheckOnClick = true;
@@ -136,35 +165,67 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniPopupOnIncomingException.Text = "Popup on Every Incoming Exception";
 			this.mniPopupOnIncomingException.Click += new System.EventHandler(this.mniPopupOnEveryIncomingException_Click);
 			// 
-			// mniRecentAlwaysSelected
+			// toolStripSeparator3
 			// 
-			this.mniRecentAlwaysSelected.CheckOnClick = true;
-			this.mniRecentAlwaysSelected.Name = "mniRecentAlwaysSelected";
-			this.mniRecentAlwaysSelected.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-			this.mniRecentAlwaysSelected.Size = new System.Drawing.Size(265, 22);
-			this.mniRecentAlwaysSelected.Text = "Recent Always Selected";
-			this.mniRecentAlwaysSelected.Click += new System.EventHandler(this.mniRecentAlwaysSelected_Click);
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(262, 6);
+			// 
+			// mniShowHeader
+			// 
+			this.mniShowHeader.CheckOnClick = true;
+			this.mniShowHeader.Name = "mniShowHeader";
+			this.mniShowHeader.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
+			this.mniShowHeader.Size = new System.Drawing.Size(265, 22);
+			this.mniShowHeader.Text = "Show Header";
+			this.mniShowHeader.Click += new System.EventHandler(this.mniShowHeaders_Click);
 			// 
 			// mniShowTimestamps
 			// 
 			this.mniShowTimestamps.CheckOnClick = true;
 			this.mniShowTimestamps.Name = "mniShowTimestamps";
+			this.mniShowTimestamps.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.T)));
 			this.mniShowTimestamps.Size = new System.Drawing.Size(265, 22);
 			this.mniShowTimestamps.Text = "Show Timestamps";
 			this.mniShowTimestamps.Click += new System.EventHandler(this.mniShowTimestamps_Click);
 			// 
-			// mniShowHeaders
+			// mniShowCounterAndGroup
 			// 
-			this.mniShowHeaders.CheckOnClick = true;
-			this.mniShowHeaders.Name = "mniShowHeaders";
-			this.mniShowHeaders.Size = new System.Drawing.Size(265, 22);
-			this.mniShowHeaders.Text = "Show Headers";
-			this.mniShowHeaders.Click += new System.EventHandler(this.mniShowHeaders_Click);
+			this.mniShowCounterAndGroup.CheckOnClick = true;
+			this.mniShowCounterAndGroup.Name = "mniShowCounterAndGroup";
+			this.mniShowCounterAndGroup.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
+			this.mniShowCounterAndGroup.Size = new System.Drawing.Size(265, 22);
+			this.mniShowCounterAndGroup.Text = "Show Times Occured";
+			this.mniShowCounterAndGroup.Click += new System.EventHandler(this.mniShowCounterAndGroup_Click);
+			// 
+			// mniShowSearchbar
+			// 
+			this.mniShowSearchbar.CheckOnClick = true;
+			this.mniShowSearchbar.Name = "mniShowSearchbar";
+			this.mniShowSearchbar.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+			this.mniShowSearchbar.Size = new System.Drawing.Size(265, 22);
+			this.mniShowSearchbar.Text = "Show Search Bar";
+			this.mniShowSearchbar.Click += new System.EventHandler(this.mniShowSearchbar_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(262, 6);
+			// 
+			// mniCopy
+			// 
+			this.mniCopy.Name = "mniCopy";
+			this.mniCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+			this.mniCopy.Size = new System.Drawing.Size(265, 22);
+			this.mniCopy.Text = "Copy";
+			this.mniCopy.Click += new System.EventHandler(this.mniCopy_Click);
+			// 
+			// mniRefresh
+			// 
+			this.mniRefresh.Name = "mniRefresh";
+			this.mniRefresh.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.R)));
+			this.mniRefresh.Size = new System.Drawing.Size(265, 22);
+			this.mniRefresh.Text = "Refresh";
+			this.mniRefresh.Click += new System.EventHandler(this.mniRefresh_Click);
 			// 
 			// mniltbFlushToGuiDelayMsec
 			// 
@@ -178,7 +239,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniltbFlushToGuiDelayMsec.InputFieldWidth = 40;
 			this.mniltbFlushToGuiDelayMsec.Name = "mniltbFlushToGuiDelayMsec";
 			this.mniltbFlushToGuiDelayMsec.OffsetTop = 0;
-			this.mniltbFlushToGuiDelayMsec.Size = new System.Drawing.Size(190, 18);
+			this.mniltbFlushToGuiDelayMsec.Size = new System.Drawing.Size(187, 21);
 			this.mniltbFlushToGuiDelayMsec.TextLeft = "Flush To GUI Delay";
 			this.mniltbFlushToGuiDelayMsec.TextLeftOffsetX = 0;
 			this.mniltbFlushToGuiDelayMsec.TextLeftWidth = 108;
@@ -187,22 +248,6 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniltbFlushToGuiDelayMsec.TextRightOffsetX = 160;
 			this.mniltbFlushToGuiDelayMsec.TextRightWidth = 27;
 			this.mniltbFlushToGuiDelayMsec.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbFlushToGuiDelayMsec_UserTyped);
-			// 
-			// mniRefresh
-			// 
-			this.mniRefresh.Name = "mniRefresh";
-			this.mniRefresh.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.R)));
-			this.mniRefresh.Size = new System.Drawing.Size(265, 22);
-			this.mniRefresh.Text = "Refresh";
-			this.mniRefresh.Click += new System.EventHandler(this.mniRefresh_Click);
-			// 
-			// mniCopy
-			// 
-			this.mniCopy.Name = "mniCopy";
-			this.mniCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.mniCopy.Size = new System.Drawing.Size(265, 22);
-			this.mniCopy.Text = "Copy";
-			this.mniCopy.Click += new System.EventHandler(this.mniCopy_Click);
 			// 
 			// splitContainerVertical
 			// 
@@ -213,6 +258,7 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			// splitContainerVertical.Panel1
 			// 
+			this.splitContainerVertical.Panel1.Controls.Add(this.pnlSearch);
 			this.splitContainerVertical.Panel1.Controls.Add(this.olvTreeExceptions);
 			this.splitContainerVertical.Panel1MinSize = 40;
 			// 
@@ -224,6 +270,46 @@ namespace Sq1.Widgets.Exceptions {
 			this.splitContainerVertical.SplitterDistance = 213;
 			this.splitContainerVertical.SplitterWidth = 5;
 			this.splitContainerVertical.TabIndex = 6;
+			// 
+			// pnlSearch
+			// 
+			this.pnlSearch.BackColor = System.Drawing.SystemColors.Control;
+			this.pnlSearch.ColumnCount = 3;
+			this.pnlSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 45F));
+			this.pnlSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.pnlSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.pnlSearch.Controls.Add(this.btnSearchClose, 2, 0);
+			this.pnlSearch.Controls.Add(this.txtSearch, 1, 0);
+			this.pnlSearch.Controls.Add(this.btnSearchClear, 0, 0);
+			this.pnlSearch.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.pnlSearch.Location = new System.Drawing.Point(0, 335);
+			this.pnlSearch.MinimumSize = new System.Drawing.Size(0, 26);
+			this.pnlSearch.Name = "pnlSearch";
+			this.pnlSearch.RowCount = 1;
+			this.pnlSearch.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.pnlSearch.Size = new System.Drawing.Size(213, 26);
+			this.pnlSearch.TabIndex = 6;
+			this.pnlSearch.Visible = false;
+			// 
+			// txtSearch
+			// 
+			this.txtSearch.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.txtSearch.Location = new System.Drawing.Point(48, 3);
+			this.txtSearch.Name = "txtSearch";
+			this.txtSearch.Size = new System.Drawing.Size(137, 20);
+			this.txtSearch.TabIndex = 3;
+			this.txtSearch.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtSearch_KeyUp);
+			// 
+			// btnSearchClose
+			// 
+			this.btnSearchClose.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.btnSearchClose.Location = new System.Drawing.Point(191, 3);
+			this.btnSearchClose.Name = "btnSearchClose";
+			this.btnSearchClose.Size = new System.Drawing.Size(19, 20);
+			this.btnSearchClose.TabIndex = 4;
+			this.btnSearchClose.Text = "X";
+			this.btnSearchClose.UseVisualStyleBackColor = true;
+			this.btnSearchClose.Click += new System.EventHandler(this.btnSearchClose_Click);
 			// 
 			// splitContainerHorizontal
 			// 
@@ -315,6 +401,17 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniCopyStackPosition.Text = "Copy";
 			this.mniCopyStackPosition.Click += new System.EventHandler(this.mniCopyStackPosition_Click);
 			// 
+			// btnSearchClear
+			// 
+			this.btnSearchClear.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.btnSearchClear.Location = new System.Drawing.Point(3, 3);
+			this.btnSearchClear.Name = "btnSearchClear";
+			this.btnSearchClear.Size = new System.Drawing.Size(39, 20);
+			this.btnSearchClear.TabIndex = 5;
+			this.btnSearchClear.Text = "Clear";
+			this.btnSearchClear.UseVisualStyleBackColor = true;
+			this.btnSearchClear.Click += new System.EventHandler(this.btnSearchClear_Click);
+			// 
 			// ExceptionsControl
 			// 
 			this.BackColor = System.Drawing.SystemColors.MenuHighlight;
@@ -329,6 +426,8 @@ namespace Sq1.Widgets.Exceptions {
 			this.splitContainerVertical.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerVertical)).EndInit();
 			this.splitContainerVertical.ResumeLayout(false);
+			this.pnlSearch.ResumeLayout(false);
+			this.pnlSearch.PerformLayout();
 			this.splitContainerHorizontal.Panel1.ResumeLayout(false);
 			this.splitContainerHorizontal.Panel1.PerformLayout();
 			this.splitContainerHorizontal.Panel2.ResumeLayout(false);
@@ -349,7 +448,7 @@ namespace Sq1.Widgets.Exceptions {
 		private SplitContainer splitContainerVertical;
 		private SplitContainer splitContainerHorizontal;
 
-		private BrightIdeasSoftware.OLVColumn olvcTime;
+		private BrightIdeasSoftware.OLVColumn olvcTimestamp;
 		private System.Windows.Forms.ToolStripMenuItem mniCopyStackPosition;
 		private System.Windows.Forms.ContextMenuStrip ctxCallStack;
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbFlushToGuiDelayMsec;
@@ -360,10 +459,18 @@ namespace Sq1.Widgets.Exceptions {
 		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.ContextMenuStrip ctxTree;
 		private ToolStripMenuItem mniRefresh;
-		private ToolStripMenuItem mniShowHeaders;
+		private ToolStripMenuItem mniShowHeader;
 		private OLVColumn olvcException;
 		private ToolStripSeparator toolStripSeparator2;
 		private ToolStripMenuItem mniPopupOnIncomingException;
+		private ToolStripMenuItem mniShowSearchbar;
+		private ToolStripMenuItem mniShowCounterAndGroup;
+		private TableLayoutPanel pnlSearch;
+		private TextBox txtSearch;
+		private Button btnSearchClose;
+		private OLVColumn olvcTimesOccured;
+		private ToolStripSeparator toolStripSeparator3;
+		private Button btnSearchClear;
 		
 	}
 }

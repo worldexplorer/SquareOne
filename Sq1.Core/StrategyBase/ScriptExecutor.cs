@@ -109,21 +109,21 @@ namespace Sq1.Core.StrategyBase {
 				if (this.Strategy.Script == null) return;	// koz the rest is only about notifying script (which may not be compiled if user typed an error in the ScriptEditor and Script didn't compile)
 				if (value == true) {
 					try {
-						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOnNonBlockingRead = true;
+						this.ExecutionDataSnapshot.IsScriptRunning_OnStrategyEmittingOrdersTurnedOn_nonBlocking = true;
 						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStreamingTriggeringScriptTurnedOnCallback(WAIT)");
 						this.Strategy.Script.OnStreamingTriggeringScript_turnedOn_callback();
 					} finally {
 						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnStreamingTriggeringScriptTurnedOnCallback(WAIT)");
-						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOnNonBlockingRead = false;
+						this.ExecutionDataSnapshot.IsScriptRunning_OnStrategyEmittingOrdersTurnedOn_nonBlocking = false;
 					}
 				} else {
 					try {
-						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOffNonBlockingRead = true;
+						this.ExecutionDataSnapshot.IsScriptRunning_OnStrategyEmittingOrdersTurnedOff_nonBlocking = true;
 						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStreamingTriggeringScriptTurnedOffCallback(WAIT)");
 						this.Strategy.Script.OnStreamingTriggeringScript_turnedOff_callback();
 					} finally {
 						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnStreamingTriggeringScriptTurnedOffCallback(WAIT)");
-						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOffNonBlockingRead = false;
+						this.ExecutionDataSnapshot.IsScriptRunning_OnStrategyEmittingOrdersTurnedOff_nonBlocking = false;
 					}
 				}
 			}
@@ -151,21 +151,21 @@ namespace Sq1.Core.StrategyBase {
 				if (this.Strategy.Script == null) return;	// koz the rest is only about notifying script (which may not be compiled if user typed an error in the ScriptEditor and Script didn't compile)
 				if (value == true) {
 					try {
-						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOnNonBlockingRead = true;
+						this.ExecutionDataSnapshot.IsScriptRunning_OnStreamingTriggeringScriptTurnedOn_nonBlocking = true;
 						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStrategyEmittingOrdersTurnedOnCallback(WAIT)");
 						this.Strategy.Script.OnStrategyEmittingOrders_turnedOn_callback();
 					} finally {
 						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnStrategyEmittingOrdersTurnedOnCallback(WAIT)");
-						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOnNonBlockingRead = false;
+						this.ExecutionDataSnapshot.IsScriptRunning_OnStreamingTriggeringScriptTurnedOn_nonBlocking = false;
 					}
 				} else {
 					try {
-						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOffNonBlockingRead = true;
+						this.ExecutionDataSnapshot.IsScriptRunning_OnStreamingTriggeringScriptTurnedOff_nonBlocking = true;
 						this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnStrategyEmittingOrdersTurnedOffCallback(WAIT)");
 						this.Strategy.Script.OnStrategyEmittingOrders_turnedOff_callback();
 					} finally {
 						this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnStrategyEmittingOrdersTurnedOffCallback(WAIT)");
-						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOffNonBlockingRead = false;
+						this.ExecutionDataSnapshot.IsScriptRunning_OnStreamingTriggeringScriptTurnedOff_nonBlocking = false;
 					}
 				}
 			}

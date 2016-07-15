@@ -114,9 +114,42 @@ namespace Sq1.Core.StrategyBase {
 			//ret += this.ScriptParametersAsStringByIdJSONcheck + this.IndicatorParametersAsStringByIdJSONcheck;
 			return ret;
 		}
-		public void CompileInstantiate() {
-			if (this.ActivatedFromDll) return;
-			this.Script = this.ScriptCompiler.CompileSource_returnInstance(this.ScriptSourceCode, this.DotNetReferences);
+
+		public bool CompileInstantiate(bool popupErrorsIntoExceptionsForm = true, string invoker = "", bool forceRecompile = false) {
+			if (this.Script != null && forceRecompile == false) return true;
+
+			bool ret = false;
+			if (this.ActivatedFromDll) {
+				string msg1 = "MUST_NEVER_HAPPEN__SCRIPT_ACTIVATED_FROM_DLL_IS_NULL[" + this + "]";
+				Assembler.PopupException(msg1);
+				return ret;
+			}
+
+			if (string.IsNullOrEmpty(this.ScriptSourceCode)) {
+				string msg = "WONT_COMPILE_STRATEGY_HAS_EMPTY_SOURCE_CODE_PLEASE_TYPE_SOMETHING";
+				Assembler.PopupException(msg, null, false);
+				return ret;
+			}
+
+			try {
+				this.Script = this.ScriptCompiler.CompileSource_returnInstance(this.ScriptSourceCode, this.DotNetReferences);
+			} catch(Exception ex) {
+				string msg3 = "FAILED_TO_COMPILE_SCRIPT__DO_IT_MANUALLY strategy[" + this + "]";
+				Assembler.PopupException(msg3, ex);
+				return ret;
+			}
+
+			if (this.Script == null && popupErrorsIntoExceptionsForm) {
+				string msg4 = invoker + " SCRIPT_DIDNT_AUTOCOMPILE LOOKS_LIKE_INTERNAL_API_HAS_CHANGED strategy[" + this + "]"
+					+ Environment.NewLine
+					+ Environment.NewLine
+					+ this.ScriptCompiler.CompilerErrors_asString_ignoreWarnings;
+				Assembler.PopupException(msg4, null, false);
+				return ret;
+			}
+
+			ret = true;
+			return ret;
 		}
 
 		public Strategy CloneWithNewGuid() {
@@ -213,7 +246,7 @@ namespace Sq1.Core.StrategyBase {
 			this.Script.RecalculateIndicator(indicatorParameterChanged_userClickedInSliders);
 		}
 
-		public bool CompileOnChartInit { get {
+		public bool ShouldCompile_onChartInit { get {
 			bool ret = false;
 			if (this.ActivatedFromDll		== true) return ret;
 			if (this.Script					!= null) return ret;

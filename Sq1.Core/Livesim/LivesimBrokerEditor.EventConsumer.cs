@@ -40,10 +40,10 @@ namespace Sq1.Core.Livesim {
 				this.livesimBrokerSettings.AdapterDisconnectEnabled = whatIchecked.Checked;
 
 			} else if (whatIchecked == this.cbx_ClearExecutionExceptions) {
-				this.livesimBrokerSettings.ClearExecutionExceptions = whatIchecked.Checked;
+				this.livesimBrokerSettings.ClearExecutionExceptions_beforeLivesim = whatIchecked.Checked;
 
-			} else if (whatIchecked == this.cbx_OrderSickEnabled) {
-				this.livesimBrokerSettings.OrderSickEnabled = whatIchecked.Checked;
+			} else if (whatIchecked == this.cbx_BrokerDeniedSubmission_Enabled) {
+				this.livesimBrokerSettings.BrokerDeniedSubmission_injectionEnabled = whatIchecked.Checked;
 
 			} else {
 				Assembler.PopupException("ADD_TARGET_FOR_CLICK_PROPAGATION_FOR_whatIchecked[" + whatIchecked.Name + "]");
@@ -180,11 +180,11 @@ namespace Sq1.Core.Livesim {
 				this.livesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMax = parsedInt;
 
 
-			} else if (whereItyped == this.txt_OrderSickHappensOncePerXordersMin) {
-				this.livesimBrokerSettings.OrderSickHappensOncePerXordersMin = parsedInt;
+			} else if (whereItyped == this.txt_BrokerDeniedSubmission_HappensOncePerXordersMin) {
+				this.livesimBrokerSettings.BrokerDeniedSubmission_HappensOncePerXorders_Min = parsedInt;
 
-			} else if (whereItyped == this.txt_OrderSickHappensOncePerXordersMax) {
-				this.livesimBrokerSettings.OrderSickHappensOncePerXordersMax = parsedInt;
+			} else if (whereItyped == this.txt_BrokerDeniedSubmission_HappensOncePerXordersMax) {
+				this.livesimBrokerSettings.BrokerDeniedSubmission_HappensOncePerXorders_Max = parsedInt;
 
 
 			} else {

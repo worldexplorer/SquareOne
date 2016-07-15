@@ -186,6 +186,7 @@ namespace Sq1.Gui {
 				if (ChartSettingsEditorForm.Instance.IsShown == false) {
 					ChartSettingsEditorForm.Instance.Show(this.DockPanel);
 					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = true;
+					ChartSettingsEditorForm.Instance.ChartSettingsEditorControl.Initialize(this.GuiDataSnapshot.ChartControls_AllCurrentlyOpen);
 				} else {
 					ChartSettingsEditorForm.Instance.Hide();
 					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = false;

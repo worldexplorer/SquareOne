@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Sq1.Core.Execution;
 
 namespace Sq1.Core.Livesim {
 	public class LivesimBrokerSpoiler {
@@ -238,6 +239,38 @@ namespace Sq1.Core.Livesim {
 		//    //Application.DoEvents();
 		//    Thread.Sleep(this.DelayReconnect_USELESS);
 		//}
+
+
+		int howManyOrders_wereNotDeniedSubmission = 0;
+		public OrderState BrokerDeniedSubmission_calculate() {
+			OrderState ret = OrderState.Unknown;
+			if (this.livesimBroker.LivesimBrokerSettings.BrokerDeniedSubmission_injectionEnabled == false) return ret;
+
+			int planned_nonDeniedLimit = this.livesimBroker.LivesimBrokerSettings.BrokerDeniedSubmission_HappensOncePerXorders_Min;
+			if (planned_nonDeniedLimit == 0) return ret;
+
+			if (this.livesimBroker.LivesimBrokerSettings.BrokerDeniedSubmission_HappensOncePerXorders_Max > 0) {
+				int range = Math.Abs(this.livesimBroker.LivesimBrokerSettings.BrokerDeniedSubmission_HappensOncePerXorders_Max -
+									 this.livesimBroker.LivesimBrokerSettings.BrokerDeniedSubmission_HappensOncePerXorders_Min);
+				double rnd0to1 = new Random().NextDouble();
+				int rangePart = (int)Math.Round(range * rnd0to1);
+				planned_nonDeniedLimit += rangePart;
+			}
+
+			if (this.howManyOrders_wereNotDeniedSubmission < planned_nonDeniedLimit) {
+				this.howManyOrders_wereNotDeniedSubmission++;
+				return ret;
+			}
+			this.howManyOrders_wereNotDeniedSubmission = 0;
+
+			double rnd0to1_orderState = new Random().NextDouble();
+			int range_orderState = OrderStatesCollections.BrokerDeniedSumbitting.Count - 1;
+			int rangePart_orderState = (int)Math.Round(range_orderState * rnd0to1_orderState);
+			ret = OrderStatesCollections.BrokerDeniedSumbitting[rangePart_orderState];
+
+			return ret;
+		}
+
 
 	}
 }

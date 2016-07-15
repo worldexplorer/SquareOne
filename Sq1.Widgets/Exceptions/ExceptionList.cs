@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Sq1.Core.Support;
 
@@ -14,5 +15,6 @@ namespace Sq1.Widgets.Exceptions {
 		public new bool InsertUnique(int indexToInsertAt, Exception exception, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
 			return base.InsertUnique(indexToInsertAt, exception, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
 		}
+
 	}
 }

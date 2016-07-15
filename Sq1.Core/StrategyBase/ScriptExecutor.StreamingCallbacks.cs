@@ -36,7 +36,7 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Strategy			== null) ret += "STRATEGY_IS_NULL ";
 			if (this.Strategy.Script	== null) {
 				ret += "SCRIPT_IS_NULL ";
-				if (this.Strategy.CompileOnChartInit == false) {
+				if (this.Strategy.ShouldCompile_onChartInit == false) {
 					ret += "YOU_DIDNT_COMPLIE_ME_ON_WORKSPACE_LOAD()?...";
 				}
 			}
@@ -345,7 +345,7 @@ namespace Sq1.Core.StrategyBase {
 			string msig_imInvoking = "OnBarStaticLastFormed_whileStreamingBarWithOneQuoteAlreadyAppended_callback(WAIT)";
 			try {
 				try {
-					this.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
+					this.ExecutionDataSnapshot.IsScriptRunning_OnBarStaticLast_nonBlocking = true;
 					this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig_imInvoking);
 					if (this.IsStreamingTriggeringScript) {
 						// TODO: What about Script.onQuote, onAlertFilled, onPositionClosed/Opened? - should they also NOT be invoked?
@@ -353,7 +353,7 @@ namespace Sq1.Core.StrategyBase {
 					}
 				} finally {
 					this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msig_imInvoking);
-					this.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
+					this.ExecutionDataSnapshot.IsScriptRunning_OnBarStaticLast_nonBlocking = false;
 				}
 				this.EventGenerator.RaiseOnStrategyExecuted_oneBar(barStaticLast);
 			} catch (Exception ex) {
@@ -391,14 +391,14 @@ namespace Sq1.Core.StrategyBase {
 			string msig_imInvoking = "OnNewQuoteOfStreamingBar_callback(WAIT)";
 			try {
 				try {
-					this.ExecutionDataSnapshot.IsScriptRunningOnNewQuoteNonBlockingRead = true;
+					this.ExecutionDataSnapshot.IsScriptRunning_OnNewQuote_nonBlocking = true;
 					this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig_imInvoking);
 					if (this.IsStreamingTriggeringScript) {
 						this.Strategy.Script.OnNewQuoteOfStreamingBar_callback(quoteForAlertsCreated);
 					}
 				} finally {
 					this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msig_imInvoking);
-					this.ExecutionDataSnapshot.IsScriptRunningOnNewQuoteNonBlockingRead = false;
+					this.ExecutionDataSnapshot.IsScriptRunning_OnNewQuote_nonBlocking = false;
 				}
 				//alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.DumpPendingAlertsIntoPendingHistoryByBar();
 				//if (alertsDumpedForStreamingBar > 0) {
@@ -428,14 +428,14 @@ namespace Sq1.Core.StrategyBase {
 			string msig_imInvoking = "OnLevelTwoChanged_noNewQuote_callback(WAIT)";
 			try {
 				try {
-					this.ExecutionDataSnapshot.IsScriptRunningOnNewQuoteNonBlockingRead = true;
+					this.ExecutionDataSnapshot.IsScriptRunning_OnNewQuote_nonBlocking = true;
 					this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig_imInvoking);
 					if (this.IsStreamingTriggeringScript) {
 						this.Strategy.Script.OnLevelTwoChanged_noNewQuote_callback(levelTwoFrozen);
 					}
 				} finally {
 					this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msig_imInvoking);
-					this.ExecutionDataSnapshot.IsScriptRunningOnNewQuoteNonBlockingRead = false;
+					this.ExecutionDataSnapshot.IsScriptRunning_OnNewQuote_nonBlocking = false;
 				}
 				//this.EventGenerator.RaiseOnStrategyExecuted_onLevelTwoChanged(levelTwoFrozen);
 			} catch (Exception ex) {

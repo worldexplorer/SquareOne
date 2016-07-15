@@ -166,5 +166,17 @@ namespace Sq1.Core.Support {
 		public override string ToString() {
 			return base.ReasonToExist + ":" + this.Count;
 		}
+
+		public List<T> SubsetContainingKeyword(string keyword) {
+			string msig = "FOUND[" + keyword + "] ";
+			List<T> ret = new List<T>();
+			List<T> clone = this.SafeCopy(this, msig);
+			foreach (T ex in clone) {
+				//if (ex.Message.Contains(keyword) == false) continue;
+				if (ex.ToString().Contains(keyword) == false) continue;
+				ret.Add(ex);
+			}
+			return ret;
+		}
 	}
 }

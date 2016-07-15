@@ -55,7 +55,7 @@ namespace Sq1.Core.Execution {
 		ErrorOrderInconsistent		= 701,
 		ErrorSubmittingNotEatable	= 702,
 		ErrorSubmitting_KillerOrder	= 704,
-		ErrorMarketPriceZero		= 705,
+		Error_MarketPriceZero		= 705,
 		ErrorSlippageCalc			= 706,
 		ErrorCancelReplace			= 707,
 

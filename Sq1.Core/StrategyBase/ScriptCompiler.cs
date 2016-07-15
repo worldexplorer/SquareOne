@@ -10,6 +10,21 @@ using Microsoft.CSharp;
 namespace Sq1.Core.StrategyBase {
 	public class ScriptCompiler {
 		public CompilerErrorCollection CompilerErrors;
+
+		public string CompilerErrors_asString_ignoreWarnings { get {
+			string errorsPlainText = "";
+			foreach (var error in this.CompilerErrors) {
+				string errormsg = error.ToString();
+				if (errormsg.ToLower().IndexOf("warning ") == 0) continue;
+				//errorsIgnoreWarnings++;
+				int indexLastSlash = errormsg.LastIndexOf(Path.DirectorySeparatorChar.ToString());
+				string noPath = errormsg.Substring(indexLastSlash + 14);
+				if (errorsPlainText.Length > 0) errorsPlainText += System.Environment.NewLine;
+				errorsPlainText += noPath;
+			}
+			return errorsPlainText;
+		} }
+
 		public string TempFolderInAppData;
 		public string TempFolderAbsPath { get {
 			string ret = null;

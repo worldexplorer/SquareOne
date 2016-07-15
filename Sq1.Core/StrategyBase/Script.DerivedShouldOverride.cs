@@ -44,5 +44,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public virtual void OnOrderReplaced_callback(Order orderKilled, Order orderReplacement) {
 		}
+		public virtual void OnBrokerDeniedSubmission_callback(Alert alert_BrokerDeniedSubmission) {
+		}
 	}
 }

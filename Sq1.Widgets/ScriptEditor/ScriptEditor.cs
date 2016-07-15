@@ -21,6 +21,7 @@ namespace Sq1.Widgets.ScriptEditor {
 		public event EventHandler<ScriptEditorEventArgs> OnRun;
 		public event EventHandler<ScriptEditorEventArgs> OnDebug;
 		public event EventHandler<ScriptEditorEventArgs> OnTextNotSaved;
+
 		public bool DocumentChangedIgnoredDuringInitialization;
 		const string SCRIPT_COMPILED_OK = "Script compiled OK";
 
@@ -146,18 +147,8 @@ namespace Sq1.Widgets.ScriptEditor {
 			}
 			if (this.splitContainer1.Panel2Collapsed) this.splitContainer1.Panel2Collapsed = false;
 		}
-		public void PopulateCompilerErrors(CompilerErrorCollection compilerErrorCollection, bool popupFromAutoHidden = true) {
+		public void PopulateCompilerErrors(string compilerError_asString_noWarnings_NewLineSeparated, bool popupFromAutoHidden = true) {
 			int errorsIgnoreWarnings = 0;
-			string errorsPlainText = "";
-			foreach (var error in compilerErrorCollection) {
-				string errormsg = error.ToString();
-				if (errormsg.ToLower().IndexOf("warning ") == 0) continue;
-				errorsIgnoreWarnings++;
-				int indexLastSlash = errormsg.LastIndexOf(Path.DirectorySeparatorChar.ToString());
-				string noPath = errormsg.Substring(indexLastSlash + 14);
-				if (errorsPlainText.Length > 0) errorsPlainText += System.Environment.NewLine;
-				errorsPlainText += noPath;
-			}
 
 			//int showLines = (compilerErrorCollection.Count >= 5) ? 5 : compilerErrorCollection.Count;
 			//int showLines = (errorsIgnoreWarnings >= 5) ? 5 : errorsIgnoreWarnings;
@@ -171,7 +162,7 @@ namespace Sq1.Widgets.ScriptEditor {
 			}
 			if (this.splitContainer1.Panel2Collapsed) this.splitContainer1.Panel2Collapsed = false;
 
-			this.txtCompilerErrors.Text = errorsPlainText;
+			this.txtCompilerErrors.Text = compilerError_asString_noWarnings_NewLineSeparated;
 			//this.txtCompilerErrors.BackColor = Color.LightCoral;
 			this.txtCompilerErrors.BackColor = Color.FromArgb(225, 200, 200);
 			this.parseError_setEditorCaret(popupFromAutoHidden);

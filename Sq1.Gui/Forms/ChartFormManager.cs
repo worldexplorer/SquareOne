@@ -353,7 +353,7 @@ namespace Sq1.Gui.Forms {
 			try {
 				// Click on strategy should open new chart,
 				//v1 if (this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == true && this.Strategy.Script == null) {		// && this.Strategy.ActivatedFromDll == false
-				if (this.Strategy.CompileOnChartInit) this.StrategyCompileActivate_populateSlidersShow();
+				if (this.Strategy.ShouldCompile_onChartInit) this.StrategyCompileActivate_populateSlidersShow();
 
 				//I'm here via Persist.Deserialize() (=> Reporters haven't been restored yet => backtest should be postponed); will backtest in InitializeStrategyAfterDeserialization
 				// STRATEGY_CLICK_TO_CHART_DOESNT_BACKTEST this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true);
@@ -679,6 +679,7 @@ namespace Sq1.Gui.Forms {
 			}
 
 			this.Strategy.CompileInstantiate();
+
 			if (this.Strategy.Script == null) {
 				string msig = " InitializeStrategyAfterDeserialization(" + this.Strategy.ToString() + ")";
 				string msg = "COMPILATION_FAILED_AFTER_DESERIALIZATION"
@@ -926,25 +927,22 @@ namespace Sq1.Gui.Forms {
 				this.LivesimForm.WindowTitlePullFromStrategy();
 			}
 		}
-		public void StrategyCompileInstantiate_beforeShow() {
+		public void StrategyCompileInstantiate_beforeChartShown(string invoker = "INVOKER_UNKNOWN") {
 			if (this.Strategy.ActivatedFromDll) {
 				string msg = "WONT_COMPILE_STRATEGY_ACTIVATED_FROM_DLL_SHOULD_HAVE_NO_OPTION_IN_UI_TO_COMPILE_IT " + this.Strategy.ToString();
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (string.IsNullOrEmpty(this.Strategy.ScriptSourceCode)) {
-				string msg = "WONT_COMPILE_STRATEGY_HAS_EMPTY_SOURCE_CODE_PLEASE_TYPE_SOMETHING";
-				Assembler.PopupException(msg, null, false);
-				return;
-			}
-			this.Strategy.CompileInstantiate();
+
+			bool isScriptInvokable_avoidNPEdownstack = this.Strategy.CompileInstantiate(true, "beforeChartShown() << " + invoker);
+
 			if (this.Strategy.Script == null) {
 				//NO!!!__BY_FORCING_EditorFormShow()_YOU_MOVE_EditorForm_BEFORE_CHART_FORM POPUP_ANYWAY_KOZ_THATS_THE_ONLY_WAY_TO_SHOW_AND_FIX_COMPILATION_ERRORS
 				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm) == false) {
 					string msg = "BY_FORCING_EditorFormShow()_YOU_MOVE_EditorForm_BEFORE_CHART_FORM"
 						+ "DONT_REMOVE_THIS_CONDITION__EditorForm_MUST_BE_MENTIONED_IN_Sq1.Gui.Layout.xml_AFTER_ChartForm";
 					this.EditorFormShow(false);
-					this.ScriptEditorFormSingletonized_nullUnsafe.ScriptEditorControl.PopulateCompilerErrors(this.Strategy.ScriptCompiler.CompilerErrors);
+					this.ScriptEditorFormSingletonized_nullUnsafe.ScriptEditorControl.PopulateCompilerErrors(this.Strategy.ScriptCompiler.CompilerErrors_asString_ignoreWarnings);
 				}
 			} else {
 				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm) == false) {
@@ -963,7 +961,7 @@ namespace Sq1.Gui.Forms {
 		}
 		public void StrategyCompileActivate_populateSlidersShow() {
 			if (this.Strategy.ActivatedFromDll == false) {
-				this.StrategyCompileInstantiate_beforeShow();
+				this.StrategyCompileInstantiate_beforeChartShown();
 			}
 
 			if (this.Strategy.Script == null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION

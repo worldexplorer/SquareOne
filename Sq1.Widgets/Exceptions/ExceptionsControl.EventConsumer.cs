@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using Sq1.Core;
 
 using Sq1.Widgets.LabeledTextBox;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Sq1.Widgets.Exceptions {
 	public partial class ExceptionsControl {
@@ -11,12 +13,12 @@ namespace Sq1.Widgets.Exceptions {
 			if (base.DesignMode) return;
 			// IF_ONLY_YOU_WANT_TO_FLUSH_DESERIALIZED_FROM_LAST_RESTART_NIY this.FlushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 
-			this.mniShowHeaders.Checked = this.dataSnapshot.ShowHeaders;
+			this.mniShowHeader.Checked = this.dataSnapshot.ShowHeaders;
 			this.olvTreeExceptions	.HeaderStyle = this.dataSnapshot.ShowHeaders ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
 			this.olvStackTrace		.HeaderStyle = this.dataSnapshot.ShowHeaders ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
 
-			this.mniShowTimestamps.Checked = this.dataSnapshot.TreeShowTimestamps;
-			this.olvcTime.IsVisible = this.dataSnapshot.TreeShowTimestamps;
+			this.mniShowTimestamps.Checked = this.dataSnapshot.ShowTimestamps;
+			this.olvcTimestamp.IsVisible = this.dataSnapshot.ShowTimestamps;
 			this.olvTreeExceptions.RebuildColumns();
 
 			this.mniPopupOnIncomingException.Checked = this.dataSnapshot.PopupOnIncomingException;
@@ -97,11 +99,11 @@ namespace Sq1.Widgets.Exceptions {
 			this.ctxTree.Visible = true;	// keep it open
 		}
 		void mniShowTimestamps_Click(object sender, EventArgs e) {
-			this.dataSnapshot.TreeShowTimestamps = mniShowTimestamps.Checked;
+			this.dataSnapshot.ShowTimestamps = mniShowTimestamps.Checked;
 			this.dataSnapshotSerializer.Serialize();
 			//this.olvcTime.Text = this.DataSnapshot.TreeShowExceptionTime ? "Time" : "Message";
 			//this.olvTreeExceptions.RebuildAll(true);
-			this.olvcTime.IsVisible = this.dataSnapshot.TreeShowTimestamps;
+			this.olvcTimestamp.IsVisible = this.dataSnapshot.ShowTimestamps;
 			this.olvTreeExceptions.RebuildColumns();
 			this.ctxTree.Visible = true;	// keep it open
 		}
@@ -117,7 +119,7 @@ namespace Sq1.Widgets.Exceptions {
 		}
 		void mniShowHeaders_Click(object sender, EventArgs e) {
 			try {
-				this.dataSnapshot.ShowHeaders = this.mniShowHeaders.Checked;
+				this.dataSnapshot.ShowHeaders = this.mniShowHeader.Checked;
 				this.dataSnapshotSerializer.Serialize();
 				this.olvTreeExceptions	.HeaderStyle = this.dataSnapshot.ShowHeaders ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
 				this.olvStackTrace		.HeaderStyle = this.dataSnapshot.ShowHeaders ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
@@ -145,5 +147,60 @@ namespace Sq1.Widgets.Exceptions {
 			this.PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized();
 			this.dataSnapshotSerializer.Serialize();
 		}
+
+		void mniShowSearchbar_Click(object sender, EventArgs e) {
+			this.dataSnapshot.ShowSearchbar = this.mniShowSearchbar.Checked;
+			this.dataSnapshotSerializer.Serialize();
+			this.pnlSearch.Visible = this.dataSnapshot.ShowSearchbar;
+			this.txtSearch.Focus();
+			if (this.pnlSearch.Visible == false) {
+				this.olvTreeExceptions.SetObjects(this.Exceptions.SafeCopy(this, "mniShowSearchbar_Click"));
+			}
+			this.ctxTree.Show();
+		}
+
+		void txtSearch_KeyUp(object sender, KeyEventArgs e) {
+			switch(e.KeyCode) {
+				//case Keys.Enter:
+				//    List<Exception> filtered = this.Exceptions.SubsetContainingKeyword(this.txtSearch.Text);
+				//    this.olvTreeExceptions.SetObjects(filtered);
+				//    this.olvTreeExceptions.BackColor = Color.Gainsboro;
+				//    return;
+				case Keys.Escape:
+					this.btnSearchClose_Click(this, null);
+					return;
+			}
+			string keyword = this.txtSearch.Text;
+			if (string.IsNullOrEmpty(keyword) == false) {
+				List<Exception> filtered = this.Exceptions.SubsetContainingKeyword(this.txtSearch.Text);
+				this.olvTreeExceptions.SetObjects(filtered);
+				this.olvTreeExceptions.BackColor = Color.FloralWhite;
+				this.txtSearch.BackColor = Color.FloralWhite;
+				return;
+			}
+
+			this.olvTreeExceptions.SetObjects(this.Exceptions.SafeCopy(this, "txtSearch_KeyDown()"));
+			this.olvTreeExceptions.BackColor = Color.White;
+			this.txtSearch.BackColor = Color.White;
+		}
+
+		void btnSearchClose_Click(object sender, EventArgs e) {
+			this.pnlSearch.Visible = false;
+			this.olvTreeExceptions.SetObjects(this.Exceptions.SafeCopy(this, "btnSearchClear_Click()"));
+			this.olvTreeExceptions.BackColor = Color.White;
+		}
+		void btnSearchClear_Click(object sender, EventArgs e) {
+			this.mniClear_Click(sender, e);
+		}
+
+
+		void mniShowCounterAndGroup_Click(object sender, EventArgs e) {
+			this.dataSnapshot.ShowTimesOccured = this.mniShowCounterAndGroup.Checked;
+			this.dataSnapshotSerializer.Serialize();
+			//if (this.dataSnapshot.ShowCounterToGroup == false) return;
+			this.olvcTimesOccured.IsVisible = this.dataSnapshot.ShowTimesOccured;
+			this.ctxTree.Show();
+		}
+
 	}
 }

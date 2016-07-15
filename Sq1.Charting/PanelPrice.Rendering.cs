@@ -54,6 +54,7 @@ namespace Sq1.Charting {
 				int shadowX = barX + this.BarShadowXoffset_cached;
 				this.renderAlertsPending_bigAquaDot_atPriceEmitted_ifExistForBar(barIndex, shadowX, g);
 				this.renderPosition_smallBrownDot_atPriceFilled_arrowsLines_ifExistForBar(barIndex, shadowX, g);
+				this.renderOrdersKilled_grayCross_ifExistForBar(barIndex, shadowX, g);
 
 				// TODO MOVE_IT_UPSTACK_AND_PLACE_AFTER_renderBarsPrice_SO_THAT_POSITION_LINES_SHOWUP_ON_TOP_OF_BARS 
 				AlertArrow arrow = base.ChartControl.TooltipPositionShownForAlertArrow;
@@ -62,21 +63,28 @@ namespace Sq1.Charting {
 				this.renderPositionLine_forArrow(arrow, g, true);
 			}
 		}
-		void renderOrdersKilled_grayCircle_ifExistForBar(int barIndex, int shadowX, Graphics g) {
+		void renderOrdersKilled_grayCross_ifExistForBar(int barIndex, int shadowX, Graphics g) {
 			Dictionary<int, OrderList> ordersKilled_byBar = base.ChartControl.ExecutorObjects_frozenForRendering.OrdersKilled_byBar;
 			if (ordersKilled_byBar.ContainsKey(barIndex) == false) return;
-			List<Order> ordersKilled = ordersKilled_byBar[barIndex].SafeCopy(this, "//renderOrdersKilled_grayCircle_ifExistForBar(WAIT)");
+			List<Order> ordersKilled = ordersKilled_byBar[barIndex].SafeCopy(this, "//renderOrdersKilled_grayCross_ifExistForBar(WAIT)");
 
 			ChartSettingsTemplated	tpl = base.ChartControl.ChartSettingsTemplated;
-			Pen pen						= tpl.PenOrderKilledCircle;
+			Pen pen						= tpl.PenOrderKilledCross;
 			int radius					= tpl.AlertPendingCircleRadius;
-			int diameter				= radius * 2 + tpl.OrderKilledCirclePenWidth + 1;	// wider than the alert to make both visible when replaced with same (BidAsk + slippage)
+			//int diameter				= radius * 2 + tpl.OrderKilledCrossPenWidth;	// wider than the alert to make both visible when replaced with same (BidAsk + slippage)
+			int rayLength				= Convert.ToInt16(radius * 2);
 			
 			foreach (Order orderVictim in ordersKilled) {
 				double priceEmitted = orderVictim.PriceEmitted;
 				int pendingY = base.ValueToYinverted(priceEmitted);
-				Rectangle entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
-				g.DrawEllipse(pen, entryPlannedRect);
+				//Rectangle entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
+				//g.DrawEllipse(pen, entryPlannedRect);
+
+				int centerX = shadowX;
+				int centerY = pendingY;
+
+				g.DrawLine(pen, centerX - rayLength, centerY - rayLength, centerX + rayLength, centerY + rayLength);
+				g.DrawLine(pen, centerX - rayLength, centerY + rayLength, centerX + rayLength, centerY - rayLength);
 
 				if (orderVictim.Alert.MarketLimitStop == MarketLimitStop.StopLimit) {
 					string msg = "TESTME_DRAWING_StopLimit_SHOULD_GRAYOUT_ALSO_pendingStopActivationPrice";
