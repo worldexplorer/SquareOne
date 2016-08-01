@@ -1,7 +1,5 @@
 ﻿using System;
 
-using Sq1.Core;
-using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Widgets.CsvImporter {

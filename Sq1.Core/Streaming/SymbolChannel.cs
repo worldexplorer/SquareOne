@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Backtesting;
-using Sq1.Core.Livesim;
 using Sq1.Core.Charting;
 
 namespace Sq1.Core.Streaming {
@@ -20,8 +19,8 @@ namespace Sq1.Core.Streaming {
 		public	QueuePerSymbol<Quote		, STREAMING_CONSUMER_CHILD>	QueueWhenBacktesting_PumpForLiveAndLivesim		{ get; protected set; }
 		public	PumpPerSymbol<LevelTwoFrozen, STREAMING_CONSUMER_CHILD>	PumpLevelTwo									{ get; protected set; }
 
-		public	PumpPerSymbol<Quote			, STREAMING_CONSUMER_CHILD>	QuotePump_nullUnsafe							{ get { return this.QueueWhenBacktesting_PumpForLiveAndLivesim as PumpPerSymbol<Quote, STREAMING_CONSUMER_CHILD>; } }
-		public	bool					ImQueueNotPump_trueOnlyForBacktest												{ get { return this.QuotePump_nullUnsafe == null; } }
+		public	PumpPerSymbol<Quote			, STREAMING_CONSUMER_CHILD>	PumpQuote_nullWhenBacktesting					{ get { return this.QueueWhenBacktesting_PumpForLiveAndLivesim as PumpPerSymbol<Quote, STREAMING_CONSUMER_CHILD>; } }
+		public	bool					ImQueueNotPump_trueOnlyForBacktest												{ get { return this.PumpQuote_nullWhenBacktesting == null; } }
 				bool					pump_separatePushingThread_enabled;
 
 		public	Dictionary<BarScaleInterval, SymbolScaleStream<STREAMING_CONSUMER_CHILD>>	StreamsByScaleInterval	{ get; protected set; }
@@ -490,20 +489,20 @@ namespace Sq1.Core.Streaming {
 		//~SymbolChannel() { this.Dispose(); }
 
 		public bool IsDisposed { get; private set; }
-		public void Dispose() {
+		public void Dispose() { lock (this.lockStreamsDictionary) {
 			if (this.IsDisposed) {
 				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.QuotePump_nullUnsafe != null) {
-			    this.QuotePump_nullUnsafe.Dispose();
+			if (this.PumpQuote_nullWhenBacktesting != null && this.PumpQuote_nullWhenBacktesting.IsDisposed == false) {
+			    this.PumpQuote_nullWhenBacktesting.Dispose();
 			}
-			if (this.PumpLevelTwo != null) {
+			if (this.PumpLevelTwo != null && this.PumpLevelTwo.IsDisposed == false) {
 				this.PumpLevelTwo.Dispose();
 			}
 			this.IsDisposed = true;
-		}
+		} }
 
 		//public List<StreamingConsumer> Consumers_QuoteBarLevel2_unique { get {
 		//    List<StreamingConsumer> consumersMerged = new List<StreamingConsumer>();

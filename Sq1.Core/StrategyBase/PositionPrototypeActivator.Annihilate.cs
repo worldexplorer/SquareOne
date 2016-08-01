@@ -76,7 +76,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg + msig);
 				throw new Exception(msg + msig);
 			}
-			Order orderFollowed = alert_takeProfit_or_stopLoss.OrderFollowed;
+			Order orderFollowed = alert_takeProfit_or_stopLoss.OrderFollowed_orCurrentReplacement;
 			if (orderFollowed == null) {
 				string msg = "MUST_NOT_BE_NULL alert_takeProfit_or_stopLoss.OrderFollowed=NULL DONT_INVOKE_ME_FOR_BACKTEST__ONLY_LIVE_AND_LIVESIM_ISSUE_ORDERS_FOR_ALERTS";
 				Assembler.PopupException(msg + msig);

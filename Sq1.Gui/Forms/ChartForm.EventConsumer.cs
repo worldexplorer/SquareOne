@@ -33,6 +33,10 @@ namespace Sq1.Gui.Forms {
 			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorInstantiated_andInFront; 
 		}
 		void ctxBacktest_Opening(object sender, CancelEventArgs e) {
+			MenuItemLabeledTextBox oldPips_mustBeSame = this.mnitlbSpreadGeneratorPct;
+			string newPips = this.ChartFormManager.Executor.SpreadPips;
+			if (oldPips_mustBeSame.TextRight == newPips) return;
+			oldPips_mustBeSame.TextRight = newPips;
 		}
 		void mniStrategyRemove_Click(object sender, System.EventArgs e) {
 			this.ChartFormManager.Strategy = null;

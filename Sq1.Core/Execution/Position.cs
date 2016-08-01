@@ -404,8 +404,8 @@ namespace Sq1.Core.Execution {
 				msg.Append(EntryFilledBarIndex);
 				msg.Append(":");
 				if (this.EntryAlert != null) {
-					if (this.EntryAlert.OrderFollowed != null) {
-						msg.Append(this.EntryAlert.OrderFollowed.State);
+					if (this.EntryAlert.OrderFollowed_orCurrentReplacement != null) {
+						msg.Append(this.EntryAlert.OrderFollowed_orCurrentReplacement.State);
 					} else {
 						msg.Append("NO_ENTRY_ORDER");
 					}
@@ -424,8 +424,8 @@ namespace Sq1.Core.Execution {
 				msg.Append(ExitFilledBarIndex);
 				msg.Append(":");
 				if (this.ExitAlert != null) {
-					if (this.ExitAlert.OrderFollowed != null) {
-						msg.Append(this.ExitAlert.OrderFollowed.State);
+					if (this.ExitAlert.OrderFollowed_orCurrentReplacement != null) {
+						msg.Append(this.ExitAlert.OrderFollowed_orCurrentReplacement.State);
 					} else {
 						msg.Append("NO_EXIT_ORDER");
 					}
@@ -449,7 +449,7 @@ namespace Sq1.Core.Execution {
 
 		}
 
-		public PositionPrototype Prototype { get { return this.EntryAlert.PositionPrototype; } }
+		public PositionPrototype Prototype { get { return this.EntryAlert.PositionPrototype_onlyForEntryAlert; } }
 
 		public string ExecutionControl_PositionClose_knowHow { get {
 			string ret = "";
@@ -465,7 +465,7 @@ namespace Sq1.Core.Execution {
 				return ret;
 			}
 
-			if (this.ExitAlert.OrderFollowed == null) {
+			if (this.ExitAlert.OrderFollowed_orCurrentReplacement == null) {
 				ret += "Generate MarketCloseOrder for ExitAlert";
 			} else {
 				ret += "Replace with MarketCloseOrder"

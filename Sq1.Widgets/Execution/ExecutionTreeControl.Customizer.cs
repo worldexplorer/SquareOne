@@ -62,9 +62,9 @@ namespace Sq1.Widgets.Execution {
 		}
 	
 		
-		void oLVColumn_VisibilityChanged(object sender, EventArgs e) {
-			OLVColumn oLVColumn = sender as OLVColumn;
-			if (oLVColumn == null) return;
+		void olvColumn_VisibilityChanged(object sender, EventArgs e) {
+			OLVColumn olvColumn = sender as OLVColumn;
+			if (olvColumn == null) return;
 			
 				//v1 prior to using this.OrdersTreeOLV.SaveState();
 //			if (this.DataSnapshot.ColumnsShown.ContainsKey(oLVColumn.Text) == false) {
@@ -84,12 +84,12 @@ namespace Sq1.Widgets.Execution {
 			// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
 			List<OLVColumn> allColumns = new List<OLVColumn>();
 			foreach (ColumnHeader columnHeader in this.olvOrdersTree.Columns) {
-				OLVColumn oLVColumn = columnHeader as OLVColumn; 
-				oLVColumn.VisibilityChanged += oLVColumn_VisibilityChanged;
-				if (oLVColumn == null) continue;
+				OLVColumn olvColumn = columnHeader as OLVColumn; 
+				olvColumn.VisibilityChanged += olvColumn_VisibilityChanged;
+				if (olvColumn == null) continue;
 				//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
-				if (this.olvOrdersTree.AllColumns.Contains(oLVColumn)) continue;
-				allColumns.Add(oLVColumn);
+				if (this.olvOrdersTree.AllColumns.Contains(olvColumn)) continue;
+				allColumns.Add(olvColumn);
 			}
 			if (allColumns.Count > 0) {
 				//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
@@ -171,14 +171,27 @@ namespace Sq1.Widgets.Execution {
 				if (order == null) return "olvcOrderType.AspectGetter: order=null";
 				//v1 return order.IsKiller ? "" : order.Alert.MarketLimitStop.ToString();
 				if (order.IsKiller == false) return order.Alert.MarketLimitStop.ToString();
-				bool thisKillerReplacesLimitExpired = order.VictimToBeKilled != null && string.IsNullOrEmpty(order.VictimToBeKilled.ReplacedByGUID) == false;
-				return thisKillerReplacesLimitExpired ? "LimitExpired" : "";
+				//v2
+				bool thisKillerReplaces_LimitExpired_orStuckInSubmitted = order.VictimToBeKilled != null && string.IsNullOrEmpty(order.VictimToBeKilled.ReplacedByGUID) == false;
+				//return thisKillerReplacesLimitExpired ? "LimitExpired" : "";
+				//v3
+				OrderStateMessage stuckInSubmitted_wasReplaced =
+					order.FindFirstMessageContaining_inOrderMessages_nullUnsafe("__STUCK_IN_SUBMITTED__REPLACED_WITH[");
+				string replacementScenario = stuckInSubmitted_wasReplaced != null ? "StuckInSubmitted" : "LimitExpired";
+				return thisKillerReplaces_LimitExpired_orStuckInSubmitted ? replacementScenario : "?";
 			};
 			this.olvcSpreadSide.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcSpreadSide.AspectGetter: order=null";
 				//v1 return order.IsKiller ? "" : formatOrderPriceSpreadSide(order, this.dataSnapshot.PricingDecimalForSymbol);
 				if (order.IsKiller == false) return formatOrderPriceSpreadSide(order, this.dataSnapshot.PricingDecimalForSymbol);
+				if (order.Alert.MarketLimitStop == MarketLimitStop.Market) {
+					if (order.Alert.QuoteCurrent_whenThisAlertFilled != null) {
+						return order.Alert.QuoteCurrent_whenThisAlertFilled.TradedPrice_asString;
+					} else {
+						return "MARKET_FILL_LAGGING";
+					}
+				}
 				bool thisKillerReplacesLimitExpired = order.VictimToBeKilled != null && string.IsNullOrEmpty(order.VictimToBeKilled.ReplacedByGUID) == false;
 				if (thisKillerReplacesLimitExpired == false) return "";
 				double nextSlippage = order.VictimToBeKilled.SlippageNextAvailable_forLimitAlertsOnly_NanWhenNoMore;
@@ -195,7 +208,7 @@ namespace Sq1.Widgets.Execution {
 			this.olvcPriceCurBidOrAsk.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcPriceCurBidOrAsk.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.PriceCurBidOrAsk.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
+				return order.IsKiller ? "" : order.PriceCurBidOrAsk_zeroForMarket.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
 			};
 			this.olvcPriceEmitted_withSlippageApplied.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -353,9 +366,9 @@ namespace Sq1.Widgets.Execution {
 			// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
 			List<OLVColumn> allColumns = new List<OLVColumn>();
 			foreach (ColumnHeader columnHeader in this.olvMessages.Columns) {
-				OLVColumn oLVColumn = columnHeader as OLVColumn; 
-				if (oLVColumn == null) continue;
-				allColumns.Add(oLVColumn);
+				OLVColumn olvColumn = columnHeader as OLVColumn; 
+				if (olvColumn == null) continue;
+				allColumns.Add(olvColumn);
 			}
 			if (allColumns.Count > 0) {
 				this.olvMessages.AllColumns.AddRange(allColumns);
@@ -412,10 +425,14 @@ namespace Sq1.Widgets.Execution {
 			if (osm.Order.Alert.DataSource_fromBars					== null) return;
 			if (osm.Order.Alert.DataSource_fromBars.BrokerAdapter	== null) return;
 			BrokerAdapter broker = osm.Order.Alert.DataSource_fromBars.BrokerAdapter;
-			Color backColor = broker.GetBackGroundColor_forOrderStateMessage_nullUnsafe(osm);
-			if (backColor											== null) return;
-			if (backColor									 == Color.Empty) return;
-			e.Item.BackColor = backColor;
+			Color backColor_fromBroker = broker.GetBackGroundColor_forOrderStateMessage_nullUnsafe(osm);
+			if (backColor_fromBroker != null && backColor_fromBroker != Color.Empty) {
+				e.Item.BackColor = backColor_fromBroker;
+				return;
+			}
+			if (osm.PostProcessed) {
+				e.Item.BackColor = this.dataSnapshot.ColorBackground_forMessagesThatChangedOrderState;
+			}
 		}
 
 		FontCache fontCache;

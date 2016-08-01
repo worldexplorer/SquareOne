@@ -23,7 +23,7 @@ namespace Sq1.Core.Broker {
 			}
 			if (ordersEatable.Count > 0) {
 				BrokerAdapter broker = extractSameBrokerAdapter_throwIfDifferent(ordersEatable, "SubmitEatableOrders(): ");
-				broker.SubmitOrders_ownOneThread_forAllNewAlerts(ordersEatable);
+				broker.EmitOrders_ownOneThread_forAllNewAlerts(ordersEatable);
 			}
 			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
 		}
@@ -41,6 +41,38 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException(msg, ex);
 			}
 		}
+		public void ExecutionTreeControl_OnOrderDoubleClicked_OrderProcessorShouldKillOrder(object sender, OrderEventArgs e) {
+			string msig = " //ExecutionTreeControl_OnOrderDoubleClicked_OrderProcessorShouldKillOrder";
+			Order orderToBeKilled = e.Order;
+			this.GuiClick_killPendingSelected(new List<Order>() { orderToBeKilled }, msig);
+		}
+		public int GuiClick_killPendingSelected(List<Order> selectedKillable, string invoker = " //GuiClick_killPendingSelected()") {
+			int killersEmitted_total = 0;
+			if (selectedKillable.Count == 0) {
+				Assembler.PopupException("NO_ORDER_TO_KILL selectedKillable.Count==0" + invoker);
+				return killersEmitted_total;
+			}
+
+			foreach (Order orderToBeKilled in selectedKillable) {
+				try {
+					bool orderDeserialized_afterAppRestart = Assembler.InstanceInitialized.AlertsForChart.IsItemRegisteredForAnyContainer(orderToBeKilled.Alert) == false;
+					if (orderDeserialized_afterAppRestart) {
+						string msg = "I_REFUSE_TO_KILL_AN_ORDER_AFTER_APPRESTART orderToBeKilled[" + orderToBeKilled + "]"
+							//+ " tree_FormatRow() sets Item.ForeColor=Color.DimGray when "
+							//+ " (all JSON-deserialized orders have no chart to get popped-up)"
+							;
+						orderToBeKilled.AppendMessage(msg);
+						Assembler.PopupException(msg + invoker, null, false);
+						continue;
+					}
+					bool killerEmitted = this.Emit_killOrderPending_usingKiller_hookNeededAfterwards(orderToBeKilled, invoker, true);
+					if (killerEmitted) killersEmitted_total++;
+				} catch (Exception ex) {
+					Assembler.PopupException(invoker, ex);
+				}
+			}
+			return killersEmitted_total;
+		}
 		public void GuiClick_killPendingAll() {
 			string msig = " //GuiClick_cancelAllPending()";
 			List<Order> ordersPendingToKill = this.DataSnapshot.OrdersPending.SafeCopy;
@@ -51,17 +83,10 @@ namespace Sq1.Core.Broker {
 			BrokerAdapter broker = this.extractSameBrokerAdapter_throwIfDifferent(ordersPendingToKill, msig);
 			foreach (Order pendingOrder in ordersPendingToKill) {
 				//this.Emit_killOrderPending_withoutKiller(pendingOrder, msig);
-				bool emitted = this.Emit_killOrderPending_usingKiller(pendingOrder, msig);
+				bool emitted = this.Emit_killOrderPending_usingKiller_hookNeededAfterwards(pendingOrder, msig);
 			}
 		}
-		public void GuiClick_killPendingSelected(List<Order> selectedKillable) {
-			string msig = " //GuiClick_killPendingSelected()";
-			if (selectedKillable.Count == 0) return;
-			foreach (Order pendingOrder in selectedKillable) {
-				//this.Emit_killOrderPending_withoutKiller(pendingOrder, msig);
-				bool emitted = this.Emit_killOrderPending_usingKiller(pendingOrder, msig);
-			}
-		}
+
 		public void GuiClick_orderReplace(Order pendingOrder) {
 			string msig = " //GuiClick_orderReplace()";
 			Order replacementOrder = pendingOrder.DeriveReplacementOrder();
@@ -86,26 +111,6 @@ namespace Sq1.Core.Broker {
 				}
 			}
 			return broker;
-		}
-
-
-		public void ExecutionTreeControl_OnOrderDoubleClicked_OrderProcessorShouldKillOrder(object sender, OrderEventArgs e) {
-			string msig = " //ExecutionTreeControl_OnOrderDoubleClicked_OrderProcessorShouldKillOrder";
-			try {
-				Order orderToBeKilled = e.Order;
-				bool orderDeserialized_afterAppRestart = Assembler.InstanceInitialized.AlertsForChart.IsItemRegisteredForAnyContainer(orderToBeKilled.Alert) == false;
-				if (orderDeserialized_afterAppRestart) {
-					string msg = "I_REFUSE_TO_KILL_AN_ORDER_AFTER_APPRESTART"
-						+ " tree_FormatRow() sets Item.ForeColor=Color.DimGray when "
-						+ " (all JSON-deserialized orders have no chart to get popped-up)";
-					orderToBeKilled.AppendMessage(msg);
-					Assembler.PopupException(msg + msig, null, false);
-					return;
-				}
-				bool emitted = this.Emit_killOrderPending_usingKiller(orderToBeKilled, "USER_DOUBLE_CLICKED_ON_ORDER_FROM_EXECUTION_FORM");
-			} catch (Exception ex) {
-				Assembler.PopupException(msig, ex);
-			}
 		}
 
 //		public void CancelReplaceOrder(Order orderToReplace, Order orderReplacement) {

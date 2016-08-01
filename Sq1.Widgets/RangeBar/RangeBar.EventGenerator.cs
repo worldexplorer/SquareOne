@@ -1,7 +1,5 @@
 ﻿using System;
 
-using Sq1.Core;
-
 namespace Sq1.Widgets.RangeBar {
 	public abstract partial class RangeBar<T>  {
 		public event EventHandler<RangeArgs<T>> OnValueMinChanged;

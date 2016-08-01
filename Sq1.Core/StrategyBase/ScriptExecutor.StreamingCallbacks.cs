@@ -86,14 +86,32 @@ namespace Sq1.Core.StrategyBase {
 			if (onNewQuoteTrue_onNewBarFalse == true) {
 				scriptInvocationError = this.invokeScript_onNewQuote_indicatorsAlready(quote_fromStreaming);
 				if (this.ExecutionDataSnapshot.AlertsUnfilled.Count > 0) {
-					this.fillPendings_onEachQuote_onlyForLivesimBrokerDefault(quote_fromStreaming);
+					this.fillPendings_onEachQuote_forAnyLivesimBrokerDerived(quote_fromStreaming);
 				}
 			} else {
 				List<Alert> extendPriceEmitted_toCurrentBar_forOrdersReplaced = this.ExecutionDataSnapshot.AlertsUnfilled.SafeCopy(
 																					this, "alertToPropagatePriceEmitted_onEachNewBar");
 				if (extendPriceEmitted_toCurrentBar_forOrdersReplaced.Count > 1) {
-					string msg = "ARE_YO_RUNNING_STRATEGY_WITH__MULTIPLE_ALERTS_OPEN??? [" + extendPriceEmitted_toCurrentBar_forOrdersReplaced.Count + "]";
-					Assembler.PopupException(msg, null, false);
+					bool twoOrders_forOnePositionPrototype_afterEntry = false;
+					if (extendPriceEmitted_toCurrentBar_forOrdersReplaced.Count == 2) {
+						// the order doesn't matter
+						Alert stopLoss		= extendPriceEmitted_toCurrentBar_forOrdersReplaced[0];
+						Alert takeProfit	= extendPriceEmitted_toCurrentBar_forOrdersReplaced[1];
+						if (stopLoss.IsExitAlert && takeProfit.IsExitAlert) {
+							PositionPrototype takeProfitPrototype = takeProfit.PositionPrototype_bothForEntryAndExit;
+							PositionPrototype   stopLossPrototype =   stopLoss.PositionPrototype_bothForEntryAndExit;
+							if (takeProfitPrototype != null &&
+								  stopLossPrototype != null &&
+								  stopLossPrototype == takeProfitPrototype) {
+								twoOrders_forOnePositionPrototype_afterEntry = true;
+							}
+						}
+					}
+
+					if (twoOrders_forOnePositionPrototype_afterEntry == false) {
+						string msg = "ARE_YO_RUNNING_STRATEGY_WITH__MULTIPLE_ALERTS_OPEN??? [" + extendPriceEmitted_toCurrentBar_forOrdersReplaced.Count + "]";
+						Assembler.PopupException(msg, null, false);
+					}
 				}
 				foreach (Alert alertToPropagatePriceEmitted_onEachNewBar in extendPriceEmitted_toCurrentBar_forOrdersReplaced) {
 					int extendedToBars = alertToPropagatePriceEmitted_onEachNewBar.FillPriceEmitted_fromLastChangeTillBar();
@@ -155,11 +173,11 @@ namespace Sq1.Core.StrategyBase {
 				//v2
 				if (this.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 					string msg2 = "BacktestBrokerAdapter just removes doomed from AlertsPending";
-					int removedFromPendings = this.DataSource_fromBars.BrokerAdapter.AlertPendings_kill(alertsDoomed_afterExec_safeCopy);
+					int removedFromPendings = this.DataSource_fromBars.BrokerAdapter.AlertsPending_kill(alertsDoomed_afterExec_safeCopy);
 				} else {
 					string msg1 = "QuikBrokerAdapter Emits Orders and waits for (simulated for LivesimBrokerDefault) callback";
 					if (this.IsStrategyEmittingOrders) {
-						int emitted = this.DataSource_fromBars.BrokerAdapter.AlertPendings_kill(alertsDoomed_afterExec_safeCopy);
+						int emitted = this.DataSource_fromBars.BrokerAdapter.AlertsPending_kill(alertsDoomed_afterExec_safeCopy);
 					}
 				}
 			}
@@ -286,12 +304,12 @@ namespace Sq1.Core.StrategyBase {
 			return ret;
 		}
 
-		void fillPendings_onEachQuote_onlyForLivesimBrokerDefault(Quote quoteForAlertsCreated) {
-			LivesimBrokerDefault defaultOrderFiller = this.DataSource_fromBars.BrokerAdapter as LivesimBrokerDefault;
-			if (defaultOrderFiller == null) return;
+		void fillPendings_onEachQuote_forAnyLivesimBrokerDerived(Quote quoteForAlertsCreated) {
+			LivesimBroker orderFiller_anyLivesimDerived = this.DataSource_fromBars.BrokerAdapter as LivesimBroker;
+			if (orderFiller_anyLivesimDerived == null) return;
 
-			if (defaultOrderFiller.DataSnapshot == null) {
-				string msg = "CHANGED_DATASOURCE_DIDNT_INITIALIZE_FULLY RESTART defaultOrderFiller.DataSnapshot=NULL IM_STORING_SCHEDULED_PENDINGS_THERE";
+			if (orderFiller_anyLivesimDerived.DataSnapshot == null) {
+				string msg = "CHANGED_DATASOURCE_DIDNT_INITIALIZE_FULLY RESTART orderFiller_anyLivesimDerived.DataSnapshot=NULL IM_STORING_SCHEDULED_PENDINGS_THERE";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
@@ -310,7 +328,7 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "CLONED_ATTACHED_SORRY!!! I_MUST_HAVE_IT_UNATTACHED_HERE";
 				//Assembler.PopupException(msg);
 			}
-			defaultOrderFiller.ConsumeQuoteBoundUnattached_toFillPending(quoteForAlertsCreated, willBeFilled);
+			orderFiller_anyLivesimDerived.ConsumeQuoteBoundUnattached_toFillPending(quoteForAlertsCreated, willBeFilled);
 		}
 
 		string invokeScript_onNewBar_indicatorsAlready(Quote quoteForAlertsCreated) {

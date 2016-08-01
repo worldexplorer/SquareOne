@@ -42,7 +42,8 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 		void domainUpDown_OnArrowDownStepSubstract(object sender, EventArgs e) {
 			try {
-				decimal parsed = Decimal.Parse(this.NumericUpDown.Text);
+				//v1 decimal parsed = Decimal.Parse(this.NumericUpDown.Text);
+				decimal parsed = this.NumericUpDown.Value;
 				this.NumericUpDown.BackColor = Color.White;
 				parsed -= this.ValueIncrement;
 				if (parsed < this.ValueMinRtlSafe) return;
@@ -54,7 +55,8 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 		void domainUpDown_OnArrowUpStepAdd(object sender, EventArgs e) {
 			try {
-				decimal parsed = Decimal.Parse(this.NumericUpDown.Text);
+				//v1 decimal parsed = Decimal.Parse(this.NumericUpDown.Text);
+				decimal parsed = this.NumericUpDown.Value;
 				this.NumericUpDown.BackColor = Color.White;
 				parsed += this.ValueIncrement;
 				if (parsed > this.ValueMaxRtlSafe) return;
@@ -111,9 +113,11 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 
 		void PanelFillSlider_ValueCurrentChanged(object sender, EventArgs e) {
-			string valueClicked = this.PanelFillSlider.ValueCurrent.ToString(this.ValueFormat);
-			if (valueClicked == this.NumericUpDown.Text) return;
-			this.NumericUpDown.Text = valueClicked;
+			//v1 string valueClicked = this.PanelFillSlider.ValueCurrent.ToString(this.ValueFormat);
+			//v1 if (valueClicked == this.NumericUpDown.Text) return;
+			//v1 this.NumericUpDown.Text = valueClicked;
+			if (this.PanelFillSlider.ValueCurrent == this.NumericUpDown.Value) return;
+			this.NumericUpDown.Value = this.PanelFillSlider.ValueCurrent;
 			this.RaiseValueChanged();
 		}
 
@@ -139,7 +143,8 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 
 		void ctxSlider_Opening(object sender, CancelEventArgs e) {
-			this.NumericUpDown.Text = this.format(this.ValueCurrent);
+			//v1 this.NumericUpDown.Text = this.format(this.ValueCurrent);
+			this.NumericUpDown.Value = this.ValueCurrent;
 			this.mniltbValueCurrent.InputFieldValue = this.format(this.ValueCurrent);
 			this.mniltbValueMin.InputFieldValue = this.format(this.ValueMin);
 			this.mniltbValueMax.InputFieldValue = this.format(this.ValueMax);

@@ -59,6 +59,10 @@ namespace Sq1.Core.Livesim {
 
 		[JsonProperty]	public	bool	ClearExecutionExceptions_beforeLivesim;
 
+		[JsonProperty]	public	bool	NoOrderStateCallbackAfterSubmitted_Enabled;
+		[JsonProperty]	public	int		NoOrderStateCallbackAfterSubmitted_HappensOncePerXorders_Min;
+		[JsonProperty]	public	int		NoOrderStateCallbackAfterSubmitted_HappensOncePerXorders_Max;
+
 		public LivesimBrokerSettings(Strategy strategy) : base() {
 			base.Initialize(strategy);
 			DelayBeforeFillEnabled						= true;
@@ -72,6 +76,7 @@ namespace Sq1.Core.Livesim {
 			AdapterDisconnectEnabled					= true;
 			BrokerDeniedSubmission_injectionEnabled		= true;
 			ClearExecutionExceptions_beforeLivesim		= false;
+			NoOrderStateCallbackAfterSubmitted_Enabled	= true;
 		}
 	}
 }

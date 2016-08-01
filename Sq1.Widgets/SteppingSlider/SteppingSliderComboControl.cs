@@ -11,7 +11,10 @@ namespace Sq1.Widgets.SteppingSlider {
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public decimal ValueMin {
 			get { return this.PanelFillSlider.ValueMin; }
-			set { this.PanelFillSlider.ValueMin = value; }
+			set {
+				this.PanelFillSlider.ValueMin = value;
+				this.NumericUpDown.Minimum = value;
+			}
 		}
 		
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
@@ -24,9 +27,19 @@ namespace Sq1.Widgets.SteppingSlider {
 		public decimal ValueCurrent {
 			get { return this.PanelFillSlider.ValueCurrent; }
 			set {
+				if (this.NumericUpDown.Minimum != this.PanelFillSlider.ValueMin) {
+					this.NumericUpDown.Minimum  = this.PanelFillSlider.ValueMin;
+					string msg = "AVOIDING_NumericUpDown_BEYOUND_Min__in_InitializeComponent()";
+				}
+				if (this.NumericUpDown.Maximum != this.PanelFillSlider.ValueMax) {
+					this.NumericUpDown.Maximum  = this.PanelFillSlider.ValueMax;
+					string msg = "AVOIDING_NumericUpDown_BEYOUND_Max__in_InitializeComponent()";
+				}
+
 				this.PanelFillSlider.ValueCurrent = value;		// => RaiseValueCurrentChanged()
 				this.mniltbValueCurrent.InputFieldValue = this.format(this.PanelFillSlider.ValueCurrent);
-				this.NumericUpDown.Text = this.format(this.PanelFillSlider.ValueCurrent);
+				//v1 this.NumericUpDown.Text = this.format(this.PanelFillSlider.ValueCurrent);
+				this.NumericUpDown.Value = this.PanelFillSlider.ValueCurrent;
 				// numericUpDown clicked causes double backtest and Disposes TSI menu items this.RaiseValueChanged();
 			}
 		}
@@ -41,7 +54,10 @@ namespace Sq1.Widgets.SteppingSlider {
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public decimal ValueMax {
 			get { return this.PanelFillSlider.ValueMax; }
-			set { this.PanelFillSlider.ValueMax = value; }
+			set {
+				this.PanelFillSlider.ValueMax = value;
+				this.NumericUpDown.Maximum = value;
+			}
 		}
 		
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]

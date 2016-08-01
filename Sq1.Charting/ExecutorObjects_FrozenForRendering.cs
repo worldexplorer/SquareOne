@@ -219,7 +219,7 @@ namespace Sq1.Charting {
 				this.OrdersKilled_byBar.Add(barIndex, new OrderList("ORDERLISTS_FOR_barIndexStillNotFilled[" + barIndex + "]", null, null));
 			}
 			OrderList victimsForBar = this.OrdersKilled_byBar[barIndex];
-			victimsForBar.AddNoDupe(orderKilled, this
+			ByBarDumpStatus ret = victimsForBar.AddNoDupe(orderKilled, this
 									, "//OrderKilled_addForBar(WAIT)[" + barIndex + "]"
 									, ConcurrentWatchdog.TIMEOUT_DEFAULT, false);
 		}

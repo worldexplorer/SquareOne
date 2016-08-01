@@ -45,6 +45,9 @@ namespace Sq1.Core.Livesim {
 			} else if (whatIchecked == this.cbx_BrokerDeniedSubmission_Enabled) {
 				this.livesimBrokerSettings.BrokerDeniedSubmission_injectionEnabled = whatIchecked.Checked;
 
+			} else if (whatIchecked == this.cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled) {
+				this.livesimBrokerSettings.NoOrderStateCallbackAfterSubmitted_Enabled = whatIchecked.Checked;
+
 			} else {
 				Assembler.PopupException("ADD_TARGET_FOR_CLICK_PROPAGATION_FOR_whatIchecked[" + whatIchecked.Name + "]");
 			}
@@ -93,24 +96,24 @@ namespace Sq1.Core.Livesim {
 
 
 			// QUIK sending "OrderFilled Transaction SUCCESS" after "OrderStatus filled" - simulating this async
-			} else if (whereItyped == this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMin) {
+			} else if (whereItyped == this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Min) {
 				this.livesimBrokerSettings.TransactionStatusAfterOrderStatusHappensOncePerOrdersMin = parsedInt;
 
-			} else if (whereItyped == this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMax) {
+			} else if (whereItyped == this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Max) {
 				this.livesimBrokerSettings.TransactionStatusAfterOrderStatusHappensOncePerOrdersMax = parsedInt;
 			
-			} else if (whereItyped == this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMin) {
+			} else if (whereItyped == this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Min) {
 				this.livesimBrokerSettings.TransactionStatusAfterOrderStatusDelayAfterFillMin = parsedInt;
 
-			} else if (whereItyped == this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMax) {
+			} else if (whereItyped == this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Max) {
 				this.livesimBrokerSettings.TransactionStatusAfterOrderStatusDelayAfterFillMax = parsedInt;
 
 			
 			// QUIK sending "Killer Transaction SUCCESS" after "OrderStatus filled" - simulating this async
-			} else if (whereItyped == this.txt_KillerTransactionCallbackAfterVictimFilled_happensMin) {
+			} else if (whereItyped == this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Min) {
 				this.livesimBrokerSettings.KillerTransactionCallbackAfterVictimFilledHappensOncePerKillersMin = parsedInt;
 
-			} else if (whereItyped == this.txt_KillerTransactionCallbackAfterVictimFilled_happensMax) {
+			} else if (whereItyped == this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Max) {
 				this.livesimBrokerSettings.KillerTransactionCallbackAfterVictimFilledHappensOncePerKillersMax = parsedInt;
 			
 			} else if (whereItyped == this.txt_KillerTransactionCallbackAfterVictimFilled_delayMin) {
@@ -147,44 +150,51 @@ namespace Sq1.Core.Livesim {
 				this.livesimBrokerSettings.OutOfOrderFillDeliveredXordersLaterMax = parsedInt;
 
 
-			} else if (whereItyped == this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin) {
+			} else if (whereItyped == this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Min) {
 				this.livesimBrokerSettings.PriceDeviationForMarketOrdersHappensOncePerXordersMin = parsedInt;
 
-			} else if (whereItyped == this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax) {
+			} else if (whereItyped == this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Max) {
 				this.livesimBrokerSettings.PriceDeviationForMarketOrdersHappensOncePerXordersMax = parsedInt;
 
-			} else if (whereItyped == this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin) {
+			} else if (whereItyped == this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Min) {
 				this.livesimBrokerSettings.PriceDeviationForMarketOrdersPercentageOfBestPriceMin = parsedInt;
 
-			} else if (whereItyped == this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax) {
+			} else if (whereItyped == this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Max) {
 				this.livesimBrokerSettings.PriceDeviationForMarketOrdersPercentageOfBestPriceMax = parsedInt;
 
 
-			} else if (whereItyped == this.txt_KillPendingDelay_min) {
+			} else if (whereItyped == this.txt_KillPendingDelay_Min) {
 				this.livesimBrokerSettings.KillPendingDelayMillisMin = parsedInt;
 
-			} else if (whereItyped == this.txt_KillPendingDelay_max) {
+			} else if (whereItyped == this.txt_KillPendingDelay_Max) {
 				this.livesimBrokerSettings.KillPendingDelayMillisMax = parsedInt;
 
 
-			} else if (whereItyped == this.txt_AdapterDisconnectHappensOncePerOrderMin) {
+			} else if (whereItyped == this.txt_AdapterDisconnect_HappensOncePerOrder_Min) {
 				this.livesimBrokerSettings.AdapterDisconnectHappensOncePerOrderMin = parsedInt;
 
-			} else if (whereItyped == this.txt_AdapterDisconnectHappensOncePerOrderMax) {
+			} else if (whereItyped == this.txt_AdapterDisconnect_HappensOncePerOrder_Max) {
 				this.livesimBrokerSettings.AdapterDisconnectHappensOncePerOrderMax = parsedInt;
 
-			} else if (whereItyped == this.txt_AdapterDisconnectReconnectsAfterMillisMin) {
+			} else if (whereItyped == this.txt_AdapterDisconnectReconnectsAfterMillis_Min) {
 				this.livesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMin = parsedInt;
 
-			} else if (whereItyped == this.txt_AdapterDisconnectReconnectsAfterMillisMax) {
+			} else if (whereItyped == this.txt_AdapterDisconnectReconnectsAfterMillis_Max) {
 				this.livesimBrokerSettings.AdapterDisconnectReconnectsAfterMillisMax = parsedInt;
 
 
-			} else if (whereItyped == this.txt_BrokerDeniedSubmission_HappensOncePerXordersMin) {
+			} else if (whereItyped == this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Min) {
 				this.livesimBrokerSettings.BrokerDeniedSubmission_HappensOncePerXorders_Min = parsedInt;
 
-			} else if (whereItyped == this.txt_BrokerDeniedSubmission_HappensOncePerXordersMax) {
+			} else if (whereItyped == this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Max) {
 				this.livesimBrokerSettings.BrokerDeniedSubmission_HappensOncePerXorders_Max = parsedInt;
+
+
+			} else if (whereItyped == this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Min) {
+				this.livesimBrokerSettings.NoOrderStateCallbackAfterSubmitted_HappensOncePerXorders_Min = parsedInt;
+
+			} else if (whereItyped == this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Max) {
+				this.livesimBrokerSettings.NoOrderStateCallbackAfterSubmitted_HappensOncePerXorders_Max = parsedInt;
 
 
 			} else {

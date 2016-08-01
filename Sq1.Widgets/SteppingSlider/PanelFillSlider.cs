@@ -24,6 +24,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		decimal valueMin;
+		//public decimal ValueMin_abs { get { return Math.Abs(this.valueMin); } }
 		public decimal ValueMin {
 			get { return valueMin; }
 			set { valueMin = value; this.Invalidate(); }
@@ -31,6 +32,7 @@ namespace Sq1.Widgets.SteppingSlider {
 	
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		decimal valueStep;
+		//public decimal ValueStep_abs { get { return Math.Abs(this.valueStep); } }
 		public decimal ValueIncrement {
 			get { return valueStep; }
 			set { valueStep = value; this.Invalidate(); }
@@ -38,6 +40,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		decimal valueMax;
+		//public decimal ValueMax_abs { get { return Math.Abs(this.valueMax); } }
 		public decimal ValueMax {
 			get { return valueMax; }
 			set { valueMax = value; this.Invalidate(); }
@@ -45,6 +48,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		decimal valueCurrent;
+		//public decimal ValueCurrent_abs { get { return Math.Abs(this.valueCurrent); } }
 		public decimal ValueCurrent {
 			get { return valueCurrent; }
 			set {
@@ -80,7 +84,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 		// COPYPASTE from IndicatorParameter.cs END
 		
-			decimal _valueMouseOver_tryingToCatchZero;
+		decimal _valueMouseOver_tryingToCatchZero;
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		//public decimal ValueMouseOver { get; protected set; }
 		public decimal ValueMouseOver {

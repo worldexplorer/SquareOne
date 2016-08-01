@@ -155,7 +155,7 @@ namespace Sq1.Core.DataFeed {
 			if (this.Symbols.Contains(barLastFormed.Symbol) == false) return ret;
 			if (this.BarsRepository == null) return ret;
 			try {
-				barLastFormed.CheckThrowFix_valuesOkay();
+				barLastFormed.ValidateBar_alignToSteps_fixOCbetweenHL();
 			} catch (Exception ex) {
 				Assembler.PopupException("WONT_ADD_TO_BAR_FILE DataSource.BarAppend(" + barLastFormed + ")", ex, false);
 				return ret;

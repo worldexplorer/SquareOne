@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using Sq1.Core;
 using Sq1.Core.Sequencing;

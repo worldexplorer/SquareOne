@@ -19,7 +19,7 @@ namespace Sq1.Core.StrategyBase {
 			double priceScript = stopOrLimitPrice_zeroForMarket;
 			double entryPriceScript = entryMarketLimitStop == MarketLimitStop.Market && stopOrLimitPrice_zeroForMarket == 0
 				? 0
-				: entryBar.ParentBars.SymbolInfo.Alert_alignToPriceLevel(priceScript, direction, entryMarketLimitStop);
+				: entryBar.ParentBars.SymbolInfo.Alert_alignToPriceStep(priceScript, direction, entryMarketLimitStop);
 			double shares = this.executor.PositionSizeCalculate(entryBar, entryPriceScript);
 
 			Alert alert = new Alert(entryBar, shares, entryPriceScript, entrySignalName,
@@ -36,7 +36,7 @@ namespace Sq1.Core.StrategyBase {
 			double priceScript = stopOrLimitPrice_zeroForMarket;
 			double exitPriceScript = exitMarketLimitStop == MarketLimitStop.Market && stopOrLimitPrice_zeroForMarket == 0
 				? 0
-				: exitBar.ParentBars.SymbolInfo.Alert_alignToPriceLevel(priceScript, direction, exitMarketLimitStop);
+				: exitBar.ParentBars.SymbolInfo.Alert_alignToPriceStep(priceScript, direction, exitMarketLimitStop);
 	
 			Alert alert = new Alert(exitBar, position.Shares, exitPriceScript, signalName,
 				direction, exitMarketLimitStop, this.executor.Strategy);

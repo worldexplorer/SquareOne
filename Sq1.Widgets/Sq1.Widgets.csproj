@@ -170,7 +170,12 @@
     <Compile Include="DockContentImproved\DockContentImproved.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Exceptions\ExceptionListLogrotated.cs" />
     <Compile Include="Exceptions\ExceptionsControl.Clipboard.cs">
+      <DependentUpon>ExceptionsControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Exceptions\ExceptionsControl.Search.cs">
       <DependentUpon>ExceptionsControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
@@ -208,6 +213,10 @@
       <DependentUpon>ExecutionTreeControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Execution\ExecutionTreeControl.Search.cs">
+      <DependentUpon>ExecutionTreeControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Execution\ExecutionTreeDataSnapshot.cs" />
     <Compile Include="FuturesMerger\BarsEditorUserControl.cs">
       <SubType>UserControl</SubType>
@@ -228,6 +237,15 @@
     </Compile>
     <Compile Include="FuturesMerger\FuturesMergerUserControl.Designer.cs">
       <DependentUpon>FuturesMergerUserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TextAndSave\MenuItemTextAndSave.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TextAndSave\TextAndSaveControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TextAndSave\TextAndSaveControl.Designer.cs">
+      <DependentUpon>TextAndSaveControl.cs</DependentUpon>
     </Compile>
     <Compile Include="LabeledTextBox\LabeledTextBoxControl.cs">
       <SubType>UserControl</SubType>
@@ -507,6 +525,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FuturesMerger\FuturesMergerUserControl.resx">
       <DependentUpon>FuturesMergerUserControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TextAndSave\TextAndSaveControl.resx">
+      <DependentUpon>TextAndSaveControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LabeledTextBox\LabeledTextBoxControl.resx">
       <DependentUpon>LabeledTextBoxControl.cs</DependentUpon>

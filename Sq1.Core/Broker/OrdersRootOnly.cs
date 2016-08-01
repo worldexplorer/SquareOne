@@ -2,22 +2,97 @@
 using System.Collections.Generic;
 
 using Sq1.Core.Execution;
+using Sq1.Core.Support;
 
 namespace Sq1.Core.Broker {
-	public class OrdersRootOnly : OrderLane {
+	//v1 public class OrdersRootOnly : OrderLane {
+	//v2 copypasted all I need from OrderLane - was hoping to inherit from ConcurrentListFiltered<Order> ...
+	public class OrdersRootOnly {
+
+	//v3 this will never work for the tree - I will implement HasParent here for ExecutionTreeControl.Customiser
+	//v3 (problematic also nesting two orders matching but related through unmatched chain between)
+	//public class OrdersRootOnly : ConcurrentListFiltered<Order> {
+	//v3
+	//public object SafeCopy(object lockOwner, string lockReason) {
+	//}
+	//public List<Exception> InitKeywordsToExclude_AndSetPointer(string keywordsCsv_nullUnsafe) {
+	//}
+	//public List<Exception> SearchForKeywords_StaticSnapshotSubset(string keywordsCsv_nullUnsafe) {
+	//}
 		public OrderLane OrdersAll;
+
+
+#region copypaste from OrderLane
+					object			ordersLock;
+		readonly	string			reasonToExist;
+		protected	List<Order>		InnerOrderList_recentFirst	{ get; private set; }
+					List<string>	ordersGuids_recentFirst;	//{ get; protected set; }
+		public		List<Order>		SafeCopy					{ get { lock (this.ordersLock) { return new List<Order>(this.InnerOrderList_recentFirst); } } }
 		
-		public OrdersRootOnly(string reasonToExist) : base(reasonToExist) {
+		OrdersRootOnly() {
+			this.InnerOrderList_recentFirst = new List<Order>();
+			this.ordersLock = new Object();
+			this.InnerOrderList_recentFirst.Capacity = 2000;
+			this.ordersGuids_recentFirst = new List<string>();
 		}
+		public OrdersRootOnly(string reasonToExist_passed) : this() {
+			this.reasonToExist = reasonToExist_passed;
+		}
+
+		protected virtual bool checkThrowAdd	(Order order) { return true; }
+		protected virtual bool checkThrowRemove	(Order order) { return true; }
+		public void InsertUnique(Order order) { lock (this.ordersLock) {
+			if (this.checkThrowAdd(order) == false) return;
+			if (this.ContainsGuid(order) == true) {
+				string msg = "Already in " + this.ToString() + ": " + order;
+				throw new Exception(msg);
+				//break;
+			}
+			order.AddedToOrdersListCounter++;
+			this.InnerOrderList_recentFirst.Insert(0, order);
+			this.ordersGuids_recentFirst.Insert(0, order.GUID);
+		} }
+		public int Count { get { lock (this.ordersLock) {
+			return this.InnerOrderList_recentFirst.Count;
+		} } } 
+		public bool ContainsGuid(Order order) { lock (this.ordersLock) {
+			//return base.Contains(order);
+			return this.ordersGuids_recentFirst.Contains(order.GUID);
+		} }
+		public int Clear() { lock (this.ordersLock) {
+			int ordersDropped = this.Count;
+			this.InnerOrderList_recentFirst.Clear();
+			this.ordersGuids_recentFirst.Clear();
+			return ordersDropped;
+		} }
+		public  bool RemoveUnique(Order order) { lock (this.ordersLock) {
+			if (this.checkThrowRemove(order) == false) return false;
+			if (this.ContainsGuid(order) == false) {
+				string msg2 = "REMOVING_ORDER_NOT_FOUND in " + this.ToString()
+					+ ": (already removed or never stored before? broker callback Dupe?) " + order;
+				throw new Exception(msg2);
+				//break;
+			}
+			order.AddedToOrdersListCounter--;
+			this.ordersGuids_recentFirst.Remove(order.GUID);
+			return this.InnerOrderList_recentFirst.Remove(order);
+		} }
+
+		public override string ToString() {
+			return this.reasonToExist + ".Count=[" + this.Count + "]";
+		}
+#endregion
+
+
 		public void InitializeScanDeserialized_moveDerivedsInside_buildTreeShadow(OrderLane ordersAllDeserialized) {
-			base.Clear();
+			this.Clear();
 			this.OrdersAll = ordersAllDeserialized;
 			this.scanDeserialized_moveDerivedsInside_buildTreeShadow(this.OrdersAll);
 		}
 		public void InsertUnique_onlyToRoot(Order orderAdded) {
 			Order orderParent = orderAdded.DerivedFrom;
 			if (orderParent != null) return;
-			base.InsertUnique(orderAdded);
+			this.InsertUnique(orderAdded);
 		}
 		void scanDeserialized_moveDerivedsInside_buildTreeShadow(OrderLane ordersFlat) {
 			string msig = " OrdersAutoTree::scanDeserializedMoveDerivedsInsideBuildTreeShadow(): ";
@@ -65,17 +140,17 @@ namespace Sq1.Core.Broker {
 			
 			foreach (Order order in ordersFlat.SafeCopy) {
 				if (foundSoRemoveFromRoot.Contains(order)) continue;
-				base.InsertUnique(order);
+				this.InsertUnique(order);
 			}
 
-			string stats = "DERIVEDS_MOVED[" + derivedsFound + "] = ordersFlat.Count[" + ordersFlat.Count + "] - base.Count[" + base.Count + "]";
+			string stats = "DERIVEDS_MOVED[" + derivedsFound + "] = ordersFlat.Count[" + ordersFlat.Count + "] - this.Count[" + this.Count + "]";
 			//Assembler.PopupException(stats + msig);
 		}
 
 		public void Remove_fromRootLevel_keepOrderPointers(List<Order> ordersToRemove, bool popupIfDoesntContain = true) {
 			foreach (Order orderRemoving in ordersToRemove) {
 				if (orderRemoving.DerivedFrom != null) continue;
-				if (base.ContainsGuid(orderRemoving) == false) {
+				if (this.ContainsGuid(orderRemoving) == false) {
 					if (orderRemoving.Alert.MyBrokerIsLivesim) {
 						string msg = "DID_I_CLEAR_LIVESIM_ORDERS_EARLIER??WHEN?";
 						continue;
@@ -86,30 +161,10 @@ namespace Sq1.Core.Broker {
 					}
 					continue;
 				}
-				base.RemoveUnique(orderRemoving);
+				this.RemoveUnique(orderRemoving);
 			}
 		}
+
 	}
 }
 
-
-//		public Order FindOrderGuidOnRootLevel(string Guid) {
-//			Order orderParent = null;
-//			foreach (var each in this.ordersAll) {
-//				if (each.GUID != Guid) continue; 
-//				orderParent = each;
-//				break;
-//			}
-//			return orderParent;
-//		}
-//		public Order FindOrderGuidAmongDerivedsRecursively(string Guid) {
-//			Order ret = null
-//			foreach (var each in this.ordersAll) {
-//				var found = each.FindOrderGuidAmongDerivedsRecursively(Guid);
-//				if (found == null) continue;
-//				ret = found;
-//				break;
-//			}
-//			return ret;
-//		}
-		//InsertToShadowTreeAfterAddingThisOrderToAnotherOrdersDerivedSlow

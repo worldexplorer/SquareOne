@@ -129,7 +129,7 @@ namespace Sq1.Core.DataTypes {
 		}
 		public Bar BarStreaming_createNewAttach_orAbsorb(Bar barToMerge_intoStreaming) { lock (base.BarsLock) {
 			bool shouldAppend = this.BarLast == null || barToMerge_intoStreaming.DateTimeOpen >= this.BarLast.DateTime_nextBarOpen_unconditional;
-			barToMerge_intoStreaming.CheckThrowFix_valuesOkay();
+			barToMerge_intoStreaming.ValidateBar_alignToSteps_fixOCbetweenHL();
 			if (shouldAppend) {	// if this.BarStreaming == null I'll have just one bar in Bars which will be streaming and no static 
 				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, barToMerge_intoStreaming.DateTimeOpen);
 				barAdding.Set_OHLCV_aligned(barToMerge_intoStreaming.Open, barToMerge_intoStreaming.High,
@@ -154,7 +154,7 @@ namespace Sq1.Core.DataTypes {
 			return barAdding;
 		} }
 		public void BarStatic_appendAttach(Bar barAdding, bool throwError = false) { lock (base.BarsLock) {
-			barAdding.CheckThrowFix_valuesOkay(throwError);
+			barAdding.ValidateBar_alignToSteps_fixOCbetweenHL(throwError);
 			this.BarStreaming_nullUnsafe = null;
 			this.BarAppendAttach(barAdding);
 			//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.raiseOnBarStaticAdded(barAdding);

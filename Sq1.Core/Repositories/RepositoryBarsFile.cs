@@ -298,7 +298,7 @@ namespace Sq1.Core.Repositories {
 				for (int i = 0; i < bars.Count; i++) {
 					Bar bar = bars[i];
 					try {
-						bar.CheckThrowFix_valuesOkay();	//	catching the exception will display stacktrace in ExceptionsForm
+						bar.ValidateBar_alignToSteps_fixOCbetweenHL();	//	catching the exception will display stacktrace in ExceptionsForm
 					} catch (Exception ex) {
 						barsFailedCheckOHLCV++;
 						string msg = "NOT_SAVING_TO_FILE_THIS_BAR__TOO_LATE_TO_FIND_WHO_GENERATED_IT barAllZeroes bar[" + bar + "]";
@@ -350,7 +350,7 @@ namespace Sq1.Core.Repositories {
 			string msig = " barAppendStaticOrReplaceStreaming(" + barLastFormedStatic_orCurrentStreaming + ")=>[" + this.Abspath + "]";
 
 			try {
-				barLastFormedStatic_orCurrentStreaming.CheckThrowFix_valuesOkay();	//	catching the exception will display stacktrace in ExceptionsForm
+				barLastFormedStatic_orCurrentStreaming.ValidateBar_alignToSteps_fixOCbetweenHL();	//	catching the exception will display stacktrace in ExceptionsForm
 			} catch (Exception ex) {
 				string msg = "NOT_APPENDING_TO_FILE_THIS_BAR__FIX_WHO_GENERATED_IT_UPSTACK barAllZeroes barLastFormed[" + barLastFormedStatic_orCurrentStreaming + "]";
 				Assembler.PopupException(msg + msig, ex, false);

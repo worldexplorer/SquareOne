@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Drawing;
-using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.Charting;

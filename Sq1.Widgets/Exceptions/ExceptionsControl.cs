@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sq1.Core;
@@ -20,7 +19,7 @@ namespace Sq1.Widgets.Exceptions {
 				ExceptionsControlDataSnapshot				dataSnapshot;
 				Serializer<ExceptionsControlDataSnapshot>	dataSnapshotSerializer;
 				ConcurrentDictionary<Exception, DateTime>	exceptionTimes;
-		public	ExceptionList								Exceptions				{ get; private set; }
+		public	ExceptionListLogrotated						Exceptions				{ get; private set; }
 				ExceptionList								exceptions_notFlushedYet;
 
 				DateTime			exceptionLastDate_notFlushedYet;
@@ -30,7 +29,7 @@ namespace Sq1.Widgets.Exceptions {
 
 		public ExceptionsControl() : base() {
 			exceptionTimes				= new ConcurrentDictionary<Exception, DateTime>("exceptionTimes_delayedGuiFlush");
-			Exceptions					= new ExceptionList("Exceptions_delayedGuiFlush");
+			Exceptions					= new ExceptionListLogrotated("Exceptions_delayedGuiFlush");
 			exceptions_notFlushedYet	= new ExceptionList("exceptions_notFlushedYet");
 			exceptionLastDate_notFlushedYet	= DateTime.MinValue;
 
@@ -82,10 +81,22 @@ namespace Sq1.Widgets.Exceptions {
 				new Action(this.flushExceptionsToOLV_switchToGuiThread), this.dataSnapshot.FlushToGuiDelayMsec);
 			//base.Timed_flushingToGui.Start();
 
-			this.pnlSearch.Visible = this.dataSnapshot.ShowSearchbar;
+			this.InitializeSearch();
+
+			this.mniShowSearchbar.Checked = this.dataSnapshot.ShowSearchbar;
+
+			this.mniShowTimestamps.Checked = this.dataSnapshot.ShowTimestamps;
+			this.mniRecentAlwaysSelected.Checked = this.dataSnapshot.RecentAlwaysSelected;
+
+			this.mniltbFlushToGuiDelayMsec.InputFieldValue = this.dataSnapshot.FlushToGuiDelayMsec.ToString();		// I will be stuck here - if ExceptionsForm.Instance was created from non-GUI thread, by Assembler.PopupException() while MainForm haven't got Window Handle yet
+			this.mniltbLogrotateLargerThan.InputFieldValue = this.dataSnapshot.LogRotateSizeLimit_Mb.ToString();	// I will be stuck here - if ExceptionsForm.Instance was created from non-GUI thread, by Assembler.PopupException() while MainForm haven't got Window Handle yet
+
 			this.olvcTimesOccured.IsVisible = this.dataSnapshot.ShowTimesOccured;
 			this.olvcTimestamp.IsVisible = this.dataSnapshot.ShowTimestamps;
+
+			this.Exceptions.Initialize();
 		}
+
 
 		public void PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized() {
 			string msig = " //PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized()";
@@ -132,10 +143,6 @@ namespace Sq1.Widgets.Exceptions {
 			this.splitContainerVertical.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerVertical_SplitterMoved);
 			this.splitContainerHorizontal.SplitterMoved -= new System.Windows.Forms.SplitterEventHandler(this.splitContainerHorizontal_SplitterMoved);
 			this.splitContainerHorizontal.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerHorizontal_SplitterMoved);
-
-			this.mniRecentAlwaysSelected.Checked = this.dataSnapshot.RecentAlwaysSelected;
-			this.mniltbFlushToGuiDelayMsec.InputFieldValue = this.dataSnapshot.FlushToGuiDelayMsec.ToString();		// I will be stuck here - if ExceptionsForm.Instance was created from non-GUI thread, by Assembler.PopupException() while MainForm haven't got Window Handle yet
-			this.mniShowTimestamps.Checked = this.dataSnapshot.ShowTimestamps;
 
 			//this.flushExceptionsToOLV_switchToGuiThread();
 		}
@@ -267,7 +274,12 @@ namespace Sq1.Widgets.Exceptions {
 				return;
 			}
 
-			if (this.pnlSearch.Visible && string.IsNullOrWhiteSpace(this.txtSearch.Text) == false) return;
+			//if (this.pnlSearch.Visible && string.IsNullOrWhiteSpace(this.txtSearch.Text) == false) return;
+			bool searchApplied = this.tsiCbx_SearchApply.CheckBoxChecked && string.IsNullOrWhiteSpace(this.tsiLtb_SearchKeywords.InputFieldValue) == false;
+			if (this.statusStrip_search.Visible && searchApplied) {
+				string msg3 = "REMEMBER?__WHEN_IM_SEARCHING_I_DONT_FLUSH_CONTROL_WHEN_SEARCHING";
+				return;
+			}
 
 			base.HowLongTreeRebuilds.Restart();
 
@@ -292,7 +304,7 @@ namespace Sq1.Widgets.Exceptions {
 					List<Exception> buffered = this.exceptions_notFlushedYet.SafeCopy(this, msig);
 					foreach (Exception ex in buffered) {
 						bool time4exAdded	= this.exceptionTimes	.Add(ex, DateTime.Now	, this, msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, true);
-						bool excInserted	= this.Exceptions		.InsertUnique(0, ex		, this, msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, false);
+						bool excInserted	= this.Exceptions		.InsertUnique(ex		, this, msig, ConcurrentWatchdog.TIMEOUT_DEFAULT, false);
 					}
 					this.exceptions_notFlushedYet.Clear(this, msig);
 				} catch (Exception ex) {
@@ -361,8 +373,9 @@ namespace Sq1.Widgets.Exceptions {
 		}
 
 		public void Clear() {
-			this.mniClear_Click(this, new EventArgs());
+			//this.flushExceptionsToOLV_switchToGuiThread();
+			this.Exceptions.Clear(this, "mniClear_Click");
+			this.flushExceptionsToOLV_switchToGuiThread();
 		}
-
 	}
 }

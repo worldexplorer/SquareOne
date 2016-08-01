@@ -130,6 +130,33 @@ namespace Sq1.Widgets.SteppingSlider {
 				base.Controls.Clear();
 
 				foreach (IndicatorParameter param in parameters_inScript) {
+					ScriptParameter sp = param as ScriptParameter;
+					if (sp != null) {
+						if (this.Strategy.Script.ScriptParametersById_reflectedCached_primary.ContainsKey(sp.Id) == false) {
+							string msg = "I_WONT_ADD_SLIDER_FOR_SCRIPT_PARAMETER_YOU_COMMENTED_OUT [" + sp.FullName + "]";
+							Assembler.PopupException(msg, null, false);
+							continue;
+						}
+					} else {
+						if (this.Strategy.Script.IndicatorParametersByIndicatorName_reflectedCached.ContainsKey(param.IndicatorName) == false) {
+							string msg = "I_WONT_ADD_SLIDER_FOR_ALL_INDICATOR_PARAMETERS__YOU_COMMENTED_OUT [" + sp.FullName + "]";
+							Assembler.PopupException(msg, null, false);
+							continue;
+						} else {
+							List<IndicatorParameter> iparams = this.Strategy.Script.IndicatorParametersByIndicatorName_reflectedCached[param.IndicatorName];
+							bool ctxParam_foundIn_indicatorParams = false;
+							foreach (IndicatorParameter iparam in iparams) {
+								if (iparam.FullName != param.FullName) continue;
+								ctxParam_foundIn_indicatorParams = true;
+								break;
+							}
+							if (ctxParam_foundIn_indicatorParams == false) {
+								string msg = "I_WONT_ADD_SLIDER_FOR_INDICATOR_PARAMETER_THAT_DISAPPEARED_FROM_INDICATOR [" + sp.FullName + "]";
+								Assembler.PopupException(msg, null, false);
+								continue;
+							}
+						}
+					}
 					if (parameterPrevToFeelChangeAndAddSpacing == null) {
 						parameterPrevToFeelChangeAndAddSpacing = param;
 					}

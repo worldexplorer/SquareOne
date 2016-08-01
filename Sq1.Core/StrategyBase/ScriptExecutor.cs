@@ -182,8 +182,9 @@ namespace Sq1.Core.StrategyBase {
 				if (lastBar == null) return ret;
 				double lastClose = lastBar.Close;
 				double spreadPips = lastClose * pct / 100d;
-				spreadPips = this.Bars.SymbolInfo.AlignToPriceLevel(spreadPips);
-				ret = "~= " + spreadPips + "pips, for lastClose[" + lastBar.Close_formatted + "]";
+				spreadPips = this.Bars.SymbolInfo.AlignToPriceStep(spreadPips);
+				if (spreadPips == 0) spreadPips = this.Bars.SymbolInfo.PriceStep;
+				ret = "= " + spreadPips + "pips, for lastClose[" + lastBar.Close_formatted + "]";
 				return ret;
 			} }
 
@@ -232,13 +233,20 @@ namespace Sq1.Core.StrategyBase {
 			} else {
 				this.Strategy.Script.Initialize(this, saveStrategy_falseForSequencer);
 
-				#region PARANOID
+				#region PARANOID - fixed in ScriptParametersReflected_absorbFromCurrentContext_pushBackToCurrentContext(), copied to ScriptParametersReflected_absorbFromCurrentContext_pushBackToCurrentContext()
 				#if DEBUG
-				var reflected = this.Strategy.Script.ScriptParametersById_reflectedCached_primary;
-				var ctx = this.Strategy.ScriptContextCurrent.ScriptParametersById;
-				if (reflected.Count != ctx.Count) {
-					string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
+				var reflected	= this.Strategy.Script.ScriptParametersById_reflectedCached_primary;
+				var ctx			= this.Strategy.ScriptContextCurrent.ScriptParametersById;
+				if (reflected.Count > ctx.Count) {
+					string msg2 = "YOU_ADDED_SCRIPT/INDICATOR_PARAMETERS_BUT_CTX_IS_STILL_OLD"
+						//" here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference"
+						;
 					Assembler.PopupException(msg2);
+				} else if (reflected.Count < ctx.Count) {
+					string msg2 = "YOU_REMOVED_SCRIPT/INDICATOR_PARAMETERS__SO_I_KEEP_IT_IN_CTX__IF_YOU_UNCOMMENT_IT_WILL_BE_THERE_WITH_OLD_VALUE"
+						//" here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference"
+						;
+					//Assembler.PopupException(msg2);
 				}
 				foreach (int id in reflected.Keys) {
 					if (ctx.ContainsKey(id) == false) {
@@ -253,25 +261,6 @@ namespace Sq1.Core.StrategyBase {
 					}
 				}
 
-				//v1: CRAZY_TYPES_CONVERSION,CONSIDER_CONTEXT_SAVE_IN_SAME_FORMAT_AS_REFLECTED_OR_INTRODUCE_ARTIFICIAL_SIMILAR_NEXT_TO_REFLECTED
-				//var iReflected = this.Strategy.Script.IndicatorsByName_ReflectedCached;
-				//var iCtx = this.Strategy.ScriptContextCurrent.IndicatorParametersByName;
-				//if (reflected.Count != ctx.Count) {
-				//	string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
-				//	Assembler.PopupException(msg2);
-				//}
-				//foreach (int id in reflected.Keys) {
-				//	if (ctx.ContainsKey(id) == false) {
-				//		string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
-				//		Assembler.PopupException(msg2);
-				//		continue;
-				//	}
-				//	if (ctx[id] != reflected[id]) {
-				//		string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
-				//		Assembler.PopupException(msg2);
-				//		continue;
-				//	}
-				//}
 				//v2 just force it and find duplicate calls in debugger...
 				//SEQUENCER_ALREADY_DONE_IT_CloneForSequencer this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 				#endif
@@ -343,14 +332,14 @@ namespace Sq1.Core.StrategyBase {
 			string msg = "";
 			ExecutorDataSnapshot snap = alert.Strategy.Script.Executor.ExecutionDataSnapshot;
 			//this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert);
-			string orderState = (alert.OrderFollowed == null) ? "alert.OrderFollowed=NULL" : alert.OrderFollowed.State.ToString();
+			string orderState = (alert.OrderFollowed_orCurrentReplacement == null) ? "alert.OrderFollowed=NULL" : alert.OrderFollowed_orCurrentReplacement.State.ToString();
 			if (snap.AlertsUnfilled.Contains(alert, this, "RemovePendingExitAlert(WAIT)")) {
 				bool removed = snap.AlertsUnfilled.Remove(alert, this, "RemovePendingExitAlert(WAIT)");
 				msg = "REMOVED " + orderState + " Pending alert[" + alert + "] ";
 			} else {
 				msg = "CANT_BE_REMOVED " + orderState + " isn't Pending alert[" + alert + "] ";
 			}
-			if (alert.OrderFollowed == null) {
+			if (alert.OrderFollowed_orCurrentReplacement == null) {
 				//if (this.BacktesterOrLivesimulator.ImRunningChartlessBacktesting == false) {
 				//    msg = "WHAT_WAS_IT??? RealTime alerts should NOT have OrderFollowed=null; " + msg;
 				//    throw new Exception(msg);
@@ -358,7 +347,7 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 			// OrderFollowed=null when executeStrategyBacktestEntryPoint() is in the call stack
-			this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed, msig + msg);
+			this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed_orCurrentReplacement, msig + msg);
 		}
 		public void RemovePendingExitAlerts_closePositionsBacktestLeftHanging(Alert alert) {
 			string msig = "RemovePendingExitAlertAndClosePositionAfterBacktestLeftItHanging(): ";

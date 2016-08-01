@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Diagnostics;
 
 using Sq1.Core;

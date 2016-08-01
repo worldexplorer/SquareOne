@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Livesim {
@@ -12,6 +13,8 @@ namespace Sq1.Core.Livesim {
 		public	bool	RejectOrderNow		{ get; private set; }
 
 		public	int		DelayTransactionStatusAfterOrderStatus		{ get; private set; }
+
+		public	bool	NoOrderStateAfterSubmitted_Now		{ get; private set; }
 
 		LivesimBrokerSpoiler() {
 			this.DelayBeforeFill = 0;
@@ -270,6 +273,31 @@ namespace Sq1.Core.Livesim {
 
 			return ret;
 		}
+
+		int howManyOrders_hadOrderStatusAfterSubmitted= 0;
+		public bool NoOrderStateCallbackAfterSubmittedNow_calculate() {
+			this.NoOrderStateAfterSubmitted_Now = false;
+			if (this.livesimBroker.LivesimBrokerSettings.NoOrderStateCallbackAfterSubmitted_Enabled == false) return this.NoOrderStateAfterSubmitted_Now;
+
+			int planned_normalStateFlow_Limit = this.livesimBroker.LivesimBrokerSettings.NoOrderStateCallbackAfterSubmitted_HappensOncePerXorders_Min;
+			if (planned_normalStateFlow_Limit == 0) return this.NoOrderStateAfterSubmitted_Now;
+
+			if (this.livesimBroker.LivesimBrokerSettings.NoOrderStateCallbackAfterSubmitted_HappensOncePerXorders_Max > 0) {
+				int range = Math.Abs(this.livesimBroker.LivesimBrokerSettings.NoOrderStateCallbackAfterSubmitted_HappensOncePerXorders_Min -
+									 this.livesimBroker.LivesimBrokerSettings.NoOrderStateCallbackAfterSubmitted_HappensOncePerXorders_Max);
+				double rnd0to1 = new Random().NextDouble();
+				int rangePart = (int)Math.Round(range * rnd0to1);
+				planned_normalStateFlow_Limit += rangePart;
+			}
+
+			if (this.howManyOrders_hadOrderStatusAfterSubmitted >= planned_normalStateFlow_Limit) {
+				this.NoOrderStateAfterSubmitted_Now = true;
+				this.howManyOrders_hadOrderStatusAfterSubmitted = 0;
+			}
+			this.howManyOrders_hadOrderStatusAfterSubmitted++;
+			return this.NoOrderStateAfterSubmitted_Now;
+		}
+
 
 
 	}

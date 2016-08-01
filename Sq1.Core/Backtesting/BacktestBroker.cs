@@ -40,7 +40,7 @@ namespace Sq1.Core.Backtesting {
 		public override bool AlertCounterparty_annihilate(Alert alertCounterparty_toAnnihilate) {
 			return this.BacktestMarketsim.AlertCounterparty_annihilate(alertCounterparty_toAnnihilate);
 		}
-		public override int AlertPendings_kill(List<Alert> alerts2kill_afterScript_onQuote_onBar) {
+		public override int AlertsPending_kill(List<Alert> alerts2kill_afterScript_onQuote_onBar) {
 			int emitted = alerts2kill_afterScript_onQuote_onBar.Count;
 			foreach (Alert alert2kill in alerts2kill_afterScript_onQuote_onBar) {
 				this.BacktestMarketsim.AlertPending_simulateKill(alert2kill);

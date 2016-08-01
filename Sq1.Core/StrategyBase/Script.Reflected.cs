@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using Sq1.Core.Charting;
-using Sq1.Core.DataTypes;
-using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
@@ -174,9 +172,14 @@ namespace Sq1.Core.StrategyBase {
 		internal int ScriptParametersReflected_absorbFromCurrentContext_pushBackToCurrentContext(SortedDictionary<int, ScriptParameter> scriptParametersById_fromCtx) {
 			string msig = " //ScriptParametersReflected_absorbFromCurrentContext_pushBackToCurrentContext()";
 			int ret = 0;
-			if (scriptParametersById_fromCtx.Count == 0) return ret;
+			if (this.ScriptParametersById_reflectedCached_primary.Count == 0) return ret;
 			foreach (ScriptParameter spReflected in this.ScriptParametersById_reflectedCached_primary.Values) {
-				if (scriptParametersById_fromCtx.ContainsKey(spReflected.Id) == false) continue;
+				if (scriptParametersById_fromCtx.ContainsKey(spReflected.Id) == false) {
+					string msg = "NEW_SCRIPT_PARAMETER_REFLECTED__IS_MISSING_IN_CURRENT_CONTEXT__PUSHING"
+						+ " spReflected[" + spReflected + "] HAPPENS_ONCE_AFTER_APPRESTART";
+					Assembler.PopupException(msg, null, false);
+					scriptParametersById_fromCtx.Add(spReflected.Id, spReflected);
+				}
 				ScriptParameter spContext = scriptParametersById_fromCtx[spReflected.Id];
 				bool valueCurrentAbsorbed = spReflected.AbsorbCurrent_fixBoundaries_from(spContext);
 				if (valueCurrentAbsorbed) ret++;
@@ -202,26 +205,33 @@ namespace Sq1.Core.StrategyBase {
 		internal int IndicatorParametersReflected_absorbFromCurrentContext_pushBackToCurrentContext(Dictionary<string, List<IndicatorParameter>> indicatorParametersByIndicatorName_fromCtx) {
 			string msig = " //IndicatorParametersReflected_absorbFromCurrentContext_pushBackToCurrentContext()";
 			int ret = 0;
-			if (indicatorParametersByIndicatorName_fromCtx.Count == 0) return ret;
+			if (this.IndicatorParametersByIndicatorName_reflectedCached.Count == 0) return ret;
 			foreach (string indicatorName in this.IndicatorParametersByIndicatorName_reflectedCached.Keys) {
-				if (indicatorParametersByIndicatorName_fromCtx.ContainsKey(indicatorName) == false) continue;
 				List<IndicatorParameter> iParamsReflected	= this.IndicatorParametersByIndicatorName_reflectedCached	[indicatorName];
+				if (indicatorParametersByIndicatorName_fromCtx.ContainsKey(indicatorName) == false) {
+					string msg = "NEW_INDICATOR_PARAMETER_REFLECTED__IS_MISSING_IN_CURRENT_CONTEXT__PUSHING"
+						+ " indicatorName[" + indicatorName + "] HAPPENS_ONCE_AFTER_APPRESTART";
+					Assembler.PopupException(msg, null, false);
+					indicatorParametersByIndicatorName_fromCtx.Add(indicatorName, iParamsReflected);
+				}
 				List<IndicatorParameter> iParamsCtx			=	   indicatorParametersByIndicatorName_fromCtx			[indicatorName];
 
 				int parametersForIndicator_absorbed = 0;
 				foreach (IndicatorParameter iParamCtx in iParamsCtx) {
 					//DIFFERENT_POINTERS_100%_COMPARING_BY_NAME_IN_LOOP if (iParamsReflected.Contains(iParamInstantiated) == false) continue;
+					IndicatorParameter iParamReflected_foundByName = null;
 					foreach (IndicatorParameter iParamReflected in iParamsReflected) {
 						//v1 WILL_ALWAYS_CONTINUE_KOZ_iParamCtx.IndicatorName="NOT_ATTACHED_TO_ANY_INDICATOR"__LAZY_TO_SET_AFTER_DESERIALIZATION_KOZ_WILL_THROW_IT_10_LINES_BELOW_AND_PARAM_NAMES_ARE_UNIQUE_WITHIN_INDICATOR if (iParamReflected.FullName != iParamCtx.FullName) {
-						if (iParamReflected.Name != iParamCtx.Name) {
-							string msg = "iParamReflected[" + iParamReflected	.ToString() + "].Name[" + iParamReflected	.Name + "]"
-								   + " != iParamCtx["		+ iParamCtx			.ToString() + "].Name[" + iParamCtx			.Name + "]";
-							Assembler.PopupException(msg);
-							continue;
-						}
-						bool valueCurrentAbsorbed = iParamReflected.AbsorbCurrent_fixBoundaries_from(iParamCtx);
-						if (valueCurrentAbsorbed) parametersForIndicator_absorbed++;
+						if (iParamReflected.Name != iParamCtx.Name) continue;
+						iParamReflected_foundByName = iParamReflected;
+						break;
 					}
+					if (iParamReflected_foundByName == null) {
+						iParamsCtx.Add(iParamReflected_foundByName);
+						continue;
+					}
+					bool valueCurrentAbsorbed = iParamReflected_foundByName.AbsorbCurrent_fixBoundaries_from(iParamCtx);
+					if (valueCurrentAbsorbed) parametersForIndicator_absorbed++;
 				}
 				//if (parametersForIndicator_absorbed > 0) {
 					this.IndicatorsByName_reflectedCached_primary[indicatorName].ParametersAsStringShort_forceRecalculate = true;
@@ -233,7 +243,6 @@ namespace Sq1.Core.StrategyBase {
 					indicatorParametersByIndicatorName_fromCtx[indicatorName]  = iParamsReflected;
 				}
 			}
-			//YOU_JUST_SYNCHED_IN_TWO_INNER_LOOPS__WHY_DO_YOU_OVERWRITE_BRO???? this.IndicatorParametersByName = indicatorParametersByIndicator_ReflectedCached;
 
 			//bool dontSaveWeSequence = this.Name.Contains(Sequencer.ITERATION_PREFIX);
 			//if (dontSaveWeSequence) {

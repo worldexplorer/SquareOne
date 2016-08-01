@@ -66,9 +66,9 @@ namespace Sq1.Strategies.Demo {
 			//	string msg = "SEQUENCER_IS_ALREADY_RUN_KOZ_4CORES-SPAWNED_EXECUTORS(WHOS_MY_FATER)_ARE_POINTING_TO_SAME_SEQUENCER";
 			//	Assembler.PopupException(msg);
 			//}
-			testChartLabelDrawOnNextLineModify();
+			testChartLabel_drawOnNextLineModify();
 		}
-		void testChartLabelDrawOnNextLineModify() {
+		void testChartLabel_drawOnNextLineModify() {
 			if (this.Executor.Sequencer.IsRunningNow) return;
 			//DISPOSE_OR_TURN_TO_CLASS_VAR Font font = new Font(FontFamily.GenericMonospace, 8, FontStyle.Bold);
 			//base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", "test[" + test+ "]", font, Color.Brown, Color.Empty);
@@ -190,8 +190,10 @@ namespace Sq1.Strategies.Demo {
 				return;
 			}
 
-			// trend following is unprofitable if (barStaticFormed.Close > barStaticFormed.Open) {
-			if (barStaticFormed.Close < barStaticFormed.Open) {
+			// trend following 
+			if (barStaticFormed.Close > barStaticFormed.Open) {
+			// Counter-trend 
+			//if (barStaticFormed.Close < barStaticFormed.Open) {
 				string msg = "BuyAtMarket@" + barStaticFormed.ParentBarsIdent;
 				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
 				Alert buyPlaced = base.BuyAtMarket(barStreaming, msg);
@@ -243,7 +245,7 @@ namespace Sq1.Strategies.Demo {
 			}
 		}
 		public override void OnAlertKilled_callback(Alert alertKilled) {
-			int ordersNumber_thatTried_toFillAlert = alertKilled.OrderFollowed == null ? 0 : 1;
+			int ordersNumber_thatTried_toFillAlert = alertKilled.OrderFollowed_orCurrentReplacement == null ? 0 : 1;
 			ordersNumber_thatTried_toFillAlert += alertKilled.OrdersFollowed_killedAndReplaced.Count;
 			string msg = "OnAlertKilled_callback ordersNumber_thatTried_toFillAlert[" + ordersNumber_thatTried_toFillAlert + "]";
 			//Assembler.PopupException(msg, null, false);
@@ -265,14 +267,14 @@ namespace Sq1.Strategies.Demo {
 			//	#endif
 			//}
 		}
-		public override void OnPositionOpened_prototypeSlTpPlaced_callback(Position positionOpenedByPrototype) {
-			string msg = "OnPositionOpened_prototypeSlTpPlaced_callback";
-			Assembler.PopupException(msg, null, false);
-		}
 		public override void OnPositionClosed_callback(Position positionClosed) {
 			//if (positionClosed.EntryFilledBarIndex == 37) {
 			//	Debugger.Break();
 			//}
+		}
+		public override void OnPositionOpened_prototypeSlTpPlaced_callback(Position positionOpenedByPrototype) {
+			string msg = "OnPositionOpened_prototypeSlTpPlaced_callback";
+			Assembler.PopupException(msg, null, false);
 		}
 		//void testBarAnnotations(Bar barStaticFormed) {
 		//	int barIndex = barStaticFormed.ParentBarsIndex;

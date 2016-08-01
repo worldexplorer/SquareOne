@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Drawing;
 
 using Newtonsoft.Json;
@@ -10,7 +8,6 @@ using Sq1.Core.Accounting;
 using Sq1.Core.Broker;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.Backtesting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Support;
@@ -20,25 +17,25 @@ namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
 	public abstract partial class LivesimBroker : BrokerAdapter, IDisposable {
 		[JsonIgnore]	public		ScriptExecutor				ScriptExecutor							{ get; private set; }
-		[JsonIgnore]	public		BacktestMarketsim			LivesimMarketsim						{ get; protected set; }
+		[JsonIgnore]	public		LivesimMarketsim			LivesimMarketsim						{ get; protected set; }
 
 		[JsonIgnore]	public		List<Order>					OrdersSubmitted_forOneLivesimBacktest	{ get; private set; }
 		[JsonIgnore]	protected	LivesimDataSource			LivesimDataSource						{ get { return base.DataSource as LivesimDataSource; } }
-		[JsonIgnore]	internal	LivesimBrokerSettings		LivesimBrokerSettings					{ get { return this.ScriptExecutor.Strategy.LivesimBrokerSettings; } }
+		[JsonIgnore]	public		LivesimBrokerSettings		LivesimBrokerSettings					{ get { return this.ScriptExecutor.Strategy.LivesimBrokerSettings; } }
 		[JsonIgnore]	public		LivesimBrokerDataSnapshot	DataSnapshot;
-		[JsonIgnore]	protected	LivesimBrokerSpoiler		LivesimBrokerSpoiler;
+		[JsonIgnore]	public		LivesimBrokerSpoiler		LivesimBrokerSpoiler					{ get; protected set; }
 
-		[JsonIgnore]	public		bool						IsDisposed								{ get; private set; }
-
-		[JsonIgnore]	public	override bool					EmittingCapable							{ get { return true; } }
+		[JsonIgnore]	public		override bool				EmittingCapable							{ get { return true; } }
+		[JsonIgnore]				object						threadEntryLockToHaveQuoteSentToThread;
 
 		public LivesimBroker(string reasonToExist) : base(reasonToExist) {
 			base.Name									= "LivesimBroker";
-			this.LivesimMarketsim						= new BacktestMarketsim(this);
+			this.LivesimMarketsim						= new LivesimMarketsim(this);
 			base.AccountAutoPropagate					= new Account("LIVESIM_ACCOUNT", -1000);
 			base.AccountAutoPropagate.Initialize(this);
 			this.OrdersSubmitted_forOneLivesimBacktest	= new List<Order>();
 			this.LivesimBrokerSpoiler					= new LivesimBrokerSpoiler(this);
+			this.threadEntryLockToHaveQuoteSentToThread	= new object();
 		}
 		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, OrderProcessor orderProcessor) {
 			base.DataSource		= livesimDataSource;
@@ -82,8 +79,8 @@ namespace Sq1.Core.Livesim {
 			return emptyEditor;
 		}
 
-		public void Dispose() {
-			if (this.IsDisposed) {
+		public override void Dispose() {
+			if (base.IsDisposed) {
 				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();
 				Assembler.PopupException(msg);
 				return;
@@ -96,15 +93,15 @@ namespace Sq1.Core.Livesim {
 			this.DataSnapshot	.Dispose();
 			base.DataSource		= null;
 			this.DataSnapshot	= null;
-			this.IsDisposed = true;
+			base.IsDisposed		= true;
 		}
 
-		public override void Broker_connect() {
+		public override void Broker_connect(string reasonToConnect = "") {
 			string msig = " //Broker_connect(" + this.ToString() + ")";
 			string msg = "LIVESIM_CHILDREN_SHOULD_NEVER_RECEIVE_UpstreamConnect()";
 			//Assembler.PopupException(msg + msig, null, false);
 			string why = "I simulate Terminal_Connected on first order, and each next spoiledDisconnect(); but LivesimDataSource.json doesnt exist";
-			base.ConnectionState_update(ConnectionState.Broker_TerminalConnected_22, msig);
+			base.ConnectionState_update(ConnectionState.Broker_TerminalConnected_22, reasonToConnect + msig);
 		}
 		public override void Broker_disconnect(string reasonForDisconnect = "UNKNONWN_reasonForDisconnect") {
 			string msig = " //Broker_disconnect(" + this.ToString() + ")";
@@ -121,5 +118,6 @@ namespace Sq1.Core.Livesim {
 			}
 			return ret;
 		}
+
 	}
 }

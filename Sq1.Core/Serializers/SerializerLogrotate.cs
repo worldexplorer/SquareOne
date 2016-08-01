@@ -6,8 +6,16 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.Serializers {
 	public class SerializerLogrotate<T> : Serializer<List<T>> {
-				long	logRotateSizeLimit;
+		public const float KILOBYTE = 1024f;
+		public const float MEGABYTE = (1024f * 1024f);
+		//public const float LIMIT_DEFAULT = 2 * MEGABYTE;
+
 				string	logRotateDateFormat;
+				long	logRotateSizeLimit_bytes;
+		public	float	LogRotateSizeLimit_Mb {
+			get { return this.logRotateSizeLimit_bytes / MEGABYTE; }
+			set { this.logRotateSizeLimit_bytes = (int) Math.Round(value * MEGABYTE); }
+		}
 
 				Object	entityLock;
 		public	bool	HasChangesToSave;
@@ -15,16 +23,16 @@ namespace Sq1.Core.Serializers {
 				object	itemsBufferedWhileSerializingLock;
 				List<T>	itemsBuffered_whileSerializing;
 
-		public SerializerLogrotate() : base() {
-			this.logRotateSizeLimit = 2 * 1024 * 1024;	// 2Mb
-			this.logRotateDateFormat = "yyyy-MM-dd_HH-mm-ss#fff";
-
+		public SerializerLogrotate(float twoMb = 2.0f) : base() {
 			this.entityLock = new Object();
 			this.currentlySerializing = false;
 			this.itemsBufferedWhileSerializingLock = new object();
 			this.itemsBuffered_whileSerializing = new List<T>();
-
 			base.OfWhat = typeof(T).Name;
+
+			this.logRotateDateFormat = "yyyy-MM-dd_HH-mm-ss#fff";
+			//v1 this.logRotateSizeLimit_bytes = 2 * 1024 * 1024;	// 2Mb
+			this.LogRotateSizeLimit_Mb = twoMb;
 		}
 
 		public override List<T> Deserialize() {
@@ -95,7 +103,7 @@ namespace Sq1.Core.Serializers {
 			if (File.Exists(fileAbspath) == false) File.Create(fileAbspath).Dispose();
 
 			long size = new FileInfo(fileAbspath).Length;
-			if (size < logRotateSizeLimit) return;
+			if (size < logRotateSizeLimit_bytes) return;
 			string fileNameWithDate = Path.GetFileNameWithoutExtension(fileAbspath)
 				+ "-" + DateTime.Now.ToString(this.logRotateDateFormat);	// Orders-2016-07-05_10-58-48#448.json
 			string fileAbsNameWithDate = Path.GetDirectoryName(fileAbspath) + Path.DirectorySeparatorChar 
@@ -126,6 +134,10 @@ namespace Sq1.Core.Serializers {
 					base.EntityDeserialized.Remove(orderRemoving);
 				}
 			}
+			this.HasChangesToSave = true;
+		} }
+		public void Clear() { lock (this.entityLock) {
+			base.EntityDeserialized.Clear();
 			this.HasChangesToSave = true;
 		} }
 

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.ComponentModel;	//[Browsable(true)]
-using System.Drawing;
 
 using BrightIdeasSoftware;
 

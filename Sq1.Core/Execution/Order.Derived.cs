@@ -15,6 +15,12 @@ namespace Sq1.Core.Execution {
 			}
 			return ret;
 		} }
+		[JsonIgnore]	public Order			DerivedOrder_Last			{ get {
+				Order ret = null;
+				if (this.DerivedOrders.Count == 0) return ret;
+				ret = this.DerivedOrders[this.DerivedOrders.Count - 1];
+				return ret;
+			} }
 		[JsonProperty]	public	List<string>	DerivedOrdersGuids			{ get; protected set; }
 		[JsonIgnore]	public	Order			DerivedFrom;				// SET_IN_OrdersShadowTreeDerived	{ get; protected set; }		// one parent with possibly its own parent, but not too deep; lazy to restore from DerivedFromGui only to rebuild Tree after restart
 

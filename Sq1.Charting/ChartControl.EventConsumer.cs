@@ -4,7 +4,6 @@ using System.Windows.Forms;
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
-using Sq1.Core.Streaming;
 
 namespace Sq1.Charting {
 	public partial class ChartControl	{

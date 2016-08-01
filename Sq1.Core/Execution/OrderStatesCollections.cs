@@ -108,6 +108,7 @@ namespace Sq1.Core.Execution {
 				OrderState.TPAnnihilating,
 				OrderState.Rejected,
 				OrderState.LimitExpiredRejected,
+				OrderState.WaitingBrokerFill,
 			}, "CanBeKilled");
 	
 		

@@ -83,13 +83,26 @@ namespace Sq1.Widgets.DataSourceEditor {
 		}
 
 		void repositoryJsonDataSource_OnDataSourceRenamed_refreshTitle(object sender, NamedObjectJsonEventArgs<DataSource> e) {
+			if (base.InvokeRequired) {
+				base.BeginInvoke(new MethodInvoker(delegate { this.repositoryJsonDataSource_OnDataSourceRenamed_refreshTitle(sender, e); }));
+				return;
+			}
 			this.tsiLtbDataSourceName.InputFieldValue = this.dataSourceIamEditing.Name;
 		}
 		void repositoryJsonDataSource_OnDataSourceDeleted_closeDataSourceEditor(object sender, NamedObjectJsonEventArgs<DataSource> e) {
+			if (base.InvokeRequired) {
+				base.BeginInvoke(new MethodInvoker(delegate { this.repositoryJsonDataSource_OnDataSourceDeleted_closeDataSourceEditor(sender, e); }));
+				return;
+			}
 			if (this.ParentForm == null) return;
 			this.ParentForm.Close();
 		}
 		void repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea(object sender, DataSourceSymbolEventArgs e) {
+			if (base.InvokeRequired) {
+				base.BeginInvoke(new MethodInvoker(delegate { this.repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea(sender, e); }));
+				return;
+			}
+
 			if (this.dataSourceIamEditing != e.DataSource) {
 				string msg = "NOT_THE_DATASOURCE_IM_EDITING_IGNORING"
 					//+ " WHERE_SHOULD_I_GET_SymbolsCSV ? this.ds[" + this.ds.Name + "] != e.DataSource[" + e.DataSource.Name + "]"

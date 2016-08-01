@@ -126,19 +126,19 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbSpreadGeneratorPct.InputFieldBackColor = System.Drawing.SystemColors.Info;
 			this.mnitlbSpreadGeneratorPct.InputFieldEditable = true;
 			this.mnitlbSpreadGeneratorPct.InputFieldMultiline = true;
-			this.mnitlbSpreadGeneratorPct.InputFieldOffsetX = 80;
+			this.mnitlbSpreadGeneratorPct.InputFieldOffsetX = 120;
 			this.mnitlbSpreadGeneratorPct.InputFieldValue = "0.005";
-			this.mnitlbSpreadGeneratorPct.InputFieldWidth = 50;
+			this.mnitlbSpreadGeneratorPct.InputFieldWidth = 40;
 			this.mnitlbSpreadGeneratorPct.Name = "mnitlbSpreadGeneratorPct";
 			this.mnitlbSpreadGeneratorPct.OffsetTop = 0;
-			this.mnitlbSpreadGeneratorPct.Size = new System.Drawing.Size(231, 21);
-			this.mnitlbSpreadGeneratorPct.TextLeft = "Set Spread as";
+			this.mnitlbSpreadGeneratorPct.Size = new System.Drawing.Size(261, 21);
+			this.mnitlbSpreadGeneratorPct.TextLeft = "Set Spread as %price";
 			this.mnitlbSpreadGeneratorPct.TextLeftOffsetX = 0;
-			this.mnitlbSpreadGeneratorPct.TextLeftWidth = 78;
+			this.mnitlbSpreadGeneratorPct.TextLeftWidth = 90;
 			this.mnitlbSpreadGeneratorPct.TextRed = false;
-			this.mnitlbSpreadGeneratorPct.TextRight = "%price ~= 121pips";
-			this.mnitlbSpreadGeneratorPct.TextRightOffsetX = 130;
-			this.mnitlbSpreadGeneratorPct.TextRightWidth = 109;
+			this.mnitlbSpreadGeneratorPct.TextRight = "= 8pips, for lastClose[14,230] SAMPLE";
+			this.mnitlbSpreadGeneratorPct.TextRightOffsetX = 160;
+			this.mnitlbSpreadGeneratorPct.TextRightWidth = 139;
 			this.mnitlbSpreadGeneratorPct.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbSpreadGeneratorPct_UserTyped);
 			// 
 			// mniFillOutsideQuoteSpreadParanoidCheckThrow

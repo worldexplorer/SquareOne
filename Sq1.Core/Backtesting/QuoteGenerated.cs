@@ -22,7 +22,7 @@ namespace Sq1.Core.Backtesting {
 					return base.Spread;
 				}
 				SymbolInfo symbolInfo = this.ParentBarSimulated.ParentBars.SymbolInfo;
-				double ret = symbolInfo.AlignToPriceLevel(base.Spread, PriceLevelRoundingMode.RoundUp);	//RoundUp so I wont' get spread = 0
+				double ret = symbolInfo.AlignToPriceStep(base.Spread, PriceLevelRoundingMode.RoundUp);	//RoundUp so I wont' get spread = 0
 				return ret;
 			} }
 		[JsonIgnore]	public bool			WentThroughStreamingToScript;

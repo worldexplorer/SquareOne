@@ -23,6 +23,8 @@ namespace Sq1.Core.Execution {
 		KillingUnfilledExpired	= 330,
 		EmittingReplacement		= 340,
 		LimitExpiredRejected	= 350,
+		StuckInSubmitted_Replacing	= 360,
+		StuckInSubmitted_Replaced	= 361,
 
 
 		Filled					= 400,
@@ -42,6 +44,8 @@ namespace Sq1.Core.Execution {
 		TPAnnihilating			= 585,
 		TPAnnihilated			= 586,
 
+		
+		VictimKillingFromGui	= 605,
 		VictimBulletPreSubmit	= 610,		// KillerPreSubmit			<=> VictimsBulletPreSubmit
 		VictimBulletConfirmed	= 620,		// KillerSubmitting			<=> VictimsBulletConfirmed		
 		VictimBulletSubmitted	= 630,		// KillerTransSubmittedOK	<=> VictimsBulletSubmitted
@@ -67,7 +71,8 @@ namespace Sq1.Core.Execution {
 		ErrorSubmittingOrder_elaborate				= 730,
 		Error_DealPriceOutOfLimit_weird				= 731,
 		Error_AccountTooSmall						= 732,
-		Error_NotTradedNow_ProbablyClearing			= 733,
+		Error_NotTradedNow_ProbablyClearing			= 734,
+		Error_KillingNotAllowed						= 735,
 
 		SubmittedNoFeedback							= 799,
 

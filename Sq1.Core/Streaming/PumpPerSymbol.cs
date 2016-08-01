@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using System.Collections.Generic;
 
 namespace Sq1.Core.Streaming {
 	// REASON_TO_EXIST: allows to store temporarily incoming streaming quotes to backtest while streaming is on;
@@ -120,7 +119,7 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		public void PushingThread_StopDispose_waitConfirmed() {
+		public void PushingThread_Stop_waitConfirmed(bool disposeMe = false) {
 			string msig = " //PushingThreadStop isPushingThreadStarted[" + this.IsPushingThreadStarted + "]=>[" + false + "]";
 #if STRINGS_VERBOSE
 				msig += " + this.ToString();
@@ -148,6 +147,7 @@ namespace Sq1.Core.Streaming {
 			}
 
 			this.IsPushingThreadStarted = false;
+			if (disposeMe == false) return;
 			try {
 				this.Dispose();
 			} catch (Exception ex) {
@@ -370,7 +370,7 @@ namespace Sq1.Core.Streaming {
 			if (this.IsPushingThreadStarted) {
 				try {
 					//v1 A task may only be disposed if it is in a completion state (RanToCompletion, Faulted or Canceled). this.bufferPusher.Dispose();
-					this.PushingThread_StopDispose_waitConfirmed();
+					this.PushingThread_Stop_waitConfirmed();
 				} catch(Exception ex) {
 					Assembler.PopupException(this.ToString() + ".PushingThreadStop()", ex, false);
 				}

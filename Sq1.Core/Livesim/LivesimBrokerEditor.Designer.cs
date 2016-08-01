@@ -45,26 +45,26 @@ namespace Sq1.Core.Livesim {
 		private System.Windows.Forms.GroupBox groupBox4;
 		private System.Windows.Forms.Label label16;
 		private System.Windows.Forms.Label label17;
-		private System.Windows.Forms.TextBox txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax;
-		private System.Windows.Forms.TextBox txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin;
+		private System.Windows.Forms.TextBox txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Max;
+		private System.Windows.Forms.TextBox txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Min;
 		private System.Windows.Forms.Label label18;
 		private System.Windows.Forms.Label label19;
 		private System.Windows.Forms.CheckBox cbx_PriceDeviationForMarketOrdersEnabled;
 		private System.Windows.Forms.Label label20;
-		private System.Windows.Forms.TextBox txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax;
-		private System.Windows.Forms.TextBox txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin;
+		private System.Windows.Forms.TextBox txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Max;
+		private System.Windows.Forms.TextBox txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Min;
 		private System.Windows.Forms.Label label21;
 		private System.Windows.Forms.GroupBox grp_BrokerAdapterDisconnect;
 		private System.Windows.Forms.Label label22;
 		private System.Windows.Forms.Label label23;
-		private System.Windows.Forms.TextBox txt_AdapterDisconnectReconnectsAfterMillisMax;
-		private System.Windows.Forms.TextBox txt_AdapterDisconnectReconnectsAfterMillisMin;
+		private System.Windows.Forms.TextBox txt_AdapterDisconnectReconnectsAfterMillis_Max;
+		private System.Windows.Forms.TextBox txt_AdapterDisconnectReconnectsAfterMillis_Min;
 		private System.Windows.Forms.Label label24;
 		private System.Windows.Forms.Label label25;
 		private System.Windows.Forms.CheckBox cbx_AdaperDisconnectEnabled;
 		private System.Windows.Forms.Label label26;
-		private System.Windows.Forms.TextBox txt_AdapterDisconnectHappensOncePerOrderMax;
-		private System.Windows.Forms.TextBox txt_AdapterDisconnectHappensOncePerOrderMin;
+		private System.Windows.Forms.TextBox txt_AdapterDisconnect_HappensOncePerOrder_Max;
+		private System.Windows.Forms.TextBox txt_AdapterDisconnect_HappensOncePerOrder_Min;
 		private System.Windows.Forms.Label label27;
 		private System.Windows.Forms.GroupBox gbx_DelayBeforeFill;
 		private System.Windows.Forms.Label label28;
@@ -77,8 +77,8 @@ namespace Sq1.Core.Livesim {
 		private System.Windows.Forms.Label label31;
 		private System.Windows.Forms.CheckBox cbx_KillPendingDelayEnabled;
 		private System.Windows.Forms.Label label32;
-		private System.Windows.Forms.TextBox txt_KillPendingDelay_max;
-		private System.Windows.Forms.TextBox txt_KillPendingDelay_min;
+		private System.Windows.Forms.TextBox txt_KillPendingDelay_Max;
+		private System.Windows.Forms.TextBox txt_KillPendingDelay_Min;
 		private System.Windows.Forms.Label lbl_KillPendingDelay;
 		private void InitializeComponent() {
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -103,26 +103,26 @@ namespace Sq1.Core.Livesim {
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
 			this.label16 = new System.Windows.Forms.Label();
 			this.label17 = new System.Windows.Forms.Label();
-			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax = new System.Windows.Forms.TextBox();
-			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin = new System.Windows.Forms.TextBox();
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Max = new System.Windows.Forms.TextBox();
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Min = new System.Windows.Forms.TextBox();
 			this.label18 = new System.Windows.Forms.Label();
 			this.label19 = new System.Windows.Forms.Label();
 			this.cbx_PriceDeviationForMarketOrdersEnabled = new System.Windows.Forms.CheckBox();
 			this.label20 = new System.Windows.Forms.Label();
-			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax = new System.Windows.Forms.TextBox();
-			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin = new System.Windows.Forms.TextBox();
+			this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Max = new System.Windows.Forms.TextBox();
+			this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Min = new System.Windows.Forms.TextBox();
 			this.label21 = new System.Windows.Forms.Label();
 			this.grp_BrokerAdapterDisconnect = new System.Windows.Forms.GroupBox();
 			this.label22 = new System.Windows.Forms.Label();
 			this.label23 = new System.Windows.Forms.Label();
-			this.txt_AdapterDisconnectReconnectsAfterMillisMax = new System.Windows.Forms.TextBox();
-			this.txt_AdapterDisconnectReconnectsAfterMillisMin = new System.Windows.Forms.TextBox();
+			this.txt_AdapterDisconnectReconnectsAfterMillis_Max = new System.Windows.Forms.TextBox();
+			this.txt_AdapterDisconnectReconnectsAfterMillis_Min = new System.Windows.Forms.TextBox();
 			this.label24 = new System.Windows.Forms.Label();
 			this.label25 = new System.Windows.Forms.Label();
 			this.cbx_AdaperDisconnectEnabled = new System.Windows.Forms.CheckBox();
 			this.label26 = new System.Windows.Forms.Label();
-			this.txt_AdapterDisconnectHappensOncePerOrderMax = new System.Windows.Forms.TextBox();
-			this.txt_AdapterDisconnectHappensOncePerOrderMin = new System.Windows.Forms.TextBox();
+			this.txt_AdapterDisconnect_HappensOncePerOrder_Max = new System.Windows.Forms.TextBox();
+			this.txt_AdapterDisconnect_HappensOncePerOrder_Min = new System.Windows.Forms.TextBox();
 			this.label27 = new System.Windows.Forms.Label();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.label3 = new System.Windows.Forms.Label();
@@ -147,20 +147,20 @@ namespace Sq1.Core.Livesim {
 			this.label31 = new System.Windows.Forms.Label();
 			this.cbx_KillPendingDelayEnabled = new System.Windows.Forms.CheckBox();
 			this.label32 = new System.Windows.Forms.Label();
-			this.txt_KillPendingDelay_max = new System.Windows.Forms.TextBox();
-			this.txt_KillPendingDelay_min = new System.Windows.Forms.TextBox();
+			this.txt_KillPendingDelay_Max = new System.Windows.Forms.TextBox();
+			this.txt_KillPendingDelay_Min = new System.Windows.Forms.TextBox();
 			this.lbl_KillPendingDelay = new System.Windows.Forms.Label();
 			this.gbx_TransactionStatusAfterOrderStatus = new System.Windows.Forms.GroupBox();
 			this.label33 = new System.Windows.Forms.Label();
 			this.label34 = new System.Windows.Forms.Label();
-			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMax = new System.Windows.Forms.TextBox();
-			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMin = new System.Windows.Forms.TextBox();
+			this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Max = new System.Windows.Forms.TextBox();
+			this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Min = new System.Windows.Forms.TextBox();
 			this.label35 = new System.Windows.Forms.Label();
 			this.label36 = new System.Windows.Forms.Label();
 			this.cbx_TransactionStatusAfterOrderStatusEnabled = new System.Windows.Forms.CheckBox();
 			this.label37 = new System.Windows.Forms.Label();
-			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMax = new System.Windows.Forms.TextBox();
-			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMin = new System.Windows.Forms.TextBox();
+			this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Max = new System.Windows.Forms.TextBox();
+			this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Min = new System.Windows.Forms.TextBox();
 			this.label38 = new System.Windows.Forms.Label();
 			this.gbx_KillerTransactionCallbackAfterVictimFilled = new System.Windows.Forms.GroupBox();
 			this.label39 = new System.Windows.Forms.Label();
@@ -171,17 +171,24 @@ namespace Sq1.Core.Livesim {
 			this.label42 = new System.Windows.Forms.Label();
 			this.cbx_KillerTransactionCallbackAfterVictimFilled_enabled = new System.Windows.Forms.CheckBox();
 			this.label43 = new System.Windows.Forms.Label();
-			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMax = new System.Windows.Forms.TextBox();
-			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMin = new System.Windows.Forms.TextBox();
+			this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Max = new System.Windows.Forms.TextBox();
+			this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Min = new System.Windows.Forms.TextBox();
 			this.label44 = new System.Windows.Forms.Label();
 			this.cbx_ClearExecutionExceptions = new System.Windows.Forms.CheckBox();
 			this.gbxInjections_BrokerDeniedSubmission = new System.Windows.Forms.GroupBox();
 			this.label45 = new System.Windows.Forms.Label();
 			this.cbx_BrokerDeniedSubmission_Enabled = new System.Windows.Forms.CheckBox();
 			this.label46 = new System.Windows.Forms.Label();
-			this.txt_BrokerDeniedSubmission_HappensOncePerXordersMax = new System.Windows.Forms.TextBox();
-			this.txt_BrokerDeniedSubmission_HappensOncePerXordersMin = new System.Windows.Forms.TextBox();
+			this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Max = new System.Windows.Forms.TextBox();
+			this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Min = new System.Windows.Forms.TextBox();
 			this.label47 = new System.Windows.Forms.Label();
+			this.gbxNoOrderStateCallbackAfterSubmitted = new System.Windows.Forms.GroupBox();
+			this.label48 = new System.Windows.Forms.Label();
+			this.cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled = new System.Windows.Forms.CheckBox();
+			this.label49 = new System.Windows.Forms.Label();
+			this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Max = new System.Windows.Forms.TextBox();
+			this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Min = new System.Windows.Forms.TextBox();
+			this.label50 = new System.Windows.Forms.Label();
 			this.groupBox2.SuspendLayout();
 			this.grp_orderRejectionRate.SuspendLayout();
 			this.groupBox4.SuspendLayout();
@@ -192,6 +199,7 @@ namespace Sq1.Core.Livesim {
 			this.gbx_TransactionStatusAfterOrderStatus.SuspendLayout();
 			this.gbx_KillerTransactionCallbackAfterVictimFilled.SuspendLayout();
 			this.gbxInjections_BrokerDeniedSubmission.SuspendLayout();
+			this.gbxNoOrderStateCallbackAfterSubmitted.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// groupBox2
@@ -388,14 +396,14 @@ namespace Sq1.Core.Livesim {
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox4.Controls.Add(this.label16);
 			this.groupBox4.Controls.Add(this.label17);
-			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax);
-			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin);
+			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Max);
+			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Min);
 			this.groupBox4.Controls.Add(this.label18);
 			this.groupBox4.Controls.Add(this.label19);
 			this.groupBox4.Controls.Add(this.cbx_PriceDeviationForMarketOrdersEnabled);
 			this.groupBox4.Controls.Add(this.label20);
-			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax);
-			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin);
+			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Max);
+			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Min);
 			this.groupBox4.Controls.Add(this.label21);
 			this.groupBox4.Enabled = false;
 			this.groupBox4.Location = new System.Drawing.Point(3, 560);
@@ -421,21 +429,21 @@ namespace Sq1.Core.Livesim {
 			this.label17.TabIndex = 27;
 			this.label17.Text = "to";
 			// 
-			// txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax
+			// txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Max
 			// 
-			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax.Location = new System.Drawing.Point(183, 45);
-			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax.Name = "txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax";
-			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax.Size = new System.Drawing.Size(33, 20);
-			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax.TabIndex = 49;
-			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Max.Location = new System.Drawing.Point(183, 45);
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Max.Name = "txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Max";
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Max.Size = new System.Drawing.Size(33, 20);
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Max.TabIndex = 49;
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Max.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin
+			// txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Min
 			// 
-			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin.Location = new System.Drawing.Point(129, 45);
-			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin.Name = "txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin";
-			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin.Size = new System.Drawing.Size(30, 20);
-			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin.TabIndex = 48;
-			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Min.Location = new System.Drawing.Point(129, 45);
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Min.Name = "txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Min";
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Min.Size = new System.Drawing.Size(30, 20);
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Min.TabIndex = 48;
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPrice_Min.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label18
 			// 
@@ -475,21 +483,21 @@ namespace Sq1.Core.Livesim {
 			this.label20.TabIndex = 22;
 			this.label20.Text = "to";
 			// 
-			// txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax
+			// txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Max
 			// 
-			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax.Location = new System.Drawing.Point(183, 19);
-			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax.Name = "txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax";
-			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax.Size = new System.Drawing.Size(33, 20);
-			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax.TabIndex = 47;
-			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Max.Location = new System.Drawing.Point(183, 19);
+			this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Max.Name = "txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Max";
+			this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Max.Size = new System.Drawing.Size(33, 20);
+			this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Max.TabIndex = 47;
+			this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Max.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin
+			// txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Min
 			// 
-			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin.Location = new System.Drawing.Point(129, 19);
-			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin.Name = "txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin";
-			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin.Size = new System.Drawing.Size(30, 20);
-			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin.TabIndex = 46;
-			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Min.Location = new System.Drawing.Point(129, 19);
+			this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Min.Name = "txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Min";
+			this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Min.Size = new System.Drawing.Size(30, 20);
+			this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Min.TabIndex = 46;
+			this.txt_PriceDeviationForMarketOrders_HappensOncePerXorders_Min.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label21
 			// 
@@ -505,14 +513,14 @@ namespace Sq1.Core.Livesim {
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.label22);
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.label23);
-			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdapterDisconnectReconnectsAfterMillisMax);
-			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdapterDisconnectReconnectsAfterMillisMin);
+			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdapterDisconnectReconnectsAfterMillis_Max);
+			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdapterDisconnectReconnectsAfterMillis_Min);
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.label24);
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.label25);
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.cbx_AdaperDisconnectEnabled);
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.label26);
-			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdapterDisconnectHappensOncePerOrderMax);
-			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdapterDisconnectHappensOncePerOrderMin);
+			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdapterDisconnect_HappensOncePerOrder_Max);
+			this.grp_BrokerAdapterDisconnect.Controls.Add(this.txt_AdapterDisconnect_HappensOncePerOrder_Min);
 			this.grp_BrokerAdapterDisconnect.Controls.Add(this.label27);
 			this.grp_BrokerAdapterDisconnect.Location = new System.Drawing.Point(3, 651);
 			this.grp_BrokerAdapterDisconnect.Name = "grp_BrokerAdapterDisconnect";
@@ -537,21 +545,21 @@ namespace Sq1.Core.Livesim {
 			this.label23.TabIndex = 27;
 			this.label23.Text = "to";
 			// 
-			// txt_AdapterDisconnectReconnectsAfterMillisMax
+			// txt_AdapterDisconnectReconnectsAfterMillis_Max
 			// 
-			this.txt_AdapterDisconnectReconnectsAfterMillisMax.Location = new System.Drawing.Point(183, 45);
-			this.txt_AdapterDisconnectReconnectsAfterMillisMax.Name = "txt_AdapterDisconnectReconnectsAfterMillisMax";
-			this.txt_AdapterDisconnectReconnectsAfterMillisMax.Size = new System.Drawing.Size(33, 20);
-			this.txt_AdapterDisconnectReconnectsAfterMillisMax.TabIndex = 54;
-			this.txt_AdapterDisconnectReconnectsAfterMillisMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_AdapterDisconnectReconnectsAfterMillis_Max.Location = new System.Drawing.Point(183, 45);
+			this.txt_AdapterDisconnectReconnectsAfterMillis_Max.Name = "txt_AdapterDisconnectReconnectsAfterMillis_Max";
+			this.txt_AdapterDisconnectReconnectsAfterMillis_Max.Size = new System.Drawing.Size(33, 20);
+			this.txt_AdapterDisconnectReconnectsAfterMillis_Max.TabIndex = 54;
+			this.txt_AdapterDisconnectReconnectsAfterMillis_Max.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// txt_AdapterDisconnectReconnectsAfterMillisMin
+			// txt_AdapterDisconnectReconnectsAfterMillis_Min
 			// 
-			this.txt_AdapterDisconnectReconnectsAfterMillisMin.Location = new System.Drawing.Point(129, 45);
-			this.txt_AdapterDisconnectReconnectsAfterMillisMin.Name = "txt_AdapterDisconnectReconnectsAfterMillisMin";
-			this.txt_AdapterDisconnectReconnectsAfterMillisMin.Size = new System.Drawing.Size(30, 20);
-			this.txt_AdapterDisconnectReconnectsAfterMillisMin.TabIndex = 53;
-			this.txt_AdapterDisconnectReconnectsAfterMillisMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_AdapterDisconnectReconnectsAfterMillis_Min.Location = new System.Drawing.Point(129, 45);
+			this.txt_AdapterDisconnectReconnectsAfterMillis_Min.Name = "txt_AdapterDisconnectReconnectsAfterMillis_Min";
+			this.txt_AdapterDisconnectReconnectsAfterMillis_Min.Size = new System.Drawing.Size(30, 20);
+			this.txt_AdapterDisconnectReconnectsAfterMillis_Min.TabIndex = 53;
+			this.txt_AdapterDisconnectReconnectsAfterMillis_Min.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label24
 			// 
@@ -591,21 +599,21 @@ namespace Sq1.Core.Livesim {
 			this.label26.TabIndex = 22;
 			this.label26.Text = "to";
 			// 
-			// txt_AdapterDisconnectHappensOncePerOrderMax
+			// txt_AdapterDisconnect_HappensOncePerOrder_Max
 			// 
-			this.txt_AdapterDisconnectHappensOncePerOrderMax.Location = new System.Drawing.Point(183, 19);
-			this.txt_AdapterDisconnectHappensOncePerOrderMax.Name = "txt_AdapterDisconnectHappensOncePerOrderMax";
-			this.txt_AdapterDisconnectHappensOncePerOrderMax.Size = new System.Drawing.Size(33, 20);
-			this.txt_AdapterDisconnectHappensOncePerOrderMax.TabIndex = 52;
-			this.txt_AdapterDisconnectHappensOncePerOrderMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_AdapterDisconnect_HappensOncePerOrder_Max.Location = new System.Drawing.Point(183, 19);
+			this.txt_AdapterDisconnect_HappensOncePerOrder_Max.Name = "txt_AdapterDisconnect_HappensOncePerOrder_Max";
+			this.txt_AdapterDisconnect_HappensOncePerOrder_Max.Size = new System.Drawing.Size(33, 20);
+			this.txt_AdapterDisconnect_HappensOncePerOrder_Max.TabIndex = 52;
+			this.txt_AdapterDisconnect_HappensOncePerOrder_Max.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// txt_AdapterDisconnectHappensOncePerOrderMin
+			// txt_AdapterDisconnect_HappensOncePerOrder_Min
 			// 
-			this.txt_AdapterDisconnectHappensOncePerOrderMin.Location = new System.Drawing.Point(129, 19);
-			this.txt_AdapterDisconnectHappensOncePerOrderMin.Name = "txt_AdapterDisconnectHappensOncePerOrderMin";
-			this.txt_AdapterDisconnectHappensOncePerOrderMin.Size = new System.Drawing.Size(30, 20);
-			this.txt_AdapterDisconnectHappensOncePerOrderMin.TabIndex = 51;
-			this.txt_AdapterDisconnectHappensOncePerOrderMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_AdapterDisconnect_HappensOncePerOrder_Min.Location = new System.Drawing.Point(129, 19);
+			this.txt_AdapterDisconnect_HappensOncePerOrder_Min.Name = "txt_AdapterDisconnect_HappensOncePerOrder_Min";
+			this.txt_AdapterDisconnect_HappensOncePerOrder_Min.Size = new System.Drawing.Size(30, 20);
+			this.txt_AdapterDisconnect_HappensOncePerOrder_Min.TabIndex = 51;
+			this.txt_AdapterDisconnect_HappensOncePerOrder_Min.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label27
 			// 
@@ -810,8 +818,8 @@ namespace Sq1.Core.Livesim {
 			this.grp_KillPendingDelay.Controls.Add(this.label31);
 			this.grp_KillPendingDelay.Controls.Add(this.cbx_KillPendingDelayEnabled);
 			this.grp_KillPendingDelay.Controls.Add(this.label32);
-			this.grp_KillPendingDelay.Controls.Add(this.txt_KillPendingDelay_max);
-			this.grp_KillPendingDelay.Controls.Add(this.txt_KillPendingDelay_min);
+			this.grp_KillPendingDelay.Controls.Add(this.txt_KillPendingDelay_Max);
+			this.grp_KillPendingDelay.Controls.Add(this.txt_KillPendingDelay_Min);
 			this.grp_KillPendingDelay.Controls.Add(this.lbl_KillPendingDelay);
 			this.grp_KillPendingDelay.Location = new System.Drawing.Point(3, 67);
 			this.grp_KillPendingDelay.Name = "grp_KillPendingDelay";
@@ -850,21 +858,21 @@ namespace Sq1.Core.Livesim {
 			this.label32.TabIndex = 33;
 			this.label32.Text = "to";
 			// 
-			// txt_KillPendingDelay_max
+			// txt_KillPendingDelay_Max
 			// 
-			this.txt_KillPendingDelay_max.Location = new System.Drawing.Point(183, 17);
-			this.txt_KillPendingDelay_max.Name = "txt_KillPendingDelay_max";
-			this.txt_KillPendingDelay_max.Size = new System.Drawing.Size(33, 20);
-			this.txt_KillPendingDelay_max.TabIndex = 31;
-			this.txt_KillPendingDelay_max.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_KillPendingDelay_Max.Location = new System.Drawing.Point(183, 17);
+			this.txt_KillPendingDelay_Max.Name = "txt_KillPendingDelay_Max";
+			this.txt_KillPendingDelay_Max.Size = new System.Drawing.Size(33, 20);
+			this.txt_KillPendingDelay_Max.TabIndex = 31;
+			this.txt_KillPendingDelay_Max.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// txt_KillPendingDelay_min
+			// txt_KillPendingDelay_Min
 			// 
-			this.txt_KillPendingDelay_min.Location = new System.Drawing.Point(129, 17);
-			this.txt_KillPendingDelay_min.Name = "txt_KillPendingDelay_min";
-			this.txt_KillPendingDelay_min.Size = new System.Drawing.Size(30, 20);
-			this.txt_KillPendingDelay_min.TabIndex = 30;
-			this.txt_KillPendingDelay_min.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_KillPendingDelay_Min.Location = new System.Drawing.Point(129, 17);
+			this.txt_KillPendingDelay_Min.Name = "txt_KillPendingDelay_Min";
+			this.txt_KillPendingDelay_Min.Size = new System.Drawing.Size(30, 20);
+			this.txt_KillPendingDelay_Min.TabIndex = 30;
+			this.txt_KillPendingDelay_Min.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// lbl_KillPendingDelay
 			// 
@@ -880,14 +888,14 @@ namespace Sq1.Core.Livesim {
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.label33);
 			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.label34);
-			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMax);
-			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMin);
+			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Max);
+			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Min);
 			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.label35);
 			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.label36);
 			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.cbx_TransactionStatusAfterOrderStatusEnabled);
 			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.label37);
-			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMax);
-			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMin);
+			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Max);
+			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Min);
 			this.gbx_TransactionStatusAfterOrderStatus.Controls.Add(this.label38);
 			this.gbx_TransactionStatusAfterOrderStatus.Location = new System.Drawing.Point(3, 197);
 			this.gbx_TransactionStatusAfterOrderStatus.Name = "gbx_TransactionStatusAfterOrderStatus";
@@ -912,21 +920,21 @@ namespace Sq1.Core.Livesim {
 			this.label34.TabIndex = 27;
 			this.label34.Text = "to";
 			// 
-			// txt_TransactionStatusAfterOrderStatusDelayAfterFillMax
+			// txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Max
 			// 
-			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMax.Location = new System.Drawing.Point(183, 45);
-			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMax.Name = "txt_TransactionStatusAfterOrderStatusDelayAfterFillMax";
-			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMax.Size = new System.Drawing.Size(33, 20);
-			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMax.TabIndex = 39;
-			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Max.Location = new System.Drawing.Point(183, 45);
+			this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Max.Name = "txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Max";
+			this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Max.Size = new System.Drawing.Size(33, 20);
+			this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Max.TabIndex = 39;
+			this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Max.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// txt_TransactionStatusAfterOrderStatusDelayAfterFillMin
+			// txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Min
 			// 
-			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMin.Location = new System.Drawing.Point(129, 45);
-			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMin.Name = "txt_TransactionStatusAfterOrderStatusDelayAfterFillMin";
-			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMin.Size = new System.Drawing.Size(30, 20);
-			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMin.TabIndex = 38;
-			this.txt_TransactionStatusAfterOrderStatusDelayAfterFillMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Min.Location = new System.Drawing.Point(129, 45);
+			this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Min.Name = "txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Min";
+			this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Min.Size = new System.Drawing.Size(30, 20);
+			this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Min.TabIndex = 38;
+			this.txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Min.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label35
 			// 
@@ -966,21 +974,21 @@ namespace Sq1.Core.Livesim {
 			this.label37.TabIndex = 22;
 			this.label37.Text = "to";
 			// 
-			// txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMax
+			// txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Max
 			// 
-			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMax.Location = new System.Drawing.Point(183, 19);
-			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMax.Name = "txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMax";
-			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMax.Size = new System.Drawing.Size(33, 20);
-			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMax.TabIndex = 37;
-			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Max.Location = new System.Drawing.Point(183, 19);
+			this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Max.Name = "txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Max";
+			this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Max.Size = new System.Drawing.Size(33, 20);
+			this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Max.TabIndex = 37;
+			this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Max.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMin
+			// txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Min
 			// 
-			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMin.Location = new System.Drawing.Point(129, 19);
-			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMin.Name = "txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMin";
-			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMin.Size = new System.Drawing.Size(30, 20);
-			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMin.TabIndex = 36;
-			this.txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Min.Location = new System.Drawing.Point(129, 19);
+			this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Min.Name = "txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Min";
+			this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Min.Size = new System.Drawing.Size(30, 20);
+			this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Min.TabIndex = 36;
+			this.txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Min.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label38
 			// 
@@ -1002,8 +1010,8 @@ namespace Sq1.Core.Livesim {
 			this.gbx_KillerTransactionCallbackAfterVictimFilled.Controls.Add(this.label42);
 			this.gbx_KillerTransactionCallbackAfterVictimFilled.Controls.Add(this.cbx_KillerTransactionCallbackAfterVictimFilled_enabled);
 			this.gbx_KillerTransactionCallbackAfterVictimFilled.Controls.Add(this.label43);
-			this.gbx_KillerTransactionCallbackAfterVictimFilled.Controls.Add(this.txt_KillerTransactionCallbackAfterVictimFilled_happensMax);
-			this.gbx_KillerTransactionCallbackAfterVictimFilled.Controls.Add(this.txt_KillerTransactionCallbackAfterVictimFilled_happensMin);
+			this.gbx_KillerTransactionCallbackAfterVictimFilled.Controls.Add(this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Max);
+			this.gbx_KillerTransactionCallbackAfterVictimFilled.Controls.Add(this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Min);
 			this.gbx_KillerTransactionCallbackAfterVictimFilled.Controls.Add(this.label44);
 			this.gbx_KillerTransactionCallbackAfterVictimFilled.Location = new System.Drawing.Point(3, 288);
 			this.gbx_KillerTransactionCallbackAfterVictimFilled.Name = "gbx_KillerTransactionCallbackAfterVictimFilled";
@@ -1082,21 +1090,21 @@ namespace Sq1.Core.Livesim {
 			this.label43.TabIndex = 22;
 			this.label43.Text = "to";
 			// 
-			// txt_KillerTransactionCallbackAfterVictimFilled_happensMax
+			// txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Max
 			// 
-			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMax.Location = new System.Drawing.Point(183, 19);
-			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMax.Name = "txt_KillerTransactionCallbackAfterVictimFilled_happensMax";
-			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMax.Size = new System.Drawing.Size(33, 20);
-			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMax.TabIndex = 37;
-			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Max.Location = new System.Drawing.Point(183, 19);
+			this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Max.Name = "txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Max";
+			this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Max.Size = new System.Drawing.Size(33, 20);
+			this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Max.TabIndex = 37;
+			this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Max.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// txt_KillerTransactionCallbackAfterVictimFilled_happensMin
+			// txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Min
 			// 
-			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMin.Location = new System.Drawing.Point(129, 19);
-			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMin.Name = "txt_KillerTransactionCallbackAfterVictimFilled_happensMin";
-			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMin.Size = new System.Drawing.Size(30, 20);
-			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMin.TabIndex = 36;
-			this.txt_KillerTransactionCallbackAfterVictimFilled_happensMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Min.Location = new System.Drawing.Point(129, 19);
+			this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Min.Name = "txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Min";
+			this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Min.Size = new System.Drawing.Size(30, 20);
+			this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Min.TabIndex = 36;
+			this.txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Min.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label44
 			// 
@@ -1111,7 +1119,7 @@ namespace Sq1.Core.Livesim {
 			this.cbx_ClearExecutionExceptions.AutoSize = true;
 			this.cbx_ClearExecutionExceptions.Checked = true;
 			this.cbx_ClearExecutionExceptions.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbx_ClearExecutionExceptions.Location = new System.Drawing.Point(9, 816);
+			this.cbx_ClearExecutionExceptions.Location = new System.Drawing.Point(3, 884);
 			this.cbx_ClearExecutionExceptions.Name = "cbx_ClearExecutionExceptions";
 			this.cbx_ClearExecutionExceptions.Size = new System.Drawing.Size(249, 17);
 			this.cbx_ClearExecutionExceptions.TabIndex = 43;
@@ -1126,8 +1134,8 @@ namespace Sq1.Core.Livesim {
 			this.gbxInjections_BrokerDeniedSubmission.Controls.Add(this.label45);
 			this.gbxInjections_BrokerDeniedSubmission.Controls.Add(this.cbx_BrokerDeniedSubmission_Enabled);
 			this.gbxInjections_BrokerDeniedSubmission.Controls.Add(this.label46);
-			this.gbxInjections_BrokerDeniedSubmission.Controls.Add(this.txt_BrokerDeniedSubmission_HappensOncePerXordersMax);
-			this.gbxInjections_BrokerDeniedSubmission.Controls.Add(this.txt_BrokerDeniedSubmission_HappensOncePerXordersMin);
+			this.gbxInjections_BrokerDeniedSubmission.Controls.Add(this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Max);
+			this.gbxInjections_BrokerDeniedSubmission.Controls.Add(this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Min);
 			this.gbxInjections_BrokerDeniedSubmission.Controls.Add(this.label47);
 			this.gbxInjections_BrokerDeniedSubmission.Location = new System.Drawing.Point(3, 746);
 			this.gbxInjections_BrokerDeniedSubmission.Name = "gbxInjections_BrokerDeniedSubmission";
@@ -1166,21 +1174,21 @@ namespace Sq1.Core.Livesim {
 			this.label46.TabIndex = 33;
 			this.label46.Text = "to";
 			// 
-			// txt_BrokerDeniedSubmission_HappensOncePerXordersMax
+			// txt_BrokerDeniedSubmission_HappensOncePerXorders_Max
 			// 
-			this.txt_BrokerDeniedSubmission_HappensOncePerXordersMax.Location = new System.Drawing.Point(183, 17);
-			this.txt_BrokerDeniedSubmission_HappensOncePerXordersMax.Name = "txt_BrokerDeniedSubmission_HappensOncePerXordersMax";
-			this.txt_BrokerDeniedSubmission_HappensOncePerXordersMax.Size = new System.Drawing.Size(33, 20);
-			this.txt_BrokerDeniedSubmission_HappensOncePerXordersMax.TabIndex = 34;
-			this.txt_BrokerDeniedSubmission_HappensOncePerXordersMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Max.Location = new System.Drawing.Point(183, 17);
+			this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Max.Name = "txt_BrokerDeniedSubmission_HappensOncePerXorders_Max";
+			this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Max.Size = new System.Drawing.Size(33, 20);
+			this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Max.TabIndex = 34;
+			this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Max.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// txt_BrokerDeniedSubmission_HappensOncePerXordersMin
+			// txt_BrokerDeniedSubmission_HappensOncePerXorders_Min
 			// 
-			this.txt_BrokerDeniedSubmission_HappensOncePerXordersMin.Location = new System.Drawing.Point(129, 17);
-			this.txt_BrokerDeniedSubmission_HappensOncePerXordersMin.Name = "txt_BrokerDeniedSubmission_HappensOncePerXordersMin";
-			this.txt_BrokerDeniedSubmission_HappensOncePerXordersMin.Size = new System.Drawing.Size(30, 20);
-			this.txt_BrokerDeniedSubmission_HappensOncePerXordersMin.TabIndex = 33;
-			this.txt_BrokerDeniedSubmission_HappensOncePerXordersMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Min.Location = new System.Drawing.Point(129, 17);
+			this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Min.Name = "txt_BrokerDeniedSubmission_HappensOncePerXorders_Min";
+			this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Min.Size = new System.Drawing.Size(30, 20);
+			this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Min.TabIndex = 33;
+			this.txt_BrokerDeniedSubmission_HappensOncePerXorders_Min.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label47
 			// 
@@ -1190,11 +1198,83 @@ namespace Sq1.Core.Livesim {
 			this.label47.TabIndex = 31;
 			this.label47.Text = "orders processed";
 			// 
+			// gbxNoOrderStateCallbackAfterSubmitted
+			// 
+			this.gbxNoOrderStateCallbackAfterSubmitted.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.gbxNoOrderStateCallbackAfterSubmitted.Controls.Add(this.label48);
+			this.gbxNoOrderStateCallbackAfterSubmitted.Controls.Add(this.cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled);
+			this.gbxNoOrderStateCallbackAfterSubmitted.Controls.Add(this.label49);
+			this.gbxNoOrderStateCallbackAfterSubmitted.Controls.Add(this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Max);
+			this.gbxNoOrderStateCallbackAfterSubmitted.Controls.Add(this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Min);
+			this.gbxNoOrderStateCallbackAfterSubmitted.Controls.Add(this.label50);
+			this.gbxNoOrderStateCallbackAfterSubmitted.Location = new System.Drawing.Point(3, 811);
+			this.gbxNoOrderStateCallbackAfterSubmitted.Name = "gbxNoOrderStateCallbackAfterSubmitted";
+			this.gbxNoOrderStateCallbackAfterSubmitted.Size = new System.Drawing.Size(356, 64);
+			this.gbxNoOrderStateCallbackAfterSubmitted.TabIndex = 37;
+			this.gbxNoOrderStateCallbackAfterSubmitted.TabStop = false;
+			this.gbxNoOrderStateCallbackAfterSubmitted.Text = "No OrderState from Broker after Submitted";
+			// 
+			// label48
+			// 
+			this.label48.Location = new System.Drawing.Point(6, 20);
+			this.label48.Name = "label48";
+			this.label48.Size = new System.Drawing.Size(107, 17);
+			this.label48.TabIndex = 34;
+			this.label48.Text = "Happens once per";
+			// 
+			// cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled
+			// 
+			this.cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled.Checked = true;
+			this.cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled.Location = new System.Drawing.Point(6, 42);
+			this.cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled.Name = "cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled";
+			this.cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled.Size = new System.Drawing.Size(344, 17);
+			this.cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled.TabIndex = 35;
+			this.cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled.Text = "Drop OrderStateCallbacks after Submitted";
+			this.cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled.UseVisualStyleBackColor = true;
+			this.cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled.CheckedChanged += new System.EventHandler(this.anyCheckBox_CheckedChanged);
+			// 
+			// label49
+			// 
+			this.label49.Location = new System.Drawing.Point(165, 20);
+			this.label49.Name = "label49";
+			this.label49.Size = new System.Drawing.Size(16, 15);
+			this.label49.TabIndex = 33;
+			this.label49.Text = "to";
+			// 
+			// txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Max
+			// 
+			this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Max.Location = new System.Drawing.Point(183, 17);
+			this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Max.Name = "txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Max";
+			this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Max.Size = new System.Drawing.Size(33, 20);
+			this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Max.TabIndex = 34;
+			this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Max.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			// 
+			// txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Min
+			// 
+			this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Min.Location = new System.Drawing.Point(129, 17);
+			this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Min.Name = "txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Min";
+			this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Min.Size = new System.Drawing.Size(30, 20);
+			this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Min.TabIndex = 33;
+			this.txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Min.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			// 
+			// label50
+			// 
+			this.label50.Location = new System.Drawing.Point(222, 20);
+			this.label50.Name = "label50";
+			this.label50.Size = new System.Drawing.Size(89, 17);
+			this.label50.TabIndex = 31;
+			this.label50.Text = "orders Submitted";
+			// 
 			// LivesimBrokerEditor
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.AutoScroll = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Controls.Add(this.gbxNoOrderStateCallbackAfterSubmitted);
 			this.Controls.Add(this.gbxInjections_BrokerDeniedSubmission);
 			this.Controls.Add(this.cbx_ClearExecutionExceptions);
 			this.Controls.Add(this.gbx_KillerTransactionCallbackAfterVictimFilled);
@@ -1207,7 +1287,7 @@ namespace Sq1.Core.Livesim {
 			this.Controls.Add(this.grp_orderRejectionRate);
 			this.Controls.Add(this.groupBox2);
 			this.Name = "LivesimBrokerEditor";
-			this.Size = new System.Drawing.Size(362, 843);
+			this.Size = new System.Drawing.Size(362, 904);
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
 			this.grp_orderRejectionRate.ResumeLayout(false);
@@ -1228,6 +1308,8 @@ namespace Sq1.Core.Livesim {
 			this.gbx_KillerTransactionCallbackAfterVictimFilled.PerformLayout();
 			this.gbxInjections_BrokerDeniedSubmission.ResumeLayout(false);
 			this.gbxInjections_BrokerDeniedSubmission.PerformLayout();
+			this.gbxNoOrderStateCallbackAfterSubmitted.ResumeLayout(false);
+			this.gbxNoOrderStateCallbackAfterSubmitted.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -1243,14 +1325,14 @@ namespace Sq1.Core.Livesim {
 		private System.Windows.Forms.GroupBox gbx_TransactionStatusAfterOrderStatus;
 		private System.Windows.Forms.Label label33;
 		private System.Windows.Forms.Label label34;
-		private System.Windows.Forms.TextBox txt_TransactionStatusAfterOrderStatusDelayAfterFillMax;
-		private System.Windows.Forms.TextBox txt_TransactionStatusAfterOrderStatusDelayAfterFillMin;
+		private System.Windows.Forms.TextBox txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Max;
+		private System.Windows.Forms.TextBox txt_TransactionStatusAfterOrderStatus_DelayAfterFill_Min;
 		private System.Windows.Forms.Label label35;
 		private System.Windows.Forms.Label label36;
 		private System.Windows.Forms.CheckBox cbx_TransactionStatusAfterOrderStatusEnabled;
 		private System.Windows.Forms.Label label37;
-		private System.Windows.Forms.TextBox txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMax;
-		private System.Windows.Forms.TextBox txt_TransactionStatusAfterOrderStatusHappensOncePerOrdersMin;
+		private System.Windows.Forms.TextBox txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Max;
+		private System.Windows.Forms.TextBox txt_TransactionStatusAfterOrderStatus_HappensOncePerOrders_Min;
 		private System.Windows.Forms.Label label38;
 		private System.Windows.Forms.GroupBox gbx_KillerTransactionCallbackAfterVictimFilled;
 		private System.Windows.Forms.Label label39;
@@ -1261,16 +1343,23 @@ namespace Sq1.Core.Livesim {
 		private System.Windows.Forms.Label label42;
 		private System.Windows.Forms.CheckBox cbx_KillerTransactionCallbackAfterVictimFilled_enabled;
 		private System.Windows.Forms.Label label43;
-		private System.Windows.Forms.TextBox txt_KillerTransactionCallbackAfterVictimFilled_happensMax;
-		private System.Windows.Forms.TextBox txt_KillerTransactionCallbackAfterVictimFilled_happensMin;
+		private System.Windows.Forms.TextBox txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Max;
+		private System.Windows.Forms.TextBox txt_KillerTransactionCallbackAfterVictimFilled_HappensOncePerOrders_Min;
 		private System.Windows.Forms.Label label44;
 		private System.Windows.Forms.CheckBox cbx_ClearExecutionExceptions;
 		private System.Windows.Forms.GroupBox gbxInjections_BrokerDeniedSubmission;
 		private System.Windows.Forms.Label label45;
 		private System.Windows.Forms.CheckBox cbx_BrokerDeniedSubmission_Enabled;
 		private System.Windows.Forms.Label label46;
-		private System.Windows.Forms.TextBox txt_BrokerDeniedSubmission_HappensOncePerXordersMax;
-		private System.Windows.Forms.TextBox txt_BrokerDeniedSubmission_HappensOncePerXordersMin;
+		private System.Windows.Forms.TextBox txt_BrokerDeniedSubmission_HappensOncePerXorders_Max;
+		private System.Windows.Forms.TextBox txt_BrokerDeniedSubmission_HappensOncePerXorders_Min;
 		private System.Windows.Forms.Label label47;
+		private System.Windows.Forms.GroupBox gbxNoOrderStateCallbackAfterSubmitted;
+		private System.Windows.Forms.Label label48;
+		private System.Windows.Forms.CheckBox cbx_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Enabled;
+		private System.Windows.Forms.Label label49;
+		private System.Windows.Forms.TextBox txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Max;
+		private System.Windows.Forms.TextBox txt_NoOrderStateCallbackAfterSubmitted_HappensOncePer_Min;
+		private System.Windows.Forms.Label label50;
 	}
 }

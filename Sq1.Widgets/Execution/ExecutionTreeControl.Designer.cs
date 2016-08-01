@@ -2,8 +2,6 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 
-using Sq1.Core.Support;
-
 namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
 		private IContainer components;
@@ -61,6 +59,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniOrderReplace = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniStopEmergencyClose = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.mniRemoveSeleted = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniFilterColumns = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctxColumnsGrouped = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniShowWhenWhat = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,21 +88,28 @@ namespace Sq1.Widgets.Execution {
 			this.mniToggleColorifyOrdersTree = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniToggleColorifyMessages = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.mniRemoveSeleted = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniDeleteAllLogrotatedOrderJsons = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniExpandAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniCollapseAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniRebuildAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniltbFlushToGuiDelayMsec = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniltbSerializationInterval = new Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox();
 			this.mniSerializeNow = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniltbLogrotateLargerThan = new Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox();
+			this.mniDeleteAllLogrotatedOrderJsons = new System.Windows.Forms.ToolStripMenuItem();
 			this.imgListOrderDirection = new System.Windows.Forms.ImageList(this.components);
 			this.olvMessages = new BrightIdeasSoftware.ObjectListView();
 			this.olvcMessageDateTime = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMessageState = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMessageText = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.splitContainerMessagePane = new System.Windows.Forms.SplitContainer();
+			this.statusStrip_search = new System.Windows.Forms.StatusStrip();
+			this.tsiBtnClear = new System.Windows.Forms.ToolStripButton();
+			this.tsilbl_separator = new System.Windows.Forms.ToolStripStatusLabel();
+			this.tsiCbx_SearchApply = new Sq1.Widgets.ToolStripImproved.ToolStripItemCheckBox();
+			this.tsiLtb_SearchKeywords = new Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox();
+			this.tsiCbx_ExcludeApply = new Sq1.Widgets.ToolStripImproved.ToolStripItemCheckBox();
+			this.tsiLtb_ExcludeKeywords = new Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox();
 			((System.ComponentModel.ISupportInitialize)(this.olvOrdersTree)).BeginInit();
 			this.ctxOrder.SuspendLayout();
 			this.ctxColumnsGrouped.SuspendLayout();
@@ -113,6 +119,7 @@ namespace Sq1.Widgets.Execution {
 			this.splitContainerMessagePane.Panel1.SuspendLayout();
 			this.splitContainerMessagePane.Panel2.SuspendLayout();
 			this.splitContainerMessagePane.SuspendLayout();
+			this.statusStrip_search.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// olvOrdersTree
@@ -212,7 +219,6 @@ namespace Sq1.Widgets.Execution {
 			this.olvOrdersTree.View = System.Windows.Forms.View.Details;
 			this.olvOrdersTree.VirtualMode = true;
 			this.olvOrdersTree.SelectedIndexChanged += new System.EventHandler(this.olvOrdersTree_SelectedIndexChanged);
-			this.olvOrdersTree.Click += new System.EventHandler(this.olvOrdersTree_Click);
 			this.olvOrdersTree.DoubleClick += new System.EventHandler(this.olvOrdersTree_DoubleClick);
 			this.olvOrdersTree.KeyDown += new System.Windows.Forms.KeyEventHandler(this.olvOrdersTree_KeyDown);
 			// 
@@ -415,22 +421,23 @@ namespace Sq1.Widgets.Execution {
             this.mniOrderReplace,
             this.mniStopEmergencyClose,
             this.toolStripSeparator3,
+            this.mniRemoveSeleted,
             this.mniFilterColumns,
             this.mniFilterOrderStates,
             this.mniFilterAccounts,
             this.mniToggles,
             this.toolStripSeparator1,
-            this.mniRemoveSeleted,
-            this.mniDeleteAllLogrotatedOrderJsons,
-            this.toolStripSeparator2,
             this.mniExpandAll,
             this.mniCollapseAll,
             this.mniRebuildAll,
             this.mniltbFlushToGuiDelayMsec,
+            this.toolStripSeparator2,
             this.mniltbSerializationInterval,
-            this.mniSerializeNow});
+            this.mniSerializeNow,
+            this.mniltbLogrotateLargerThan,
+            this.mniDeleteAllLogrotatedOrderJsons});
 			this.ctxOrder.Name = "popupOrders";
-			this.ctxOrder.Size = new System.Drawing.Size(420, 520);
+			this.ctxOrder.Size = new System.Drawing.Size(423, 549);
 			this.ctxOrder.Opening += new System.ComponentModel.CancelEventHandler(this.ctxOrder_Opening);
 			// 
 			// mniPosition_info
@@ -438,7 +445,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniPosition_info.Enabled = false;
 			this.mniPosition_info.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.mniPosition_info.Name = "mniPosition_info";
-			this.mniPosition_info.Size = new System.Drawing.Size(419, 22);
+			this.mniPosition_info.Size = new System.Drawing.Size(422, 22);
 			this.mniPosition_info.Text = "Position: BLA BLA BLA";
 			// 
 			// mniExitAlert_info
@@ -446,59 +453,59 @@ namespace Sq1.Widgets.Execution {
 			this.mniExitAlert_info.Enabled = false;
 			this.mniExitAlert_info.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.mniExitAlert_info.Name = "mniExitAlert_info";
-			this.mniExitAlert_info.Size = new System.Drawing.Size(419, 22);
+			this.mniExitAlert_info.Size = new System.Drawing.Size(422, 22);
 			this.mniExitAlert_info.Text = "ExitAlert: BLA BLA BLA";
 			// 
 			// mniOrderPositionClose
 			// 
 			this.mniOrderPositionClose.Name = "mniOrderPositionClose";
-			this.mniOrderPositionClose.Size = new System.Drawing.Size(419, 22);
+			this.mniOrderPositionClose.Size = new System.Drawing.Size(422, 22);
 			this.mniOrderPositionClose.Text = "Close Position";
 			this.mniOrderPositionClose.Click += new System.EventHandler(this.mniClosePosition_Click);
 			// 
 			// mniOrderAlert_removeFromPending
 			// 
 			this.mniOrderAlert_removeFromPending.Name = "mniOrderAlert_removeFromPending";
-			this.mniOrderAlert_removeFromPending.Size = new System.Drawing.Size(419, 22);
+			this.mniOrderAlert_removeFromPending.Size = new System.Drawing.Size(422, 22);
 			this.mniOrderAlert_removeFromPending.Text = "Remove from PendingAlerts (if Order Processor failed)";
 			this.mniOrderAlert_removeFromPending.Click += new System.EventHandler(this.mniRemoveFromPendingAlerts_Click);
 			// 
 			// toolStripSeparator5
 			// 
 			this.toolStripSeparator5.Name = "toolStripSeparator5";
-			this.toolStripSeparator5.Size = new System.Drawing.Size(416, 6);
+			this.toolStripSeparator5.Size = new System.Drawing.Size(419, 6);
 			// 
 			// mniKillPendingSelected
 			// 
 			this.mniKillPendingSelected.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.mniKillPendingSelected.Name = "mniKillPendingSelected";
-			this.mniKillPendingSelected.Size = new System.Drawing.Size(419, 22);
+			this.mniKillPendingSelected.Size = new System.Drawing.Size(422, 22);
 			this.mniKillPendingSelected.Text = "Kill Pending Selected[1],        Continue Emitting    [Double Click]";
 			this.mniKillPendingSelected.Click += new System.EventHandler(this.mniKillPendingSelected_Click);
 			// 
 			// mniKillPendingAll
 			// 
 			this.mniKillPendingAll.Name = "mniKillPendingAll";
-			this.mniKillPendingAll.Size = new System.Drawing.Size(419, 22);
+			this.mniKillPendingAll.Size = new System.Drawing.Size(422, 22);
 			this.mniKillPendingAll.Text = "Kill Pending AllForStrat[0],      Continue Emitting";
 			this.mniKillPendingAll.Click += new System.EventHandler(this.mniKillPendingAll_Click);
 			// 
 			// mniKillPendingAll_stopEmitting
 			// 
 			this.mniKillPendingAll_stopEmitting.Name = "mniKillPendingAll_stopEmitting";
-			this.mniKillPendingAll_stopEmitting.Size = new System.Drawing.Size(419, 22);
+			this.mniKillPendingAll_stopEmitting.Size = new System.Drawing.Size(422, 22);
 			this.mniKillPendingAll_stopEmitting.Text = "Kill Pending AllForStrat[0],              Stop Emitting - PANIC";
 			this.mniKillPendingAll_stopEmitting.Click += new System.EventHandler(this.mniKillPendingAll_stopEmitting_Click);
 			// 
 			// sepCancel
 			// 
 			this.sepCancel.Name = "sepCancel";
-			this.sepCancel.Size = new System.Drawing.Size(416, 6);
+			this.sepCancel.Size = new System.Drawing.Size(419, 6);
 			// 
 			// mniOrderReplace
 			// 
 			this.mniOrderReplace.Name = "mniOrderReplace";
-			this.mniOrderReplace.Size = new System.Drawing.Size(419, 22);
+			this.mniOrderReplace.Size = new System.Drawing.Size(422, 22);
 			this.mniOrderReplace.Text = "Replace NYI";
 			this.mniOrderReplace.Visible = false;
 			this.mniOrderReplace.Click += new System.EventHandler(this.mniOrderReplace_Click);
@@ -506,7 +513,7 @@ namespace Sq1.Widgets.Execution {
 			// mniStopEmergencyClose
 			// 
 			this.mniStopEmergencyClose.Name = "mniStopEmergencyClose";
-			this.mniStopEmergencyClose.Size = new System.Drawing.Size(419, 22);
+			this.mniStopEmergencyClose.Size = new System.Drawing.Size(422, 22);
 			this.mniStopEmergencyClose.Text = "Stop Emergency Close";
 			this.mniStopEmergencyClose.Visible = false;
 			this.mniStopEmergencyClose.Click += new System.EventHandler(this.mniEmergencyLockRemove_Click);
@@ -514,14 +521,22 @@ namespace Sq1.Widgets.Execution {
 			// toolStripSeparator3
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(416, 6);
+			this.toolStripSeparator3.Size = new System.Drawing.Size(419, 6);
 			this.toolStripSeparator3.Visible = false;
+			// 
+			// mniRemoveSeleted
+			// 
+			this.mniRemoveSeleted.Name = "mniRemoveSeleted";
+			this.mniRemoveSeleted.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+			this.mniRemoveSeleted.Size = new System.Drawing.Size(422, 22);
+			this.mniRemoveSeleted.Text = "Remove Selected Non-Pending";
+			this.mniRemoveSeleted.Click += new System.EventHandler(this.mniOrdersRemoveSelected_Click);
 			// 
 			// mniFilterColumns
 			// 
 			this.mniFilterColumns.DropDown = this.ctxColumnsGrouped;
 			this.mniFilterColumns.Name = "mniFilterColumns";
-			this.mniFilterColumns.Size = new System.Drawing.Size(419, 22);
+			this.mniFilterColumns.Size = new System.Drawing.Size(422, 22);
 			this.mniFilterColumns.Text = "Filter Columns";
 			// 
 			// ctxColumnsGrouped
@@ -618,7 +633,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniFilterOrderStates.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem4});
 			this.mniFilterOrderStates.Name = "mniFilterOrderStates";
-			this.mniFilterOrderStates.Size = new System.Drawing.Size(419, 22);
+			this.mniFilterOrderStates.Size = new System.Drawing.Size(422, 22);
 			this.mniFilterOrderStates.Text = "Filter Order States";
 			this.mniFilterOrderStates.Visible = false;
 			// 
@@ -632,7 +647,7 @@ namespace Sq1.Widgets.Execution {
 			// 
 			this.mniFilterAccounts.DropDown = this.ctxAccounts;
 			this.mniFilterAccounts.Name = "mniFilterAccounts";
-			this.mniFilterAccounts.Size = new System.Drawing.Size(419, 22);
+			this.mniFilterAccounts.Size = new System.Drawing.Size(422, 22);
 			this.mniFilterAccounts.Text = "Filter Accounts";
 			// 
 			// ctxAccounts
@@ -646,7 +661,7 @@ namespace Sq1.Widgets.Execution {
 			// 
 			this.mniToggles.DropDown = this.ctxToggles;
 			this.mniToggles.Name = "mniToggles";
-			this.mniToggles.Size = new System.Drawing.Size(419, 22);
+			this.mniToggles.Size = new System.Drawing.Size(422, 22);
 			this.mniToggles.Text = "Toggles";
 			// 
 			// ctxToggles
@@ -663,7 +678,6 @@ namespace Sq1.Widgets.Execution {
             this.mniToggleColorifyOrdersTree,
             this.mniToggleColorifyMessages});
 			this.ctxToggles.Name = "ctxToggles";
-			this.ctxToggles.OwnerItem = this.mniToggles;
 			this.ctxToggles.Size = new System.Drawing.Size(349, 208);
 			// 
 			// mniRecentAlwaysSelected
@@ -746,33 +760,13 @@ namespace Sq1.Widgets.Execution {
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(416, 6);
-			// 
-			// mniRemoveSeleted
-			// 
-			this.mniRemoveSeleted.Name = "mniRemoveSeleted";
-			this.mniRemoveSeleted.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.mniRemoveSeleted.Size = new System.Drawing.Size(419, 22);
-			this.mniRemoveSeleted.Text = "Remove Selected Non-Pending";
-			this.mniRemoveSeleted.Click += new System.EventHandler(this.mniOrdersRemoveSelected_Click);
-			// 
-			// mniDeleteAllLogrotatedOrderJsons
-			// 
-			this.mniDeleteAllLogrotatedOrderJsons.Name = "mniDeleteAllLogrotatedOrderJsons";
-			this.mniDeleteAllLogrotatedOrderJsons.Size = new System.Drawing.Size(419, 22);
-			this.mniDeleteAllLogrotatedOrderJsons.Text = "Delete All[x] logrotated Order*.json";
-			this.mniDeleteAllLogrotatedOrderJsons.Click += new System.EventHandler(this.mniDeleteAllLogrotatedJsons_Click);
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(416, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(419, 6);
 			// 
 			// mniExpandAll
 			// 
 			this.mniExpandAll.Name = "mniExpandAll";
 			this.mniExpandAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
-			this.mniExpandAll.Size = new System.Drawing.Size(419, 22);
+			this.mniExpandAll.Size = new System.Drawing.Size(422, 22);
 			this.mniExpandAll.Text = "Expand All";
 			this.mniExpandAll.Click += new System.EventHandler(this.mniTreeExpandAll_Click);
 			// 
@@ -780,7 +774,7 @@ namespace Sq1.Widgets.Execution {
 			// 
 			this.mniCollapseAll.Name = "mniCollapseAll";
 			this.mniCollapseAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
-			this.mniCollapseAll.Size = new System.Drawing.Size(419, 22);
+			this.mniCollapseAll.Size = new System.Drawing.Size(422, 22);
 			this.mniCollapseAll.Text = "Collapse All";
 			this.mniCollapseAll.Click += new System.EventHandler(this.mniTreeCollapseAll_Click);
 			// 
@@ -788,23 +782,24 @@ namespace Sq1.Widgets.Execution {
 			// 
 			this.mniRebuildAll.Name = "mniRebuildAll";
 			this.mniRebuildAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.R)));
-			this.mniRebuildAll.Size = new System.Drawing.Size(419, 22);
+			this.mniRebuildAll.Size = new System.Drawing.Size(422, 22);
 			this.mniRebuildAll.Text = "Rebuild All";
 			this.mniRebuildAll.Click += new System.EventHandler(this.mniTreeRebuildAll_Click);
 			// 
 			// mniltbFlushToGuiDelayMsec
 			// 
+			this.mniltbFlushToGuiDelayMsec.AutoSize = false;
 			this.mniltbFlushToGuiDelayMsec.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbFlushToGuiDelayMsec.InputFieldAlignedRight = false;
 			this.mniltbFlushToGuiDelayMsec.InputFieldBackColor = System.Drawing.SystemColors.Info;
 			this.mniltbFlushToGuiDelayMsec.InputFieldEditable = true;
-			this.mniltbFlushToGuiDelayMsec.InputFieldMultiline = false;
+			this.mniltbFlushToGuiDelayMsec.InputFieldMultiline = true;
 			this.mniltbFlushToGuiDelayMsec.InputFieldOffsetX = 170;
 			this.mniltbFlushToGuiDelayMsec.InputFieldValue = "200";
 			this.mniltbFlushToGuiDelayMsec.InputFieldWidth = 40;
 			this.mniltbFlushToGuiDelayMsec.Name = "mniltbFlushToGuiDelayMsec";
 			this.mniltbFlushToGuiDelayMsec.OffsetTop = 0;
-			this.mniltbFlushToGuiDelayMsec.Size = new System.Drawing.Size(240, 18);
+			this.mniltbFlushToGuiDelayMsec.Size = new System.Drawing.Size(240, 22);
 			this.mniltbFlushToGuiDelayMsec.TextLeft = "Flush To GUI Delay";
 			this.mniltbFlushToGuiDelayMsec.TextLeftOffsetX = 0;
 			this.mniltbFlushToGuiDelayMsec.TextLeftWidth = 108;
@@ -813,6 +808,11 @@ namespace Sq1.Widgets.Execution {
 			this.mniltbFlushToGuiDelayMsec.TextRightOffsetX = 210;
 			this.mniltbFlushToGuiDelayMsec.TextRightWidth = 27;
 			this.mniltbFlushToGuiDelayMsec.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbFlushToGuiDelayMsec_UserTyped);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(419, 6);
 			// 
 			// mniltbSerializationInterval
 			// 
@@ -840,9 +840,39 @@ namespace Sq1.Widgets.Execution {
 			// mniSerializeNow
 			// 
 			this.mniSerializeNow.Name = "mniSerializeNow";
-			this.mniSerializeNow.Size = new System.Drawing.Size(419, 22);
+			this.mniSerializeNow.Size = new System.Drawing.Size(422, 22);
 			this.mniSerializeNow.Text = "Serialize now";
 			this.mniSerializeNow.Click += new System.EventHandler(this.mniSerializeNow_Click);
+			// 
+			// mniltbLogrotateLargerThan
+			// 
+			this.mniltbLogrotateLargerThan.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbLogrotateLargerThan.InputFieldAlignedRight = false;
+			this.mniltbLogrotateLargerThan.InputFieldBackColor = System.Drawing.SystemColors.Info;
+			this.mniltbLogrotateLargerThan.InputFieldEditable = true;
+			this.mniltbLogrotateLargerThan.InputFieldMultiline = true;
+			this.mniltbLogrotateLargerThan.InputFieldOffsetX = 170;
+			this.mniltbLogrotateLargerThan.InputFieldValue = "3000";
+			this.mniltbLogrotateLargerThan.InputFieldWidth = 40;
+			this.mniltbLogrotateLargerThan.Name = "mniltbLogrotateLargerThan";
+			this.mniltbLogrotateLargerThan.OffsetTop = 0;
+			this.mniltbLogrotateLargerThan.Size = new System.Drawing.Size(242, 22);
+			this.mniltbLogrotateLargerThan.Text = "mniltbLogrotateLargerThan";
+			this.mniltbLogrotateLargerThan.TextLeft = "Logrotate if larger than";
+			this.mniltbLogrotateLargerThan.TextLeftOffsetX = 0;
+			this.mniltbLogrotateLargerThan.TextLeftWidth = 130;
+			this.mniltbLogrotateLargerThan.TextRed = false;
+			this.mniltbLogrotateLargerThan.TextRight = "Mb";
+			this.mniltbLogrotateLargerThan.TextRightOffsetX = 210;
+			this.mniltbLogrotateLargerThan.TextRightWidth = 29;
+			this.mniltbLogrotateLargerThan.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbLogrotateLargerThan_UserTyped);
+			// 
+			// mniDeleteAllLogrotatedOrderJsons
+			// 
+			this.mniDeleteAllLogrotatedOrderJsons.Name = "mniDeleteAllLogrotatedOrderJsons";
+			this.mniDeleteAllLogrotatedOrderJsons.Size = new System.Drawing.Size(422, 22);
+			this.mniDeleteAllLogrotatedOrderJsons.Text = "Delete All[x] logrotated Order*.json";
+			this.mniDeleteAllLogrotatedOrderJsons.Click += new System.EventHandler(this.mniDeleteAllLogrotatedJsons_Click);
 			// 
 			// imgListOrderDirection
 			// 
@@ -856,7 +886,7 @@ namespace Sq1.Widgets.Execution {
 			this.olvMessages.AllowColumnReorder = true;
 			this.olvMessages.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.olvMessages.CausesValidation = false;
-			this.olvMessages.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
+			this.olvMessages.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.DoubleClick;
 			this.olvMessages.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.olvcMessageDateTime,
             this.olvcMessageState,
@@ -873,7 +903,7 @@ namespace Sq1.Widgets.Execution {
 			this.olvMessages.ShowCommandMenuOnRightClick = true;
 			this.olvMessages.ShowGroups = false;
 			this.olvMessages.ShowItemToolTips = true;
-			this.olvMessages.Size = new System.Drawing.Size(1033, 99);
+			this.olvMessages.Size = new System.Drawing.Size(1033, 75);
 			this.olvMessages.TabIndex = 5;
 			this.olvMessages.TintSortColumn = true;
 			this.olvMessages.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -903,8 +933,10 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// splitContainerMessagePane
 			// 
+			this.splitContainerMessagePane.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.splitContainerMessagePane.BackColor = System.Drawing.SystemColors.ControlLight;
-			this.splitContainerMessagePane.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.splitContainerMessagePane.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
 			this.splitContainerMessagePane.Location = new System.Drawing.Point(0, 0);
 			this.splitContainerMessagePane.Name = "splitContainerMessagePane";
@@ -919,17 +951,115 @@ namespace Sq1.Widgets.Execution {
 			// 
 			this.splitContainerMessagePane.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainerMessagePane.Panel2.Controls.Add(this.olvMessages);
-			this.splitContainerMessagePane.Size = new System.Drawing.Size(1033, 249);
+			this.splitContainerMessagePane.Size = new System.Drawing.Size(1033, 225);
 			this.splitContainerMessagePane.SplitterDistance = 146;
 			this.splitContainerMessagePane.TabIndex = 22;
 			// 
+			// statusStrip_search
+			// 
+			this.statusStrip_search.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsiBtnClear,
+            this.tsilbl_separator,
+            this.tsiCbx_SearchApply,
+            this.tsiLtb_SearchKeywords,
+            this.tsiCbx_ExcludeApply,
+            this.tsiLtb_ExcludeKeywords});
+			this.statusStrip_search.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
+			this.statusStrip_search.Location = new System.Drawing.Point(0, 225);
+			this.statusStrip_search.Name = "statusStrip_search";
+			this.statusStrip_search.Size = new System.Drawing.Size(1033, 24);
+			this.statusStrip_search.SizingGrip = false;
+			this.statusStrip_search.TabIndex = 23;
+			this.statusStrip_search.Text = "statusStrip1";
+			// 
+			// tsiBtnClear
+			// 
+			this.tsiBtnClear.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsiBtnClear.Name = "tsiBtnClear";
+			this.tsiBtnClear.Size = new System.Drawing.Size(38, 22);
+			this.tsiBtnClear.Text = "Clear";
+			// 
+			// tsilbl_separator
+			// 
+			this.tsilbl_separator.Name = "tsilbl_separator";
+			this.tsilbl_separator.Size = new System.Drawing.Size(16, 19);
+			this.tsilbl_separator.Text = "   ";
+			// 
+			// tsiCbx_SearchApply
+			// 
+			this.tsiCbx_SearchApply.AutoSize = false;
+			this.tsiCbx_SearchApply.CheckBoxChecked = true;
+			this.tsiCbx_SearchApply.CheckBoxText = "Search for:";
+			this.tsiCbx_SearchApply.Name = "tsiCbx_SearchApply";
+			this.tsiCbx_SearchApply.Size = new System.Drawing.Size(82, 22);
+			this.tsiCbx_SearchApply.Text = "Search for:";
+			// 
+			// tsiLtb_SearchKeywords
+			// 
+			this.tsiLtb_SearchKeywords.AutoSize = false;
+			this.tsiLtb_SearchKeywords.BackColor = System.Drawing.SystemColors.Control;
+			this.tsiLtb_SearchKeywords.InputFieldAlignedRight = false;
+			this.tsiLtb_SearchKeywords.InputFieldBackColor = System.Drawing.SystemColors.Window;
+			this.tsiLtb_SearchKeywords.InputFieldEditable = true;
+			this.tsiLtb_SearchKeywords.InputFieldMultiline = false;
+			this.tsiLtb_SearchKeywords.InputFieldOffsetX = 0;
+			this.tsiLtb_SearchKeywords.InputFieldValue = "";
+			this.tsiLtb_SearchKeywords.InputFieldWidth = 110;
+			this.tsiLtb_SearchKeywords.Margin = new System.Windows.Forms.Padding(0);
+			this.tsiLtb_SearchKeywords.Name = "tsiLtb_SearchKeywords";
+			this.tsiLtb_SearchKeywords.OffsetTop = 0;
+			this.tsiLtb_SearchKeywords.Size = new System.Drawing.Size(130, 24);
+			this.tsiLtb_SearchKeywords.Text = "toolStripItemLabeledTextBox1";
+			this.tsiLtb_SearchKeywords.TextLeft = "";
+			this.tsiLtb_SearchKeywords.TextLeftOffsetX = 0;
+			this.tsiLtb_SearchKeywords.TextLeftWidth = 2;
+			this.tsiLtb_SearchKeywords.TextRed = false;
+			this.tsiLtb_SearchKeywords.TextRight = "";
+			this.tsiLtb_SearchKeywords.TextRightOffsetX = 115;
+			this.tsiLtb_SearchKeywords.TextRightWidth = 4;
+			// 
+			// tsiCbx_ExcludeApply
+			// 
+			this.tsiCbx_ExcludeApply.AutoSize = false;
+			this.tsiCbx_ExcludeApply.CheckBoxChecked = true;
+			this.tsiCbx_ExcludeApply.CheckBoxText = "Exclude:";
+			this.tsiCbx_ExcludeApply.Name = "tsiCbx_ExcludeApply";
+			this.tsiCbx_ExcludeApply.Size = new System.Drawing.Size(69, 22);
+			this.tsiCbx_ExcludeApply.Text = "Exclude:";
+			// 
+			// tsiLtb_ExcludeKeywords
+			// 
+			this.tsiLtb_ExcludeKeywords.AutoSize = false;
+			this.tsiLtb_ExcludeKeywords.BackColor = System.Drawing.Color.Transparent;
+			this.tsiLtb_ExcludeKeywords.InputFieldAlignedRight = false;
+			this.tsiLtb_ExcludeKeywords.InputFieldBackColor = System.Drawing.SystemColors.Window;
+			this.tsiLtb_ExcludeKeywords.InputFieldEditable = true;
+			this.tsiLtb_ExcludeKeywords.InputFieldMultiline = false;
+			this.tsiLtb_ExcludeKeywords.InputFieldOffsetX = 0;
+			this.tsiLtb_ExcludeKeywords.InputFieldValue = "";
+			this.tsiLtb_ExcludeKeywords.InputFieldWidth = 170;
+			this.tsiLtb_ExcludeKeywords.Margin = new System.Windows.Forms.Padding(0, -1, 0, 0);
+			this.tsiLtb_ExcludeKeywords.Name = "tsiLtb_ExcludeKeywords";
+			this.tsiLtb_ExcludeKeywords.OffsetTop = 0;
+			this.tsiLtb_ExcludeKeywords.Size = new System.Drawing.Size(182, 24);
+			this.tsiLtb_ExcludeKeywords.Text = "toolStripItemLabeledTextBox1";
+			this.tsiLtb_ExcludeKeywords.TextLeft = "";
+			this.tsiLtb_ExcludeKeywords.TextLeftOffsetX = 0;
+			this.tsiLtb_ExcludeKeywords.TextLeftWidth = 2;
+			this.tsiLtb_ExcludeKeywords.TextRed = false;
+			this.tsiLtb_ExcludeKeywords.TextRight = "";
+			this.tsiLtb_ExcludeKeywords.TextRightOffsetX = 175;
+			this.tsiLtb_ExcludeKeywords.TextRightWidth = 4;
+			// 
 			// ExecutionTreeControl
 			// 
+			this.Controls.Add(this.statusStrip_search);
 			this.Controls.Add(this.splitContainerMessagePane);
 			this.Name = "ExecutionTreeControl";
 			this.Size = new System.Drawing.Size(1033, 249);
 			((System.ComponentModel.ISupportInitialize)(this.olvOrdersTree)).EndInit();
 			this.ctxOrder.ResumeLayout(false);
+			this.ctxOrder.PerformLayout();
 			this.ctxColumnsGrouped.ResumeLayout(false);
 			this.ctxToggles.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.olvMessages)).EndInit();
@@ -937,7 +1067,10 @@ namespace Sq1.Widgets.Execution {
 			this.splitContainerMessagePane.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerMessagePane)).EndInit();
 			this.splitContainerMessagePane.ResumeLayout(false);
+			this.statusStrip_search.ResumeLayout(false);
+			this.statusStrip_search.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -1030,5 +1163,13 @@ namespace Sq1.Widgets.Execution {
 		private ToolStripMenuItem mniRecentAlwaysSelected;
 		private ToolStripMenuItem mniToggleKillerOrders;
 		private ToolStripMenuItem mniDeleteAllLogrotatedOrderJsons;
+		private StatusStrip statusStrip_search;
+		public ToolStripButton tsiBtnClear;
+		private ToolStripStatusLabel tsilbl_separator;
+		private ToolStripImproved.ToolStripItemCheckBox tsiCbx_SearchApply;
+		private LabeledTextBox.ToolStripItemLabeledTextBox tsiLtb_SearchKeywords;
+		private ToolStripImproved.ToolStripItemCheckBox tsiCbx_ExcludeApply;
+		private LabeledTextBox.ToolStripItemLabeledTextBox tsiLtb_ExcludeKeywords;
+		private LabeledTextBox.ToolStripItemLabeledTextBox mniltbLogrotateLargerThan;
 	}
 }

@@ -4,14 +4,14 @@ using System.Threading;
 
 using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
-using Sq1.Core.Support;
 using Sq1.Core.Streaming;
+using Sq1.Core.Support;
 
 namespace Sq1.Core.Broker {
-	public class OrderPostProcessorReplacerExpired : OrderPostProcessorReplacer {
+	public class OrderPostProcessorReplacer_Expired_WithoutFill : OrderPostProcessorReplacer {
 		Dictionary<Order, TimerSimplifiedThreading_withOrder> timeredOrders;
 
-		public OrderPostProcessorReplacerExpired(OrderProcessor orderProcessor) : base(orderProcessor) {
+		public OrderPostProcessorReplacer_Expired_WithoutFill(OrderProcessor orderProcessor) : base(orderProcessor) {
 			timeredOrders = new Dictionary<Order, TimerSimplifiedThreading_withOrder>();
 		}
 
@@ -54,7 +54,7 @@ namespace Sq1.Core.Broker {
 				return ret;
 			}
 
-			this.OrderProcessor.AppendMessage_propagateToGui(order, "CAN_NOT_BE_REPLACED " + reasonCanNotBeReplaced);
+			this.OrderProcessor.AppendMessage_propagateToGui(order, "LIMIT_EXPIRED_REPLACEMENT__NO_NEED " + reasonCanNotBeReplaced);
 			this.removeTimer_forOrder(order, msig_invoker);
 			return ret;
 		}
@@ -62,16 +62,16 @@ namespace Sq1.Core.Broker {
 		public void AllTimers_stopDispose_LivesimEnded(List<Alert> alertsPending, string scriptStopped) {
 			string msig = " //AllTimers_stopDispose_LivesimEnded(" + scriptStopped + ")";
 			foreach (Alert pending in alertsPending) {
-				if (pending.OrderFollowed == null) continue;
+				if (pending.OrderFollowed_orCurrentReplacement == null) continue;
 				bool pumpMustAlreadyStopped_atLivesimEndedOrAborted = false;
-				this.removeTimer_forOrder(pending.OrderFollowed, msig, pumpMustAlreadyStopped_atLivesimEndedOrAborted);
+				this.removeTimer_forOrder(pending.OrderFollowed_orCurrentReplacement, msig, pumpMustAlreadyStopped_atLivesimEndedOrAborted);
 			}
 		}
 
 		void removeTimer_forOrder(Order order, string msig_invoker = "", bool waitForReplacementComplete_andUnpauseAll = true) {
 			// "ORDER_CAN_NOT_BE_REPLACED"
 			if (this.timeredOrders.ContainsKey(order)) {
-				string reasonCanNotBeReplaced = "CANCELLING_TIMER ";
+				string reasonCanNotBeReplaced = "LIMIT_EXPIRED_REPLACEMENT__CANCELLING_TIMER ";
 
 				// timer exists => now I have to stop & dispose the timer
 				TimerSimplifiedThreading_withOrder timerItself = this.timeredOrders[order];
@@ -160,6 +160,17 @@ namespace Sq1.Core.Broker {
 			}
 			if (orderLimitExpired_toReplace.SlippagesLeftAvailable_noMore) {
 				base.AddMessage_noMoreSlippagesAvailable(orderLimitExpired_toReplace);
+				bool shouldKillLastExpired = orderLimitExpired_toReplace.Alert.Bars.SymbolInfo.LimitExpired_KillUnfilledWithLastSlippage;
+				string killReason = ": SymbolInfo[" + symbolClass + "].LimitExpired_KillUnfilledWithLastSlippage[" + shouldKillLastExpired + "]";
+				if (shouldKillLastExpired) {
+					string killAction = "KILLING_LAST_HOPE";
+					base.OrderProcessor.AppendMessage_propagateToGui(orderLimitExpired_toReplace, killAction + killReason);
+					string msg = "KILLING_UNFILLED__LIMIT_EXPIRED_WITH_LAST_SLIPPAGE";
+					emitted = this.OrderProcessor.Emit_killOrderPending_usingKiller_hookNeededAfterwards(orderLimitExpired_toReplace, msg + msig);
+				} else {
+					string killAction = "NOT_KILLING_LAST_HOPE(DANGEROUS_UNFILL_FOREVER)";
+					base.OrderProcessor.AppendMessage_propagateToGui(orderLimitExpired_toReplace, killAction + killReason);
+				}
 				return emitted;
 			}
 
@@ -201,8 +212,8 @@ namespace Sq1.Core.Broker {
 					return emitted;
 
 				default:
-					string msg3 = "MUST_NEVER_HAPPEN__TOO_LATE_TO_KILL__DESPITE_WASNT_FILLED_UPSTACK";
-					this.OrderProcessor.AppendMessage_propagateToGui(limitOrderExpired_willBeReplaced, msg3);
+					string msg3 = "MUST_NEVER_HAPPEN__TOO_LATE_TO_KILL__DESPITE_WASNT_FILLED_UPSTACK [" + limitOrderExpired_willBeReplaced.State + "]";
+					this.OrderProcessor.AppendMessage_propagateToGui(limitOrderExpired_willBeReplaced, msg3 + msig);
 					return emitted;
 			}
 
@@ -232,7 +243,7 @@ namespace Sq1.Core.Broker {
 				OrderStateMessage osm = new OrderStateMessage(limitOrderExpired_willBeReplaced, OrderState.KillingUnfilledExpired, verdict);
 				this.OrderProcessor.AppendOrderMessage_propagateToGui(osm);
 
-				emitted = this.OrderProcessor.Emit_killOrderPending_usingKiller(limitOrderExpired_willBeReplaced, msig);
+				emitted = this.OrderProcessor.Emit_killOrderPending_usingKiller_hookNeededAfterwards(limitOrderExpired_willBeReplaced, msig);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex, false);
 			}
@@ -249,8 +260,8 @@ namespace Sq1.Core.Broker {
 				}
 				if (expiredOrderKilled_replaceMe.SlippagesLeftAvailable_noMore) {
 					reasonCanNotBeReplaced = "NoMoreSlippagesAvailable "
-						+ " expiredOrderKilled_replaceMe.SlippageAppliedIndex[" + expiredOrderKilled_replaceMe.SlippageAppliedIndex + "]=[" + expiredOrderKilled_replaceMe.SlippageApplied + "]"
-						+ " expiredOrderKilled_replaceMe.SlippagesLeftAvailable[" + expiredOrderKilled_replaceMe.SlippagesLeftAvailable + "]";
+						+ " expiredOrderKilled_replaceMe.SlippageAppliedIndex["		+ expiredOrderKilled_replaceMe.SlippageAppliedIndex + "]=[" + expiredOrderKilled_replaceMe.SlippageApplied + "]"
+						+ " expiredOrderKilled_replaceMe.SlippagesLeftAvailable["	+ expiredOrderKilled_replaceMe.SlippagesLeftAvailable + "]";
 				}
 				if (string.IsNullOrEmpty(reasonCanNotBeReplaced) == false) {
 					Assembler.PopupException(reasonCanNotBeReplaced, null, false);
@@ -263,7 +274,7 @@ namespace Sq1.Core.Broker {
 			}
 
 			try {
-				Order replacement = this.CreateReplacementOrder_insteadOfReplaceExpired(expiredOrderKilled_replaceMe);
+				Order replacement = this.CreateReplacementOrder_forExpired(expiredOrderKilled_replaceMe);
 				if (replacement == null) {
 					string msg = "got NULL from CreateReplacementOrder()"
 						+ "; broker reported twice about rejection, ignored this second callback";
@@ -305,14 +316,14 @@ namespace Sq1.Core.Broker {
 				double priceBasedOnLastQuote = priceStreaming + slippageNext_NanUnsafe;
 				double difference_withExpiredOrder_signInprecise = expiredOrderKilled_replaceMe.PriceEmitted - priceBasedOnLastQuote;
 				replacement.PriceEmitted = priceBasedOnLastQuote;
-				replacement.Alert.SetNewPriceEmitted_fromReplacementOrder(replacement);	// will repaint the circle at the new order-emitted price PanelPrice.Rendering.cs:86
+				replacement.Alert.SetNew_OrderFollowed_PriceEmitted_fromReplacementOrder(replacement);	// will repaint the circle at the new order-emitted price PanelPrice.Rendering.cs:86
 
 				string verdict = "REPLACING_LIMIT_EXPIRED_HOOK diffToExpired[" + difference_withExpiredOrder_signInprecise + "] " + replacement;
 				OrderStateMessage osm = new OrderStateMessage(expiredOrderKilled_replaceMe, OrderState.EmittingReplacement, verdict);
 				this.OrderProcessor.AppendOrderMessage_propagateToGui(osm);
 
 				bool inNewThread = false;
-				bool scheduled = this.SubmitReplacementOrder_insteadOfReplaceExpired(replacement, inNewThread);
+				bool scheduled = this.EmitReplacementOrder_insteadOfExpired(replacement, inNewThread);
 
 				replacement.Alert.Strategy.Script.Executor.CallbackOrderReplaced_invokeScript_nonReenterably(
 															expiredOrderKilled_replaceMe, replacement, scheduled);

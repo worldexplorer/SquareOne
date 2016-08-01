@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
-using Sq1.Core.Serializers;
 
 namespace Sq1.Core.Repositories {
 	public class RepositorySerializerSymbolInfos : SerializerList<SymbolInfo> {

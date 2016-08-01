@@ -131,13 +131,13 @@ namespace Sq1.Core.StrategyBase {
 
 
 		public void AlertPendingKill_appendToDoomed_willBeSubmitted_afterScriptInovcationReturned(Alert alert) {
-			string msig = " //AlertPending_kill(WAIT)";
+			string msig = " //AlertPendingKill_appendToDoomed_willBeSubmitted_afterScriptInovcationReturned(WAIT)";
 			bool doomedAlready = this.ExecutionDataSnapshot.AlertsDoomed.Contains(alert, this, msig);
 			if (doomedAlready) {
 				string msg = "ALREADY_DOOMED__YOU_INVOKED_Script.AlertPending_kill()_MORE_THAN_ONCE_FOR_THE_SAME_ALERT";
 				Assembler.PopupException(msg + msig);
-				if (alert.OrderFollowed != null) {
-					this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed, msg + msig);
+				if (alert.OrderFollowed_orCurrentReplacement != null) {
+					this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed_orCurrentReplacement, msg + msig);
 				}
 				return;
 			}

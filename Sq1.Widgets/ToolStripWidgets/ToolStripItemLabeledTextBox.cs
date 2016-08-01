@@ -1,8 +1,5 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using System.Drawing;
 
 namespace Sq1.Widgets.LabeledTextBox {
 	[ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.StatusStrip)]

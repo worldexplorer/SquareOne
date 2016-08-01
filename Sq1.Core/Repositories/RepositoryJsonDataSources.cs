@@ -56,13 +56,17 @@ namespace Sq1.Core.Repositories {
 
 		public void SymbolAdd(DataSource dataSource, string symbolToAdd, object sender = null, bool skipSerialize_invokerWillSerialize_atTheEndOfBatchUpdate = false) {
 			if (sender == null) sender = this;
-			string msig = " RepositoryJsonDataSource.SymbolAdd(" + dataSource + ", " + symbolToAdd + "): ";
+			string msig = " //RepositoryJsonDataSource.SymbolAdd(" + dataSource + ", " + symbolToAdd + ")";
 			try {
 				dataSource.SymbolAdd(symbolToAdd);
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			}
+			try {
+				this.RaiseOnSymbolAdded(sender, dataSource, symbolToAdd);
 				if (skipSerialize_invokerWillSerialize_atTheEndOfBatchUpdate == false) {
 					base.SerializeSingle(dataSource);
 				}
-				this.RaiseOnSymbolAdded(sender, dataSource, symbolToAdd);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			}

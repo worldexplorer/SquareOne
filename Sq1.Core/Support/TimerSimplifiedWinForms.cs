@@ -3,8 +3,6 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
 
-using Sq1.Core;
-
 namespace Sq1.Core.Support {
 	public class TimerSimplifiedWinForms : IDisposable {
 		System.Windows.Forms.Timer	timer;

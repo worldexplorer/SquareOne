@@ -1,6 +1,6 @@
 using System;
 
-using Sq1.Core.DataFeed;
+//using Sq1.Core.DataFeed;
 
 namespace Sq1.Widgets.DataSourceEditor {
 	public partial class DataSourceEditorControl {

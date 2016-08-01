@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Indicators;
-using Sq1.Core.Livesim;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
@@ -265,13 +263,13 @@ namespace Sq1.Core.StrategyBase {
 			string msig = " //LivesimEnded_invalidateUnfilledOrders_ClearPendingAlerts() " + this.ToString();
 			List<Alert> mostLikelyUnfilled = this.ExecutionDataSnapshot.AlertsUnfilled.SafeCopy(this, msig);
 			foreach (Alert alertWithUnfilledOrder in mostLikelyUnfilled) {
-				Order unfilled = alertWithUnfilledOrder.OrderFollowed;
+				Order unfilled = alertWithUnfilledOrder.OrderFollowed_orCurrentReplacement;
 				if (unfilled == null) continue;
 
 				OrderStateMessage omsg = new OrderStateMessage(unfilled, OrderState.Invalidated_LivesimEnded, msig);
 				this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg);
 			}
-			this.OrderProcessor.OPPexpired.AllTimers_stopDispose_LivesimEnded(mostLikelyUnfilled, msig);
+			this.OrderProcessor.OPPexpired_NoFill.AllTimers_stopDispose_LivesimEnded(mostLikelyUnfilled, msig);
 			// some other PostProcessors might need to clear their queues
 		}
 	}

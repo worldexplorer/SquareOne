@@ -9,9 +9,9 @@ namespace Sq1.Core.Execution {
 
 		[JsonProperty]	public	SortedDictionary<int, List<double>> PricesEmitted_byBarIndex			{ get; private set; }
 
-		internal void SetNewPriceEmitted_fromReplacementOrder(Order replacementOrder) {
-			this.OrdersFollowed_killedAndReplaced.Add(this.OrderFollowed);
-			this.OrderFollowed = replacementOrder;
+		internal void SetNew_OrderFollowed_PriceEmitted_fromReplacementOrder(Order replacementOrder) {
+			this.OrdersFollowed_killedAndReplaced.Add(this.OrderFollowed_orCurrentReplacement);
+			this.OrderFollowed_orCurrentReplacement = replacementOrder;
 			this.PriceEmitted = replacementOrder.PriceEmitted;
 
 			int barLast_index = this.Bars.BarLast.ParentBarsIndex;
@@ -70,7 +70,7 @@ namespace Sq1.Core.Execution {
 
 		    if (barIndex_next > barTill_streamingOrBarFilled) {
 				string msg = "ALREADY_EXTENDED_PRICE_EMITTED_FOR_CURRENT_BAR.COUNT__DONT_INVOKE_ME_TWICE_FOR_SAME_BAR";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				return howManyAdded;
 			}
 			int mustBeOne = barTill_streamingOrBarFilled - barIndex_next;

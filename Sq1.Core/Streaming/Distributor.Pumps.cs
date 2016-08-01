@@ -15,17 +15,17 @@ namespace Sq1.Core.Streaming {
 			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbolLivesimming];
 
 
-			if (channel.QuotePump_nullUnsafe == null) {
+			if (channel.PumpQuote_nullWhenBacktesting == null) {
 				msg += "PUMP_NULL_ONLY_WHEN_BACKTESTING_QUOTE";
 				Assembler.PopupException(msg + msig);
 				return paused;
 			}
-			if (channel.QuotePump_nullUnsafe.Paused) {
+			if (channel.PumpQuote_nullWhenBacktesting.Paused) {
 				msg += "PUSHING_THREAD_ALREADY_PAUSED_QUOTE";
 				Assembler.PopupException(msg + msig);
 				return paused;
 			}
-			channel.QuotePump_nullUnsafe.PusherPause_waitUntilPaused();
+			channel.PumpQuote_nullWhenBacktesting.PusherPause_waitUntilPaused();
 			//channel.QuotePump_nullUnsafe.WaitUntilPaused();
 			msg = "PUMP_UNPAUSED_CONFIRMED_QUOTE";
 			Assembler.PopupException(msg + msig, null, false);
@@ -65,17 +65,17 @@ namespace Sq1.Core.Streaming {
 			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbolLivesimming];
 
 
-			if (channel.QuotePump_nullUnsafe == null) {
+			if (channel.PumpQuote_nullWhenBacktesting == null) {
 				msg += "PUMP_NULL_ONLY_WHEN_BACKTESTING_QUOTE";
 				Assembler.PopupException(msg + msig);
 				return unpaused;
 			}
-			if (channel.QuotePump_nullUnsafe.Paused == false) {
+			if (channel.PumpQuote_nullWhenBacktesting.Paused == false) {
 				msg += "PUSHING_THREAD_NOT_PAUSED_QUOTE";
 				Assembler.PopupException(msg + msig);
 				return unpaused;
 			}
-			channel.QuotePump_nullUnsafe.PusherUnpause_waitUntilUnpaused();
+			channel.PumpQuote_nullWhenBacktesting.PusherUnpause_waitUntilUnpaused();
 			//channel.QuotePump_nullUnsafe.WaitUntilUnpaused();
 			msg = "PUMP_UNPAUSED_CONFIRMED_QUOTE";
 			Assembler.PopupException(msg + msig, null, false);
@@ -108,23 +108,24 @@ namespace Sq1.Core.Streaming {
 			int stopped = 0;
 			if (this.ChannelsBySymbol.ContainsKey(symbolLivesimming) == false) {
 				msg += "CHANNEL_DOESNT_EXIST_FOR_SYMBOL";
+				msg += " SUBSCRIBE_CHART_TO_BARS_BEFORE_LIVESIMMING__REMOVE_ORANGE";
 				Assembler.PopupException(msg + msig);
 				return stopped;
 			}
 			SymbolChannel<STREAMING_CONSUMER_CHILD> channel = this.ChannelsBySymbol[symbolLivesimming];
 
 	
-			if (channel.QuotePump_nullUnsafe == null) {
+			if (channel.PumpQuote_nullWhenBacktesting == null) {
 				msg += "PUMP_NULL_ONLY_WHEN_BACKTESTING_QUOTE";
 				Assembler.PopupException(msg + msig);
 				return stopped;
 			}
-			if (channel.QuotePump_nullUnsafe.IsPushingThreadStarted == false) {
+			if (channel.PumpQuote_nullWhenBacktesting.IsPushingThreadStarted == false) {
 				msg += "PUSHING_THREAD_NOT_STARTED_QUOTE";
 				Assembler.PopupException(msg + msig);
 				return stopped;
 			}
-			channel.QuotePump_nullUnsafe.PushingThread_StopDispose_waitConfirmed();
+			channel.PumpQuote_nullWhenBacktesting.PushingThread_Stop_waitConfirmed();
 			msg = "PUMP_STOPPED_CONFIRMED_QUOTE";
 			Assembler.PopupException(msg + msig, null, false);
 			stopped++;
@@ -142,7 +143,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig);
 				return stopped;
 			}
-			channel.PumpLevelTwo.PushingThread_StopDispose_waitConfirmed();
+			channel.PumpLevelTwo.PushingThread_Stop_waitConfirmed();
 			msg = "PUMP_STOPPED_CONFIRMED_LEVEL_TWO";
 			Assembler.PopupException(msg + msig, null, false);
 			stopped++;

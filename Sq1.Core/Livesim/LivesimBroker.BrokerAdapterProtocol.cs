@@ -2,10 +2,9 @@
 using System.Threading.Tasks;
 
 using Sq1.Core.Execution;
-using Sq1.Core.Broker;
 
 namespace Sq1.Core.Livesim {
-	public sealed partial class LivesimBrokerDefault {
+	public partial class LivesimBroker {
 		public override void Order_submit_oneThread_forAllNewAlerts_trampoline(Order order) {
 			string msig = " //LivesimBrokerDefault.Order_submit()";
 
@@ -108,53 +107,5 @@ namespace Sq1.Core.Livesim {
 			base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg_killed_victim);
 		}
 
-		//public override void Order_killPending_withoutKiller(Order orderPendingToKill) {
-		//    string msig = " //LivesimBroker.Order_killPending_withoutKiller()";
-			
-		//    string orderGUID = orderPendingToKill.GUID;
-		//    Order orderPendingFound = base.ScanEvidentLanes_forGuid_nullUnsafe(orderGUID);
-		//    if (orderPendingFound != orderPendingToKill) {
-		//        string msg = "PARANOID_SCAN_FAILED orderPendingFound[" + orderPendingFound + "] != orderPendingToKill[" + orderPendingToKill + "]";
-		//        Assembler.PopupException(msg);
-		//    }
-
-		//    var omsg2 = new OrderStateMessage(orderPendingToKill, OrderState.VictimsBulletSubmitting, "Step#2");
-		//    base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(omsg2);
-
-		//    var omsg3 = new OrderStateMessage(orderPendingToKill, OrderState.VictimsBulletSubmitted, "Step#3");
-		//    base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(omsg3);
-
-		//    int delay = 0;
-		//    if (this.LivesimBrokerSettings.KillPendingDelayEnabled) {
-		//        delay = LivesimBrokerSettings.KillPendingDelayMillisMin;
-		//        if (LivesimBrokerSettings.KillPendingDelayMillisMax > 0) {
-		//            int range = Math.Abs(LivesimBrokerSettings.KillPendingDelayMillisMax - LivesimBrokerSettings.KillPendingDelayMillisMin);
-		//            double rnd0to1 = new Random().NextDouble();
-		//            int rangePart = (int)Math.Round(range * rnd0to1);
-		//            delay += rangePart;
-		//        }
-		//    }
-		//    if (delay == 0) {
-		//        var omsg = new OrderStateMessage(orderPendingToKill, OrderState.VictimsBulletFlying, "DELAY_PENDING_KILL_ZERO");
-		//        base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(omsg);
-		//        base.OrderProcessor.Emit_killOrderPending_withoutKiller(orderPendingToKill, msig);
-		//        return;
-		//    }
-
-		//    Task t = new Task(delegate() {
-		//        string threadName = "DELAYED_PENDING_KILL " + orderPendingToKill.ToString();
-		//        Assembler.SetThreadName(threadName, "CANT_SET_THREAD_NAME " + msig);
-
-		//        Thread.Sleep(delay);
-		//        var omsg = new OrderStateMessage(orderPendingToKill, OrderState.VictimKilled, "DELAY_PENDING_KILL[" + delay + "]ms");
-		//        base.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeTheSame_dontPostProcess(omsg);
-		//        base.OrderProcessor.Emit_killOrderPending_withoutKiller(orderPendingToKill, msig);
-		//    });
-		//    t.ContinueWith(delegate {
-		//        string msg = "TASK_THREW";
-		//        Assembler.PopupException(msg + msig, t.Exception);
-		//    }, TaskContinuationOptions.OnlyOnFaulted);
-		//    t.Start();		// WHO_DOES t.Dispose() ?
-		//}
 	}
 }

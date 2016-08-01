@@ -93,8 +93,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
+    <Compile Include="Broker\OrderPostProcessorReplacer_Expired_WithoutCallback_WaitingForBrokerFill.cs" />
     <Compile Include="Broker\OrderPostProcessorReplacer.cs" />
-    <Compile Include="Broker\OrderPostProcessorReplacerExpired.cs" />
+    <Compile Include="Broker\OrderPostProcessorReplacer_Expired_WithoutFill.cs" />
     <Compile Include="Broker\OrderProcessor.Accounting.cs">
       <DependentUpon>OrderProcessor.cs</DependentUpon>
     </Compile>
@@ -167,8 +168,11 @@
     <Compile Include="Indicators\Indicator.Reflection.cs">
       <DependentUpon>Indicator.cs</DependentUpon>
     </Compile>
-    <Compile Include="Livesim\LivesimBrokerDefault.BrokerAdapterProtocol.cs">
-      <DependentUpon>LivesimBrokerDefault.cs</DependentUpon>
+    <Compile Include="Livesim\LivesimBroker.BrokerAdapterProtocol.cs">
+      <DependentUpon>LivesimBroker.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Livesim\LivesimBroker.StreamingSubscribe.cs">
+      <DependentUpon>LivesimBroker.cs</DependentUpon>
     </Compile>
     <Compile Include="Livesim\LivesimBrokerDefault.cs" />
     <Compile Include="DataFeed\SymbolOfDataSource.cs" />
@@ -177,6 +181,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Livesim\LivesimBrokerSpoiler.cs" />
+    <Compile Include="Livesim\LivesimMarketsim.cs" />
     <Compile Include="Livesim\LivesimStreamingDefault.cs" />
     <Compile Include="Livesim\LivesimStreamingEditorEmpty.cs">
       <SubType>UserControl</SubType>
@@ -456,6 +461,8 @@
     <Compile Include="Support\ConcurrentWatchdog.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Support\ConcurrentListFiltered.cs" />
+    <Compile Include="Support\TimerSimplifiedThreading_withAlert.cs" />
     <Compile Include="Support\TimerSimplifiedThreading_withOrder.cs" />
     <Compile Include="Support\TimerSimplifiedThreading.cs" />
     <Compile Include="Support\TimerSimplifiedWinForms.cs" />

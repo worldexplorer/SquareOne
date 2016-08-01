@@ -20,6 +20,7 @@ using Sq1.Widgets.RangeBar;
 using Sq1.Widgets.LabeledTextBox;
 
 using Sq1.Gui.Singletons;
+using Sq1.Core.Backtesting;
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm : DockContentImproved {
@@ -193,7 +194,7 @@ namespace Sq1.Gui.Forms {
 			}
 			// "AfterBarsLoaded" implies Executor.SetBars() has already initialized this.ChartFormManager.Executor.DataSource
 			this.populateCtxMniBars_streamingConnectionState_orange();
-			this.mnitlbSpreadGeneratorPct.TextRight = this.ChartFormManager.Executor.SpreadPips + " pips";
+			this.mnitlbSpreadGeneratorPct.TextRight = this.ChartFormManager.Executor.SpreadPips;
 		}
 		void populateCtxMniBars_streamingConnectionState_orange() {
 			if (this.ChartFormManager.ContextCurrentChartOrStrategy.DownstreamSubscribed) {
@@ -384,7 +385,11 @@ namespace Sq1.Gui.Forms {
 			
 				this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Checked = ctxScript.FillOutsideQuoteSpreadParanoidCheckThrow;
 				this.mnitlbSpreadGeneratorPct.InputFieldValue = ctxScript.SpreadModelerPercent.ToString();
-				this.mnitlbSpreadGeneratorPct.TextRight = this.ChartFormManager.Executor.SpreadPips + " pips";
+				this.mnitlbSpreadGeneratorPct.TextRight = this.ChartFormManager.Executor.SpreadPips;
+
+				BacktestStrokesPerBar current = this.currentStrokes();
+				string currentAsString = Enum.GetName(typeof(BacktestStrokesPerBar), current);
+				this.mniStrokes.Text = "QuotesGenerator: [" + currentAsString + "]";
 
 				if (this.ChartFormManager.MainForm.DockPanel.ActiveDocument == null) {
 					string msg = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET";

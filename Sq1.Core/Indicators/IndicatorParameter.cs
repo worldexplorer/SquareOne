@@ -58,6 +58,15 @@ namespace Sq1.Core.Indicators {
 			//        string msg = "SCRIPT_PARAMETER_NAME_CAN_BE_NULL ScriptParametersInitializedInDerivedConstructor will fix this by assigning my name to variable name I'm assigned to";
 			//    }
 			//}
+
+			if (valueMin > valueMax) {
+				string msg = "USER_MIGHT_GET_CONFUSED_WHEN_USING_NEGATIVE_NUMBERS__SO_I_FIX_THEM_HERE";
+				double tmp = valueMax;
+				valueMax = valueMin;
+				valueMin = tmp;
+			}
+			if (valueIncrement < 0) valueIncrement = Math.Abs(valueIncrement);
+
 			Name			= name;
 			ValueCurrent	= valueCurrent;
 			ValueMin		= valueMin;

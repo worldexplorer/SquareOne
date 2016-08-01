@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
@@ -38,7 +37,7 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Executor == scriptExecutor) {
 				string msg = "SRIPT_ALREADY_INITIALIZED_WITH_EXECUTOR_AND_NEVER_GETS_ANOTHER_ONE"
 					+ " INDICATORS_WILL_COMPLAIN__HOST_PANEL_ALREADY_ASSIGNED";
-				Assembler.PopupException(msg, null, false);
+				Assembler.PopupException(msg);
 				
 				var reflected	= this.Strategy.Script.ScriptParametersById_reflectedCached_primary;
 				var ctx			= this.Strategy.ScriptContextCurrent.ScriptParametersById;

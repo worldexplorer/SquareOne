@@ -22,7 +22,7 @@ namespace Sq1.Core.Broker {
 			this.UpstreamConnectionState = ConnectionState.UnknownConnectionState;
 		}
 
-		public virtual void Broker_connect() {
+		public virtual void Broker_connect(string reasonToConnect = "UNKNOWN_reasonToConnect") {
 			throw new Exception("please override BrokerAdapter::Connect() for BrokerAdapter.Name=[" + Name + "]");
 		}
 		public virtual void Broker_disconnect(string reasonToDisconnect = "UNKNOWN_reasonToDisconnect") {
@@ -58,7 +58,7 @@ namespace Sq1.Core.Broker {
 		public virtual bool AlertCounterparty_annihilate(Alert alertCounterparty_toAnnihilate) {
 			string msig = " //" + this.Name + ".AlertCounterparty_annihilate(" + alertCounterparty_toAnnihilate + ") LIVE+SIM";
 
-			Order orderCounterparty_toAnnihilate = alertCounterparty_toAnnihilate.OrderFollowed;
+			Order orderCounterparty_toAnnihilate = alertCounterparty_toAnnihilate.OrderFollowed_orCurrentReplacement;
 			if (orderCounterparty_toAnnihilate == null) {
 				string msg = "ALERT_MUST_HAVE_ORDER_FOLLOWED";
 				Assembler.PopupException(msg);
@@ -71,7 +71,7 @@ namespace Sq1.Core.Broker {
 				return false;
 			}
 
-			PositionPrototype proto = alertCounterparty_toAnnihilate.PositionPrototype;
+			PositionPrototype proto = alertCounterparty_toAnnihilate.PositionPrototype_bothForEntryAndExit;
 			if (proto == null) {
 				string msg = "POSITION_MUST_HAVE_A_PROTOTYPE";
 				Assembler.PopupException(msg);
@@ -94,16 +94,16 @@ namespace Sq1.Core.Broker {
 			if (alertCounterparty_toAnnihilate.ImTakeProfit_prototyped) newState =  OrderState.TPAnnihilating;
 			if (alertCounterparty_toAnnihilate.ImStopLoss_prototyped)	newState =  OrderState.SLAnnihilating;
 
-			Order whatWasFilled = alertCounterparty_toAnnihilate.PositionAffected.ExitAlert.OrderFollowed;
+			Order whatWasFilled = alertCounterparty_toAnnihilate.PositionAffected.ExitAlert.OrderFollowed_orCurrentReplacement;
 			string whatWasTheTrigger = "TRIGGER_FOR_ANNIHILATION whatWasFilled[" + whatWasFilled + "]";
 			OrderStateMessage omsg_counterParty_annihilating = new OrderStateMessage(orderCounterparty_toAnnihilate, newState, whatWasTheTrigger);
 			this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg_counterParty_annihilating);
 
-			bool emitted = this.OrderProcessor.Emit_killOrderPending_usingKiller(orderCounterparty_toAnnihilate, msig);
+			bool emitted = this.OrderProcessor.Emit_killOrderPending_usingKiller_hookNeededAfterwards(orderCounterparty_toAnnihilate, msig);
 			return emitted;
 		}
 
-		public virtual int AlertPendings_kill(List<Alert> alerts2kill_afterScript_onQuote_onBar) {
+		public virtual int AlertsPending_kill(List<Alert> alerts2kill_afterScript_onQuote_onBar) {
 			int emitted = this.OrderProcessor.Emit_alertsPending_kill(alerts2kill_afterScript_onQuote_onBar);
 			return emitted;
 		}

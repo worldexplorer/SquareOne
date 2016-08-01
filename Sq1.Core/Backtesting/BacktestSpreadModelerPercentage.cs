@@ -22,7 +22,7 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			double spread = openOrClosePrice * this.PartOfPrice;
-			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
+			double spreadAligned = symbolInfo.AlignToPriceStep(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
 			if (spreadAligned == 0) {
 				//string msg = "you can't use RoundDown here";
 				//Debugger.Break();
@@ -31,7 +31,7 @@ namespace Sq1.Core.Backtesting {
 			
 			if (barSimulated.HighLowDistance == 0) {
 				double halfSpread = spreadAligned / 2d;
-				halfSpread = symbolInfo.AlignToPriceLevel(halfSpread, PriceLevelRoundingMode.RoundToClosest); 
+				halfSpread = symbolInfo.AlignToPriceStep(halfSpread, PriceLevelRoundingMode.RoundToClosest); 
 				quote.Bid = openOrClosePrice - halfSpread;
 				quote.Ask = quote.Bid + spreadAligned;
 			} else {
@@ -53,7 +53,7 @@ namespace Sq1.Core.Backtesting {
 				}
 			}
 
-			this.AlignBidAsk_toPriceLevel(quote, PriceLevelRoundingMode.RoundToClosest, spreadAligned);
+			this.AlignBidAsk_toPriceStep(quote, PriceLevelRoundingMode.RoundToClosest, spreadAligned);
 			if (double.IsNaN(quote.Spread)) {
 				string msg = "SPREAD_MUST_NOT_BE_NAN for " + quote;
 				Assembler.PopupException(msg);
@@ -75,7 +75,7 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			double spread = quote.Bid * this.PartOfPrice;
-			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
+			double spreadAligned = symbolInfo.AlignToPriceStep(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
 			if (spreadAligned == 0) {
 				string msg = "you can't use RoundDown here";
 				//Debugger.Break();
@@ -99,7 +99,7 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			double spread = quote.Ask * this.PartOfPrice;
-			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
+			double spreadAligned = symbolInfo.AlignToPriceStep(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
 			if (spreadAligned == 0) {
 				//string msg = "you can't use RoundDown here";
 				//Debugger.Break();

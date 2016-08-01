@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
+
 using Sq1.Core;
 using Sq1.Core.Indicators;
 using Sq1.Core.Sequencing;

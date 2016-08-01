@@ -7,6 +7,16 @@ namespace Sq1.Core.Support {
 		protected	List<T>		InnerList	{ get; private set; }
 		public		int			Count		{ get; protected set; }
 
+		ConcurrentList(string reasonToExist, ExecutorDataSnapshot snap, List<T> copyFrom) : this(reasonToExist, snap) {
+			InnerList	= new List<T>();
+			InnerList.AddRange(copyFrom);
+			Count = InnerList.Count;
+		}
+		public ConcurrentList(string reasonToExist, ExecutorDataSnapshot snap = null) : base(reasonToExist, snap) {
+			Snap		= snap;
+			InnerList	= new List<T>();
+		}
+
 		public T First_nullUnsafe(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			T ret = default(T);
 			lockPurpose += " //" + this.ToString() + ".First_nullUnsafe()";
@@ -62,15 +72,6 @@ namespace Sq1.Core.Support {
 				base.UnLockFor(owner, lockPurpose);
 			}
 			return ret;
-		}
-		ConcurrentList(string reasonToExist, ExecutorDataSnapshot snap, List<T> copyFrom) : this(reasonToExist, snap) {
-			InnerList	= new List<T>();
-			InnerList.AddRange(copyFrom);
-			Count = InnerList.Count;
-		}
-		public ConcurrentList(string reasonToExist, ExecutorDataSnapshot snap = null) : base(reasonToExist, snap) {
-			Snap		= snap;
-			InnerList	= new List<T>();
 		}
 		public bool Contains(T position, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			//lockPurpose += " //" + this.ToString() + ".Contains(" + position.ToString() + ")";
@@ -134,8 +135,9 @@ namespace Sq1.Core.Support {
 		}
 
 		// "protected" forces derived classes to use the wrapper (for narrower debugging)
-		protected virtual bool InsertUnique(int indexToInsertAt, T alertOrPosition, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+		protected virtual bool InsertUnique(T alertOrPosition, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
 			//lockPurpose += " //" + this.ToString() + ".Add(" + alertOrPosition.ToString() + ")";
+			int indexToInsertAt = 0;
 			bool added = false;
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
@@ -165,18 +167,6 @@ namespace Sq1.Core.Support {
 		}
 		public override string ToString() {
 			return base.ReasonToExist + ":" + this.Count;
-		}
-
-		public List<T> SubsetContainingKeyword(string keyword) {
-			string msig = "FOUND[" + keyword + "] ";
-			List<T> ret = new List<T>();
-			List<T> clone = this.SafeCopy(this, msig);
-			foreach (T ex in clone) {
-				//if (ex.Message.Contains(keyword) == false) continue;
-				if (ex.ToString().Contains(keyword) == false) continue;
-				ret.Add(ex);
-			}
-			return ret;
 		}
 	}
 }

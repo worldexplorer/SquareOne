@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 using System.ComponentModel;
 
@@ -9,7 +8,6 @@ using BrightIdeasSoftware;
 using Sq1.Core;
 using Sq1.Core.Execution;
 using Sq1.Core.Serializers;
-using Sq1.Core.StrategyBase;
 using Sq1.Core.Broker;
 
 using Sq1.Widgets.LabeledTextBox;
@@ -326,10 +324,6 @@ namespace Sq1.Widgets.Execution {
 			}
 		}
 
-
-		void olvOrdersTree_Click(object sender, EventArgs e) {
-
-		}
 		void olvOrdersTree_DoubleClick(object sender, EventArgs e) {
 			//if (this.mniOrderEdit.Enabled) this.mniOrderEdit_Click(sender, e);
 			if (this.olvOrdersTree.SelectedItem == null) {
@@ -411,23 +405,6 @@ namespace Sq1.Widgets.Execution {
 			this.dataSnapshotSerializer.Serialize();
 		}
 
-		void mniltbDelaySerializationSync_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
-			string msig = " //mniltbDelaySerializationSync_UserTyped";
-			try {
-				int userTyped = e.IntegerUserTyped;		// makes it red if failed to parse; "an event is a passive POCO" concept is broken here
-				this.dataSnapshot.SerializationInterval = userTyped;
-				this.dataSnapshotSerializer.Serialize();
-
-				SerializerLogrotatePeriodic<Order> logrotate = Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders;
-				logrotate.PeriodMillis = this.dataSnapshot.SerializationInterval;
-				string msg = "NEW_INTERVAL_ACTIVATED SAVED_FOR_APPRESTART SerializerLogrotatePeriodic<Order>.SerializationInterval=[" + logrotate.PeriodMillis + "]";
-				Assembler.PopupException(msg, null, false);
-			} catch (Exception ex) {
-				Assembler.PopupException(msig, ex);
-			} finally {
-				this.ctxOrder.Show();
-			}
-		}
 		void mniltbFlushToGuiDelayMsec_UserTyped(object sender, LabeledTextBox.LabeledTextBoxUserTypedArgs e) {
 			MenuItemLabeledTextBox mnilbDelay = sender as MenuItemLabeledTextBox;
 			string typed = e.StringUserTyped;
@@ -446,6 +423,43 @@ namespace Sq1.Widgets.Execution {
 			this.PopulateWindowTitle();
 			this.ctxOrder.Visible = true;	// keep it open
 		}
+		void mniltbDelaySerializationSync_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			string msig = " //mniltbDelaySerializationSync_UserTyped";
+			try {
+				int userTyped = e.UserTyped_asInteger;		// makes it red if failed to parse; "an event is a passive POCO" concept is broken here
+				this.dataSnapshot.SerializationInterval_Millis = userTyped;
+				this.dataSnapshotSerializer.Serialize();
+
+				SerializerLogrotatePeriodic<Order> logrotate = Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders;
+				logrotate.PeriodMillis = this.dataSnapshot.SerializationInterval_Millis;
+				string msg = "NEW_INTERVAL_ACTIVATED SAVED_FOR_APPRESTART SerializerLogrotatePeriodic<Order>.SerializationInterval_Millis=[" + logrotate.PeriodMillis + "]";
+				Assembler.PopupException(msg, null, false);
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			} finally {
+				this.ctxOrder.Show();
+			}
+		}
+		void mniltbLogrotateLargerThan_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			string msig = " //mniltbLogrotateLargerThan_UserTyped";
+			try {
+				float userTyped = e.UserTyped_asFloat;		// makes it red if failed to parse; "an event is a passive POCO" concept is broken here
+				this.dataSnapshot.LogRotateSizeLimit_Mb = userTyped;
+				this.dataSnapshotSerializer.Serialize();
+
+				SerializerLogrotatePeriodic<Order> logrotator = Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders;
+				logrotator.LogRotateSizeLimit_Mb = this.dataSnapshot.LogRotateSizeLimit_Mb;
+				string msg = "NEW_INTERVAL_ACTIVATED__SAVED SerializerLogrotatePeriodic<Order>.LogRotateSizeLimit_Mb=[" + logrotator.LogRotateSizeLimit_Mb + "]";
+				Assembler.PopupException(msg, null, false);
+
+				this.mniltbLogrotateLargerThan.InputFieldValue = logrotator.LogRotateSizeLimit_Mb.ToString();
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			} finally {
+				this.ctxOrder.Show();
+			}
+		}
+
 
 		void ctxOrder_Opening(object sender, CancelEventArgs e) {
 			bool strategy_hasPendingAlerts = false;
@@ -547,19 +561,19 @@ namespace Sq1.Widgets.Execution {
 			string msg1 = "";
 			ExecutorDataSnapshot snap = alertClicked.Strategy.Script.Executor.ExecutionDataSnapshot;
 			//this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert);
-			string orderState = (alertClicked.OrderFollowed == null) ? "alert.OrderFollowed=NULL" : alertClicked.OrderFollowed.State.ToString();
+			string orderState = (alertClicked.OrderFollowed_orCurrentReplacement == null) ? "alert.OrderFollowed=NULL" : alertClicked.OrderFollowed_orCurrentReplacement.State.ToString();
 			if (snap.AlertsUnfilled.Contains(alertClicked, this, "RemovePendingExitAlert(WAIT)")) {
 				bool removed = snap.AlertsUnfilled.Remove(alertClicked, this, "RemovePendingExitAlert(WAIT)");
-				msg1 = "REMOVED " + orderState + " Pending alert[" + alertClicked + "] ";
+				msg1 = "RighClick_REMOVED " + orderState + " Pending alert[" + alertClicked + "] ";
 			} else {
-				msg1 = "CANT_BE_REMOVED " + orderState + " isn't Pending alert[" + alertClicked + "] ";
+				msg1 = "RighClick_CANT_BE_REMOVED " + orderState + " isn't Pending alert[" + alertClicked + "] ";
 			}
-			if (alertClicked.OrderFollowed == null) {
+			if (alertClicked.OrderFollowed_orCurrentReplacement == null) {
 				Assembler.PopupException("NONSENSE alertClicked.OrderFollowed==null " + msg1);
 				return;
 			}
 			// OrderFollowed=null when executeStrategyBacktestEntryPoint() is in the call stack
-			Assembler.InstanceInitialized.OrderProcessor.AppendMessage_propagateToGui(alertClicked.OrderFollowed, msig + msg1);
+			Assembler.InstanceInitialized.OrderProcessor.AppendMessage_propagateToGui(alertClicked.OrderFollowed_orCurrentReplacement, msig + msg1);
 		//}
 
 		}

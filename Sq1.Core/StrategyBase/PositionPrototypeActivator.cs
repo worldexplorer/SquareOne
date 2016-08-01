@@ -13,7 +13,7 @@ namespace Sq1.Core.StrategyBase {
 		public List<Alert> PositionActivator_entryPoint__alertFilled_createSlTp_orAnnihilateCounterparty(Alert alert) {
 			List<Alert> ret = new List<Alert>();
 			if (alert.PositionAffected == null) return ret;
-			if (alert.PositionPrototype == null) return ret;
+			if (alert.PositionPrototype_bothForEntryAndExit == null) return ret;
 			if (alert.IsEntryAlert) {
 				return this.CreateStopLossAndTakeProfitAlerts_fromPositionPrototype(alert.PositionAffected);
 			} else {

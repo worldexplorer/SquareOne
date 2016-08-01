@@ -36,8 +36,6 @@
 			this.lblMarketInfo = new System.Windows.Forms.Label();
 			this.lblMarketTimeZone = new System.Windows.Forms.Label();
 			this.dgMarketName = new System.Windows.Forms.DataGridView();
-			this.colMarketName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.colMarketUsedTimes = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dgHolidays = new System.Windows.Forms.DataGridView();
 			this.colHolidaysDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dgShortDays = new System.Windows.Forms.DataGridView();
@@ -49,9 +47,6 @@
 			this.lnkHolidaysDelete = new System.Windows.Forms.LinkLabel();
 			this.lnkShortDaysDelete = new System.Windows.Forms.LinkLabel();
 			this.dgClearingTimespans = new System.Windows.Forms.DataGridView();
-			this.colClearingTimespansSuspends = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.colClearingTimespansResumes = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.colClearingTimespansDaysOfWeek = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.lblClearingTimespans = new System.Windows.Forms.Label();
 			this.lnkClearingTimespanDelete = new System.Windows.Forms.LinkLabel();
 			this.txtMarketDaysOfWeek = new System.Windows.Forms.TextBox();
@@ -63,6 +58,11 @@
 			this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
+			this.colClearingTimespansSuspends = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.colClearingTimespansResumes = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.colClearingTimespansDaysOfWeek = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.colMarketName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.colMarketUsedTimes = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			((System.ComponentModel.ISupportInitialize)(this.dgMarketName)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dgHolidays)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dgShortDays)).BeginInit();
@@ -155,6 +155,7 @@
 			// dgMarketName
 			// 
 			this.dgMarketName.AllowUserToOrderColumns = true;
+			this.dgMarketName.AllowUserToResizeRows = false;
 			this.dgMarketName.BackgroundColor = System.Drawing.SystemColors.ControlLightLight;
 			this.dgMarketName.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 			this.dgMarketName.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Sunken;
@@ -186,19 +187,6 @@
 			this.dgMarketName.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgMarketName_CellContentDoubleClick);
 			this.dgMarketName.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgMarketName_CellValueChanged);
 			// 
-			// colMarketName
-			// 
-			this.colMarketName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.colMarketName.HeaderText = "Name";
-			this.colMarketName.Name = "colMarketName";
-			// 
-			// colMarketUsedTimes
-			// 
-			this.colMarketUsedTimes.HeaderText = "Used";
-			this.colMarketUsedTimes.Name = "colMarketUsedTimes";
-			this.colMarketUsedTimes.ReadOnly = true;
-			this.colMarketUsedTimes.Width = 33;
-			// 
 			// dgHolidays
 			// 
 			this.dgHolidays.BackgroundColor = System.Drawing.SystemColors.Control;
@@ -218,12 +206,12 @@
             this.colHolidaysDate});
 			this.dgHolidays.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dgHolidays.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
-			this.dgHolidays.Location = new System.Drawing.Point(344, 22);
+			this.dgHolidays.Location = new System.Drawing.Point(379, 22);
 			this.dgHolidays.Name = "dgHolidays";
 			this.dgHolidays.RowHeadersVisible = false;
 			this.dgHolidays.RowTemplate.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
 			this.dgHolidays.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgHolidays.Size = new System.Drawing.Size(110, 139);
+			this.dgHolidays.Size = new System.Drawing.Size(75, 139);
 			this.dgHolidays.TabIndex = 44;
 			this.dgHolidays.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgHolidays_CellValueChanged);
 			this.dgHolidays.SelectionChanged += new System.EventHandler(this.dgHolidays_SelectionChanged);
@@ -255,12 +243,12 @@
             this.colShortDaysClose});
 			this.dgShortDays.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dgShortDays.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
-			this.dgShortDays.Location = new System.Drawing.Point(230, 22);
+			this.dgShortDays.Location = new System.Drawing.Point(240, 22);
 			this.dgShortDays.Name = "dgShortDays";
 			this.dgShortDays.RowHeadersVisible = false;
 			this.dgShortDays.RowTemplate.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
 			this.dgShortDays.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgShortDays.Size = new System.Drawing.Size(108, 139);
+			this.dgShortDays.Size = new System.Drawing.Size(133, 139);
 			this.dgShortDays.TabIndex = 43;
 			this.dgShortDays.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgShortDays_CellValueChanged);
 			this.dgShortDays.SelectionChanged += new System.EventHandler(this.dgShortDays_SelectionChanged);
@@ -306,9 +294,9 @@
 			this.lnkHolidaysDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.lnkHolidaysDelete.AutoSize = true;
 			this.lnkHolidaysDelete.Enabled = false;
-			this.lnkHolidaysDelete.Location = new System.Drawing.Point(69, 0);
+			this.lnkHolidaysDelete.Location = new System.Drawing.Point(58, 0);
 			this.lnkHolidaysDelete.Name = "lnkHolidaysDelete";
-			this.lnkHolidaysDelete.Size = new System.Drawing.Size(38, 13);
+			this.lnkHolidaysDelete.Size = new System.Drawing.Size(14, 13);
 			this.lnkHolidaysDelete.TabIndex = 42;
 			this.lnkHolidaysDelete.TabStop = true;
 			this.lnkHolidaysDelete.Text = "Delete";
@@ -319,9 +307,9 @@
 			this.lnkShortDaysDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.lnkShortDaysDelete.AutoSize = true;
 			this.lnkShortDaysDelete.Enabled = false;
-			this.lnkShortDaysDelete.Location = new System.Drawing.Point(73, 0);
+			this.lnkShortDaysDelete.Location = new System.Drawing.Point(92, 0);
 			this.lnkShortDaysDelete.Name = "lnkShortDaysDelete";
-			this.lnkShortDaysDelete.Size = new System.Drawing.Size(32, 13);
+			this.lnkShortDaysDelete.Size = new System.Drawing.Size(38, 13);
 			this.lnkShortDaysDelete.TabIndex = 41;
 			this.lnkShortDaysDelete.TabStop = true;
 			this.lnkShortDaysDelete.Text = "Delete";
@@ -355,28 +343,10 @@
 			this.dgClearingTimespans.RowTemplate.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
 			this.dgClearingTimespans.RowTemplate.DividerHeight = 1;
 			this.dgClearingTimespans.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgClearingTimespans.Size = new System.Drawing.Size(144, 139);
+			this.dgClearingTimespans.Size = new System.Drawing.Size(154, 139);
 			this.dgClearingTimespans.TabIndex = 47;
 			this.dgClearingTimespans.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgClearingTimespans_CellValueChanged);
 			this.dgClearingTimespans.SelectionChanged += new System.EventHandler(this.dgClearingTimespans_SelectionChanged);
-			// 
-			// colClearingTimespansSuspends
-			// 
-			this.colClearingTimespansSuspends.HeaderText = "Suspends";
-			this.colClearingTimespansSuspends.Name = "colClearingTimespansSuspends";
-			this.colClearingTimespansSuspends.Width = 45;
-			// 
-			// colClearingTimespansResumes
-			// 
-			this.colClearingTimespansResumes.HeaderText = "Resumes";
-			this.colClearingTimespansResumes.Name = "colClearingTimespansResumes";
-			this.colClearingTimespansResumes.Width = 45;
-			// 
-			// colClearingTimespansDaysOfWeek
-			// 
-			this.colClearingTimespansDaysOfWeek.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.colClearingTimespansDaysOfWeek.HeaderText = "DaysOfWeek";
-			this.colClearingTimespansDaysOfWeek.Name = "colClearingTimespansDaysOfWeek";
 			// 
 			// lblClearingTimespans
 			// 
@@ -392,9 +362,9 @@
 			this.lnkClearingTimespanDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.lnkClearingTimespanDelete.AutoSize = true;
 			this.lnkClearingTimespanDelete.Enabled = false;
-			this.lnkClearingTimespanDelete.Location = new System.Drawing.Point(118, 0);
+			this.lnkClearingTimespanDelete.Location = new System.Drawing.Point(113, 0);
 			this.lnkClearingTimespanDelete.Name = "lnkClearingTimespanDelete";
-			this.lnkClearingTimespanDelete.Size = new System.Drawing.Size(23, 13);
+			this.lnkClearingTimespanDelete.Size = new System.Drawing.Size(38, 13);
 			this.lnkClearingTimespanDelete.TabIndex = 46;
 			this.lnkClearingTimespanDelete.TabStop = true;
 			this.lnkClearingTimespanDelete.Text = "Delete";
@@ -422,9 +392,9 @@
 			// 
 			this.tableLayoutPanel1.ColumnCount = 4;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.97531F));
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.02469F));
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 35.22976F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30.63457F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 17.50547F));
 			this.tableLayoutPanel1.Controls.Add(this.dgMarketName, 0, 1);
 			this.tableLayoutPanel1.Controls.Add(this.dgClearingTimespans, 1, 1);
 			this.tableLayoutPanel1.Controls.Add(this.dgShortDays, 2, 1);
@@ -469,7 +439,7 @@
 			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
 			this.tableLayoutPanel3.RowCount = 1;
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel3.Size = new System.Drawing.Size(144, 13);
+			this.tableLayoutPanel3.Size = new System.Drawing.Size(154, 13);
 			this.tableLayoutPanel3.TabIndex = 49;
 			// 
 			// tableLayoutPanel4
@@ -480,11 +450,11 @@
 			this.tableLayoutPanel4.Controls.Add(this.lblShortDays, 0, 0);
 			this.tableLayoutPanel4.Controls.Add(this.lnkShortDaysDelete, 1, 0);
 			this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel4.Location = new System.Drawing.Point(230, 3);
+			this.tableLayoutPanel4.Location = new System.Drawing.Point(240, 3);
 			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
 			this.tableLayoutPanel4.RowCount = 1;
 			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel4.Size = new System.Drawing.Size(108, 13);
+			this.tableLayoutPanel4.Size = new System.Drawing.Size(133, 13);
 			this.tableLayoutPanel4.TabIndex = 50;
 			// 
 			// tableLayoutPanel5
@@ -495,11 +465,11 @@
 			this.tableLayoutPanel5.Controls.Add(this.lblHolidays, 0, 0);
 			this.tableLayoutPanel5.Controls.Add(this.lnkHolidaysDelete, 1, 0);
 			this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel5.Location = new System.Drawing.Point(344, 3);
+			this.tableLayoutPanel5.Location = new System.Drawing.Point(379, 3);
 			this.tableLayoutPanel5.Name = "tableLayoutPanel5";
 			this.tableLayoutPanel5.RowCount = 1;
 			this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel5.Size = new System.Drawing.Size(110, 13);
+			this.tableLayoutPanel5.Size = new System.Drawing.Size(75, 13);
 			this.tableLayoutPanel5.TabIndex = 51;
 			// 
 			// tableLayoutPanel6
@@ -540,6 +510,39 @@
 			this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
 			this.tableLayoutPanel7.Size = new System.Drawing.Size(463, 215);
 			this.tableLayoutPanel7.TabIndex = 52;
+			// 
+			// colClearingTimespansSuspends
+			// 
+			this.colClearingTimespansSuspends.HeaderText = "Suspends";
+			this.colClearingTimespansSuspends.Name = "colClearingTimespansSuspends";
+			this.colClearingTimespansSuspends.Width = 48;
+			// 
+			// colClearingTimespansResumes
+			// 
+			this.colClearingTimespansResumes.HeaderText = "Resumes";
+			this.colClearingTimespansResumes.Name = "colClearingTimespansResumes";
+			this.colClearingTimespansResumes.Width = 48;
+			// 
+			// colClearingTimespansDaysOfWeek
+			// 
+			this.colClearingTimespansDaysOfWeek.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+			this.colClearingTimespansDaysOfWeek.HeaderText = "DaysOfWeek";
+			this.colClearingTimespansDaysOfWeek.Name = "colClearingTimespansDaysOfWeek";
+			// 
+			// colMarketName
+			// 
+			this.colMarketName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+			this.colMarketName.HeaderText = "Name";
+			this.colMarketName.Name = "colMarketName";
+			this.colMarketName.ToolTipText = "Single Click: Edit; Double Click: assign to DataSource";
+			// 
+			// colMarketUsedTimes
+			// 
+			this.colMarketUsedTimes.HeaderText = "Used";
+			this.colMarketUsedTimes.Name = "colMarketUsedTimes";
+			this.colMarketUsedTimes.ReadOnly = true;
+			this.colMarketUsedTimes.ToolTipText = "Single Click: Edit; Double Click: assign to DataSource";
+			this.colMarketUsedTimes.Width = 33;
 			// 
 			// MarketInfoEditor
 			// 
@@ -592,15 +595,10 @@
 		private System.Windows.Forms.LinkLabel lnkClearingTimespanDelete;
 		private System.Windows.Forms.TextBox txtMarketDaysOfWeek;
 		private System.Windows.Forms.Label lblMarketDaysOfWeek;
-		private System.Windows.Forms.DataGridViewTextBoxColumn colMarketName;
-		private System.Windows.Forms.DataGridViewTextBoxColumn colMarketUsedTimes;
 		private System.Windows.Forms.DataGridViewTextBoxColumn colHolidaysDate;
 		private System.Windows.Forms.DataGridViewTextBoxColumn colShortDaysDate;
 		private System.Windows.Forms.DataGridViewTextBoxColumn colShortDaysTime;
 		private System.Windows.Forms.DataGridViewTextBoxColumn colShortDaysClose;
-		private System.Windows.Forms.DataGridViewTextBoxColumn colClearingTimespansSuspends;
-		private System.Windows.Forms.DataGridViewTextBoxColumn colClearingTimespansResumes;
-		private System.Windows.Forms.DataGridViewTextBoxColumn colClearingTimespansDaysOfWeek;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
@@ -608,5 +606,10 @@
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
+		private System.Windows.Forms.DataGridViewTextBoxColumn colMarketName;
+		private System.Windows.Forms.DataGridViewTextBoxColumn colMarketUsedTimes;
+		private System.Windows.Forms.DataGridViewTextBoxColumn colClearingTimespansSuspends;
+		private System.Windows.Forms.DataGridViewTextBoxColumn colClearingTimespansResumes;
+		private System.Windows.Forms.DataGridViewTextBoxColumn colClearingTimespansDaysOfWeek;
 	}
 }

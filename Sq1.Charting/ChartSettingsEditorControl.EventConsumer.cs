@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 using Sq1.Core;
 using Sq1.Core.Charting;
-using Sq1.Core.Repositories;
 
 using Sq1.Widgets.LabeledTextBox;
 

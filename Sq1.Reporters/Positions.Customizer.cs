@@ -29,8 +29,8 @@ namespace Sq1.Reporters {
 			}
 		}
 		void olvColumn_VisibilityChanged(object sender, EventArgs e) {
-			OLVColumn oLVColumn = sender as OLVColumn;
-			if (oLVColumn == null) return;
+			OLVColumn olvColumn = sender as OLVColumn;
+			if (olvColumn == null) return;
 			this.olvBinaryState_save_raiseStrategySerialize();
 		}
 		void olvReCustomize_OnPriceDecimalsChanged() {

@@ -336,7 +336,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 		}
 
 		void dataSourceRepository_OnSymbolAdded(object sender, DataSourceSymbolEventArgs e) {
-			if (base.InvokeRequired) {
+			bool inDdeMessagePumpThread = System.Threading.Thread.CurrentThread.ManagedThreadId != 1;
+			if (base.InvokeRequired || inDdeMessagePumpThread) {
 				string msg = "StreamingProvider pushed newly auto-subscribed Symbol";
 				base.Invoke((MethodInvoker) delegate() { this.dataSourceRepository_OnSymbolAdded(sender, e); });
 				return;

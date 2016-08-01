@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 
-using Sq1.Core;
 using System.Threading;
 
 namespace Sq1.Core.Support {

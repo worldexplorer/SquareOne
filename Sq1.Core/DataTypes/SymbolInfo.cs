@@ -93,7 +93,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	int				NOT_USED_ReplaceTidalMillis			{ get; set; }
 
 		[Category("3. Pre-OrderProcessor"), DefaultValue(false), Description("")]
-		[JsonProperty]	public	bool			MarketOrders_priceFill_bringBackFromOutrageous			{ get; set; }
+		[JsonProperty]	public	bool			NOT_USED_MarketOrders_priceFill_bringBackFromOutrageous			{ get; set; }
 
 
 
@@ -107,20 +107,42 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	bool			CheckForSimilarAlreadyPending { get; set; }
 
 
-		[Category("5.1 OrderPostProcessor:Replace Limit Orders after Expiration"), DefaultValue(-1),		Description("if!=-1: 1) Kill Pending Limit + wait it's killed, 2) use SlippagesCrossMarketCsv for CrossMarket and SlippagesTidalCsv for Tidal, 3) send replacement order with more cutting-through slippage")]
+
+		[Category("5.1 OrderPostProcessor StuckInSubmitted: Reconnect, Kill, Resubmit"), DefaultValue(400),	Description("")]
+		[JsonProperty]	public	int				IfNoTransactionCallback_MillisAllowed					{ get; set; }
+
+		[Category("5.1 OrderPostProcessor StuckInSubmitted: Reconnect, Kill, Resubmit"), DefaultValue(true),	Description("")]
+		[JsonProperty]	public	bool			IfNoTransactionCallback_ReconnectBrokerDll				{ get; set; }
+
+		[Category("5.1 OrderPostProcessor StuckInSubmitted: Reconnect, Kill, Resubmit"), DefaultValue(true),	Description("")]
+		[JsonProperty]	public	bool			IfNoTransactionCallback_Kill_StuckInSubmitted			{ get; set; }
+
+		[Category("5.1 OrderPostProcessor StuckInSubmitted: Reconnect, Kill, Resubmit"), DefaultValue(true),	Description("")]
+		[JsonProperty]	public	bool			IfNoTransactionCallback_Resubmit						{ get; set; }
+
+		[Category("5.1 OrderPostProcessor StuckInSubmitted: Reconnect, Kill, Resubmit"), DefaultValue(3),		Description("")]
+		[JsonProperty]	public	int				IfNoTransactionCallback_ResubmitLimit					{ get; set; }
+
+
+
+		[Category("5.2 OrderPostProcessor:Replace Limit Orders after Expiration @WaitingBrokerFill"), DefaultValue(-1),		Description("if!=-1: 1) Kill Pending Limit + wait it's killed, 2) use SlippagesCrossMarketCsv for CrossMarket and SlippagesTidalCsv for Tidal, 3) send replacement order with more cutting-through slippage")]
 		[JsonProperty]	public	int				LimitExpiresAfterMillis		{ get; set; }
 
-		[Category("5.1 OrderPostProcessor:Replace Limit Orders after Expiration"), DefaultValue(true), Description("Kill->Wait->SubmitReplacement using {SlippagesCrossMarketCsv/SlippagesTidalCsv} after ReSubmitLimitNotFilledWithinMillis")]
+		[Category("5.2 OrderPostProcessor:Replace Limit Orders after Expiration @WaitingBrokerFill"), DefaultValue(true), Description("Kill->Wait->SubmitReplacement using {SlippagesCrossMarketCsv/SlippagesTidalCsv} after ReSubmitLimitNotFilledWithinMillis")]
 		[JsonProperty]	public	bool			LimitExpiredResubmit		{ get; set; }
 
+		[Category("5.2 OrderPostProcessor:Replace Limit Orders after Expiration @WaitingBrokerFill"), DefaultValue(true), Description("if the price went out of grasp and your strategy will issue a new identical alert OnNextStaticBar")]
+		[JsonProperty]	public	bool			LimitExpired_KillUnfilledWithLastSlippage		{ get; set; }
 
-		[Category("5.2 OrderPostProcessor:ReplaceRejected"), DefaultValue(true), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry")]
+
+
+		[Category("5.3 OrderPostProcessor:ReplaceRejected"), DefaultValue(true), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry")]
 		[JsonProperty]	public	bool			RejectedResubmit					{ get; set; }
 
-		[Category("5.2 OrderPostProcessor:ReplaceRejected"), DefaultValue(true), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry")]
+		[Category("5.3 OrderPostProcessor:ReplaceRejected"), DefaultValue(true), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry")]
 		[JsonProperty]	public	bool			RejectedKill						{ get; set; }
 
-		[Category("5.2 OrderPostProcessor:ReplaceRejected"), DefaultValue(false), Description("OrderPostProcessorEmergency and OrderPostProcessorEmergency will increase the distance (=> decrease the profit) by using next available from SlippagesBuy/SlippagesSell")]
+		[Category("5.3 OrderPostProcessor:ReplaceRejected"), DefaultValue(false), Description("OrderPostProcessorEmergency and OrderPostProcessorEmergency will increase the distance (=> decrease the profit) by using next available from SlippagesBuy/SlippagesSell")]
 		[JsonProperty]	public	bool			RejectedResubmitWithNextSlippage	{ get; set; }
 
 
@@ -167,12 +189,18 @@ namespace Sq1.Core.DataTypes {
 			this.VolumeDecimals					= 0;	// if your Forex Symbol uses lotMin=0.001, DecimalsVolume = 3 
 			this.SameBarPolarCloseThenOpen		= true;
 			this.SequencedOpeningAfterClosedDelayMillis = 1000;
-			this.MarketOrderAs					= MarketOrderAs.Unknown;
+			this.MarketOrderAs							= MarketOrderAs.Unknown;
 			this.NOT_USED_ReplaceTidalWithCrossMarket	= false;
-			this.NOT_USED_ReplaceTidalMillis				= 0;
+			this.NOT_USED_ReplaceTidalMillis			= 0;
 			this.SlippagesCrossMarketCsv		= "";
 			this.SlippagesTidalCsv				= "";
 
+			this.IfNoTransactionCallback_MillisAllowed			= 400;
+			this.IfNoTransactionCallback_ReconnectBrokerDll		= true;
+			this.IfNoTransactionCallback_Kill_StuckInSubmitted	= true;
+			this.IfNoTransactionCallback_Resubmit				= true;
+			this.IfNoTransactionCallback_ResubmitLimit			= 3;
+		
 			this.RejectedKill							= true;
 			this.RejectedResubmit						= true;
 			this.RejectedResubmitWithNextSlippage		= false;
@@ -182,6 +210,7 @@ namespace Sq1.Core.DataTypes {
 
 			this.LimitExpiresAfterMillis		= 2000;
 			this.LimitExpiredResubmit			= false;
+			this.LimitExpired_KillUnfilledWithLastSlippage = true;
 
 			this.EmergencyCloseAttemptsMax		= 5;
 
@@ -197,7 +226,7 @@ namespace Sq1.Core.DataTypes {
 				case MarketOrderAs.LimitCrossMarket:	ret = this.SlippagesCrossMarketCsv;		break;
 				case MarketOrderAs.LimitTidal:			ret = this.SlippagesTidalCsv;			break;
 
-				case MarketOrderAs.MarketUnchanged_DANGEROUS:
+				//case MarketOrderAs.MarketUnchanged_DANGEROUS:
 				case MarketOrderAs.MarketZeroSentToBroker:
 				case MarketOrderAs.MarketMinMaxSentToBroker:
 					string msg = "SLIPAGE_NOT_APPLICABLE_FOR[" + crossOrTidal + "] returning slippage=0";
@@ -264,8 +293,8 @@ namespace Sq1.Core.DataTypes {
 			return (SymbolInfo)this.MemberwiseClone();
 		}
 
-		public double Alert_alignToPriceLevel(double alertPrice, Direction direction, MarketLimitStop marketLimitStop) {
-			PriceLevelRoundingMode roundingMode = PriceLevelRoundingMode.DontRoundPrintLowerUpper;
+		public double Alert_alignToPriceStep(double alertPrice, Direction direction, MarketLimitStop marketLimitStop) {
+			PriceLevelRoundingMode roundingMode = PriceLevelRoundingMode.RoundToClosest;
 			switch (marketLimitStop) {
 				case MarketLimitStop.Limit:
 					switch (direction) {
@@ -290,10 +319,12 @@ namespace Sq1.Core.DataTypes {
 					roundingMode = PriceLevelRoundingMode.RoundToClosest;
 					break;
 				default:
-					roundingMode = PriceLevelRoundingMode.DontRoundPrintLowerUpper;
+					string msg = "NO_HANDLER_TO_ROUND_ALERT_PRICE_FOR marketLimitStop[" + marketLimitStop+ "]";
+					Assembler.PopupException(msg);
+					//roundingMode = PriceLevelRoundingMode.DontRoundPrintLowerUpper;
 					break;
 			}
-			return this.AlignToPriceLevel(alertPrice, roundingMode);
+			return this.AlignToPriceStep(alertPrice, roundingMode);
 		}
 		
 		#if USE_CUSTOM_ROUNDING
@@ -344,38 +375,59 @@ namespace Sq1.Core.DataTypes {
 			#endif
 			return ret;
 		}
+			public double AlignToPriceLevel(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest) {
+				double decimals = this.PriceDecimals;	//this.PriceStep);
+				//if (integefier == -1) {
+				//    integefier = Convert.ToDecimal(this.PriceDecimals);		//integefier = this.PriceStepFromDecimal;
+				//}
+				if (decimals < 0) {
+					throw new ArithmeticException();
+				}
+				decimal integefier = Convert.ToDecimal(Math.Pow(10, decimals));	// 10 ^ 2 = 100; 10 ^ 0.01
+				decimal ret = (decimal) price * integefier; 					// 90.145 => 9014.5
+				switch (upOrDown) {
+					case PriceLevelRoundingMode.RoundDown:		ret = Math.Floor(ret);		break;		// 9014.5 => 9014.0
+					case PriceLevelRoundingMode.RoundUp:		ret = Math.Ceiling(ret);	break;		// 9014.5 => 9015.0
+					case PriceLevelRoundingMode.RoundToClosest:	ret = Math.Round(ret);		break;		// 9014.5 => 9015.0
+					case PriceLevelRoundingMode.DontRoundPrintLowerUpper:
+						double lowerLevel = this.AlignToPriceLevel(price, PriceLevelRoundingMode.RoundDown);
+						double upperLevel = this.AlignToPriceLevel(price, PriceLevelRoundingMode.RoundUp);
+						string msg = "DontRound=>returning[" + price + "] RoundDown[" + lowerLevel + "] RoundUp[" + upperLevel + "] ";
+						Assembler.PopupException(msg);
+						return price;
+					default:
+					throw new NotImplementedException("AlignToPriceLevel() for PriceLevelRoundingMode." + upOrDown);
+				}
+				ret /= integefier;														// 9015.0 => 90.15
+				//ret = Math.Round(ret, integefier);
+				//if (ret < integefier) {
+				//    ret = integefier;
+				//} else {
+				//    ret = Math.Round(ret, (int)integefier);	// DIRTY
+				//}
+				return Convert.ToDouble(ret);
+			}
 		#else
-		public double AlignToPriceLevel(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest) {
-			double decimals = this.PriceDecimals;	//this.PriceStep);
-			//if (integefier == -1) {
-			//    integefier = Convert.ToDecimal(this.PriceDecimals);		//integefier = this.PriceStepFromDecimal;
-			//}
-			if (decimals < 0) {
-				throw new ArithmeticException();
+		public double AlignToPriceStep(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest) {
+			if (this.PriceStep == 0) {
+				string msg = "CAN_NOT_ALIGN_TO_ZERO_PRICE_STEP Symbol[" + this.SymbolClass + "] price[" + price + "]";
+				throw new Exception(msg);
 			}
-			decimal integefier = Convert.ToDecimal(Math.Pow(10, decimals));	// 10 ^ 2 = 100; 10 ^ 0.01
-			decimal ret = (decimal) price * integefier; 					// 90.145 => 9014.5
+			double reminder = price % this.PriceStep;				// 18,562.17 % 10 = 2.17 (reminder);		10.2 (step 0.5) => 0.2
+			double level_lower = price - reminder;					// 18,562.17 - 2.17 (reminder) = 18,560;	10.2 - 0.2 (reminder) = 10.0
+			double level_upper = level_lower + this.PriceStep;		// 18,560 + 10 = 18,570;					10.0 + 0.5 = 10.5
+			double level_closest = reminder >= this.PriceStep/2d ? level_upper : level_lower;
 			switch (upOrDown) {
-				case PriceLevelRoundingMode.RoundDown:		ret = Math.Floor(ret);		break;		// 9014.5 => 9014.0
-				case PriceLevelRoundingMode.RoundUp:		ret = Math.Ceiling(ret);	break;		// 9014.5 => 9015.0
-				case PriceLevelRoundingMode.RoundToClosest:	ret = Math.Round(ret);		break;		// 9014.5 => 9015.0
-				case PriceLevelRoundingMode.DontRoundPrintLowerUpper:
-					double lowerLevel = this.AlignToPriceLevel(price, PriceLevelRoundingMode.RoundDown);
-					double upperLevel = this.AlignToPriceLevel(price, PriceLevelRoundingMode.RoundUp);
-					string msg = "DontRound=>returning[" + price + "] RoundDown[" + lowerLevel + "] RoundUp[" + upperLevel + "] ";
-					Assembler.PopupException(msg);
-					return price;
+				case PriceLevelRoundingMode.RoundDown:		return level_lower;		// 18,562.17 (step 10) => 18,560; 10.2 (step 0.5) => 10.0
+				case PriceLevelRoundingMode.RoundUp:		return level_upper;		// 18,568.17 (step 10) => 18,570; 10.2 (step 0.5) => 10.5
+				case PriceLevelRoundingMode.RoundToClosest:	return level_closest;	// 18,568.17 (step 10) => 18,570; 10.6 (step 0.5) => 10.5
+				//case PriceLevelRoundingMode.DontRoundPrintLowerUpper:
+				//    string msg = "DontRound=>returning[" + price + "] RoundDown[" + level_lower + "] RoundUp[" + level_upper + "] ";
+				//    Assembler.PopupException(msg);
+				//    return price;
 				default:
-				throw new NotImplementedException("AlignToPriceLevel() for PriceLevelRoundingMode." + upOrDown);
+					throw new NotImplementedException("AlignToPriceLevel() for PriceLevelRoundingMode." + upOrDown);
 			}
-			ret /= integefier;														// 9015.0 => 90.15
-			//ret = Math.Round(ret, integefier);
-			//if (ret < integefier) {
-			//    ret = integefier;
-			//} else {
-			//    ret = Math.Round(ret, (int)integefier);	// DIRTY
-			//}
-			return Convert.ToDouble(ret);
 		}
 		#endif
 		public double AlignToVolumeStep(double volume, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest) {
@@ -391,14 +443,14 @@ namespace Sq1.Core.DataTypes {
 				case PriceLevelRoundingMode.RoundDown:		ret = Math.Floor(ret);		break;		// 9014.5 => 9014.0
 				case PriceLevelRoundingMode.RoundUp:		ret = Math.Ceiling(ret);	break;		// 9014.5 => 9015.0
 				case PriceLevelRoundingMode.RoundToClosest:	ret = Math.Round(ret);		break;		// 9014.5 => 9015.0
-				case PriceLevelRoundingMode.DontRoundPrintLowerUpper:
-				double lowerLevel = this.AlignToVolumeStep(volume, PriceLevelRoundingMode.RoundDown);
-				double upperLevel = this.AlignToVolumeStep(volume, PriceLevelRoundingMode.RoundUp);
-					string msg = "DontRound=>returning[" + volume + "] RoundDown[" + lowerLevel + "] RoundUp[" + upperLevel + "] ";
-					Assembler.PopupException(msg);
-					return volume;
+				//case PriceLevelRoundingMode.DontRoundPrintLowerUpper:
+				//    double lowerLevel = this.AlignToVolumeStep(volume, PriceLevelRoundingMode.RoundDown);
+				//    double upperLevel = this.AlignToVolumeStep(volume, PriceLevelRoundingMode.RoundUp);
+				//        string msg = "DontRound=>returning[" + volume + "] RoundDown[" + lowerLevel + "] RoundUp[" + upperLevel + "] ";
+				//        Assembler.PopupException(msg);
+				//        return volume;
 				default:
-				throw new NotImplementedException("AlignToVolumeStep() for PriceLevelRoundingMode." + upOrDown);
+					throw new NotImplementedException("AlignToVolumeStep() for PriceLevelRoundingMode." + upOrDown);
 			}
 			ret /= integefier;	// 9015.0 => 90.15
 			ret = Math.Round(ret, this.VolumeDecimals);

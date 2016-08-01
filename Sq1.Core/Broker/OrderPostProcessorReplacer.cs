@@ -47,7 +47,39 @@ namespace Sq1.Core.Broker {
 			return ret;
 		}
 
-		protected Order CreateReplacementOrder_insteadOfReplaceExpired(Order orderExpired_toReplace) {
+		protected BrokerAdapter GetBrokerAdapter_fromOrder_nullUnsafe(Order orderStuckInSubmitted_brokerMustBeReconnected, string msig_invoker) {
+			BrokerAdapter ret = null;
+
+			if (orderStuckInSubmitted_brokerMustBeReconnected.Alert == null) {
+				string msg = "ALERT_MUST_NOT_BE_NULL";
+				this.OrderProcessor.AppendMessage_propagateToGui(orderStuckInSubmitted_brokerMustBeReconnected, msg);
+				Assembler.PopupException(msg + msig_invoker);
+				return ret;
+			}
+			if (orderStuckInSubmitted_brokerMustBeReconnected.Alert.Bars == null) {
+				string msg = "BARS_MUST_NOT_BE_NULL";
+				this.OrderProcessor.AppendMessage_propagateToGui(orderStuckInSubmitted_brokerMustBeReconnected, msg);
+				Assembler.PopupException(msg + msig_invoker);
+				return ret;
+			}
+			if (orderStuckInSubmitted_brokerMustBeReconnected.Alert.DataSource_fromBars == null) {
+				string msg = "DATASOURCE_MUST_NOT_BE_NULL";
+				this.OrderProcessor.AppendMessage_propagateToGui(orderStuckInSubmitted_brokerMustBeReconnected, msg);
+				Assembler.PopupException(msg + msig_invoker);
+				return ret;
+			}
+			if (orderStuckInSubmitted_brokerMustBeReconnected.Alert.DataSource_fromBars.BrokerAdapter == null) {
+				string msg = "BROKER_ADAPTER_MUST_NOT_BE_NULL";
+				this.OrderProcessor.AppendMessage_propagateToGui(orderStuckInSubmitted_brokerMustBeReconnected, msg);
+				Assembler.PopupException(msg + msig_invoker);
+				return ret;
+			}
+
+			ret = orderStuckInSubmitted_brokerMustBeReconnected.Alert.DataSource_fromBars.BrokerAdapter;
+			return ret;
+		}
+
+		protected Order CreateReplacementOrder_forExpired(Order orderExpired_toReplace) {
 			if (orderExpired_toReplace == null) {
 				Assembler.PopupException("order2replace=null why did you call me?");
 				return null;
@@ -78,10 +110,10 @@ namespace Sq1.Core.Broker {
 			Order replacement = this.OrderProcessor.DataSnapshot.OrdersAll.ScanRecent_forOrderGuid(ReplaceExpired.ReplacedByGUID, out suggestedLane_nullUnsafe, out suggestion, true);
 			return replacement;
 		}
-		protected bool SubmitReplacementOrder_insteadOfReplaceExpired(Order replacementOrder, bool inNewThread = true) {
+		protected bool EmitReplacementOrder_insteadOfExpired(Order replacementOrder, bool inNewThread = true) {
 			bool submittedOrScheduled = false;
 
-			string msig = " //SubmitReplacementOrder_insteadOfReplaceExpired()";
+			string msig = " //SubmitReplacementOrder_insteadOfExpired()";
 			try {
 				if (replacementOrder == null) {
 					Assembler.PopupException("replacementOrder == null why did you call me?");
@@ -136,5 +168,88 @@ namespace Sq1.Core.Broker {
 			OrderStateMessage newOrderStateReplaceExpired = new OrderStateMessage(order, OrderState.LimitExpiredRejected, msg2);
 			this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(newOrderStateReplaceExpired);
 		}
+
+
+		protected bool ReplaceOrder_withoutHook(Order orderStuckInSubmitted,
+						string invoker,
+						bool recalculatePriceEmitted_fromCurrentMarket = true,
+						bool recalculatePriceEmitted_applyNextSlippage = false,
+						bool inNewThread = false) {
+
+			bool replacementEmitted = false;
+			//string msig = " //ReplaceOrder_withoutHook(" + orderStuckInSubmitted + ") << " + invoker;
+			string msig = " //ReplaceOrder_withoutHook(recalculatePriceEmitted_fromCurrentMarket[" + recalculatePriceEmitted_fromCurrentMarket + "],"
+				+ " recalculatePriceEmitted_applyNextSlippage[" + recalculatePriceEmitted_applyNextSlippage + "],"
+				+ " inNewThread[" + inNewThread + "] " + orderStuckInSubmitted + ") << " + invoker;
+
+			try {
+				Order replacement = this.CreateReplacementOrder_forExpired(orderStuckInSubmitted);
+				if (replacement == null) {
+					string msg = "got NULL from CreateReplacementOrder()"
+						+ "; broker reported twice about rejection, ignored this second callback";
+					Assembler.PopupException(msg + msig);
+					//orderToReplace.addMessage(new OrderMessage(msg));
+					return replacementEmitted;
+				}
+
+				bool newPriceEmitted_onlyForLimitOrders_orMarketReplacedAsLimit = orderStuckInSubmitted.Alert.MarketLimitStop != MarketLimitStop.Market;
+
+				string diff = "";
+				if (recalculatePriceEmitted_fromCurrentMarket && newPriceEmitted_onlyForLimitOrders_orMarketReplacedAsLimit) {
+					double priceStreaming = replacement.Alert.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot
+						.GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteLast(
+							replacement.Alert.Bars.Symbol, replacement.Alert.Direction, out replacement.SpreadSide, false);
+
+					if (replacement.Alert.PositionAffected != null) {	// alert.PositionAffected = null when order created by chart-click-mni
+						if (replacement.Alert.IsEntryAlert) {
+							replacement.Alert.PositionAffected.EntryEmitted_price = priceStreaming;
+						} else {
+							replacement.Alert.PositionAffected.ExitEmitted_price = priceStreaming;
+						}
+					}
+
+					string msg_replacement = "REPLACEMENT_FOR_STUCK_IN_SUBMITTED["
+						+ replacement.ReplacementForGUID + "]; SlippageIndex[" + replacement.SlippageAppliedIndex + "]";
+					if (replacement.SlippagesLeftAvailable_noMore) {
+						msg_replacement += " THIS_IS_THE_LAST_POSSIBLE_SLIPPAGE";
+					}
+					this.OrderProcessor.AppendMessage_propagateToGui(replacement, msg_replacement);
+
+					if (recalculatePriceEmitted_applyNextSlippage) {
+						//double slippage = replacement.Alert.Bars.SymbolInfo.GetSlippage_signAware_forLimitOrdersOnly(
+						//	priceScript, replacement.Alert.Direction, replacement.Alert.MarketOrderAs, replacement.SlippageAppliedIndex);
+						double slippageNext_NanUnsafe = replacement.Alert.GetSlippage_signAware_forLimitAlertsOnly_NanWhenNoMore(replacement.SlippageAppliedIndex);
+						if (double.IsNaN(slippageNext_NanUnsafe)) {
+							string msg = "IRREPAIRABLE__YOU_SHOULD_JAVE_NOT_CREATED_REPLACEMENT_ORDER__SEE_reasonCanNotBeReplaced_20_LINES_ABOVE";
+							Assembler.PopupException(msg);
+						}
+
+						replacement.SlippageApplied = slippageNext_NanUnsafe;
+						double priceBasedOnLastQuote = priceStreaming + slippageNext_NanUnsafe;
+						double difference_withExpiredOrder_signInprecise = orderStuckInSubmitted.PriceEmitted - priceBasedOnLastQuote;
+						replacement.PriceEmitted = priceBasedOnLastQuote;
+
+						diff = " diffToExpired[" + difference_withExpiredOrder_signInprecise + "] ";
+					}
+				}
+
+				replacement.Alert.SetNew_OrderFollowed_PriceEmitted_fromReplacementOrder(replacement);	// will repaint the circle at the new order-emitted price PanelPrice.Rendering.cs:86
+
+				string verdict = "REPLACING_NOHOOK " + diff + replacement + invoker;
+				OrderStateMessage osm = new OrderStateMessage(orderStuckInSubmitted, OrderState.EmittingReplacement, verdict);
+				this.OrderProcessor.AppendOrderMessage_propagateToGui(osm);
+
+				replacementEmitted = this.EmitReplacementOrder_insteadOfExpired(replacement, inNewThread);
+
+				replacement.Alert.Strategy.Script.Executor.CallbackOrderReplaced_invokeScript_nonReenterably(
+															orderStuckInSubmitted, replacement, replacementEmitted);
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex, false);
+			} finally {
+				orderStuckInSubmitted.OrderReplacement_Emitted_afterOriginalKilled__orError.Set();
+			}
+
+			return replacementEmitted;
+		}	
 	}
 }

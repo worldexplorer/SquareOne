@@ -18,8 +18,11 @@ namespace Sq1.Gui.Forms {
 				btnStartStop.Text = "Starting";
 				btnStartStop.Enabled = false;
 
-				LivesimDataSource ds = this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesim_generator_nullUnsafe;
-				if (ds != null && true) {
+				//v1 Livesimulator livesimulator = this.chartFormManager.Executor.Livesimulator;
+				//v1 LivesimDataSource ds = livesimulator.DataSourceAsLivesim_generator_nullUnsafe;
+				//v1 bool clearExecutionExceptions = ds != null && ds.BrokerAsLivesim_nullUnsafe.LivesimBrokerSettings.ClearExecutionExceptions_beforeLivesim;
+				bool clearExecutionExceptions = this.chartFormManager.Executor.Strategy.LivesimBrokerSettings.ClearExecutionExceptions_beforeLivesim;
+				if (clearExecutionExceptions) {
 					//if (MainForm.ExceptionsForm != null && DockContentImproved.
 					ExceptionsForm.Instance.ExceptionControl.Clear();
 					ExecutionForm.Instance.ExecutionTreeControl.Clear();

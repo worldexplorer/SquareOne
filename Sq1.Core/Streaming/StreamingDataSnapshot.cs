@@ -178,7 +178,8 @@ namespace Sq1.Core.Streaming {
 			if (quoteLast == null) return 0;
 			if (quoteLast.TradedAt == BidOrAsk.UNKNOWN) {
 				string msg = "NEVER_HAPPENED_SO_FAR LAST_QUOTE_MUST_BE_BID_OR_ASK quoteLast.TradeOccuredAt[" + quoteLast.TradedAt + "]=BidOrAsk.UNKNOWN";
-				//NOISY Assembler.PopupException(msg, null, false);
+				//NOISY
+				Assembler.PopupException(msg, null, false);
 				return 0;
 			}
 			return quoteLast.TradedPrice;
@@ -223,7 +224,8 @@ namespace Sq1.Core.Streaming {
 			if (priceLastQuote == 0) {
 				string msg = "QuickCheck ZERO priceLastQuote=" + priceLastQuote + " for Symbol=[" + symbol + "]"
 					+ " from streamingAdapter[" + this.streamingAdapter.Name + "].StreamingDataSnapshot";
-				//NOISY Assembler.PopupException(msg, null, false);
+				//NOISY
+				Assembler.PopupException(msg, null, false);
 				//throw new Exception(msg);
 			}
 			double currentAsk = this.GetBestAsk_notAligned_forMarketOrder_fromQuoteLast(symbol);
@@ -281,10 +283,10 @@ namespace Sq1.Core.Streaming {
 							oss = SpreadSide.MarketPrice;
 							price = currentAsk;		// looks like default, must be crossmarket to fill it right now
 							break;
-						case MarketOrderAs.MarketUnchanged_DANGEROUS:
-							oss = SpreadSide.Unknown;
-							//DONT_CHANGE_USELESS price = ???;
-							break;
+						//case MarketOrderAs.MarketUnchanged_DANGEROUS:
+						//    oss = SpreadSide.Unknown;
+						//    //DONT_CHANGE_USELESS price = ???;
+						//    break;
 						default:
 							string msg2 = "no handler for spreadSide[" + spreadSide + "] direction[" + direction + "]";
 							throw new Exception(msg2 + msig);
@@ -309,10 +311,10 @@ namespace Sq1.Core.Streaming {
 							oss = SpreadSide.MarketPrice;
 							price = currentBid;		// looks like default, must be crossmarket to fill it right now
 							break;
-						case MarketOrderAs.MarketUnchanged_DANGEROUS:
-							oss = SpreadSide.Unknown;
-							//DONT_CHANGE_USELESS price = ???;
-							break;
+						//case MarketOrderAs.MarketUnchanged_DANGEROUS:
+						//    oss = SpreadSide.Unknown;
+						//    //DONT_CHANGE_USELESS price = ???;
+						//    break;
 						default:
 							string msg2 = "no handler for spreadSide[" + spreadSide + "] direction[" + direction + "]";
 							throw new Exception(msg2 + msig);
@@ -328,7 +330,7 @@ namespace Sq1.Core.Streaming {
 				Debugger.Break();
 			}
 			symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfoOrNew(symbol);
-			price = symbolInfo.Alert_alignToPriceLevel(price, direction, MarketLimitStop.Market);
+			price = symbolInfo.Alert_alignToPriceStep(price, direction, MarketLimitStop.Market);
 			return price;
 		}
 

@@ -935,10 +935,10 @@ namespace Sq1.Widgets.Correlation {
 				Assembler.PopupException(msg, ex, false);
 			}
 		}
-		void oLVColumn_VisibilityChanged(object sender, EventArgs e) {
+		void olvColumn_VisibilityChanged(object sender, EventArgs e) {
 			if (this.indicatorParameter_nullUnsafe == null) return;
-			OLVColumn oLVColumn = sender as OLVColumn;
-			if (oLVColumn == null) return;
+			OLVColumn olvColumn = sender as OLVColumn;
+			if (olvColumn == null) return;
 			this.olvSaveBinaryState_SerializeSnapshot();
 		}
 	}

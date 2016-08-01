@@ -44,13 +44,13 @@ namespace Sq1.Core.Backtesting {
 				// QUOTEGEN_PROBLEM#2 : at Open/Close, when they are == to Low/High, the Symmetrical quote will go beoynd bar boundaries => MarketSim will freak out
 				if (quote.Ask > barSimulated.High) {
 					double pushDown = quote.Ask - barSimulated.High;
-					double pushDownAligned = barSimulated.ParentBars.SymbolInfo.AlignToPriceLevel(pushDown, PriceLevelRoundingMode.RoundToClosest);
+					double pushDownAligned = barSimulated.ParentBars.SymbolInfo.AlignToPriceStep(pushDown, PriceLevelRoundingMode.RoundToClosest);
 					quote.Bid -= pushDown;
 					quote.Ask -= pushDown;
 					//quote.Bid = Math.Round(quote.Bid, barSimulated.ParentBars.SymbolInfo.DecimalsPrice);
 					//quote.Ask = Math.Round(quote.Ask, barSimulated.ParentBars.SymbolInfo.DecimalsPrice);
-					quote.Bid = barSimulated.ParentBars.SymbolInfo.AlignToPriceLevel(quote.Bid, PriceLevelRoundingMode.RoundToClosest);
-					quote.Ask = barSimulated.ParentBars.SymbolInfo.AlignToPriceLevel(quote.Ask, PriceLevelRoundingMode.RoundToClosest);
+					quote.Bid = barSimulated.ParentBars.SymbolInfo.AlignToPriceStep(quote.Bid, PriceLevelRoundingMode.RoundToClosest);
+					quote.Ask = barSimulated.ParentBars.SymbolInfo.AlignToPriceStep(quote.Ask, PriceLevelRoundingMode.RoundToClosest);
 				}
 				if (quote.Bid < barSimulated.Low) {
 					double pushUp = barSimulated.Low - quote.Bid;
@@ -58,8 +58,8 @@ namespace Sq1.Core.Backtesting {
 					quote.Ask += pushUp;
 					//quote.Bid = Math.Round(quote.Bid, barSimulated.ParentBars.SymbolInfo.DecimalsPrice);
 					//quote.Ask = Math.Round(quote.Ask, barSimulated.ParentBars.SymbolInfo.DecimalsPrice);
-					quote.Bid = barSimulated.ParentBars.SymbolInfo.AlignToPriceLevel(quote.Bid, PriceLevelRoundingMode.RoundToClosest);
-					quote.Ask = barSimulated.ParentBars.SymbolInfo.AlignToPriceLevel(quote.Ask, PriceLevelRoundingMode.RoundToClosest);
+					quote.Bid = barSimulated.ParentBars.SymbolInfo.AlignToPriceStep(quote.Bid, PriceLevelRoundingMode.RoundToClosest);
+					quote.Ask = barSimulated.ParentBars.SymbolInfo.AlignToPriceStep(quote.Ask, PriceLevelRoundingMode.RoundToClosest);
 				}
 				return;
 			}
@@ -73,9 +73,9 @@ namespace Sq1.Core.Backtesting {
 				return;
 			}			
 		}
-		protected void AlignBidAsk_toPriceLevel(QuoteGenerated quote, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.DontRoundPrintLowerUpper,
+		protected void AlignBidAsk_toPriceStep(QuoteGenerated quote, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest,
 											double spreadAlignedToMaintain = -1, double dontGoBeyond = -1) {
-			string msig = " " + this.GetType().Name + ".AlignBidAskToPriceLevel(" + quote.ToString() + ")";
+			string msig = " " + this.GetType().Name + ".AlignBidAsk_toPriceStep(" + quote.ToString() + ")";
 			try {
 				CheckThrowCanReachSymbolInfo(quote);
 			} catch (Exception ex) {
@@ -84,8 +84,8 @@ namespace Sq1.Core.Backtesting {
 			}
 			SymbolInfo symbolInfo = quote.ParentBarSimulated.ParentBars.SymbolInfo;
 			
-			double bidAligned = symbolInfo.AlignToPriceLevel(quote.Bid, upOrDown); 
-			double askAligned = symbolInfo.AlignToPriceLevel(quote.Ask, upOrDown);
+			double bidAligned = symbolInfo.AlignToPriceStep(quote.Bid, upOrDown); 
+			double askAligned = symbolInfo.AlignToPriceStep(quote.Ask, upOrDown);
 
 			if (dontGoBeyond != -1) {
 				switch(upOrDown) {
@@ -104,7 +104,7 @@ namespace Sq1.Core.Backtesting {
 			if (spreadAlignedToMaintain != -1) {
 				double spreadAligned = spreadAlignedToMaintain;
 				// DONT_ROUND_UP_ALREADY_ALIGNED_UPSTACK
-				spreadAligned = symbolInfo.AlignToPriceLevel(spreadAlignedToMaintain, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
+				spreadAligned = symbolInfo.AlignToPriceStep(spreadAlignedToMaintain, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
 				if (spreadAligned == 0) {
 					//string msg = "you can't use RoundDown here";
 					//Debugger.Break();
@@ -127,12 +127,12 @@ namespace Sq1.Core.Backtesting {
 					}
 				}
 
-				double quoteSreadAligned = symbolInfo.AlignToPriceLevel(askAligned - bidAligned, PriceLevelRoundingMode.RoundUp);
+				double quoteSreadAligned = symbolInfo.AlignToPriceStep(askAligned - bidAligned, PriceLevelRoundingMode.RoundUp);
 				if (quoteSreadAligned <= 0) {
 					//Debugger.Break();
-					bidAligned = symbolInfo.AlignToPriceLevel(quote.Bid, PriceLevelRoundingMode.RoundDown); 
-					askAligned = symbolInfo.AlignToPriceLevel(quote.Ask, PriceLevelRoundingMode.RoundUp);
-					double quoteSreadAligned2 = symbolInfo.AlignToPriceLevel(askAligned - bidAligned, PriceLevelRoundingMode.RoundUp);
+					bidAligned = symbolInfo.AlignToPriceStep(quote.Bid, PriceLevelRoundingMode.RoundDown); 
+					askAligned = symbolInfo.AlignToPriceStep(quote.Ask, PriceLevelRoundingMode.RoundUp);
+					double quoteSreadAligned2 = symbolInfo.AlignToPriceStep(askAligned - bidAligned, PriceLevelRoundingMode.RoundUp);
 					if (quoteSreadAligned2 > spreadAligned) {
 						string msg = "place to cheat it once again to avoid ContainsBidAskForQuoteGenerated() to fail us";
 						Assembler.PopupException(msg);

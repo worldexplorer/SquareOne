@@ -48,7 +48,7 @@ namespace Sq1.Core.Execution {
 
 		[JsonProperty]	public	double		CurrentAsk					{ get; private set; }
 		[JsonProperty]	public	double		CurrentBid					{ get; private set; }
-		[JsonProperty]	public	double		PriceCurBidOrAsk			{ get {
+		[JsonProperty]	public	double		PriceCurBidOrAsk_zeroForMarket			{ get {
 				double ret = 0;
 				switch (this.SpreadSide) {
 					case SpreadSide.AskCrossed:
@@ -293,22 +293,25 @@ namespace Sq1.Core.Execution {
 			this.Alert = alert;
 
 			if (setAlertOrderFollowed_toNewlyCreatedOrder_falseForKiller) {
-				if (alert.OrderFollowed != null) {
+				if (alert.OrderFollowed_orCurrentReplacement != null) {
 					string msg = null;
-					string msig = " alert.OrderFollowed.State[" + alert.OrderFollowed.State + "] alert[" + alert + "]";
-					if (alert.OrderFollowed.State == OrderState.VictimKilled) {
+					string msig = " alert.OrderFollowed.State[" + alert.OrderFollowed_orCurrentReplacement.State + "] alert[" + alert + "]";
+					if (alert.OrderFollowed_orCurrentReplacement.State == OrderState.VictimKilled) {
 						msg = "I_ASSIGN_A_REPLACEMENT_ORDER_INSTEAD_OF_EXPIRED_KILLED";
-					} else if (alert.OrderFollowed.State == OrderState.Rejected) {
+					} else if (alert.OrderFollowed_orCurrentReplacement.State == OrderState.StuckInSubmitted_Replacing) {
+						msg = "I_ASSIGN_A_REPLACEMENT_ORDER_INSTEAD_OF_STUCK_IN_SUBMITTED";
+					} else if (alert.OrderFollowed_orCurrentReplacement.State == OrderState.Rejected) {
 						msg = "I_ASSIGN_A_REPLACEMENT_ORDER_INSTEAD_OF_REJECTED";
-					} else if (alert.OrderFollowed.State == OrderState.RejectedKilled) {
+					} else if (alert.OrderFollowed_orCurrentReplacement.State == OrderState.RejectedKilled) {
 						msg = "I_ASSIGN_A_REPLACEMENT_ORDER_INSTEAD_OF_REJECTED_KILLED";
 					} else {
 						msg = "ONLY_REPLACEMENT_ORDER_CAN_OVERWRITE_THE_KILLED_EXPIRED";
 					}
-					alert.OrderFollowed.AppendMessage(msg + msig);
+					alert.OrderFollowed_orCurrentReplacement.AppendMessage(msg + msig);
 					//TESTED_OK Assembler.PopupException(msg + msig, null, false);
 				}
-				alert.OrderFollowed = this;
+				alert.OrderFollowed_orCurrentReplacement = this;
+				// StopLimitTestCompiled with protoEntryOffset=0 generated Market order, and then alert.OrderFollowed was null in 
 				alert.OrderFollowed_isAssignedNow_Mre.Set();	// simple alert submission is single threaded, including proto.StopLossAlertForAnnihilation!
 			}
 		}
@@ -402,6 +405,16 @@ namespace Sq1.Core.Execution {
 			//}
 			//this.Alert.FillPositionAffectedEntryOrExitRespectively(barStreaming, -1, priceFill, qtyFill, slippageFill, commissionFill);
 		}
+		public bool FindStates_inOrderMessages(List<OrderState> orderStates, int occurenciesLooking = 1) { lock (this.messages) {
+			int occurenciesFound = 0;
+			foreach (OrderStateMessage osm in this.messages) {
+				foreach (OrderState orderState in orderStates) {
+					if (osm.State != orderState) continue;
+					occurenciesFound++;
+				}
+			}
+			return (occurenciesFound >= occurenciesLooking);
+		} }
 		public bool FindState_inOrderMessages(OrderState orderState, int occurenciesLooking = 1) { lock (this.messages) {
 			int occurenciesFound = 0;
 			foreach (OrderStateMessage osm in this.messages) {

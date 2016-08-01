@@ -31,14 +31,14 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg + msig);
 				throw new Exception(msg + msig);
 			}
-			if (alert.PositionPrototype != null) {
+			if (alert.PositionPrototype_onlyForEntryAlert != null) {
 				string msg = "CLEANUP: I was trying to catch MoveStopLoss::if(proto.StopLossAlertForAnnihilation==null)"
 					+ " so I thought there is a new prototype assigned to a position,"
 					+ " since we never put null directly proto.StopLossAlertForAnnihilation";
 				Assembler.PopupException(msg + msig);
 				throw new Exception(msg + msig);
 			}
-			alert.PositionPrototype = proto;
+			alert.PositionPrototype_onlyForEntryAlert = proto;
 		}
 
 		bool checkPrototype_alreadyPlaced(PositionPrototype proto) {
@@ -47,8 +47,8 @@ namespace Sq1.Core.StrategyBase {
 			foreach (Alert alert in pendingSafe) {
 				//Position pos = alert.PositionAffected;
 				//if (pos == null) continue;
-				if (alert.PositionPrototype == null) continue;
-				if (alert.PositionPrototype.IsIdenticalTo(proto)) return true;
+				if (alert.PositionPrototype_onlyForEntryAlert == null) continue;
+				if (alert.PositionPrototype_onlyForEntryAlert.IsIdenticalTo(proto)) return true;
 			}
 			return false;
 		}

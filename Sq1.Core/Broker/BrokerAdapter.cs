@@ -16,7 +16,7 @@ namespace Sq1.Core.Broker {
 	public partial class BrokerAdapter : IDisposable {
 		[JsonIgnore]	public const string TESTING_BY_OWN_LIVESIM = "TESTING_BY_OWN_LIVESIM :: ";
 
-		[JsonIgnore]				object				lockSubmitOrders;
+		[JsonIgnore]				object				lock_submitOrdersSequentially;
 		[JsonIgnore]	public		string				Name				{ get; protected set; }
 		[JsonIgnore]	public		string				ReasonToExist		{ get; protected set; }
 		[JsonIgnore]	public		bool				HasBacktestInName	{ get { return Name.Contains("Backtest"); } }
@@ -136,7 +136,7 @@ namespace Sq1.Core.Broker {
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public BrokerAdapter() {
 			this.ReasonToExist				= "DUMMY_FOR_LIST_OF_BROKER_PROVIDERS_IN_DATASOURCE_EDITOR";
-			this.lockSubmitOrders			= new object();
+			this.lock_submitOrdersSequentially			= new object();
 			//Accounts = new List<Account>();
 			this.AccountAutoPropagate		= new Account("ACCTNR_NOT_SET", -1000);
 			this.OrderCallbackDupesChecker	= new OrderCallbackDupesCheckerTransparent(this);
@@ -192,15 +192,15 @@ namespace Sq1.Core.Broker {
 				}
 				Order firstOrder = ordersFromAlerts[0];
 				Assembler.SetThreadName(firstOrder.ToString(), "can not set Thread.CurrentThread.Name=[" + firstOrder + "]");
-				this.SubmitOrders_ownOneThread_forAllNewAlerts(ordersFromAlerts);
+				this.EmitOrders_ownOneThread_forAllNewAlerts(ordersFromAlerts);
 			} catch (Exception exc) {
 				string msg = "SubmitOrdersThreadEntry default Exception Handler";
 				Assembler.PopupException(msg, exc);
 			}
 		}
-		public virtual void SubmitOrders_ownOneThread_forAllNewAlerts(List<Order> orders) { lock (this.lockSubmitOrders) {
+		public virtual void EmitOrders_ownOneThread_forAllNewAlerts(List<Order> orders) { lock (this.lock_submitOrdersSequentially) {
 			string msig = " //" + this.Name + "::SubmitOrders()";
-			List<Order> ordersToExecute = new List<Order>();
+			List<Order> ordersToEmit = new List<Order>();
 			foreach (Order order in orders) {
 				if (order.Alert.IsBacktestingNoLivesimNow_FalseIfNoBacktester == true || this.HasBacktestInName) {
 					string msg = "Backtesting orders should not be routed to AnyBrokerAdapters, but simulated using MarketSim; order=[" + order + "]";
@@ -214,14 +214,14 @@ namespace Sq1.Core.Broker {
 					string msg = "NO_PAPER_ORDERS_ALLOWED: order=[" + order + "]";
 					throw new Exception(msg + msig);
 				}
-				if (ordersToExecute.Contains(order)) {
+				if (ordersToEmit.Contains(order)) {
 					string msg = "REMOVED_DUPLICATED_ORDER_IN_WHAT_YOU_PASSED_TO_SubmitOrders(): order=[" + order + "]";
 					Assembler.PopupException(msg + msig, null, false);
 					continue;
 				}
-				ordersToExecute.Add(order);
+				ordersToEmit.Add(order);
 			}
-			foreach (Order order in ordersToExecute) {
+			foreach (Order order in ordersToEmit) {
 				//string msg_order = " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "] SernoSession[" + order.SernoSession + "]";
 				//this.OrderProcessor.AppendOrderMessage_propagateToGui(order, msg_order + msig);
 
@@ -242,6 +242,8 @@ namespace Sq1.Core.Broker {
 				}
 				//this.OrderProcessor.DataSnapshot.SwitchLanes_forOrder_postStatusUpdate(order);
 				this.Order_submit_oneThread_forAllNewAlerts_trampoline(order);
+
+				bool stuckInSubmitted_watchTimerScheduled = this.OrderProcessor.OPPexpired_StuckInSubmitted.ScheduleTimer_forStuckInSubmitted_ifMillisAllowed_nonZero(order);
 			}
 		} }
 
@@ -501,7 +503,7 @@ namespace Sq1.Core.Broker {
 					throw new Exception(msg);
 			}
 			if (string.IsNullOrEmpty(msg)) return;
-			order.AppendMessage(msg + msig);
+			this.OrderProcessor.AppendMessage_propagateToGui(order, msg + msig);
 		}
 
 		public override string ToString() {
@@ -514,7 +516,7 @@ namespace Sq1.Core.Broker {
 			return ret;
 		}
 		
-		[JsonIgnore]	public bool IsDisposed { get; private set; }
+		[JsonIgnore]	public bool IsDisposed { get; protected set; }
 		public virtual void Dispose() {
 			if (this.IsDisposed) {
 				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE  " + this.ToString();
@@ -529,29 +531,32 @@ namespace Sq1.Core.Broker {
 		[JsonIgnore]	protected	ManualResetEvent	EmittingCapable_mre;
 		[JsonIgnore]	protected	ManualResetEvent	EmittingIncapable_mre;
 
-		public bool ConnectionState_waitFor_emittingCapable(int waitMillis = -1) {
+		public bool ConnectionState_waitFor_emittingCapable(int waitMillis = -1, bool autoreset = false) {
 			//bool connectTimerScheduled = this.EmittingCapable_mre.WaitOne(0);
 			//if (connectTimerScheduled == false) {
 			//    this.Broker_connect();
 			//}
 			bool capable =	this.EmittingCapable_mre.WaitOne(waitMillis);
-			if (capable)	this.EmittingCapable_mre.Reset();		// it's a MANUAL reset, not AUTO
+			if (capable && autoreset) this.EmittingCapable_mre.Reset();		// it's a MANUAL reset, not AUTO
 			return capable;
 		}
-		//public bool ConnectionState_waitFor_emittingIncapable(int waitMillis = -1) {
-		//    bool incapable =	this.EmittingIncapable_mre.WaitOne(waitMillis);
-		//    if (incapable)		this.EmittingIncapable_mre.Reset();		// it's a MANUAL reset, not AUTO
-		//    return incapable;
-		//}
+		public bool ConnectionState_waitFor_emittingIncapable(int waitMillis = -1, bool autoreset = false) {
+		    bool incapable = this.EmittingIncapable_mre.WaitOne(waitMillis);
+		    if (incapable && autoreset) this.EmittingIncapable_mre.Reset();		// it's a MANUAL reset, not AUTO
+		    return incapable;
+		}
 		public void ConnectionState_update(ConnectionState state, string message) {
 			this.UpstreamConnectionState = state;
 			Assembler.DisplayConnectionStatus(state, message);
 			if (this.EmittingCapable) {
+			    bool capable_mustBeFalseHere = this.EmittingCapable_mre.WaitOne(0);
 				this.EmittingCapable_mre.Set();
+			    bool capable_mustBeTrueHere = this.EmittingCapable_mre.WaitOne(0);
 				this.EmittingIncapable_mre.Reset();
 			} else {
-			    bool incapable = this.EmittingIncapable_mre.WaitOne(0);
+			    bool incapable_mustBeFalseHere = this.EmittingIncapable_mre.WaitOne(0);
 				this.EmittingIncapable_mre.Set();
+			    bool incapable_mustBeTrueHere = this.EmittingIncapable_mre.WaitOne(0);
 				this.EmittingCapable_mre.Reset();
 			}
 		}
@@ -563,6 +568,16 @@ namespace Sq1.Core.Broker {
 				return;
 			}
 			this.DataSource.Serialize();
+		}
+
+		public virtual void Broker_reconnect_waitConnected(string reason_reconnect) {
+			this.Broker_disconnect(reason_reconnect);
+			this.ConnectionState_waitFor_emittingIncapable(-1);
+
+			this.Broker_connect(reason_reconnect);
+			this.ConnectionState_waitFor_emittingCapable(-1);
+
+			bool ret = this.EmittingCapable;
 		}
 	}
 }

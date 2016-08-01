@@ -47,6 +47,7 @@ namespace Sq1.Core.Execution {
 		        base.WaitAndLockFor(lockOwner, lockPurpose, waitMillis);
 		        foreach (Order order in base.InnerList) order.Dispose();
 		        this.Clear(lockOwner, lockPurpose, waitMillis);
+				base.Dispose();		//ConcurrentWatchdog's waitHandles
 		    } finally {
 		        base.UnLockFor(lockOwner, lockPurpose);
 		    }

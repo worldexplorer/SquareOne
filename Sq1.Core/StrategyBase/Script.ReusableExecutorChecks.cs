@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
+//using System.Collections.Generic;
 
-using Sq1.Core.Indicators;
+//using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class Script {

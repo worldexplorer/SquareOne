@@ -4,7 +4,6 @@ using System.Windows.Forms;
 
 using Sq1.Core.Serializers;
 
-
 namespace Sq1.Core.Repositories {
 	public class SerializerList<SYMBOL_INFO> : Serializer<List<SYMBOL_INFO>> {
 

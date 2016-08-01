@@ -42,7 +42,12 @@ namespace Sq1.Core.StrategyBase {
 
 		public void CallbackOrderKilled_orBrokerDeniedSubmission_addGrayCross_onChart(Order expiredOrderKilled_replaceMe) {
 			int barIndex_streamingNow = this.Bars.Count - 1;
-			this.ChartShadow.OrderKilled_addForBar(barIndex_streamingNow, expiredOrderKilled_replaceMe);
+			try {
+				this.ChartShadow.OrderKilled_addForBar(barIndex_streamingNow, expiredOrderKilled_replaceMe);
+			} catch (Exception ex) {
+				string msg = " //ChartShadow.OrderKilled_addForBar(barIndex_streamingNow[" + barIndex_streamingNow + "], expiredOrderKilled_replaceMe[" + expiredOrderKilled_replaceMe + "])";
+				Assembler.PopupException(msg, ex);
+			}
 		}
 
 		public void CallbackOrderReplaced_invokeScript_nonReenterably(Order expiredOrderKilled_replaceMe, Order replacement, bool orderScheduled) {
@@ -72,16 +77,7 @@ namespace Sq1.Core.StrategyBase {
 				//v1 NO!!! DIRECT_KILLED_TO_EXECUTOR_UPSTACK alert.Strategy.Script.OnAlertKilledCallback(alert);
 				this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msig);
 
-				Order victimKilled = alertKilled.OrderFollowed;
-
-				#region ALERT_PENDING_REMOVAL_FOR_REJECTED__POSTPONED_FOR_REPLACEMENT_GETS_FILL
-				bool killedAfterRejected						= victimKilled.FindState_inOrderMessages(OrderState.Rejected);
-				bool replacementShouldHaveAlreadyBeenSubmitted	= victimKilled.Alert.Bars.SymbolInfo.RejectedResubmit;
-				bool replacementWasSubmitted					= victimKilled.FindFirstMessageContaining_inOrderMessages_nullUnsafe("REPLACEMENT_FOR_REJECTED") != null;
-
-				bool replacementFilledWillRemove = killedAfterRejected && replacementShouldHaveAlreadyBeenSubmitted && replacementWasSubmitted;
-				if (replacementFilledWillRemove) return;
-				#endregion
+				Order victimKilled = alertKilled.OrderFollowed_orCurrentReplacement;
 
 				if (this.ExecutionDataSnapshot.AlertsUnfilled.Contains(alertKilled, this, msig)) {
 					bool removed = this.ExecutionDataSnapshot.AlertsUnfilled.Remove(alertKilled, this, msig);
@@ -102,7 +98,7 @@ namespace Sq1.Core.StrategyBase {
 				} else {
 					//string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed DELETED_EARLIER_OR_NEVER_BEEN_ADDED";
 					string msg = "";
-					if (alertKilled.OrderFollowed.State == OrderState.Rejected) {
+					if (alertKilled.OrderFollowed_orCurrentReplacement.State == OrderState.Rejected) {
 						msg = "REJECTED_KILLED_WITHOUT_HOOK KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed";
 					} else {
 						msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed DELETED_EARLIER_OR_NEVER_BEEN_ADDED";
@@ -113,21 +109,31 @@ namespace Sq1.Core.StrategyBase {
 					}
 				}
 
-				bool removingAlert_afterLastSlippaged_replacementOrderExpired =	victimKilled != null &&
-																				victimKilled.HasSlippagesDefined &&
-																   double.IsNaN(victimKilled.SlippageNextAvailable_forLimitAlertsOnly_NanWhenNoMore);
-				if (removingAlert_afterLastSlippaged_replacementOrderExpired) {
-					if (alertKilled.BuyOrShort) {
-						this.ExecutionDataSnapshot.Positions_OpenNow.Remove(alertKilled.PositionAffected, this,
-							"REMOVING_ALERT_UNFILLED__AFTER_LAST_SLIPPAGED_REPLACEMENT_ORDER_EXPIRED__ENTRY_ALERT_UNLUCKY_DIDNT_GET_FILL");
+
+				if (victimKilled.State == OrderState.SLAnnihilated || victimKilled.State == OrderState.TPAnnihilated) {
+					string msg = "by now, victimKilled.Alert was PositionPrototyped, filled, and here I remove annihilated from Pendings";
+				} else {
+					bool removing_fromOpenPositions = true;
+					if (victimKilled.Alert.MarketLimitStop == MarketLimitStop.Limit) {
+						bool removingAlert_afterLastSlippaged_replacementOrderExpired =	victimKilled != null &&
+																					victimKilled.HasSlippagesDefined &&
+																	   double.IsNaN(victimKilled.SlippageNextAvailable_forLimitAlertsOnly_NanWhenNoMore);
+						removing_fromOpenPositions = removingAlert_afterLastSlippaged_replacementOrderExpired;
 					} else {
-						string msg = "PROBABLY_EMERGENCY_CLOSE_WILL_KICK_IN... BUT_SHOULD_I_REMOVE??";
-						Assembler.PopupException(msg, null, false);
+						string msg = "#3 THE_CONCEPT_OF_SLIPPAGE_IS_NOT_APPLICABLE_FOR_STOP_ORDERS__AND_POSITION_PROTOTYPE_ENTRIES";
+					}
+					if (removing_fromOpenPositions) {
+						if (alertKilled.BuyOrShort) {
+							this.ExecutionDataSnapshot.Positions_OpenNow.Remove(alertKilled.PositionAffected, this,
+								"REMOVING_ALERT_UNFILLED__AFTER_LAST_SLIPPAGED_REPLACEMENT_ORDER_EXPIRED__ENTRY_ALERT_UNLUCKY_DIDNT_GET_FILL");
+						} else {
+							string msg = "PROBABLY_EMERGENCY_CLOSE_WILL_KICK_IN... BUT_SHOULD_I_REMOVE_FROM_byExitFilled[]??";
+							Assembler.PopupException(msg, null, false);
+						}
 					}
 				}
 
 				this.ExecutionDataSnapshot.IsScriptRunning_OnAlertKilled_nonBlocking = true;
-				this.CallbackOrderKilled_orBrokerDeniedSubmission_addGrayCross_onChart(victimKilled);
 				this.Strategy.Script.OnAlertKilled_callback(alertKilled);
 			} finally {
 				this.ExecutionDataSnapshot.IsScriptRunning_OnAlertKilled_nonBlocking = false;
@@ -223,10 +229,10 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			bool filledIndeed_notRejected_willAddPosition_toExecutionSnapshot = true;
-			if (alertFilled.OrderFollowed != null) {
+			if (alertFilled.OrderFollowed_orCurrentReplacement != null) {
 				string msg = "dealing with Live or LiveSim; it's not a backtest";
 				//Assembler.PopupException(msg, null, false);
-				switch (alertFilled.OrderFollowed.State) {
+				switch (alertFilled.OrderFollowed_orCurrentReplacement.State) {
 					case OrderState.Filled:
 					case OrderState.FilledPartially:
 						filledIndeed_notRejected_willAddPosition_toExecutionSnapshot = true;
@@ -249,9 +255,9 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (filledIndeed_notRejected_willAddPosition_toExecutionSnapshot == false) {
-				string msg = "NOT_ADDING_POSITION_TO_SNAP_KOZ_STATE[" + alertFilled.OrderFollowed.State + "]";
+				string msg = "NOT_ADDING_POSITION_TO_SNAP_KOZ_STATE[" + alertFilled.OrderFollowed_orCurrentReplacement.State + "]";
 				bool closingAlert_wasRejected = alertFilled.SellOrCover;
-				if (alertFilled.PositionPrototype != null && closingAlert_wasRejected) {
+				if (alertFilled.PositionPrototype_onlyForEntryAlert != null && closingAlert_wasRejected) {
 					msg = "CLOSING_ALERT_REJECTED__USE_SymbolInfo.EMERGENCY_CLOSE " + msg;
 				}
 				Assembler.PopupException(msg);
@@ -360,8 +366,8 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 
-			if (alertFilled.OrderFollowed != null) {
-				this.OrderProcessor.AppendMessage_propagateToGui(alertFilled.OrderFollowed, msg_order);
+			if (alertFilled.OrderFollowed_orCurrentReplacement != null) {
+				this.OrderProcessor.AppendMessage_propagateToGui(alertFilled.OrderFollowed_orCurrentReplacement, msg_order);
 			}
 
 
@@ -375,7 +381,7 @@ namespace Sq1.Core.StrategyBase {
 			//}
 
 			AlertList alertsNewAfterAlertFilled = new AlertList("alertsNewAfterAlertFilled", this.ExecutionDataSnapshot);
-			PositionPrototype proto = alertFilled.PositionPrototype;
+			PositionPrototype proto = alertFilled.PositionPrototype_bothForEntryAndExit;
 			if (proto != null) {
 				// 0. once again, set ExitAlert to What was actually filled, because prototypeEntry created SL & TP, which were both written into ExitAlert;
 				// so if we caught the Loss and SL was executed, position.ExitAlert will still contain TP if we don't set it here
@@ -452,7 +458,7 @@ namespace Sq1.Core.StrategyBase {
 						int twoMinutes = 120000;
 						if (alertFilled.IsEntryAlert) {
 							// there must be SL.OrderFollowed!=null and TP.OrderFollowed!=null
-							if (proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed == null) {
+							if (proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed_orCurrentReplacement == null) {
 								string msg = "StopLossAlert.OrderFollowed is NULL!!! CreateOrdersSubmitToBrokerAdapterInNewThreads() didnt do its job; engaging ManualResetEvent.WaitOne()";
 								this.PopupException(msg);
 
@@ -468,11 +474,11 @@ namespace Sq1.Core.StrategyBase {
 								waitedForStopLossOrder.Stop();
 								msg = "waited " + waitedForStopLossOrder.ElapsedMilliseconds + "ms for StopLossAlert.OrderFollowed";
 
-								if (proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed == null) {
+								if (proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed_orCurrentReplacement == null) {
 									msg += ": NO_SUCCESS still null!!!";
 									this.PopupException(msg);
 								} else {
-									proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed.AppendMessage(msg);
+									proto.StopLossAlert_forMoveAndAnnihilation.OrderFollowed_orCurrentReplacement.AppendMessage(msg);
 									this.PopupException(msg);
 								}
 							//} else {
@@ -480,7 +486,7 @@ namespace Sq1.Core.StrategyBase {
 							//	Assembler.PopupException(msg);
 							}
 	
-							if (proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed == null) {
+							if (proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed_orCurrentReplacement == null) {
 								string msg = "TakeProfitAlert.OrderFollowed is NULL!!! CreateOrdersSubmitToBrokerAdapterInNewThreads() didnt do its job; engaging ManualResetEvent.WaitOne()";
 								this.PopupException(msg);
 								Stopwatch waitedForTakeProfitOrder = new Stopwatch();
@@ -488,11 +494,11 @@ namespace Sq1.Core.StrategyBase {
 								proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed_isAssignedNow_Mre.WaitOne(twoMinutes);
 								waitedForTakeProfitOrder.Stop();
 								msg = "waited " + waitedForTakeProfitOrder.ElapsedMilliseconds + "ms for TakeProfitAlert.OrderFollowed";
-								if (proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed == null) {
+								if (proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed_orCurrentReplacement == null) {
 									msg += ": NO_SUCCESS still null!!!";
 									this.PopupException(msg);
 								} else {
-									proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed.AppendMessage(msg);
+									proto.TakeProfitAlert_forMoveAndAnnihilation.OrderFollowed_orCurrentReplacement.AppendMessage(msg);
 									this.PopupException(msg);
 								}
 							//} else {
@@ -521,7 +527,7 @@ namespace Sq1.Core.StrategyBase {
 					this.ExecutionDataSnapshot.IsScriptRunning_OnAlertFilled_nonBlocking = false;
 				}
 				if (alertFilled.IsEntryAlert) {
-					if (alertFilled.PositionPrototype != null) {
+					if (alertFilled.PositionPrototype_onlyForEntryAlert != null) {
 						try {
 							this.ExecutionDataSnapshot.IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlocking = true;
 							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpened_prototypeSlTpPlaced_callback(WAIT)");
@@ -549,7 +555,7 @@ namespace Sq1.Core.StrategyBase {
 						}
 					}
 				} else {
-					if (alertFilled.PositionPrototype != null) {
+					if (alertFilled.PositionPrototype_onlyForEntryAlert != null) {
 						string msg = "NYI alertFilled.PositionPrototype != null";
 						Assembler.PopupException(msg + msig);
 					} else {
@@ -600,7 +606,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 		public bool Callback_BrokerDeniedSubmission(Order order_BDS) {
-			string msig = " //OrderRejected_byBroker(orderRejected[" + order_BDS + "])";
+			string msig = " //OrderRejected_byBroker(order_BDS[" + order_BDS + "])";
 			Alert alert_BDS = order_BDS.Alert;
 
 			alert_BDS.StoreKilledInfo();
@@ -638,13 +644,13 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "can't close PositionAffected and remove Position from PositionsOpenNow"
 					+ ": alert.PositionAffected=null for alert [" + alert + "]";
 				//throw new Exception(msig + msg);
-				this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed, msig + msg);
+				this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed_orCurrentReplacement, msig + msg);
 				return false;
 			}
 			if (alert.IsExitAlert) {
 				string msg = "Sorry I don't serve alerts.IsExitAlert=true, only .IsEntryAlert's: alert [" + alert + "]";
 				//throw new Exception(msig + msg);
-				this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed, msig + msg);
+				this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed_orCurrentReplacement, msig + msg);
 				return false;
 			}
 			if (checkPositionOpenNow == true) {
@@ -656,7 +662,7 @@ namespace Sq1.Core.StrategyBase {
 					}
 					string msg = "CHECK_POSITION_OPEN_NOW Sorry I serve only BarRelnoFilled==-1"
 						+ " otherwize alert.FillPositionAffectedEntryOrExitRespectively() with throw: alert [" + alert + "]";
-					this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed, msig + msg);
+					this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed_orCurrentReplacement, msig + msg);
 					return false;
 				}
 				if (alert.PositionAffected.ExitFilledBarIndex > -1) {
@@ -665,7 +671,7 @@ namespace Sq1.Core.StrategyBase {
 					}
 					string msg = "CHECK_POSITION_OPEN_NOW Sorry I serve only alert.PositionAffected.ExitBar==-1"
 						+ " otherwize PositionAffected.FillExitAlert() will throw: alert [" + alert + "]";
-					this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed, msig + msg);
+					this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed_orCurrentReplacement, msig + msg);
 					return false;
 				}
 			} else {
@@ -673,11 +679,11 @@ namespace Sq1.Core.StrategyBase {
 				if (alert.PositionAffected.EntryFilledBarIndex != -1) {
 					string msg = "DUPE: can't do my job: alert.PositionAffected.EntryBar!=-1 for alert [" + alert + "]";
 					//throw new Exception(msig + msg);
-					this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed, msig + msg);
+					this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed_orCurrentReplacement, msig + msg);
 					//return;
 				} else {
 					string msg = "Forcibly closing at EntryBar=[" + barFill + "]";
-					this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed, msig + msg);
+					this.OrderProcessor.AppendMessage_propagateToGui(alert.OrderFollowed_orCurrentReplacement, msig + msg);
 				}
 
 			}

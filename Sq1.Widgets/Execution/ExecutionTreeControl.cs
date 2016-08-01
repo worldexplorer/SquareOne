@@ -179,8 +179,11 @@ namespace Sq1.Widgets.Execution {
 					this.olvOrdersTree.RestoreState(olvStateBinary);
 				}
 
-				this.mniltbSerializationInterval.InputFieldValue = this.dataSnapshot.SerializationInterval.ToString();
-				Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders.PeriodMillis = this.dataSnapshot.SerializationInterval;
+				this.mniltbSerializationInterval.InputFieldValue = this.dataSnapshot.SerializationInterval_Millis.ToString();
+				Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders.PeriodMillis = this.dataSnapshot.SerializationInterval_Millis;
+
+				this.mniltbLogrotateLargerThan.InputFieldValue = this.dataSnapshot.LogRotateSizeLimit_Mb.ToString();
+				Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders.LogRotateSizeLimit_Mb = this.dataSnapshot.LogRotateSizeLimit_Mb;
 			}
 
 			//base.TimedTask_flushingToGui.Delay = this.dataSnapshot.TreeRefreshDelayMsec;	// may be already started?
@@ -279,6 +282,7 @@ namespace Sq1.Widgets.Execution {
 				base.HowLongTreeRebuilds.Restart();
 
 				this.olvOrdersTree.SetObjects(this.ordersRoot.SafeCopy);
+				//this.olvOrdersTree.SetObjects(this.ordersRoot.SafeCopy(this, "//RebuildAllTree_focusOnRecent()"));
 				//this.OrdersTreeOLV.RebuildAll();	//, true we will refocus
 				this.olvOrdersTree.Refresh();
 				//this.OrdersTreeOLV.RebuildColumns();
@@ -343,6 +347,7 @@ namespace Sq1.Widgets.Execution {
 		public void Clear() {
 			OrderProcessorDataSnapshot snap = this.orderProcessor_forToStringOnly.DataSnapshot;
 			snap.OrdersRemoveRange_fromAllLanes(snap.OrdersAll.SafeCopy);
+			this.populateMessagesFor(null);
 		}
 
 		public List<Order> OrdersSelected { get {
@@ -365,8 +370,9 @@ namespace Sq1.Widgets.Execution {
 				bool canBeKilled = OrderStatesCollections.CanBeKilled.Contains(order.State);
 				if (canBeKilled == false) {
 					string msg = "I_REFUSE_TO_MANUAL_KILL__STATE[" + order.State + "] NOT_IN{" + OrderStatesCollections.CanBeKilled.ToString() + "}";
+					msg = "?RIGHT_CLICK__" + msg;
 					order.AppendMessage(msg);
-					Assembler.PopupException("?RIGHT_CLICK__" + msg, null, false);
+					Assembler.PopupException(msg, null, false);
 					continue;
 				}
 				ret.Add(order);

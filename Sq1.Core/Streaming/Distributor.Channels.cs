@@ -20,9 +20,14 @@ namespace Sq1.Core.Streaming {
 			// second-deserialized: chartNoStrategy on RIM3_20-minutes => Pump/Thread should be started as well
 
 			int dontWait = 0;	// -1 was a REASON_FOR_SLOW_STARTUP
-			if (symbolChannel.QuotePump_nullUnsafe != null && symbolChannel.QuotePump_nullUnsafe.Paused)
-				symbolChannel.QuotePump_nullUnsafe.PusherUnpause_waitUntilUnpaused(dontWait);
-
+			if (symbolChannel.PumpQuote_nullWhenBacktesting != null) {
+				if (symbolChannel.PumpQuote_nullWhenBacktesting.IsDisposed) {
+					string msg = "YOU_UNSUBSCRIBED_BUT_CLEANUP_FAILED";
+					Assembler.PopupException(msg);
+					return false;
+				}
+				if (symbolChannel.PumpQuote_nullWhenBacktesting.Paused) symbolChannel.PumpQuote_nullWhenBacktesting.PusherUnpause_waitUntilUnpaused(dontWait);
+			}
 			if (this.StreamingAdapter.UpstreamIsSubscribed(symbol) == false) {
 				this.StreamingAdapter.UpstreamSubscribe(symbol);
 			}
@@ -53,33 +58,33 @@ namespace Sq1.Core.Streaming {
 
 		#region USE_THESE_RAILS
 		public virtual bool ConsumerQuoteSubscribe(STREAMING_CONSUMER_CHILD quoteConsumer, bool quotePumpSeparatePushingThreadEnabled) {
-		    return this.ConsumerQuoteSubscribe_solidifiers(quoteConsumer.Symbol, quoteConsumer.ScaleInterval, quoteConsumer, quotePumpSeparatePushingThreadEnabled);
+			return this.ConsumerQuoteSubscribe_solidifiers(quoteConsumer.Symbol, quoteConsumer.ScaleInterval, quoteConsumer, quotePumpSeparatePushingThreadEnabled);
 		}
 		public virtual bool ConsumerQuoteUnsubscribe(STREAMING_CONSUMER_CHILD quoteConsumer) {
-		    return this.ConsumerQuoteUnsubscribe_solidifiers(quoteConsumer.Symbol, quoteConsumer.ScaleInterval, quoteConsumer);
+			return this.ConsumerQuoteUnsubscribe_solidifiers(quoteConsumer.Symbol, quoteConsumer.ScaleInterval, quoteConsumer);
 		}
 		public virtual bool ConsumerQuoteIsSubscribed(STREAMING_CONSUMER_CHILD quoteConsumer) {
-		    return this.ConsumerQuoteIsSubscribed_solidifiers(quoteConsumer.Symbol, quoteConsumer.ScaleInterval, quoteConsumer);
+			return this.ConsumerQuoteIsSubscribed_solidifiers(quoteConsumer.Symbol, quoteConsumer.ScaleInterval, quoteConsumer);
 		}
 
 		public virtual bool ConsumerBarSubscribe(STREAMING_CONSUMER_CHILD barConsumer, bool barPumpSeparatePushingThreadEnabled) {
-		    return this.ConsumerBarSubscribe_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer, barPumpSeparatePushingThreadEnabled);
+			return this.ConsumerBarSubscribe_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer, barPumpSeparatePushingThreadEnabled);
 		}
 		public virtual bool ConsumerBarUnsubscribe(STREAMING_CONSUMER_CHILD barConsumer) {
-		    return this.ConsumerBarUnsubscribe_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer);
+			return this.ConsumerBarUnsubscribe_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer);
 		}
 		public virtual bool ConsumerBarIsSubscribed(STREAMING_CONSUMER_CHILD barConsumer) {
-		    return this.ConsumerBarIsSubscribed_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer);
+			return this.ConsumerBarIsSubscribed_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer);
 		}
 
 		public virtual bool ConsumerLevelTwoFrozenSubscribe(STREAMING_CONSUMER_CHILD barConsumer, bool barPumpSeparatePushingThreadEnabled) {
-		    return this.ConsumerLevelTwoFrozenSubscribe_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer, barPumpSeparatePushingThreadEnabled);
+			return this.ConsumerLevelTwoFrozenSubscribe_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer, barPumpSeparatePushingThreadEnabled);
 		}
 		public virtual bool ConsumerLevelTwoFrozenUnsubscribe(STREAMING_CONSUMER_CHILD barConsumer) {
-		    return this.ConsumerLevelTwoFrozenUnsubscribe_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer);
+			return this.ConsumerLevelTwoFrozenUnsubscribe_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer);
 		}
 		public virtual bool ConsumerLevelTwoFrozenIsSubscribed(STREAMING_CONSUMER_CHILD barConsumer) {
-		    return this.ConsumerLevelTwoFrozenIsSubscribed_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer);
+			return this.ConsumerLevelTwoFrozenIsSubscribed_solidifiers(barConsumer.Symbol, barConsumer.ScaleInterval, barConsumer);
 		}
 		#endregion
 
@@ -111,8 +116,8 @@ namespace Sq1.Core.Streaming {
 			// first-deserialized: Strategy on RIM3_5-minutes => Pump/Thread should be started as well
 
 			int dontWait = 0;	// -1 was a REASON_FOR_SLOW_STARTUP
-			if (symbolChannel.QuotePump_nullUnsafe != null && symbolChannel.QuotePump_nullUnsafe.Paused)
-				symbolChannel.QuotePump_nullUnsafe.PusherUnpause_waitUntilUnpaused(dontWait);
+			if (symbolChannel.PumpQuote_nullWhenBacktesting != null && symbolChannel.PumpQuote_nullWhenBacktesting.Paused)
+				symbolChannel.PumpQuote_nullWhenBacktesting.PusherUnpause_waitUntilUnpaused(dontWait);
 
 			if (this.StreamingAdapter.UpstreamIsSubscribed(symbol) == false) {
 				this.StreamingAdapter.UpstreamSubscribe(symbol);
@@ -295,19 +300,36 @@ namespace Sq1.Core.Streaming {
 			if (channel.ConsumersBarCount > 0 || channel.ConsumersQuoteCount > 0) return false;
 			//Assembler.PopupException("QuoteConsumer [" + consumer + "] was the last one using [" + symbol + "]; removing QuoteBarDistributor[" + channel + "]");
 			if (quoteTrue_level2False == true) {
-				if (channel.QuotePump_nullUnsafe	!= null) channel.QuotePump_nullUnsafe	.PushingThread_StopDispose_waitConfirmed();
+				if (channel.PumpQuote_nullWhenBacktesting	!= null) channel.PumpQuote_nullWhenBacktesting	.PushingThread_Stop_waitConfirmed();
 			} else {
-				if (channel.PumpLevelTwo			!= null) channel.PumpLevelTwo			.PushingThread_StopDispose_waitConfirmed();
+				if (channel.PumpLevelTwo					!= null) channel.PumpLevelTwo					.PushingThread_Stop_waitConfirmed();
 			}
-			if (channel.QuotePump_nullUnsafe != null && channel.QuotePump_nullUnsafe.IsDisposed == false) {
-				return false;
-			}
-			if (channel.PumpLevelTwo != null && channel.PumpLevelTwo.IsDisposed == false) {
+
+			//v1
+			//bool  quotePump_stoppedDisposed = channel.PumpQuote_nullWhenBacktesting != null && channel.PumpQuote_nullWhenBacktesting.IsDisposed == false;
+			//bool level2Pump_stoppedDisposed = channel.PumpLevelTwo					!= null && channel.PumpLevelTwo					.IsDisposed == false;
+			//bool bothPumps_stoppedDisposed = typeof(STREAMING_CONSUMER_CHILD) == typeof(StreamingConsumerSolidifier)
+			//	? quotePump_stoppedDisposed		// solidifiers aren't subscribed to Level2, don't wait for another invocation to stop Level2Pump
+			//	: quotePump_stoppedDisposed && level2Pump_stoppedDisposed;
+			//v2
+			//bool  quotePump_stopped = channel.PumpQuote_nullWhenBacktesting != null && channel.PumpQuote_nullWhenBacktesting.IsPushingThreadStarted;
+			//bool level2Pump_stopped = channel.PumpLevelTwo					!= null && channel.PumpLevelTwo					.IsPushingThreadStarted;
+			//bool  bothPumps_stopped = quotePump_stopped && quotePump_stopped;
+			//if (bothPumps_stopped == false) {
+			//v3
+			int disposeIfZero = channel.ConsumersQuoteCount + channel.ConsumersBarCount + channel.ConsumersLevelTwoFrozenCount;
+			if (disposeIfZero > 0) {
+				string msg = "AT_NEXT_INVOCATION_I_WILL_DISPOSE_THE_CHANNEL symbol[" + symbol + "] quoteTrue_level2False[" + quoteTrue_level2False + "]";
+#if DEBUG
+				Assembler.PopupException(msg, null, false);
+#endif
 				return false;
 			}
 			channel.Dispose();
 			this.ChannelsBySymbol.Remove(symbol);
-			//Assembler.PopupException("...UpstreamUnSubscribing [" + symbol + "]");
+#if DEBUG
+			Assembler.PopupException("...UpstreamUnSubscribing [" + symbol + "]", null, false);
+#endif
 			this.StreamingAdapter.UpstreamUnSubscribe(symbol);
 			return true;
 		}

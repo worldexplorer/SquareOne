@@ -95,7 +95,7 @@ namespace Sq1.Core.DataTypes {
 				string msg = "PARENT_BARS_NOT_ACCESSIBLE OHLC_IS_NOT_ALIGNED_TRY_TO_AVOID_IT";
 				//Assembler.PopupException(msg, null);
 			}
-			this.CheckThrowFix_valuesOkay();
+			this.ValidateBar_alignToSteps_fixOCbetweenHL();
 		}
 		public void Set_OpenAligned_forPseudoBar_noChecks(double firstPriceOfBar, SymbolInfo symbolInfo) {
 			if (symbolInfo != null) {
@@ -194,7 +194,7 @@ namespace Sq1.Core.DataTypes {
 			if (throwError) throw new Exception(msg);
 			return msg;
 		}
-		public string CheckThrowFix_valuesOkay(bool throwError = true, bool tryToFix = true) {
+		public string ValidateBar_alignToSteps_fixOCbetweenHL(bool throwError = true, bool alignToSteps = true, bool tryToFix = true) {
 			string msg = "";
 
 			msg = this.CheckThrow_DateOHLCV_validForSaving(throwError);
@@ -209,6 +209,8 @@ namespace Sq1.Core.DataTypes {
 			if (this.Close <= 0)		msg += "Close[" + this.Close + "]<=0 ";
 			//if (this.Volume <= 0)		msg += "Volume[" + this.Volume + "]<=0 ";
 			
+			msg += this.align_OHLCtoPriceStep_volumeToVolumeStep();
+
 			if (this.High < this.Low)	{
 				string err = "High[" + this.High + "]<Low[" + this.High + "] ";
 				if (tryToFix) {
@@ -260,6 +262,32 @@ namespace Sq1.Core.DataTypes {
 			if (tryToFix == false) throw new Exception(msg);
 			//TOO_NOISY__WILL_FIGURE_WHY_TradedAt_IS_SET_WRONG Assembler.PopupException(msg + " " + this.ToString(), null, false);
 			return msg;
+		}
+
+		public string align_OHLCtoPriceStep_volumeToVolumeStep() {
+			string whatWasAligned = "";
+			
+			double open_before = this.Open;
+			this.Open	= this.symbolInfo_nullUnsafe.AlignToPriceStep(this.Open);
+			if (open_before != this.Open) whatWasAligned += "OPEN[" + open_before + "]=>[" + this.Open + "] ";
+
+			double high_before = this.High;
+			this.High	= this.symbolInfo_nullUnsafe.AlignToPriceStep(this.High);
+			if (high_before != this.High) whatWasAligned += "HIGH[" + high_before + "]=>[" + this.High + "] ";
+
+			double low_before = this.Low;
+			this.Low	= this.symbolInfo_nullUnsafe.AlignToPriceStep(this.Low);
+			if (low_before != this.Low) whatWasAligned += "LOW[" + low_before + "]=>[" + this.Low + "] ";;
+
+			double close_before = this.Close;
+			this.Close	= this.symbolInfo_nullUnsafe.AlignToPriceStep(this.Close);
+			if (close_before != this.Close) whatWasAligned += "CLOSE[" + close_before + "]=>[" + this.Close + "] ";;
+
+			double volume_before = this.Volume;
+			this.Volume	= this.symbolInfo_nullUnsafe.AlignToVolumeStep(this.Volume);
+			if (volume_before != this.Volume) whatWasAligned += "VOLUME[" + volume_before + "]=>[" + this.Volume + "] ";;
+
+			return whatWasAligned;
 		}
 		public bool HasSameDOHLCVas(Bar bar, string barIdent, string thisIdent, ref string errRef) {
 			if (this.Symbol != bar.Symbol) {

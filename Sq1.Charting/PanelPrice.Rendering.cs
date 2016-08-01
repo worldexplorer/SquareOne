@@ -108,12 +108,12 @@ namespace Sq1.Charting {
 
 			foreach (Alert pending in alertsPending) {
 				Pen pen = pending.BuyOrCover ? penPending_BuyCover : penPending_ShortSell;
-				if (pending.PositionAffected != null && pending.PositionPrototype != null) {
-					if (pending == pending.PositionPrototype.StopLossAlert_forMoveAndAnnihilation) {
+				if (pending.PositionAffected != null && pending.PositionPrototype_onlyForEntryAlert != null) {
+					if (pending == pending.PositionPrototype_onlyForEntryAlert.StopLossAlert_forMoveAndAnnihilation) {
 						//Assembler.PopupException("SL_CIRCLE_RED");
 						pen = penSL;
 					}
-					if (pending == pending.PositionPrototype.TakeProfitAlert_forMoveAndAnnihilation) {
+					if (pending == pending.PositionPrototype_onlyForEntryAlert.TakeProfitAlert_forMoveAndAnnihilation) {
 						//Assembler.PopupException("TP_CIRCLE_GREEN");
 						pen = penTP;
 					}

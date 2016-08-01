@@ -2,8 +2,6 @@
 
 using Newtonsoft.Json;
 
-using Sq1.Core.StrategyBase;
-
 namespace Sq1.Core.Execution {
 	public partial class Alert {
 		[JsonIgnore]	public string ExecutionControl_AlertsPendingClear_knowHow { get {

@@ -39,7 +39,7 @@ namespace Sq1.Widgets.LabeledTextBox {
 			get { return this.LabelRight.Text; }
 			set { this.LabelRight.Text = value; this.LabelRight.Visible = true; }
 		}
-		[Browsable(true)]
+		[Browsable(true), DefaultValue(false)]
 		public bool TextRed {
 			get { return this.LabelLeft.ForeColor == Color.Red; }
 			set { this.LabelLeft.ForeColor = value ? Color.Red : Color.Black; }
@@ -74,23 +74,27 @@ namespace Sq1.Widgets.LabeledTextBox {
 			get { return this.TextBox.Text; }
 			set { this.TextBox.Text = value; }
 		}
-		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
+		//[DefaultValueAttribute(typeof(TextBox), null), Browsable(true), DefaultValue(0)]
+		[Browsable(true), DefaultValue(0)]
 		public int InputFieldOffsetX {
 			get { return this.TextBox.Location.X; }
 			set { this.TextBox.Location = new Point(value, this.TextBox.Location.Y); }
 		}
-		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
+		//[DefaultValueAttribute(typeof(TextBox), null), Browsable(true), DefaultValue(80)]
+		[Browsable(true), DefaultValue(80)]
 		public int InputFieldWidth {
 			get { return this.TextBox.Width; }
 			set { this.TextBox.Width = value;
 				  this.TextRightOffsetX = this.InputFieldOffsetX + this.InputFieldWidth + 3; }
 		}
-		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
+		//[DefaultValueAttribute(typeof(TextBox), null), Browsable(true), DefaultValue(true)]
+		[Browsable(true), DefaultValue(true)]
 		public bool InputFieldEditable {
 			get { return this.TextBox.Enabled; }
 			set { this.TextBox.Enabled = value; }
 		}
-		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
+		//[DefaultValueAttribute(typeof(TextBox), null), Browsable(true), DefaultValue(false)]
+		[Browsable(true), DefaultValue(false)]
 		public bool InputFieldAlignedRight {
 			get { return this.TextBox.TextAlign == HorizontalAlignment.Right; }
 			set { this.TextBox.TextAlign = (value == true) ? HorizontalAlignment.Right : HorizontalAlignment.Left; }

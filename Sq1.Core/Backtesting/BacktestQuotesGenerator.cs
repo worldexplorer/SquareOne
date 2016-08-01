@@ -89,7 +89,7 @@ namespace Sq1.Core.Backtesting {
 			//if (barSimulated.HighLowDistance > 0 && barSimulated.HighLowDistance > ret.Spread) {
 				if (barSimulated.ContainsBidAsk_forQuoteGenerated(ret, true) == false) {
 					string msg1 = "QUOTE_GENERATED_OUT_OF_BAR";
-					Assembler.PopupException(msg1, null, false);
+					Assembler.PopupException(msg1);
 					throw new Exception(msg1);
 				}
 			//}
@@ -503,7 +503,7 @@ namespace Sq1.Core.Backtesting {
 			ret.AbsnoPerSymbol = quoteGenerated.AbsnoPerSymbol + 1;
 			return ret;
 		}
-		public virtual List<QuoteGenerated> Generate_quotesFromBar_avoidClearing_StreamingAdaterWontPushOutOfMarket(Bar barSimulated) {
+		public virtual List<QuoteGenerated> Generate_quotesFromBar_avoidClearing_wontPushOutOfMarket(Bar barSimulated) {
 			string msig = " //Generate_quotesFromBar_avoidClearing()";
 			this.Quotes_generatedForOneBar_amountDependsOnEngineType.Clear();
 
@@ -544,18 +544,24 @@ namespace Sq1.Core.Backtesting {
 				double price_withGranularStrokes_requiresAlignement = 0;
 				BidOrAsk bidOrAsk = BidOrAsk.UNKNOWN;
 				this.Assign_priceAndBidOrAsk_dependingOnQuotesPerBar_forStroke(barSimulated, stroke, out price_withGranularStrokes_requiresAlignement, out bidOrAsk);
-				double priceAligned = symbolInfo.AlignToPriceLevel(price_withGranularStrokes_requiresAlignement);
+				double priceAligned = symbolInfo.AlignToPriceStep(price_withGranularStrokes_requiresAlignement);
 
 				if (priceAligned != price_withGranularStrokes_requiresAlignement) {
 					string msg = "OUT_OF_BAR_CHECK_IS_WAITING_FOR_US_IN_this.GenerateNewQuote_childrenHelper()";
 				}
 
-				barSimulated.CheckThrowFix_valuesOkay(false);
+				string fixlog = barSimulated.ValidateBar_alignToSteps_fixOCbetweenHL(false);
+				if (string.IsNullOrEmpty(fixlog) == false) {
+					string msg = "SOLIDIFIER_SAVED_BAR_WITH_ERRORS__OR_YOU_CHANGED_PriceStep_VolumeStep "
+						+ " [" + symbolInfo.Symbol + "] fixlog[" + fixlog + "]";
+					Assembler.PopupException(msg + msig, null, true);
+				}
 				if (barSimulated.ContainsPrice(priceAligned) == false) {
-					string msg = "DECREASE_PRICE_STEP_IN_SYMBOL_INFO_EDITOR[" + barSimulated.Symbol + "]"
-						+ " symbolInfo.PriceDecimals[" + symbolInfo.PriceDecimals + "]";
-					Assembler.PopupException(msg + msig, null, false);
-					throw new Exception(msg);
+					string msg = "SHOULD_NEVER_HAPPEN__ValidateBar_alignToSteps_fixOCbetweenHL()_DID_A_BAD_JOB"
+						+ " barSimulated[" + barSimulated + "]";
+					Assembler.PopupException(msg + msig);
+					//v1 throw new Exception(msg);
+					continue;
 				}
 
 				DateTime timeServerForStroke = barOpenOrResume + timespanBarBeginning_offsetCumulative;

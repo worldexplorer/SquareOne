@@ -1,7 +1,5 @@
 using System;
 
-using Newtonsoft.Json;
-
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 

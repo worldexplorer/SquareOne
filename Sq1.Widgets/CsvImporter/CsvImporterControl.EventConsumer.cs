@@ -12,7 +12,6 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 
 using Sq1.Widgets.LabeledTextBox;
-using Sq1.Widgets.SteppingSlider;
 using Sq1.Widgets.RangeBar;
 
 namespace Sq1.Widgets.CsvImporter {

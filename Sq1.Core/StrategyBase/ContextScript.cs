@@ -132,8 +132,8 @@ namespace Sq1.Core.StrategyBase {
 			SpreadModelerPercent					= BacktestStreaming.PERCENTAGE_DEFAULT;
 			BacktestStrokesPerBar					= BacktestStrokesPerBar.FourStrokeOHLC;
 
-			SequenceIterationName = "it was a F5 GUI invoked backtest, not a sequencer-generated run";
-			SequenceIterationSerno = -1;	// it was a F5 GUI invoked backtest, not a sequencer-generated run;
+			SequenceIterationName = "it was an F5 GUI invoked backtest, not a sequencer-generated run";
+			SequenceIterationSerno = -1;	// it was an  F5 GUI invoked backtest, not a sequencer-generated run;
 		}
 		
 		public ContextScript CloneAndAbsorb_fromSystemPerformanceRestoreAble(SystemPerformanceRestoreAble sysPerfOptimized, string newScriptContextName = null) {

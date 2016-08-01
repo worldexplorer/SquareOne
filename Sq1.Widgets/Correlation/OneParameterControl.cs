@@ -467,9 +467,9 @@ namespace Sq1.Widgets.Correlation {
 				// #1/2 OBJECTLISTVIEW_HACK__SEQUENCE_MATTERS!!!! otherwize RestoreState() doesn't restore after restart
 				// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
 				foreach (ColumnHeader columnHeader in this.olv.AllColumns) {
-					OLVColumn oLVColumn = columnHeader as OLVColumn;
-					if (oLVColumn == null) continue;
-					oLVColumn.VisibilityChanged += oLVColumn_VisibilityChanged;
+					OLVColumn olvColumn = columnHeader as OLVColumn;
+					if (olvColumn == null) continue;
+					olvColumn.VisibilityChanged += olvColumn_VisibilityChanged;
 				}
 				// #2/2 OBJECTLISTVIEW_HACK__SEQUENCE_MATTERS!!!! otherwize RestoreState() doesn't restore after restart
 				if (snap.OlvStateBase64.Length > 0) {

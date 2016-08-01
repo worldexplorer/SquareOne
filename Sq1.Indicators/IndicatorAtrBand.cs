@@ -117,14 +117,14 @@ namespace Sq1.Indicators {
 			//this.bandLower.Append(newStaticBar.DateTimeOpen, lastClose - atrMultiplied);
 			//this.bandUpper.Append(newStaticBar.DateTimeOpen, lastClose + atrMultiplied);
 			//v2
-			double atrMultipliedAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceLevel(atrMultiplied, PriceLevelRoundingMode.RoundToClosest);
+			double atrMultipliedAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceStep(atrMultiplied, PriceLevelRoundingMode.RoundToClosest);
 			double lower = lastClose - atrMultipliedAligned;
 			double upper = lastClose + atrMultipliedAligned;
 			//this.bandLower.AppendWithParentBar(newStaticBar.DateTimeOpen, lower, newStaticBar);
 			//this.bandUpper.AppendWithParentBar(newStaticBar.DateTimeOpen, upper, newStaticBar);
 			//v3 BACK_FROM_V4_AFTER_SIMULATE_ROUND_WAS_FIXED
-			double lowerAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceLevel(lower, PriceLevelRoundingMode.RoundToClosest);
-			double upperAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceLevel(upper, PriceLevelRoundingMode.RoundToClosest);
+			double lowerAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceStep(lower, PriceLevelRoundingMode.RoundToClosest);
+			double upperAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceStep(upper, PriceLevelRoundingMode.RoundToClosest);
 			//v4
 			//double lowerAligned = Math.Round(lower, newStaticBar.ParentBars.SymbolInfo.DecimalsPrice);
 			//double upperAligned = Math.Round(upper, newStaticBar.ParentBars.SymbolInfo.DecimalsPrice);

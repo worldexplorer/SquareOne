@@ -112,7 +112,7 @@ namespace Sq1.Core.Backtesting {
 				}
 
 				Bar bar = this.BarsOriginal[barNo];
-				bar.CheckThrowFix_valuesOkay();
+				bar.ValidateBar_alignToSteps_fixOCbetweenHL();
 				this.generateQuotes_forBar_push(bar);
 				this.BarsSimulatedSoFar++;
 				if (this.BarsSimulatedSoFar % repaintableChunk == 0) {
@@ -327,7 +327,7 @@ namespace Sq1.Core.Backtesting {
 				return;
 			}
 
-			List<QuoteGenerated> quotesGenerated = this.QuotesGenerator.Generate_quotesFromBar_avoidClearing_StreamingAdaterWontPushOutOfMarket(bar2simulate);
+			List<QuoteGenerated> quotesGenerated = this.QuotesGenerator.Generate_quotesFromBar_avoidClearing_wontPushOutOfMarket(bar2simulate);
 			if (quotesGenerated == null) return;
 
 			for (int i = 0; i < quotesGenerated.Count; i++) {

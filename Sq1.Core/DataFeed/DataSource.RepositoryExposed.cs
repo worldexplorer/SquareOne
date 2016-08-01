@@ -37,12 +37,16 @@ namespace Sq1.Core.DataFeed {
 		}
 		// internal => use only RepositoryJsonDataSource.SymbolRemove() which will notify subscribers about remove operation
 		internal void SymbolRemove(string symbolToDelete) {
-			if (this.Symbols.Contains(symbolToDelete) == false) {
-				throw new Exception("ALREADY_DELETED[" + symbolToDelete + "] in [" + this.Name + "]");
+			try {
+				if (this.Symbols.Contains(symbolToDelete) == false) {
+					throw new Exception("ALREADY_DELETED[" + symbolToDelete + "] in [" + this.Name + "]");
+				}
+				this.Symbols.Remove(symbolToDelete);
+				this.BarsRepository.SymbolDataFile_delete(symbolToDelete);
+			} catch (Exception ex) {
+				string msg = " //this.BarsRepository.SymbolDataFile_delete(" + symbolToDelete + ")";
+				Assembler.PopupException(msg, ex);
 			}
-			this.Symbols.Remove(symbolToDelete);
-			this.BarsRepository.SymbolDataFile_delete(symbolToDelete);
-
 			List<ChartShadow> chartsForOldSymbol = this.ChartsOpenForSymbol.FindContentsForSimilarKey__nullUnsafe(new SymbolOfDataSource(symbolToDelete, this));
 			if (chartsForOldSymbol != null && chartsForOldSymbol.Count > 0) {
 				string msg = "SHOULD_I_CLOSE_THE_CHARTS_OPEN_WITH_SYMBOL? symbolToDelete[" + symbolToDelete + "]";

@@ -62,7 +62,8 @@ namespace Sq1.Core.Broker {
 			if (newState_isUnderscored_thatOrderNeverGets_asyncCallbacksFromBroker) return;
 
 			if (omsg_sameState.State == order.State) {
-				string msg = "I_REFUSE_TO_UPDATE_ORDER_WITH_SAME_STATE USE_INSTEAD__OrderProcessor.AppendOrderMessage_propagateToGui()  //Order_updateState_switchLanes_appendMessage_propagateIfGuiHasTime__dontPostProcess()";
+				string msg = "I_REFUSE_TO_UPDATE_ORDER_WITH_SAME_STATE";
+				string adviceIsObsolete = " USE_INSTEAD__OrderProcessor.AppendOrderMessage_propagateToGui()  //Order_updateState_switchLanes_appendMessage_propagateIfGuiHasTime__dontPostProcess()";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
@@ -89,12 +90,16 @@ namespace Sq1.Core.Broker {
 				return;
 			}
 
+			if (omsg_newState.State == OrderState.VictimKilled) {
+				int a = 1;
+			}
+
 			if (order.IsKiller) {
 				this.postProcess_killerOrder(omsg_newState);
 				return;
 			}
 			if (order.IsVictim) {
-				bool tryOrderFill = this.postProcess_victimOrder(omsg_newState);
+				bool tryOrderFill = this.postProcess_victimOrder_Limit(omsg_newState);
 				if (tryOrderFill == false) {
 					// irrelevant after postProcess_victimOrder() returns TRUE by default
 					//if (omsg_newState.State == OrderState.VictimKilled && omsg_newState.State == OrderState.VictimKilled) {
@@ -146,7 +151,8 @@ namespace Sq1.Core.Broker {
 			}
 
 			if (order.State == omsg_newState.State) {
-				string msg = "I_REFUSE_TO_POST_PROCESS USE_INSTEAD__OrderProcessor.Order_appendPropagateMessage_updateStateIfDifferent_switchLanes___dontPostProcess()  //Order_appendPropagateMessage_updateStateMustBeDifferent_switchLanes_postProcess()";
+				string msg = "I_REFUSE_TO_POST_PROCESS";
+				string adviceIsObsolete = " USE_INSTEAD__OrderProcessor.Order_appendPropagateMessage_updateStateIfDifferent_switchLanes___dontPostProcess()  //Order_appendPropagateMessage_updateStateMustBeDifferent_switchLanes_postProcess()";
 				//Assembler.PopupException(msg + msig, null, false);
 				//this.AppendMessage_propagateToGui(order, msg + msig);
 				this.AppendOrderMessage_propagateToGui(omsg_newState);
@@ -203,6 +209,7 @@ namespace Sq1.Core.Broker {
 
 			this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(omsg_newState);
 			this.postProcess_invokeScriptCallback(order, priceFill, qtyFill);
+			omsg_newState.PostProcessed = true;
 			this.OPPstatusCallbacks.InvokeHooks_forOrderState_unregisterInvoked(order, null);
 		}
 		//public void BrokerCallback_pendingKilled_withoutKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(Order orderPending_victimKilled, string msigInvoker) {
@@ -228,50 +235,77 @@ namespace Sq1.Core.Broker {
 		//		orderPending_victimKilled.AppendMessage(msg + msigInvoker);
 		//	}
 		//}
-		public void BrokerCallback_pendingKilled_withKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(Order orderPending_victimKilled, string msigInvoker) {
-			Alert alert_forVictim = orderPending_victimKilled.Alert;
+		public void BrokerCallback_orderKilled_withKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(Order victimKilled, string msigInvoker) {
+			Alert alert_forVictim = victimKilled.Alert;
 			if (alert_forVictim == null) {
 				string msg = "orderPending_victimKilled.Alert=null; dunno what to remove from PendingAlerts";
-				orderPending_victimKilled.AppendMessage(msg + msigInvoker + " " + orderPending_victimKilled);
+				victimKilled.AppendMessage(msg + msigInvoker + " " + victimKilled);
 				Assembler.PopupException(msg);
 				return;
 			}
 			ScriptExecutor executor = alert_forVictim.Strategy.Script.Executor;
 
-			#region ALERT_PENDING_REMOVAL_FOR_REJECTED__POSTPONED_FOR_REPLACEMENT_GETS_FILL
-			bool killedAfterRejected		= orderPending_victimKilled.State == OrderState.Rejected;
-			bool replacementWillBeSubmitted	= orderPending_victimKilled.Alert.Bars.SymbolInfo.RejectedResubmit;
-			bool replacementFilledWillRemove = killedAfterRejected && replacementWillBeSubmitted;
-			if (replacementFilledWillRemove) {
-				executor.CallbackOrderKilled_orBrokerDeniedSubmission_addGrayCross_onChart(orderPending_victimKilled);
-				return;
+			//#region ALERT_PENDING_REMOVAL_FOR_REJECTED__POSTPONED_FOR_REPLACEMENT_GETS_FILL
+			//bool killedAfterRejected		= victimKilled.State == OrderState.Rejected;
+			//bool replacementWillBeSubmitted	= victimKilled.Alert.Bars.SymbolInfo.RejectedResubmit;
+			//bool replacementFilledWillRemove = killedAfterRejected && replacementWillBeSubmitted;
+			//if (replacementFilledWillRemove) {
+			//    return;
+			//}
+			//#endregion
+
+			bool annihilatingCounterParty_forExitAlert = victimKilled.Alert.IsExitAlert && victimKilled.Alert.PositionPrototype_bothForEntryAndExit != null;
+			if (annihilatingCounterParty_forExitAlert) {
+				if (victimKilled.FindState_inOrderMessages(OrderState.TPAnnihilating)) {
+					OrderStateMessage omsg = new OrderStateMessage(victimKilled, OrderState.TPAnnihilated, "TPAnnihilating=>TPAnnihilated in ALERT_KILLED_CALLBACK");
+					this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(omsg);
+				}
+				if (victimKilled.FindState_inOrderMessages(OrderState.SLAnnihilating)) {
+					OrderStateMessage omsg = new OrderStateMessage(victimKilled, OrderState.SLAnnihilated, "SLAnnihilating=>SLAnnihilated in ALERT_KILLED_CALLBACK");
+					this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(omsg);
+				}
 			}
-			#endregion
 
 			bool inRightState =
 			    //orderPending_victimKilled.State == OrderState.KillerTransSubmittedOK ||		// ???
-			    orderPending_victimKilled.State == OrderState.SLAnnihilated ||	// prototype hit TP
-			    orderPending_victimKilled.State == OrderState.TPAnnihilated ||	// prototype hit TP
-				orderPending_victimKilled.State == OrderState.VictimKilled		// ScriptExecutor.PositionCloseImmediately()
+			    victimKilled.State == OrderState.SLAnnihilated ||	// prototype hit TP
+			    victimKilled.State == OrderState.TPAnnihilated ||	// prototype hit TP
+				victimKilled.State == OrderState.VictimKilled		// ScriptExecutor.PositionCloseImmediately()
 				// REMOVED_ONSUBMIT_AND_IN_CALLBACK
-				|| orderPending_victimKilled.State == OrderState.Rejected		// kill-by-DoubleClick and ReplacerRejected+RejectedKillBeforeReplacing
+				//|| victimKilled.State == OrderState.VictimKillingFromGui		// kill-by-DoubleClick in Livesim
+				|| victimKilled.State == OrderState.Rejected				// kill-by-ReplacerRejected+RejectedKillBeforeReplacing
 				;
+			//OrderStatesCollections.CanBeKilled
+			bool everHadRightState = victimKilled.FindStates_inOrderMessages(new List<OrderState>() { OrderState.VictimKillingFromGui});
 
-			if (inRightState == false) {
+
+			if (inRightState == false && everHadRightState == false) {
 				string msg = "VICTIM_NOT_REMOVED_FROM_PENDINGS "
-					+ "State[" + orderPending_victimKilled.State + "] MUST_BE{KillTransSubmittedOK,SLAnnihilated,TPAnnihilated}";
-				Assembler.PopupException(msg);
+					+ "State[" + victimKilled.State + "] MUST_BE{KillTransSubmittedOK,SLAnnihilated,TPAnnihilated}";
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 
+			
+			//#region ALERT_PENDING_REMOVAL_FOR_REJECTED__POSTPONED_FOR_REPLACEMENT_GETS_FILL
+			//bool killedAfterRejected2						= victimKilled.FindState_inOrderMessages(OrderState.Rejected);
+			//bool replacementShouldHaveAlreadyBeenSubmitted	= victimKilled.Alert.Bars.SymbolInfo.RejectedResubmit;
+			//bool replacementWasSubmitted					= victimKilled.FindFirstMessageContaining_inOrderMessages_nullUnsafe("REPLACEMENT_FOR_REJECTED") != null;
+			//bool replacementFilledWillRemove2				= killedAfterRejected2 && replacementShouldHaveAlreadyBeenSubmitted && replacementWasSubmitted;
+			//if (replacementFilledWillRemove2) {
+			//    return;
+			//}
+			//#endregion
+
+
 			try {
 				executor.CallbackAlertKilled_invokeScript_nonReenterably(alert_forVictim);
-				string msg = orderPending_victimKilled.State + " => AlertsPending.Remove.Remove(orderExecuted.Alert)'d ";
-				orderPending_victimKilled.AppendMessage(msg + msigInvoker);
+				string msg = victimKilled.State + " => AlertsPending.Remove.Remove(orderExecuted.Alert)'d ";
+				victimKilled.AppendMessage(msg + msigInvoker);
 			} catch (Exception e) {
-				string msg = orderPending_victimKilled.State + " is a Cemetery but [" + e.Message + "]"
+				string msg = victimKilled.State + " is a Cemetery but [" + e.Message + "]"
 					+ "; comment the State out; alert[" + alert_forVictim + "] ";
-				orderPending_victimKilled.AppendMessage(msg + msigInvoker);
+				victimKilled.AppendMessage(msg + msigInvoker);
 			}
 		}
 	}

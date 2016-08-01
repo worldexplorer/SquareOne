@@ -7,9 +7,10 @@ namespace Sq1.Core.Execution {
 		[JsonIgnore]	public Order		Order						{ get; private set; }
 		[JsonIgnore]	public	bool		OnlyDeserializedHasNoOrder	{ get { return this.Order == null; } }
 
-		[JsonProperty]	public DateTime		DateTime	{ get; private set; }
-		[JsonProperty]	public OrderState	State		{ get; private set; }
-		[JsonProperty]	public string		Message		{ get; private set; }
+		[JsonProperty]	public DateTime		DateTime		{ get; private set; }
+		[JsonProperty]	public OrderState	State			{ get; private set; }
+		[JsonProperty]	public string		Message			{ get; private set; }
+		[JsonProperty]	public bool			PostProcessed;//	{ get; private set; }
 		
 		OrderStateMessage(Order order, OrderState state, string message, DateTime dateTime) {
 			if (order == null) {
@@ -21,6 +22,7 @@ namespace Sq1.Core.Execution {
 			State = state;
 			Message = message;
 			DateTime = dateTime;
+			PostProcessed = false;
 		}
 
 		//public OrderStateMessage() : this(null, OrderState.Unknown, "JSON_DESERIALIZATION_ERROR", DateTime.Now) { }

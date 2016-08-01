@@ -13,29 +13,30 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	string		SymbolClass;
 		[JsonProperty]	public	string		Source;
 		[JsonProperty]	public	DateTime	ServerTime;
-		[JsonProperty]	public	DateTime	LocalTime				{ get; protected set; }
+		[JsonProperty]	public	DateTime	LocalTime						{ get; protected set; }
 
 		[JsonProperty]	public	double		Bid;
 		[JsonProperty]	public	double		Ask;
 		[JsonProperty]	public	double		Size;
 		
-		[JsonIgnore]	public	int			IntraBarSerno			{ get; private set; }
+		[JsonIgnore]	public	int			IntraBarSerno					{ get; private set; }
 		[JsonIgnore]	public	bool		IamInjectedToFillPendingAlerts;	//		{ get; protected set; }
 		[JsonProperty]	public	long		AbsnoPerSymbol;
 
-		[JsonIgnore]	public	Bar			ParentBarStreaming		{ get; protected set; }
-		[JsonIgnore]	public	bool		HasParentBarStreaming	{ get { return this.ParentBarStreaming != null; } }
-		[JsonProperty]	public	string		ParentBarIdent			{ get { return (this.HasParentBarStreaming) ? this.ParentBarStreaming.ParentBarsIdent : "NO_PARENT_BAR"; } }
+		[JsonIgnore]	public	Bar			ParentBarStreaming				{ get; protected set; }
+		[JsonIgnore]	public	bool		HasParentBarStreaming			{ get { return this.ParentBarStreaming != null; } }
+		[JsonProperty]	public	string		ParentBarIdent					{ get { return (this.HasParentBarStreaming) ? this.ParentBarStreaming.ParentBarsIdent : "NO_PARENT_BAR"; } }
 
 		[Obsolete("NOT_REALLY_USED")]
 		[JsonIgnore]	public	BidOrAsk	ItriggeredFillAtBidOrAsk;
 		[JsonProperty]	public	BidOrAsk	TradedAt;
-		[JsonProperty]	public	double		TradedPrice				{ get {
+		[JsonProperty]	public	double		TradedPrice						{ get {
 				if (this.TradedAt == BidOrAsk.UNKNOWN) return this.Median_forBarOpen_fromLevel2;		// CAUSED CANT_FILL_STREAMING_CLOSE_FROM_BID_OR_ASK_UNKNOWN double.NaN;
 				return (this.TradedAt == BidOrAsk.Bid) ? this.Bid : this.Ask;
 			} }
-		[JsonProperty]	public	double		Spread					{ get { return this.Ask - this.Bid; } }
-		[JsonIgnore]	public	double		Median_forBarOpen_fromLevel2				{ get { return this.Bid - this.Spread / 2d; } }
+		[JsonProperty]	public	string		TradedPrice_asString			{ get { return "traded$[" + this.TradedPrice + "]@[" + this.TradedAt + "]"; } }
+		[JsonProperty]	public	double		Spread							{ get { return this.Ask - this.Bid; } }
+		[JsonIgnore]	public	double		Median_forBarOpen_fromLevel2	{ get { return this.Bid - this.Spread / 2d; } }
 
 		#region long story short
 		[JsonIgnore]			SymbolInfo	symbolInfo_nullUnsafe					{ get {
@@ -206,9 +207,9 @@ namespace Sq1.Core.DataTypes {
 			sb.Append(this.Size);
 			sb.Append("@");
 			sb.Append(this.TradedPrice);
-			sb.Append("}lastDeal");
+			sb.Append("}lastTraded@[");
 			sb.Append(this.TradedAt);
-			sb.Append(" ");
+			sb.Append("] ");
 			bool timesAreDifferent = true;
 			if (this.ServerTime != null) {
 				if (this.ServerTime == this.LocalTime) {

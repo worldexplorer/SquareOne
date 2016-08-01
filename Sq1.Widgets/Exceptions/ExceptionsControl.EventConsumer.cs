@@ -1,11 +1,11 @@
 using System;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 using Sq1.Core;
+using Sq1.Core.Serializers;
 
 using Sq1.Widgets.LabeledTextBox;
-using System.Collections.Generic;
-using System.Drawing;
 
 namespace Sq1.Widgets.Exceptions {
 	public partial class ExceptionsControl {
@@ -32,9 +32,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.displayStackTrace_forSingleSelected();
 		}
 		void mniClear_Click(object sender, EventArgs e) {
-			//this.flushExceptionsToOLV_switchToGuiThread();
-			this.Exceptions.Clear(this, "mniClear_Click");
-			this.flushExceptionsToOLV_switchToGuiThread();
+			this.Clear();
 		}
 		void mniCopy_Click(object sender, EventArgs e) {
 			this.copyExceptionsSelected_toClipboard();
@@ -98,6 +96,47 @@ namespace Sq1.Widgets.Exceptions {
 			this.populateWindowTitle();
 			this.ctxTree.Visible = true;	// keep it open
 		}
+		void mniltbLogrotateLargerThan_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			string msig = " //mniltbLogrotateLargerThan_UserTyped";
+			try {
+				float userTyped = e.UserTyped_asFloat;		// makes it red if failed to parse; "an event is a passive POCO" concept is broken here
+				this.dataSnapshot.LogRotateSizeLimit_Mb = userTyped;
+				this.dataSnapshotSerializer.Serialize();
+
+				SerializerLogrotatePeriodic<Exception> logrotator = this.Exceptions.Logrotator;
+				logrotator.LogRotateSizeLimit_Mb = this.dataSnapshot.LogRotateSizeLimit_Mb;
+				string msg = "NEW_INTERVAL_ACTIVATED__SAVED SerializerLogrotatePeriodic<Order>.LogRotateSizeLimit_Mb=[" + logrotator.LogRotateSizeLimit_Mb + "]";
+				Assembler.PopupException(msg, null, false);
+
+				this.mniltbLogrotateLargerThan.InputFieldValue = logrotator.LogRotateSizeLimit_Mb.ToString();
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			} finally {
+				this.ctxTree.Show();
+			}
+		}
+		void mniSerializeNow_Click(object sender, EventArgs e) {
+			SerializerLogrotatePeriodic<Exception> logrotator = this.Exceptions.Logrotator;
+			logrotator.HasChangesToSave = true;
+			logrotator.Serialize();
+		}
+		void mniDeleteAllLogrotatedExceptionJsons_Click(object sender, EventArgs e) {
+			try {
+				SerializerLogrotatePeriodic<Exception> logrotator = this.Exceptions.Logrotator;
+				logrotator.FindAndDelete_allLogrotatedFiles_butNotMainJson();
+			} catch (Exception ex) {
+				Assembler.PopupException(" //mniDeleteAllLogrotatedJsons_Click", ex);
+			} finally {
+				this.ctxTree.Show();
+			}
+		}
+		void ctxTree_Opening(object sender, CancelEventArgs e) {
+			SerializerLogrotatePeriodic<Exception> logrotator = this.Exceptions.Logrotator;
+			int logrotates = logrotator.AllLogrotatedAbsFnames_butNotMainJson_scanned.Count;
+			this.mniDeleteAllLogrotatedExceptionJsons.Text		= "Delete All[" + logrotates + "] logrotated Exception*.json";
+			this.mniDeleteAllLogrotatedExceptionJsons.Enabled	= logrotates > 0;
+		}
+
 		void mniShowTimestamps_Click(object sender, EventArgs e) {
 			this.dataSnapshot.ShowTimestamps = mniShowTimestamps.Checked;
 			this.dataSnapshotSerializer.Serialize();
@@ -146,60 +185,6 @@ namespace Sq1.Widgets.Exceptions {
 			// splittersMove will serialize immediately; Resize will come 2 seconds after last and serialize again
 			this.PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized();
 			this.dataSnapshotSerializer.Serialize();
-		}
-
-		void mniShowSearchbar_Click(object sender, EventArgs e) {
-			this.dataSnapshot.ShowSearchbar = this.mniShowSearchbar.Checked;
-			this.dataSnapshotSerializer.Serialize();
-			this.pnlSearch.Visible = this.dataSnapshot.ShowSearchbar;
-			this.txtSearch.Focus();
-			if (this.pnlSearch.Visible == false) {
-				this.olvTreeExceptions.SetObjects(this.Exceptions.SafeCopy(this, "mniShowSearchbar_Click"));
-			}
-			this.ctxTree.Show();
-		}
-
-		void txtSearch_KeyUp(object sender, KeyEventArgs e) {
-			switch(e.KeyCode) {
-				//case Keys.Enter:
-				//    List<Exception> filtered = this.Exceptions.SubsetContainingKeyword(this.txtSearch.Text);
-				//    this.olvTreeExceptions.SetObjects(filtered);
-				//    this.olvTreeExceptions.BackColor = Color.Gainsboro;
-				//    return;
-				case Keys.Escape:
-					this.btnSearchClose_Click(this, null);
-					return;
-			}
-			string keyword = this.txtSearch.Text;
-			if (string.IsNullOrEmpty(keyword) == false) {
-				List<Exception> filtered = this.Exceptions.SubsetContainingKeyword(this.txtSearch.Text);
-				this.olvTreeExceptions.SetObjects(filtered);
-				this.olvTreeExceptions.BackColor = Color.FloralWhite;
-				this.txtSearch.BackColor = Color.FloralWhite;
-				return;
-			}
-
-			this.olvTreeExceptions.SetObjects(this.Exceptions.SafeCopy(this, "txtSearch_KeyDown()"));
-			this.olvTreeExceptions.BackColor = Color.White;
-			this.txtSearch.BackColor = Color.White;
-		}
-
-		void btnSearchClose_Click(object sender, EventArgs e) {
-			this.pnlSearch.Visible = false;
-			this.olvTreeExceptions.SetObjects(this.Exceptions.SafeCopy(this, "btnSearchClear_Click()"));
-			this.olvTreeExceptions.BackColor = Color.White;
-		}
-		void btnSearchClear_Click(object sender, EventArgs e) {
-			this.mniClear_Click(sender, e);
-		}
-
-
-		void mniShowCounterAndGroup_Click(object sender, EventArgs e) {
-			this.dataSnapshot.ShowTimesOccured = this.mniShowCounterAndGroup.Checked;
-			this.dataSnapshotSerializer.Serialize();
-			//if (this.dataSnapshot.ShowCounterToGroup == false) return;
-			this.olvcTimesOccured.IsVisible = this.dataSnapshot.ShowTimesOccured;
-			this.ctxTree.Show();
 		}
 
 	}

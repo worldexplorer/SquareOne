@@ -29,6 +29,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	BarScaleInterval	BarsScaleInterval				{ get; private set; }
 		[JsonProperty]	public	string				Symbol							{ get; private set; }
 		[JsonProperty]	public	string				SymbolClass						{ get; private set; }
+		[JsonProperty]	public	string				SymbolAndClass					{ get { return this.Symbol + ":" + this.SymbolClass; } }
 		[JsonProperty]	public	string				AccountNumber					{ get; private set; }
 		[JsonProperty]	public	string				DataSourceName					{ get; private set; }		// containsBidAsk BrokerAdapter for further {new Order(Alert)} execution
 
@@ -304,7 +305,7 @@ namespace Sq1.Core.Execution {
 				return MarketConverter.BidOrAskWillFillAlert(this);
 			}}
 
-		[JsonIgnore]	public	Order				OrderFollowed;			// set on Order(alert).executed;
+		[JsonIgnore]	public	Order				OrderFollowed_orCurrentReplacement;			// set on Order(alert).executed;
 		[JsonIgnore]	public	ManualResetEvent	OrderFollowed_isAssignedNow_Mre	{ get; private set; }
 		[JsonProperty]	public	double				PriceDeposited;		// for a Future, we pay less that it's quoted (GUARANTEE DEPOSIT)
 		
@@ -328,37 +329,30 @@ namespace Sq1.Core.Execution {
 		} }
 		[JsonIgnore]	public	bool				IsDisposed;
 
-		[JsonIgnore]	public						PositionPrototype	PositionPrototype;
-		[JsonIgnore]	public	bool				ImTakeProfit_prototyped { get {
-			string msig = " //ImTakeProfit_prototyped.Get() " + this;
-
-			bool ret = false;
-			bool nullOnTheWay = this.check_positionPrototype_notNull(msig) == false;
-			if (nullOnTheWay) return ret;
-
-			if (this.PositionPrototype.TakeProfitAlert_forMoveAndAnnihilation == null) {
-				string msg = "SHOULD_I_COMPLAIN?";
-				Assembler.PopupException(msg + msig);
-				return ret;
-			}
-			ret = this.PositionPrototype.TakeProfitAlert_forMoveAndAnnihilation == this;
+		[JsonIgnore]	public						PositionPrototype	PositionPrototype_bothForEntryAndExit { get {
+			if (this.IsEntryAlert) return this.PositionPrototype_onlyForEntryAlert;
+			PositionPrototype ret = null;
+			if (this.PositionAffected == null) return ret;
+			if (this.PositionAffected.EntryAlert == null) return ret;
+			ret = this.PositionAffected.EntryAlert.PositionPrototype_onlyForEntryAlert;
 			return ret;
 		} }
-		[JsonIgnore]	public	bool				ImStopLoss_prototyped { get {
-			string msig = " //ImStopLoss_prototyped.Get() " + this;
 
-			bool ret = false;
-			bool nullOnTheWay = this.check_positionPrototype_notNull(msig) == false;
-			if (nullOnTheWay) return ret;
-
-			if (this.PositionPrototype.StopLossAlert_forMoveAndAnnihilation == null) {
-				string msg = "SHOULD_I_COMPLAIN?";
-				Assembler.PopupException(msg + msig);
-				return ret;
-			}
-			ret = this.PositionPrototype.StopLossAlert_forMoveAndAnnihilation == this;
+		[JsonIgnore]	public						PositionPrototype	PositionPrototype_onlyForEntryAlert;
+		[JsonIgnore]	public	Alert				TakeProfit_prototyped	{ get {
+			Alert ret = null;
+			if (this.PositionPrototype_bothForEntryAndExit == null) return ret;
+			ret = this.PositionPrototype_bothForEntryAndExit.TakeProfitAlert_forMoveAndAnnihilation;
 			return ret;
 		} }
+		[JsonIgnore]	public	Alert				StopLoss_prototyped		{ get {
+			Alert ret = null;
+			if (this.PositionPrototype_bothForEntryAndExit == null) return ret;
+			ret = this.PositionPrototype_bothForEntryAndExit.StopLossAlert_forMoveAndAnnihilation;
+			return ret;
+		} }
+		[JsonIgnore]	public	bool				ImTakeProfit_prototyped { get { return this.TakeProfit_prototyped == this; } }
+		[JsonIgnore]	public	bool				ImStopLoss_prototyped	{ get { return this.StopLoss_prototyped == this; } }
 
 		// throws during SerializerLogrotate<T>.Serialize()
 		[JsonIgnore]	public	List<double>		Slippages_forLimitOrdersOnly { get {
@@ -408,7 +402,7 @@ namespace Sq1.Core.Execution {
 			StrategyID					= Guid.Empty;
 			StrategyName				= "NO_STRATEGY";
 			BarsScaleInterval			= new BarScaleInterval(BarScale.Unknown, 0);
-			OrderFollowed				= null;
+			OrderFollowed_orCurrentReplacement				= null;
 			OrderFollowed_isAssignedNow_Mre	= new ManualResetEvent(false);
 
 			PricesEmitted_byBarIndex			= new SortedDictionary<int, List<double>>();
@@ -526,7 +520,7 @@ namespace Sq1.Core.Execution {
 
 				}
 			} else {
-				this.PriceScriptAligned = this.Bars.SymbolInfo.Alert_alignToPriceLevel(this.PriceScript, this.Direction, this.MarketLimitStop);
+				this.PriceScriptAligned = this.Bars.SymbolInfo.Alert_alignToPriceStep(this.PriceScript, this.Direction, this.MarketLimitStop);
 				this.PriceEmitted = this.PriceScriptAligned;
 				if (this.PriceScriptAligned < 0) {
 					string msg = "ALERT_CTOR_PRICE_SCRIPT_CANT_BE_NEGATIVE";
@@ -588,11 +582,11 @@ namespace Sq1.Core.Execution {
 				msg.Append(this.PositionAffected.SernoPerStrategy);
 				msg.Append("]");
 			}
-			if (this.OrderFollowed != null) {
+			if (this.OrderFollowed_orCurrentReplacement != null) {
 				msg.Append("; Order[");
-				msg.Append(this.OrderFollowed.SernoExchange);
+				msg.Append(this.OrderFollowed_orCurrentReplacement.SernoExchange);
 				msg.Append("/");
-				msg.Append(this.OrderFollowed.State);
+				msg.Append(this.OrderFollowed_orCurrentReplacement.State);
 				msg.Append("]");
 			}
 			return msg.ToString();
@@ -605,8 +599,8 @@ namespace Sq1.Core.Execution {
 				+ "\t" + longOrderType + Qty + "/" + this.QtyFilled_fromPosition + "filled*" + Symbol
 				+ "@" + PriceScript + "/" + this.PriceFilled_fromPosition + "filled"
 				;
-			if (this.PositionAffected != null && this.PositionPrototype != null) {
-				msg += "\tProto" + this.PositionPrototype;
+			if (this.PositionAffected != null && this.PositionPrototype_onlyForEntryAlert != null) {
+				msg += "\tProto" + this.PositionPrototype_onlyForEntryAlert;
 			}
 			msg += "\t[" + SignalName + "]";
 			return msg;
@@ -719,14 +713,14 @@ namespace Sq1.Core.Execution {
 			}
 		}
 
-				bool	check_positionPrototype_notNull(string msig_invoker) {
+		bool	check_positionPrototype_notNull(string msig_invoker) {
 			if (this.PositionAffected == null) {
 				string msg = "ALERT_MUST_HAVE_POSITION_AFFECTED";
 				Assembler.PopupException(msg + msig_invoker);
 				//throw new Exception(msg + msig_invoker);
 				return false;
 			}
-			if (this.PositionPrototype == null) {
+			if (this.PositionPrototype_onlyForEntryAlert == null) {
 				string msg = "ALERT_MUST_HAVE_PROTOTYPE";
 				Assembler.PopupException(msg + msig_invoker);
 				//throw new Exception(msg + msig_invoker);
@@ -761,7 +755,7 @@ namespace Sq1.Core.Execution {
 					string msg = "MUST_HAVE_BEEN_alreadyFilled_withSameInfo[" + alreadyFilled_withSameInfo + "]"
 						+ " during doomedRemoved_duplicateCall[" + doomedRemoved_duplicateCall + "]";
 					Assembler.PopupException(msg, null, false);
-					Assembler.InstanceInitialized.OrderProcessor.AppendMessage_propagateToGui(this.OrderFollowed, msg);
+					Assembler.InstanceInitialized.OrderProcessor.AppendMessage_propagateToGui(this.OrderFollowed_orCurrentReplacement, msg);
 				}
 				return;
 			}

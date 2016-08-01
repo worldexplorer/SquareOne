@@ -255,12 +255,12 @@ namespace Sq1.Reporters {
 				// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
 				List<OLVColumn> allColumnsOtherwizeEmptyListAndRowFormatException = new List<OLVColumn>();
 				foreach (ColumnHeader columnHeader in this.olvPositions.Columns) {
-					OLVColumn oLVColumn = columnHeader as OLVColumn;
-					if (oLVColumn == null) continue;
-					oLVColumn.VisibilityChanged += olvColumn_VisibilityChanged;
+					OLVColumn olvColumn = columnHeader as OLVColumn;
+					if (olvColumn == null) continue;
+					olvColumn.VisibilityChanged += olvColumn_VisibilityChanged;
 					//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
-					if (this.olvPositions.AllColumns.Contains(oLVColumn)) continue;
-					allColumnsOtherwizeEmptyListAndRowFormatException.Add(oLVColumn);
+					if (this.olvPositions.AllColumns.Contains(olvColumn)) continue;
+					allColumnsOtherwizeEmptyListAndRowFormatException.Add(olvColumn);
 				}
 				if (allColumnsOtherwizeEmptyListAndRowFormatException.Count > 0) {
 					//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 

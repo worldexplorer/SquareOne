@@ -26,9 +26,9 @@ namespace Sq1.Widgets.CsvImporter {
 //			this.olvFiles.AllColumns.AddRange(this.olvFiles.Columns);
 			List<OLVColumn> allColumns = new List<OLVColumn>();
 			foreach (ColumnHeader columnHeader in this.olvFiles.Columns) {
-				OLVColumn oLVColumn = columnHeader as OLVColumn; 
-				if (oLVColumn == null) continue;
-				allColumns.Add(oLVColumn);
+				OLVColumn olvColumn = columnHeader as OLVColumn; 
+				if (olvColumn == null) continue;
+				allColumns.Add(olvColumn);
 			}
 			if (allColumns.Count > 0) {
 				this.olvFiles.AllColumns.AddRange(allColumns);

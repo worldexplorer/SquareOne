@@ -175,12 +175,12 @@ namespace Sq1.Core.DataFeed {
 		        return channelsPaused;
 		    }
 
-		    if (channel_nullUnsafe.QuotePump_nullUnsafe.Paused == true) {
+		    if (channel_nullUnsafe.PumpQuote_nullWhenBacktesting.Paused == true) {
 		        string msg = "PUMP_QUOTE_ALREADY_PAUSED_BY_ANOTHER_LIVESIM";
 		        Assembler.PopupException(msg, null, false);
 		        return channelsPaused;
 		    }
-		    channel_nullUnsafe.QuotePump_nullUnsafe.PusherPause_waitUntilPaused();
+		    channel_nullUnsafe.PumpQuote_nullWhenBacktesting.PusherPause_waitUntilPaused();
 		    channelsPaused++;
 
 		    if (channel_nullUnsafe.PumpLevelTwo.Paused == true) {
@@ -217,12 +217,12 @@ namespace Sq1.Core.DataFeed {
 		        return channelsPaused;
 		    }
 
-		    if (channel_nullUnsafe.QuotePump_nullUnsafe.Paused == false) {
+		    if (channel_nullUnsafe.PumpQuote_nullWhenBacktesting.Paused == false) {
 		        string msg = "PUMP_QUOTE_ALREADY_UNPAUSED_BY_ANOTHER_LIVESIM";
 		        Assembler.PopupException(msg, null, false);
 		        return channelsPaused;
 		    }
-		    channel_nullUnsafe.QuotePump_nullUnsafe.PusherUnpause_waitUntilUnpaused();
+		    channel_nullUnsafe.PumpQuote_nullWhenBacktesting.PusherUnpause_waitUntilUnpaused();
 		    channelsPaused++;
 
 		    if (channel_nullUnsafe.PumpLevelTwo.Paused == false) {
