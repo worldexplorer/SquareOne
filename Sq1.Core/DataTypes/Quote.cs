@@ -174,7 +174,7 @@ namespace Sq1.Core.DataTypes {
 		}
 
 		#region SORRY_FOR_THE_MESS__I_NEED_TO_DERIVE_IDENTICAL_ONLY_FOR_GENERATED__IF_YOU_NEED_IT_IN_BASE_QUOTE_MOVE_IT_THERE
-		public Quote Clone_asCoreQuote() {
+		public Quote Clone_asCoreQuote(bool quoteDeserializable_needsBarDetached = false) {
 			string prefix = "MEMBERWISE_CLONE_OF_";
 			if (this.Source.Contains(prefix)) {
 				string msg = "QuoteCreatedThisAlert_deserializable <= WHERE_DO_YOU_NEED_CLONED_CLONE?";
@@ -183,8 +183,14 @@ namespace Sq1.Core.DataTypes {
 			}
 			Quote clone = (Quote)this.MemberwiseClone();
 			if (clone.ParentBarStreaming != null) {
-				Bar barCloned_justInCase = clone.ParentBarStreaming.CloneDetached();
-				clone.StreamingBar_Replace(barCloned_justInCase);
+				if (quoteDeserializable_needsBarDetached) {
+					Bar barCloned_justInCase = clone.ParentBarStreaming.CloneDetached();
+					bool streamingParentBars_mustBeNull = quoteDeserializable_needsBarDetached;
+					clone.StreamingBar_Replace(barCloned_justInCase, streamingParentBars_mustBeNull);
+				} else {
+					Bar barCloned_justInCase = clone.ParentBarStreaming.Clone();
+					clone.StreamingBar_Replace(barCloned_justInCase);
+				}
 			}
 			clone.Source = prefix + this.ToStringShort() + " " + clone.Source;
 			return clone;

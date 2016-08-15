@@ -16,7 +16,7 @@ namespace Sq1.Core.Broker {
 			string		suggestion = "PASS_suggestLane=TRUE";
 			Order orderFound = this.DataSnapshot.OrdersSubmitting.ScanRecent_forOrderGuid(orderGUID, out suggestedLane_nullUnsafe, out suggestion, false);
 			if (orderFound == null) {
-				 orderFound = this.DataSnapshot.OrdersAll.ScanRecent_forOrderGuid(orderGUID, out suggestedLane_nullUnsafe, out suggestion, false);		//pass suggestLane=true 
+				 orderFound = this.DataSnapshot.OrdersAll_lanesSuggestor.ScanRecent_forOrderGuid(orderGUID, out suggestedLane_nullUnsafe, out suggestion, false);		//pass suggestLane=true 
 			}
 			if (orderFound == null) {
 				string msg = "order[" + orderGUID + "] wasn't found; OrderProcessorDataSnapshot.OrderCount=[" + this.DataSnapshot.OrderCount + "]"
@@ -186,8 +186,8 @@ namespace Sq1.Core.Broker {
 				}
 				// postProcess()_WILL_DO_IT order.FillWith(priceFill, qtyFill);
 
-				if (order.QtyFill != 0) {
-					string msg = "ORDER_WAS_ALREADY_FILLED order.QtyFill[" + order.QtyFill + "] qtyFill[" + qtyFill + "]!= 0";
+				if (order.QtyFill != Order.INITIAL_QtyFill) {
+					string msg = "ORDER_WAS_ALREADY_FILLED order.QtyFill[" + order.QtyFill + "] qtyFill[" + qtyFill + "]!= [" + Order.INITIAL_QtyFill + "]";
 					Assembler.PopupException(msg, null, false);
 					this.AppendMessage_propagateToGui(order, msg + msig);
 				}
@@ -209,7 +209,7 @@ namespace Sq1.Core.Broker {
 
 			this.BrokerCallback_orderStateUpdate_mustBeDifferent_dontPostProcess(omsg_newState);
 			this.postProcess_invokeScriptCallback(order, priceFill, qtyFill);
-			omsg_newState.PostProcessed = true;
+			omsg_newState.Message_LedToPostProcessing = true;
 			this.OPPstatusCallbacks.InvokeHooks_forOrderState_unregisterInvoked(order, null);
 		}
 		//public void BrokerCallback_pendingKilled_withoutKiller_postProcess_removeAlertsPending_fromExecutorDataSnapshot(Order orderPending_victimKilled, string msigInvoker) {
@@ -254,7 +254,7 @@ namespace Sq1.Core.Broker {
 			//}
 			//#endregion
 
-			bool annihilatingCounterParty_forExitAlert = victimKilled.Alert.IsExitAlert && victimKilled.Alert.PositionPrototype_bothForEntryAndExit != null;
+			bool annihilatingCounterParty_forExitAlert = victimKilled.Alert.IsExitAlert && victimKilled.Alert.PositionPrototype_bothForEntryAndExit_nullUnsafe != null;
 			if (annihilatingCounterParty_forExitAlert) {
 				if (victimKilled.FindState_inOrderMessages(OrderState.TPAnnihilating)) {
 					OrderStateMessage omsg = new OrderStateMessage(victimKilled, OrderState.TPAnnihilated, "TPAnnihilating=>TPAnnihilated in ALERT_KILLED_CALLBACK");

@@ -232,7 +232,7 @@ namespace Sq1.Core.Backtesting {
 						Assembler.PopupException(msg);
 					}
 
-					double priceStopActivationAligned = exitAlert.PriceStopLimitActivationAligned;
+					double priceStopActivationAligned = exitAlert.PriceStopLimitActivation;
 
 					switch (exitAlert.Direction) {
 						case Direction.Sell:
@@ -253,12 +253,12 @@ namespace Sq1.Core.Backtesting {
 								}
 								this.stopLossesActivatedOnPreviousQuotes.Add(exitAlert); // yes SellStop is VIRTUALLY activated by TOUCHED_FROM_ABOVE
 							}
-							if (exitPriceOut < quote.Bid) {		// + slippageLimit
+							if (exitPriceOut > quote.Bid) {		// + slippageLimit
 								string msg = "SellLimit is not filled because whole quoteToReach is below SellLimit"
 									+ "; rare case when PositionPrototype.ctor() checks didn't catch it?";
 								return false;
 							}
-							if (exitPriceOut < quote.Ask) {
+							if (exitPriceOut > quote.Ask) {
 								string msg = "SellLimit wasn't TOUCHED_FROM_ABOVE; staying WaitingFillBroker but not filled at this bar" 
 									+ " (TODO: if on next bar SellLimit is fillable, avoid first StopActivation condition above)";
 								return false;
@@ -293,12 +293,12 @@ namespace Sq1.Core.Backtesting {
 								this.stopLossesActivatedOnPreviousQuotes.Add(exitAlert);
 							}
 							// yes SellStop is "virtually" activated by "touched from above" (UnitTest: eyeball the current bar)
-							if (exitPriceOut > quote.Bid) {		// - slippageLimit
+							if (exitPriceOut < quote.Bid) {		// - slippageLimit
 								string msg = "BuyLimit is not filled because whole the bar was above BuyLimit"
 									+ "; rare case when PositionPrototype.ctor() checks didn't catch it?";
 								return false;
 							}
-							if (exitPriceOut > quote.Ask) {
+							if (exitPriceOut < quote.Ask) {
 								string msg = "BuyLimit wasn't TOUCHED_FROM_BELOW; staying WaitingFillBroker but not filled at this bar"
 									+ " (TODO: if on next bar BuyLimit is fillable, avoid first StopActivation condition above)";
 								return false;

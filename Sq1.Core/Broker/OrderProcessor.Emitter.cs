@@ -174,7 +174,7 @@ namespace Sq1.Core.Broker {
 			OrderState stateBeforeKilledAssumingActive = OrderState.Unknown;
 
 			string msig = " //OrderProcessor.Emit_stopLossMove_byKillingAndSubmittingNew("
-				+ proto.StopLossActivation_negativeOffset + "/" + proto.StopLoss_negativeOffset
+				+ proto.StopLossActivation_priceEntryNegativeOffset + "/" + proto.StopLoss_priceEntryNegativeOffset
 				+ "=>" + newActivation_negativeOffset + "/" + newStopLoss_negativeOffset + "): ";
 
 			// 1. hook onKilled=>submitNew
@@ -221,7 +221,7 @@ namespace Sq1.Core.Broker {
 			position.ExitAlert = null;
 			// set new SL+SLa as new targets for Activator
 			string msg = position.Prototype.ToString();
-			position.Prototype.SetNewStopLossOffsets(newStopLoss_negativeOffset, newActivation_negativeOffset);
+			position.Prototype.Calculate_StopLossOffsets(newStopLoss_negativeOffset, newActivation_negativeOffset);
 			msg += " => " + position.Prototype.ToString();
 			Alert replacement = executor.PositionPrototypeActivator.CreateStopLoss_fromPositionPrototype(position);
 			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter();
@@ -245,7 +245,7 @@ namespace Sq1.Core.Broker {
 			OrderState stateBeforeActiveAssummingSubmitting = order2killAndReplace.State;
 			OrderState stateBeforeKilledAssumingActive = OrderState.Unknown;
 
-			string msig = " // OrderProcessor.Emit_takeProfitMove_byKillingAndSubmittingNew(" + proto.TakeProfit_positiveOffset + "=>" + newTakeProfit_positiveOffset + "): ";
+			string msig = " // OrderProcessor.Emit_takeProfitMove_byKillingAndSubmittingNew(" + proto.TakeProfit_priceEntryPositiveOffset + "=>" + newTakeProfit_positiveOffset + "): ";
 
 			// 1. hook onKilled=>submitNew
 			OrderPostProcessorStateHook oppHook_takeProfitKilled = new OrderPostProcessorStateHook("oppHook_takeProfitKilled",
@@ -291,7 +291,7 @@ namespace Sq1.Core.Broker {
 			position.ExitAlert = null;
 			// set new SL+SLa as new targets for Activator
 			string msg = position.Prototype.ToString();
-			position.Prototype.SetNewTakeProfitOffset(newTakeProfit_positiveOffset);
+			position.Prototype.Calculate_TakeProfitOffset(newTakeProfit_positiveOffset);
 			msg += " => " + position.Prototype.ToString();
 			Alert replacement = executor.PositionPrototypeActivator.CreateTakeProfit_fromPositionPrototype(position);
 			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter();

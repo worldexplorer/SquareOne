@@ -9,6 +9,9 @@ using Sq1.Core;
 using Sq1.Core.Execution;
 using Sq1.Core.Serializers;
 using Sq1.Core.Broker;
+using Sq1.Core.Support;
+using Sq1.Core.StrategyBase;
+using Sq1.Core.DataTypes;
 
 using Sq1.Widgets.LabeledTextBox;
 
@@ -16,6 +19,8 @@ namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
 		void olvOrdersTree_SelectedIndexChanged(object sender, EventArgs e) {
 			try {
+				this.ignoreEvents_dontSerialize = true;
+
 				//this.dataSnapshot.RecentOrderShouldStaySelected = (this.olvOrdersTree.SelectedIndex == 0) ? true : false;
 				int selectedIndex = this.olvOrdersTree.SelectedIndex;
 				if (selectedIndex == -1) {
@@ -42,6 +47,8 @@ namespace Sq1.Widgets.Execution {
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException("olvOrdersTree_SelectedIndexChanged()", ex);
+			} finally {
+				this.ignoreEvents_dontSerialize = false;
 			}
 		}
 		void ctxColumnsGrouped_ItemClicked(object sender, ToolStripItemClickedEventArgs e)	{
@@ -325,6 +332,8 @@ namespace Sq1.Widgets.Execution {
 		}
 
 		void olvOrdersTree_DoubleClick(object sender, EventArgs e) {
+			string msig = " //olvOrdersTree_DoubleClick()";
+
 			//if (this.mniOrderEdit.Enabled) this.mniOrderEdit_Click(sender, e);
 			if (this.olvOrdersTree.SelectedItem == null) {
 				string msg = "OrdersTree.SelectedItem == null";
@@ -339,9 +348,17 @@ namespace Sq1.Widgets.Execution {
 			//    return;
 			//}
 			//otherwize if you'll see REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR - dont forget to use Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.ExitAlert);
-			this.raiseOnOrderDoubleClicked_OrderProcessorShouldKillOrder(this, this.olvOrdersTree.SelectedObject as Order);
-		}
 
+			Order order_doubleClicked = this.olvOrdersTree.SelectedObject as Order;
+			Alert alert_doubleClicked = order_doubleClicked.Alert;
+			if (alert_doubleClicked.IsEntryAlert && alert_doubleClicked.PriceFilled_fromPosition > 0) {
+				if (alert_doubleClicked.PositionAffected.ExitFilled_price > 0) return;
+				ScriptExecutor executor  = order_doubleClicked.Alert.Strategy.Script.Executor;
+				executor.Position_closeImmediately_forOrderInExecution_clickGuiThread(order_doubleClicked.Alert, msig);
+			} else {
+				this.raiseOnOrderDoubleClicked_OrderProcessorShouldKillOrder(this, order_doubleClicked);
+			}
+		}
 
 		void mniTreeCollapseAll_Click(object sender, EventArgs e) {
 			string msig = " //mniTreeCollapseAll_Click";
@@ -478,7 +495,13 @@ namespace Sq1.Widgets.Execution {
 			if (orderRightClicked != null) {
 				Alert alertClicked = orderRightClicked.Alert;
 				if (alertClicked != null) {
-					mniOrderPositionClose_text				= alertClicked.ExecutionControl_PositionClose_knowHow;
+					string position_doubleClickable =
+							alertClicked.IsEntryAlert &&
+							alertClicked.PriceFilled_fromPosition > 0 &&
+							alertClicked.PositionAffected != null &&
+							alertClicked.PositionAffected.ExitFilled_price == 0
+						? "     [DoubleClick to close]" : "";
+					mniOrderPositionClose_text				= alertClicked.ExecutionControl_PositionClose_knowHow + position_doubleClickable;
 					mniOrderAlert_removeFromPending_text	= alertClicked.ExecutionControl_AlertsPendingClear_knowHow;
 
 					pendingAlertsFound_inExecutorDataSnap_forAlertClicked = alertClicked.PendingFound_inMyExecutorsDataSnap;
@@ -507,8 +530,8 @@ namespace Sq1.Widgets.Execution {
 
 			this.mniKillPendingSelected			.Enabled = strategy_hasPendingAlerts;
 
-			this.mniPosition_info	.Text = "POSITION    "		+ mniPosition_info_text;
-			this.mniExitAlert_info	.Text = "ExitAlert      "	+ mniExitAlert_info_text;
+			this.mniPosition_info				.Text = "POSITION    "		+ mniPosition_info_text;
+			this.mniExitAlert_info				.Text = "ExitAlert      "	+ mniExitAlert_info_text;
 
 
 			//DO_YOU_WANT_TO_STOP_EMITTING_EVERY_STRATEGY??? int pendingAllCount = this.orderProcessor_forToStringOnly.DataSnapshot.OrdersPending.Count;
@@ -518,15 +541,69 @@ namespace Sq1.Widgets.Execution {
 			this.mniKillPendingAll_stopEmitting	.Enabled	= pendingAlertsFound_inExecutorDataSnap_forAlertClicked > 0;
 			this.mniKillPendingAll_stopEmitting	.Text		= "Kill Pending AllForAllStrat[" + pendingAlertsFound_inExecutorDataSnap_forAlertClicked + "],  Stop Emitting - PANIC";
 
+			
 			int selectedKillable = this.OrdersSelected_killable_unfilled.Count;
+			string alert_doubleClickable = selectedKillable > 0 ? "     [Double Click]" : "";
+
 			this.mniKillPendingSelected			.Enabled	= selectedKillable > 0;
-			this.mniKillPendingSelected			.Text		= "Kill Pending Selected[" + selectedKillable + "],        Continue Emitting    [Double Click]";
+			this.mniKillPendingSelected			.Text		= "Kill Pending Selected[" + selectedKillable + "],        Continue Emitting" + alert_doubleClickable;
 
-			SerializerLogrotatePeriodic<Order> logrotator = Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders;
-			int logrotates = logrotator.AllLogrotatedAbsFnames_butNotMainJson_scanned.Count;
-			this.mniDeleteAllLogrotatedOrderJsons.Text		= "Delete All[" + logrotates + "] logrotated Order*.json";
-			this.mniDeleteAllLogrotatedOrderJsons.Enabled	= logrotates > 0;
+			SerializerLogrotatePeriodic<Order> logrotator	= Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.SerializerLogrotateOrders;
+			int		logrotatedFiles_count					= logrotator.AllLogrotatedAbsFnames_butNotMainJson_scanned.Count;
+			string	logrotatedFiles_size					= logrotator.AllLogrotatedSize_butNotMainJson_scanned;
+			this.mniDeleteAllLogrotatedOrderJsons.Text		= "Delete All[" + logrotatedFiles_count + "] logrotated Order*.json [" + logrotatedFiles_size + "]";
+			this.mniDeleteAllLogrotatedOrderJsons.Enabled	= logrotatedFiles_count > 0;
+		}
 
+
+		void ctxOrderStates_Opening(object sender, CancelEventArgs e) {
+			this.ctxOrderStates_rebuildFrom_currentOrders();
+		}
+		void ctxOrderStates_rebuildFrom_currentOrders() {
+			string msig = " //ctxOrderStates_rebuildFrom_currentOrders()";
+
+			List<ToolStripMenuItem> mnisToBeRemoved = new List<ToolStripMenuItem>();
+			foreach (ToolStripItem tsi_canBeSeparator in this.ctxOrderStates.Items) {
+				ToolStripMenuItem mniDynamic = tsi_canBeSeparator as ToolStripMenuItem;
+				if (mniDynamic == null) continue;
+				OrderStateDisplayed representsState = tsi_canBeSeparator.Tag as OrderStateDisplayed;
+				if (representsState == null) continue;
+				mniDynamic.Click -= new EventHandler(this.mniOrderState_Click);
+				mnisToBeRemoved.Add(mniDynamic);
+			}
+			foreach (ToolStripMenuItem eachDynamic in mnisToBeRemoved) {
+				this.ctxOrderStates.Items.Remove(eachDynamic);
+			}
+
+			OrdersByState ordersByState = Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.OrdersByState;
+			int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT;
+			//List<OrderState> states_sorted = ordersByState.KeysSorted(this, msig, waitMillis);
+			List<OrderStateDisplayed> states_sorted = ordersByState.Keys(this, msig, waitMillis);
+			foreach (OrderStateDisplayed eachStateDisplayed in states_sorted) {
+				int ordersNumber_inState = 0;
+				if (ordersByState.ContainsKey(eachStateDisplayed, this, msig)) {
+					ConcurrentList<Order> orders_inState = ordersByState.GetAtKey_nullUnsafe(eachStateDisplayed, this, msig);
+					ordersNumber_inState = orders_inState.Count;
+				}
+				string ordersNumber_inState_formatted = string.Format("{0:00}", ordersNumber_inState);
+				string ordersState_formatted = string.Format("{0:000}", (int)eachStateDisplayed.OrderState);
+				string mniLabel = "#" + ordersNumber_inState_formatted + "    [" + ordersState_formatted + "]    " + eachStateDisplayed.OrderState.ToString();
+				ToolStripMenuItem mni = new ToolStripMenuItem();
+				mni.Text = mniLabel;
+				mni.Tag = eachStateDisplayed;
+				mni.Checked = eachStateDisplayed.Displayed;
+				mni.CheckOnClick = true;
+				mni.Click += new EventHandler(this.mniOrderState_Click);
+				this.ctxOrderStates.Items.Add(mni);
+			}
+		}
+
+		void mniOrderState_Click(object sender, EventArgs e) {
+			ToolStripMenuItem mni = sender as ToolStripMenuItem;
+			if (mni == null) return;
+			OrderStateDisplayed osd = mni.Tag as OrderStateDisplayed;
+			osd.Displayed = mni.Checked;
+			this.ctxOrderStates.Show();
 		}
 
 		void mniClosePosition_Click(object sender, EventArgs e) {
@@ -537,8 +614,9 @@ namespace Sq1.Widgets.Execution {
 				Assembler.PopupException(msg);
 				return;
 			}
-			//Alert exitPlaced = base.ExitAtMarket(barStreaming, lastPos_OpenNow_nullUnsafe, msg);
-			//Assembler.InstanceInitialized.OrderProcessor.SubmitToBroker_inNewThread_waitUntilConnected(alertClicked.OrderFollowed, msig + msg1);
+
+			ScriptExecutor executor = orderRightClicked.Alert.Strategy.Script.Executor;
+			executor.Position_closeImmediately_forOrderInExecution_clickGuiThread(orderRightClicked.Alert, msig);
 		}
 
 		void mniRemoveFromPendingAlerts_Click(object sender, EventArgs e) {
@@ -585,5 +663,29 @@ namespace Sq1.Widgets.Execution {
 			slo.HasChangesToSave = true;
 			slo.Serialize();
 		}
+
+		void mniOrderStateAll_Click(object sender, EventArgs e) {
+			try {
+				//this.dataSnapshotSerializer.Serialize();
+				//this.RebuildAllTree_focusOnRecent();
+			} catch (Exception ex) {
+				Assembler.PopupException(" //mniOrderStateAll_Click", ex);
+			} finally {
+				this.ctxOrderStates.Show();
+			}
+		}
+
+		void mniOrderStateNone_Click(object sender, EventArgs e) {
+			try {
+				//this.dataSnapshotSerializer.Serialize();
+				//this.RebuildAllTree_focusOnRecent();
+			} catch (Exception ex) {
+				Assembler.PopupException(" //mniOrderStateNone_Click", ex);
+			} finally {
+				this.ctxOrderStates.Show();
+			}
+		}
+
+
 	}
 }

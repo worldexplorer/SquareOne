@@ -114,6 +114,15 @@
     <Compile Include="Broker\OrderProcessor.GuiCommands.cs">
       <DependentUpon>OrderProcessor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Broker\OrderProcessorDataSnapshot.SuggestLane.cs">
+      <DependentUpon>OrderProcessorDataSnapshot.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Broker\OrderProcessorDataViewProxy.cs" />
+    <Compile Include="Broker\OrdersByState.cs" />
+    <Compile Include="Broker\OrdersByState.EventGenerator.cs">
+      <DependentUpon>OrdersByState.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Broker\OrdersSearchable.cs" />
     <Compile Include="Broker\OrdersRootOnly.cs" />
     <Compile Include="Charting\ChartSettingsTemplated.cs" />
     <Compile Include="Charting\ChartShadow.DataSourceTreeControl.ChartUnderSymbol.cs">
@@ -155,10 +164,15 @@
     <Compile Include="Execution\Order.Derived.cs">
       <DependentUpon>Order.cs</DependentUpon>
     </Compile>
+    <Compile Include="Execution\Order.EventGenerator.cs">
+      <DependentUpon>Order.cs</DependentUpon>
+    </Compile>
     <Compile Include="Execution\Order.Slippages.cs">
       <DependentUpon>Order.cs</DependentUpon>
     </Compile>
     <Compile Include="Execution\OrderList.cs" />
+    <Compile Include="Execution\OrderStateChangedEventArgs.cs" />
+    <Compile Include="Execution\OrderStateDisplayed.cs" />
     <Compile Include="Indicators\Indicator.EventGenerator.cs">
       <DependentUpon>Indicator.cs</DependentUpon>
     </Compile>
@@ -457,7 +471,10 @@
       <DependentUpon>SymbolScaleStream.cs</DependentUpon>
     </Compile>
     <Compile Include="Support\ConcurrentDictionary.cs" />
+    <Compile Include="Support\ConcurrentDictionarySorted.cs" />
+    <Compile Include="Support\ConcurrentDictionary_ofConcurrentLists.cs" />
     <Compile Include="Support\ConcurrentList.cs" />
+    <Compile Include="Support\ConcurrentDictionarySorted_ofConcurrentLists.cs" />
     <Compile Include="Support\ConcurrentWatchdog.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -498,9 +515,7 @@
     </Compile>
     <Compile Include="Execution\PositionPrototype.cs" />
     <Compile Include="Execution\ExecutorDataSnapshot.cs" />
-    <Compile Include="Execution\AlertEventArgs.cs" />
     <Compile Include="Execution\ReporterPokeUnitEventArgs.cs" />
-    <Compile Include="Execution\PositionEventArgs.cs" />
     <Compile Include="StrategyBase\PerformanceEventArg.cs" />
     <Compile Include="StrategyBase\PositionPrototypeActivator.cs" />
     <Compile Include="StrategyBase\ScriptExecutor.cs" />

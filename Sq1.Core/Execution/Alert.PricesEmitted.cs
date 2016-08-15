@@ -76,7 +76,7 @@ namespace Sq1.Core.Execution {
 			int mustBeOne = barTill_streamingOrBarFilled - barIndex_next;
 		    if (mustBeOne > 1) {
 				string msg = "I_EXTEND_PRICE_EMITTED_TO_NEXT_BAR__EACH_BAR__CAN_NOT_BE_TWO_BARS";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				return howManyAdded;
 			}
 

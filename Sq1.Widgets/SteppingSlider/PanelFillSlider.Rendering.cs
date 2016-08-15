@@ -16,11 +16,11 @@ namespace Sq1.Widgets.SteppingSlider {
 			if (this.brushFgText == null) this.brushFgText = new SolidBrush(base.ForeColor);
 			try {
 				Graphics g = pe.Graphics;
-				int valueMinWidthMeasured = (int)Math.Round(g.MeasureString(this.ValueMin.ToString(this.ValueFormat), this.Font).Width);
-				int valueCurrentWidthMeasured = (int)Math.Round(g.MeasureString(this.ValueCurrent.ToString(this.ValueFormat), this.Font).Width);
-				int valueMouseOverWidthMeasured = (int)Math.Round(g.MeasureString(this.ValueMouseOver.ToString(this.ValueFormat), this.Font).Width);
-				int valueMaxWidthMeasured = (int)Math.Round(g.MeasureString(this.ValueMax.ToString(this.ValueFormat), this.Font).Width);
-				int labelTextWidthMeasured = (int)Math.Round(g.MeasureString(this.LabelText + "", this.Font).Width);
+				int valueMinWidthMeasured		= (int)Math.Round(g.MeasureString(this.ValueMin			.ToString(this.ValueFormat), this.Font).Width);
+				int valueCurrentWidthMeasured	= (int)Math.Round(g.MeasureString(this.ValueCurrent		.ToString(this.ValueFormat), this.Font).Width);
+				int valueMouseOverWidthMeasured	= (int)Math.Round(g.MeasureString(this.ValueMouseOver	.ToString(this.ValueFormat), this.Font).Width);
+				int valueMaxWidthMeasured		= (int)Math.Round(g.MeasureString(this.ValueMax			.ToString(this.ValueFormat), this.Font).Width);
+				int labelTextWidthMeasured		= (int)Math.Round(g.MeasureString(this.LabelText + "", this.Font).Width);
 				int labelYposition = base.Padding.Top + paddingTop;
 
 				decimal range = Math.Abs(this.ValueMax - this.ValueMin);

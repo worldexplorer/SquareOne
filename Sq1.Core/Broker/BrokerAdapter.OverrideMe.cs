@@ -71,7 +71,7 @@ namespace Sq1.Core.Broker {
 				return false;
 			}
 
-			PositionPrototype proto = alertCounterparty_toAnnihilate.PositionPrototype_bothForEntryAndExit;
+			PositionPrototype proto = alertCounterparty_toAnnihilate.PositionPrototype_bothForEntryAndExit_nullUnsafe;
 			if (proto == null) {
 				string msg = "POSITION_MUST_HAVE_A_PROTOTYPE";
 				Assembler.PopupException(msg);
@@ -95,7 +95,7 @@ namespace Sq1.Core.Broker {
 			if (alertCounterparty_toAnnihilate.ImStopLoss_prototyped)	newState =  OrderState.SLAnnihilating;
 
 			Order whatWasFilled = alertCounterparty_toAnnihilate.PositionAffected.ExitAlert.OrderFollowed_orCurrentReplacement;
-			string whatWasTheTrigger = "TRIGGER_FOR_ANNIHILATION whatWasFilled[" + whatWasFilled + "]";
+			string whatWasTheTrigger = "TRIGGER_FOR_ANNIHILATION counterPartyWasFilled[" + whatWasFilled + "]";
 			OrderStateMessage omsg_counterParty_annihilating = new OrderStateMessage(orderCounterparty_toAnnihilate, newState, whatWasTheTrigger);
 			this.OrderProcessor.BrokerCallback_orderStateUpdate_mustBeDifferent_postProcess(omsg_counterParty_annihilating);
 

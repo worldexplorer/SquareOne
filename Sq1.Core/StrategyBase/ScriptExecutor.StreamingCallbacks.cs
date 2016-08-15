@@ -98,8 +98,8 @@ namespace Sq1.Core.StrategyBase {
 						Alert stopLoss		= extendPriceEmitted_toCurrentBar_forOrdersReplaced[0];
 						Alert takeProfit	= extendPriceEmitted_toCurrentBar_forOrdersReplaced[1];
 						if (stopLoss.IsExitAlert && takeProfit.IsExitAlert) {
-							PositionPrototype takeProfitPrototype = takeProfit.PositionPrototype_bothForEntryAndExit;
-							PositionPrototype   stopLossPrototype =   stopLoss.PositionPrototype_bothForEntryAndExit;
+							PositionPrototype takeProfitPrototype = takeProfit.PositionPrototype_bothForEntryAndExit_nullUnsafe;
+							PositionPrototype   stopLossPrototype =   stopLoss.PositionPrototype_bothForEntryAndExit_nullUnsafe;
 							if (takeProfitPrototype != null &&
 								  stopLossPrototype != null &&
 								  stopLossPrototype == takeProfitPrototype) {
@@ -132,11 +132,11 @@ namespace Sq1.Core.StrategyBase {
 
 			// for backtest and LivesimDefault, AlertsNew will be empty by now because of this.fillPendings_onEachQuote_onlyForLivesimBrokerDefault(quote_fromStreaming)
 			// for Live and ownLivesimImplementation, we will go through OrderProcessor to submit via BrokerAdapter.OverrideMe
-			ret = this.scriptInvoke_Post_dealWithNewAlerts_fillPendings_killDoomed_emitOrders_both_onNewQuote_onNewBar(quote_fromStreaming);
+			ret = this.ScriptInvoke_Post_dealWithNewAlerts_fillPendings_killDoomed_emitOrders_onNewQuote_onNewBar_onGuiClick(quote_fromStreaming);
 			return ret;
 		}
 
-		ReporterPokeUnit scriptInvoke_Post_dealWithNewAlerts_fillPendings_killDoomed_emitOrders_both_onNewQuote_onNewBar(Quote quoteBoundAttached_toEnrichAlerts) {
+		public ReporterPokeUnit ScriptInvoke_Post_dealWithNewAlerts_fillPendings_killDoomed_emitOrders_onNewQuote_onNewBar_onGuiClick(Quote quoteBoundAttached_toEnrichAlerts) {
 			string msig = "InvokeScript_onNewBar_onNewQuote(WAIT)";
 			ReporterPokeUnit ret = null;
 			string msg5 = "DONT_REMOVE_ALERT_SHOULD_LEAVE_ITS_TRAIL_DURING_LIFETIME_TO_PUT_UNFILLED_DOTS_ON_CHART";
@@ -252,19 +252,19 @@ namespace Sq1.Core.StrategyBase {
 					//MOVED_TO_ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
 					// ^^^ this.DataSource.UnPausePumpingFor(this.Bars, true);	// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
 
-					foreach (Alert alert in alertsNew_afterExec_safeCopy) {
-						string msg = "WHEN_DO_YOU_NEED_TO_REMOVE??? onFill_WILL_REMOVE_IT";
-						//if (alert.OrderFollowed == null) {
-						//    string msg = "STRATEGY_GENERATED_FRESH_ALERTS_MUST_HAVE_ORDERS_BY_NOW__KILLER_ALERTS_DO_NOT_EXIST";
-						//    Assembler.PopupException(msg);
-						//    continue;
-						//}
-						//bool removed = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alert, this, msig);
-						//if (removed == false) {
-						//    string msg3 = "FAILED_TO_REMOVE_INCONSISTENT_ALERT_FROM_PENDING removed=" + removed;
-						//    Assembler.PopupException(msg3 + msig);
-						//}
-					}
+					//foreach (Alert alert in alertsNew_afterExec_safeCopy) {
+					//    string msg = "WHEN_DO_YOU_NEED_TO_REMOVE??? onFill_WILL_REMOVE_IT";
+					//    //if (alert.OrderFollowed == null) {
+					//    //    string msg = "STRATEGY_GENERATED_FRESH_ALERTS_MUST_HAVE_ORDERS_BY_NOW__KILLER_ALERTS_DO_NOT_EXIST";
+					//    //    Assembler.PopupException(msg);
+					//    //    continue;
+					//    //}
+					//    //bool removed = this.ExecutionDataSnapshot.AlertsPending_havingOrderFollowed_notYetFilled.Remove(alert, this, msig);
+					//    //if (removed == false) {
+					//    //    string msg3 = "FAILED_TO_REMOVE_INCONSISTENT_ALERT_FROM_PENDING removed=" + removed;
+					//    //    Assembler.PopupException(msg3 + msig);
+					//    //}
+					//}
 					this.ChartShadow.AlertsPlaced_addRealtime(alertsNew_afterExec_safeCopy);
 				}
 

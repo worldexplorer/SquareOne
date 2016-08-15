@@ -31,5 +31,11 @@ namespace Sq1.Widgets.Exceptions {
 			this.Logrotator.Insert(0, exception);
 			return inserted;
 		}
+
+		public new int RemoveRange(List<Exception> exceptions, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
+			int removed_fromList = base.RemoveRange(exceptions, owner, lockPurpose, waitMillis, absenceThrowsAnError);
+			int removed_fromLogrotator = this.Logrotator.RemoveRange(exceptions);
+			return removed_fromLogrotator;
+		}
 	}
 }

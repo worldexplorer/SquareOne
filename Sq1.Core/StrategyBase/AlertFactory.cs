@@ -11,35 +11,40 @@ namespace Sq1.Core.StrategyBase {
 			this.executor = executor;
 		}
 
-		public Alert EntryAlert_create(Bar entryBar, double stopOrLimitPrice_zeroForMarket, string entrySignalName,
-			Direction direction, MarketLimitStop entryMarketLimitStop) {
-
+		public Alert EntryAlert_create(Bar entryBar, double priceLimitOrStop_zeroForMarket, double priceStopLimitActivation,
+										string entrySignalName, Direction direction, MarketLimitStop entryMarketLimitStop) {
 			this.checkThrow_entryBar_isValid(entryBar);
 
-			double priceScript = stopOrLimitPrice_zeroForMarket;
-			double entryPriceScript = entryMarketLimitStop == MarketLimitStop.Market && stopOrLimitPrice_zeroForMarket == 0
+			double priceScript = priceLimitOrStop_zeroForMarket;
+			double entryPriceScript = entryMarketLimitStop == MarketLimitStop.Market && priceLimitOrStop_zeroForMarket == 0
 				? 0
 				: entryBar.ParentBars.SymbolInfo.Alert_alignToPriceStep(priceScript, direction, entryMarketLimitStop);
 			double shares = this.executor.PositionSizeCalculate(entryBar, entryPriceScript);
 
-			Alert alert = new Alert(entryBar, shares, entryPriceScript, entrySignalName,
-				direction, entryMarketLimitStop, this.executor.Strategy);
+			Alert alert = new Alert(entryBar, shares, entryPriceScript, priceStopLimitActivation,
+				entrySignalName, direction, entryMarketLimitStop, this.executor.Strategy);
 
 			return alert;
 		}
-		public Alert ExitAlert_create(Bar exitBar, Position position, double stopOrLimitPrice_zeroForMarket, string signalName,
+		public Alert ExitAlert_create(Bar exitBar, Position position,
+			double priceLimitOrStop_zeroForMarket, double priceStopLimitActivation, string signalName,
 			Direction direction, MarketLimitStop exitMarketLimitStop) {
 
 			this.checkThrow_entryBar_isValid(exitBar);
 			this.checkThrow_positionToClose_isValid(position);
 
-			double priceScript = stopOrLimitPrice_zeroForMarket;
-			double exitPriceScript = exitMarketLimitStop == MarketLimitStop.Market && stopOrLimitPrice_zeroForMarket == 0
+			double priceScript = priceLimitOrStop_zeroForMarket;
+			double exitPriceScript = exitMarketLimitStop == MarketLimitStop.Market && priceLimitOrStop_zeroForMarket == 0
 				? 0
 				: exitBar.ParentBars.SymbolInfo.Alert_alignToPriceStep(priceScript, direction, exitMarketLimitStop);
+
+			if (exitMarketLimitStop == MarketLimitStop.StopLimit && priceStopLimitActivation > 0) {
+				// LAZY PriceLevelRoundingMode tighterToPriceEntry = position.IsLong && 
+				priceStopLimitActivation = exitBar.ParentBars.SymbolInfo.AlignToPriceStep(priceStopLimitActivation);
+			}
 	
-			Alert alert = new Alert(exitBar, position.Shares, exitPriceScript, signalName,
-				direction, exitMarketLimitStop, this.executor.Strategy);
+			Alert alert = new Alert(exitBar, position.Shares, exitPriceScript, priceStopLimitActivation,
+									signalName, direction, exitMarketLimitStop, this.executor.Strategy);
 			alert.PositionAffected = position;
 			alert.PositionAffected.ExitAlertAttach(alert);
 

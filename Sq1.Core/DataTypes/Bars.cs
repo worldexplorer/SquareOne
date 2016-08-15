@@ -112,7 +112,7 @@ namespace Sq1.Core.DataTypes {
 				return ret;
 			}
 			Bar firstBar_noParentBackRef = this[0].CloneDetached();
-			ret.BarStatic_appendAttach(firstBar_noParentBackRef);
+			ret.BarStatic_appendAttach(firstBar_noParentBackRef, false, false);
 			return ret;
 		}
 		public Bars CloneBars_zeroBarsInside_sameDataSource(string reasonToExist = null, BarScaleInterval scaleIntervalConvertingTo = null, bool exposedInnerBars_forEditor = false) {
@@ -147,14 +147,15 @@ namespace Sq1.Core.DataTypes {
 			}
 			return this.BarStreaming_nullUnsafe;
 		} }
-		public Bar BarStatic_createAppendAttach(DateTime dateTime, double open, double high, double low, double close, double volume, bool throwError = false) { lock (base.BarsLock) {
+		public Bar BarStatic_createAppendAttach(DateTime dateTime, double open, double high, double low, double close, double volume,
+				bool validateAndFix, bool throwError) { lock (base.BarsLock) {
 			Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, dateTime);
 			barAdding.Set_OHLCV_aligned(open, high, low, close, volume, this.SymbolInfo);
-			this.BarStatic_appendAttach(barAdding, throwError);
+			this.BarStatic_appendAttach(barAdding, validateAndFix, throwError);
 			return barAdding;
 		} }
-		public void BarStatic_appendAttach(Bar barAdding, bool throwError = false) { lock (base.BarsLock) {
-			barAdding.ValidateBar_alignToSteps_fixOCbetweenHL(throwError);
+		public void BarStatic_appendAttach(Bar barAdding, bool validateAndFix, bool throwError) { lock (base.BarsLock) {
+			if (validateAndFix) barAdding.ValidateBar_alignToSteps_fixOCbetweenHL(throwError);
 			this.BarStreaming_nullUnsafe = null;
 			this.BarAppendAttach(barAdding);
 			//OBSOLETE_NOW__USE_STREAMING_CONSUMERS_INSTEAD this.raiseOnBarStaticAdded(barAdding);
@@ -287,7 +288,7 @@ namespace Sq1.Core.DataTypes {
 				int high = rand.Next(candleBodyHigh, candleBodyHigh + shadowLimit);
 				int low = rand.Next(candleBodyLow - shadowLimit, candleBodyLow);
 				int volume = rand.Next(volumeMax);
-				this.BarStatic_createAppendAttach(dateCurrent, open, high, low, close, volume);
+				this.BarStatic_createAppendAttach(dateCurrent, open, high, low, close, volume, true, true);
 				dateCurrent = dateCurrent.AddSeconds(this.ScaleInterval.AsTimeSpanInSeconds);
 				open = close;
 			}
@@ -310,7 +311,7 @@ namespace Sq1.Core.DataTypes {
 				if (startDate > DateTime.MinValue && barAdding.DateTimeOpen < startDate) skipThisBar = true; 
 				if (endDate < DateTime.MaxValue && barAdding.DateTimeOpen > endDate) skipThisBar = true;
 				if (skipThisBar) continue;
-				clone.BarStatic_appendAttach(barAdding.CloneDetached());
+				clone.BarStatic_appendAttach(barAdding.CloneDetached(), false, false);
 			}
 			if (exposeInnerBars_forEditor) {
 				clone.InnerBars_exposedOnlyForEditor_fromSafeCopy = clone.BarsList;
@@ -344,7 +345,7 @@ namespace Sq1.Core.DataTypes {
 			for (int i = 1; i < this.Count; i++) {
 				Bar barEach = this[i];
 				if (barEach.DateTimeOpen >= barCompressing.DateTime_nextBarOpen_unconditional) {
-					barsConverted.BarStatic_appendAttach(barCompressing);
+					barsConverted.BarStatic_appendAttach(barCompressing, false, false);
 					barCompressing = new Bar(this.Symbol, scaleIntervalTo, barEach.DateTimeOpen);
 					barCompressing.AbsorbOHLCVfrom(barEach);
 				} else {

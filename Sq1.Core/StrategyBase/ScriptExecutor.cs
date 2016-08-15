@@ -302,10 +302,14 @@ namespace Sq1.Core.StrategyBase {
 					continue;
 				}
 				if (quote.ParentBarStreaming == null) {
-					// essential for a postProcess to have a quoteFilled inside the alert already, to moveAround (illogical I know)
-					string msg = "I_REFUSE_TO_ENRICH_ALERT_WITH_QUOTE_HAVING_NO_PARENT_STREAMING_BAR";
-					Assembler.PopupException(msg, null, false);
-					continue;
+					if (this.Livesimulator.ImRunningLivesim) {
+						quote.StreamingBar_Replace(this.Bars.BarStreaming_nullUnsafeCloneReadonly);
+					} else {
+						// essential for a postProcess to have a quoteFilled inside the alert already, to moveAround (illogical I know)
+						string msg = "I_REFUSE_TO_ENRICH_ALERT_WITH_QUOTE_HAVING_NO_PARENT_STREAMING_BAR";
+						Assembler.PopupException(msg, null, false);
+						continue;
+					}
 				}
 
 				int alertIsLateNbars = alert.PlacedBarIndex - quote.ParentBarStreaming.ParentBarsIndex;
@@ -318,7 +322,9 @@ namespace Sq1.Core.StrategyBase {
 				//alert.PositionSize = this.PositionSize;
 				alert.QuoteCreatedThisAlertServerTime = quote.ServerTime;
 				alert.QuoteCreatedThisAlert = quote;
-				alert.QuoteCreatedThisAlert_deserializable = alert.QuoteCreatedThisAlert.Clone_asCoreQuote();
+
+				bool quoteDeserializable_needsBarDetached = true;
+				alert.QuoteCreatedThisAlert_deserializable = alert.QuoteCreatedThisAlert.Clone_asCoreQuote(quoteDeserializable_needsBarDetached);
 			}
 		}
 
@@ -621,6 +627,34 @@ namespace Sq1.Core.StrategyBase {
 						Assembler.PopupException(msg + msig, ex, false);
 					}
 				}
+			}
+		}
+
+		public void Position_closeImmediately_forOrderInExecution_clickGuiThread(Alert alert, string invoker) {
+			try {
+				bool scriptFinishedRunning = this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, invoker);
+
+				if (alert.PositionAffected == null) {
+					this.AlertPendingKill_appendToDoomed_willBeSubmitted_afterScriptInovcationReturned(alert);
+	 			} else {
+					if (alert.PositionAffected.ExitFilled_price > 0) return;
+					if (alert.PositionAffected.Prototype != null) {
+						List<Alert> alerts_emulateScriptFinished = this
+							.Position_closeImmediately_killAllExitAlerts_ExitAtMarket_ordersEmitRequired(
+								alert.PositionAffected, invoker);
+					}
+					this.AlertPendingKill_appendToDoomed_willBeSubmitted_afterScriptInovcationReturned(alert);
+					int alertsDoomed = this.ExecutionDataSnapshot.AlertsDoomed.Count;
+				}
+
+				Quote quote_whenClicked = alert.DataSource_fromBars.StreamingAdapter
+					.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(alert.Symbol);
+				ReporterPokeUnit pokeUnit = this.ScriptInvoke_Post_dealWithNewAlerts_fillPendings_killDoomed_emitOrders_onNewQuote_onNewBar_onGuiClick(quote_whenClicked);
+				int mustBeZero = pokeUnit.PositionsOpenNow.Count;
+			} catch (Exception ex) {
+				Assembler.PopupException(invoker, ex);
+			} finally {
+				this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, invoker);
 			}
 		}
 	}

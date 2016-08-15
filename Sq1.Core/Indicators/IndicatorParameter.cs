@@ -7,17 +7,21 @@ using Sq1.Core.Correlation;
 namespace Sq1.Core.Indicators {
 	public class IndicatorParameter {
 		[JsonProperty]	public string			IndicatorName;
+		[JsonProperty]	public string			ReasonToExist;
 		[JsonIgnore]	public virtual string	FullName { get { return this.IndicatorName + "." + this.Name; } } // "MAslow.Period" for indicators, plain Name for StrategyParams
 		
 		[JsonProperty]	public string			Name;	// unlike user-editable ScriptParameter, IndicatorParameter.Name is compiled and remains constant (no need for Id)
 		[JsonIgnore]	public string			ReasonToClone	{get; protected set; }
 		[JsonIgnore]	public IndicatorParameter ClonedFrom	{get; protected set; }
 		[JsonIgnore]	public string			Owner_asString;
+
 		[JsonProperty]	public double			ValueMin;
 		[JsonProperty]	public double			ValueMax;
 		[JsonProperty]	public double			ValueIncrement;
 		[JsonProperty]	public double			ValueCurrent;
 		[JsonIgnore]	public int				ValueCurrentAsInteger { get { return (int) Math.Round(this.ValueCurrent); } }
+		[JsonProperty]	public string			ValueFormat;
+
 		[JsonProperty]	public bool				WillBeSequenced;
 		[JsonProperty]	public int				NumberOfRuns { get {
 				// got "Arithmetic opertation resulted in an overflow" when a Script wasn't built (IndicatorParameters restored from StrategyContext?)
@@ -40,6 +44,9 @@ namespace Sq1.Core.Indicators {
 		[JsonProperty]	public bool				BorderShown;
 		[JsonProperty]	public bool				NumericUpdownShown;
 
+		[JsonIgnore]	public Func<double, double>	ValueConverter_meaningfulToStrategy { get; private set; }
+		[JsonIgnore]	public Func<string>			ValueFormat_meaningfulToStrategy	{ get; private set; }
+
 		// DESPITE_NOT_INVOKED_EXPLICITLY__I_GUESS_INITIALIZING_VALUES_USING_OTHER_CONSTRUCTOR_MAY_CORRUPT_JSON_DESERIALIZATION
 		public IndicatorParameter() {
 			BorderShown			= true;
@@ -48,8 +55,13 @@ namespace Sq1.Core.Indicators {
 			ReasonToClone	= "";	// expected to be a non-null string in Clone_asIndicatorParameter() and Clone_asScriptParameter()
 			Owner_asString	= "DESERIALIZED_IndicatorParameter";
 		}
-		public IndicatorParameter(string name, double valueCurrent = double.NaN,
-								  double valueMin = double.NaN, double valueMax = double.NaN, double valueIncrement = double.NaN) : this() {
+		public IndicatorParameter(string name,
+									double valueCurrent = double.NaN,
+									double valueMin = double.NaN,
+									double valueMax = double.NaN,
+									double valueIncrement = double.NaN,
+									string reasonToExist = "INDICATOR_REASON_PARAM_NOT_FILLED",
+									string valueFormat = "N0") : this() {
 			//if (name == null) {
 			//    if (this is IndicatorParameter) {
 			//        name = "INDICATOR_PARAMETER_NAME_NOT_INITIALIZED:" + new Random().Next(1000, 9999);
@@ -72,6 +84,9 @@ namespace Sq1.Core.Indicators {
 			ValueMin		= valueMin;
 			ValueMax		= valueMax;
 			ValueIncrement	= valueIncrement;
+			ValueFormat		= valueFormat;
+			
+			ReasonToExist = reasonToExist;
 		}
 		//public IndicatorParameter(string name = "NAME_NOT_INITIALIZED", string value = "STRING_VALUE_NOT_INITIALIZED") {
 		//	this.Name = name;
@@ -138,6 +153,11 @@ namespace Sq1.Core.Indicators {
 			ret.Owner_asString = owner_asString;
 			ret.ClonedFrom = this;		// if ctx.Indicator parameters would be peeled off from Script-reflected, pushing from Sliders would have a backreference... nemishe?... 
 			return ret;
+		}
+
+		public void RegisterValueConverter_meaningfulToStrategy(Func<double, double> valueConverter, Func<string> valueFormat = null) {
+			this.ValueConverter_meaningfulToStrategy	= valueConverter;
+			this.ValueFormat_meaningfulToStrategy		= valueFormat;
 		}
 	}
 }

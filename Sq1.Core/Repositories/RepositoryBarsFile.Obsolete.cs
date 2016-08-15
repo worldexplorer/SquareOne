@@ -59,42 +59,42 @@ namespace Sq1.Core.Repositories {
 		}
 		#endregion
 		
-		[Obsolete("replaced by barAppendStaticUnconditional()")]
-		int barStaticAppend_saveToFileFullCopy_slow(Bar barLastFormed) {
-			//v1
-			Bars allBars = this.BarsLoadAll_nullUnsafe_threadSafe();
-			if (allBars == null) {
-				allBars = new Bars(barLastFormed.Symbol, barLastFormed.ScaleInterval, "DUMMY: LoadBars()=null");
-			}
-			//allBars.DumpPartialInitFromStreamingBar(bar);
+		//[Obsolete("replaced by barAppendStaticUnconditional()")]
+		//int barStaticAppend_saveToFileFullCopy_slow(Bar barLastFormed) {
+		//    //v1
+		//    Bars allBars = this.BarsLoadAll_nullUnsafe_threadSafe();
+		//    if (allBars == null) {
+		//        allBars = new Bars(barLastFormed.Symbol, barLastFormed.ScaleInterval, "DUMMY: LoadBars()=null");
+		//    }
+		//    //allBars.DumpPartialInitFromStreamingBar(bar);
 			
-			// this happens on a very first quote - this.pushBarToConsumers(StreamingBarFactory.LastBarFormed.Clone());
-			if (allBars.BarStaticLast_nullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) return 0;
+		//    // this happens on a very first quote - this.pushBarToConsumers(StreamingBarFactory.LastBarFormed.Clone());
+		//    if (allBars.BarStaticLast_nullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) return 0;
 			
-			// not really needed to clone to save it in a file, but we became strict to eliminate other bugs
-			barLastFormed = barLastFormed.CloneDetached();
+		//    // not really needed to clone to save it in a file, but we became strict to eliminate other bugs
+		//    barLastFormed = barLastFormed.CloneDetached();
 			
-			// SetParentForBackwardUpdateAutoindex used within Bar only()
-			//barLastFormed.SetParentForBackwardUpdateAutoindex(allBars);
-			if (allBars.BarStaticLast_nullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) {
-				return 0;
-			}
+		//    // SetParentForBackwardUpdateAutoindex used within Bar only()
+		//    //barLastFormed.SetParentForBackwardUpdateAutoindex(allBars);
+		//    if (allBars.BarStaticLast_nullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) {
+		//        return 0;
+		//    }
 			
-			allBars.BarStatic_appendAttach(barLastFormed);
-			int barsSaved = this.BarsSave_threadSafe(allBars);
-			return barsSaved;
-		}
-		[Obsolete("BarAppendStaticUnconditionalThreadSafe() doesnt allow StreamingBar be saved every 10 seconds so there is risk of loosing current-day-bar after app restart")]
-		public int BarAppendStaticUnconditionalThreadSafe(Bar barLastFormed) {
-			int barsAppended = -1;
-			lock (this.fileReadWriteSequentialLock) {
-				barsAppended = this.barAppendStaticUnconditional(barLastFormed);
-				//Assembler.PopupException("Saved [ " + bars.Count + "] bars; symbol[" + bars.Symbol + "] scaleInterval[" + bars.ScaleInterval + "]");
-			}
-			return barsAppended;
-		}
+		//    allBars.BarStatic_appendAttach(barLastFormed);
+		//    int barsSaved = this.BarsSave_threadSafe(allBars);
+		//    return barsSaved;
+		//}
+		//[Obsolete("BarAppendStatic_unconditional_threadSafe() doesnt allow StreamingBar be saved every 10 seconds so there is risk of loosing current-day-bar after app restart")]
+		//public int BarAppendStatic_unconditional_threadSafe(Bar barLastFormed) {
+		//    int barsAppended = -1;
+		//    lock (this.fileReadWriteSequentialLock) {
+		//        barsAppended = this.barAppendStatic_unconditional(barLastFormed);
+		//        //Assembler.PopupException("Saved [ " + bars.Count + "] bars; symbol[" + bars.Symbol + "] scaleInterval[" + bars.ScaleInterval + "]");
+		//    }
+		//    return barsAppended;
+		//}
 		[Obsolete("barAppendStaticUnconditional() doesnt allow StreamingBar be saved every 10 seconds so there is risk of loosing current-day-bar after app restart")]
-		int barAppendStaticUnconditional(Bar barLastFormed) {
+		int barAppendStatic_unconditional(Bar barLastFormed) {
 			int saved = 0;
 			string msig = " barAppendStatic(" + barLastFormed + ")=>[" + this.Abspath + "]";
 

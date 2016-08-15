@@ -69,6 +69,7 @@ namespace Sq1.Widgets.Exceptions {
 				this.dataSnapshot.SplitDistanceHorizontal = this.splitContainerHorizontal.SplitterDistance;
 				this.dataSnapshotSerializer.Serialize();
 			}
+			this.Exceptions.Logrotator.LogRotateSizeLimit_Mb = this.dataSnapshot.LogRotateSizeLimit_Mb;
 
 			if (Thread.CurrentThread.ManagedThreadId != 1) {
 				string msg = "YOU_MUST_CREATE_ME_FROM_GUI_THREAD__HAVING_MAIN_FORM_HANDLE__SEE_SIMILAR_CHECK_IN_MainForm_and_Assembler.Exceptions_duringStartup";

@@ -287,6 +287,16 @@ namespace Sq1.Core.Charting {
 		[JsonProperty]	public int		AlertPendingProtoStopLossCirclePenWidth					{ get; set; }
 
 
+		
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public Color	AlertPendingProtoStopLossActivationCircleColor			{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingProtoStopLossActivationCircleColorAlpha		{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingProtoStopLossActivationCirclePenWidth		{ get; set; }
+
 
 		[Category("5. Annotations and Labels"), Description("description to be composed")]
 		[JsonProperty]	public int		ChartLabelsUpperLeftYstartTopmost						{ get; set; }
@@ -660,6 +670,15 @@ namespace Sq1.Core.Charting {
 			} }
 			
 		[Browsable(false)]
+		[JsonIgnore]	Pen penAlertPendingProtoStopLossActivationEllipse;
+		[Browsable(false)]
+		[JsonIgnore]	public Pen PenAlertPendingProtoStopLossActivationEllipse { get {
+				if (this.penAlertPendingProtoStopLossActivationEllipse == null) this.penAlertPendingProtoStopLossActivationEllipse =
+					new Pen(Color.FromArgb(this.AlertPendingProtoStopLossActivationCircleColorAlpha, this.AlertPendingProtoStopLossActivationCircleColor), this.AlertPendingProtoStopLossActivationCirclePenWidth);
+				return this.penAlertPendingProtoStopLossActivationEllipse;
+			} }
+			
+		[Browsable(false)]
 		[JsonIgnore]	Pen penMousePositionTrackOnGutters;
 		[Browsable(false)]
 		[JsonIgnore]	public Pen PenMousePositionTrackOnGuttersForeground { get {
@@ -858,6 +877,11 @@ namespace Sq1.Core.Charting {
 			AlertPendingProtoStopLossCircleColor = Color.Red;
 			AlertPendingProtoStopLossCircleColorAlpha = 100;
 			AlertPendingProtoStopLossCirclePenWidth = 2;
+
+			AlertPendingProtoStopLossActivationCircleColor = Color.DeepSkyBlue;
+			AlertPendingProtoStopLossActivationCircleColorAlpha = 100;
+			AlertPendingProtoStopLossActivationCirclePenWidth = 2;
+
 
 			MousePositionTrackOnGutters = true;
 			MousePositionTrackOnGuttersColorBackground = Color.Black;

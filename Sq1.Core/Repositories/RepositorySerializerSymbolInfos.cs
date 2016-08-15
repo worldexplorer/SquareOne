@@ -10,7 +10,7 @@ namespace Sq1.Core.Repositories {
 		//public List<SymbolInfo> SymbolInfos { get { return base.EntityDeserialized; } }
 		public List<SymbolInfo> SymbolInfos { get { return base.EntityDeserialized; } }
 
-		public SymbolInfo FindSymbolInfo_nullUnsafe(string symbol) {
+		public SymbolInfo FindSymbolInfo_nullUnsafe(string symbol, bool caseSensitive = false) {
 			SymbolInfo ret = null;
 			if (string.IsNullOrEmpty(symbol)) return ret;
 			foreach (SymbolInfo eachSymbolInfo in this.SymbolInfos) {
@@ -18,7 +18,10 @@ namespace Sq1.Core.Repositories {
 					string msg = "DELETE_Symbol=null_IN_SYMBOL_INFO_EDITOR";
 					continue;
 				}
-				if (eachSymbolInfo.Symbol.ToUpper() != symbol.ToUpper()) continue;
+				bool iFoundIt = caseSensitive
+					? eachSymbolInfo.Symbol.ToUpper()	== symbol.ToUpper()
+					: eachSymbolInfo.Symbol				== symbol;
+				if (iFoundIt == false) continue;
 				ret = eachSymbolInfo;
 				break;
 			}

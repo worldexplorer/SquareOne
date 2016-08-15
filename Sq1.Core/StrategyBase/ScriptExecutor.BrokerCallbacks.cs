@@ -101,8 +101,14 @@ namespace Sq1.Core.StrategyBase {
 					if (alertKilled.OrderFollowed_orCurrentReplacement.State == OrderState.Rejected) {
 						msg = "REJECTED_KILLED_WITHOUT_HOOK KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed";
 					} else {
-						msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed DELETED_EARLIER_OR_NEVER_BEEN_ADDED";
-						Assembler.PopupException(msg, null, false);
+						if (alertKilled.PositionPrototype_bothForEntryAndExit_nullUnsafe != null && (
+							alertKilled.PositionPrototype_bothForEntryAndExit_nullUnsafe.StopLossAlert_forMoveAndAnnihilation == alertKilled ||
+							alertKilled.PositionPrototype_bothForEntryAndExit_nullUnsafe.TakeProfitAlert_forMoveAndAnnihilation == alertKilled)) {
+							msg = "OKAY_IF_REACHED_TP_THEN_SL_IS_ANNIHILATED_WITHOUT_HOOK";
+						} else {
+							msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed DELETED_EARLIER_OR_NEVER_BEEN_ADDED";
+							Assembler.PopupException(msg, null, false);
+						}
 					}
 					if (victimKilled != null) {
 						this.OrderProcessor.AppendMessage_propagateToGui(victimKilled, msg);
@@ -281,12 +287,20 @@ namespace Sq1.Core.StrategyBase {
 					Assembler.PopupException(msg);
 				}
 				//THIS_ALREADY_IS_A_CLONE alertFilled.QuoteFilledThisAlertDuringBacktestNotLive = quoteFilledThisAlertNullForLive.Clone();	// CLONE_TO_FREEZE_AS_IT_HAPPENED_IGNORING_WHATEVER_HAPPENED_WITH_ORIGINAL_QUOTE_AFTERWARDS
-				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive = quoteFilledThisAlert_nullFromOrderProcessorWhenLive;	// CLONE_TO_FREEZE_AS_IT_HAPPENED_IGNORING_WHATEVER_HAPPENED_WITH_ORIGINAL_QUOTE_AFTERWARDS
-				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive.ItriggeredFillAtBidOrAsk = alertFilled.BidOrAsk_willFillMe;
+				alertFilled.QuoteFilledThisAlert_duringBacktestNotLive = quoteFilledThisAlert_nullFromOrderProcessorWhenLive;	// CLONE_TO_FREEZE_AS_IT_HAPPENED_IGNORING_WHATEVER_HAPPENED_WITH_ORIGINAL_QUOTE_AFTERWARDS
+				alertFilled.QuoteFilledThisAlert_duringBacktestNotLive.ItriggeredFillAtBidOrAsk = alertFilled.BidOrAsk_willFillMe;
 			} else {
 				//LIVEISM
 				alertFilled.QuoteCurrent_whenThisAlertFilled = this.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(alertFilled.Symbol);
 				alertFilled.QuoteCurrent_whenThisAlertFilled_deserializable = alertFilled.QuoteCurrent_whenThisAlertFilled.Clone_asCoreQuote();
+				if (alertFilled.OrderFollowed_orCurrentReplacement != null) {
+					alertFilled.OrderFollowed_orCurrentReplacement.Absorb_BidAsk_whenFilled();
+				}
+
+				//MOVED_INTO_ScriptExecutor_OTHERWIZE_GetQuoteLast_forSymbol_nullUnsafe()_COMLAINS_"MUST_NOT_BE_NULL_FOR_LIVESIM_TOO" fixing "I_REFUSE_TO_ENRICH_ALERT_WITH_QUOTE_HAVING_NO_PARENT_STREAMING_BAR"
+				//if (alertFilled.QuoteCurrent_whenThisAlertFilled.ParentBarStreaming == null) {
+				//    alertFilled.QuoteCurrent_whenThisAlertFilled.StreamingBar_Replace(this.Bars.BarStreaming_nullUnsafeCloneReadonly);
+				//}
 			}
 
 			//DILUTED_30_LINES_BELOW
@@ -381,7 +395,7 @@ namespace Sq1.Core.StrategyBase {
 			//}
 
 			AlertList alertsNewAfterAlertFilled = new AlertList("alertsNewAfterAlertFilled", this.ExecutionDataSnapshot);
-			PositionPrototype proto = alertFilled.PositionPrototype_bothForEntryAndExit;
+			PositionPrototype proto = alertFilled.PositionPrototype_bothForEntryAndExit_nullUnsafe;
 			if (proto != null) {
 				// 0. once again, set ExitAlert to What was actually filled, because prototypeEntry created SL & TP, which were both written into ExitAlert;
 				// so if we caught the Loss and SL was executed, position.ExitAlert will still contain TP if we don't set it here

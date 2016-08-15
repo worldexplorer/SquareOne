@@ -47,9 +47,10 @@ namespace Sq1.Core.Support {
 			string ret = "";
 			List<string> stackAsList = new List<string>(this.recursionDetector.ToArray());
 			//LOOKS_LIKE_THEY_INSERT_RECENT_INTO_LIST__NO_NEED_TO_REVERSE stackAsList.Reverse();
+			int i = 1;
 			foreach (string msig in stackAsList) {
 				if (ret != "") ret += "," + Environment.NewLine;
-				ret += msig;
+				ret += "[" + i + "] " + msig;
 			}
 			return ret;
 		} }

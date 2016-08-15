@@ -61,32 +61,48 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	double				Qty								{ get; private set; }
 		[JsonProperty]	public	double				PriceScript						{ get; private set; }		//doesn't contain Slippage; ZERO for Market
 		[JsonProperty]	public	double				PriceScriptAligned				{ get; private set; }		//doesn't contain Slippage
-		[JsonProperty]	public	double				CurrentAsk						{ get; private set; }
-		[JsonProperty]	public	double				CurrentBid						{ get; private set; }
+		[JsonProperty]	public	double				Ask_whenCreated					{ get; private set; }
+		[JsonProperty]	public	double				Bid_whenCreated					{ get; private set; }
 		[JsonProperty]	public	SpreadSide			SpreadSide						{ get; private set; }
-		[JsonProperty]	public	double				PriceCurBidOrAsk				{ get {
-				double ret = 0;
-				switch (this.SpreadSide) {
-					case SpreadSide.AskCrossed:
-					case SpreadSide.AskTidal:
-						ret = this.CurrentAsk;
-						break;
-					case SpreadSide.BidCrossed:
-					case SpreadSide.BidTidal:
-						ret = this.CurrentBid;
-						break;
-					default:
-						break;
-				}
-				return ret;
-		} }
+		//[JsonProperty]	public	double				BidOrAsk_whenEmitted			{ get {
+		//        double ret = 0;
+		//        switch (this.SpreadSide) {
+		//            case SpreadSide.AskCrossed:
+		//            case SpreadSide.AskTidal:
+		//                ret = this.Ask_whenEmitted;
+		//                break;
+		//            case SpreadSide.BidCrossed:
+		//            case SpreadSide.BidTidal:
+		//                ret = this.Bid_whenEmitted;
+		//                break;
+		//            default:
+		//                break;
+		//        }
+		//        return ret;
+		//} }
 		[JsonProperty]	public	double				PriceEmitted					{ get; private set; }		//PriceRequested = PriceFromStreaming + Slippage
+		[JsonProperty]	public	double				PriceStopLimitActivation;
 		[JsonProperty]	public	double				SlippageApplied					{ get; private set; }		//from SymbolInfo
 		[JsonProperty]	public	int					SlippageAppliedIndex			{ get; private set; }		//from SymbolInfo
 
 		[JsonProperty]	public	MarketLimitStop		MarketLimitStop;				//BROKER_ADAPDER_CAN_REPLACE_ORIGINAL_ALERT_TYPE { get; private set; }
 		[JsonProperty]	public	MarketOrderAs		MarketOrderAs					{ get; private set; }
-		[JsonProperty]	public	string 				MarketLimitStopAsString;		//BROKER_ADAPDER_LEAVES_COMMENTS_WHEN_CHANGING__ORIGINAL_ALERT_TYPE { get; private set; }
+		[JsonProperty]	public	string 				MarketLimitStop_asString;		//BROKER_ADAPDER_LEAVES_COMMENTS_WHEN_CHANGING__ORIGINAL_ALERT_TYPE { get; private set; }
+		[JsonProperty]	public	string				MarketLimitStopFinal_asString	{ get { 
+			switch (this.MarketLimitStop) {
+				case MarketLimitStop.Limit:
+					return this.MarketOrderAs != MarketOrderAs.Unknown ? this.MarketOrderAs.ToString() : this.MarketLimitStop.ToString();
+
+				case MarketLimitStop.Market:
+				case MarketLimitStop.Stop:
+				case MarketLimitStop.StopLimit:
+				case MarketLimitStop.Unknown:
+					return this.MarketLimitStop.ToString();
+
+				default:
+					return "NO_HANDLER_FOR_NEW_ORDER_TYPE[" + this.MarketLimitStop + "] Alert.get_MarketLimitStopFinal_asString";
+			}
+		} }
 
 		[JsonProperty]	public	Direction			Direction						{ get; private set; }
 		[JsonIgnore]	public	string				DirectionAsString				{ get; private set; }
@@ -98,9 +114,6 @@ namespace Sq1.Core.Execution {
 		[JsonIgnore]	public	bool				IsExitAlert						{ get { return !this.IsEntryAlert; } }
 
 		[JsonIgnore]	public	PositionLongShort	PositionLongShortFromDirection	{ get { return MarketConverter.LongShortFromDirection(this.Direction); } }
-
-		[JsonProperty]	public	double				PriceStopLimitActivation;
-		[JsonProperty]	public	double				PriceStopLimitActivationAligned	{ get; private set; }
 
 		[JsonIgnore]			Backtester			Backtester_nullUnsafeForDeserialized			{ get {
 				if (this.Strategy == null) {
@@ -143,12 +156,12 @@ namespace Sq1.Core.Execution {
 		}
 
 		[JsonProperty]	public	DateTime			QuoteCreatedThisAlertServerTime;	// EXECUTOR_ENRICHES_ALERT_WITH_QUOTE { get; private set; }
-		[JsonProperty]	public	Quote				QuoteCreatedThisAlert_deserializable;
-		[JsonProperty]	public	Quote				QuoteCurrent_whenThisAlertFilled_deserializable;
-
 		[JsonIgnore]	public	Quote				QuoteCreatedThisAlert;
-		[JsonIgnore]	public	Quote				QuoteFilledThisAlertDuringBacktestNotLive;
+		[JsonProperty]	public	Quote				QuoteCreatedThisAlert_deserializable;				// deserializable is a SafeClone and isnt changed by Streaming anymore
+
+		[JsonIgnore]	public	Quote				QuoteFilledThisAlert_duringBacktestNotLive;
 		[JsonIgnore]	public	Quote				QuoteCurrent_whenThisAlertFilled;
+		[JsonProperty]	public	Quote				QuoteCurrent_whenThisAlertFilled_deserializable;	// deserializable is a SafeClone and isnt changed by Streaming anymore
 
 		[JsonIgnore]	public	Position			PositionAffected;
 		[JsonIgnore]	public	DateTime			PositionEntryDateTimeBarAligned				{ get {
@@ -232,7 +245,7 @@ namespace Sq1.Core.Execution {
 					return true;
 				}
 
-				bool noQuoteFilled = (this.QuoteFilledThisAlertDuringBacktestNotLive == null);
+				bool noQuoteFilled = (this.QuoteFilledThisAlert_duringBacktestNotLive == null);
 				if (noQuoteFilled) {
 					#if DEBUG
 					Debugger.Break();
@@ -242,7 +255,7 @@ namespace Sq1.Core.Execution {
 
 
 				bool fillAtSlimBarIsWithinSpread = this.FilledBar_frozenAtFill.FillAtSlimBarIsWithinSpread(
-					this.PriceFilled_fromPosition, this.QuoteFilledThisAlertDuringBacktestNotLive.Spread);
+					this.PriceFilled_fromPosition, this.QuoteFilledThisAlert_duringBacktestNotLive.Spread);
 				if (!fillAtSlimBarIsWithinSpread) {
 					#if DEBUG
 					Debugger.Break();
@@ -260,7 +273,7 @@ namespace Sq1.Core.Execution {
 						return true;
 					}
 
-					bool containsBidAsk = this.FilledBar_frozenAtFill.ContainsBidAsk_forQuoteGenerated(this.QuoteFilledThisAlertDuringBacktestNotLive);
+					bool containsBidAsk = this.FilledBar_frozenAtFill.ContainsBidAsk_forQuoteGenerated(this.QuoteFilledThisAlert_duringBacktestNotLive);
 					if (!containsBidAsk && fillAtSlimBarIsWithinSpread) {
 						#if DEBUG
 						Debugger.Break();
@@ -269,7 +282,7 @@ namespace Sq1.Core.Execution {
 					}
 				}
 				
-				bool priceBetweenFilledQuotesBidAsk = this.QuoteFilledThisAlertDuringBacktestNotLive.PriceBetweenBidAsk(this.PriceFilled_fromPosition);
+				bool priceBetweenFilledQuotesBidAsk = this.QuoteFilledThisAlert_duringBacktestNotLive.PriceBetweenBidAsk(this.PriceFilled_fromPosition);
 				if (!priceBetweenFilledQuotesBidAsk) {
 					#if DEBUG
 					Debugger.Break();
@@ -291,8 +304,8 @@ namespace Sq1.Core.Execution {
 		//		return outsideBar;
 		//	} }
 		[JsonIgnore]	public	bool				IsFilledOutsideQuote_DEBUG_CHECK { get {
-				if (this.QuoteFilledThisAlertDuringBacktestNotLive == null) return false;		// this is LIVE - I'm just notified "your order is filled" at a random moment; no way I could possibly figure out
-				bool insideQuote = (this.PriceFilled_fromPosition >= this.QuoteFilledThisAlertDuringBacktestNotLive.Bid && this.PriceFilled_fromPosition <= this.QuoteFilledThisAlertDuringBacktestNotLive.Ask);
+				if (this.QuoteFilledThisAlert_duringBacktestNotLive == null) return false;		// this is LIVE - I'm just notified "your order is filled" at a random moment; no way I could possibly figure out
+				bool insideQuote = (this.PriceFilled_fromPosition >= this.QuoteFilledThisAlert_duringBacktestNotLive.Bid && this.PriceFilled_fromPosition <= this.QuoteFilledThisAlert_duringBacktestNotLive.Ask);
 				bool outsideQuote = !insideQuote; 
 				#if DEBUG
 				if (outsideQuote) {
@@ -329,7 +342,7 @@ namespace Sq1.Core.Execution {
 		} }
 		[JsonIgnore]	public	bool				IsDisposed;
 
-		[JsonIgnore]	public						PositionPrototype	PositionPrototype_bothForEntryAndExit { get {
+		[JsonIgnore]	public						PositionPrototype	PositionPrototype_bothForEntryAndExit_nullUnsafe { get {
 			if (this.IsEntryAlert) return this.PositionPrototype_onlyForEntryAlert;
 			PositionPrototype ret = null;
 			if (this.PositionAffected == null) return ret;
@@ -341,14 +354,14 @@ namespace Sq1.Core.Execution {
 		[JsonIgnore]	public						PositionPrototype	PositionPrototype_onlyForEntryAlert;
 		[JsonIgnore]	public	Alert				TakeProfit_prototyped	{ get {
 			Alert ret = null;
-			if (this.PositionPrototype_bothForEntryAndExit == null) return ret;
-			ret = this.PositionPrototype_bothForEntryAndExit.TakeProfitAlert_forMoveAndAnnihilation;
+			if (this.PositionPrototype_bothForEntryAndExit_nullUnsafe == null) return ret;
+			ret = this.PositionPrototype_bothForEntryAndExit_nullUnsafe.TakeProfitAlert_forMoveAndAnnihilation;
 			return ret;
 		} }
 		[JsonIgnore]	public	Alert				StopLoss_prototyped		{ get {
 			Alert ret = null;
-			if (this.PositionPrototype_bothForEntryAndExit == null) return ret;
-			ret = this.PositionPrototype_bothForEntryAndExit.StopLossAlert_forMoveAndAnnihilation;
+			if (this.PositionPrototype_bothForEntryAndExit_nullUnsafe == null) return ret;
+			ret = this.PositionPrototype_bothForEntryAndExit_nullUnsafe.StopLossAlert_forMoveAndAnnihilation;
 			return ret;
 		} }
 		[JsonIgnore]	public	bool				ImTakeProfit_prototyped { get { return this.TakeProfit_prototyped == this; } }
@@ -375,7 +388,7 @@ namespace Sq1.Core.Execution {
 		}
 		
 		~Alert() { this.Dispose(); }
-		public	Alert() {
+		Alert() {
 			string msig = "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
 			
 			PlacedBarIndex				= -1;
@@ -408,8 +421,8 @@ namespace Sq1.Core.Execution {
 			PricesEmitted_byBarIndex			= new SortedDictionary<int, List<double>>();
 			OrdersFollowed_killedAndReplaced	= new List<Order>();
 		}
-		public	Alert(Bar bar, double qty, double priceScript_limitOrStop_zeroForMarket, string signalName,
-				Direction direction, MarketLimitStop marketLimitStop, Strategy strategy) : this() {
+		public	Alert(Bar bar, double qty, double priceScript_limitOrStop_zeroForMarket, double priceStopLimitActivation,
+						string signalName, Direction direction, MarketLimitStop marketLimitStop, Strategy strategy) : this() {
 
 			string msig = " //Alert.ctor(" + qty + "@" + priceScript_limitOrStop_zeroForMarket
 				+ " " + direction + " " + marketLimitStop + " " + signalName + " " + strategy + ")";
@@ -453,11 +466,12 @@ namespace Sq1.Core.Execution {
 
 			this.Qty						= qty;
 			this.PriceScript				= priceScript_limitOrStop_zeroForMarket;
+			this.PriceStopLimitActivation	= priceStopLimitActivation;
 			this.SignalName					= signalName;
 			this.Direction					= direction;
 			this.DirectionAsString			= this.Direction.ToString();
 			this.MarketLimitStop			= marketLimitStop;
-			this.MarketLimitStopAsString	= this.MarketLimitStop.ToString();			
+			this.MarketLimitStop_asString	= this.MarketLimitStop.ToString();			
 
 			if (strategy == null) {
 				string msg = "SERIALIZER_LOGROTATE<ORDER>_GOT_A_SUBMITTED_ALERT_WITH_STRATEGY_NULL__HOW_COME?";
@@ -495,8 +509,8 @@ namespace Sq1.Core.Execution {
 				string msg = "NPE_AHEAD?... OR_ONLY_WITH_OWN_LIVEIM_ADAPTERS???...";
 				//Assembler.PopupException(msg);
 			}
-			this.CurrentAsk = snap.GetBestAsk_notAligned_forMarketOrder_fromQuoteLast(this.Symbol);
-			this.CurrentBid = snap.GetBestBid_notAligned_forMarketOrder_fromQuoteLast(this.Symbol);
+			this.Ask_whenCreated = snap.GetBestAsk_notAligned_forMarketOrder_fromQuoteLast(this.Symbol);
+			this.Bid_whenCreated = snap.GetBestBid_notAligned_forMarketOrder_fromQuoteLast(this.Symbol);
 
 			
 			bool willGetFromStreaming =
@@ -505,8 +519,9 @@ namespace Sq1.Core.Execution {
 
 			if (this.MarketLimitStop == MarketLimitStop.Market && willGetFromStreaming) {
 				SpreadSide spreadSide = SpreadSide.Unknown;
-				this.PriceEmitted = snap.GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteLast(
+				double current_bidAsk_aligned = snap.GetBidOrAsk_aligned_forTidalOrCrossMarket_fromQuoteLast(
 						this.Symbol, this.Direction, out spreadSide, false);
+				this.PriceEmitted = current_bidAsk_aligned;
 				this.SpreadSide = spreadSide;
 				if (useFirstSlippageForMarketAlertsAsLimit) {
 					this.SlippageAppliedIndex = 0;
@@ -559,7 +574,7 @@ namespace Sq1.Core.Execution {
 			msg.Append(": ");
 			msg.Append(this.DirectionAsString);
 			msg.Append(" ");
-			msg.Append(this.MarketLimitStopAsString);
+			msg.Append(this.MarketLimitStop_asString);
 			msg.Append(" ");
 			msg.Append(Qty);
 			msg.Append("*");
@@ -595,7 +610,7 @@ namespace Sq1.Core.Execution {
 			string longOrderType = (MarketLimitStop == MarketLimitStop.StopLimit) ? "" : "\t";
 
 			string msg = DirectionAsString
-				+ "\t" + MarketLimitStopAsString
+				+ "\t" + MarketLimitStop_asString
 				+ "\t" + longOrderType + Qty + "/" + this.QtyFilled_fromPosition + "filled*" + Symbol
 				+ "@" + PriceScript + "/" + this.PriceFilled_fromPosition + "filled"
 				;
@@ -776,20 +791,20 @@ namespace Sq1.Core.Execution {
 				case MarketOrderAs.LimitTidal:
 					bool tidalUsesBid = this.Direction == Direction.Short || this.Direction == Direction.Sell;
 					sum = tidalUsesBid
-						? this.CurrentBid + this.SlippageApplied - this.PriceEmitted
-						: this.PriceEmitted - this.SlippageApplied - this.CurrentAsk;
+						? this.Bid_whenCreated + this.SlippageApplied - this.PriceEmitted
+						: this.PriceEmitted - this.SlippageApplied - this.Ask_whenCreated;
 #if DEBUG
 					if (sum != 0) Debugger.Break();
 #endif
 					break;
 
 				case MarketOrderAs.LimitCrossMarket:
-					bool crossmarketUsesAsk = this.Direction == Direction.Short || this.Direction == Direction.Sell;
+					bool crossmarketUsesAsk = this.Direction == Direction.Buy || this.Direction == Direction.Cover;
 					sum = crossmarketUsesAsk
-						? this.CurrentAsk - this.SlippageApplied - this.PriceEmitted
-						: this.PriceEmitted - this.SlippageApplied - this.CurrentBid;
+						? this.Ask_whenCreated - this.SlippageApplied - this.PriceEmitted
+						: this.PriceEmitted - this.SlippageApplied - this.Bid_whenCreated;
 #if DEBUG
-					if (sum != 0) Debugger.Break();
+					//if (sum != 0) Debugger.Break();
 #endif
 					break;
 

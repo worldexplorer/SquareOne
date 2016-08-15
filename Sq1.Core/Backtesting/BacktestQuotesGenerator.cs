@@ -415,6 +415,27 @@ namespace Sq1.Core.Backtesting {
 
 			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktest_nullUnsafe.SpreadModeler;
 			switch (alert.MarketLimitStop) {
+				case MarketLimitStop.Market:
+					switch (alert.Direction) {
+						case Direction.Buy:
+						case Direction.Cover:
+							ret.Ask = quoteGenerated.Ask;
+							ret.TradedAt = BidOrAsk.Ask;
+							modeler.FillBid_basedOnAsk_aligned(ret);
+							break;
+						case Direction.Short:
+						case Direction.Sell:
+							ret.Bid = quoteGenerated.Bid;
+							ret.TradedAt = BidOrAsk.Bid;
+							modeler.FillAsk_basedOnBid_aligned(ret);
+							break;
+						default:
+							string msg = "ALERT_MARKET_DIRECTION_UNKNOWN direction[" + alert.Direction
+								+ "] is not Buy/Cover/Short/Sell modelQuote_thatCouldFillAlert()";
+							throw new Exception(msg + msig);
+					}
+					break;
+
 				case MarketLimitStop.Limit:
 					switch (alert.Direction) {
 						case Direction.Buy:
@@ -443,7 +464,9 @@ namespace Sq1.Core.Backtesting {
 							throw new Exception(msg + msig);
 					}
 					break;
+
 				case MarketLimitStop.Stop:
+				case MarketLimitStop.StopLimit: // HACK one QuoteGenerated might satisfy SLactivation, the other one might fill it; time to introduce state of SL into Alert???
 					switch (alert.Direction) {
 						case Direction.Buy:
 						case Direction.Cover:
@@ -471,31 +494,13 @@ namespace Sq1.Core.Backtesting {
 							throw new Exception(msg + msig);
 					}
 					break;
-				case MarketLimitStop.Market:
-					switch (alert.Direction) {
-						case Direction.Buy:
-						case Direction.Cover:
-							ret.Ask = quoteGenerated.Ask;
-							ret.TradedAt = BidOrAsk.Ask;
-							modeler.FillBid_basedOnAsk_aligned(ret);
-							break;
-						case Direction.Short:
-						case Direction.Sell:
-							ret.Bid = quoteGenerated.Bid;
-							ret.TradedAt = BidOrAsk.Bid;
-							modeler.FillAsk_basedOnBid_aligned(ret);
-							break;
-						default:
-							string msg = "ALERT_MARKET_DIRECTION_UNKNOWN direction[" + alert.Direction
-								+ "] is not Buy/Cover/Short/Sell modelQuote_thatCouldFillAlert()";
-							throw new Exception(msg + msig);
-					}
-					break;
-				case MarketLimitStop.StopLimit: // HACK one QuoteGenerated might satisfy SLactivation, the other one might fill it; time to introduce state of SL into Alert???
-					string msg2 = "STOP_LIMIT_QUOTE_FILLING_GENERATION_REQUIRES_TWO_STEPS_NYI"
-						+ "; pass SLActivation=0 to PositionPrototypeActivator so that it generates STOP instead of STOPLOSS which I can't generate yet";
-					Assembler.PopupException(msg2 + msig, null, false);
-					break;
+
+				//case MarketLimitStop.StopLimit: // HACK one QuoteGenerated might satisfy SLactivation, the other one might fill it; time to introduce state of SL into Alert???
+				//    string msg2 = "STOP_LIMIT_QUOTE_FILLING_GENERATION_REQUIRES_TWO_STEPS_NYI"
+				//        + "; pass SLActivation=0 to PositionPrototypeActivator so that it generates STOP instead of STOPLOSS which I can't generate yet";
+				//    Assembler.PopupException(msg2 + msig, null, false);
+				//    break;
+
 				default:
 					throw new Exception("ALERT_TYPE_UNKNOWN MarketLimitStop[" + alert.MarketLimitStop + "] is not Market/Limit/Stop modelQuote_thatCouldFillAlert()");
 			}

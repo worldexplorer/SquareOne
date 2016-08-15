@@ -15,13 +15,14 @@ namespace Sq1.Core.Broker {
 		protected	List<Order>		InnerOrderList_recentFirst	{ get; private set; }
 		public		List<Order>		SafeCopy					{ get { lock (this.ordersLock) { return new List<Order>(this.InnerOrderList_recentFirst); } } }
 		public		string			SessionSernosAsString		{ get { lock (this.ordersLock) {
-					//const string sessionSernos = "";
-					//return this.Aggregate(sessionSernos, (current, order) => current + (" " + order.SernoSession));
-					string ret = "";
-					foreach (Order order in this.InnerOrderList_recentFirst) ret += order.SernoSession + " "; 
-					ret.TrimEnd(" ,".ToCharArray());
-					return ret;
-				} } }
+			//const string sessionSernos = "";
+			//return this.Aggregate(sessionSernos, (current, order) => current + (" " + order.SernoSession));
+			string ret = "";
+			foreach (Order order in this.InnerOrderList_recentFirst) ret += order.SernoSession + " "; 
+			ret.TrimEnd(" ,".ToCharArray());
+			return ret;
+		} } }
+
 					List<string>	ordersGuids_recentFirst;	//{ get; protected set; }
 		public		Order			MostRecent_nullUnsafe		{ get { lock (this.ordersLock) {
 			Order ret = null;

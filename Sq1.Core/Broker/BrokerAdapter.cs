@@ -243,6 +243,11 @@ namespace Sq1.Core.Broker {
 				//this.OrderProcessor.DataSnapshot.SwitchLanes_forOrder_postStatusUpdate(order);
 				this.Order_submit_oneThread_forAllNewAlerts_trampoline(order);
 
+				
+				bool prototyped_neverReplaceTakeProfit = order.Alert.IsExitAlert && order.Alert.PositionPrototype_bothForEntryAndExit_nullUnsafe != null;
+				if (prototyped_neverReplaceTakeProfit) continue;
+
+				if (order.Alert.Bars.SymbolInfo.IfNoTransactionCallback_TimerEnabled == false) continue;
 				bool stuckInSubmitted_watchTimerScheduled = this.OrderProcessor.OPPexpired_StuckInSubmitted.ScheduleTimer_forStuckInSubmitted_ifMillisAllowed_nonZero(order);
 			}
 		} }
@@ -291,7 +296,7 @@ namespace Sq1.Core.Broker {
 					string msg1 = "SIMILAR_NOT_FOUND_IN_PENDINGS [" + suggestion_SimilarOrder + "]";
 					//Assembler.PopupException(msg1 + msg_order + msig, null, false);
 
-					if (lane_withSimilarOrder == null) lane_withSimilarOrder = this.OrderProcessor.DataSnapshot.OrdersAll;
+					if (lane_withSimilarOrder == null) lane_withSimilarOrder = this.OrderProcessor.DataSnapshot.OrdersAll_lanesSuggestor;
 					if (lane_withSimilarOrder != null) {
 						orderSimilar = lane_withSimilarOrder.ScanRecent_forSimilarPendingOrder_notSame(order, out lane_withSimilarOrder, out suggestion_SimilarOrder);
 					}
@@ -373,14 +378,14 @@ namespace Sq1.Core.Broker {
 									+ ") brokerSpecificDetails[" + brokerSpecificDetails + "]";
 							} else {
 								alert.MarketLimitStop = MarketLimitStop.Limit;
-								alert.MarketLimitStopAsString += " => " + alert.MarketLimitStop + " (" + alert.MarketOrderAs + ")";
+								alert.MarketLimitStop_asString += " => " + alert.MarketLimitStop + " (" + alert.MarketOrderAs + ")";
 								msg = "SYMBOL_INFO_CONVERSION_MarketMinMaxSentToBroker: [" + beforeBrokerSpecific + "]=>[" + alert.MarketLimitStop + "](" + alert.MarketOrderAs + ")";
 							}
 							break;
 
 						case MarketOrderAs.LimitCrossMarket:
 							alert.MarketLimitStop = MarketLimitStop.Limit;
-							alert.MarketLimitStopAsString += " => " + alert.MarketLimitStop + " (" + alert.MarketOrderAs + ")";
+							alert.MarketLimitStop_asString += " => " + alert.MarketLimitStop + " (" + alert.MarketOrderAs + ")";
 							msg = "";
 							if (alert.Slippage_maxIndex_forLimitOrdersOnly > 0) {
 								//double slippage = symbolInfo.GetSlippage_signAware_forLimitAlertsOnly(alert, 0);
@@ -407,7 +412,7 @@ namespace Sq1.Core.Broker {
 
 						case MarketOrderAs.LimitTidal:
 							alert.MarketLimitStop = MarketLimitStop.Limit;
-							alert.MarketLimitStopAsString += " => " + alert.MarketLimitStop + " (" + alert.MarketOrderAs + ")";
+							alert.MarketLimitStop_asString += " => " + alert.MarketLimitStop + " (" + alert.MarketOrderAs + ")";
 							msg = "";
 							if (alert.Slippage_maxIndex_forLimitOrdersOnly > 0) {
 								//double slippage = symbolInfo.GetSlippage_signAware_forLimitAlertsOnly(alert, 0);

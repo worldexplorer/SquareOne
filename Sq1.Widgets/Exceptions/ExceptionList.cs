@@ -15,5 +15,9 @@ namespace Sq1.Widgets.Exceptions {
 		public new bool InsertUnique(Exception exception, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
 			return base.InsertUnique(exception, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
 		}
+
+		public new int RemoveRange(List<Exception> exceptions, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
+			return base.RemoveRange(exceptions, owner, lockPurpose, waitMillis, absenceThrowsAnError);
+		}
 	}
 }

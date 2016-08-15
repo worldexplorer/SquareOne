@@ -230,11 +230,11 @@ namespace Sq1.Core.Broker {
 		Order findEmergencyReplacement_forRejectedOrder(Order orderRejected) {
 			OrderLane	suggestedLane_nullUnsafe = null;
 			string		suggestion = "PASS_suggestLane=TRUE";
-			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forOrderGuid(orderRejected.GUID, out suggestedLane_nullUnsafe, out suggestion, true);
+			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll_lanesSuggestor.ScanRecent_forOrderGuid(orderRejected.GUID, out suggestedLane_nullUnsafe, out suggestion, true);
 			if (rejected == null) {
 				throw new Exception("OrderRejected[" + orderRejected + "] wasn't found!!! suggestion[" + suggestion + "]");
 			}
-			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecent_forOrderGuid(rejected.EmergencyReplacedByGUID, out suggestedLane_nullUnsafe, out suggestion, true);
+			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll_lanesSuggestor.ScanRecent_forOrderGuid(rejected.EmergencyReplacedByGUID, out suggestedLane_nullUnsafe, out suggestion, true);
 			return replacement;
 		}
 		void throwLog_ifNotRejected_closingOrder(Order order) {

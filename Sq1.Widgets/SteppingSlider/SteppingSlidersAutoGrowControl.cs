@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 
+using Sq1.Core;
 using Sq1.Core.DoubleBuffered;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
-using Sq1.Core;
 
 namespace Sq1.Widgets.SteppingSlider {
 	//public partial class SlidersAutoGrowControl : UserControlDoubleBuffered {
@@ -235,13 +235,15 @@ namespace Sq1.Widgets.SteppingSlider {
 			if (string.IsNullOrEmpty(nameForScriptDotSeparatedForIndicator)) nameForScriptDotSeparatedForIndicator = indicatorOrScriptParameter.FullName; 
 			slider.LabelText = nameForScriptDotSeparatedForIndicator;
 			slider.Name = "parameter_" + nameForScriptDotSeparatedForIndicator;
+
+			slider.ParameterDescription = indicatorOrScriptParameter.ReasonToExist;
 			
 			//v1 ValueCurrent="200" set initially, impedes setting ValueMax=10
 			//sequence matters! ret.ValueCurrent checks that you didn't set it outside the boundaries AND within the Increment; fix manually designer-generated SliderComboControl.InitializeComponents() as well 
 			slider.ValueIncrement	= new decimal(indicatorOrScriptParameter.ValueIncrement);
-			slider.ValueMin		= new decimal(indicatorOrScriptParameter.ValueMin);
-			slider.ValueMax		= new decimal(indicatorOrScriptParameter.ValueMax);
-			slider.ValueCurrent	= new decimal(indicatorOrScriptParameter.ValueCurrent);
+			slider.ValueMin			= new decimal(indicatorOrScriptParameter.ValueMin);
+			slider.ValueMax			= new decimal(indicatorOrScriptParameter.ValueMax);
+			slider.ValueCurrent		= new decimal(indicatorOrScriptParameter.ValueCurrent);
 			//v2
 			//ret.ValidateValuesAndAbsorbFrom(indicatorOrScriptparameter);
 			
@@ -254,11 +256,13 @@ namespace Sq1.Widgets.SteppingSlider {
 			slider.ValueCurrentChanged += slider_ValueCurrentChanged;
 			// WILL_ADD_PARENT_MENU_ITEMS_IN_Opening
 			
-			slider.EnableBorder	= indicatorOrScriptParameter.BorderShown;
+			slider.EnableBorder		= indicatorOrScriptParameter.BorderShown;
 			slider.EnableNumeric	= indicatorOrScriptParameter.NumericUpdownShown;
 			
-			slider.ShowBorderChanged			+= slider_ShowBorderChanged;
+			slider.ShowBorderChanged		+= slider_ShowBorderChanged;
 			slider.ShowNumericUpdownChanged	+= slider_ShowNumericUpdownChanged;
+
+			slider.ValueFormat = indicatorOrScriptParameter.ValueFormat;
 			
 			return slider;
 		}

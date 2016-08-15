@@ -108,10 +108,13 @@ namespace Sq1.Core.DataTypes {
 
 
 
+		[Category("5.1 OrderPostProcessor StuckInSubmitted: Reconnect, Kill, Resubmit"), DefaultValue(false),	Description("")]
+		[JsonProperty]	public	bool			IfNoTransactionCallback_TimerEnabled					{ get; set; }
+
 		[Category("5.1 OrderPostProcessor StuckInSubmitted: Reconnect, Kill, Resubmit"), DefaultValue(400),	Description("")]
 		[JsonProperty]	public	int				IfNoTransactionCallback_MillisAllowed					{ get; set; }
 
-		[Category("5.1 OrderPostProcessor StuckInSubmitted: Reconnect, Kill, Resubmit"), DefaultValue(true),	Description("")]
+		[Category("5.1 OrderPostProcessor StuckInSubmitted: Reconnect, Kill, Resubmit"), DefaultValue(true),	Description("QUIK: NEVER_RECONNECT it won't call you asyncs for current pending orders")]
 		[JsonProperty]	public	bool			IfNoTransactionCallback_ReconnectBrokerDll				{ get; set; }
 
 		[Category("5.1 OrderPostProcessor StuckInSubmitted: Reconnect, Kill, Resubmit"), DefaultValue(true),	Description("")]
@@ -125,7 +128,7 @@ namespace Sq1.Core.DataTypes {
 
 
 
-		[Category("5.2 OrderPostProcessor:Replace Limit Orders after Expiration @WaitingBrokerFill"), DefaultValue(-1),		Description("if!=-1: 1) Kill Pending Limit + wait it's killed, 2) use SlippagesCrossMarketCsv for CrossMarket and SlippagesTidalCsv for Tidal, 3) send replacement order with more cutting-through slippage")]
+		[Category("5.2 OrderPostProcessor:Replace Limit Orders after Expiration @WaitingBrokerFill"), DefaultValue(15000),		Description("if!=-1: 1) Kill Pending Limit + wait it's killed, 2) use SlippagesCrossMarketCsv for CrossMarket and SlippagesTidalCsv for Tidal, 3) send replacement order with more cutting-through slippage")]
 		[JsonProperty]	public	int				LimitExpiresAfterMillis		{ get; set; }
 
 		[Category("5.2 OrderPostProcessor:Replace Limit Orders after Expiration @WaitingBrokerFill"), DefaultValue(true), Description("Kill->Wait->SubmitReplacement using {SlippagesCrossMarketCsv/SlippagesTidalCsv} after ReSubmitLimitNotFilledWithinMillis")]
@@ -195,8 +198,9 @@ namespace Sq1.Core.DataTypes {
 			this.SlippagesCrossMarketCsv		= "";
 			this.SlippagesTidalCsv				= "";
 
+			this.IfNoTransactionCallback_TimerEnabled			= false;
 			this.IfNoTransactionCallback_MillisAllowed			= 400;
-			this.IfNoTransactionCallback_ReconnectBrokerDll		= true;
+			this.IfNoTransactionCallback_ReconnectBrokerDll		= false;
 			this.IfNoTransactionCallback_Kill_StuckInSubmitted	= true;
 			this.IfNoTransactionCallback_Resubmit				= true;
 			this.IfNoTransactionCallback_ResubmitLimit			= 3;
@@ -208,7 +212,7 @@ namespace Sq1.Core.DataTypes {
 			this.UseFirstSlippageForMarketAlertsAsLimit	= false;
 			this.EmergencyCloseInterAttemptDelayMillis	= 8000;
 
-			this.LimitExpiresAfterMillis		= 2000;
+			this.LimitExpiresAfterMillis		= 15000;
 			this.LimitExpiredResubmit			= false;
 			this.LimitExpired_KillUnfilledWithLastSlippage = true;
 

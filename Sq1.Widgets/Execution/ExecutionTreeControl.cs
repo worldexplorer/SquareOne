@@ -22,7 +22,10 @@ namespace Sq1.Widgets.Execution {
 				ExecutionTreeDataSnapshot						dataSnapshot;
 				Serializer<ExecutionTreeDataSnapshot>			dataSnapshotSerializer;
 				Dictionary<ToolStripMenuItem, List<OLVColumn>>	columnsByFilter;
-				OrdersRootOnly									ordersRoot;
+
+				//OrdersRootOnly									ordersRoot;
+				OrderProcessorDataViewProxy						ordersViewProxy;
+
 				OrderProcessor									orderProcessor_forToStringOnly;
 				Order											orderSelected			{ get {
 					if (this.olvOrdersTree.SelectedObjects.Count != 1) return null;
@@ -41,6 +44,7 @@ namespace Sq1.Widgets.Execution {
 					}
 					return ret;
 				} }
+				bool											ignoreEvents_dontSerialize;
 
 		public ExecutionTreeControl() {
 			this.InitializeComponent();
@@ -48,7 +52,7 @@ namespace Sq1.Widgets.Execution {
 			
 			this.fontCache = new FontCache(base.Font);
 
-			this.olvOrderTree_customize();
+			this.olvOrdersTree_customize();
 			this.olvMessages_customize();
 
 			// THROWS this.olvMessages.AllColumns.AddRange(new List<OLVColumn>() {
@@ -141,10 +145,15 @@ namespace Sq1.Widgets.Execution {
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		public void InitializeWith_shadowTreeRebuilt(OrdersRootOnly ordersTree, OrderProcessor orderProcessor) {
-			this.ordersRoot = ordersTree;
+
+		//public void InitializeWith_shadowTreeRebuilt(OrdersRootOnly ordersTree, OrderProcessor orderProcessor) {
+		//	this.ordersTree = ordersTree;
+		public void InitializeWith_shadowTreeRebuilt(OrderProcessorDataViewProxy ordersViewProxy_passed, OrderProcessor orderProcessor) {
+			this.ordersViewProxy = ordersViewProxy_passed;
 			this.orderProcessor_forToStringOnly = orderProcessor;
 			// NOPE_DOCK_CONTENT_HASNT_BEEN_DESERIALiZED_YET_I_DONT_KNOW_IF_IM_SHOWN_OR_NOT this.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
+
+			this.ignoreEvents_dontSerialize = true;
 
 			this.dataSnapshotSerializer = new Serializer<ExecutionTreeDataSnapshot>();
 			bool createdNewFile = this.dataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
@@ -175,8 +184,12 @@ namespace Sq1.Widgets.Execution {
 				//v2
 				// http://stackoverflow.com/questions/11743160/how-do-i-encode-and-decode-a-base64-string
 				if (this.dataSnapshot.OrdersTreeOlvStateBase64.Length > 0) {
-					byte[] olvStateBinary = ObjectListViewStateSerializer.Base64Decode(this.dataSnapshot.OrdersTreeOlvStateBase64);
-					this.olvOrdersTree.RestoreState(olvStateBinary);
+					byte[] olvcTree_binaryState = ObjectListViewStateSerializer.Base64Decode(this.dataSnapshot.OrdersTreeOlvStateBase64);
+					this.olvOrdersTree.RestoreState(olvcTree_binaryState);
+				}
+				if (this.dataSnapshot.OrderMessagesOlvStateBase64.Length > 0) {
+					byte[] olvcMessages_binaryState = ObjectListViewStateSerializer.Base64Decode(this.dataSnapshot.OrderMessagesOlvStateBase64);
+					this.olvMessages.RestoreState(olvcMessages_binaryState);
 				}
 
 				this.mniltbSerializationInterval.InputFieldValue = this.dataSnapshot.SerializationInterval_Millis.ToString();
@@ -191,6 +204,8 @@ namespace Sq1.Widgets.Execution {
 			base.Initialize_periodicFlushing("FLUSH_EXECUTION_CONTROL",
 				new Action(this.RebuildAllTree_focusOnRecent), this.dataSnapshot.FlushToGuiDelayMsec);
 			//base.Timed_flushingToGui.Start();
+
+			this.InitializeSearch();
 		}
 		public void PopulateMenuAccounts_fromBrokerAdapter(ToolStripMenuItem[] ctxAccountsAllCheckedFromUnderlyingBrokerAdapters) {
 			this.ctxAccounts.SuspendLayout();
@@ -279,20 +294,23 @@ namespace Sq1.Widgets.Execution {
 		public void RebuildAllTree_focusOnRecent() {
 			string msig = " //ExecutionTreeControl.RebuildAllTree_focusOnRecent()";
 			try {
+				this.ignoreEvents_dontSerialize = true;
 				base.HowLongTreeRebuilds.Restart();
 
-				this.olvOrdersTree.SetObjects(this.ordersRoot.SafeCopy);
+				//this.olvOrdersTree.SetObjects(this.ordersRoot.SafeCopy);
+				this.olvOrdersTree.SetObjects(this.ordersViewProxy.OrdersList_switchable);
+
 				//this.olvOrdersTree.SetObjects(this.ordersRoot.SafeCopy(this, "//RebuildAllTree_focusOnRecent()"));
 				//this.OrdersTreeOLV.RebuildAll();	//, true we will refocus
 				this.olvOrdersTree.Refresh();
 				//this.OrdersTreeOLV.RebuildColumns();
 				//foreach (var order in this.ordersShadowTree) this.OrdersTree.ToggleExpansion(order);
-				this.olvOrdersTree.ExpandAll();
+				//this.olvOrdersTree.ExpandAll();
 
 
 				if (this.dataSnapshot.RecentAlwaysSelected == false) return;
 
-				Order recentOrder_includingKillers = this.ordersRoot.OrdersAll.MostRecent_nullUnsafe;
+				Order recentOrder_includingKillers = this.ordersViewProxy.MostRecent_ordersAll_nullUnsafe;
 				if (recentOrder_includingKillers == null) {
 					string msg = "Initialize() with zero deserialized?? Removed all deserialized? DONT_INVOKE_ME_THEN";
 					//Assembler.PopupException(msg + msig, null, false);
@@ -313,6 +331,7 @@ namespace Sq1.Widgets.Execution {
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex, false);
 			} finally {
+				this.ignoreEvents_dontSerialize = false;
 				base.HowLongTreeRebuilds.Stop();
 				this.PopulateWindowTitle();
 			}
@@ -346,7 +365,7 @@ namespace Sq1.Widgets.Execution {
 
 		public void Clear() {
 			OrderProcessorDataSnapshot snap = this.orderProcessor_forToStringOnly.DataSnapshot;
-			snap.OrdersRemoveRange_fromAllLanes(snap.OrdersAll.SafeCopy);
+			snap.OrdersRemoveRange_fromAllLanes(snap.OrdersAll_lanesSuggestor.SafeCopy);
 			this.populateMessagesFor(null);
 		}
 
@@ -370,8 +389,8 @@ namespace Sq1.Widgets.Execution {
 				bool canBeKilled = OrderStatesCollections.CanBeKilled.Contains(order.State);
 				if (canBeKilled == false) {
 					string msg = "I_REFUSE_TO_MANUAL_KILL__STATE[" + order.State + "] NOT_IN{" + OrderStatesCollections.CanBeKilled.ToString() + "}";
-					msg = "?RIGHT_CLICK__" + msg;
-					order.AppendMessage(msg);
+					msg = "?RIGHT_CLICK[" + order.SernoExchange + "]__" + msg;
+					//order.AppendMessage(msg);
 					Assembler.PopupException(msg, null, false);
 					continue;
 				}
@@ -379,5 +398,6 @@ namespace Sq1.Widgets.Execution {
 			}
 			return ret;
 		} }
+
 	}
 }

@@ -159,7 +159,7 @@ namespace Sq1.Widgets.CsvImporter {
 						barsRead_total++;
 						try {
 							Bar barAdded = this.barsParsed.BarStatic_createAppendAttach(csvBar.DateTime,
-								csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume, true);
+								csvBar.Open, csvBar.High, csvBar.Low, csvBar.Close, csvBar.Volume, false, true);
 						} catch (Exception exception_DateOHLCV_NaNs__orZeroes) {
 							barsIndexes_failedOHLCVcheck.Add(barsRead_total-1);
 						}

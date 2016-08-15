@@ -21,7 +21,7 @@ namespace Sq1.Widgets.Exceptions {
 				if (ex == null) return o.ToString();
 				string timeOrName = "";
 				if (this.exceptionTimes.ContainsKey(ex, this, "olvcTime.AspectGetter")) {
-					DateTime exTime = this.exceptionTimes.GetAtKey(ex, this, "olvcTime.AspectGetter");
+					DateTime exTime = this.exceptionTimes.GetAtKey_nullUnsafe(ex, this, "olvcTime.AspectGetter");
 					timeOrName = exTime.ToString(Assembler.DateTimeFormat_toMillis);
 				} else {
 					timeOrName = ex.GetType().Name;

@@ -30,6 +30,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.ctxIgnoreKeywords = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniTextAndSave = new Sq1.Widgets.TextAndSave.MenuItemTextAndSave();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.mniDeleteExceptionsSelected = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniClear = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniCopy = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniRefresh = new System.Windows.Forms.ToolStripMenuItem();
@@ -147,6 +148,7 @@ namespace Sq1.Widgets.Exceptions {
             this.mniShowSearchbar,
             this.mniExcludeKeywords,
             this.toolStripSeparator1,
+            this.mniDeleteExceptionsSelected,
             this.mniClear,
             this.mniCopy,
             this.mniRefresh,
@@ -157,7 +159,7 @@ namespace Sq1.Widgets.Exceptions {
             this.mniltbLogrotateLargerThan,
             this.mniDeleteAllLogrotatedExceptionJsons});
 			this.ctxTree.Name = "ctxTree";
-			this.ctxTree.Size = new System.Drawing.Size(303, 383);
+			this.ctxTree.Size = new System.Drawing.Size(303, 401);
 			this.ctxTree.Opening += new System.ComponentModel.CancelEventHandler(this.ctxTree_Opening);
 			// 
 			// mniRecentAlwaysSelected
@@ -247,6 +249,14 @@ namespace Sq1.Widgets.Exceptions {
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(299, 6);
 			// 
+			// mniDeleteExceptionsSelected
+			// 
+			this.mniDeleteExceptionsSelected.Name = "mniDeleteExceptionsSelected";
+			this.mniDeleteExceptionsSelected.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+			this.mniDeleteExceptionsSelected.Size = new System.Drawing.Size(302, 22);
+			this.mniDeleteExceptionsSelected.Text = "Delete selected Exceptions";
+			this.mniDeleteExceptionsSelected.Click += new System.EventHandler(this.mniDeleteExceptionsSelected_Click);
+			// 
 			// mniClear
 			// 
 			this.mniClear.Name = "mniClear";
@@ -283,7 +293,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniltbFlushToGuiDelayMsec.InputFieldWidth = 40;
 			this.mniltbFlushToGuiDelayMsec.Name = "mniltbFlushToGuiDelayMsec";
 			this.mniltbFlushToGuiDelayMsec.OffsetTop = 0;
-			this.mniltbFlushToGuiDelayMsec.Size = new System.Drawing.Size(240, 22);
+			this.mniltbFlushToGuiDelayMsec.Size = new System.Drawing.Size(240, 18);
 			this.mniltbFlushToGuiDelayMsec.TextLeft = "Flush To GUI Delay";
 			this.mniltbFlushToGuiDelayMsec.TextLeftOffsetX = 0;
 			this.mniltbFlushToGuiDelayMsec.TextLeftWidth = 108;
@@ -363,7 +373,7 @@ namespace Sq1.Widgets.Exceptions {
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.splitContainerVertical.BackColor = System.Drawing.SystemColors.ControlLight;
-			this.splitContainerVertical.Location = new System.Drawing.Point(0, 0);
+			this.splitContainerVertical.Location = new System.Drawing.Point(0, 1);
 			this.splitContainerVertical.Name = "splitContainerVertical";
 			// 
 			// splitContainerVertical.Panel1
@@ -722,6 +732,7 @@ namespace Sq1.Widgets.Exceptions {
 		private ToolStripMenuItem mniDeleteAllLogrotatedExceptionJsons;
 		private LabeledTextBox.ToolStripItemLabeledTextBox mniltbLogrotateLargerThan;
 		private ToolStripSeparator toolStripSeparator2;
+		private ToolStripMenuItem mniDeleteExceptionsSelected;
 		
 	}
 }

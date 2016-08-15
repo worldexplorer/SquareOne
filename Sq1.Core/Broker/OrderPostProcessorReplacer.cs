@@ -102,12 +102,12 @@ namespace Sq1.Core.Broker {
 			OrderLane	suggestedLane_nullUnsafe = null;
 			string		suggestion = "PASS_suggestLane=TRUE";
 			
-			Order ReplaceExpired = this.OrderProcessor.DataSnapshot.OrdersAll.ScanRecent_forOrderGuid(orderReplaceExpired.GUID, out suggestedLane_nullUnsafe, out suggestion, true);
+			Order ReplaceExpired = this.OrderProcessor.DataSnapshot.OrdersAll_lanesSuggestor.ScanRecent_forOrderGuid(orderReplaceExpired.GUID, out suggestedLane_nullUnsafe, out suggestion, true);
 			if (ReplaceExpired == null) {
 				throw new Exception("OrderReplaceExpired[" + orderReplaceExpired + "] wasn't found!!! suggestion[" + suggestion + "]");
 			}
 			if (string.IsNullOrEmpty(ReplaceExpired.ReplacedByGUID)) return null;
-			Order replacement = this.OrderProcessor.DataSnapshot.OrdersAll.ScanRecent_forOrderGuid(ReplaceExpired.ReplacedByGUID, out suggestedLane_nullUnsafe, out suggestion, true);
+			Order replacement = this.OrderProcessor.DataSnapshot.OrdersAll_lanesSuggestor.ScanRecent_forOrderGuid(ReplaceExpired.ReplacedByGUID, out suggestedLane_nullUnsafe, out suggestion, true);
 			return replacement;
 		}
 		protected bool EmitReplacementOrder_insteadOfExpired(Order replacementOrder, bool inNewThread = true) {

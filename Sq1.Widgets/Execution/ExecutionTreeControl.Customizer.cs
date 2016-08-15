@@ -28,7 +28,8 @@ namespace Sq1.Widgets.Execution {
 			columnsByFilter.Add(this.mniShowPrice, new List<OLVColumn>() {
 				this.olvcSpreadSide,
 				this.olvcPriceScript,
-				this.olvcPriceCurBidOrAsk,
+				this.olvcBidAndAsk_whenEmitted,
+				this.olvcBidAndAsk_whenFilled,
 				this.olvcSlippageApplied,
 				this.olvcPriceEmitted_withSlippageApplied,
 				this.olvcPriceFilled,
@@ -60,44 +61,50 @@ namespace Sq1.Widgets.Execution {
 				this.olvcLastMessage
 				});
 		}
-	
 		
-		void olvColumn_VisibilityChanged(object sender, EventArgs e) {
+		void olvOrdersTree_columnVisibilityChanged(object sender, EventArgs e) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
+			if (this.ignoreEvents_dontSerialize) return;
 			OLVColumn olvColumn = sender as OLVColumn;
 			if (olvColumn == null) return;
-			
-				//v1 prior to using this.OrdersTreeOLV.SaveState();
-//			if (this.DataSnapshot.ColumnsShown.ContainsKey(oLVColumn.Text) == false) {
-//				this.DataSnapshot.ColumnsShown.Add(oLVColumn.Text, oLVColumn.IsVisible);
-//			} else {
-//				this.DataSnapshot.ColumnsShown[oLVColumn.Text] = oLVColumn.IsVisible;
-//			}
-			byte[] olvStateBinary = this.olvOrdersTree.SaveState();
-			this.dataSnapshot.OrdersTreeOlvStateBase64 = ObjectListViewStateSerializer.Base64Encode(olvStateBinary);
-			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
+			byte[] olvcTree_binaryState = this.olvOrdersTree.SaveState();
+			string newTreeState = ObjectListViewStateSerializer.Base64Encode(olvcTree_binaryState);
+			if (this.dataSnapshot.OrdersTreeOlvStateBase64 == newTreeState) return;
+			this.dataSnapshot.OrdersTreeOlvStateBase64 = newTreeState;
 			this.dataSnapshotSerializer.Serialize();
 		}
-
-		void olvOrderTree_customize() {
+		void olvOrdersTree_ColumnWidthChanged(object sender, ColumnWidthChangedEventArgs e) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
+			if (this.ignoreEvents_dontSerialize) return;
+			byte[] olvcTree_binaryState = this.olvOrdersTree.SaveState();
+			string newTreeState = ObjectListViewStateSerializer.Base64Encode(olvcTree_binaryState);
+			if (this.dataSnapshot.OrdersTreeOlvStateBase64 == newTreeState) return;
+			this.dataSnapshot.OrdersTreeOlvStateBase64 = newTreeState;
+			this.dataSnapshotSerializer.Serialize();
+		}
+		void olvOrdersTree_customize() {
 			// MOVED_TO_PopulateDataSnapshot this.olvOrdersTree_customizeColors();
 
 			// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
 			List<OLVColumn> allColumns = new List<OLVColumn>();
 			foreach (ColumnHeader columnHeader in this.olvOrdersTree.Columns) {
 				OLVColumn olvColumn = columnHeader as OLVColumn; 
-				olvColumn.VisibilityChanged += olvColumn_VisibilityChanged;
 				if (olvColumn == null) continue;
+				olvColumn.VisibilityChanged += this.olvOrdersTree_columnVisibilityChanged;
 				//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
 				if (this.olvOrdersTree.AllColumns.Contains(olvColumn)) continue;
 				allColumns.Add(olvColumn);
 			}
-			if (allColumns.Count > 0) {
-				//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
-				this.olvOrdersTree.AllColumns.AddRange(allColumns);
+			foreach (OLVColumn eachColumn in allColumns) {
+			    if (this.olvOrdersTree.AllColumns.Contains(eachColumn)) continue;
+			    this.olvOrdersTree.AllColumns.Add(eachColumn);
 			}
+			this.olvOrdersTree.ColumnWidthChanged += new ColumnWidthChangedEventHandler(this.olvOrdersTree_ColumnWidthChanged);
 
 			//	http://stackoverflow.com/questions/9802724/how-to-create-a-multicolumn-treeview-like-this-in-c-sharp-winforms-app/9802753#9802753
 			this.olvOrdersTree.CanExpandGetter = delegate(object o) {
+				if (this.ordersViewProxy.ShowingTreeTrue_FlatFalse == false) return false;
+
 				var order = o as Order;
 				if (order == null) {
 					Assembler.PopupException("treeListView.CanExpandGetter: order=null");
@@ -109,6 +116,8 @@ namespace Sq1.Widgets.Execution {
 				return order.DerivedOrders.Count > 0;
 			};
 			this.olvOrdersTree.ChildrenGetter = delegate(object o) {
+				if (this.ordersViewProxy.ShowingTreeTrue_FlatFalse == false) return null;
+
 				var order = o as Order;
 				if (order == null) {
 					Assembler.PopupException("treeListView.ChildrenGetter: order=null");
@@ -170,28 +179,47 @@ namespace Sq1.Widgets.Execution {
 				var order = o as Order;
 				if (order == null) return "olvcOrderType.AspectGetter: order=null";
 				//v1 return order.IsKiller ? "" : order.Alert.MarketLimitStop.ToString();
-				if (order.IsKiller == false) return order.Alert.MarketLimitStop.ToString();
+				//if (order.IsKiller == false) return order.Alert.MarketLimitStop.ToString();
+				//if (order.IsKiller == false) return order.Alert.MarketLimitStop_asString;	// includes "Market => Limit (BidTidal)" transformations
+				if (order.IsKiller == false) return order.Alert.MarketLimitStopFinal_asString;	// this.MarketLimitStop / this.MarketOrderAs
+
+				Order orderKiller = order;
 				//v2
-				bool thisKillerReplaces_LimitExpired_orStuckInSubmitted = order.VictimToBeKilled != null && string.IsNullOrEmpty(order.VictimToBeKilled.ReplacedByGUID) == false;
+				bool deserializedDoesntHaveIt = order.VictimToBeKilled != null;
+				bool thisKillerReplaces_LimitExpired_orStuckInSubmitted = deserializedDoesntHaveIt && string.IsNullOrEmpty(orderKiller.VictimToBeKilled.ReplacedByGUID) == false;
 				//return thisKillerReplacesLimitExpired ? "LimitExpired" : "";
 				//v3
 				OrderStateMessage stuckInSubmitted_wasReplaced =
-					order.FindFirstMessageContaining_inOrderMessages_nullUnsafe("__STUCK_IN_SUBMITTED__REPLACED_WITH[");
+					orderKiller.FindFirstMessageContaining_inOrderMessages_nullUnsafe("__STUCK_IN_SUBMITTED__REPLACED_WITH[");
 				string replacementScenario = stuckInSubmitted_wasReplaced != null ? "StuckInSubmitted" : "LimitExpired";
-				return thisKillerReplaces_LimitExpired_orStuckInSubmitted ? replacementScenario : "?";
+				return thisKillerReplaces_LimitExpired_orStuckInSubmitted ? replacementScenario : "";	 //"<TODO: RESTORE_VictimToBeKilled_fromGuid_onTreeBuild>";
 			};
 			this.olvcSpreadSide.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcSpreadSide.AspectGetter: order=null";
 				//v1 return order.IsKiller ? "" : formatOrderPriceSpreadSide(order, this.dataSnapshot.PricingDecimalForSymbol);
-				if (order.IsKiller == false) return formatOrderPriceSpreadSide(order, this.dataSnapshot.PricingDecimalForSymbol);
-				if (order.Alert.MarketLimitStop == MarketLimitStop.Market) {
-					if (order.Alert.QuoteCurrent_whenThisAlertFilled != null) {
-						return order.Alert.QuoteCurrent_whenThisAlertFilled.TradedPrice_asString;
-					} else {
-						return "MARKET_FILL_LAGGING";
+				if (order.IsKiller == false) {
+					switch (order.Alert.MarketLimitStop) {
+						case MarketLimitStop.Market:
+							if (order.Alert.QuoteCurrent_whenThisAlertFilled != null) {
+								return order.Alert.QuoteCurrent_whenThisAlertFilled.TradedPrice_asString;
+							} else {
+								return "MARKET_FILL_LAGGING";
+							}
+
+						case MarketLimitStop.Stop:
+						case MarketLimitStop.StopLimit:
+							PositionPrototype proto = order.Alert.PositionPrototype_bothForEntryAndExit_nullUnsafe;
+							double priceSL = proto.PriceStopLossActivation;
+							string priceSL_asString = priceSL.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
+							return priceSL_asString + " SLactivation [" + proto.StopLossActivation_distanceFromStopLoss + "]";
+
+						case MarketLimitStop.Limit:
+						default:
+							return order.BidOrAsk_whenEmitted_spreadSide_forMarketSubstitutedByLimit(this.dataSnapshot.PricingDecimalForSymbol);
 					}
 				}
+
 				bool thisKillerReplacesLimitExpired = order.VictimToBeKilled != null && string.IsNullOrEmpty(order.VictimToBeKilled.ReplacedByGUID) == false;
 				if (thisKillerReplacesLimitExpired == false) return "";
 				double nextSlippage = order.VictimToBeKilled.SlippageNextAvailable_forLimitAlertsOnly_NanWhenNoMore;
@@ -205,10 +233,17 @@ namespace Sq1.Widgets.Execution {
 				if (order == null) return "olvcPriceScript.AspectGetter: order=null";
 				return order.IsKiller ? "" : order.Alert.PriceScript.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
 			};
-			this.olvcPriceCurBidOrAsk.AspectGetter = delegate(object o) {
+			this.olvcBidAndAsk_whenEmitted.AspectGetter = delegate(object o) {
 				var order = o as Order;
-				if (order == null) return "olvcPriceCurBidOrAsk.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.PriceCurBidOrAsk_zeroForMarket.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
+				if (order == null) return "olvcBidAndAsk_whenEmitted.AspectGetter: order=null";
+				//v1 return order.IsKiller ? "" : order.PriceEmitted_BidOrAsk_zeroForMarket.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
+				return order.IsKiller ? "" : order.BidAndAsk_whenEmitted(this.dataSnapshot.PricingDecimalForSymbol);
+			};
+			this.olvcBidAndAsk_whenFilled.AspectGetter = delegate(object o) {
+			    var order = o as Order;
+			    if (order == null) return "olvcBidAndAsk_whenFilled.AspectGetter: order=null";
+			    //v1 return order.IsKiller ? "" : order.PriceEmitted_BidOrAsk_zeroForMarket.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
+			    return order.IsKiller ? "" : order.BidAndAsk_whenFilled(this.dataSnapshot.PricingDecimalForSymbol);
 			};
 			this.olvcPriceEmitted_withSlippageApplied.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -264,7 +299,9 @@ namespace Sq1.Widgets.Execution {
 			this.olvcPriceDeposited_DollarForPoint.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "olvcPriceDeposited.AspectGetter: order=null";
-				return (order.QtyFill == 0) ? "0" : order.Alert.PriceDeposited.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
+				return (order.QtyFill == Order.INITIAL_QtyFill)
+					? Order.INITIAL_QtyFill.ToString()
+					: order.Alert.PriceDeposited.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
 			};
 			this.olvcQtyRequested.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -343,22 +380,27 @@ namespace Sq1.Widgets.Execution {
 				return order.LastMessage;
 			};
 		}
-		string formatOrderPriceSpreadSide(Order order, int pricingDecimalForSymbol) {
-			string ret = "";
-			switch (order.SpreadSide) {
-				case SpreadSide.AskCrossed:
-				case SpreadSide.AskTidal:
-					ret = order.CurrentAsk.ToString("N" + pricingDecimalForSymbol) + " " + order.SpreadSide;
-					break;
-				case SpreadSide.BidCrossed:
-				case SpreadSide.BidTidal:
-					ret = order.CurrentBid.ToString("N" + pricingDecimalForSymbol) + " " + order.SpreadSide;
-					break;
-				default:
-					ret = order.SpreadSide + " bid[" + order.CurrentBid + "] ask[" + order.CurrentAsk + "]";
-					break;
-			}
-			return ret;
+
+
+		void olvMessages_columnVisibilityChanged(object sender, EventArgs e) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
+			if (this.ignoreEvents_dontSerialize) return;
+			OLVColumn olvColumn = sender as OLVColumn;
+			if (olvColumn == null) return;
+			byte[] olvcMessages_binaryState = this.olvMessages.SaveState();
+			string newMessagesState = ObjectListViewStateSerializer.Base64Encode(olvcMessages_binaryState);
+			if (this.dataSnapshot.OrderMessagesOlvStateBase64 == newMessagesState) return;
+			this.dataSnapshot.OrderMessagesOlvStateBase64 = newMessagesState;
+			this.dataSnapshotSerializer.Serialize();
+		}
+		void olvMessages_columnWidthChanged(object sender, ColumnWidthChangedEventArgs e) {
+			if (Assembler.InstanceInitialized.MainForm_dockFormsFullyDeserialized_layoutComplete == false) return;
+			if (this.ignoreEvents_dontSerialize) return;
+			byte[] olvcMessages_binaryState = this.olvMessages.SaveState();
+			string newMessagesState = ObjectListViewStateSerializer.Base64Encode(olvcMessages_binaryState);
+			if (this.dataSnapshot.OrderMessagesOlvStateBase64 == newMessagesState) return;
+			this.dataSnapshot.OrderMessagesOlvStateBase64 = newMessagesState;
+			this.dataSnapshotSerializer.Serialize();
 		}
 		void olvMessages_customize() {
 			// MOVED_TO_PopulateDataSnapshot this.olvMessages_customizeColors();
@@ -368,26 +410,40 @@ namespace Sq1.Widgets.Execution {
 			foreach (ColumnHeader columnHeader in this.olvMessages.Columns) {
 				OLVColumn olvColumn = columnHeader as OLVColumn; 
 				if (olvColumn == null) continue;
+				olvColumn.VisibilityChanged += this.olvMessages_columnVisibilityChanged;
+				if (this.olvOrdersTree.AllColumns.Contains(olvColumn)) continue;
 				allColumns.Add(olvColumn);
 			}
-			if (allColumns.Count > 0) {
-				this.olvMessages.AllColumns.AddRange(allColumns);
+			foreach (OLVColumn eachColumn in allColumns) {
+			    if (this.olvMessages.AllColumns.Contains(eachColumn)) continue;
+			    this.olvMessages.AllColumns.Add(eachColumn);
 			}
+			this.olvMessages.ColumnWidthChanged += new ColumnWidthChangedEventHandler(this.olvMessages_columnWidthChanged);
 
-			this.olvcMessageText.AspectGetter = delegate(object o) {
+			this.olvcMessageSerno.AspectGetter = delegate(object o) {
 				var omsg = o as OrderStateMessage;
-				if (omsg == null) return "olvcMessageText.AspectGetter: omsg=null";
-				return omsg.Message;
+				if (omsg == null) return "olvcMessageSerno.AspectGetter: omsg=null";
+				return omsg.Serno;
 			};
+			this.olvcMessageSerno.AspectToStringFormat = "{0:N0}";
+
+			this.olvcMessageDateTime.AspectGetter = delegate(object o) {
+				var omsg = o as OrderStateMessage;
+				if (omsg == null) return "olvcMessageDateTime.AspectGetter: omsg=null";
+				//v1 return omsg.DateTime.ToString(Assembler.DateTimeFormat_toMillis);
+				return omsg.DateTime;
+			};
+			this.olvcMessageDateTime.AspectToStringFormat = "{0:" + Assembler.DateTimeFormat_toMillis + "}";
+
 			this.olvcMessageState.AspectGetter = delegate(object o) {
 				var omsg = o as OrderStateMessage;
 				if (omsg == null) return "olvcMessageState.AspectGetter: omsg=null";
 				return omsg.State.ToString();
 			};
-			this.olvcMessageDateTime.AspectGetter = delegate(object o) {
+			this.olvcMessageText.AspectGetter = delegate(object o) {
 				var omsg = o as OrderStateMessage;
-				if (omsg == null) return "olvcMessageDateTime.AspectGetter: omsg=null";
-				return omsg.DateTime.ToString(Assembler.DateTimeFormat_toMillis);
+				if (omsg == null) return "olvcMessageText.AspectGetter: omsg=null";
+				return omsg.Message;
 			};
 		}
 
@@ -418,20 +474,19 @@ namespace Sq1.Widgets.Execution {
 		}		
 		void olvMessages_FormatRow(object sender, FormatRowEventArgs e) {
 			OrderStateMessage osm = e.Model as OrderStateMessage;
-			if (osm													== null) return;
-			if (osm.Order											== null) return;
-			if (osm.Order.Alert										== null) return;
-			if (osm.Order.Alert.Bars								== null) return;
-			if (osm.Order.Alert.DataSource_fromBars					== null) return;
-			if (osm.Order.Alert.DataSource_fromBars.BrokerAdapter	== null) return;
-			BrokerAdapter broker = osm.Order.Alert.DataSource_fromBars.BrokerAdapter;
-			Color backColor_fromBroker = broker.GetBackGroundColor_forOrderStateMessage_nullUnsafe(osm);
-			if (backColor_fromBroker != null && backColor_fromBroker != Color.Empty) {
-				e.Item.BackColor = backColor_fromBroker;
-				return;
+			if (osm == null) return;
+
+			Color backColor = osm.BackColor_fromBroker_neverNull;
+			if (backColor != Color.Empty) {
+				e.Item.BackColor = backColor;
+			} else {
+				if (osm.Message_LedToPostProcessing) {
+					e.Item.BackColor = this.dataSnapshot.MessagesColorBackground_ledToProcessing;
+				}
 			}
-			if (osm.PostProcessed) {
-				e.Item.BackColor = this.dataSnapshot.ColorBackground_forMessagesThatChangedOrderState;
+
+			if (osm.Message_ChangedOrderState) {
+				e.Item.ForeColor = this.dataSnapshot.MessagesColorForeground_changedOrderState;
 			}
 		}
 

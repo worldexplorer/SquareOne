@@ -52,15 +52,17 @@ namespace Sq1.Widgets.SteppingSlider {
 		public decimal ValueCurrent {
 			get { return valueCurrent; }
 			set {
-				if (value > this.ValueMax) {
-					string msg = "I_REFUSE_OUT_OF_BOUNDARY_ASSIGNMENT value[" + value + "] > this.ValueMax[" + this.ValueMax + "]";
-					Assembler.PopupException(msg);
-					return;
-				}
-				if (value < this.ValueMin) {
-					string msg = "I_REFUSE_OUT_OF_BOUNDARY_ASSIGNMENT value[" + value + "] < this.ValueMin[" + this.ValueMin + "]";
-					Assembler.PopupException(msg);
-					return;
+				if (this.ParentInitialized_currentWithinBoundaries_checkEnabled) {
+					if (value > this.ValueMax) {
+						string msg = "I_REFUSE_OUT_OF_BOUNDARY_ASSIGNMENT value[" + value + "] > this.ValueMax[" + this.ValueMax + "]";
+						Assembler.PopupException(msg);
+						return;
+					}
+					if (value < this.ValueMin) {
+						string msg = "I_REFUSE_OUT_OF_BOUNDARY_ASSIGNMENT value[" + value + "] < this.ValueMin[" + this.ValueMin + "]";
+						Assembler.PopupException(msg);
+						return;
+					}
 				}
 				decimal roundedChangesSliders = this.RoundToClosestStep(value);
 				if (value != roundedChangesSliders) {
@@ -183,7 +185,9 @@ namespace Sq1.Widgets.SteppingSlider {
 			}
 		}
 
-		IndicatorParameter parameterJustForDebugging;
+				IndicatorParameter	parameterJustForDebugging;
+		public	bool				ParentInitialized_currentWithinBoundaries_checkEnabled;
+
 		public void SetParameterForDebuggingOnly(IndicatorParameter parameterJustForDebugging) {
 			this.parameterJustForDebugging = parameterJustForDebugging;
 		}

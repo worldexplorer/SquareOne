@@ -30,19 +30,20 @@ namespace Sq1.Core.Execution {
 				string msg = "DeriveKillerOrder(): Alert=null (serializer will get upset) for " + this.ToString();
 				throw new Exception(msg);
 			}
-			Order killer = new Order(this.Alert, this.EmittedByScript, false);
-			killer.State = OrderState.JustConstructed;
-			killer.PriceEmitted = 0;
-			killer.PriceFilled = 0;
-			killer.Qty = 0;
-			killer.QtyFill = 0;
 
-			killer.VictimToBeKilled = this;
-			killer.VictimGUID = this.GUID;
-			killer.Alert.SignalName = "IAM_KILLER_FOR " + this.Alert.SignalName;
+			Order killer			= new Order(this.Alert, this.EmittedByScript, false);
+			killer.State			= OrderState.JustConstructed;
+			killer.PriceEmitted		= 0;
+			killer.PriceFilled		= Order.INITIAL_PriceFill;
+			killer.Qty				= 0;
+			killer.QtyFill			= Order.INITIAL_QtyFill;
 
-			this.KillerOrder = killer;
-			this.KillerGUID = killer.GUID;
+			killer.VictimToBeKilled	= this;
+			killer.VictimGUID		= this.GUID;
+			killer.Alert.SignalName	= "IAM_KILLER_FOR " + this.Alert.SignalName;
+
+			this.KillerOrder		= killer;
+			this.KillerGUID			= killer.GUID;
 			
 			this.DerivedOrdersAdd(killer);
 			

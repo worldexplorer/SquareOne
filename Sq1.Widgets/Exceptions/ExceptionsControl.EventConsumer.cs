@@ -6,6 +6,7 @@ using Sq1.Core;
 using Sq1.Core.Serializers;
 
 using Sq1.Widgets.LabeledTextBox;
+using System.Collections.Generic;
 
 namespace Sq1.Widgets.Exceptions {
 	public partial class ExceptionsControl {
@@ -131,10 +132,11 @@ namespace Sq1.Widgets.Exceptions {
 			}
 		}
 		void ctxTree_Opening(object sender, CancelEventArgs e) {
-			SerializerLogrotatePeriodic<Exception> logrotator = this.Exceptions.Logrotator;
-			int logrotates = logrotator.AllLogrotatedAbsFnames_butNotMainJson_scanned.Count;
-			this.mniDeleteAllLogrotatedExceptionJsons.Text		= "Delete All[" + logrotates + "] logrotated Exception*.json";
-			this.mniDeleteAllLogrotatedExceptionJsons.Enabled	= logrotates > 0;
+			SerializerLogrotatePeriodic<Exception> logrotator	= this.Exceptions.Logrotator;
+			int		logrotatedFiles_count						= logrotator.AllLogrotatedAbsFnames_butNotMainJson_scanned.Count;
+			string	logrotatedFiles_size						= logrotator.AllLogrotatedSize_butNotMainJson_scanned;
+			this.mniDeleteAllLogrotatedExceptionJsons.Text		= "Delete All[" + logrotatedFiles_count + "] logrotated Exception*.json " + logrotatedFiles_size;
+			this.mniDeleteAllLogrotatedExceptionJsons.Enabled	= logrotatedFiles_count > 0;
 		}
 
 		void mniShowTimestamps_Click(object sender, EventArgs e) {
@@ -186,6 +188,29 @@ namespace Sq1.Widgets.Exceptions {
 			this.PopulateDataSnapshot_initializeSplitters_afterDockContentDeserialized();
 			this.dataSnapshotSerializer.Serialize();
 		}
-
+		void mniDeleteExceptionsSelected_Click(object sender, EventArgs e) {
+			string msig = " //mniDeleteExceptionsSelected_Click()";
+			try {
+				//List<Exception> exceptionsSelected = new List<Exception>(this.olvTreeExceptions.SelectedObjects);
+				List<Exception> exceptionsSelected = new List<Exception>();
+				foreach (int index in this.olvTreeExceptions.SelectedIndices) {
+					object objectSelected = this.olvTreeExceptions.GetModelObject(index);
+					Exception exceptionSelected = objectSelected as Exception;
+					if (exceptionSelected == null) {
+						string msg = "MUST_BE_AN_Exception_GOT [" + objectSelected.GetType().Name + "]";
+						Assembler.PopupException(msg);
+						continue;
+					}
+					bool thisIs_innerException = this.Exceptions.Contains(exceptionSelected, this, msig) == false;
+					if (thisIs_innerException) continue;
+					exceptionsSelected.Add(exceptionSelected);
+				}
+				int removedCount = this.Exceptions.RemoveRange(exceptionsSelected, this, msig);
+				this.olvTreeExceptions.SetObjects(this.Exceptions.SafeCopy(this, msig));		// it's slow but thread-safe and you set a delay 200ms EXACTLY because it's all expensive
+				this.olvTreeExceptions.DeselectAll();	// otherwize selected rows "slide" down to the ones I never selected 
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			}
+		}
 	}
 }

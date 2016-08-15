@@ -24,7 +24,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg + msig);
 				throw new Exception(msg + msig);
 			}
-			if (position.IsExitFilled_byTakeProfit_prototyped && position.Prototype.StopLoss_negativeOffset < 0) {
+			if (position.IsExitFilled_byTakeProfit_prototyped && position.Prototype.StopLoss_priceEntryNegativeOffset < 0) {
 				if (position.Prototype.StopLossAlert_forMoveAndAnnihilation == null) {
 					string msg = "PROTOTYPED_STOP_LOSS_ALERT_MUST_NOT_BE_NULL";
 					Assembler.PopupException(msg + msig);
@@ -47,7 +47,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 
-			if (position.IsExitFilled_byStopLoss_prototyped && position.Prototype.TakeProfit_positiveOffset > 0) {
+			if (position.IsExitFilled_byStopLoss_prototyped && position.Prototype.TakeProfit_priceEntryPositiveOffset > 0) {
 				if (position.Prototype.TakeProfitAlert_forMoveAndAnnihilation == null) {
 					string msg = "FAILED_ANNIHILATE_TAKEPROFIT Prototype.TakeProfitAlert_forMoveAndAnnihilation=null for position[" + position + "]";
 					Assembler.PopupException(msg + msig);

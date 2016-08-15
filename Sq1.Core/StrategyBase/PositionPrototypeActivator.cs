@@ -13,7 +13,7 @@ namespace Sq1.Core.StrategyBase {
 		public List<Alert> PositionActivator_entryPoint__alertFilled_createSlTp_orAnnihilateCounterparty(Alert alert) {
 			List<Alert> ret = new List<Alert>();
 			if (alert.PositionAffected == null) return ret;
-			if (alert.PositionPrototype_bothForEntryAndExit == null) return ret;
+			if (alert.PositionPrototype_bothForEntryAndExit_nullUnsafe == null) return ret;
 			if (alert.IsEntryAlert) {
 				return this.CreateStopLossAndTakeProfitAlerts_fromPositionPrototype(alert.PositionAffected);
 			} else {
@@ -23,7 +23,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		public double StopLossCurrentGet_NaNunsafe(PositionPrototype proto) {
-			if (proto.StopLoss_negativeOffset == 0) return double.NaN;
+			if (proto.StopLoss_priceEntryNegativeOffset == 0) return double.NaN;
 			Alert SLalert = proto.StopLossAlert_forMoveAndAnnihilation;
 			if (SLalert == null) {
 				string msg = "CHECK_UPSTACK_WHAT_LED_TO_proto.StopLossAlertForAnnihilation=NULL";

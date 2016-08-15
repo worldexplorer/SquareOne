@@ -86,10 +86,11 @@ namespace Sq1.Charting {
 				g.DrawLine(pen, centerX - rayLength, centerY - rayLength, centerX + rayLength, centerY + rayLength);
 				g.DrawLine(pen, centerX - rayLength, centerY + rayLength, centerX + rayLength, centerY - rayLength);
 
-				if (orderVictim.Alert.MarketLimitStop == MarketLimitStop.StopLimit) {
-					string msg = "TESTME_DRAWING_StopLimit_SHOULD_GRAYOUT_ALSO_pendingStopActivationPrice";
-					Assembler.PopupException(msg, null, false);
-				}
+				// TESTED
+				//if (orderVictim.Alert.MarketLimitStop == MarketLimitStop.StopLimit) {
+				//    string msg = "TESTME_DRAWING_StopLimit_SHOULD_GRAYOUT_ALSO_pendingStopActivationPrice";
+				//    Assembler.PopupException(msg, null, false);
+				//}
 			}
 		}
 
@@ -103,6 +104,7 @@ namespace Sq1.Charting {
 			Pen penPending_ShortSell	= tpl.PenAlertPendingShortSellCircle;
 			Pen penTP					= tpl.PenAlertPendingProtoTakeProfitEllipse;
 			Pen penSL					= tpl.PenAlertPendingProtoStopLossEllipse;
+			Pen penSLactivation			= tpl.PenAlertPendingProtoStopLossActivationEllipse;
 			int radius					= tpl.AlertPendingCircleRadius;
 			int diameter				= radius * 2;
 
@@ -129,13 +131,13 @@ namespace Sq1.Charting {
 					g.DrawEllipse(pen, entryPlannedRect);
 
 					if (pending.MarketLimitStop == MarketLimitStop.StopLimit) {
-						string msg = "TESTME_DRAWING_pendingStopActivationPrice";
-						Assembler.PopupException(msg, null, false);
+						string msg = "TESTME_DRAWING_PENDING_StopLimit PriceStopLimitActivation[" + pending.PriceStopLimitActivation + "]=>PriceEmitted[" + pending.PriceEmitted  + "]";
+						//Assembler.PopupException(msg, null, false);
 
 						double pendingStopActivationPrice = pending.PriceStopLimitActivation;
 						pendingY = base.ValueToYinverted(pendingStopActivationPrice);
 						entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
-						g.DrawEllipse(pen, entryPlannedRect);
+						g.DrawEllipse(penSLactivation, entryPlannedRect);
 					}
 				}
 			}

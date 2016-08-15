@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 using Sq1.Core.Streaming;
 using Sq1.Core.Broker;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Execution {
 	public partial class Order {
@@ -37,54 +38,57 @@ namespace Sq1.Core.Execution {
 
 		[JsonProperty]	public	string		VictimGUID					{ get; private set; }
 		[JsonIgnore]	public	Order		VictimToBeKilled			{ get; private set; }
-		[JsonProperty]	public	bool		IsKiller					{ get { return this.VictimToBeKilled != null && string.IsNullOrEmpty(this.VictimGUID) == false; } }
+		[JsonProperty]	public	bool		IsKiller					{ get { return /*this.VictimToBeKilled != null &&*/ string.IsNullOrEmpty(this.VictimGUID) == false; } }
 
 		[JsonProperty]	public	string		KillerGUID					{ get; private set; }
 		[JsonIgnore]	public	Order		KillerOrder					{ get; private set; }
-		[JsonProperty]	public	bool		IsVictim					{ get { return this.KillerOrder != null && string.IsNullOrEmpty(this.KillerGUID) == false; } }
+		[JsonProperty]	public	bool		IsVictim					{ get { return /*this.KillerOrder != null &&*/ string.IsNullOrEmpty(this.KillerGUID) == false; } }
 
 		[JsonProperty]	public	DateTime	DateServerLastFillUpdate;	// SET_IN_BROKER_QUIK	{ get; private set; }
 		[JsonProperty]	public	bool		EmittedByScript 			{ get; private set; }
 
-		[JsonProperty]	public	double		CurrentAsk					{ get; private set; }
-		[JsonProperty]	public	double		CurrentBid					{ get; private set; }
-		[JsonProperty]	public	double		PriceCurBidOrAsk_zeroForMarket			{ get {
-				double ret = 0;
-				switch (this.SpreadSide) {
-					case SpreadSide.AskCrossed:
-					case SpreadSide.AskTidal:
-						ret = this.CurrentAsk;
-						break;
-					case SpreadSide.BidCrossed:
-					case SpreadSide.BidTidal:
-						ret = this.CurrentBid;
-						break;
-					default:
-						break;
-				}
-				return ret;
-		} }
+		[JsonProperty]	public	double		Ask_whenEmitted				{ get; private set; }
+		[JsonProperty]	public	double		Bid_whenEmitted				{ get; private set; }
 		[JsonProperty]	public	SpreadSide	SpreadSide;					// SET_IN_BROKER_ADAPDER	{ get; private set; }
-		[JsonProperty]	public	string		PriceSpreadSideAsString		{ get {
-				string ret = "";
-				switch (this.SpreadSide) {
-					case SpreadSide.AskCrossed:
-					case SpreadSide.AskTidal:
-						ret = this.CurrentAsk + " " + this.SpreadSide;
-						break;
-					case SpreadSide.BidCrossed:
-					case SpreadSide.BidTidal:
-						ret = this.CurrentBid + " " + this.SpreadSide;
-						break;
-					default:
-						ret = this.SpreadSide + " bid[" + CurrentBid + "] ask[" + CurrentAsk + "]";
-						break;
-				}
-				return ret;
-			} }
+		//[JsonProperty]	public	double		PriceEmitted_BidOrAsk_zeroForMarket			{ get {
+		//        double ret = 0;
+		//        switch (this.SpreadSide) {
+		//            case SpreadSide.AskCrossed:
+		//            case SpreadSide.AskTidal:
+		//                ret = this.Ask_whenEmitted;
+		//                break;
+		//            case SpreadSide.BidCrossed:
+		//            case SpreadSide.BidTidal:
+		//                ret = this.Bid_whenEmitted;
+		//                break;
+		//            default:
+		//                break;
+		//        }
+		//        return ret;
+		//} }
+		//[JsonProperty]	public	string		PriceSpreadSideAsString		{ get {
+		//        string ret = "";
+		//        switch (this.SpreadSide) {
+		//            case SpreadSide.AskCrossed:
+		//            case SpreadSide.AskTidal:
+		//                ret = this.Ask_whenEmitted + " " + this.SpreadSide;
+		//                break;
+		//            case SpreadSide.BidCrossed:
+		//            case SpreadSide.BidTidal:
+		//                ret = this.Bid_whenEmitted + " " + this.SpreadSide;
+		//                break;
+		//            default:
+		//                ret = this.SpreadSide + " bid[" + Bid_whenEmitted + "] ask[" + Ask_whenEmitted + "]";
+		//                break;
+		//        }
+		//        return ret;
+		//    } }
+
+		[JsonProperty]	public	double		Ask_whenFilled				{ get; private set; }
+		[JsonProperty]	public	double		Bid_whenFilled				{ get; private set; }
 
 		[JsonProperty]	public	Alert		Alert						{ get; private set; }
-		[JsonIgnore]	public	bool		OnlyDeserializedHasNoBars	{ get { return this.Alert.Bars == null; } }
+		[JsonIgnore]	public	bool		HasNoBars_deserializedOnly	{ get { return this.Alert.Bars == null; } }
 
 		// why Concurrent: OrderProcessor adds while GUI reads (a copy); why Stack: ExecutionTree displays Messages RecentOnTop;
 		// TODO: revert to List (with lock(privateLock) { messages.Add/Remove/Count}) when:
@@ -206,8 +210,8 @@ namespace Sq1.Core.Execution {
 		[JsonIgnore]	public	ManualResetEvent	OrderReplacement_Emitted_afterOriginalKilled__orError		{ get; private set; }
 
 
-		[JsonIgnore]	public const int	INITIAL_PriceFill	= 0;
-		[JsonIgnore]	public const int	INITIAL_QtyFill		= 0;
+		[JsonIgnore]	public	const int		INITIAL_PriceFill	= 0;
+		[JsonIgnore]	public	const int		INITIAL_QtyFill		= 0;
 
  		public Order() {	// called by Json.Deserialize(); what if I'll make it protected?
 			GUID			= newGUID();
@@ -238,9 +242,12 @@ namespace Sq1.Core.Execution {
 			SlippageAppliedIndex = -1;
 			SlippageApplied	= 0;
 
-			CurrentAsk		= double.NaN;
-			CurrentBid		= double.NaN;
-			SpreadSide		= SpreadSide.Unknown;
+			Ask_whenEmitted		= double.NaN;
+			Bid_whenEmitted		= double.NaN;
+			SpreadSide			= SpreadSide.Unknown;
+			Ask_whenFilled		= double.NaN;
+			Bid_whenFilled		= double.NaN;
+
 			DerivedOrders	= new List<Order>();
 			DerivedOrdersGuids = new List<string>();
 
@@ -275,8 +282,8 @@ namespace Sq1.Core.Execution {
 			//    Assembler.PopupException(msg, null, false);
 			//}
 
-			this.CurrentBid				= alert.CurrentBid;
-			this.CurrentAsk				= alert.CurrentAsk;
+			this.Bid_whenEmitted		= alert.Bid_whenCreated;
+			this.Ask_whenEmitted		= alert.Ask_whenCreated;
 			this.PriceEmitted			= alert.PriceEmitted;
 			this.SlippageApplied		= alert.SlippageApplied;
 			this.SlippageAppliedIndex	= alert.SlippageAppliedIndex;	// first slippage already applied inside the Alert
@@ -333,7 +340,14 @@ namespace Sq1.Core.Execution {
 		}
 		//internal for Sq1.Core.dll to use ONLY; BrokerAdapters should use OrderProcessor.AppendOrderMessage_propagateToGui(osm_deserialized);
 		public void AppendOrderMessage(OrderStateMessage omsg) { lock (this.messages) {
+			if (this.messages.Count > 0) {
+				OrderStateMessage last = null;
+				if (this.messages.TryPeek(out last)) {
+					omsg.DateTime_forProperSorting_incrementOneMillis_ifEqualsTo(last.DateTime);
+				}
+			}
 			this.LastMessage = omsg.Message;	// KISS; mousemove over OlvOrdersTree won't bother calculating
+			omsg.Serno = this.messages.Count + 1;
 			this.messages.Push(omsg);
 			//this.messages.Enqueue(omsg);
 		} }
@@ -361,8 +375,8 @@ namespace Sq1.Core.Execution {
 			if (this.SernoSession	!= 0)	ret += " SernoSession[" + this.SernoSession + "]";
 			//if (GUID				!= "")	ret += " GUID["			+ GUID + "]";
 			//if (SernoExchange		!= 0)	ret += " SernoExchange["+ SernoExchange + "]";
-			if (this.QtyFill		!= 0.0)	ret += " FillQty["		+ this.QtyFill + "]";
-			if (this.PriceFilled	!= 0.0) ret += " PriceFilled["	+ this.PriceFilled.ToString(formatPrice) + "]";
+			if (this.QtyFill		!= Order.INITIAL_QtyFill)	ret += " FillQty["		+ this.QtyFill + "]";
+			if (this.PriceFilled	!= Order.INITIAL_PriceFill) ret += " PriceFilled["	+ this.PriceFilled.ToString(formatPrice) + "]";
 			//if (this.Alert.PriceDeposited != 0) ret += " PricePaid[" + this.Alert.PriceDeposited + "]";
 			if (this.EmittedByScript) ret += " EmittedByScript";
 			//if (this.Alert.MyBrokerIsLivesim) ret += " Livesim";
@@ -432,22 +446,45 @@ namespace Sq1.Core.Execution {
 			}
 			return ret;
 		}
+
 		public void AbsorbCurrentBidAsk_fromStreamingSnapshot_ifNotPropagatedFromAlert(StreamingDataSnapshot snap) {
-			bool shouldGetFromLastQuote = double.IsNaN(this.CurrentBid) || double.IsNaN(this.CurrentAsk);
-			if (shouldGetFromLastQuote == false) return;
-			this.CurrentBid = snap.GetBestBid_notAligned_forMarketOrder_fromQuoteLast(this.Alert.Symbol);
-			this.CurrentAsk = snap.GetBestAsk_notAligned_forMarketOrder_fromQuoteLast(this.Alert.Symbol);
+			bool shouldGet_fromLastQuote = double.IsNaN(this.Bid_whenEmitted) || double.IsNaN(this.Ask_whenEmitted);
+			if (shouldGet_fromLastQuote == false) return;
+			this.Bid_whenEmitted = snap.GetBestBid_notAligned_forMarketOrder_fromQuoteLast(this.Alert.Symbol);
+			this.Ask_whenEmitted = snap.GetBestAsk_notAligned_forMarketOrder_fromQuoteLast(this.Alert.Symbol);
+		}
+		public bool Absorb_BidAsk_whenFilled() {
+			if (this.Alert													== null) return false;
+			if (this.Alert.QuoteCurrent_whenThisAlertFilled_deserializable	== null) return false;		// deserializable is a SafeClone and isnt changed by Streaming anymore
+
+			Quote quote = this.Alert.QuoteCurrent_whenThisAlertFilled_deserializable;
+			bool invalid_bidAsk = double.IsNaN(quote.Bid) || double.IsNaN(quote.Ask);
+			if (invalid_bidAsk) return false;
+
+			this.Ask_whenFilled = quote.Ask;
+			this.Bid_whenFilled = quote.Bid;
+			return true;
 		}
 
 		internal void SetState_localTime_fromMessage(OrderStateMessage newStateWithReason) {
 			this.setState_localTime(newStateWithReason.State, newStateWithReason.DateTime);
+			newStateWithReason.Message_ChangedOrderState = true;
 		}
 		internal void SetState_localTimeNow(OrderState newOrderState) {
 			this.setState_localTime(newOrderState, DateTime.Now);
 		}
 		void setState_localTime(OrderState newOrderState, DateTime localTime_updated) {
+			OrderState						oldState = this.State;
+			string msig = " //Order.setState_localTime(.oldState[" + oldState + "] => OrderState[" + newOrderState + "], localTime_updated[" + localTime_updated + "]";
+			if (oldState == newOrderState) {
+				string msg = "FIXME_NOW DONT_MAKE_ORDER_ABSORB_SAME_STATE_IT_HAD_BEFORE SHOULD_HAVE_CHECKED_UPSTACK";
+				Assembler.PopupException(msg);
+			}
 			this.State						= newOrderState;
 			this.StateUpdateLastTimeLocal	= localTime_updated;
+
+			if (oldState == newOrderState) return;
+			this.raiseOnOrderStateChanged(this, oldState);
 		}
 
 		public Order EnsureOrder_isLiveOrLivesim_nullIfDeserialized(BrokerAdapter broker = null) {
@@ -476,6 +513,48 @@ namespace Sq1.Core.Execution {
 			}
 			return this;
 		}
+
+		public string BidOrAsk_whenEmitted_spreadSide_forMarketSubstitutedByLimit(int pricingDecimals_forSymbol) {
+			string ret = "";
+			switch (this.SpreadSide) {
+				case SpreadSide.AskCrossed:
+				case SpreadSide.AskTidal:
+					ret = this.Ask_whenEmitted.ToString("N" + pricingDecimals_forSymbol) + " " + this.SpreadSide;
+					break;
+				case SpreadSide.BidCrossed:
+				case SpreadSide.BidTidal:
+					ret = this.Bid_whenEmitted.ToString("N" + pricingDecimals_forSymbol) + " " + this.SpreadSide;
+					break;
+				default:
+					double priceScript = this.Alert.PriceScript;
+					if (priceScript != 0) {
+						string msg = "LIMIT/STOP_ORDER_PRICE_IS_SHOWN_IN_$Script_COLUMN";
+						//ret = priceScript.ToString("N" + pricingDecimalForSymbol) + " $Script";
+					} else {
+						string msg = "THIS_ORDER_WAS_A_MARKET_ORDER_WITH_ERRONEOUS_LimitTidal/LimitCrossMarket_CALCULATION";
+						ret = this.SpreadSide + " bid[" + this.Bid_whenEmitted + "] ask[" + this.Ask_whenEmitted + "]";
+					}
+					break;
+			}
+			return ret;
+		}
+
+		public string BidAndAsk_whenEmitted(int pricingDecimals_forSymbol) {
+			string ret = "";
+			if (double.IsNaN(this.Bid_whenEmitted) || double.IsNaN(this.Ask_whenEmitted)) return ret;
+			ret = "bid[" + this.Bid_whenEmitted.ToString("N" + pricingDecimals_forSymbol) + "]:[" + this.Ask_whenEmitted.ToString("N" + pricingDecimals_forSymbol) + "]ask //EMITTED";
+			return ret;
+		}
+
+		public string BidAndAsk_whenFilled(int pricingDecimals_forSymbol) {
+			string ret = "";
+			if (this.QtyFill == Order.INITIAL_QtyFill) return ret;
+			if (double.IsNaN(this.Bid_whenFilled) || double.IsNaN(this.Ask_whenFilled)) return ret;
+			ret = "bid[" + this.Bid_whenFilled.ToString("N" + pricingDecimals_forSymbol) + "]:[" + this.Ask_whenFilled.ToString("N" + pricingDecimals_forSymbol) + "]ask //FILLED";
+			return ret;
+		}
+
+
 
 		[JsonIgnore]	public	bool				IsDisposed;
 		public void Dispose() {

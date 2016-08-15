@@ -124,7 +124,7 @@ namespace Sq1.Core.StrategyBase {
 
 			string msg = "";
 			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteLast(proto.Symbol, proto.LongShort);
-			double newStopLossPrice = proto.OffsetToPrice(newStopLoss_negativeOffset);
+			double newStopLossPrice = proto.OffsetToPriceEntry(newStopLoss_negativeOffset);
 			//switch (proto.StopLossAlertForAnnihilation.MarketLimitStop) {
 			switch (marketLimitStopPlanned) {
 				#region StopLimits are considered NYI; mess v1 implementation
@@ -132,7 +132,7 @@ namespace Sq1.Core.StrategyBase {
 					double newActivationOffset = proto.CalcActivationOffset_forNewClosing(newStopLoss_negativeOffset);
 					//double lastPrice = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteGetPriceForMarketOrder(proto.Symbol);
 					//Quote quote = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteGetForSymbol(proto.Symbol);
-					double newActivationPrice = proto.OffsetToPrice(newActivationOffset);
+					double newActivationPrice = proto.OffsetToPriceEntry(newActivationOffset);
 					bool willBeExecutedImmediately = false;
 					string ident = "StopLoss{old[" + proto.PriceStopLoss + "]:new[" + newStopLossPrice + "]}"
 								 + " Activation{old[" + proto.PriceStopLossActivation + "]:new[" + newActivationPrice + "]}";
@@ -214,7 +214,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			Quote quote = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(proto.Symbol);
 			double priceBestBidAsk = executor.DataSource_fromBars.StreamingAdapter.StreamingDataSnapshot.GetBidOrAsk_forDirection_fromQuoteLast(proto.Symbol, proto.LongShort);
-			double newTakeProfitPrice = proto.OffsetToPrice(newTakeProfit_positiveOffset);
+			double newTakeProfitPrice = proto.OffsetToPriceEntry(newTakeProfit_positiveOffset);
 			bool willBeExecutedImmediately = false;
 			string ident = "TakeProfit{old[" + proto.PriceTakeProfit + "]:new[" + newTakeProfitPrice + "]}";
 			string msg = "";

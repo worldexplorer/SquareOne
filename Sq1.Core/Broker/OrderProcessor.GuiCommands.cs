@@ -10,7 +10,7 @@ namespace Sq1.Core.Broker {
 		public void GuiClick_ordersSubmit_eatable(List<Order> orders) {
 			List<Order> ordersEatable = new List<Order>();
 			foreach (Order order in orders) {
-				if (this.isOrderEatable(order) == false) {
+				if (this.isOrderEatable_notOrdersProperty(order) == false) {
 					string msg1 = "I_REFUSE_TO_SUBMIT_NON_EDIBLE_ORDER [" + order + "]";
 					order.AppendMessage(msg1);
 					Assembler.PopupException(msg1, null, false);

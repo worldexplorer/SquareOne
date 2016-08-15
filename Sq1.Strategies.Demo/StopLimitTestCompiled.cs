@@ -9,19 +9,36 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Strategies.Demo {
 	public class StopLimitTestCompiled : Script {
-		ScriptParameter					protoPlacementOffsetPct;
-		ScriptParameter					TPpct;
-		ScriptParameter					SLpct;
-		//ScriptParameter					SLApct;
-		ScriptParameter					Long0_Short1;
+		ScriptParameter					protoPlacementOffsetPrm;
+		ScriptParameter					TPprm;
+		ScriptParameter					SLprm;
+		ScriptParameter					SLApips;
+		ScriptParameter					Short0_Long1;
 
 		public StopLimitTestCompiled() {
-			protoPlacementOffsetPct = new ScriptParameter(1, "protoPlacementOffsetPct", 0.1, -1, 1, 0.05, "hopefully this will go to tooltip");
-			TPpct					= new ScriptParameter(2, "TPpct",					0.5, 0.1, 2, 0.05, "hopefully this will go to tooltip");
-			SLpct					= new ScriptParameter(3, "SLpct",					-0.1, -0.1, -1, 0.05, "hopefully this will go to tooltip");
-			//SLApct					= new ScriptParameter(4, "SLApct",					-0.1, -0.8, -1, 0.1, "hopefully this will go to tooltip");
-			Long0_Short1			= new ScriptParameter(5, "Long0_Short1",			0, 0, 1, 1, "hopefully this will go to tooltip");
+			protoPlacementOffsetPrm = new ScriptParameter(1, "protoPlacementOffsetPrm", 1, -10, 10, 0.5,	"Current Bid/Ask => PriceEntry offset, promiles");
+			TPprm					= new ScriptParameter(2, "TPprm",					5, 1, 20, 0.5,		"PriceEntry(Limit) => TakeProfit(Limit) offset, promiles");
+			SLprm					= new ScriptParameter(3, "SLprm",					-1, -1, -10, 0.5,	"PriceEntry(Limit) => StopLoss(Limit) target offset, promiles");
+			SLApips					= new ScriptParameter(4, "SLApips",					-10, -10, -50, 10,	"PriceEntry(Limit) => StopLoss(Stop) activation offset, priceUnits");
+			Short0_Long1			= new ScriptParameter(5, "Short0_Long1",			0, 0, 1, 1,			"Each Prototype will be Short(0) or Long (1)");
+
+			this.TPprm	.RegisterValueConverter_meaningfulToStrategy(this.calculate_promileOfBarClose);	//,	this.format_forPriceValues);
+			this.SLprm	.RegisterValueConverter_meaningfulToStrategy(this.calculate_promileOfBarClose);	//,	this.format_forPriceValues);
+			this.SLApips.RegisterValueConverter_meaningfulToStrategy(this.calculate_pipsStraight);	//,		this.format_forPriceValues);
 		}
+		double calculate_promileOfBarClose(double TPprm_value) {
+			double ret = 0;
+			if (this.Bars != null && this.Bars.Count > 0) {
+				ret = this.Bars.BarPreLast.Close * TPprm_value / 1000;
+			}
+			return ret;
+		}
+		double calculate_pipsStraight(double SLApips_value) {
+			return SLApips_value;
+		}
+		//string format_forPriceValues() {
+		//    return this.Bars.SymbolInfo.PriceFormat;
+		//}
 
 		public override void InitializeBacktest() {
 			//this.PadBars(0);
@@ -70,31 +87,42 @@ namespace Sq1.Strategies.Demo {
 			//double SLpct_value = -1;
 			//double SLApct_value = -0.8;
 
-			double protoPlacementOffsetPct_value = protoPlacementOffsetPct.ValueCurrent;
-			double TPpct_value = TPpct.ValueCurrent;
-			double SLpct_value = SLpct.ValueCurrent;
-			//double SLApct_value = SLApct.ValueCurrent;
+			double protoPlacementOffsetPrm_value = this.protoPlacementOffsetPrm.ValueCurrent;
+			double TPprm_value = this.TPprm.ValueCurrent;
+			double SLprm_value = this.SLprm.ValueCurrent;
+			double SLApips_value = this.SLApips.ValueCurrent;
 
 			double protoPlacement = 0;
-			if (protoPlacementOffsetPct_value > 0) {
+			if (protoPlacementOffsetPrm_value > 0) {
 				string msg = "LIMIT_ALERT_WILL_BE_CREATED_WITH_PRICE_IS_NONZERO PositionPrototypeActivator.PlaceOnce()";
-				protoPlacement = bar.Close + bar.Close * protoPlacementOffsetPct_value / 100;
+				protoPlacement = bar.Close + bar.Close * protoPlacementOffsetPrm_value / 1000;
 			} else {
 				string msg = "MARKET_ALERT_WILL_BE_CREATED_WITH_PRICE_IS_ZERO PositionPrototypeActivator.PlaceOnce()";
 			}
-			double TP = bar.Close * TPpct_value / 100;
-			double SL = bar.Close * SLpct_value / 100;
-			//double SLactivation = bar.Close * SLApct_value / 100;
-			double SLactivation = 0;	// when SLactivation == 0 Prototype generates Stop alert instead of StopLoss
+			//double TP = bar.Close * TPprm_value / 1000;
+			//double SL = bar.Close * SLprm_value / 1000;
+			//double SLactivation = bar.Close * SLApips_value;
 
-			PositionPrototype protoLong = new PositionPrototype(this.Bars.Symbol, PositionLongShort.Long, protoPlacement, TP, SL, SLactivation);
+			if (bar.Close != this.Bars.BarPreLast.Close) {
+				string msg = "WRONG_LAST_BAR_WILL_BE_USED_IN_calculate_promileOfBarClose()";
+				Assembler.PopupException(msg);
+			}
+
+			double TP = this.calculate_promileOfBarClose(TPprm_value);
+			double SL = this.calculate_promileOfBarClose(SLprm_value);
+
+			double SLactivation = SLApips_value;
+			//double SLactivation = 0;	// when SLactivation == 0 Prototype generates Stop alert instead of StopLoss
+
+			PositionPrototype protoLong  = new PositionPrototype(this.Bars.Symbol, PositionLongShort.Long,   protoPlacement, TP, SL, SLactivation);
 			PositionPrototype protoShort = new PositionPrototype(this.Bars.Symbol, PositionLongShort.Short, -protoPlacement, TP, SL, SLactivation);
 			//PositionPrototype protoFixed = new PositionPrototype(this.Bars.Symbol, PositionLongShort.Long, 158000, +150.0, -50.0, -40.0);
 
 			//PositionPrototype proto = barNewStaticArrived.Close < 158000 ? protoLong : protoShort;
-			PositionPrototype proto = this.Long0_Short1.ValueCurrentAsInteger == 0 ? protoLong : protoShort;
+			PositionPrototype proto = this.Short0_Long1.ValueCurrentAsInteger == 0 ? protoShort : protoLong;
 			base.Executor.PositionPrototypeActivator.PlaceOnce(proto);
 		}
+
 		public override void OnAlertFilled_callback(Alert alertFilled) {
 			if (alertFilled.IsExitAlert) return;
 			Position position = alertFilled.PositionAffected;
@@ -120,7 +148,7 @@ namespace Sq1.Strategies.Demo {
 			return;
 
 
-			double currentStopLossNegativeOffset = proto.StopLoss_negativeOffset;
+			double currentStopLossNegativeOffset = proto.StopLoss_priceEntryNegativeOffset;
 			double newStopLossNegativeOffset = currentStopLossNegativeOffset - 20;
 			//string msg = base.Executor.PositionPrototypeActivator.ReasonWhyNewStopLossOffsetDoesntMakeSense(positionOpenedProto, newStopLossNegativeOffset);
 			//if (String.IsNullOrEmpty(msg)) {
@@ -129,7 +157,7 @@ namespace Sq1.Strategies.Demo {
 			//	base.Executor.PopupException(new Exception("WONT_UPDATE_STOPLOSS: " + msg));
 			//}
 
-			double newTakeProfitPositiveOffset = proto.TakeProfit_positiveOffset + 50;
+			double newTakeProfitPositiveOffset = proto.TakeProfit_priceEntryPositiveOffset + 50;
 			//msg = base.Executor.PositionPrototypeActivator.ReasonWhyNewTakeProfitOffsetDoesntMakeSense(positionOpenedProto, newTakeProfitPositiveOffset);
 			//if (String.IsNullOrEmpty(msg)) {
 				base.Executor.PositionPrototypeActivator.TakeProfit_newPositiveOffset_updateActivate(positionOpenedProto, newTakeProfitPositiveOffset);

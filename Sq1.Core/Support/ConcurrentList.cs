@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using Sq1.Core.Execution;
 
@@ -93,8 +94,8 @@ namespace Sq1.Core.Support {
 			}
 		}
 
-		// "protected" forces derived classes to use the wrapper (for narrower debugging)
-		protected virtual bool RemoveUnique(T position, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
+		// YES_BUT_FOR_ConcurrentDictionary_ofConcurrentLists_I_NEED_PUBLIC_INTERFACE "protected" forces derived classes to use the wrapper (for narrower debugging)
+		internal virtual bool RemoveUnique(T position, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
 			//lockPurpose += " //" + this.ToString() + ".Remove(" + position.ToString() + ")";
 			bool removed = false;
 			try {
@@ -114,8 +115,8 @@ namespace Sq1.Core.Support {
 			return removed;
 		}
 
-		// "protected" forces derived classes to use the wrapper (for narrower debugging)
-		protected virtual bool AppendUnique(T alertOrPosition, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+		// YES_BUT_FOR_ConcurrentDictionary_ofConcurrentLists_I_NEED_PUBLIC_INTERFACE "protected" forces derived classes to use the wrapper (for narrower debugging)
+		internal virtual bool AppendUnique(T alertOrPosition, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
 			//lockPurpose += " //" + this.ToString() + ".Add(" + alertOrPosition.ToString() + ")";
 			bool added = false;
 			try {
@@ -134,8 +135,9 @@ namespace Sq1.Core.Support {
 			return added;
 		}
 
-		// "protected" forces derived classes to use the wrapper (for narrower debugging)
-		protected virtual bool InsertUnique(T alertOrPosition, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+		// YES_BUT_FOR_ConcurrentDictionary_ofConcurrentLists_I_NEED_PUBLIC_INTERFACE "protected" forces derived classes to use the wrapper (for narrower debugging)
+		internal virtual bool InsertUnique(T alertOrPosition, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+			string msig = " //ConcurrentList<T>.InsertUnique()";
 			//lockPurpose += " //" + this.ToString() + ".Add(" + alertOrPosition.ToString() + ")";
 			int indexToInsertAt = 0;
 			bool added = false;
@@ -149,6 +151,8 @@ namespace Sq1.Core.Support {
 				this.InnerList.Insert(indexToInsertAt, alertOrPosition);
 				this.Count = this.InnerList.Count;
 				added = true;
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
 			}

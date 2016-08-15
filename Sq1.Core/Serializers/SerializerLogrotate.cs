@@ -128,20 +128,25 @@ namespace Sq1.Core.Serializers {
 			}
 			this.HasChangesToSave = true;
 		}
-		public void Remove(List<T> ordersToRemove) { lock (this.entityLock) {
+		public int RemoveRange(List<T> ordersToRemove) { lock (this.entityLock) {
+			int ret = 0;
 			foreach (T orderRemoving in ordersToRemove) {
-				if (base.EntityDeserialized.Contains(orderRemoving)) {
-					base.EntityDeserialized.Remove(orderRemoving);
-				}
+				if (base.EntityDeserialized.Contains(orderRemoving) == false) continue;
+				base.EntityDeserialized.Remove(orderRemoving);
+				ret++;
 			}
 			this.HasChangesToSave = true;
+			return ret;
 		} }
 		public void Clear() { lock (this.entityLock) {
 			base.EntityDeserialized.Clear();
 			this.HasChangesToSave = true;
 		} }
 
+
+		public string			 AllLogrotatedSize_butNotMainJson_scanned { get; private set; }		// filled after accessing AllLogrotatedAbsFnames_butNotMainJson_scanned
 		public List<string> AllLogrotatedAbsFnames_butNotMainJson_scanned { get {
+			this.AllLogrotatedSize_butNotMainJson_scanned = "[xx]Mb";
 			List<string> logrotatedAbsFnames = new List<string>();
 			if (Directory.Exists(base.AbsPath) == false) {
 				return logrotatedAbsFnames;
@@ -149,12 +154,25 @@ namespace Sq1.Core.Serializers {
 
 			string mask = this.OfWhat + "s-*.json";		// Orders-2016-07-05_10-58-48#448.json
 			string[] absFileNames = Directory.GetFiles(this.AbsPath, mask);
+			long totalBytes = 0;
 			for (int i = 0; i < absFileNames.Length; i++) {
 				string absFileName = absFileNames[i];
 				string thisOne = "[" + absFileName + "]=[" + i + "]/[" + absFileNames.Length + "]";
 				logrotatedAbsFnames.Add(absFileName);
+
+				FileInfo finfo = new FileInfo(absFileName);
+				totalBytes += finfo.Length;
 			}
 
+			float totalKiloBytes = totalBytes / 1024f; 
+			if (totalKiloBytes < 1024) {
+				string sizeKb = "[" + Math.Round(totalKiloBytes).ToString("N0") + "]Kb";
+				this.AllLogrotatedSize_butNotMainJson_scanned = sizeKb;
+			} else {
+				float totalMegaBytes = totalKiloBytes / 1024f; 
+				string sizeMb = "[" + Math.Round(totalMegaBytes, 2).ToString("N2") + "]Mb";
+				this.AllLogrotatedSize_butNotMainJson_scanned = sizeMb;
+			}
 			return logrotatedAbsFnames;
 		} }
 		public int FindAndDelete_allLogrotatedFiles_butNotMainJson() {

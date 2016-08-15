@@ -4,6 +4,9 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core;
+using Sq1.Core.StrategyBase;
+using Sq1.Core.Indicators;
+
 using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Widgets.SteppingSlider {
@@ -142,14 +145,47 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.RaiseShowNumericUpdownChanged();
 		}
 
+		bool ctxSlider_IalreadyAppended_myCrazyMenuItems = false;
 		void ctxSlider_Opening(object sender, CancelEventArgs e) {
 			//v1 this.NumericUpDown.Text = this.format(this.ValueCurrent);
 			this.NumericUpDown.Value = this.ValueCurrent;
-			this.mniltbValueCurrent.InputFieldValue = this.format(this.ValueCurrent);
-			this.mniltbValueMin.InputFieldValue = this.format(this.ValueMin);
-			this.mniltbValueMax.InputFieldValue = this.format(this.ValueMax);
-			this.mniltbValueStep.InputFieldValue = this.format(this.ValueIncrement);
-			this.mniHeaderNonHighlighted.Text = this.LabelText;
+
+			this.mniltbValueCurrent	.InputFieldValue = this.format(this.ValueCurrent);
+			this.mniltbValueMin		.InputFieldValue = this.format(this.ValueMin);
+			this.mniltbValueMax		.InputFieldValue = this.format(this.ValueMax);
+			this.mniltbValueStep	.InputFieldValue = this.format(this.ValueIncrement);
+
+			IndicatorParameter paramImHolding = this.Tag as IndicatorParameter;
+			if (paramImHolding != null && paramImHolding.ValueConverter_meaningfulToStrategy != null) {
+				string format = this.ValueFormat;
+				if (paramImHolding.ValueFormat_meaningfulToStrategy != null) {
+					format = paramImHolding.ValueFormat_meaningfulToStrategy();
+				}
+
+				double current_strategyMeaningful = paramImHolding.ValueConverter_meaningfulToStrategy(paramImHolding.ValueCurrent);
+				if (double.IsNaN(current_strategyMeaningful) == false) {
+					this.mniltbValueCurrent	.LabeledTextBoxControl.LabelRight.Text = "[" + current_strategyMeaningful.ToString(format) + "]";
+				}
+
+				double min_strategyMeaningful = paramImHolding.ValueConverter_meaningfulToStrategy(paramImHolding.ValueMin);
+				if (double.IsNaN(min_strategyMeaningful) == false) {
+					this.mniltbValueMin		.LabeledTextBoxControl.LabelRight.Text = "[" + min_strategyMeaningful.ToString(format) + "]";
+				}
+
+				double max_strategyMeaningful = paramImHolding.ValueConverter_meaningfulToStrategy(paramImHolding.ValueMax);
+				if (double.IsNaN(max_strategyMeaningful) == false) {
+					this.mniltbValueMax		.LabeledTextBoxControl.LabelRight.Text = "[" + max_strategyMeaningful.ToString(format) + "]";
+				}
+
+				double step_strategyMeaningful = paramImHolding.ValueConverter_meaningfulToStrategy(paramImHolding.ValueIncrement);
+				if (double.IsNaN(step_strategyMeaningful) == false) {
+					this.mniltbValueStep	.LabeledTextBoxControl.LabelRight.Text = "[" + step_strategyMeaningful.ToString(format) + "]";
+				}
+
+			}
+
+			this.mniParameterVariableName		.Text = this.LabelText;
+			this.mniParameterVariableDescription.Text = this.ParameterDescription;
 
 			//v1 ???base.Parent is NULL here:  SlidersAutoGrowControl slidersAutoGrow = base.Parent as SlidersAutoGrowControl;
 			SteppingSlidersAutoGrowControl slidersAutoGrow = this.ParentAutoGrowControl;
@@ -160,6 +196,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				return;
 			}
 
+			if (this.ctxSlider_IalreadyAppended_myCrazyMenuItems) return; 
 			try {
 				this.ctxSlider.SuspendLayout();
 				//this.ctxSlider.Items.AddRange(slidersAutoGrow.TsiScriptContextsDynamic);
@@ -173,10 +210,18 @@ namespace Sq1.Widgets.SteppingSlider {
 					}
 					this.ctxSlider.Items.Add(mni);
 				}
+
+				// otherwize I have to scroll vertically my trying to avoid this.ctxSlider.LayoutEngine.Layout(x, y);
+				int height_before = this.ctxSlider.Height;
+				this.ctxSlider.AutoSize = false;
+				this.ctxSlider.AutoSize = true;
+				int height_after = this.ctxSlider.Height;
+				bool shouldGrow = height_after > height_before;
 			} catch (Exception ex) {
 				Assembler.PopupException("ctxSlider_Opening()", ex);
 			} finally {
 				this.ctxSlider.ResumeLayout(true);
+				this.ctxSlider_IalreadyAppended_myCrazyMenuItems = true;
 			}
 		}
 	}

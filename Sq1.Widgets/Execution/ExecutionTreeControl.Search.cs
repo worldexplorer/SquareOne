@@ -1,6 +1,8 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Collections.Generic;
+using Sq1.Core.Execution;
 
 namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
@@ -50,6 +52,7 @@ namespace Sq1.Widgets.Execution {
 		void tsiCbx_ExcludeApply_Click(object sender, EventArgs e) {
 			this.dataSnapshot.ShowSearchbar_ExcludeKeywordApplied = this.tsiCbx_ExcludeApply.CheckBoxChecked;
 			this.dataSnapshotSerializer.Serialize();
+
 			this.keywordsExclude_apply();
 		}
 
@@ -58,7 +61,7 @@ namespace Sq1.Widgets.Execution {
 			this.dataSnapshotSerializer.Serialize();
 
 			if (this.dataSnapshot.ShowSearchbar_ExcludeKeywordApplied == false) return;
-			//this.keywordsExclude_apply();
+			this.keywordsExclude_apply();
 		}
 
 		void btnSearchClose_Click(object sender, EventArgs e) {
@@ -69,6 +72,7 @@ namespace Sq1.Widgets.Execution {
 			this.olvOrdersTree.BackColor = Color.White;
 		}
 		void tsiBtnClear_Click(object sender, EventArgs e) {
+			this.Clear();
 		}
 
 
@@ -78,20 +82,26 @@ namespace Sq1.Widgets.Execution {
 				?	this.dataSnapshot.ShowSearchbar_SearchKeywordsCsv
 				:	null;
 
-			//if (string.IsNullOrEmpty(keywordsCsv_nullUnsafe)) {
-			//    this.olvOrdersTree.SetObjects(this.ordersRoot.SafeCopy(this, "keywordsSearch_apply()"));
+			bool willBeFlat =
+				this.dataSnapshot.ShowSearchbar_SearchKeywordApplied	&& string.IsNullOrEmpty(this.dataSnapshot.ShowSearchbar_SearchKeywordsCsv) == false ||
+				this.dataSnapshot.ShowSearchbar_ExcludeKeywordApplied	&& string.IsNullOrEmpty(this.dataSnapshot.ShowSearchbar_ExcludeKeywordsCsv) == false;
+			this.ordersViewProxy.ShowingTreeTrue_FlatFalse = willBeFlat == false;
 
-			//    this.tsiLtb_SearchKeywords.LabeledTextBoxControl.InternalTextBox.BackColor = Color.White;
-			//    // yeps color from the opposite checkbox
-			//    Color newBgColor = this.dataSnapshot.ShowSearchbar_ExcludeKeywordApplied ? Color.FloralWhite : Color.White;
-			//    this.olvOrdersTree.BackColor = newBgColor;
-			//    return;
-			//}
+			this.ordersViewProxy.SearchForKeywords(keywordsCsv_nullUnsafe);
+			this.RebuildAllTree_focusOnRecent();
 
-			//List<Exception> filtered_fromAllOrNoExcluded = this.ordersRoot.SearchForKeywords_StaticSnapshotSubset(keywordsCsv_nullUnsafe);
-			//this.olvOrdersTree.SetObjects(filtered_fromAllOrNoExcluded);
-			//this.olvOrdersTree.BackColor = Color.LightGreen;
-			//this.tsiLtb_SearchKeywords.LabeledTextBoxControl.InternalTextBox.BackColor = Color.LightGreen;
+			if (string.IsNullOrEmpty(keywordsCsv_nullUnsafe)) {
+			    this.olvOrdersTree.SetObjects(this.ordersViewProxy.OrdersList_switchable);
+
+			    this.tsiLtb_SearchKeywords.LabeledTextBoxControl.InternalTextBox.BackColor = Color.White;
+			    // yeps color from the opposite checkbox
+			    Color newBgColor = this.dataSnapshot.ShowSearchbar_ExcludeKeywordApplied ? Color.FloralWhite : Color.White;
+			    this.olvOrdersTree.BackColor = newBgColor;
+			    return;
+			}
+
+			this.olvOrdersTree.BackColor = Color.LightGreen;
+			this.tsiLtb_SearchKeywords.LabeledTextBoxControl.InternalTextBox.BackColor = Color.LightGreen;
 		}
 
 		void keywordsExclude_apply() {
@@ -100,24 +110,30 @@ namespace Sq1.Widgets.Execution {
 				?	this.dataSnapshot.ShowSearchbar_ExcludeKeywordsCsv
 				:	null;
 
-			//if (string.IsNullOrEmpty(keywordsCsv_nullUnsafe)) {
-			//    this.ordersRoot.InitKeywordsToExclude_AndSetPointer(null);
-			//    this.olvOrdersTree.SetObjects(this.ordersRoot.SafeCopy(this, "keywordsExclude_apply()"));
+			bool willBeFlat =
+				this.dataSnapshot.ShowSearchbar_SearchKeywordApplied	&& string.IsNullOrEmpty(this.dataSnapshot.ShowSearchbar_SearchKeywordsCsv) == false ||
+				this.dataSnapshot.ShowSearchbar_ExcludeKeywordApplied	&& string.IsNullOrEmpty(this.dataSnapshot.ShowSearchbar_ExcludeKeywordsCsv) == false;
+			this.ordersViewProxy.ShowingTreeTrue_FlatFalse = willBeFlat == false;
 
-			//    // yeps color from the opposite checkbox
-			//    Color newBgColor = this.dataSnapshot.ShowSearchbar_SearchKeywordApplied ? Color.LightGreen : Color.White;
-			//    this.olvOrdersTree.BackColor = newBgColor;
-			//    this.tsiLtb_ExcludeKeywords.LabeledTextBoxControl.InternalTextBox.BackColor = Color.White;
-			//    return;
-			//}
+			if (string.IsNullOrEmpty(keywordsCsv_nullUnsafe)) {
+			    this.ordersViewProxy.OrdersSearchable_forGui.InitKeywordsToExclude_AndSetPointer(null);
+			    this.olvOrdersTree.SetObjects(this.ordersViewProxy.OrdersList_switchable);
 
-			//List<Exception> innerList_excludeKeywordsApplied = this.ordersRoot.InitKeywordsToExclude_AndSetPointer(keywordsCsv_nullUnsafe);
-			//this.olvOrdersTree.SetObjects(innerList_excludeKeywordsApplied);
+			    // yeps color from the opposite checkbox
+			    Color newBgColor = this.dataSnapshot.ShowSearchbar_SearchKeywordApplied ? Color.LightGreen : Color.White;
+			    this.olvOrdersTree.BackColor = newBgColor;
+			    this.tsiLtb_ExcludeKeywords.LabeledTextBoxControl.InternalTextBox.BackColor = Color.White;
+			    return;
+			}
 
-			//// yeps color from the opposite checkbox
-			//Color oppositeBgColor = this.dataSnapshot.ShowSearchbar_SearchKeywordApplied ? Color.LightGreen : Color.FloralWhite;
-			//this.olvOrdersTree.BackColor = oppositeBgColor;
-			//this.tsiLtb_ExcludeKeywords.LabeledTextBoxControl.InternalTextBox.BackColor = Color.FloralWhite;
+			List<Order> innerList_excludeKeywordsApplied = this.ordersViewProxy.OrdersSearchable_forGui.InitKeywordsToExclude_AndSetPointer(keywordsCsv_nullUnsafe);
+			this.olvOrdersTree.SetObjects(innerList_excludeKeywordsApplied);
+			this.RebuildAllTree_focusOnRecent();
+
+			// yeps color from the opposite checkbox
+			Color oppositeBgColor = this.dataSnapshot.ShowSearchbar_SearchKeywordApplied ? Color.LightGreen : Color.FloralWhite;
+			this.olvOrdersTree.BackColor = oppositeBgColor;
+			this.tsiLtb_ExcludeKeywords.LabeledTextBoxControl.InternalTextBox.BackColor = Color.FloralWhite;
 		}
 
 		/*

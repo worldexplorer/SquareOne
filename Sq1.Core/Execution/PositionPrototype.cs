@@ -2,50 +2,103 @@
 using System.Diagnostics;
 using System.Text;
 
+using Sq1.Core.DataTypes;
+
 namespace Sq1.Core.Execution {
 	public class PositionPrototype {
-		public readonly	string Symbol;
-		public readonly	PositionLongShort LongShort;
-		public double	PriceEntry							{ get; protected set; }
-		public double	StopLoss_negativeOffset;			// { get; protected set; }
-		public double	StopLossActivation_negativeOffset	{ get; protected set; }
-		public double	TakeProfit_positiveOffset			{ get; protected set; }
-		public double	PriceStopLossActivation				{ get { return this.OffsetToPrice(this.StopLossActivation_negativeOffset); } }
-		public double	PriceStopLoss						{ get { return this.OffsetToPrice(this.StopLoss_negativeOffset); } }
-		public double	PriceTakeProfit						{ get { return this.OffsetToPrice(this.TakeProfit_positiveOffset); } }
+		public	readonly	string Symbol;
+		public	readonly	PositionLongShort LongShort;
+		public	double		PriceEntry									{ get; protected set; }
 
-		public Alert	StopLossAlert_forMoveAndAnnihilation;
-		public Alert	TakeProfitAlert_forMoveAndAnnihilation;
+		public	double		TakeProfit_priceEntryPositiveOffset			{ get; protected set; }
+		public	double		PriceTakeProfit								{ get; protected set; }
+
+		public	double		StopLoss_priceEntryNegativeOffset			{ get; protected set; }
+		public	double		StopLossActivation_priceEntryNegativeOffset	{ get; protected set; }
+		public	double		PriceStopLoss								{ get; protected set; }
+		public	double		PriceStopLossActivation						{ get; protected set; }
+
+		public	double		StopLossActivation_distanceFromStopLoss		{ get {
+			return
+				this.LongShort == PositionLongShort.Long
+					? this.PriceStopLoss - this.PriceStopLossActivation
+					: this.PriceStopLossActivation - this.PriceStopLoss;
+		} }
+
+		public	Alert		StopLossAlert_forMoveAndAnnihilation;
+		public	Alert		TakeProfitAlert_forMoveAndAnnihilation;
 		
-		public string	SignalEntry = "";
-		public string	SignalStopLoss = "";
-		public string	SignalTakeProfit = "";
+		public	string		SignalEntry = "";
+		public	string		SignalStopLoss = "";
+		public	string		SignalTakeProfit = "";
+				SymbolInfo	symbolInfo;
 
-		public PositionPrototype(string symbol, PositionLongShort positionLongShort, double priceEntry,
-				double takeProfitPositiveOffset,
-				double stopLossNegativeOffset, double stopLossActivationNegativeOffset = 0,
+		public PositionPrototype(string symbol, PositionLongShort positionLongShort, double priceEntry_mostLikelyZero,
+				double takeProfit_priceEntryPositiveOffset,
+				double stopLoss_priceEntryNegativeOffset, double stopLossActivation_stopLossNegativeOffset = 0,
 				string signalEntry = "", string signalStopLoss = "", string signalTakeProfit = "") {
 
 			this.Symbol = symbol;
 			this.LongShort = positionLongShort;
-			this.PriceEntry = priceEntry;
-			this.SetNewTakeProfitOffset(takeProfitPositiveOffset);
-			this.SetNewStopLossOffsets(stopLossNegativeOffset, stopLossActivationNegativeOffset);
-			
+
+			this.symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfo_nullUnsafe(this.Symbol);
+			if (priceEntry_mostLikelyZero > 0) this.PriceEntryAbsorb_calculateTpSl(priceEntry_mostLikelyZero);
+
+			this.TakeProfit_priceEntryPositiveOffset			= takeProfit_priceEntryPositiveOffset;
+			this.StopLoss_priceEntryNegativeOffset				= stopLoss_priceEntryNegativeOffset;
+			this.StopLossActivation_priceEntryNegativeOffset	= stopLossActivation_stopLossNegativeOffset;
+
 			if (string.IsNullOrEmpty(signalEntry) == false)			this.SignalEntry = signalEntry;
 			if (string.IsNullOrEmpty(signalStopLoss) == false)		this.SignalStopLoss = signalStopLoss;
 			if (string.IsNullOrEmpty(signalTakeProfit) == false)	this.SignalTakeProfit = signalTakeProfit;
 		}
 
-		public void SetNewTakeProfitOffset(double newTakeProfitPositiveOffset) {
-			this.checkTPOffset_throwBeforeAbsorbing(newTakeProfitPositiveOffset);
-			this.TakeProfit_positiveOffset = newTakeProfitPositiveOffset;
+		public void PriceEntryAbsorb_calculateTpSl(double priceEntry_afterAlertFilled) {
+			if (priceEntry_afterAlertFilled == 0) {
+				string msg = "STRATEGY_CREATED_PROTOTYPE__HOPING_TO_FILL_ENTRY_ALERT_FIRST__ABSORB_AND_RECALCULATE_AFTER_FILL";
+				return;
+			}
+
+			this.PriceEntry = priceEntry_afterAlertFilled;
+			this.Calculate_TakeProfitOffset();
+			this.Calculate_StopLossOffsets();
 		}
-		public void SetNewStopLossOffsets(double newStopLossNegativeOffset, double stopLossActivationNegativeOffset) {
-			this.checkSLOffsets_throwBeforeAbsorbing(newStopLossNegativeOffset, stopLossActivationNegativeOffset);
-			this.StopLossActivation_negativeOffset = stopLossActivationNegativeOffset;
-			this.StopLoss_negativeOffset = newStopLossNegativeOffset;
+
+		public void Calculate_TakeProfitOffset(double newTakeProfit_positiveOffset = 0) {
+			if (newTakeProfit_positiveOffset > 0) {
+				this.checkTPOffset_throwBeforeAbsorbing(newTakeProfit_positiveOffset);
+				this.TakeProfit_priceEntryPositiveOffset = newTakeProfit_positiveOffset;
+			}
+			this.PriceTakeProfit = this.OffsetToPriceEntry(this.TakeProfit_priceEntryPositiveOffset);
+
+			if (this.symbolInfo == null) return;
+
+			PriceLevelRoundingMode roundingMode_TakeProfit_tighterToEntry =
+				this.LongShort == PositionLongShort.Long
+					? PriceLevelRoundingMode.RoundDown
+					: PriceLevelRoundingMode.RoundUp;
+			this.PriceTakeProfit = this.symbolInfo.AlignToPriceStep(this.PriceTakeProfit, roundingMode_TakeProfit_tighterToEntry);
 		}
+
+		public void Calculate_StopLossOffsets(double newStopLoss_negativeOffset = 0, double newStopLossActivation_negativeOffset = 0) {
+			if (newStopLoss_negativeOffset < 0 && newStopLossActivation_negativeOffset < 0) {
+				this.checkSLOffsets_throwBeforeAbsorbing(newStopLoss_negativeOffset, newStopLossActivation_negativeOffset);
+				this.StopLoss_priceEntryNegativeOffset				= newStopLoss_negativeOffset;
+				this.StopLossActivation_priceEntryNegativeOffset	= newStopLossActivation_negativeOffset;
+			}
+			this.PriceStopLoss				= this.OffsetToPriceEntry(this.StopLoss_priceEntryNegativeOffset);
+			this.PriceStopLossActivation	= this.OffsetToPriceEntry(-this.StopLossActivation_priceEntryNegativeOffset, this.PriceStopLoss);
+
+			if (this.symbolInfo == null) return;
+
+			PriceLevelRoundingMode roundingMode_StopLoss_tighterToEntry =
+				this.LongShort == PositionLongShort.Long
+					? PriceLevelRoundingMode.RoundUp
+					: PriceLevelRoundingMode.RoundDown;
+			this.PriceStopLoss				= this.symbolInfo.AlignToPriceStep(this.PriceStopLoss,				roundingMode_StopLoss_tighterToEntry);
+			this.PriceStopLossActivation	= this.symbolInfo.AlignToPriceStep(this.PriceStopLossActivation,	roundingMode_StopLoss_tighterToEntry);
+		}
+
 		public void checkTPOffset_throwBeforeAbsorbing(double takeProfitPositiveOffset) {
 			if (takeProfitPositiveOffset < 0) {
 				string msg = "WRONG USAGE OF PositionPrototype.ctor()!"
@@ -84,34 +137,26 @@ namespace Sq1.Core.Execution {
 				throw new Exception(msg);
 			}
 		}
-		//public void checkThrowAbsorbed() {
-		//	this.checkSlOffsetsThrowBeforeAbsorbing(this.TakeProfitPositiveOffset, this.StopLossNegativeOffset, this.StopLossActivationNegativeOffset);
-		//}
-		//internal void StopLossNegativeSameActivationDistanceOffsetSafeUpdate(double newStopLossNegativeOffset) {
-		//	double newActivationOffset = this.CalcActivationOffsetForNewClosing(newStopLossNegativeOffset);
-		//	this.checkSlOffsetsThrowBeforeAbsorbing(this.TakeProfitPositiveOffset, newStopLossNegativeOffset, newActivationOffset);
-		//	this.StopLossNegativeOffset = newStopLossNegativeOffset;
-		//}
 
 		public double CalcActivationOffset_forNewClosing(double newStopLossNegativeOffset) {
 			// for a long position, activation price is above closing price
-			double currentDistance = this.StopLossActivation_negativeOffset - this.StopLoss_negativeOffset;
+			double currentDistance = this.StopLossActivation_priceEntryNegativeOffset - this.StopLoss_priceEntryNegativeOffset;
 			return newStopLossNegativeOffset + currentDistance;
 		}
 
-		public double CalcStopLossDifference(double newStopLossNegativeOffset) {
-			return newStopLossNegativeOffset - this.StopLoss_negativeOffset;
-		}
+		public double OffsetToPriceEntry(double offset, double priceEntry_orStopLoss = 0) {
+			if (priceEntry_orStopLoss == 0) priceEntry_orStopLoss = this.PriceEntry;
+			double price_withOffset = 0;
 
-		public double OffsetToPrice(double newActivationOffset) {
-			double priceFromOffset = 0;
 			switch (this.LongShort) {
 				case PositionLongShort.Long:
-					priceFromOffset = this.PriceEntry + newActivationOffset;
+					price_withOffset = priceEntry_orStopLoss + offset;
 					break;
+
 				case PositionLongShort.Short:
-					priceFromOffset = this.PriceEntry - newActivationOffset;
+					price_withOffset = priceEntry_orStopLoss - offset;
 					break;
+
 				default:
 					string msg = "OffsetToPrice(): No PositionLongShort[" + this.LongShort + "] handler "
 						+ "; must be one of those: Long/Short";
@@ -120,18 +165,16 @@ namespace Sq1.Core.Execution {
 					#endif
 					throw new Exception(msg);
 			}
-			return priceFromOffset;
+
+			return price_withOffset;
 		}
 
-		public double PriceToOffset(double newPrice) {
-			return this.PriceEntry - newPrice;
-		}
 		public bool IsIdenticalTo(PositionPrototype proto) {
 			return this.LongShort == proto.LongShort
 				&& this.PriceEntry == proto.PriceEntry
-				&& this.TakeProfit_positiveOffset == proto.TakeProfit_positiveOffset
-				&& this.StopLoss_negativeOffset == proto.StopLoss_negativeOffset
-				&& this.StopLossActivation_negativeOffset == proto.StopLossActivation_negativeOffset;
+				&& this.TakeProfit_priceEntryPositiveOffset == proto.TakeProfit_priceEntryPositiveOffset
+				&& this.StopLoss_priceEntryNegativeOffset == proto.StopLoss_priceEntryNegativeOffset
+				&& this.StopLossActivation_priceEntryNegativeOffset == proto.StopLossActivation_priceEntryNegativeOffset;
 		}
 		public override string ToString() {
 //			return this.LongShort + " Entry[" + this.PriceEntry + "]TP[" + this.TakeProfitPositiveOffset + "]SL["
@@ -141,16 +184,12 @@ namespace Sq1.Core.Execution {
 			msg.Append(" Entry[");
 			msg.Append(this.PriceEntry);
 			msg.Append("]TP[");
-			msg.Append(this.TakeProfit_positiveOffset);
+			msg.Append(this.TakeProfit_priceEntryPositiveOffset);
 			msg.Append("]SL[");
-			msg.Append(this.StopLoss_negativeOffset);
+			msg.Append(this.StopLoss_priceEntryNegativeOffset);
 			msg.Append("]SLA[");
-			msg.Append(this.StopLossActivation_negativeOffset + "]");
+			msg.Append(this.StopLossActivation_priceEntryNegativeOffset + "]");
 			return msg.ToString();
-		}
-
-		public void PriceEntryAbsorb(double priceEntryAlertFilled) {
-			this.PriceEntry = priceEntryAlertFilled;
 		}
 	}
 }

@@ -2,8 +2,9 @@
 
 namespace Sq1.Core.Support {
 	public class ConcurrentDictionary<PRICE_LEVEL, TOTAL_LOTS> : ConcurrentWatchdog {
-		protected	Dictionary<PRICE_LEVEL, TOTAL_LOTS> InnerDictionary		{ get; private set; }
-		public		int									Count				{ get; protected set; }
+		//v1 pre-ConcurrentDictionarySorted protected	Dictionary<PRICE_LEVEL, TOTAL_LOTS>	InnerDictionary		{ get; private set; }
+		protected	IDictionary<PRICE_LEVEL, TOTAL_LOTS>	InnerDictionary;
+		public		int										Count				{ get; protected set; }
 
 		public int CountBlocking(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			int count = -1;
@@ -13,9 +14,9 @@ namespace Sq1.Core.Support {
 			} finally {
 				base.UnLockFor(lockOwner, lockPurpose);
 			}
-			return count;	//I'm sucpiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
+			return count;	//I'm suspiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
 		}
-		public Dictionary<PRICE_LEVEL, TOTAL_LOTS> SafeCopy(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public virtual Dictionary<PRICE_LEVEL, TOTAL_LOTS> SafeCopy(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			Dictionary<PRICE_LEVEL, TOTAL_LOTS> ret = new Dictionary<PRICE_LEVEL, TOTAL_LOTS>();
 			try {
 				base.WaitAndLockFor(lockOwner, lockPurpose, waitMillis);
@@ -29,7 +30,7 @@ namespace Sq1.Core.Support {
 		public ConcurrentDictionary(string reasonToExist) : base(reasonToExist) {
 			InnerDictionary	= new Dictionary<PRICE_LEVEL, TOTAL_LOTS>();
 		}
-		public bool ContainsKey(PRICE_LEVEL priceLevel, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public virtual bool ContainsKey(PRICE_LEVEL priceLevel, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			bool contains = false;
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
@@ -37,7 +38,7 @@ namespace Sq1.Core.Support {
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
 			}
-			return contains;	//I'm sucpiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
+			return contains;	//I'm suspiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
 		}
 		public virtual void Clear(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			try {
@@ -64,7 +65,7 @@ namespace Sq1.Core.Support {
 			} finally {
 				base.UnLockFor(lockOwner, lockPurpose);
 			}
-			return removed;	//I'm sucpiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
+			return removed;	//I'm suspiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
 		}
 		public virtual bool Add(PRICE_LEVEL priceLevel, TOTAL_LOTS totalLots
 						, object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
@@ -82,7 +83,7 @@ namespace Sq1.Core.Support {
 			} finally {
 				base.UnLockFor(lockOwner, lockPurpose);
 			}
-			return added;	//I'm sucpiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
+			return added;	//I'm suspiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
 		}
 		public virtual bool UpdateAtKey(PRICE_LEVEL priceLevel, TOTAL_LOTS totalLots
 						, object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
@@ -101,7 +102,7 @@ namespace Sq1.Core.Support {
 			}
 			return updated;	//I'm sucpiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
 		}
-		public virtual TOTAL_LOTS GetAtKey(PRICE_LEVEL priceLevel
+		public virtual TOTAL_LOTS GetAtKey_nullUnsafe(PRICE_LEVEL priceLevel
 						, object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
 			TOTAL_LOTS ret = default(TOTAL_LOTS);
 			try {
@@ -115,9 +116,9 @@ namespace Sq1.Core.Support {
 			} finally {
 				base.UnLockFor(lockOwner, lockPurpose);
 			}
-			return ret;	//I'm sucpiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
+			return ret;	//I'm suspiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
 		}
-		public virtual List<PRICE_LEVEL> Keys(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
+		public virtual List<PRICE_LEVEL> Keys(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			try {
 				base.WaitAndLockFor(lockOwner, lockPurpose, waitMillis);
 				List<PRICE_LEVEL> ret = new List<PRICE_LEVEL>(this.InnerDictionary.Keys);
@@ -126,7 +127,7 @@ namespace Sq1.Core.Support {
 				base.UnLockFor(lockOwner, lockPurpose);
 			}
 		}
-		public virtual List<TOTAL_LOTS> Values(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
+		public virtual List<TOTAL_LOTS> Values(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			try {
 				base.WaitAndLockFor(lockOwner, lockPurpose, waitMillis);
 				List<TOTAL_LOTS> ret = new List<TOTAL_LOTS>(this.InnerDictionary.Values);

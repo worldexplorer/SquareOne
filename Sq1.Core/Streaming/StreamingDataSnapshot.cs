@@ -46,7 +46,7 @@ namespace Sq1.Core.Streaming {
 					string streamingAdapterInitialized_asString = this.streamingAdapter.ToString();
 					this.level2_quoteLast_unboundUnattached_bySymbol.Add(symbol, new LevelTwo(symbol, streamingAdapterInitialized_asString), this, msig);
 				}
-				LevelTwo level2 = this.level2_quoteLast_unboundUnattached_bySymbol.GetAtKey(symbol, this, msig);
+				LevelTwo level2 = this.level2_quoteLast_unboundUnattached_bySymbol.GetAtKey_nullUnsafe(symbol, this, msig);
 				Quote quoteBeforeNullification_WHY = level2.QuoteLast_clear();
 				level2.Clear_LevelTwo(this, "livesimEnded");
 				if (this.SymbolsSubscribedAndReceiving.Contains(symbol) == false) {
@@ -75,7 +75,7 @@ namespace Sq1.Core.Streaming {
 					//Assembler.PopupException(msg + msig, null, false);
 				}
 
-				LevelTwo level2 = this.level2_quoteLast_unboundUnattached_bySymbol.GetAtKey(quoteUnboundUnattached.Symbol, this, msig);
+				LevelTwo level2 = this.level2_quoteLast_unboundUnattached_bySymbol.GetAtKey_nullUnsafe(quoteUnboundUnattached.Symbol, this, msig);
 				Quote quoteLast = level2.QuoteLast_unbound_notCloned_validAbsno_invalidIntrabarSerno__mightBeDifferentByTimeScriptGetsInvoked;
 				if (quoteLast == null) {
 					string msg = "ALREADY_REPORTED RECEIVED_FIRST_QUOTE_EVER_FOR#2 symbol[" + quoteUnboundUnattached.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
@@ -107,18 +107,22 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		public Quote GetQuoteLast_forSymbol_nullUnsafe(string symbol) { //HERE_WAS_THE_DEADLOCK lock (this.lockLastQuote) {
-			string msig = " //StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(" + symbol + ")";
+			//v1 string msig = " //StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(" + symbol + ")";
+			string msig = "ASSIGNING_WITHIN_TRY__HOPING_TO_UNLOCK_WITH_SAME_MSIG";
 			try {
+				msig = " //StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(" + symbol + ")";
 				this.level2_quoteLast_unboundUnattached_bySymbol.WaitAndLockFor(this, msig);
 				//this.lockReason_getLastQuoteForSymbol = msig;
 				if (this.level2_quoteLast_unboundUnattached_bySymbol.ContainsKey(symbol, this, msig) == false) return null;
-				LevelTwo level2 = this.level2_quoteLast_unboundUnattached_bySymbol.GetAtKey(symbol, this, msig);
+				LevelTwo level2 = this.level2_quoteLast_unboundUnattached_bySymbol.GetAtKey_nullUnsafe(symbol, this, msig);
 				if (level2 == null) return null;
 				Quote ret = level2.QuoteLast_unbound_notCloned_validAbsno_invalidIntrabarSerno__mightBeDifferentByTimeScriptGetsInvoked;
+
 				if (ret != null && ret.ParentBarStreaming != null) {
-					string msg = "NULL_IS_OK_FOR_APP_RESTART MUST_NOT_BE_NULL_FOR_LIVESIM_TOO levelTwoAndLastQuote.QuoteLast_unbound_notCloned attached_toOriginalBars_insteadOfRegeneratedGrowingCopy_forBacktest";
-					Assembler.PopupException(msg + msig);
+				    string msg = "NULL_IS_OK_FOR_APP_RESTART MUST_NOT_BE_NULL_FOR_LIVESIM_TOO levelTwoAndLastQuote.QuoteLast_unbound_notCloned attached_toOriginalBars_insteadOfRegeneratedGrowingCopy_forBacktest";
+					// FOR_LIVESIM_IM_FILLING_ParentBarStreaming_WITHOUT_ParentBars_FOR_QUOTE_DESERIALIZED Assembler.PopupException(msg + msig);
 				}
+
 				return ret;
 			} finally {
 				this.level2_quoteLast_unboundUnattached_bySymbol.UnLockFor(this, msig);
@@ -150,7 +154,7 @@ namespace Sq1.Core.Streaming {
 			try {
 				this.level2_quoteLast_unboundUnattached_bySymbol.WaitAndLockFor(this, msig);
 				if (this.level2_quoteLast_unboundUnattached_bySymbol.ContainsKey(symbol, this, msig) == false) return null;
-				LevelTwo level2 = this.level2_quoteLast_unboundUnattached_bySymbol.GetAtKey(symbol, this, msig);
+				LevelTwo level2 = this.level2_quoteLast_unboundUnattached_bySymbol.GetAtKey_nullUnsafe(symbol, this, msig);
 				return level2;
 			} finally {
 				this.level2_quoteLast_unboundUnattached_bySymbol.UnLockFor(this, msig);
@@ -161,7 +165,7 @@ namespace Sq1.Core.Streaming {
 			try {
 				this.level2_quoteLast_unboundUnattached_bySymbol.WaitAndLockFor(this, msig);
 				if (this.level2_quoteLast_unboundUnattached_bySymbol.ContainsKey(symbol, this, msig) == false) return null;
-				LevelTwo level2 = this.level2_quoteLast_unboundUnattached_bySymbol.GetAtKey(symbol, this, msig);
+				LevelTwo level2 = this.level2_quoteLast_unboundUnattached_bySymbol.GetAtKey_nullUnsafe(symbol, this, msig);
 				LevelTwoFrozen levelTwoFrozen = new LevelTwoFrozen(level2, whoFrozeMe, recipient);
 				if (levelTwoFrozen.MarketIsDead_reliablyKozSorted) {
 					string msg = "MarketIsDead_reliablyKozSorted";
@@ -268,12 +272,12 @@ namespace Sq1.Core.Streaming {
 				case Direction.Cover:
 					switch (spreadSide) {
 						case MarketOrderAs.LimitTidal:
-							oss = SpreadSide.AskTidal;
-							price = currentAsk;
+							oss = SpreadSide.BidTidal;
+							price = currentBid;		// Unknown (Order default) becomes CrossMarket
 							break;
 						case MarketOrderAs.LimitCrossMarket:
-							oss = SpreadSide.BidCrossed;
-							price = currentBid;		// Unknown (Order default) becomes CrossMarket
+							oss = SpreadSide.AskCrossed;
+							price = currentAsk;
 							break;
 						case MarketOrderAs.MarketMinMaxSentToBroker:
 							oss = SpreadSide.MaxPrice;
@@ -296,12 +300,12 @@ namespace Sq1.Core.Streaming {
 				case Direction.Sell:
 					switch (spreadSide) {
 						case MarketOrderAs.LimitTidal:
-							oss = SpreadSide.BidTidal;
-							price = currentBid;
+							oss = SpreadSide.AskTidal;
+							price = currentAsk;		// Unknown (Order default) becomes CrossMarket
 							break;
 						case MarketOrderAs.LimitCrossMarket:
-							oss = SpreadSide.AskCrossed;
-							price = currentAsk;		// Unknown (Order default) becomes CrossMarket
+							oss = SpreadSide.BidCrossed;
+							price = currentBid;
 							break;
 						case MarketOrderAs.MarketMinMaxSentToBroker:
 							oss = SpreadSide.MinPrice;

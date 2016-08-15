@@ -17,7 +17,8 @@ namespace Sq1.Widgets.Execution {
 
 		[JsonProperty]	public bool		ColorifyOrderTree_positionNet			= true;
 		[JsonProperty]	public bool		ColorifyMessages_askBrokerProvider		= true;
-		[JsonProperty]	public Color	ColorBackground_forMessagesThatChangedOrderState = Color.Gainsboro;
+		[JsonProperty]	public Color	MessagesColorBackground_ledToProcessing		= Color.Gainsboro;
+		[JsonProperty]	public Color	MessagesColorForeground_changedOrderState	= Color.SlateGray;
 		
 		[JsonProperty]	public int		MessagePane_splitDistance_horizontal	= 0;
 		[JsonProperty]	public int		MessagePane_splitDistance_vertical		= 0;
@@ -26,6 +27,7 @@ namespace Sq1.Widgets.Execution {
 		[JsonProperty]	public float	LogRotateSizeLimit_Mb					= 10.0f;
 		
 		[JsonProperty]	public string	OrdersTreeOlvStateBase64				= "";
+		[JsonProperty]	public string	OrderMessagesOlvStateBase64				= "";
 
 		[JsonProperty]	public bool		ShowSearchbar						= true;
 		[JsonProperty]	public string	ShowSearchbar_ExcludeKeywordsCsv	= "";

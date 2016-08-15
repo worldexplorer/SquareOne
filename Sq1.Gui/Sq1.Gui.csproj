@@ -377,6 +377,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ProfilingSessions\Session20160803_221146.sdps" />
     <Content Include="Sq1.Gui-LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

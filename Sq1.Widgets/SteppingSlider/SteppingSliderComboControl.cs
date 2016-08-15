@@ -6,8 +6,8 @@ using System.Windows.Forms;
 using Sq1.Core.DoubleBuffered;
 
 namespace Sq1.Widgets.SteppingSlider {
-	public partial class SteppingSliderComboControl : UserControlDoubleBuffered {
-	//public partial class SteppingSliderComboControl : UserControl {
+	//public partial class SteppingSliderComboControl : UserControlDoubleBuffered {
+	public partial class SteppingSliderComboControl : UserControl {
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public decimal ValueMin {
 			get { return this.PanelFillSlider.ValueMin; }
@@ -73,6 +73,9 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
+		public String ParameterDescription;
+
+		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public float LabelFilledPercentage {
 			get { return this.PanelFillSlider.FilledPercentageCurrentValue; }
 			//set { this.panelWithBackground1.FilledPercentageCurrentValue = value; }
@@ -119,6 +122,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			
 		public SteppingSliderComboControl() {
 			InitializeComponent();
+			this.PanelFillSlider.ParentInitialized_currentWithinBoundaries_checkEnabled = true;
 			//this.mniltbValueMin.InputFieldEditable = false;
 			//this.mniltbValueMax.InputFieldEditable = false;
 			//this.mniltbValueStep.InputFieldEditable = false;

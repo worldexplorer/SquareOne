@@ -7,7 +7,6 @@ using Sq1.Core.Indicators;
 namespace Sq1.Core.StrategyBase {
 	public class ScriptParameter : IndicatorParameter {
 		[JsonProperty]	public int				Id;
-		[JsonProperty]	public string			ReasonToExist;
 		[JsonIgnore]	public override string	FullName { get { return this.Name; } }	// "MAslow.Period" for indicators, plain Name for StrategyParams
 
 		ScriptParameter() {
@@ -15,9 +14,8 @@ namespace Sq1.Core.StrategyBase {
 			string msg = "invoked by JSON_DESERIALIZER, I guess...";
 		}
 		public ScriptParameter(int id, string name, double current, double min, double max, double increment, string reasonToExist)
-				: base(name, current, min, max, increment) {
+				: base(name, current, min, max, increment, reasonToExist) {
 			this.Id = id;
-			this.ReasonToExist = reasonToExist;
 			base.IndicatorName = "THIS_IS_A_STRATEGY_PARAMETER";
 			base.Owner_asString = "DESERIALIZED_ScriptParameter";
 		}

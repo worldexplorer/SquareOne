@@ -163,7 +163,7 @@ namespace Sq1.Core.Repositories {
 					}
 
 					try {
-						Bar barAdded = bars.BarStatic_createAppendAttach(dateTimeOpen, open, high, low, close, volume, true);
+						Bar barAdded = bars.BarStatic_createAppendAttach(dateTimeOpen, open, high, low, close, volume, false, true);
 						if (barAdded.Fixed_resavingRequired) barsFixed_resaveIfNonZero++;
 					} catch (Exception exception_DateOHLCV_NaNs__orZeroes) {
 						barsIndexes_failedOHLCVcheck.Add(barsRead_total-1);

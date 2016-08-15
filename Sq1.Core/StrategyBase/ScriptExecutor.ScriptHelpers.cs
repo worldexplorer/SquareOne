@@ -8,21 +8,22 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
-//		public Position BuyOrShortAlertCreateDontRegister(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
+//		public Position BuyOrShortAlertCreateDontRegister(Bar entryBar, double priceLimitOrStop, string entrySignalName,
 //														  Direction direction, MarketLimitStop entryMarketLimitStop) {
-//			return BuyOrShortAlertCreateRegister(entryBar, stopOrLimitPrice, entrySignalName,
+//			return BuyOrShortAlertCreateRegister(entryBar, priceLimitOrStop, entrySignalName,
 //												 direction, entryMarketLimitStop, false);
 //		}
-		public Alert BuyOrShort_alertCreateRegister(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
-													  Direction direction, MarketLimitStop entryMarketLimitStop, bool registerInNew = true) {
-			string msig = " //BuyOrShortAlertCreateRegister(stopOrLimitPrice[" + stopOrLimitPrice+ "], entrySignalName[" + entrySignalName + "], entryBar[" + entryBar + "])";
+		public Alert BuyOrShort_alertCreateRegister(
+						Bar entryBar, double priceLimitOrStop, double priceStopLimitActivation,
+						string entrySignalName, Direction direction, MarketLimitStop entryMarketLimitStop, bool registerInNew = true) {
+			string msig = " //BuyOrShortAlertCreateRegister(priceLimitOrStop[" + priceLimitOrStop+ "], entrySignalName[" + entrySignalName + "], entryBar[" + entryBar + "])";
 			this.checkThrow_alertCanBeCreated(entryBar, msig);
 
 			Alert alert = null;
 			// real-time streaming should create its own Position after an Order gets filled
 			if (this.IsStreamingTriggeringScript) {
-				alert = this.AlertFactory.EntryAlert_create(entryBar, stopOrLimitPrice, entrySignalName,
-														 direction, entryMarketLimitStop);
+				alert = this.AlertFactory.EntryAlert_create(entryBar, priceLimitOrStop, priceStopLimitActivation,
+														 entrySignalName, direction, entryMarketLimitStop);
 			} else {
 				//string msg = "YOU_DONT_EMIT_ORDERS_THEN_CONTINUE_BACKTEST_BASED_ON_LIVE_QUOTES";
 				string msg = "BACKTESTS_MUST_RUN_IN_STREAMING_SINCE_MarketSimStatic_WAS_DEPRECATED_INFAVOROF_MarketRealStreaming";
@@ -44,13 +45,16 @@ namespace Sq1.Core.StrategyBase {
 			//alert.PositionAffected = pos;
 			return alert;
 		}
-		public Alert SellOrCover_alertCreate_dontRegisterInNew_prototypeActivator(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
-															 Direction direction, MarketLimitStop exitMarketLimitStop) {
-			return this.SellOrCover_alertCreateRegister(exitBar, position, stopOrLimitPrice, signalName,
-													   direction, exitMarketLimitStop, false);
+		public Alert SellOrCover_alertCreate_dontRegisterInNew_prototypeActivator(
+						Bar exitBar, Position position, double priceLimitOrStop, double priceStopLimitActivation,
+						string signalName, Direction direction, MarketLimitStop exitMarketLimitStop) {
+			return this.SellOrCover_alertCreateRegister(
+							exitBar, position, priceLimitOrStop, priceStopLimitActivation,
+							signalName, direction, exitMarketLimitStop, false);
 		}
-		public Alert SellOrCover_alertCreateRegister(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
-													Direction direction, MarketLimitStop exitMarketLimitStop, bool registerInNewAfterExec = true) {
+		public Alert SellOrCover_alertCreateRegister(
+						Bar exitBar, Position position, double priceLimitOrStop, double priceStopLimitActivation,
+						string signalName, Direction direction, MarketLimitStop exitMarketLimitStop, bool registerInNewAfterExec = true) {
 
 			this.checkThrow_alertCanBeCreated(exitBar, "BARS.BARSTREAMING_OR_BARS.BARLASTSTATIC_IS_NULL_SellOrCoverAlertCreateRegister() ");
 			if (position == null) {
@@ -100,8 +104,9 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (this.IsStreamingTriggeringScript) {
-				alert = this.AlertFactory.ExitAlert_create(exitBar, position, stopOrLimitPrice, signalName,
-														direction, exitMarketLimitStop);
+				alert = this.AlertFactory.ExitAlert_create(exitBar, position,
+					priceLimitOrStop, priceStopLimitActivation, signalName,
+					direction, exitMarketLimitStop);
 			} else {
 				//string msg = "YOU_DONT_EMIT_ORDERS_THEN_CONTINUE_BACKTEST_BASED_ON_LIVE_QUOTES";
 				string msg = "BACKTESTS_MUST_RUN_IN_STREAMING_SINCE_MarketSimStatic_WAS_DEPRECATED_INFAVOROF_MarketRealStreaming";
@@ -156,7 +161,7 @@ namespace Sq1.Core.StrategyBase {
 			List<Position> positionsOpenNow = this.ExecutionDataSnapshot.Positions_OpenNow.SafeCopy(this, msig);
 			List<Alert> alertsSubmittedToKill_forAllOpenPositions = new List<Alert>();
 			foreach (Position positionOpen in positionsOpenNow) {
-				List<Alert> alertsSubmittedToKill = this.PositionClose_immediately(positionOpen, "EXIT_FORCED_" + barNewStaticArrived.DateTimeOpen.ToString(), true);
+				List<Alert> alertsSubmittedToKill = this.Position_closeImmediately_killAllExitAlerts_ExitAtMarket_ordersEmitRequired(positionOpen, "EXIT_FORCED_" + barNewStaticArrived.DateTimeOpen.ToString(), true);
 				alertsSubmittedToKill_forAllOpenPositions.AddRange(alertsSubmittedToKill);
 			}
 			// NOTE that PositionCloseImmediately() already killed all positionPrototype-related Pending Alerts;
@@ -174,7 +179,7 @@ namespace Sq1.Core.StrategyBase {
 			return alertsSubmittedToKill_forAllOpenPositions;
 		}
 
-		public List<Alert> PositionClose_immediately(Position positionOpen, string signalName, bool annotateAtBars_forEachClosedPosition = true) {
+		public List<Alert> Position_closeImmediately_killAllExitAlerts_ExitAtMarket_ordersEmitRequired(Position positionOpen, string signalName, bool annotateAtBars_forEachClosedPosition = true) {
 			Bar barNewStaticArrived = this.Bars.BarStaticLast_nullUnsafe;
 			int barIndex = barNewStaticArrived.ParentBarsIndex;
 

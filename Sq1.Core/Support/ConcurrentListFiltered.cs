@@ -22,6 +22,15 @@ namespace Sq1.Core.Support {
 		protected	List<T>			InnerList_swingingPointer			{ get; private set; }
 		public		int				Count								{ get; private set; }
 
+		public		bool			ExcludeKeywordsApplied				{ get {
+			return this.InnerList_swingingPointer == this.InnerList_excludeKeywordsApplied;
+		} }
+
+		public		bool			SearchApplied						{ get {
+			return this.InnerList_swingingPointer == this.InnerList_excludeKeywordsApplied;
+		} }
+
+
 		// used in SafeCopy() only
 		ConcurrentListFiltered(string reasonToExist, ExecutorDataSnapshot snap, List<T> copyFrom, string separator = ",", bool caseSensitive = false)
 								: this(reasonToExist, snap, separator, caseSensitive) {
@@ -104,13 +113,15 @@ namespace Sq1.Core.Support {
 				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public void Clear(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public int Clear(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			//lockPurpose += " //" + this.ToString() + ".Clear()";
 			try {
+				int countBeforeCleared = this.Count;
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				this.InnerList.Clear();
 				this.InnerList_excludeKeywordsApplied.Clear();
 				this.Count = this.InnerList_swingingPointer.Count;
+				return countBeforeCleared;
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
 			}
@@ -196,6 +207,29 @@ namespace Sq1.Core.Support {
 			return inserted;
 		}
 
+		
+		protected int AddRange(List<T> ordersInit, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+			int ret = 0;
+			foreach (T eachOrder in ordersInit) {
+				bool inserted = this.InsertUnique(eachOrder, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
+				if (inserted) ret ++;
+			}
+			return ret;
+		}
+
+		protected int RemoveRange(List<T> ordersToRemove, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
+			string	msig = " //ConcurrentListFiltered.RemoveRange(" + ordersToRemove.Count + ")";
+			int removed_counter = 0;
+
+			foreach (T eachOrder in ordersToRemove) {
+				bool removed = this.RemoveUnique(eachOrder, owner, lockPurpose, waitMillis, absenceThrowsAnError);
+				removed_counter++;
+			}
+			return removed_counter;
+		}
+
+
+
 		public ConcurrentListFiltered<T> Clone(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			//lockPurpose += " //" + this.ToString() + ".Clone()";
 			ConcurrentListFiltered<T> ret = null;
@@ -211,7 +245,13 @@ namespace Sq1.Core.Support {
 		bool matchesAtLeastOne_Keyword(T exception, List<string> keywords) {
 			bool ret = false;
 			if (exception == null) return ret;
-			string exception_asString = this.CaseSensitive ? exception.ToString() : exception.ToString().ToUpper();
+
+			//v1 string eachException_asStringForMatch = exception.ToString();
+			string eachException_asStringForMatch = this.ToString_forMatch(exception);
+			string exception_asString = this.CaseSensitive
+				? eachException_asStringForMatch
+				: eachException_asStringForMatch.ToUpper();
+
 			foreach (string keyword in keywords) {
 				string keyword_withCase = this.CaseSensitive ? keyword : keyword.ToUpper();
 				if (exception_asString.Contains(keyword_withCase) == false) continue;
@@ -219,6 +259,10 @@ namespace Sq1.Core.Support {
 				break;
 			}
 			return ret;
+		}
+
+		public virtual string ToString_forMatch(T exception) {
+			return exception.ToString();
 		}
 
 		public List<T> SearchForKeywords_StaticSnapshotSubset(string keywordsToSearch_csv) {

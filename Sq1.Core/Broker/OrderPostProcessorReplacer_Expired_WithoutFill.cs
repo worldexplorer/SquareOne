@@ -21,7 +21,7 @@ namespace Sq1.Core.Broker {
 			bool shallReplace = order.Alert.Bars.SymbolInfo.LimitExpiredResubmit;
 			if (shallReplace == false) {
 				string msg = "Symbol[" + order.Alert.Bars.Symbol + "].ReSubmitLimitNotFilled=[" + shallReplace +  "]; returning";
-				Assembler.PopupException(msg + msig_invoker, null, false);
+				//TOO_VERBOSE Assembler.PopupException(msg + msig_invoker, null, false);
 				return ret;
 			}
 
@@ -33,8 +33,8 @@ namespace Sq1.Core.Broker {
 			}
 
 			string reasonCanNotBeReplaced = "";
-			if (order.QtyFill > 0 || order.PriceFilled > 0) {
-				reasonCanNotBeReplaced += "order.QtyFill[" + order.QtyFill + "] > 0 || order.PriceFilled[" + order.PriceFilled + "] > 0 ";
+			if (order.QtyFill > Order.INITIAL_QtyFill || order.PriceFilled > Order.INITIAL_PriceFill) {
+				reasonCanNotBeReplaced += "order.QtyFill[" + order.QtyFill + "] > [" + Order.INITIAL_QtyFill + "] || order.PriceFilled[" + order.PriceFilled + "] > [" + Order.INITIAL_PriceFill + "] ";
 			}
 			if (order.State != OrderState.WaitingBrokerFill) {
 				reasonCanNotBeReplaced += "ORDER_ISNT_WAITING_FOR_FILL_ANYMORE[" + order.State + "] ";

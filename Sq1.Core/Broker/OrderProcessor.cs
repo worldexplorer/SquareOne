@@ -116,7 +116,7 @@ namespace Sq1.Core.Broker {
 					Assembler.PopupException(msg);
 					return null;
 				}
-				newbornOrderState = this.isOrderEatable(newborn) ? OrderState.Submitting : OrderState.ErrorSubmittingNotEatable;
+				newbornOrderState = this.isOrderEatable_notOrdersProperty(newborn) ? OrderState.Submitting : OrderState.ErrorSubmittingNotEatable;
 				//string isPastDue = newborn.Alert.IsAlertCreatedOnPreviousBar;
 				//if (emittedByScript && String.IsNullOrEmpty(isPastDue) == false) {
 				//	newbornMessage += "; " + isPastDue;
@@ -183,7 +183,7 @@ namespace Sq1.Core.Broker {
 			orderSubmitted = orders.Count;
 			return orderSubmitted;
 		}
-		bool isOrderEatable(Order order) {
+		bool isOrderEatable_notOrdersProperty(Order order) {
 			if (order.Alert.Strategy == null) return true;
 			if (order.IsKiller) return true;
 			if (order.Alert.SellOrCover) {
@@ -442,12 +442,12 @@ namespace Sq1.Core.Broker {
 						// && order.Alert.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker
 							) {
 						if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) {
-							slippageByFact = priceFill - order.CurrentBid;
+							slippageByFact = priceFill - order.Bid_whenEmitted;
 							if (slippageByFact < 0) {
 								string msg = "do you really want a negative slippage?";
 							}
 						} else {
-							slippageByFact = priceFill - order.CurrentAsk;
+							slippageByFact = priceFill - order.Ask_whenEmitted;
 							if (slippageByFact < 0) {
 								string msg = "do you really want a negative slippage?";
 							}
