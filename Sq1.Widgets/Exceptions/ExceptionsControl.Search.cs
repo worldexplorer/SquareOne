@@ -36,6 +36,7 @@ namespace Sq1.Widgets.Exceptions {
 			//this.tsiCbx_SearchApply.BackColor = SystemColors.Control;
 			//this.tsiCbx_ExcludeApply.BackColor = SystemColors.Control;
 		}
+
 		void keywordsSearch_apply() {
 			string keywordsCsv_nullUnsafe =
 					this.dataSnapshot.ShowSearchbar_SearchKeywordApplied
@@ -196,6 +197,5 @@ namespace Sq1.Widgets.Exceptions {
 			this.dataSnapshotSerializer.Serialize();
 			this.keywordsExclude_apply();
 		}
-
 	}
 }

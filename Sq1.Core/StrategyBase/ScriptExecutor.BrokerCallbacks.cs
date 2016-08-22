@@ -101,9 +101,11 @@ namespace Sq1.Core.StrategyBase {
 					if (alertKilled.OrderFollowed_orCurrentReplacement.State == OrderState.Rejected) {
 						msg = "REJECTED_KILLED_WITHOUT_HOOK KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed";
 					} else {
-						if (alertKilled.PositionPrototype_bothForEntryAndExit_nullUnsafe != null && (
-							alertKilled.PositionPrototype_bothForEntryAndExit_nullUnsafe.StopLossAlert_forMoveAndAnnihilation == alertKilled ||
-							alertKilled.PositionPrototype_bothForEntryAndExit_nullUnsafe.TakeProfitAlert_forMoveAndAnnihilation == alertKilled)) {
+						//bool alertIsPrototyped_1 = alertKilled.PositionPrototype != null && (
+						//    alertKilled.PositionPrototype.StopLossAlert_forMoveAndAnnihilation == alertKilled ||
+						//    alertKilled.PositionPrototype.TakeProfitAlert_forMoveAndAnnihilation == alertKilled);
+						bool alertIsPrototyped = alertKilled.ImStopLoss_prototyped || alertKilled.ImTakeProfit_prototyped;
+						if (alertIsPrototyped) {
 							msg = "OKAY_IF_REACHED_TP_THEN_SL_IS_ANNIHILATED_WITHOUT_HOOK";
 						} else {
 							msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsDoomed DELETED_EARLIER_OR_NEVER_BEEN_ADDED";
@@ -263,7 +265,7 @@ namespace Sq1.Core.StrategyBase {
 			if (filledIndeed_notRejected_willAddPosition_toExecutionSnapshot == false) {
 				string msg = "NOT_ADDING_POSITION_TO_SNAP_KOZ_STATE[" + alertFilled.OrderFollowed_orCurrentReplacement.State + "]";
 				bool closingAlert_wasRejected = alertFilled.SellOrCover;
-				if (alertFilled.PositionPrototype_onlyForEntryAlert != null && closingAlert_wasRejected) {
+				if (alertFilled.PositionPrototype != null && closingAlert_wasRejected) {
 					msg = "CLOSING_ALERT_REJECTED__USE_SymbolInfo.EMERGENCY_CLOSE " + msg;
 				}
 				Assembler.PopupException(msg);
@@ -395,7 +397,7 @@ namespace Sq1.Core.StrategyBase {
 			//}
 
 			AlertList alertsNewAfterAlertFilled = new AlertList("alertsNewAfterAlertFilled", this.ExecutionDataSnapshot);
-			PositionPrototype proto = alertFilled.PositionPrototype_bothForEntryAndExit_nullUnsafe;
+			PositionPrototype proto = alertFilled.PositionPrototype;
 			if (proto != null) {
 				// 0. once again, set ExitAlert to What was actually filled, because prototypeEntry created SL & TP, which were both written into ExitAlert;
 				// so if we caught the Loss and SL was executed, position.ExitAlert will still contain TP if we don't set it here
@@ -528,61 +530,77 @@ namespace Sq1.Core.StrategyBase {
 			// 4. Script event will generate a StopLossMove PostponedHook
 			//NOW_INLINE this.invokeScriptEvents(alertFilled);
 			if (this.Strategy.Script != null) {
+				string msg_entryFilled_both = "OnAlertFilled_callback(WAIT)" + msig;
 				try {
 					this.ExecutionDataSnapshot.IsScriptRunning_OnAlertFilled_nonBlocking = true;
-					this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnAlertFilled_callback(WAIT)");
+					this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msg_entryFilled_both);
 					this.Strategy.Script.OnAlertFilled_callback(alertFilled);
 				} catch (Exception e) {
 					string msg = "fix your OnAlertFilled_callback() in script[" + this.Strategy.Script.StrategyName + "]"
 						+ "; was invoked with alert[" + alertFilled + "]";
 					this.PopupException(msg, e);
 				} finally {
-					this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnAlertFilled_callback(WAIT)");
+					this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msg_entryFilled_both);
 					this.ExecutionDataSnapshot.IsScriptRunning_OnAlertFilled_nonBlocking = false;
 				}
+
 				if (alertFilled.IsEntryAlert) {
-					if (alertFilled.PositionPrototype_onlyForEntryAlert != null) {
+					if (alertFilled.PositionPrototype != null) {
+						string msg_entryFilled_prototyped = "OnPositionOpened_prototypeEntryFilled_callback(WAIT)" + msig;
 						try {
-							this.ExecutionDataSnapshot.IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlocking = true;
-							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpened_prototypeSlTpPlaced_callback(WAIT)");
-							this.Strategy.Script.OnPositionOpened_prototypeSlTpPlaced_callback(alertFilled.PositionAffected);
+							this.ExecutionDataSnapshot.IsScriptRunning_onPositionOpened_entryPrototypedFilled_nonBlocking = true;
+							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msg_entryFilled_prototyped);
+							this.Strategy.Script.OnPositionOpened_prototypedEntryFilled_SlTpWillBePlacedSoon_callback(alertFilled.PositionAffected);
 						} catch (Exception e) {
-							string msg = "fix your OnPositionOpened_prototypeSlTpPlaced_callback() in script[" + this.Strategy.Script.StrategyName + "]"
+							string msg = "fix your OnPositionOpened_prototypedEntryFilled_SlTpWillBePlacedSoon_callback() in script[" + this.Strategy.Script.StrategyName + "]"
 								+ "; was invoked with PositionAffected[" + alertFilled.PositionAffected + "]";
 							this.PopupException(msg, e);
 						} finally {
-							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionOpened_prototypeSlTpPlaced_callback(WAIT)");
-							this.ExecutionDataSnapshot.IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlocking = false;
+							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msg_entryFilled_prototyped);
+							this.ExecutionDataSnapshot.IsScriptRunning_onPositionOpened_entryPrototypedFilled_nonBlocking = false;
 						}
 					} else {
+						string msg_entryFilled_nonPrototyped = "OnPositionOpened_callback(WAIT)" + msig;
 						try {
 							this.ExecutionDataSnapshot.IsScriptRunning_OnPositionOpened_nonBlocking = true;
-							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionOpened_callback(WAIT)");
+							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msg_entryFilled_nonPrototyped);
 							this.Strategy.Script.OnPositionOpened_callback(alertFilled.PositionAffected);
 						} catch (Exception e) {
 							string msg = "fix your OnPositionOpened_callback() in script[" + this.Strategy.Script.StrategyName + "]"
 								+ "; was invoked with PositionAffected[" + alertFilled.PositionAffected + "]";
 							this.PopupException(msg, e);
 						} finally {
-							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionOpened_callback(WAIT)");
+							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msg_entryFilled_nonPrototyped);
 							this.ExecutionDataSnapshot.IsScriptRunning_OnPositionOpened_nonBlocking = false;
 						}
 					}
 				} else {
-					if (alertFilled.PositionPrototype_onlyForEntryAlert != null) {
-						string msg = "NYI alertFilled.PositionPrototype != null";
-						Assembler.PopupException(msg + msig);
+					if (alertFilled.PositionPrototype != null) {
+						string msg_exitFilled_prototyped = "OnPositionOpened_prototypeExitFilled_callback(WAIT)" + msig;
+						try {
+							this.ExecutionDataSnapshot.IsScriptRunning_onPositionClosed_exitPrototypedFilled_nonBlocking = true;
+							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msg_exitFilled_prototyped);
+							this.Strategy.Script.OnPositionOpened_prototypedExitFilled_callback(alertFilled.PositionAffected);
+						} catch (Exception e) {
+							string msg = "fix your OnPositionOpened_prototypedExitFilled_callback() in script[" + this.Strategy.Script.StrategyName + "]"
+								+ "; was invoked with PositionAffected[" + alertFilled.PositionAffected + "]";
+							this.PopupException(msg, e);
+						} finally {
+							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msg_exitFilled_prototyped);
+							this.ExecutionDataSnapshot.IsScriptRunning_onPositionClosed_exitPrototypedFilled_nonBlocking = false;
+						}
 					} else {
+						string msg_exitFilled = "OnPositionClosed_callback(WAIT)" + msig;
 						try {
 							this.ExecutionDataSnapshot.IsScriptRunning_OnPositionClosed_nonBlocking = true;
-							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, "OnPositionClosed_callback(WAIT)");
+							this.ScriptIsRunning_cantAlterInternalLists.WaitAndLockFor(this, msg_exitFilled);
 							this.Strategy.Script.OnPositionClosed_callback(alertFilled.PositionAffected);
 						} catch (Exception e) {
 							string msg = "fix your OnPositionClosed_callback() in script[" + this.Strategy.Script.StrategyName + "]"
 								+ "; was invoked with PositionAffected[" + alertFilled.PositionAffected + "]";
 							this.PopupException(msg, e);
 						} finally {
-							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, "OnPositionClosed_callback(WAIT)");
+							this.ScriptIsRunning_cantAlterInternalLists.UnLockFor(this, msg_exitFilled);
 							this.ExecutionDataSnapshot.IsScriptRunning_OnPositionClosed_nonBlocking = false;
 						}
 					}

@@ -336,7 +336,7 @@
 			this.ctxWindows.OwnerItem = this.mniWindows;
 			this.ctxWindows.ShowImageMargin = false;
 			this.ctxWindows.Size = new System.Drawing.Size(36, 4);
-			this.ctxWindows.Opening += new System.ComponentModel.CancelEventHandler(this.ctxWindowsOpening);
+			this.ctxWindows.Opening += new System.ComponentModel.CancelEventHandler(this.ctxWindows_opening);
 			// 
 			// mniWorkSpaces
 			// 

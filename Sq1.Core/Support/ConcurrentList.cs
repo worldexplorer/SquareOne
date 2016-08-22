@@ -63,7 +63,7 @@ namespace Sq1.Core.Support {
 			}
 			return ret;
 		}
-		public List<T> SafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public virtual List<T> SafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			List<T> ret = new List<T>();
 			lockPurpose += " //" + this.ToString() + ".SafeCopy()";
 			try {
@@ -74,11 +74,20 @@ namespace Sq1.Core.Support {
 			}
 			return ret;
 		}
-		public bool Contains(T position, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public bool Contains(T alertOrPosition, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			//lockPurpose += " //" + this.ToString() + ".Contains(" + position.ToString() + ")";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				return this.InnerList.Contains(position);
+				//v1
+				bool alreadyContains = this.InnerList.Contains(alertOrPosition);
+				//v2
+				//bool alreadyContains = false;
+				//foreach (T each in this.InnerList) {
+				//    if (alertOrPosition.Equals(each) == false) continue;
+				//    alreadyContains = true;
+				//    break;
+				//}
+				return alreadyContains;
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
 			}
@@ -95,18 +104,27 @@ namespace Sq1.Core.Support {
 		}
 
 		// YES_BUT_FOR_ConcurrentDictionary_ofConcurrentLists_I_NEED_PUBLIC_INTERFACE "protected" forces derived classes to use the wrapper (for narrower debugging)
-		internal virtual bool RemoveUnique(T position, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
+		internal virtual bool RemoveUnique(T alertOrPosition, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenceThrowsAnError = true) {
 			//lockPurpose += " //" + this.ToString() + ".Remove(" + position.ToString() + ")";
 			bool removed = false;
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				if (this.InnerList.Contains(position) == false) {
+				//v1
+				bool alreadyContains = this.InnerList.Contains(alertOrPosition);
+				//v2
+				//bool alreadyContains = false;
+				//foreach (T each in this.InnerList) {
+				//    if (alertOrPosition.Equals(each) == false) continue;
+				//    alreadyContains = true;
+				//    break;
+				//}
+				if (alreadyContains == false) {
 					if (absenceThrowsAnError == true) {
-						string msg = "WAS_REMOVED_EARLIER__OR_NEVER_ADDED position[" + position + "] LIVESIM_SHOULD_NOT_FILL_ORDER_THAT_WAS_ALREADY_KILLED";
+						string msg = "WAS_REMOVED_EARLIER__OR_NEVER_ADDED alertOrPosition[" + alertOrPosition + "] LIVESIM_SHOULD_NOT_FILL_ORDER_THAT_WAS_ALREADY_KILLED";
 						Assembler.PopupException(msg + this.ToString());
 					}
 				} else {
-					removed = this.InnerList.Remove(position);
+					removed = this.InnerList.Remove(alertOrPosition);
 					this.Count = this.InnerList.Count;
 				}
 			} finally {
@@ -121,9 +139,22 @@ namespace Sq1.Core.Support {
 			bool added = false;
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				if (this.InnerList.Contains(alertOrPosition) && duplicateThrowsAnError) {
-					string msg = base.ReasonToExist + ": CLWD_MUST_BE_ADDED_ONLY_ONCE__ALREADY_ADDED_BEFORE " + alertOrPosition.ToString();
-					Assembler.PopupException(msg, null, true);
+				//v1
+				bool alreadyAppended = this.InnerList.Contains(alertOrPosition);
+				//v2
+				//bool alreadyAppended = false;
+				//foreach (T each in this.InnerList) {
+				//    //if (alertOrPosition.Equals(each) == false) continue;
+				//    if (alertOrPosition.ToString() != each.ToString()) continue;
+				//    alreadyAppended = true;
+				//    break;
+				//}
+
+				if (alreadyAppended) {
+					if (duplicateThrowsAnError) {
+						string msg = base.ReasonToExist + ": CLWD_MUST_BE_ADDED_ONLY_ONCE__ALREADY_ADDED_BEFORE " + alertOrPosition.ToString();
+						Assembler.PopupException(msg, null, true);
+					}
 					return added;
 				}
 				this.InnerList.Add(alertOrPosition);
@@ -143,9 +174,21 @@ namespace Sq1.Core.Support {
 			bool added = false;
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				if (this.InnerList.Contains(alertOrPosition) && duplicateThrowsAnError) {
-					string msg = base.ReasonToExist + ": CLWD_MUST_BE_INSERTED_ONLY_ONCE__ALREADY_INSERTED_BEFORE " + alertOrPosition.ToString();
-					Assembler.PopupException(msg, null, true);
+				//v1
+				bool alreadyInserted = this.InnerList.Contains(alertOrPosition);
+				//v2
+				//bool alreadyInserted = false;
+				//foreach (T each in this.InnerList) {
+				//    if (alertOrPosition.Equals(each) == false) continue;
+				//    alreadyInserted = true;
+				//    break;
+				//}
+
+				if (alreadyInserted) {
+					if (duplicateThrowsAnError) {
+						string msg = base.ReasonToExist + ": CLWD_MUST_BE_INSERTED_ONLY_ONCE__ALREADY_INSERTED_BEFORE " + alertOrPosition.ToString();
+						Assembler.PopupException(msg, null, true);
+					}
 					return added;
 				}
 				this.InnerList.Insert(indexToInsertAt, alertOrPosition);

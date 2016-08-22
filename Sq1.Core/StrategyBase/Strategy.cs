@@ -77,8 +77,8 @@ namespace Sq1.Core.StrategyBase {
 		[JsonIgnore]	public	string			NameAndDll { get {
 				string ret = this.Name;
 				if (this.ScriptEditedNeedsSaving) ret = PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + ret;
-				if (this.ActivatedFromDll) {
-					ret += " :: " + Path.GetFileName(this.GetType().Assembly.Location);
+				if (this.ActivatedFromDll && this.Script != null) {
+					ret += " :: " + Path.GetFileName(this.Script.GetType().Assembly.Location);
 				}
 				return ret;
 			} }
@@ -112,6 +112,11 @@ namespace Sq1.Core.StrategyBase {
 			}
 			ret += "[" + this.ScriptContextCurrent.ToString() + "]";
 			//ret += this.ScriptParametersAsStringByIdJSONcheck + this.IndicatorParametersAsStringByIdJSONcheck;
+
+			if (this.ActivatedFromDll == false && this.ScriptCompiler.CompilerErrors != null) {
+				ret += " compileFailed[" + this.ScriptCompiler.CompilerErrors_asString_ignoreWarnings + "]";
+			}
+
 			return ret;
 		}
 

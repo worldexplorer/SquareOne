@@ -21,7 +21,7 @@ namespace Sq1.Core.Streaming {
 					ManualResetEvent	confirmPaused;		// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 					ManualResetEvent	confirmUnpaused;	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 		public override bool			Paused { get {
-			string msig = " //PumpPerSymbol.Paused_get()";
+			string msig = " //PumpPerSymbol.Paused_get() " + this.ToString();
 			try {
 				return this.confirmPaused.WaitOne(0);
 			} catch (Exception ex) {
@@ -61,8 +61,9 @@ namespace Sq1.Core.Streaming {
 				if (this.IsDisposed) return;
 				bool myOwn_currentValue_nonBlocking = this.hasQuoteToPush_nonBlocking;
 				if (value == myOwn_currentValue_nonBlocking) {
+					string msig = " //PumpPerSymbol.hasQuoteToPush_nonBlocking_get() " + this.ToString();
 					string msg = "DONT_INVOKE_ME_TWICE__I_DONT_WANNA_SIGNAL_AGAIN_THOSE_WHO_ARE_WAITING__YOU_HAVE_TO_FIX_IT";
-					Assembler.PopupException(msg, null, false);
+					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}
 				if (value == true) this.hasQuoteToPush.Set();
@@ -77,8 +78,9 @@ namespace Sq1.Core.Streaming {
 			bool check_pausedBefore = this.Paused;
 
 			if (signalledTrue_expiredFalse == false) {
+				string msig = " //PumpPerSymbol.hasQuoteToPush_blockingAtHeartBeatRate_get() " + this.ToString();
 				string msg = "IMPOSSIBLE__MUST_BE_signalTo_pauseUnpauseAbort()_WAS_INVOKED_SECOND_TIME_BEFORE_I_EXECUTED_TWO_RESETS_BELOW__ADD_LOCK_STATEMENT?";
-				Assembler.PopupException(msg, null, false);
+				Assembler.PopupException(msg + msig, null, false);
 			}
 			this.signalledTo_pauseUnpauseAbort = false;
 			Thread.Sleep(10);	// that helped somewhere else

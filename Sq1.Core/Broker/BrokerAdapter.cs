@@ -244,7 +244,7 @@ namespace Sq1.Core.Broker {
 				this.Order_submit_oneThread_forAllNewAlerts_trampoline(order);
 
 				
-				bool prototyped_neverReplaceTakeProfit = order.Alert.IsExitAlert && order.Alert.PositionPrototype_bothForEntryAndExit_nullUnsafe != null;
+				bool prototyped_neverReplaceTakeProfit = order.Alert.IsExitAlert && order.Alert.PositionPrototype != null;
 				if (prototyped_neverReplaceTakeProfit) continue;
 
 				if (order.Alert.Bars.SymbolInfo.IfNoTransactionCallback_TimerEnabled == false) continue;

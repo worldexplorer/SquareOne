@@ -34,7 +34,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		public void Initialize(ScriptExecutor scriptExecutor, bool saveStrategy_falseForSequencer = true) {
-			if (this.Executor == scriptExecutor) {
+			if (this.Executor != null && this.Executor != scriptExecutor) {
 				string msg = "SRIPT_ALREADY_INITIALIZED_WITH_EXECUTOR_AND_NEVER_GETS_ANOTHER_ONE"
 					+ " INDICATORS_WILL_COMPLAIN__HOST_PANEL_ALREADY_ASSIGNED";
 				Assembler.PopupException(msg);

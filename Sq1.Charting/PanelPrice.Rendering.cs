@@ -97,7 +97,8 @@ namespace Sq1.Charting {
 		void renderAlertsPending_bigAquaDot_atPriceEmitted_ifExistForBar(int barIndex, int shadowX, Graphics g) {
 			Dictionary<int, AlertList> alertPending_byBar = base.ChartControl.ExecutorObjects_frozenForRendering.AlertsPlaced_byBar;
 			if (alertPending_byBar.ContainsKey(barIndex) == false) return;
-			List<Alert> alertsPending = alertPending_byBar[barIndex].SafeCopy(this, "//renderAlertsPending_bigAquaDot_atPriceEmitted_ifExistForBar(WAIT)");
+			List<Alert> alertsPending = alertPending_byBar[barIndex].SafeCopy_forPanelPrice_lessStringConcat(
+				this, "//renderAlertsPending_bigAquaDot_atPriceEmitted_ifExistForBar(WAIT)");
 
 			ChartSettingsTemplated	tpl = base.ChartControl.ChartSettingsTemplated;
 			Pen penPending_BuyCover		= tpl.PenAlertPendingBuyCoverCircle;
@@ -110,12 +111,12 @@ namespace Sq1.Charting {
 
 			foreach (Alert pending in alertsPending) {
 				Pen pen = pending.BuyOrCover ? penPending_BuyCover : penPending_ShortSell;
-				if (pending.PositionAffected != null && pending.PositionPrototype_onlyForEntryAlert != null) {
-					if (pending == pending.PositionPrototype_onlyForEntryAlert.StopLossAlert_forMoveAndAnnihilation) {
+				if (pending.PositionAffected != null && pending.PositionPrototype != null) {
+					if (pending == pending.PositionPrototype.StopLossAlert_forMoveAndAnnihilation) {
 						//Assembler.PopupException("SL_CIRCLE_RED");
 						pen = penSL;
 					}
-					if (pending == pending.PositionPrototype_onlyForEntryAlert.TakeProfitAlert_forMoveAndAnnihilation) {
+					if (pending == pending.PositionPrototype.TakeProfitAlert_forMoveAndAnnihilation) {
 						//Assembler.PopupException("TP_CIRCLE_GREEN");
 						pen = penTP;
 					}
@@ -124,6 +125,9 @@ namespace Sq1.Charting {
 				//v1 SHOWS_ONLY_CURRENT_NO_HISTORY double alertPending_priceScript_zeroForMarket = pending.PriceEmitted;
 				List<double> orderReplacements_pricesEmitted_forBar = pending.GetEmittedPrice_forBarIndex_nullUnsafe(barIndex);
 				if (orderReplacements_pricesEmitted_forBar == null) continue;
+				if (orderReplacements_pricesEmitted_forBar.Count > 2) {
+					string msg = "CHASING_ELLIPSES_DARKEINING__MUST_BE_ONE";
+				}
 
 				foreach (double alertPending_priceScript_zeroForMarket in orderReplacements_pricesEmitted_forBar) {
 					int pendingY = base.ValueToYinverted(alertPending_priceScript_zeroForMarket);

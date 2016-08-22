@@ -320,7 +320,6 @@ namespace Sq1.Gui.Forms {
 			// 
 			// MniShowSequencer
 			// 
-			this.MniShowSequencer.CheckOnClick = true;
 			this.MniShowSequencer.Name = "MniShowSequencer";
 			this.MniShowSequencer.ShortcutKeys = System.Windows.Forms.Keys.F8;
 			this.MniShowSequencer.Size = new System.Drawing.Size(283, 22);
@@ -329,7 +328,6 @@ namespace Sq1.Gui.Forms {
 			// 
 			// MniShowCorrelator
 			// 
-			this.MniShowCorrelator.CheckOnClick = true;
 			this.MniShowCorrelator.Name = "MniShowCorrelator";
 			this.MniShowCorrelator.ShortcutKeys = System.Windows.Forms.Keys.F9;
 			this.MniShowCorrelator.Size = new System.Drawing.Size(283, 22);
@@ -758,6 +756,7 @@ namespace Sq1.Gui.Forms {
 			this.Name = "ChartForm";
 			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.Document;
 			this.Text = "ChartForm";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.chartForm_FormClosing);
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.chartForm_Closed);
 			this.Load += new System.EventHandler(this.chartForm_Load);
 			this.ctxBacktest.ResumeLayout(false);

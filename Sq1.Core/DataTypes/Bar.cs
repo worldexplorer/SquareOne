@@ -12,17 +12,17 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public	DateTime			DateTime_nextBarOpen_unconditional		{ get; protected set; }
 		[JsonProperty]	public	DateTime			DateTime_previousBarOpen_unconditional	{ get; protected set; }
 		
-		[JsonProperty]	public	double	Open		{ get; protected set; }
-		[JsonProperty]	public	double	High		{ get; protected set; }
-		[JsonProperty]	public	double	Low			{ get; protected set; }
-		[JsonProperty]	public	double	Close		{ get; protected set; }
-		[JsonProperty]	public	double	Volume		{ get; protected set; }
-		[JsonIgnore]	public	bool	Fixed_resavingRequired { get; private set; }
+		[JsonProperty]	public	double				Open									{ get; protected set; }
+		[JsonProperty]	public	double				High									{ get; protected set; }
+		[JsonProperty]	public	double				Low										{ get; protected set; }
+		[JsonProperty]	public	double				Close									{ get; protected set; }
+		[JsonProperty]	public	double				Volume									{ get; protected set; }
+		[JsonIgnore]	public	bool				Fixed_resavingRequired					{ get; private set; }
 
-		[JsonIgnore]	public	Bars	ParentBars			{ get; protected set; }
-		[JsonIgnore]	public	int		ParentBarsIndex		{ get; protected set; }
-		[JsonIgnore]	public	bool	HasParentBars		{ get { return this.ParentBars != null; } }
-		[JsonProperty]	public	string	ParentBarsIdent		{ get {
+		[JsonIgnore]	public	Bars				ParentBars								{ get; protected set; }
+		[JsonIgnore]	public	int					ParentBarsIndex							{ get; protected set; }
+		[JsonIgnore]	public	bool				HasParentBars							{ get { return this.ParentBars != null; } }
+		[JsonProperty]	public	string				ParentBarsIdent							{ get {
 				if (this.HasParentBars == false) return "NO_PARENT_BARS";
 				StringBuilder sb = new StringBuilder("");
 				//if (this.ParentBarsIndex <  this.ParentBars.Count - 1) ret = this.ParentBarsIndex.ToString();
@@ -39,11 +39,12 @@ namespace Sq1.Core.DataTypes {
 				return sb.ToString();
 			} }
 		// Perst deserializer invokes default ctor()
-		[JsonProperty]	public int DaySerial;
+		[JsonProperty]	public	int					DaySerial;
 
-		[JsonIgnore]	public double	HighLowDistance		{ get { return this.High - this.Low; } }
-		[JsonIgnore]	public bool		IsWhiteCandle		{ get { return this.Close > this.Open; } }
+		[JsonIgnore]	public	double				HighLowDistance							{ get { return this.High - this.Low; } }
+		[JsonIgnore]	public	bool				IsWhiteCandle							{ get { return this.Close > this.Open; } }
 
+		[JsonIgnore]			SymbolInfo			symbolInfo;
 
 		Bar() {
 			// ChartRenderer would update its max/min if NaN
@@ -73,18 +74,19 @@ namespace Sq1.Core.DataTypes {
 		public void SetSame_OHLCV_aligned(double firstPriceOfBar, double firstVolumeOfBar, SymbolInfo symbolInfo) {
 			this.Set_OHLCV_aligned(firstPriceOfBar, firstPriceOfBar, firstPriceOfBar, firstPriceOfBar, firstVolumeOfBar, symbolInfo);
 		}
-		public void Set_OHLCV_aligned(double open, double high, double low, double close, double volume, SymbolInfo symbolInfo = null) {
+		public void Set_OHLCV_aligned(double open, double high, double low, double close, double volume, SymbolInfo symbolInfo_passed = null) {
 			this.Open = open;
 			this.High = high;
 			this.Low = low;
 			this.Close = close;
 			this.Volume = volume;
-			if (symbolInfo != null) {
-				this.Open	= Math.Round(this.Open,		symbolInfo.PriceDecimals);
-				this.High	= Math.Round(this.High,		symbolInfo.PriceDecimals);
-				this.Low	= Math.Round(this.Low,		symbolInfo.PriceDecimals);
-				this.Close	= Math.Round(this.Close,	symbolInfo.PriceDecimals);
-				this.Volume	= Math.Round(this.Volume,	symbolInfo.VolumeDecimals);
+			this.symbolInfo = symbolInfo_passed;
+			if (this.symbolInfo != null) {
+				this.Open	= Math.Round(this.Open,		this.symbolInfo.PriceDecimals);
+				this.High	= Math.Round(this.High,		this.symbolInfo.PriceDecimals);
+				this.Low	= Math.Round(this.Low,		this.symbolInfo.PriceDecimals);
+				this.Close	= Math.Round(this.Close,	this.symbolInfo.PriceDecimals);
+				this.Volume	= Math.Round(this.Volume,	this.symbolInfo.VolumeDecimals);
 
 				//this.Open = symbolInfo.AlignToPriceLevel(this.Open, PriceLevelRoundingMode.RoundToClosest);
 				//this.High = symbolInfo.AlignToPriceLevel(this.High, PriceLevelRoundingMode.RoundToClosest);

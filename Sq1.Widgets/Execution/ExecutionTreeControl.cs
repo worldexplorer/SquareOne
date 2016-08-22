@@ -350,6 +350,11 @@ namespace Sq1.Widgets.Execution {
 			string ret = "";
 			// ALWAYS_SCHEDULED_AFTER_ANY_NEWCOMER_BUFFERED_OR_FLUSHED ret += this.timerFlushToGui_noNewcomersWithinDelay.Scheduled ? "BUFFERING " : "";
 			// ALREADY_PRINTED_2_LINES_LATER ret += this.exceptions_notFlushedYet.Count ? "BUFFERING " : "";
+			
+			if (this.orderProcessor_forToStringOnly == null) {
+				ret = "GC_IS_NOW_DISPOSING_CLOSED_EXECUTION_FORM";
+				return ret;
+			}
 
 			ret += this.orderProcessor_forToStringOnly.ToString();
 
@@ -360,6 +365,11 @@ namespace Sq1.Widgets.Execution {
 				+ "000" //+ this.exceptions_notFlushedYet.Count.ToString("000")
 				+ "buffered";
 			ret += base.FlushingStats;
+			ret += "   tillSerialization:"
+				+ this.orderProcessor_forToStringOnly.DataSnapshot.SerializerLogrotateOrders.NextSerialization_estimatedIn.TotalMilliseconds.ToString("N2")
+				+ "ms";
+			ret += "   records:"
+				+ this.orderProcessor_forToStringOnly.DataSnapshot.SerializerLogrotateOrders.LastSerialization_records;
 			return ret;
 		}
 

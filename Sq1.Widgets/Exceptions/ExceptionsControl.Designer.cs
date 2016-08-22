@@ -33,7 +33,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniDeleteExceptionsSelected = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniClear = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniCopy = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniRefresh = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniRebuildAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniltbFlushToGuiDelayMsec = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniltbSerializationInterval = new Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox();
@@ -63,6 +63,9 @@ namespace Sq1.Widgets.Exceptions {
 			this.tsiLtb_SearchKeywords = new Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox();
 			this.tsiCbx_ExcludeApply = new Sq1.Widgets.ToolStripImproved.ToolStripItemCheckBox();
 			this.tsiLtb_ExcludeKeywords = new Sq1.Widgets.LabeledTextBox.ToolStripItemLabeledTextBox();
+			this.mniExpandAll = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniCollapseAll = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			((System.ComponentModel.ISupportInitialize)(this.olvTreeExceptions)).BeginInit();
 			this.ctxTree.SuspendLayout();
 			this.ctxIgnoreKeywords.SuspendLayout();
@@ -148,10 +151,13 @@ namespace Sq1.Widgets.Exceptions {
             this.mniShowSearchbar,
             this.mniExcludeKeywords,
             this.toolStripSeparator1,
+            this.mniCopy,
             this.mniDeleteExceptionsSelected,
             this.mniClear,
-            this.mniCopy,
-            this.mniRefresh,
+            this.toolStripSeparator4,
+            this.mniExpandAll,
+            this.mniCollapseAll,
+            this.mniRebuildAll,
             this.mniltbFlushToGuiDelayMsec,
             this.toolStripSeparator2,
             this.mniltbSerializationInterval,
@@ -159,7 +165,7 @@ namespace Sq1.Widgets.Exceptions {
             this.mniltbLogrotateLargerThan,
             this.mniDeleteAllLogrotatedExceptionJsons});
 			this.ctxTree.Name = "ctxTree";
-			this.ctxTree.Size = new System.Drawing.Size(303, 401);
+			this.ctxTree.Size = new System.Drawing.Size(303, 429);
 			this.ctxTree.Opening += new System.ComponentModel.CancelEventHandler(this.ctxTree_Opening);
 			// 
 			// mniRecentAlwaysSelected
@@ -235,7 +241,6 @@ namespace Sq1.Widgets.Exceptions {
 			this.ctxIgnoreKeywords.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mniTextAndSave});
 			this.ctxIgnoreKeywords.Name = "ctxIgnoreKeywords";
-			this.ctxIgnoreKeywords.OwnerItem = this.mniExcludeKeywords;
 			this.ctxIgnoreKeywords.Size = new System.Drawing.Size(261, 307);
 			// 
 			// mniTextAndSave
@@ -273,13 +278,13 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniCopy.Text = "Copy";
 			this.mniCopy.Click += new System.EventHandler(this.mniCopy_Click);
 			// 
-			// mniRefresh
+			// mniRebuildAll
 			// 
-			this.mniRefresh.Name = "mniRefresh";
-			this.mniRefresh.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.R)));
-			this.mniRefresh.Size = new System.Drawing.Size(302, 22);
-			this.mniRefresh.Text = "Refresh";
-			this.mniRefresh.Click += new System.EventHandler(this.mniRefresh_Click);
+			this.mniRebuildAll.Name = "mniRebuildAll";
+			this.mniRebuildAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.R)));
+			this.mniRebuildAll.Size = new System.Drawing.Size(302, 22);
+			this.mniRebuildAll.Text = "Rebuild All";
+			this.mniRebuildAll.Click += new System.EventHandler(this.mniTreeRebuildAll_Click);
 			// 
 			// mniltbFlushToGuiDelayMsec
 			// 
@@ -651,6 +656,27 @@ namespace Sq1.Widgets.Exceptions {
 			this.tsiLtb_ExcludeKeywords.TextRightOffsetX = 175;
 			this.tsiLtb_ExcludeKeywords.TextRightWidth = 4;
 			// 
+			// mniExpandAll
+			// 
+			this.mniExpandAll.Name = "mniExpandAll";
+			this.mniExpandAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
+			this.mniExpandAll.Size = new System.Drawing.Size(302, 22);
+			this.mniExpandAll.Text = "Expand All";
+			this.mniExpandAll.Click += new System.EventHandler(this.mniTreeExpandAll_Click);
+			// 
+			// mniCollapseAll
+			// 
+			this.mniCollapseAll.Name = "mniCollapseAll";
+			this.mniCollapseAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
+			this.mniCollapseAll.Size = new System.Drawing.Size(302, 22);
+			this.mniCollapseAll.Text = "Collapse All";
+			this.mniCollapseAll.Click += new System.EventHandler(this.mniTreeCollapseAll_Click);
+			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			this.toolStripSeparator4.Size = new System.Drawing.Size(299, 6);
+			// 
 			// ExceptionsControl
 			// 
 			this.Controls.Add(this.statusStrip_search);
@@ -703,7 +729,7 @@ namespace Sq1.Widgets.Exceptions {
 		private System.Windows.Forms.ToolStripMenuItem mniClear;
 		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.ContextMenuStrip ctxTree;
-		private ToolStripMenuItem mniRefresh;
+		private ToolStripMenuItem mniRebuildAll;
 		private ToolStripMenuItem mniShowHeader;
 		private OLVColumn olvcException;
 		private ToolStripMenuItem mniPopupOnIncomingException;
@@ -733,6 +759,9 @@ namespace Sq1.Widgets.Exceptions {
 		private LabeledTextBox.ToolStripItemLabeledTextBox mniltbLogrotateLargerThan;
 		private ToolStripSeparator toolStripSeparator2;
 		private ToolStripMenuItem mniDeleteExceptionsSelected;
+		private ToolStripMenuItem mniExpandAll;
+		private ToolStripMenuItem mniCollapseAll;
+		private ToolStripSeparator toolStripSeparator4;
 		
 	}
 }

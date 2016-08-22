@@ -13,9 +13,12 @@ namespace Sq1.Core.StrategyBase {
 
 		public string CompilerErrors_asString_ignoreWarnings { get {
 			string errorsPlainText = "";
+			if (this.CompilerErrors == null) return errorsPlainText;
+
 			foreach (var error in this.CompilerErrors) {
 				string errormsg = error.ToString();
-				if (errormsg.ToLower().IndexOf("warning ") == 0) continue;
+				int warning_position = errormsg.ToLower().IndexOf("warning ");
+				if (warning_position >= 0) continue;	// warning omitted, collecting only ERRORS
 				//errorsIgnoreWarnings++;
 				int indexLastSlash = errormsg.LastIndexOf(Path.DirectorySeparatorChar.ToString());
 				string noPath = errormsg.Substring(indexLastSlash + 14);

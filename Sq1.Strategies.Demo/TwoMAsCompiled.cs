@@ -132,7 +132,7 @@ namespace Sq1.Strategies.Demo {
 		}
 		public override void OnPositionOpened_callback(Position positionOpened) {
 		}
-		public override void OnPositionOpened_prototypeSlTpPlaced_callback(Position positionOpenedByPrototype) {
+		public override void OnPositionOpened_prototypedEntryFilled_SlTpWillBePlacedSoon_callback(Position positionOpenedByPrototype) {
 		}
 		public override void OnPositionClosed_callback(Position positionClosed) {
 		}

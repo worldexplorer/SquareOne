@@ -371,14 +371,14 @@ namespace Sq1.Core.Backtesting {
 
 			List<Alert> alertsPendingSafeCopy = this.scriptExecutor.ExecutionDataSnapshot.AlertsUnfilled.SafeCopy(this, "SimulateFill_allPendingAlerts(WAIT)");
 			foreach (Alert alert in alertsPendingSafeCopy) {
-				if (alert.IsFilled_fromPosition && alert.IsExitAlert && alert.PositionPrototype_onlyForEntryAlert != null) {
+				if (alert.IsFilled_fromPosition && alert.IsExitAlert && alert.PositionPrototype != null) {
 					bool thisAlertWasAnnihilated = false;
-					if (alert.PositionAffected.ExitAlert == alert.PositionPrototype_onlyForEntryAlert.StopLossAlert_forMoveAndAnnihilation
-							&& alert == alert.PositionPrototype_onlyForEntryAlert.TakeProfitAlert_forMoveAndAnnihilation) {
+					if (alert.PositionAffected.ExitAlert == alert.PositionPrototype.StopLossAlert_forMoveAndAnnihilation
+							&& alert == alert.PositionPrototype.TakeProfitAlert_forMoveAndAnnihilation) {
 						thisAlertWasAnnihilated = true;
 					}
-					if (alert.PositionAffected.ExitAlert == alert.PositionPrototype_onlyForEntryAlert.TakeProfitAlert_forMoveAndAnnihilation
-							&& alert == alert.PositionPrototype_onlyForEntryAlert.StopLossAlert_forMoveAndAnnihilation) {
+					if (alert.PositionAffected.ExitAlert == alert.PositionPrototype.TakeProfitAlert_forMoveAndAnnihilation
+							&& alert == alert.PositionPrototype.StopLossAlert_forMoveAndAnnihilation) {
 						thisAlertWasAnnihilated = true;
 					}
 					if (thisAlertWasAnnihilated) continue;

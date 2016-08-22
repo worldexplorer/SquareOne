@@ -254,7 +254,7 @@ namespace Sq1.Core.Broker {
 			//}
 			//#endregion
 
-			bool annihilatingCounterParty_forExitAlert = victimKilled.Alert.IsExitAlert && victimKilled.Alert.PositionPrototype_bothForEntryAndExit_nullUnsafe != null;
+			bool annihilatingCounterParty_forExitAlert = victimKilled.Alert.IsExitAlert && victimKilled.Alert.PositionPrototype != null;
 			if (annihilatingCounterParty_forExitAlert) {
 				if (victimKilled.FindState_inOrderMessages(OrderState.TPAnnihilating)) {
 					OrderStateMessage omsg = new OrderStateMessage(victimKilled, OrderState.TPAnnihilated, "TPAnnihilating=>TPAnnihilated in ALERT_KILLED_CALLBACK");

@@ -63,21 +63,11 @@ namespace Sq1.Gui.Forms {
 		public	bool								ScriptEditorInstantiated_andInFront			{ get { return this.ScriptEditorInstantiated ? this.ScriptEditorForm.IsInFront : false; } }
 		
 		
-				SequencerFormFactory				sequencerFormFactory;
 		public	SequencerForm						SequencerForm;
 		public	SequencerForm						SequencerFormSingletonized_nullUnsafe		{ get {
 				if (DockContentImproved.IsNullOrDisposed(this.SequencerForm)) {
 					if (this.Strategy == null) return null;
-					if (this.sequencerFormFactory == null) {
-						string msg = "SHOULD_NEVER_HAPPEN_this.sequencerFormFactory=null";
-						Assembler.PopupException(msg);
-						this.sequencerFormFactory = new SequencerFormFactory(this);
-					}
-
-					this.SequencerForm = this.sequencerFormFactory.CreateSequencerFormSubscribe();
-					if (this.SequencerForm == null) {
-						throw new Exception("SequencerFormFactory.CreateAndSubscribe() failed to create SequencerForm in ChartFormsManager");
-					}
+					this.SequencerForm = new SequencerForm(this);
 				}
 				return this.SequencerForm;
 			} }
@@ -164,15 +154,15 @@ namespace Sq1.Gui.Forms {
 			// deserialization: ChartSerno will be restored; never use this constructor in your app!
 			//			this.Executor = new ScriptExecutor(Assembler.InstanceInitialized.ScriptExecutorConfig
 			//				, this.ChartForm.ChartControl, null, Assembler.InstanceInitialized.OrderProcessor, Assembler.InstanceInitialized.StatusReporter);
-			this.Executor					= new ScriptExecutor("EXECUTOR_FOR_AN_OPENED_CHART_UNCLONED");
+			this.Executor												= new ScriptExecutor("EXECUTOR_FOR_AN_OPENED_CHART_UNCLONED");
 			this.Executor.EventGenerator.OnStrategyPreExecuteOneQuote	+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyPreExecuteOneQuote_updateBtnStreamingText);
-			this.Executor.EventGenerator.OnStrategyExecuted_oneQuote		+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree);
+			this.Executor.EventGenerator.OnStrategyExecuted_oneQuote	+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree);
 
 			this.ReportersFormsManager		= new ReportersFormsManager(this);
 
 			// never used in CHART_ONLY, but we have "Open In Current Chart" for Strategies
 			this.scriptEditorFormFactory	= new ScriptEditorFormFactory(this);
-			this.sequencerFormFactory		= new SequencerFormFactory(this);
+			//this.sequencerFormFactory		= new SequencerFormFactory(this);
 			//this.livesimFormFactory		= new LivesimFormFactory(this);
 
 			this.DataSnapshotSerializer		= new Serializer<ChartFormDataSnapshot>();
@@ -666,7 +656,7 @@ namespace Sq1.Gui.Forms {
 			if (willBacktest == false) {
 				// COPYFROM_StrategyCompileActivatePopulateSlidersShow()
 				if (this.Strategy.Script == null) {		 //&& this.Strategy.ActivatedFromDll
-					string msg = "COMPILE_AND_INITIALIZE_SCRIPT_THEN??... this.Strategy.Script=null";
+					string msg = "COMPILE_AND_INITIALIZE_SCRIPT__NOW_NULL this.Strategy[" + this.Strategy + "]";
 					Assembler.PopupException(msg, null, false);
 				} else {
 					//ALREADY_DONE_20LINES_ABOVE_VIA_this.InitializeWithStrategy(strategyFound, true, false); this.Strategy.ScriptAndIndicatorParametersReflected_absorbMergeFromCurrentContext_saveStrategy();
@@ -803,9 +793,13 @@ namespace Sq1.Gui.Forms {
 				}
 			}
 
-			if (this.SequencerFormSingletonized_nullUnsafe.MustBeActivated) {
+			//if (this.ChartForm.DockPanel.Contents.Contains(this.SequencerFormSingletonized_nullUnsafe) == false) {
+			//	this.SequencerFormSingletonized_nullUnsafe.Show(this.ChartForm.DockPanel);
+			//}
+
+			if (this.SequencerFormSingletonized_nullUnsafe.IsAddedToDockPane_andMustBeActivated) {
 				this.SequencerFormSingletonized_nullUnsafe.ActivateDockContent_popupAutoHidden(keepAutoHidden, true);
-				return;			// NOT_SURE
+				return;
 			}
 			DockPanel mainPanelOrAnotherSequencerPanel = this.dockPanel;
 			DockPane			 anotherSequencerPane  = null;
@@ -832,9 +826,9 @@ namespace Sq1.Gui.Forms {
 				this.CorrelatorFormSingletonized_nullUnsafe.Initialize(this);
 			//}
 
-			if (this.CorrelatorFormSingletonized_nullUnsafe.MustBeActivated) {
+			if (this.CorrelatorFormSingletonized_nullUnsafe.IsAddedToDockPane_andMustBeActivated) {
 				this.CorrelatorFormSingletonized_nullUnsafe.ActivateDockContent_popupAutoHidden(keepAutoHidden, true);
-				return;			// NOT_SURE
+				return;
 			}
 
 			DockPanel mainPanelOrAnotherCorrelatorPanel = this.dockPanel;
@@ -892,16 +886,26 @@ namespace Sq1.Gui.Forms {
 		public void LivesimFormShow(bool keepAutoHidden = true) {
 			this.LivesimFormSingletonized_nullUnsafe.Initialize(this);
 
-			DockPanel mainPanelOrAnotherLivesimsPanel = this.dockPanel;
+			if (this.LivesimFormSingletonized_nullUnsafe.IsAddedToDockPane_andMustBeActivated) {
+				this.LivesimFormSingletonized_nullUnsafe.ActivateDockContent_popupAutoHidden(keepAutoHidden, true);
+				return;
+			}
+			DockPanel mainPanelOrAnotherLivesimPanel	= this.dockPanel;
+			DockPane			 anotherLivesimPane		= null;
 			LivesimForm anotherLivesim = null;
 			foreach (DockContent form in this.dockPanel.Contents) {
 				anotherLivesim = form as LivesimForm;
 				if (anotherLivesim == null) continue;
 				if (anotherLivesim.Pane == null) continue;
-				mainPanelOrAnotherLivesimsPanel = anotherLivesim.Pane.DockPanel;
+				mainPanelOrAnotherLivesimPanel = anotherLivesim.Pane.DockPanel;		// will point to Main's this.dockPanel
+				anotherLivesimPane = anotherLivesim.Pane;
 				break;
 			}
-			this.LivesimFormSingletonized_nullUnsafe.Show(mainPanelOrAnotherLivesimsPanel);
+			if (anotherLivesimPane != null) {
+				this.LivesimFormSingletonized_nullUnsafe.Show(anotherLivesimPane, null);	// will place new livesim into the same panel as (at right of) the previous & found
+			} else {
+				this.LivesimFormSingletonized_nullUnsafe.Show(mainPanelOrAnotherLivesimPanel);
+			}
 			this.LivesimFormSingletonized_nullUnsafe.ActivateDockContent_popupAutoHidden(keepAutoHidden, true);
 			//this.LivesimFormConditionalInstance.SequencerControl.Refresh();	// olvBacktest doens't repaint while having results?...
 			//this.LivesimFormConditionalInstance.SequencerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
@@ -965,7 +969,7 @@ namespace Sq1.Gui.Forms {
 			}
 
 			if (this.Strategy.Script == null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
-				string msg = "COMPILE_AND_INITIALIZE_SCRIPT_THEN??... this.Strategy.Script=null";
+				string msg = "COMPILE_AND_INITIALIZE_SCRIPT__NOW_NULL this.Strategy[" + this.Strategy + "]";
 				Assembler.PopupException(msg, null, false);
 			} else {
 				this.Strategy.ScriptAndIndicatorParametersReflected_absorbFromCurrentContext_saveStrategy();
@@ -994,7 +998,7 @@ namespace Sq1.Gui.Forms {
 					ret = this.ChartForm.ChartControl.ToString();
 				}
 			}
-			return null;
+			return ret;
 		}
 		public void PopulateThroughMainForm_symbolStrategyTree_andSliders() {
 			ContextChart ctxScript = this.ContextCurrentChartOrStrategy;
@@ -1020,7 +1024,7 @@ namespace Sq1.Gui.Forms {
 
 
 			if (this.LivesimFormInstantiated) {
-				if (this.LivesimForm.MustBeActivated) this.LivesimForm.Activate();
+				if (this.LivesimForm.IsAddedToDockPane_andMustBeActivated) this.LivesimForm.Activate();
 			}
 		}
 

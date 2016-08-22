@@ -202,6 +202,11 @@ namespace Sq1.Core.Repositories {
 			this.FoldersWithin.Remove(workspace);
 			this.sort();
 			if (index == 0) {
+				string msg = "TOP_WORKSPACE_DELETED[" + workspace.ToString() + "]";
+				Assembler.PopupException(msg);
+				return null;
+			}
+			if (this.FoldersWithin.Count == 0) {
 				string msg = "LAST_WORKSPACE_DELETED[" + workspace.ToString() + "]";
 				Assembler.PopupException(msg);
 				return null;

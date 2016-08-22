@@ -85,12 +85,24 @@ namespace Sq1.Core.Livesim {
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.LivesimDataSource.IsDisposed == false) {
-				this.LivesimDataSource	.Dispose();
+			if (this.LivesimDataSource != null) {
+				if (this.LivesimDataSource.IsDisposed == false) {
+					this.LivesimDataSource.Dispose();
+				} else {
+					string msg = "ITS_OKAY this.livesimDataSource might have been already disposed by LivesimStreaming.Dispose()";
+				}
 			} else {
-				string msg = "ITS_OKAY this.livesimDataSource might have been already disposed by LivesimStreaming.Dispose()";
+				string msg = "WEIRD_LivesimDataSource=NULL " + this.ToString();
+				Assembler.PopupException(msg);
 			}
-			this.DataSnapshot	.Dispose();
+			if (this.DataSnapshot != null) { 
+				if (this.DataSnapshot.IsDisposed == false) {
+					this.DataSnapshot.Dispose();
+				}
+			} else {
+				string msg = "ARE_YOU_SWITCHING_WORKSPACES? LivesimBroker.DataSnapshot=NULL HERE";
+				Assembler.PopupException(msg);
+			}
 			base.DataSource		= null;
 			this.DataSnapshot	= null;
 			base.IsDisposed		= true;

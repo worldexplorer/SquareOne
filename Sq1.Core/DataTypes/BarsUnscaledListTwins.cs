@@ -58,21 +58,22 @@ namespace Sq1.Core.DataTypes {
 					throw new Exception(msg);
 				}
 
+				#if DEBUG
 				//v1
 				//if (double.IsNaN(bar.Open)) msg += "bar.Open[NaN] ";
 				//if (double.IsNaN(bar.Low)) msg += "bar.Low[NaN] ";
 				//if (double.IsNaN(bar.High)) msg += "bar.High[NaN] ";
 				//if (double.IsNaN(bar.Close)) msg += "bar.Close[NaN] ";
 				//if (double.IsNaN(bar.Volume)) msg += "bar.Volume[NaN] ";
-				//v2
-				msg = bar.CheckThrow_DateOHLCV_validForSaving(false);
+				//v2 APP_STARTUP_TOO_SLOW__EXCESSIVE_FOR_READING__WRITING_ALREADY_VALID
+				//msg = bar.CheckThrow_DateOHLCV_validForSaving(false);
 
-				if (string.IsNullOrEmpty(msg) == false) {
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					throw new Exception("BARS_UNSCALED[]_MUST_ALWAYS_RETURN_BAR_WITHOUT_NANS: " + msg);
-				}
+				//if (string.IsNullOrEmpty(msg) == false) {
+				//    //Debugger.Break();
+				//    throw new Exception("BARS_UNSCALED[]_MUST_ALWAYS_RETURN_BAR_WITHOUT_NANS: " + msg);
+				//}
+				#endif
+
 				return bar;
 			} } }
 		public Bar this[DateTime dateTimeRequested] { get { lock (this.BarsLock) {

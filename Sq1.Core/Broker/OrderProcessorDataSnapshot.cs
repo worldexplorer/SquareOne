@@ -45,7 +45,7 @@ namespace Sq1.Core.Broker {
 			OrdersCemeterySick			= new OrderLaneByState(OrderStatesCollections.CemeterySick);
 
 			OrdersAll_lanesSuggestor	= new OrderLane("OrderProcessorDataSnapshot=>OrdersAll_lanesSuggestor", this);
-			OrdersSearchable_forGui			= new OrdersSearchable("OrderProcessorDataSnapshot=>OrdersAll_forGui");
+			OrdersSearchable_forGui		= new OrdersSearchable("OrderProcessorDataSnapshot=>OrdersAll_forGui");
 			OrdersRootOnly				= new OrdersRootOnly("OrdersRootOnly");
 			OrdersByState				= new OrdersByState("OrderProcessorDataSnapshot=>OrdersByState", new OrdersByState.ASC());
 			//OrdersByAccount			= new Dictionary<Account, List<Order>>();
@@ -92,6 +92,9 @@ namespace Sq1.Core.Broker {
 					//    }
 					//}
 					// 3. lookup & set pointer "<TODO: RESTORE_VictimToBeKilled_fromGuid_onTreeBuild>"
+					if (current.Alert != null && current.Alert.PositionAffected != null && string.IsNullOrEmpty(current.Alert.PositionAffected.Symbol)) {
+						current.Alert.PositionAffected.AbsorbSymbol_ifWasntSerialized(current.Alert.Symbol);
+					}
 				}
 				// yeps we spawn the lists with the same content;
 				// original, OrdersBuffered.ItemsMain will shrink later due to LogrotateSerializer.safeLogRotate()

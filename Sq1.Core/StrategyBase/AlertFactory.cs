@@ -11,8 +11,9 @@ namespace Sq1.Core.StrategyBase {
 			this.executor = executor;
 		}
 
-		public Alert EntryAlert_create(Bar entryBar, double priceLimitOrStop_zeroForMarket, double priceStopLimitActivation,
-										string entrySignalName, Direction direction, MarketLimitStop entryMarketLimitStop) {
+		public Alert AlertEntry_create(Bar entryBar,
+			double priceLimitOrStop_zeroForMarket, double priceStopLimitActivation,
+			string entrySignalName, Direction direction, MarketLimitStop entryMarketLimitStop) {
 			this.checkThrow_entryBar_isValid(entryBar);
 
 			double priceScript = priceLimitOrStop_zeroForMarket;
@@ -21,14 +22,15 @@ namespace Sq1.Core.StrategyBase {
 				: entryBar.ParentBars.SymbolInfo.Alert_alignToPriceStep(priceScript, direction, entryMarketLimitStop);
 			double shares = this.executor.PositionSizeCalculate(entryBar, entryPriceScript);
 
-			Alert alert = new Alert(entryBar, shares, entryPriceScript, priceStopLimitActivation,
+			Alert alertEntry = new Alert(entryBar, shares, entryPriceScript, priceStopLimitActivation,
 				entrySignalName, direction, entryMarketLimitStop, this.executor.Strategy);
 
-			return alert;
+			return alertEntry;
 		}
-		public Alert ExitAlert_create(Bar exitBar, Position position,
-			double priceLimitOrStop_zeroForMarket, double priceStopLimitActivation, string signalName,
-			Direction direction, MarketLimitStop exitMarketLimitStop) {
+
+		public Alert AlertExit_create(Bar exitBar, Position position,
+			double priceLimitOrStop_zeroForMarket, double priceStopLimitActivation,
+			string signalName, Direction direction, MarketLimitStop exitMarketLimitStop) {
 
 			this.checkThrow_entryBar_isValid(exitBar);
 			this.checkThrow_positionToClose_isValid(position);
@@ -43,12 +45,13 @@ namespace Sq1.Core.StrategyBase {
 				priceStopLimitActivation = exitBar.ParentBars.SymbolInfo.AlignToPriceStep(priceStopLimitActivation);
 			}
 	
-			Alert alert = new Alert(exitBar, position.Shares, exitPriceScript, priceStopLimitActivation,
+			Alert alertExit = new Alert(exitBar, position.Shares, exitPriceScript, priceStopLimitActivation,
 									signalName, direction, exitMarketLimitStop, this.executor.Strategy);
-			alert.PositionAffected = position;
-			alert.PositionAffected.ExitAlertAttach(alert);
+			alertExit.PositionAffected = position;
+			alertExit.PositionAffected.ExitAlertAttach(alertExit);
+			if (position.Prototype != null) alertExit.PositionPrototype = position.Prototype;
 
-			return alert;
+			return alertExit;
 		}
 
 		void checkThrow_positionToClose_isValid(Position position) {

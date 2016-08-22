@@ -2,6 +2,7 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Collections.Generic;
+
 using Sq1.Core.Execution;
 
 namespace Sq1.Widgets.Execution {
@@ -36,45 +37,6 @@ namespace Sq1.Widgets.Execution {
 			//this.tsiCbx_SearchApply.BackColor = SystemColors.Control;
 			//this.tsiCbx_ExcludeApply.BackColor = SystemColors.Control;
 		}
-
-		void tsiCbx_SearchApply_Click(object sender, EventArgs e) {
-			this.dataSnapshot.ShowSearchbar_SearchKeywordApplied = this.tsiCbx_SearchApply.CheckBoxChecked;
-			this.dataSnapshotSerializer.Serialize();
-			this.keywordsSearch_apply();
-		}
-		void txtSearch_KeyUp(object sender, KeyEventArgs e) {
-			this.dataSnapshot.ShowSearchbar_SearchKeywordsCsv = this.tsiLtb_SearchKeywords.LabeledTextBoxControl.InternalTextBox.Text;
-			this.dataSnapshotSerializer.Serialize();
-			if (this.dataSnapshot.ShowSearchbar_SearchKeywordApplied == false) return;
-			this.keywordsSearch_apply();
-		}
-
-		void tsiCbx_ExcludeApply_Click(object sender, EventArgs e) {
-			this.dataSnapshot.ShowSearchbar_ExcludeKeywordApplied = this.tsiCbx_ExcludeApply.CheckBoxChecked;
-			this.dataSnapshotSerializer.Serialize();
-
-			this.keywordsExclude_apply();
-		}
-
-		void txtExclude_KeyUp(object sender, KeyEventArgs e) {
-			this.dataSnapshot.ShowSearchbar_ExcludeKeywordsCsv = this.tsiLtb_ExcludeKeywords.LabeledTextBoxControl.InternalTextBox.Text;
-			this.dataSnapshotSerializer.Serialize();
-
-			if (this.dataSnapshot.ShowSearchbar_ExcludeKeywordApplied == false) return;
-			this.keywordsExclude_apply();
-		}
-
-		void btnSearchClose_Click(object sender, EventArgs e) {
-			//this.pnlSearch.Visible = false;
-			this.statusStrip_search.Visible = false;
-			//this.mniShowSearchbar.Checked = false;
-			//this.olvOrdersTree.SetObjects(this.ordersRoot.SafeCopy(this, "btnSearchClose_Click()"));
-			this.olvOrdersTree.BackColor = Color.White;
-		}
-		void tsiBtnClear_Click(object sender, EventArgs e) {
-			this.Clear();
-		}
-
 
 		void keywordsSearch_apply() {
 			string keywordsCsv_nullUnsafe =
@@ -122,7 +84,7 @@ namespace Sq1.Widgets.Execution {
 			    // yeps color from the opposite checkbox
 			    Color newBgColor = this.dataSnapshot.ShowSearchbar_SearchKeywordApplied ? Color.LightGreen : Color.White;
 			    this.olvOrdersTree.BackColor = newBgColor;
-			    this.tsiLtb_ExcludeKeywords.LabeledTextBoxControl.InternalTextBox.BackColor = Color.White;
+			    this.tsiLtb_ExcludeKeywords.LabeledTextBoxControl.InternalTextBox.BackColor = newBgColor;
 			    return;
 			}
 
@@ -133,8 +95,48 @@ namespace Sq1.Widgets.Execution {
 			// yeps color from the opposite checkbox
 			Color oppositeBgColor = this.dataSnapshot.ShowSearchbar_SearchKeywordApplied ? Color.LightGreen : Color.FloralWhite;
 			this.olvOrdersTree.BackColor = oppositeBgColor;
-			this.tsiLtb_ExcludeKeywords.LabeledTextBoxControl.InternalTextBox.BackColor = Color.FloralWhite;
+			this.tsiLtb_ExcludeKeywords.LabeledTextBoxControl.InternalTextBox.BackColor = oppositeBgColor;
 		}
+
+		void tsiCbx_SearchApply_Click(object sender, EventArgs e) {
+			this.dataSnapshot.ShowSearchbar_SearchKeywordApplied = this.tsiCbx_SearchApply.CheckBoxChecked;
+			this.dataSnapshotSerializer.Serialize();
+			this.keywordsSearch_apply();
+		}
+		void txtSearch_KeyUp(object sender, KeyEventArgs e) {
+			this.dataSnapshot.ShowSearchbar_SearchKeywordsCsv = this.tsiLtb_SearchKeywords.LabeledTextBoxControl.InternalTextBox.Text;
+			this.dataSnapshotSerializer.Serialize();
+			if (this.dataSnapshot.ShowSearchbar_SearchKeywordApplied == false) return;
+			this.keywordsSearch_apply();
+		}
+
+		void tsiCbx_ExcludeApply_Click(object sender, EventArgs e) {
+			this.dataSnapshot.ShowSearchbar_ExcludeKeywordApplied = this.tsiCbx_ExcludeApply.CheckBoxChecked;
+			this.dataSnapshotSerializer.Serialize();
+
+			this.keywordsExclude_apply();
+		}
+
+		void txtExclude_KeyUp(object sender, KeyEventArgs e) {
+			this.dataSnapshot.ShowSearchbar_ExcludeKeywordsCsv = this.tsiLtb_ExcludeKeywords.LabeledTextBoxControl.InternalTextBox.Text;
+			this.dataSnapshotSerializer.Serialize();
+
+			if (this.dataSnapshot.ShowSearchbar_ExcludeKeywordApplied == false) return;
+			this.keywordsExclude_apply();
+		}
+
+		void btnSearchClose_Click(object sender, EventArgs e) {
+			//this.pnlSearch.Visible = false;
+			this.statusStrip_search.Visible = false;
+			//this.mniShowSearchbar.Checked = false;
+			//this.olvOrdersTree.SetObjects(this.ordersRoot.SafeCopy(this, "btnSearchClose_Click()"));
+			this.olvOrdersTree.BackColor = Color.White;
+		}
+		void tsiBtnClear_Click(object sender, EventArgs e) {
+			this.Clear();
+		}
+
+
 
 		/*
 		string exceptionMessageFragmentSelected;

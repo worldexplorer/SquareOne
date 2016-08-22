@@ -100,7 +100,7 @@ namespace Sq1.Gui.Singletons {
 			this.ExecutionTreeControl.OnOrderSingleClicked_ChartControlShouldPopupPosition					-= this.executionTree_OnOrderSingleClicked_ChartControlShouldPopupPosition;
 
 			string msg = "ExecutionForm_Closing(): unsubscribed from orderProcessor.OnOrder{Added/Removed/StateChanged/MessageAdded}";
-			Assembler.PopupException(msg);
+			Assembler.PopupException(msg, null, false);
 		}
 	}
 }

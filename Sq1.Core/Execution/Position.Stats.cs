@@ -1,16 +1,18 @@
 ﻿using System;
 
+using Newtonsoft.Json;
+
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Execution {
 	public partial class Position {
-		public double NetProfit { get {
+		[JsonIgnore]	public	double	NetProfit { get {
 				double netProfit = this.GrossProfit - this.EntryFilled_commission;
 				if (this.ExitFilledBarIndex != -1) netProfit -= this.ExitFilled_commission;
 				return netProfit;
 			} }
-		public double GrossProfit { get { return this.Shares * this.DistanceInPoints * this.Bars.SymbolInfo.Point2Dollar; } }
-		public double DistanceInPoints { get {
+		[JsonIgnore]	public	double	GrossProfit { get { return this.Shares * this.DistanceInPoints * this.symbolInfo.Point2Dollar; } }
+		[JsonIgnore]	public	double	DistanceInPoints { get {
 				return (this.PositionLongShort == PositionLongShort.Long)
 					? this.ExitFilled_orBarsClose_forOpenPositions - this.EntryFilled_price
 					: this.EntryFilled_price - this.ExitFilled_orBarsClose_forOpenPositions;
@@ -26,12 +28,12 @@ namespace Sq1.Core.Execution {
 //				if (this.ExitFilledBarIndex != -1) netProfitNoSlippage -= this.ExitFilledCommission;
 //				return netProfitNoSlippage;
 //			} }
-		public double PositionCost { get { return this.Shares * this.EntryFilled_price * this.Bars.SymbolInfo.Point2Dollar; } }
-		public double NetProfitPercent { get {
+		[JsonIgnore]	public	double	PositionCost { get { return this.Shares * this.EntryFilled_price * this.symbolInfo.Point2Dollar; } }
+		[JsonIgnore]	public	double	NetProfitPercent { get {
 				if (this.Bars == null) return -999999;
 				return 100.0 * this.NetProfit / this.PositionCost;
 			} }
-		public int BarsHeld { get {
+		[JsonIgnore]	public	int		BarsHeld { get {
 				if (this.Bars == null) return -999999;
 				int barsHeld;
 				if (this.ExitFilledBarIndex == -1) {
@@ -42,11 +44,11 @@ namespace Sq1.Core.Execution {
 				if (barsHeld < 1) barsHeld = 1;
 				return barsHeld;
 			} }
-		public double ProfitPerBar { get { return this.NetProfit / (double)this.BarsHeld;} }
+		[JsonIgnore]	public	double	ProfitPerBar { get { return this.NetProfit / (double)this.BarsHeld;} }
 		
-		int mfeUptoBarIndex;
-		double mfeUptoValue;
-		public double MFE { get {	// will be always positive
+		[JsonIgnore]			int		mfeUptoBarIndex;
+		[JsonIgnore]			double	mfeUptoValue;
+		[JsonIgnore]	public	double	MFE { get {	// will be always positive
 				if (this.Bars == null) return -999999;
 				if (this.EntryFilledBarIndex == -1) return -999998;
 				if (this.Bars.Count <= 0) return -999997;
@@ -68,20 +70,20 @@ namespace Sq1.Core.Execution {
 					}
 				}
 				mfe *= this.Shares;
-				mfe *= this.Bars.SymbolInfo.Point2Dollar;
+				mfe *= this.symbolInfo.Point2Dollar;
 				//mfe -= this.EntryFilledCommission;
 				this.mfeUptoBarIndex = barIndexExitOrStreaming; 
 				this.mfeUptoValue = mfe;
 				return mfe;
 			} }
-		public double MFEPercent { get {
+		[JsonIgnore]	public	double	MFEPercent { get {
 				if (this.Bars == null) return -999999;
 				return 100.0 * this.MFE / this.PositionCost;
 			} }
 		
-		int maeUptoBarIndex;
-		double maeUptoValue;
-		public double MAE { get {	// will be always negative
+		[JsonIgnore]			int		maeUptoBarIndex;
+		[JsonIgnore]			double	maeUptoValue;
+		[JsonIgnore]	public	double	MAE { get {	// will be always negative
 				if (this.Bars == null) return -999999;
 				if (this.EntryFilledBarIndex == -1) return -999999;
 				if (this.Bars.Count <= 0) return -9999998;
@@ -103,13 +105,13 @@ namespace Sq1.Core.Execution {
 					}
 				}
 				mae *= this.Shares;
-				mae *= this.Bars.SymbolInfo.Point2Dollar;
+				mae *= this.symbolInfo.Point2Dollar;
 				//mae += this.EntryFilledCommission;
 				this.maeUptoBarIndex = barExitOrStreaming; 
 				this.maeUptoValue = mae;
 				return mae;
 			} }
-		public double MAEPercent { get {
+		[JsonIgnore]	public	double	MAEPercent { get {
 				if (this.Bars == null) return -999999;
 				return 100.0 * this.MAE / this.PositionCost;
 			} }

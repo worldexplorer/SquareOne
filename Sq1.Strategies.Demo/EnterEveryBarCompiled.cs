@@ -272,7 +272,7 @@ namespace Sq1.Strategies.Demo {
 			//	Debugger.Break();
 			//}
 		}
-		public override void OnPositionOpened_prototypeSlTpPlaced_callback(Position positionOpenedByPrototype) {
+		public override void OnPositionOpened_prototypedEntryFilled_SlTpWillBePlacedSoon_callback(Position positionOpenedByPrototype) {
 			string msg = "OnPositionOpened_prototypeSlTpPlaced_callback";
 			Assembler.PopupException(msg, null, false);
 		}

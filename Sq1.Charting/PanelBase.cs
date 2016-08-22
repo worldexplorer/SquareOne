@@ -434,7 +434,7 @@ namespace Sq1.Charting {
 		public override string ToString() {
 			string ret = this.PanelName;
 			//ret += ": Location[" + this.Location + "]; Size[" + this.Size + "] (" + this.Height + ");"
-			ret += " ClientRectangle[" + this.ClientRectangle + "]";
+			//TOO_SLOW ret += " ClientRectangle[" + this.ClientRectangle + "]";
 			return ret;
 		}
 

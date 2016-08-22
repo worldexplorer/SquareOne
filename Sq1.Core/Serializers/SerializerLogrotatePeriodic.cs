@@ -8,11 +8,25 @@ using Sq1.Core.Serializers;
 namespace Sq1.Core.Serializers {
 	public class SerializerLogrotatePeriodic<T> : SerializerLogrotate<T> {
 				Timer		timer;
-		public	int			PeriodMillis;
-		public	List<T>		Orders { get { return base.EntityDeserialized; } }
+		public	long		PeriodMillis;
+		public	List<T>		Orders							{ get { return base.EntityDeserialized; } }
 
-		public SerializerLogrotatePeriodic(int periodMillis = 10 * 1000) : base() {
+				Stopwatch	lastSerialization_elapsed;
+				Stopwatch	lastSerialization_millisAgo;
+		public	int			LastSerialization_records		{ get; private set; }
+		public	TimeSpan	NextSerialization_estimatedIn { get {
+			TimeSpan diff = new TimeSpan();
+			if (this.lastSerialization_millisAgo.IsRunning == false) return diff;
+			diff = new TimeSpan(this.PeriodMillis - this.lastSerialization_millisAgo.ElapsedMilliseconds);
+			return diff;
+		} }
+
+
+		public SerializerLogrotatePeriodic(long periodMillis = 10 * 1000) : base() {
 			this.PeriodMillis = periodMillis;
+			this.lastSerialization_elapsed = new Stopwatch();
+			this.lastSerialization_millisAgo = new Stopwatch();
+			this.LastSerialization_records = -1;
 		}
 
 		public void StartSerializerThread() {
@@ -29,18 +43,18 @@ namespace Sq1.Core.Serializers {
 				Thread.CurrentThread.Name != "DataSnapshotSerializer") {
 				//Thread.CurrentThread.Name = "DataSnapshotSerializer";
 			}
-			Stopwatch watch = new Stopwatch();
-			watch.Start();
+			this.lastSerialization_elapsed.Restart();
 			try {
 				if (base.HasChangesToSave) {
-					int recordsSerialized = base.Serialize();
+					this.LastSerialization_records = base.Serialize();
 				}
+				this.lastSerialization_millisAgo.Start();
 			} catch (Exception ex) {
 				string msig = " SerializerLogrotatePeriodic<" + base.OfWhat + ">::serializerThreadEntry() ";
 				string msg = "JSON serialization problems?";
 				Assembler.PopupException(msg + msig, ex);
 			} finally {
-				watch.Stop();
+				this.lastSerialization_elapsed.Stop();
 				//this.DataSnapshot.OrderProcessor.exceptionsForm.DisplayStatus(
 				//	"serialized Orders and HistoricalTrades in [" + watch.ElapsedMilliseconds
 				//	+ "]milliseconds at [" + DateTime.Now.ToString("HH:mm:ss.fff") + "]");

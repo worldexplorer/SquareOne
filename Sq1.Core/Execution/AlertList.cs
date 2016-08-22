@@ -17,8 +17,19 @@ namespace Sq1.Core.Execution {
 			}
 			return ret;
 		}
-		public List<Alert> SafeCopy(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public override List<Alert> SafeCopy(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			return base.SafeCopy(lockOwner, lockPurpose, waitMillis);
+		}
+		public List<Alert> SafeCopy_forPanelPrice_lessStringConcat(object lockOwner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			List<Alert> ret = new List<Alert>();
+			//TOO_SLOW lockPurpose += " //" + this.ToString() + ".SafeCopy()";
+			try {
+				base.WaitAndLockFor(lockOwner, lockPurpose, waitMillis);
+				ret = new List<Alert>(base.InnerList);
+			} finally {
+				base.UnLockFor(lockOwner, lockPurpose);
+			}
+			return ret;
 		}
 		public AlertList(string reasonToExist, ExecutorDataSnapshot snap = null, List<Alert> copyFrom = null) : this(reasonToExist, snap) {
 			if (copyFrom == null) return;
@@ -51,7 +62,9 @@ namespace Sq1.Core.Execution {
 			lockPurpose += " //" + base.ReasonToExist + ".AddRange(" + alerts.Count + ")";
 			try {
 				base.WaitAndLockFor(lockOwner, lockPurpose, waitMillis);
-				foreach (Alert alert in alerts) this.AddNoDupe_byBarsPlaced(alert, lockOwner, lockPurpose, waitMillis, duplicateThrowsAnError);
+				foreach (Alert alert in alerts) {
+					ByBarDumpStatus added = this.AddNoDupe_byBarsPlaced(alert, lockOwner, lockPurpose, waitMillis, duplicateThrowsAnError);
+				}
 			} finally {
 				base.UnLockFor(lockOwner, lockPurpose);
 			}

@@ -468,7 +468,7 @@ namespace Sq1.Widgets.Execution {
             this.mniltbLogrotateLargerThan,
             this.mniDeleteAllLogrotatedOrderJsons});
 			this.ctxOrder.Name = "popupOrders";
-			this.ctxOrder.Size = new System.Drawing.Size(423, 527);
+			this.ctxOrder.Size = new System.Drawing.Size(423, 549);
 			this.ctxOrder.Opening += new System.ComponentModel.CancelEventHandler(this.ctxOrder_Opening);
 			// 
 			// mniPosition_info
@@ -660,7 +660,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniltbSerializationInterval.InputFieldWidth = 40;
 			this.mniltbSerializationInterval.Name = "mniltbSerializationInterval";
 			this.mniltbSerializationInterval.OffsetTop = 0;
-			this.mniltbSerializationInterval.Size = new System.Drawing.Size(237, 22);
+			this.mniltbSerializationInterval.Size = new System.Drawing.Size(240, 22);
 			this.mniltbSerializationInterval.Text = "mniltbDelaySerializationSync";
 			this.mniltbSerializationInterval.TextLeft = "Serialize every (logrotate)";
 			this.mniltbSerializationInterval.TextLeftOffsetX = 0;
@@ -690,7 +690,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniltbLogrotateLargerThan.InputFieldWidth = 40;
 			this.mniltbLogrotateLargerThan.Name = "mniltbLogrotateLargerThan";
 			this.mniltbLogrotateLargerThan.OffsetTop = 0;
-			this.mniltbLogrotateLargerThan.Size = new System.Drawing.Size(239, 22);
+			this.mniltbLogrotateLargerThan.Size = new System.Drawing.Size(242, 22);
 			this.mniltbLogrotateLargerThan.Text = "mniltbLogrotateLargerThan";
 			this.mniltbLogrotateLargerThan.TextLeft = "Logrotate if larger than";
 			this.mniltbLogrotateLargerThan.TextLeftOffsetX = 0;

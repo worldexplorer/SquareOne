@@ -71,7 +71,7 @@ namespace Sq1.Core.Broker {
 				return false;
 			}
 
-			PositionPrototype proto = alertCounterparty_toAnnihilate.PositionPrototype_bothForEntryAndExit_nullUnsafe;
+			PositionPrototype proto = alertCounterparty_toAnnihilate.PositionPrototype;
 			if (proto == null) {
 				string msg = "POSITION_MUST_HAVE_A_PROTOTYPE";
 				Assembler.PopupException(msg);

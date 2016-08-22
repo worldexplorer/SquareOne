@@ -491,17 +491,21 @@ namespace Sq1.Widgets.Execution {
 
 			int pendingAlertsFound_inExecutorDataSnap_forAlertClicked = 0;
 
+			bool alertIsBoldTrue_positionIsBoldFalse = true;
+
 			Order orderRightClicked = this.olvOrdersTree.SelectedObject as Order;
 			if (orderRightClicked != null) {
 				Alert alertClicked = orderRightClicked.Alert;
 				if (alertClicked != null) {
-					string position_doubleClickable =
+					bool position_doubleClickable =
 							alertClicked.IsEntryAlert &&
 							alertClicked.PriceFilled_fromPosition > 0 &&
 							alertClicked.PositionAffected != null &&
-							alertClicked.PositionAffected.ExitFilled_price == 0
-						? "     [DoubleClick to close]" : "";
-					mniOrderPositionClose_text				= alertClicked.ExecutionControl_PositionClose_knowHow + position_doubleClickable;
+							alertClicked.PositionAffected.ExitFilled_price == -1.0;
+					string position_doubleClickable_asString = position_doubleClickable ? "     [DoubleClick to close]" : "";
+					alertIsBoldTrue_positionIsBoldFalse = position_doubleClickable ? false : true;
+
+					mniOrderPositionClose_text				= alertClicked.ExecutionControl_PositionClose_knowHow + position_doubleClickable_asString;
 					mniOrderAlert_removeFromPending_text	= alertClicked.ExecutionControl_AlertsPendingClear_knowHow;
 
 					pendingAlertsFound_inExecutorDataSnap_forAlertClicked = alertClicked.PendingFound_inMyExecutorsDataSnap;
@@ -553,6 +557,17 @@ namespace Sq1.Widgets.Execution {
 			string	logrotatedFiles_size					= logrotator.AllLogrotatedSize_butNotMainJson_scanned;
 			this.mniDeleteAllLogrotatedOrderJsons.Text		= "Delete All[" + logrotatedFiles_count + "] logrotated Order*.json [" + logrotatedFiles_size + "]";
 			this.mniDeleteAllLogrotatedOrderJsons.Enabled	= logrotatedFiles_count > 0;
+
+
+			System.Drawing.Font font_Bold		= new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+			System.Drawing.Font font_Regular	= new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular);
+			if (alertIsBoldTrue_positionIsBoldFalse == true) {
+				this.mniKillPendingSelected	.Font = font_Bold;
+				this.mniOrderPositionClose	.Font = font_Regular;
+			} else {
+				this.mniKillPendingSelected	.Font = font_Regular;
+				this.mniOrderPositionClose	.Font = font_Bold;
+			}
 		}
 
 
@@ -685,7 +700,5 @@ namespace Sq1.Widgets.Execution {
 				this.ctxOrderStates.Show();
 			}
 		}
-
-
 	}
 }

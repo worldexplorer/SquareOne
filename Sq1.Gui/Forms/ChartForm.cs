@@ -58,6 +58,13 @@ namespace Sq1.Gui.Forms {
 		// SharpDevelop/VisualStudio Designer's constructor
 		public ChartForm() {
 			InitializeComponent();
+
+			// FIX_CLICK_HANDLERS_IF_YOU_WANT_TO_RELY_ON_.Checked
+			this.MniShowCorrelator.CheckOnClick = false;
+			this.MniShowSequencer.CheckOnClick = false;
+			this.MniShowLivesim.CheckOnClick = false;
+			this.MniShowSourceCodeEditor.CheckOnClick = false;
+
 			this.ChartControl.RangeBarCollapsed = !this.mniShowBarRange.Checked;
 			
 			// in case if Designer removes these from ChartForm.Designer.cs 
@@ -446,7 +453,7 @@ namespace Sq1.Gui.Forms {
 		}
 
 		public void Initialize(Strategy strategy = null) {
-			this.mniStrategyName.Text = strategy == null ? "[NO_STRATEGY_LOADED]" : strategy.NameAndDll;
+			this.mniStrategyName.Text = strategy == null ? "[NO_STRATEGY_LOADED]" : strategy.NameAndDll;	// duplicated in ctxStrategy_Opening()
 
 			bool containsStrategy = strategy != null;
 			bool strategyActivatedFromDll = (strategy != null && strategy.ActivatedFromDll) ? true : false;

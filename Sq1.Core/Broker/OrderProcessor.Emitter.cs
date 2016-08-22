@@ -12,6 +12,8 @@ namespace Sq1.Core.Broker {
 	public partial class OrderProcessor {
 
 		public List<Order> Emit_createOrders_forScriptGeneratedAlerts_eachInNewThread(List<Alert> alertsBatch, bool setStatusSubmitting, bool emittedByScript) {
+			string msig = " //Emit_createOrders_forScriptGeneratedAlerts_eachInNewThread()";
+
 			if (alertsBatch.Count == 0) {
 				string msg = "no alerts to Add; why did you call me? make sure you invoke using a synchronized Queue";
 				Assembler.PopupException(msg);
@@ -29,11 +31,17 @@ namespace Sq1.Core.Broker {
 			BrokerAdapter broker = null;
 			foreach (Alert alert in alertsBatch) {
 				// I only needed alert.OrderFollowed=newOrder... mb even CreatePropagateOrderFromAlert() should be reduced for backtest
-				if (alert.Strategy.Script.Executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
-					string msg = "BACKTEST_DOES_NOT_SUBMIT_ORDERS__UNCHECK_CHART=>EMIT_BUTTON";
-					Assembler.PopupException(msg, null, false);
-					alert.Strategy.Script.Executor.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted(msg);
-					return null;
+				ScriptExecutor executor = alert.Executor_nullForDeserialized;
+				if (executor != null) {
+					if (executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
+						string msg = "BACKTEST_DOES_NOT_SUBMIT_ORDERS__UNCHECK_CHART=>EMIT_BUTTON";
+						Assembler.PopupException(msg, null, false);
+						executor.BacktesterOrLivesimulator.AbortRunningBacktest_waitAborted(msg);
+						return null;
+					}
+				} else {
+					string msg = "_EXECUTOR_FOR_ALERT_IS_NULL__NEVER_INVOKED_FOR_DESERIALIZED_ALERTS";
+					Assembler.PopupException(msg + msig, null, false);
 				}
 
 				Order newOrder;
@@ -51,15 +59,19 @@ namespace Sq1.Core.Broker {
 				}
 				if (newOrder.State != OrderState.Submitting) {
 					if (newOrder.State == OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted) {
-						alert.Strategy.Script.Executor.CallbackCreatedOrder_wontBePlacedPastDue_invokeScript_nonReenterably(alert, alert.Bars.Count);
-						continue;
+						if (executor != null) {
+							executor.CallbackCreatedOrder_wontBePlacedPastDue_invokeScript_nonReenterably(alert, alert.Bars.Count);
+							continue;
+						} else {
+							string msg = "ALREADY_REPORTED";
+						}
 					}
 					if (newOrder.State == OrderState.EmitOrdersNotClicked) continue;
 					//if (newOrder.Alert.Strategy.Script.Executor.IsAutoSubmitting == true
 					//&& newOrder.Alert.Strategy.Script.Executor.IsStreaming == true
 					//&& newOrder.FromAutoTrading == true
-					string msg = "Unexpected newOrder.State[" + newOrder.State + "] from CreatedOrder_wontBePlacedPastDue_invokeScript_nonReenterably()";
-					Assembler.PopupException(msg, null, false);
+					string msg1 = "Unexpected newOrder.State[" + newOrder.State + "] from CreatedOrder_wontBePlacedPastDue_invokeScript_nonReenterably()";
+					Assembler.PopupException(msg1, null, false);
 					continue;
 				}
 				if (broker == null) {
@@ -461,6 +473,15 @@ namespace Sq1.Core.Broker {
 			bool canBeKilled = OrderStatesCollections.CanBeKilled.Contains(victim.State);
 			if (canBeKilled == false) {
 				string msg = "NOT_EMITTING_KILLER_FOR_UNKILLABLE_VICTIM[" + victim.State + "] MUST_BE{" + OrderStatesCollections.CanBeKilled.ToString() + "}";
+				ExecutorDataSnapshot snap_nullUnsafe = alert.ExecutorSnap_nullForDeserialized;
+				if (snap_nullUnsafe != null) {
+					if (snap_nullUnsafe.AlertsDoomed.Contains(alert, this, msig) == false) {
+						msg = "WEIRD_ALREADY_REMOVED_FROM_DOOMED__WILL_CONTINUE_SPAMMING " + msg;
+					} else {
+						bool removedFromDoomed = snap_nullUnsafe.AlertsDoomed.Remove(alert, this, msig);
+						msg = "REMOVED_FROM_DOOMED[" + removedFromDoomed + "] " + msg;
+					}
+				}
 				victim.AppendMessage(msg);
 				Assembler.PopupException(msg + msig, null, false);
 				return emitted;

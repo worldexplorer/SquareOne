@@ -4,10 +4,10 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
 	public partial class Bar {
-
 		#region long story short
 		[JsonIgnore]			SymbolInfo	symbolInfo_nullUnsafe					{ get {
-			SymbolInfo ret = this.symbolInfo_fromParentBars_nullUnsafe;
+			SymbolInfo ret = this.symbolInfo;
+			if (ret == null) ret = this.symbolInfo_fromParentBars_nullUnsafe;
 			if (ret == null) {
 				ret = Assembler.InstanceInitialized.RepositorySymbolInfos.FindSymbolInfo_nullUnsafe(this.Symbol);
 			}

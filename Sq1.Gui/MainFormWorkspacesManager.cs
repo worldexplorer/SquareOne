@@ -96,37 +96,68 @@ namespace Sq1.Gui {
 			this.mainForm.WorkspaceLoad(this.WorkspaceCurrentName);
 		}
 		void mniltbWorkspaceDuplicateTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
-			string workspace = this.mainForm.CtxWorkspacesModify.Tag as string;
-			string workspaceDupe = e.StringUserTyped;
-			this.repository.Duplicate(workspace, workspaceDupe);
-			this.RescanRebuildWorkspacesMenu();
+			string msig = " //mniltbWorkspaceDuplicateTo_UserTyped()";
+			try {
+				string workspace = this.mainForm.CtxWorkspacesModify.Tag as string;
+				string workspaceDupe = e.StringUserTyped;
+				this.repository.Duplicate(workspace, workspaceDupe);
+				this.RescanRebuildWorkspacesMenu();
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			}
 		}
 		void mniltbWorkspaceRenameTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string workspace = this.mainForm.CtxWorkspacesModify.Tag as string;
 			string workspaceRenameTo = e.StringUserTyped;
-			this.repository.Rename(workspace, workspaceRenameTo);
 			string workspaceCurrentlyLoaded = Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded;
-			if (workspace == workspaceCurrentlyLoaded) {
-				Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded = workspaceRenameTo;
+			string msig = " //mniltbWorkspaceRenameTo_UserTyped(workspaceCurrentlyLoaded[" + workspaceCurrentlyLoaded + "]=> workspaceRenameTo[" + workspaceRenameTo + "])";
+
+			try {
+				this.repository.Rename(workspace, workspaceRenameTo);
+				if (workspace == workspaceCurrentlyLoaded) {
+					Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded = workspaceRenameTo;
+
+					bool createdNewFile = this.mainForm.GuiDataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
+						"Sq1.Gui.GuiDataSnapshot.json", "Workspaces",
+						Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded);
+					bool mustContainNow_workspaceRenamed = this.mainForm.LayoutXml.Contains(workspaceRenameTo);
+					if (mustContainNow_workspaceRenamed == false) {
+						string msg = "mainForm.LayoutXml[" + this.mainForm.LayoutXml + "]"
+							+ " mustContainNow_workspaceRenamed[" + mustContainNow_workspaceRenamed + "]";
+						Assembler.PopupException(msg + msig);
+					}
+				}
+				this.RescanRebuildWorkspacesMenu();
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
 			}
-			this.RescanRebuildWorkspacesMenu();
 		}
 		void mniltbWorkspaceNewBlank_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string workspace = this.mainForm.CtxWorkspacesModify.Tag as string;
 			string workspaceNewBlank = e.StringUserTyped;
-			this.repository.Add(workspaceNewBlank);
-			this.RescanRebuildWorkspacesMenu();
+			string msig = " //mniWorkspaceDelete_Click()";
+			try {
+				this.repository.Add(workspaceNewBlank);
+				this.RescanRebuildWorkspacesMenu();
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			}
 		}
 		void mniWorkspaceDelete_Click(object sender, EventArgs e) {
 			string workspace = this.mainForm.CtxWorkspacesModify.Tag as string;
 			string workspaceCurrentlyLoaded = Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded;
-			if (workspace == workspaceCurrentlyLoaded) {
-				string msg = "I_REFUSE_TO_DELETE_workspaceCurrentlyLoaded[" + workspaceCurrentlyLoaded + "]";
-				Assembler.PopupException(msg);
-				return;
+			string msig = " //mniWorkspaceDelete_Click()";
+			try {
+				if (workspace == workspaceCurrentlyLoaded) {
+					string msg = "I_REFUSE_TO_DELETE_workspaceCurrentlyLoaded[" + workspaceCurrentlyLoaded + "]";
+					Assembler.PopupException(msg);
+					return;
+				}
+				this.repository.Delete(workspace);
+				this.RescanRebuildWorkspacesMenu();
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
 			}
-			this.repository.Delete(workspace);
-			this.RescanRebuildWorkspacesMenu();
 		}
 
 		public void SelectWorkspaceAfterLoaded(string workspaceLoaded) {

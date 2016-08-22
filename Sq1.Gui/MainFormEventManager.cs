@@ -63,19 +63,19 @@ namespace Sq1.Gui {
 			if (strategy.Script != null && strategy.Script.Executor != null) {
 				strategy.ContextSwitch_currentToNamed_serialize(e.scriptContextName);
 			} else {
-				string msg = "CANT_SWITCH_CONTEXT_SCRIPT";
+				string msg = "SCRIPT_DIDNT_COMPILE__CANT_SWITCH_CONTEXT_SCRIPT strategy[" + strategy.ToString() + "]";
 				Assembler.PopupException(msg);
 			}
 		}
 		internal void StrategiesTree_OnStrategyRenamed(object sender, StrategyEventArgs e) {
-			foreach (ChartFormManager chartFormsManager in this.mainForm.GuiDataSnapshot.ChartFormManagers.Values) {
-				if (chartFormsManager.Strategy != e.Strategy) continue;
-				if (chartFormsManager.ScriptEditorFormSingletonized_nullUnsafe != null) {
-					chartFormsManager.ScriptEditorFormSingletonized_nullUnsafe.Text = e.Strategy.Name;
+			foreach (ChartFormManager chartFormManager in this.mainForm.GuiDataSnapshot.ChartFormManagers.Values) {
+				if (chartFormManager.Strategy != e.Strategy) continue;
+				if (chartFormManager.ScriptEditorFormSingletonized_nullUnsafe != null) {
+					chartFormManager.ScriptEditorFormSingletonized_nullUnsafe.Text = e.Strategy.Name;
 				}
-				if (chartFormsManager.ChartForm != null) {
+				if (chartFormManager.ChartForm != null) {
 					//v1 chartFormsManager.ChartForm.Text = e.Strategy.Name;
-					chartFormsManager.PopulateWindowTitles_fromChartContext_orStrategy();
+					chartFormManager.PopulateWindowTitles_fromChartContext_orStrategy();
 				}
 			}
 		}

@@ -567,7 +567,7 @@ namespace Newtonsoft.Json
                         break;
                     case '"':
                     case '\'':
-                        if (_chars[charPos - 1] == quote)
+                        if (charPos > 0 && charPos - 1 < _chars.Length && _chars[charPos - 1] == quote)
                         {
                             charPos--;
 

@@ -9,6 +9,7 @@ namespace Sq1.Gui.Forms {
 		// don't use this constuctor outside this class!
 		private ScriptEditorForm() {
 			InitializeComponent();
+			base.HideOnClose = false;
 		}
 
 		// chartFormsManager is needed for serialization and the following deserialization

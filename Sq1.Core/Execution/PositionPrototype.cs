@@ -2,36 +2,38 @@
 using System.Diagnostics;
 using System.Text;
 
+using Newtonsoft.Json;
+
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Execution {
 	public class PositionPrototype {
-		public	readonly	string Symbol;
-		public	readonly	PositionLongShort LongShort;
-		public	double		PriceEntry									{ get; protected set; }
+		[JsonIgnore]	public	readonly	string Symbol;
+		[JsonIgnore]	public	readonly	PositionLongShort LongShort;
+		[JsonProperty]	public	double		PriceEntry									{ get; protected set; }
 
-		public	double		TakeProfit_priceEntryPositiveOffset			{ get; protected set; }
-		public	double		PriceTakeProfit								{ get; protected set; }
+		[JsonProperty]	public	double		TakeProfit_priceEntryPositiveOffset			{ get; protected set; }
+		[JsonProperty]	public	double		PriceTakeProfit								{ get; protected set; }
 
-		public	double		StopLoss_priceEntryNegativeOffset			{ get; protected set; }
-		public	double		StopLossActivation_priceEntryNegativeOffset	{ get; protected set; }
-		public	double		PriceStopLoss								{ get; protected set; }
-		public	double		PriceStopLossActivation						{ get; protected set; }
+		[JsonProperty]	public	double		StopLoss_priceEntryNegativeOffset			{ get; protected set; }
+		[JsonProperty]	public	double		StopLossActivation_priceEntryNegativeOffset	{ get; protected set; }
+		[JsonProperty]	public	double		PriceStopLoss								{ get; protected set; }
+		[JsonProperty]	public	double		PriceStopLossActivation						{ get; protected set; }
 
-		public	double		StopLossActivation_distanceFromStopLoss		{ get {
+		[JsonProperty]	public	double		StopLossActivation_distanceFromStopLoss		{ get {
 			return
 				this.LongShort == PositionLongShort.Long
 					? this.PriceStopLoss - this.PriceStopLossActivation
 					: this.PriceStopLossActivation - this.PriceStopLoss;
 		} }
 
-		public	Alert		StopLossAlert_forMoveAndAnnihilation;
-		public	Alert		TakeProfitAlert_forMoveAndAnnihilation;
+		[JsonIgnore]	public	Alert		StopLossAlert_forMoveAndAnnihilation;
+		[JsonIgnore]	public	Alert		TakeProfitAlert_forMoveAndAnnihilation;
 		
-		public	string		SignalEntry = "";
-		public	string		SignalStopLoss = "";
-		public	string		SignalTakeProfit = "";
-				SymbolInfo	symbolInfo;
+		[JsonProperty]	public	string		SignalEntry = "";
+		[JsonProperty]	public	string		SignalStopLoss = "";
+		[JsonProperty]	public	string		SignalTakeProfit = "";
+		[JsonIgnore]			SymbolInfo	symbolInfo;
 
 		public PositionPrototype(string symbol, PositionLongShort positionLongShort, double priceEntry_mostLikelyZero,
 				double takeProfit_priceEntryPositiveOffset,
@@ -176,6 +178,7 @@ namespace Sq1.Core.Execution {
 				&& this.StopLoss_priceEntryNegativeOffset == proto.StopLoss_priceEntryNegativeOffset
 				&& this.StopLossActivation_priceEntryNegativeOffset == proto.StopLossActivation_priceEntryNegativeOffset;
 		}
+
 		public override string ToString() {
 //			return this.LongShort + " Entry[" + this.PriceEntry + "]TP[" + this.TakeProfitPositiveOffset + "]SL["
 //				+ this.StopLossNegativeOffset + "]SLA[" + this.StopLossActivationNegativeOffset + "]";

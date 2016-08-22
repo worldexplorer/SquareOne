@@ -184,7 +184,8 @@ namespace Sq1.Charting {
 			}
 			
 			if (this.ChartControl.BarsCanFitForCurrentWidth <= 0) {
-				string msg = "NEVER_HAPPENED_SO_FAR still resizing?...";
+				string msg = "NEVER_HAPPENED_SO_FAR STILL_RESIZING?..."
+					+ " MUST_BE_POSITIVE_this.ChartControl.BarsCanFitForCurrentWidth[" + this.ChartControl.BarsCanFitForCurrentWidth + "]";
 				Assembler.PopupException(msg, null, false);
 				e.Graphics.Clear(base.BackColor);
 				this.DrawError(e.Graphics, msig + msg);

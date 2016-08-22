@@ -255,7 +255,7 @@ namespace Sq1.Gui {
 			//v2
 			base.Close();
 		}
-		void ctxWindowsOpening(object sender, System.ComponentModel.CancelEventArgs e) {
+		void ctxWindows_opening(object sender, System.ComponentModel.CancelEventArgs e) {
 			this.ctxWindows.Items.Clear();
 			foreach (var mgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 				var mniRoot = new ToolStripMenuItem();
@@ -277,9 +277,9 @@ namespace Sq1.Gui {
 					mniChartSubitem.Text = textForMenu;
 					mniChartSubitem.Tag = formImproved;
 					mniChartSubitem.Checked = (formImproved.IsCoveredOrAutoHidden == false);
-					mniChartSubitem.Click += new EventHandler(mniWindowsCtxChart_SubitemClick);
-					mniChartSubitem.MouseEnter += new EventHandler(mniWindowsCtxChart_SubitemMouseEnter);
-					mniChartSubitem.MouseLeave += new EventHandler(mniWindowsCtxChart_SubitemMouseLeave);
+					mniChartSubitem.Click += new EventHandler(this.mniWindowsCtxChart_SubitemClick);
+					mniChartSubitem.MouseEnter += new EventHandler(this.mniWindowsCtxChart_SubitemMouseEnter);
+					mniChartSubitem.MouseLeave += new EventHandler(this.mniWindowsCtxChart_SubitemMouseLeave);
 					mniChartSubitem.CheckOnClick = false;
 					ctxChartRelatedForms.Items.Add(mniChartSubitem);
 				}
@@ -288,73 +288,80 @@ namespace Sq1.Gui {
 			}
 		}
 		void mniWindowsCtxChart_SubitemClick(object sender, EventArgs e) {
+			string msig = " //mniWindowsCtxChart_SubitemClick()";
 			try {
 				ToolStripMenuItem mniChartRelatedForm = sender as ToolStripMenuItem;
 				if (mniChartRelatedForm == null) {
 					string msg = "SENDER_MUST_BE_ToolStripMenuItem sender[" + sender + "]";
-					Assembler.PopupException(msg + " //mniWindowsCtxShart_SubitemClick()");
+					Assembler.PopupException(msg + msig);
 					return;
 				}
-				DockContentImproved chartRelatedForm = mniChartRelatedForm.Tag as DockContentImproved;
-				if (chartRelatedForm == null) {
+				DockContentImproved formRelated_toChart = mniChartRelatedForm.Tag as DockContentImproved;
+				if (formRelated_toChart == null) {
 					string msg = "CHART_RELATED_FORM_MUST_BE_DockContentImproved mniChartRelatedForm["
 						+ mniChartRelatedForm.Text + "].Tag[" + mniChartRelatedForm.Tag + "]";
-					Assembler.PopupException(msg + " //mniWindowsCtxShart_SubitemClick()");
+					Assembler.PopupException(msg + msig);
 					return;
 				}
 				mniChartRelatedForm.Checked = !mniChartRelatedForm.Checked;
 				if (mniChartRelatedForm.Checked) {
-					chartRelatedForm.Activate();
+					formRelated_toChart.Activate();
 				}
 				this.ctxWindows.Show();
 			} catch (Exception ex) {
-				Assembler.PopupException("//mniWindowsCtxChart_SubitemClick()", ex, false);
+				Assembler.PopupException(msig, ex, false);
 			}
 		}
 		void mniWindowsCtxChart_SubitemMouseEnter(object sender, EventArgs e) {
+			string msig = " //mniWindowsCtxChart_SubitemMouseEnter()";
 			try {
 				ToolStripMenuItem mniChartRelatedForm = sender as ToolStripMenuItem;
 				if (mniChartRelatedForm == null) {
 					string msg = "SENDER_MUST_BE_ToolStripMenuItem sender[" + sender + "]";
-					Assembler.PopupException(msg + " //mniWindowsCtxChart_SubitemMouseEnter()");
+					Assembler.PopupException(msg + msig);
 					return;
 				}
-				DockContentImproved chartRelatedForm = mniChartRelatedForm.Tag as DockContentImproved;
-				if (chartRelatedForm == null) {
+				DockContentImproved formRelated_toChart = mniChartRelatedForm.Tag as DockContentImproved;
+				if (formRelated_toChart == null) {
 					string msg = "CHART_RELATED_FORM_MUST_BE_DockContentImproved mniChartRelatedForm["
 						+ mniChartRelatedForm.Text + "].Tag[" + mniChartRelatedForm.Tag + "]";
-					Assembler.PopupException(msg + " //mniWindowsCtxChart_SubitemMouseEnter()");
+					Assembler.PopupException(msg + msig);
 					return;
 				}
-				if (chartRelatedForm.IsFloatingWindow) {
+				if (formRelated_toChart.IsFloatingWindow) {
 					string msg = "RETURNS_BACK_TO_DOCUMENT_A_CHART__FLOATING_NOONE_KNOWS_WHERE__AFTER_ACCIDENTAL_DOUBLECLICK_ON_DOCUMENT_TAB";
-					chartRelatedForm.Show(this.DockPanel, DockState.Document);	// a floating window somewhere outside the screen boundaries is returned back to life
+					formRelated_toChart.Show(this.DockPanel, DockState.Document);	// a floating window somewhere outside the screen boundaries is returned back to life
 				}
 				if (mniChartRelatedForm.Checked == false) {
-					chartRelatedForm.ToggleAutoHide();
+					formRelated_toChart.ToggleAutoHide();
 				}
-				chartRelatedForm.Activate();
+				formRelated_toChart.Activate();
 			} catch (Exception ex) {
-				Assembler.PopupException("//mniWindowsCtxChart_SubitemMouseEnter()", ex, false);
+				Assembler.PopupException(msig, ex, false);
 			}
 		}
 		void mniWindowsCtxChart_SubitemMouseLeave(object sender, EventArgs e) {
 			ToolStripMenuItem mniChartRelatedForm = sender as ToolStripMenuItem;
-			if (mniChartRelatedForm == null) {
-				string msg = "SENDER_MUST_BE_ToolStripMenuItem sender[" + sender + "]";
-				Assembler.PopupException(msg + " //mniWindowsCtxChart_SubitemMouseLeave()");
-				return;
+			string msig = " //mniWindowsCtxChart_SubitemMouseLeave()";
+			try {
+				if (mniChartRelatedForm == null) {
+					string msg = "SENDER_MUST_BE_ToolStripMenuItem sender[" + sender + "]";
+					Assembler.PopupException(msg + msig);
+					return;
+				}
+				DockContentImproved formRelated_toChart = mniChartRelatedForm.Tag as DockContentImproved;
+				if (formRelated_toChart == null) {
+					string msg = "CHART_RELATED_FORM_MUST_BE_DockContentImproved mniChartRelatedForm["
+						+ mniChartRelatedForm.Text + "].Tag[" + mniChartRelatedForm.Tag + "]";
+					Assembler.PopupException(msg + msig);
+					return;
+				}
+				if (mniChartRelatedForm.Checked) return;	// leave it open after I clicked to confirm I want it open
+				// otherwize I didn't click and it was IsCoveredOrAutoHidden==false; put it back Left=>LeftHidden
+				formRelated_toChart.ToggleAutoHide();
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex, false);
 			}
-			DockContentImproved chartRelatedForm = mniChartRelatedForm.Tag as DockContentImproved;
-			if (chartRelatedForm == null) {
-				string msg = "CHART_RELATED_FORM_MUST_BE_DockContentImproved mniChartRelatedForm["
-					+ mniChartRelatedForm.Text + "].Tag[" + mniChartRelatedForm.Tag + "]";
-				Assembler.PopupException(msg + " //mniWindowsCtxChart_SubitemMouseLeave()");
-				return;
-			}
-			if (mniChartRelatedForm.Checked) return;	// leave it open after I clicked to confirm I want it open
-			// otherwize I didn't click and it was IsCoveredOrAutoHidden==false; put it back Left=>LeftHidden
-			chartRelatedForm.ToggleAutoHide();
 		}
 
 		void mniWorkSpaces_DropDownOpening(object sender, EventArgs e) {

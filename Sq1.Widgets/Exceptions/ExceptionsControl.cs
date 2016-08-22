@@ -370,6 +370,12 @@ namespace Sq1.Widgets.Exceptions {
 			}
 
 			ret += base.FlushingStats;
+
+			ret += "   tillSerialization:"
+				+ this.Exceptions.Logrotator.NextSerialization_estimatedIn.TotalMilliseconds.ToString("N2")
+				+ "ms";
+			ret += "   records:"
+				+ this.Exceptions.Logrotator.LastSerialization_records;
 			return ret;
 		}
 

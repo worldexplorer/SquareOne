@@ -71,20 +71,16 @@ namespace Sq1.Core.Support {
 				return false;
 			}
 
-			string lockOwner_asString = "THREW_DURING_lockOwner_asString";
-			try {
-				lockOwner_asString = lockOwner.ToString();
-			} catch (Exception ex) {
-				string msg = "I_WAS_TRYING_TO_AVOID_STACK_OVERFLOW_IN__UnLockFor()__WaitAndLockFor()_WAS_NOT_SUFFERING";
-			}
-			string msig = " //WaitAndLockFor(owner[" + lockOwner_asString + "] lockPurpose[" + lockPurpose + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
 			//string msig = "LOCK_REQUESTED_BY[" + owner.ToString() + "]_FOR[" + lockPurpose + "] ";
+			string msig = " //WaitAndLockFor";	//(owner[" + lockOwner_asString + "] lockPurpose[" + lockPurpose + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
 			if (this.IsDisposed) {
 				string msg = "DISPOSED_WAS_AREADY_INVOKED#1 ";
+				msig += concatInvoker_onlyWhenFailed(lockOwner, lockPurpose);
 				Assembler.PopupException(msg + msig);
 			}
 			if (this.isFree == null) {
 				string msg = "DISPOSED_WAS_AREADY_INVOKED#2 isFree = null";
+				msig += concatInvoker_onlyWhenFailed(lockOwner, lockPurpose);
 				Assembler.PopupException(msg + msig);
 			}
 			lock (this.customerLockingQueue) {		// keep same-stack-return above first ever lock() {}
@@ -98,6 +94,7 @@ namespace Sq1.Core.Support {
 					string msg = "DIDNT_UNLOCK_WITH_SAME_REASON[" + lockPurpose + "] WITHIN[" + waitMillis + "]ms"
 						//+ " lockStack[" + this.LockStack_asString + "] AVOIDING_STACK_OVERFLOW RECURSIVE_CALL"
 						;
+					msig += concatInvoker_onlyWhenFailed(lockOwner, lockPurpose);
 					Assembler.PopupException(msg + msig, null, false);
 				}
 				this.recursionDetector.Push(lockPurpose);
@@ -116,14 +113,16 @@ namespace Sq1.Core.Support {
 							unlocked = this.isFree.WaitOne(waitMillis);
 							if (unlocked) break;
 							string msg = "LOCK_REPEATEDLY_NOT_ACQUIRED_WITHIN elapsedWaiting[" + this.stopwatchLock.ElapsedMilliseconds + "]ms heartBeat[" + waitMillis + "]ms ";
-							Assembler.PopupException(msig + msg + this.Ident, null, false);
+							msig += concatInvoker_onlyWhenFailed(lockOwner, lockPurpose);
+							Assembler.PopupException(msg + this.Ident + msig, null, false);
 						}
 					}
 				}
 				this.stopwatchLock.Stop();
 				if (hadToWaitWasLockedAtFirst) {
 					string msg = "ACQUIRED_AFTER[" + this.stopwatchLock.ElapsedMilliseconds + "]ms ";
-					Assembler.PopupException(msig + msg + this.Ident, null, false);
+					msig += concatInvoker_onlyWhenFailed(lockOwner, lockPurpose);
+					Assembler.PopupException(msg + this.Ident + msig, null, false);
 				}
 
 				this.lockedThread = Thread.CurrentThread;
@@ -154,9 +153,10 @@ namespace Sq1.Core.Support {
 			} catch (Exception ex) {
 				string msg = "I_WAS_TRYING_TO_AVOID_STACK_OVERFLOW_IN__UnLockFor()";
 			}
-			string msig = " //UnLockFor(owner[" + lockOwner_asString + "] releasingAfter[" + releasingAfter + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
+			string msig = " //UnLockFor";	//(owner[" + lockOwner_asString + "] releasingAfter[" + releasingAfter + "]) [" + Thread.CurrentThread.ManagedThreadId + "]";
 			if (this.IsDisposed) {
 				string msg = "DISPOSED_WAS_AREADY_INVOKED#1 ";
+				msig += concatInvoker_onlyWhenFailed(lockOwner, releasingAfter);
 				Assembler.PopupException(msg + msig);
 			}
 			if (this.isFree == null) {
@@ -181,6 +181,7 @@ namespace Sq1.Core.Support {
 				} else {
 					if (this.lockedClass != lockOwner) {
 						msg = "YOU_MUST_BE_THE_SAME_OBJECT_WHO_LOCKED this.lockOwner[" + this.lockedClass + "] != owner[" + lockOwner_asString + "]";
+						msig += concatInvoker_onlyWhenFailed(lockOwner, releasingAfter);
 						throw new Exception(msg + msig);
 					}
 					if (this.lockedPurposeFirstInTheStack != releasingAfter) {
@@ -193,6 +194,7 @@ namespace Sq1.Core.Support {
 
 				if (this.recursionDetector.Contains(releasingAfter) == false) {
 					string msg1 = "YOU_NEVER_LOCKED_ME_WITH_SAME_REASON_YOU_ARE_RELEASING[" + releasingAfter + "] lockStack[" + this.LockStack_asString + "]";
+					msig += concatInvoker_onlyWhenFailed(lockOwner, releasingAfter);
 					Assembler.PopupException(msg1 + msig, null, false);
 				} else {
 					string lastLockReason = this.recursionDetector.Peek();
@@ -220,6 +222,24 @@ namespace Sq1.Core.Support {
 				this.isFree.Set();	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 				return true;
 			}
+		}
+		string concatInvoker_onlyWhenFailed(object lockOwner, string lockPurpose_orReleasingAfter) {
+			string lockOwner_asString = "THREW_DURING_lockOwner_asString";
+			try {
+				lockOwner_asString = lockOwner.ToString();
+			} catch (Exception ex) {
+				string msg = "I_WAS_TRYING_TO_AVOID_STACK_OVERFLOW_IN__UnLockFor()__WaitAndLockFor()_WAS_NOT_SUFFERING";
+			}
+
+			StringBuilder msig_speedup = new StringBuilder();
+			msig_speedup.Append("(owner[");
+			msig_speedup.Append(lockOwner_asString);
+			msig_speedup.Append("] lockPurpose[");
+			msig_speedup.Append(lockPurpose_orReleasingAfter);
+			msig_speedup.Append("]) [");
+			msig_speedup.Append(Thread.CurrentThread.ManagedThreadId);
+			msig_speedup.Append("]");
+			return msig_speedup.ToString();
 		}
 
 		public string Ident { get {

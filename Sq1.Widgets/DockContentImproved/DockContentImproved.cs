@@ -252,6 +252,7 @@ namespace Sq1.Widgets {
 			} }
 		public bool IsInFront				{ get { return this.IsShown ? this.IsCoveredOrAutoHidden == false : false; } }
 		public bool MustBeActivated			{ get { return this.IsInFront == false; } }
+		public bool IsAddedToDockPane_andMustBeActivated	{ get { return base.DockPanel != null && this.MustBeActivated; } }
 
 		// moved from modified WelfenLuoBlaBlaBla.DockHandler to restore release-state of DockContent library (not fully restored, though)
 		public void ActivateDockContent_popupAutoHidden(bool keepAutoHidden = true, bool activate = true) {

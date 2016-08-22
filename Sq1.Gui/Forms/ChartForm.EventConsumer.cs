@@ -26,11 +26,14 @@ namespace Sq1.Gui.Forms {
 			//_preCalcPricesHandleTradeMenuItemsGuiThread();
 		}
 		void ctxStrategy_Opening(object sender, CancelEventArgs e) {
+			this.mniStrategyName.Text = this.ChartFormManager.Strategy != null
+				? this.ChartFormManager.Strategy.NameAndDll
+				: "[NO_STRATEGY_LOADED]";
 			this.MniShowLivesim		.Checked = this.ChartFormManager.LivesimFormInstantiated_andInFront;
 			this.MniShowSequencer	.Checked = this.ChartFormManager.SequencerInstantiated_andInFront;
 			this.MniShowCorrelator	.Checked = this.ChartFormManager.CorrelatorFormInstantiated_andInFront;
 			if (this.MniShowSourceCodeEditor.Enabled == false) return;	// don't show ScriptEditor for Strategy.ActivatedFromDll
-			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorInstantiated_andInFront; 
+			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorInstantiated_andInFront;
 		}
 		void ctxBacktest_Opening(object sender, CancelEventArgs e) {
 			MenuItemLabeledTextBox oldPips_mustBeSame = this.mnitlbSpreadGeneratorPct;
@@ -59,6 +62,7 @@ namespace Sq1.Gui.Forms {
 			this.mniStrategyRemove.Enabled = false;
 		}
 		void mniShowSourceCodeEditor_Click(object sender, System.EventArgs e) {
+			string msig = " //mniShowSourceCodeEditor_Click(" + this.ToString() + ")";
 			this.ctxStrategy.Visible = true;
 			if (this.MniShowSourceCodeEditor.Checked == false) {
 				// if autohidden => popup and keepAutoHidden=false
@@ -78,75 +82,89 @@ namespace Sq1.Gui.Forms {
 			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
 		void mniShowSequencer_Click(object sender, System.EventArgs e) {
-			this.ctxStrategy.Visible = true;
-			if (this.MniShowSequencer.Checked == false) {
-				this.MniShowSequencer.Checked = true;
-				// if autohidden => popup and keepAutoHidden=false
-				this.ChartFormManager.SequencerFormShow(false);
-				this.ChartFormManager.MainForm.MainFormSerialize();
-			} else {
-				this.MniShowSequencer.Checked = false;
-				//v1 this.ChartFormManager.SequencerFormConditionalInstance.ToggleAutoHide();
-				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.SequencerForm)) {
-					string msg = "CHECK_ON_CLICK_WILL_SET_CHECKED_AFTER_THIS_HANDLER_EXITS YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_SEQUENCER_FORM_WAS_CLOSED_BY_X";
-					//Assembler.PopupException(msg);
+			string msig = " //mniShowSequencer_Click(" + this.ToString() + ")";
+			try {
+				if (this.MniShowSequencer.Checked == false) {
+					this.MniShowSequencer.Checked = true;
+					// if autohidden => popup and keepAutoHidden=false
+					this.ChartFormManager.SequencerFormShow(false);
+					this.ChartFormManager.MainForm.MainFormSerialize();
 				} else {
-					this.ChartFormManager.SequencerForm.Close();
+					this.MniShowSequencer.Checked = false;
+					//v1 this.ChartFormManager.SequencerFormConditionalInstance.ToggleAutoHide();
+					if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.SequencerForm)) {
+						string msg = "CHECK_ON_CLICK_WILL_SET_CHECKED_AFTER_THIS_HANDLER_EXITS YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_SEQUENCER_FORM_WAS_CLOSED_BY_X";
+						Assembler.PopupException(msg);
+					} else {
+						this.ChartFormManager.SequencerForm.Close();
+					}
 				}
+				// DUPLICATE_XML_SERIALIZATION_AFTER SequencerForm.OnFormClosed()
+				//this.ChartFormManager.MainForm.MainFormSerialize();
+				this.ctxStrategy.Visible = true;
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
 			}
-			// DUPLICATE_XML_SERIALIZATION_AFTER SequencerForm.OnFormClosed()
-			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
 		void mniShowCorrelator_Click(object sender, System.EventArgs e) {
-			this.ctxStrategy.Visible = true;
-			if (this.MniShowCorrelator.Checked == false) {
-				this.MniShowCorrelator.Checked = true;
-				if (this.ChartFormManager.CorrelatorForm == null) {
-					this.ChartFormManager.CorrelatorFormSingletonized_nullUnsafe.Initialize(this.ChartFormManager);
-					//this.ChartFormManager.CorrelatorFormConditionalInstance.PopulateSequencedHistory(this.ChartFormManager.SequencerFormConditionalInstance.SequencerControl.Seq.SequencedBacktests);
-					this.ChartFormManager.SequencerFormSingletonized_nullUnsafe.SequencerControl.RaiseOnCorrelatorShouldPopulateBacktestsIhave();
-				}
-				this.ChartFormManager.CorrelatorFormShow(false);		// if autohidden => popup and keepAutoHidden=false
-				this.ChartFormManager.MainForm.MainFormSerialize();
-			} else {
-				this.MniShowCorrelator.Checked = false;
-				//v1 this.ChartFormManager.CorrelatorFormConditionalInstance.ToggleAutoHide();
-				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.CorrelatorForm)) {
-					string msg = "CHECK_ON_CLICK_WILL_SET_CHECKED_AFTER_THIS_HANDLER_EXITS YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_Correlator_FORM_WAS_CLOSED_BY_X";
-					//Assembler.PopupException(msg);
+			string msig = " //mniShowCorrelator_Click(" + this.ToString() + ")";
+			try {
+				if (this.MniShowCorrelator.Checked == false) {
+					this.MniShowCorrelator.Checked = true;
+					if (this.ChartFormManager.CorrelatorForm == null) {
+						this.ChartFormManager.CorrelatorFormSingletonized_nullUnsafe.Initialize(this.ChartFormManager);
+						//this.ChartFormManager.CorrelatorFormConditionalInstance.PopulateSequencedHistory(this.ChartFormManager.SequencerFormConditionalInstance.SequencerControl.Seq.SequencedBacktests);
+						this.ChartFormManager.SequencerFormSingletonized_nullUnsafe.SequencerControl.RaiseOnCorrelatorShouldPopulateBacktestsIhave();
+					}
+					this.ChartFormManager.CorrelatorFormShow(false);		// if autohidden => popup and keepAutoHidden=false
+					this.ChartFormManager.MainForm.MainFormSerialize();
 				} else {
-					this.ChartFormManager.CorrelatorForm.Close();
+					this.MniShowCorrelator.Checked = false;
+					//v1 this.ChartFormManager.CorrelatorFormConditionalInstance.ToggleAutoHide();
+					if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.CorrelatorForm)) {
+						string msg = "CHECK_ON_CLICK_WILL_SET_CHECKED_AFTER_THIS_HANDLER_EXITS YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_Correlator_FORM_WAS_CLOSED_BY_X";
+						Assembler.PopupException(msg);
+					} else {
+						this.ChartFormManager.CorrelatorForm.Close();
+					}
 				}
+				// DUPLICATE_XML_SERIALIZATION_AFTER CorrelatorForm.OnFormClosed()
+				//this.ChartFormManager.MainForm.MainFormSerialize();
+				//this.ctxStrategy.Visible = false;	// only mniCorrelator.Checked=true;
+				this.ctxStrategy.Visible = true;	// reopen will show mniSequencer.Checked=true koz we just opened both
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
 			}
-			this.ctxStrategy.Visible = false;	// only mniCorrelator.Checked=true;
-			this.ctxStrategy.Visible = true;	// reopen will show mniSequencer.Checked=true koz we just opened both
-
-			// DUPLICATE_XML_SERIALIZATION_AFTER CorrelatorForm.OnFormClosed()
-			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
 		void mniShowLivesim_Click(object sender, EventArgs e) {
-			this.ctxStrategy.Visible = true;
-			if (this.MniShowLivesim.Checked == false) {
-				this.MniShowLivesim.Checked = true;
-				// if autohidden => popup and keepAutoHidden=false
-				this.ChartFormManager.LivesimFormShow(false);
-				this.ChartFormManager.MainForm.MainFormSerialize();
-			} else {
-				this.MniShowLivesim.Checked = false;
-				//this.ChartFormManager.LivesimFormConditionalInstance.Visible = true;
-				//this.ChartFormManager.LivesimFormShow(false);
-				//v1 this.ChartFormManager.LivesimFormConditionalInstance.ToggleAutoHide();
-				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.LivesimForm)) {
-					string msg = "YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_LIVESIM_FORM_WAS_CLOSED_BY_X";
-					Assembler.PopupException(msg);
+			string msig = " //mniShowLivesim_Click(" + this.ToString() + ")";
+			try {
+				if (this.MniShowLivesim.Checked == false) {
+					this.MniShowLivesim.Checked = true;
+					// if autohidden => popup and keepAutoHidden=false
+					this.ChartFormManager.LivesimFormShow(false);
+					this.ChartFormManager.MainForm.MainFormSerialize();
 				} else {
-					this.ChartFormManager.LivesimForm.Close();
+					this.MniShowLivesim.Checked = false;
+					//this.ChartFormManager.LivesimFormConditionalInstance.Visible = true;
+					//this.ChartFormManager.LivesimFormShow(false);
+					//v1 this.ChartFormManager.LivesimFormConditionalInstance.ToggleAutoHide();
+					if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.LivesimForm)) {
+						string msg = "YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_LIVESIM_FORM_WAS_CLOSED_BY_X";
+						Assembler.PopupException(msg);
+					} else {
+						this.ChartFormManager.LivesimForm.Close();
+					}
 				}
+				// DUPLICATE_XML_SERIALIZATION_AFTER LivesimForm.OnFormClosed()
+				//this.ChartFormManager.MainForm.MainFormSerialize();
+				this.ctxStrategy.Visible = true;
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
 			}
-			// DUPLICATE_XML_SERIALIZATION_AFTER LivesimForm.OnFormClosed()
-			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
 		void btnStreamingWillTriggerScript_Click(object sender, EventArgs e) {
+			string msig = " //btnStreamingWillTriggerScript_Click(" + this.ToString() + ")";
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnStreaming.CheckOnClick=True this.BtnStreaming.Checked = !this.BtnStreaming.Checked;
 			try {
 				if (this.BtnStreamingTriggersScript.Checked) {
@@ -172,7 +190,7 @@ namespace Sq1.Gui.Forms {
 				//WHO_ELSE_NEEDS_IT? this.RaiseStreamingButtonStateChanged();
 				this.PropagateSelectors_disabledIfStreaming_forCurrentChart();
 			} catch (Exception ex) {
-				Assembler.PopupException(ex.Message);
+				Assembler.PopupException(msig, ex);
 			}
 		}
 		void btnStrategyEmittingOrders_Click(object sender, EventArgs e) {
@@ -474,20 +492,41 @@ namespace Sq1.Gui.Forms {
 			//NO_VISIBLE_IMPAIRMENT_IF_COMMENTED_OUT_RIGHT? ChartSettingsEditorForm.Instance.ChartSettingsEditorControl.PopulateWithChartSettings();
 		}
 		void chartForm_Load(object sender, EventArgs e) {
-			if (this.waitForChartFormIsLoaded.WaitOne(0) == true) {
-				string msg = "MUST_BE_INSTANTIATED_AS_NON_SIGNALLED_IN_CTOR()_#1 waitForChartFormIsLoaded.WaitOne(0)=[true]";
-				Assembler.PopupException(msg);
-				return;	// why signal on already-signalled?
+			string msig = " //chartForm_Load(" + this.ChartFormManager.ToString() + ")";
+			try {
+				if (this.waitForChartFormIsLoaded.WaitOne(0) == true) {
+					string msg = "MUST_BE_INSTANTIATED_AS_NON_SIGNALLED_IN_CTOR()_#1 waitForChartFormIsLoaded.WaitOne(0)=[true]";
+					Assembler.PopupException(msg);
+					return;	// why signal on already-signalled?
+				}
+				this.waitForChartFormIsLoaded.Set();
+				this.ChartControl.ChartShadow_AddToDataSource();
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
 			}
-			this.waitForChartFormIsLoaded.Set();
-			this.ChartControl.ChartShadow_AddToDataSource();
+		}
+		void chartForm_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e) {
+			string msig = " //chartForm_FormClosing(" + this.ChartFormManager.ToString() + ")";
+			try {
+				foreach (DockContentImproved eachForm_relatedToClosingChart in this.ChartFormManager.FormsAllRelated.Values) {
+					if (eachForm_relatedToClosingChart == this) continue; 
+					eachForm_relatedToClosingChart.Close();
+				}
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			}
 		}
 		void chartForm_Closed(object sender, FormClosedEventArgs e) {
+			string msig = " //chartForm_FormClosing(" + this.ChartFormManager.ToString() + ")";
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
 				return;
 			}
-			this.ChartFormManager.DataSnapshotSerializer.DeleteJsonFile();
-			this.ChartControl.ChartShadow_RemoveFromDataSource();
+			try {
+				this.ChartFormManager.DataSnapshotSerializer.DeleteJsonFile();
+				this.ChartControl.ChartShadow_RemoveFromDataSource();
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			}
 		}
 
 		void mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim_Clicked(object sender, EventArgs e) {

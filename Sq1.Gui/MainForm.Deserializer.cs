@@ -99,13 +99,13 @@ namespace Sq1.Gui {
 						// who knows why LoadFromXml invokes me twice?
 						return ret;
 					}
-					ChartFormManager chartFormsManagerDeserialized = new ChartFormManager(this, chartSerno);
+					ChartFormManager chartFormManagerDeserialized = new ChartFormManager(this, chartSerno);
 					//chartFormsManagerDeserialized.Initialize(this, strategy);
 					string strategyGuid;
 					bool existsGuid = persistedParsedToHash.TryGetValue("StrategyGuid", out strategyGuid);
 					if (string.IsNullOrEmpty(strategyGuid)) {
-						chartFormsManagerDeserialized.InitializeChartNoStrategyAfterDeserialization();
-						this.GuiDataSnapshot.AddChartFormsManager_justDeserialized(chartFormsManagerDeserialized);
+						chartFormManagerDeserialized.InitializeChartNoStrategyAfterDeserialization();
+						this.GuiDataSnapshot.AddChartFormsManager_justDeserialized(chartFormManagerDeserialized);
 					} else {
 						string strategyName;
 						bool existsName = persistedParsedToHash.TryGetValue("StrategyName", out strategyName);
@@ -115,14 +115,14 @@ namespace Sq1.Gui {
 							#endif
 							strategyName = "STRATEGY_NAME_HAVENT_BEEN_SERIALIZED";
 						}
-						chartFormsManagerDeserialized.InitializeStrategyAfterDeserialization(strategyGuid, strategyName);
-						if (chartFormsManagerDeserialized.StrategyFoundDuringDeserialization == false) {
-							chartFormsManagerDeserialized.InitializeChartNoStrategyAfterDeserialization();
+						chartFormManagerDeserialized.InitializeStrategyAfterDeserialization(strategyGuid, strategyName);
+						if (chartFormManagerDeserialized.StrategyFoundDuringDeserialization == false) {
+							chartFormManagerDeserialized.InitializeChartNoStrategyAfterDeserialization();
 						}
-						this.GuiDataSnapshot.AddChartFormsManager_justDeserialized(chartFormsManagerDeserialized);
+						this.GuiDataSnapshot.AddChartFormsManager_justDeserialized(chartFormManagerDeserialized);
 					}
-					chartFormsManagerDeserialized.PopulateWindowTitles_fromChartContext_orStrategy();
-					ret = chartFormsManagerDeserialized.ChartForm;
+					chartFormManagerDeserialized.PopulateWindowTitles_fromChartContext_orStrategy();
+					ret = chartFormManagerDeserialized.ChartForm;
 					break;
 
 				case ("ReporterWrapped"):

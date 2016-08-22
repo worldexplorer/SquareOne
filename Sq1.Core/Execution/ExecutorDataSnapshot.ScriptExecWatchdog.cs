@@ -9,22 +9,24 @@ namespace Sq1.Core.Execution {
 			ManualResetEvent	ScriptRunning_OnAlertKilled						;//	{ get; private set; }
 			ManualResetEvent	ScriptRunning_OnAlertNotSubmitted				;//	{ get; private set; }
 			ManualResetEvent	ScriptRunning_OnPositionOpened					;//	{ get; private set; }
-			ManualResetEvent	ScriptRunning_OnPositionOpenedPrototypeSlTpPlaced;//	{ get; private set; }
+			ManualResetEvent	ScriptRunning_onPositionOpened_entryPrototypedFilled;//	{ get; private set; }
+			ManualResetEvent	ScriptRunning_onPositionClosed_exitPrototypedFilled;
 			ManualResetEvent	ScriptRunning_OnPositionClosed					;//	{ get; private set; }
 			ManualResetEvent	ScriptRunning_OnStreamingTriggeringScriptTurnedOn;//	{ get; private set; }
 			ManualResetEvent	ScriptRunning_OnStreamingTriggeringScriptTurnedOff;//	{ get; private set; }
 			ManualResetEvent	ScriptRunning_OnStrategyEmittingOrdersTurnedOn	;//	{ get; private set; }
 			ManualResetEvent	ScriptRunning_OnStrategyEmittingOrdersTurnedOff	;//	{ get; private set; }
 
-		public	bool	AnyScriptOverridenMethodIsRunningNowBlockingRead { get {
+		public	bool	AnyScriptOverridenMethod_isRunningNow_nonBlocking { get {
 			bool ret =	IsScriptRunning_OnBarStaticLast_nonBlocking;
 			ret		|=	IsScriptRunning_OnNewQuote_nonBlocking;
 			ret		|=	IsScriptRunning_OnAlertFilled_nonBlocking;
 			ret		|=	IsScriptRunning_OnAlertKilled_nonBlocking;
 			ret		|=	IsScriptRunning_OnAlertNotSubmitted_nonBlocking;
 			ret		|=	IsScriptRunning_OnPositionOpened_nonBlocking;
-			ret		|=	IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlocking;
 			ret		|=	IsScriptRunning_OnPositionClosed_nonBlocking;
+			ret		|=	IsScriptRunning_onPositionOpened_entryPrototypedFilled_nonBlocking;
+			ret		|=	IsScriptRunning_onPositionClosed_exitPrototypedFilled_nonBlocking;
 			ret		|=	IsScriptRunning_OnStreamingTriggeringScriptTurnedOn_nonBlocking;
 			ret		|=	IsScriptRunning_OnStreamingTriggeringScriptTurnedOff_nonBlocking;
 			ret		|=	IsScriptRunning_OnStrategyEmittingOrdersTurnedOn_nonBlocking;
@@ -56,10 +58,17 @@ namespace Sq1.Core.Execution {
 			get { return this.ScriptRunning_OnPositionOpened.WaitOne(0); }
 			set { if (value == true) this.ScriptRunning_OnPositionOpened.Set();
 								else this.ScriptRunning_OnPositionOpened.Reset(); } }
-		public bool IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlocking	{
-			get { return this.ScriptRunning_OnPositionOpenedPrototypeSlTpPlaced.WaitOne(0); }
-			set { if (value == true) this.ScriptRunning_OnPositionOpenedPrototypeSlTpPlaced.Set();
-								else this.ScriptRunning_OnPositionOpenedPrototypeSlTpPlaced.Reset(); } }
+
+		public bool IsScriptRunning_onPositionOpened_entryPrototypedFilled_nonBlocking	{
+			get { return this.ScriptRunning_onPositionOpened_entryPrototypedFilled.WaitOne(0); }
+			set { if (value == true) this.ScriptRunning_onPositionOpened_entryPrototypedFilled.Set();
+								else this.ScriptRunning_onPositionOpened_entryPrototypedFilled.Reset(); } }
+
+		public bool IsScriptRunning_onPositionClosed_exitPrototypedFilled_nonBlocking	{
+			get { return this.ScriptRunning_onPositionClosed_exitPrototypedFilled.WaitOne(0); }
+			set { if (value == true) this.ScriptRunning_onPositionClosed_exitPrototypedFilled.Set();
+								else this.ScriptRunning_onPositionClosed_exitPrototypedFilled.Reset(); } }
+
 		public bool IsScriptRunning_OnPositionClosed_nonBlocking						{
 			get { return this.ScriptRunning_OnPositionClosed.WaitOne(0); }
 			set { if (value == true) this.ScriptRunning_OnPositionClosed.Set();
@@ -88,7 +97,7 @@ namespace Sq1.Core.Execution {
 			if (this.IsScriptRunning_OnAlertFilled_nonBlocking)								ret += "OnAlertFilled,";
 			if (this.IsScriptRunning_OnAlertNotSubmitted_nonBlocking)						ret += "OnAlertNotSubmitted,";
 			if (this.IsScriptRunning_OnPositionOpened_nonBlocking)							ret += "OnPositionOpened,";
-			if (this.IsScriptRunning_onPositionOpenedPrototypeSlTpPlaced_nonBlocking)	ret += "OnPositionOpenedPrototypeSlTpPlaced,";
+			if (this.IsScriptRunning_onPositionOpened_entryPrototypedFilled_nonBlocking)	ret += "OnPositionOpenedPrototypeSlTpPlaced,";
 			if (this.IsScriptRunning_OnPositionClosed_nonBlocking)							ret += "PositionClosed,";
 			if (this.IsScriptRunning_OnStreamingTriggeringScriptTurnedOn_nonBlocking)		ret += "OnStreamingTriggeringScriptTurnedOn,";
 			if (this.IsScriptRunning_OnStreamingTriggeringScriptTurnedOff_nonBlocking)		ret += "OnStreamingTriggeringScriptTurnedOff,";
@@ -105,7 +114,8 @@ namespace Sq1.Core.Execution {
 			ScriptRunning_OnAlertKilled							= new ManualResetEvent(false);
 			ScriptRunning_OnAlertNotSubmitted					= new ManualResetEvent(false);
 			ScriptRunning_OnPositionOpened						= new ManualResetEvent(false);
-			ScriptRunning_OnPositionOpenedPrototypeSlTpPlaced	= new ManualResetEvent(false);
+			ScriptRunning_onPositionOpened_entryPrototypedFilled	= new ManualResetEvent(false);
+			ScriptRunning_onPositionClosed_exitPrototypedFilled		= new ManualResetEvent(false);
 			ScriptRunning_OnPositionClosed						= new ManualResetEvent(false);
 			ScriptRunning_OnStreamingTriggeringScriptTurnedOn	= new ManualResetEvent(false);
 			ScriptRunning_OnStreamingTriggeringScriptTurnedOff	= new ManualResetEvent(false);
@@ -115,7 +125,7 @@ namespace Sq1.Core.Execution {
 		public void BarkIfAnyScriptOverrideIsRunning(string msig) {
 			//WHATS_THE_POINT_THEN return;	//EXPLAIN_BETTER  POTENTIAL_RACE_CONDITIONs are all followed by lock(){} upstack, right?
 
-			if (this.AnyScriptOverridenMethodIsRunningNowBlockingRead == false) return;
+			if (this.AnyScriptOverridenMethod_isRunningNow_nonBlocking == false) return;
 			if (this.executor.BacktesterOrLivesimulator.ImRunningChartless_backtestOrSequencing) {
 				string msg1 = "SKIPPING_CHECKS_FOR_BACKTESTER_SINCE_ITS_SINGLE_THREADED";
 				return;
@@ -156,7 +166,7 @@ namespace Sq1.Core.Execution {
 			this.ScriptRunning_OnAlertKilled						.Dispose();
 			this.ScriptRunning_OnAlertNotSubmitted					.Dispose();
 			this.ScriptRunning_OnPositionOpened						.Dispose();
-			this.ScriptRunning_OnPositionOpenedPrototypeSlTpPlaced	.Dispose();
+			this.ScriptRunning_onPositionOpened_entryPrototypedFilled	.Dispose();
 			this.ScriptRunning_OnPositionClosed						.Dispose();
 			this.ScriptRunning_OnStreamingTriggeringScriptTurnedOn	.Dispose();
 			this.ScriptRunning_OnStreamingTriggeringScriptTurnedOff	.Dispose();

@@ -6,10 +6,10 @@ namespace Sq1.Core.Execution {
 	public partial class Alert  {
 		// Json throws with Self referencing error > JsonIgnore
 		[JsonIgnore]	public	List<Order>							OrdersFollowed_killedAndReplaced	{ get; private set; }
+		//SORTED_IS_SLOW_NO_ACTUAL_NEED [JsonProperty]	public	SortedDictionary<int, List<double>> PricesEmitted_byBarIndex			{ get; private set; }
+		[JsonProperty]	public	Dictionary<int, List<double>> PricesEmitted_byBarIndex			{ get; private set; }
 
-		[JsonProperty]	public	SortedDictionary<int, List<double>> PricesEmitted_byBarIndex			{ get; private set; }
-
-		internal void SetNew_OrderFollowed_PriceEmitted_fromReplacementOrder(Order replacementOrder) {
+		public void SetNew_OrderFollowed_PriceEmitted_fromReplacementOrder(Order replacementOrder) {
 			this.OrdersFollowed_killedAndReplaced.Add(this.OrderFollowed_orCurrentReplacement);
 			this.OrderFollowed_orCurrentReplacement = replacementOrder;
 			this.PriceEmitted = replacementOrder.PriceEmitted;
@@ -24,6 +24,7 @@ namespace Sq1.Core.Execution {
 				this.PricesEmitted_byBarIndex.Add(barIndex_current, new List<double>());
 			}
 			List<double> pricesForSameBar = this.PricesEmitted_byBarIndex[barIndex_current];
+			if (pricesForSameBar.Contains(this.PriceEmitted)) return;
 			pricesForSameBar.Add(this.PriceEmitted);
 		}
 		public List<double> GetEmittedPrice_forBarIndex_nullUnsafe(int barIndex_beingPainted) {
@@ -33,7 +34,7 @@ namespace Sq1.Core.Execution {
 				return singlePriceForBar;
 			}
 
-			List<int> barIndexes = new List<int>(this.PricesEmitted_byBarIndex.Keys);
+			
 			//MOVED_TO_ScriptExecutor.InvokeScript_onNewBar_onNewQuote()
 			//if (this.FilledOrKilled) {
 			//    if (barIndexes.Contains(this.FilledOrKilled_barIndex) == false) {
@@ -45,7 +46,11 @@ namespace Sq1.Core.Execution {
 			////    barIndexes = new List<int>(this.PricesEmitted_byBarIndex.Keys);
 			//}
 
-			if (barIndexes.Contains(barIndex_beingPainted) == false) {
+			//v1_TOO_SLOW List<int> barIndexes = new List<int>(this.PricesEmitted_byBarIndex.Keys);
+			//v1_TOO_SLOW if (barIndexes.Contains(barIndex_beingPainted) == false) {
+
+			//v2
+			if (this.PricesEmitted_byBarIndex.ContainsKey(barIndex_beingPainted) == false) {
 			    string msg = "PANEL_PRICE_SHOULD_NOT_ASK_ME_ABOUT_Alert.PriceEmitted_FOR_BAR_WHERE_ALERT_DIDNT_EXIST";
 			    //Assembler.PopupException(msg);
 			    return null;
@@ -59,8 +64,14 @@ namespace Sq1.Core.Execution {
 		    if (this.Bars == null) return howManyAdded;
 
 		    List<int> barIndexes = new List<int>(this.PricesEmitted_byBarIndex.Keys);
+			barIndexes.Sort();	// TESTED - sorted ascending, just like I needed it here; SortedDictionary was very slow on retrieval in Paint()
 		    if (barIndexes.Count == 0) return howManyAdded;
 		    int barIndex_last = barIndexes[barIndexes.Count-1];
+
+			// TESTED barIndexes.Sort();
+			//if (barIndexes.Count > 2) {
+			//    string msg = "barIndexes.Sort();	// TESTED - sorted ascending, just like I needed it here; SortedDictionary was very slow on retrieval in Paint()";
+			//}
 
 		    List<double> pricesEmitted_last = this.PricesEmitted_byBarIndex[barIndex_last];
 

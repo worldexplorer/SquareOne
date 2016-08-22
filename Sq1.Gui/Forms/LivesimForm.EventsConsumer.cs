@@ -83,11 +83,11 @@ namespace Sq1.Gui.Forms {
 
 			// only when user closed => allow scriptEditorForm_FormClosed() to serialize
 			if (this.chartFormManager.MainForm.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) {
-				//WHEN_DID_YOU_NEED_IT?? MAIN_FORM_STAYS_OPEN_AFTER_USER_CLICKED_X?? e.Cancel = true;
+				e.Cancel = true;
 				return;
 			}
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
-				//OTHERWISE_I_NEED_TO_X_TWICE e.Cancel = true;
+				e.Cancel = true;
 				return;
 			}
 		}

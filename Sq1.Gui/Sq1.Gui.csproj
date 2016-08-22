@@ -89,7 +89,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FormFactories\SequencerFormFactory.cs" />
     <Compile Include="Forms\CorrelatorForm.cs">
       <SubType>Form</SubType>
     </Compile>

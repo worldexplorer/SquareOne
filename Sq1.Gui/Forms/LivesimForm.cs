@@ -11,11 +11,12 @@ namespace Sq1.Gui.Forms {
 		// INVOKED_BY_DOCKCONTENT.DESERIALIZE_FROM_XML
 		public LivesimForm() {
 			InitializeComponent();
+			base.HideOnClose = false;
 		}
 		
 		// INVOKED_AT_USER_CLICK
-		public LivesimForm(ChartFormManager chartFormsManager) : this() {
-			this.Initialize(chartFormsManager);
+		public LivesimForm(ChartFormManager chartFormManager) : this() {
+			this.Initialize(chartFormManager);
 			//ERASES_LINE_IN_DOCK_CONTENT_XML_IF_WITHOUT_IGNORING this.Disposed += this.LivesimForm_Disposed;
 			this.FormClosing							+= new FormClosingEventHandler(this.livesimForm_FormClosing);
 			this.FormClosed								+= new  FormClosedEventHandler(this.livesimForm_FormClosed);

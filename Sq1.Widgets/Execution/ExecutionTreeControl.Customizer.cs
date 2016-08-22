@@ -116,12 +116,13 @@ namespace Sq1.Widgets.Execution {
 				return order.DerivedOrders.Count > 0;
 			};
 			this.olvOrdersTree.ChildrenGetter = delegate(object o) {
-				if (this.ordersViewProxy.ShowingTreeTrue_FlatFalse == false) return null;
+				List<Order> noChildren = new List<Order>();
+				if (this.ordersViewProxy.ShowingTreeTrue_FlatFalse == false) return noChildren;
 
 				var order = o as Order;
 				if (order == null) {
 					Assembler.PopupException("treeListView.ChildrenGetter: order=null");
-					return null;
+					return noChildren;
 				}
 				if (this.dataSnapshot.ShowKillerOrders == false) {
 					return order.DerivedOrders_noKillers;
@@ -209,10 +210,14 @@ namespace Sq1.Widgets.Execution {
 
 						case MarketLimitStop.Stop:
 						case MarketLimitStop.StopLimit:
-							PositionPrototype proto = order.Alert.PositionPrototype_bothForEntryAndExit_nullUnsafe;
+							string priceSL_asString = "WASNT_SERIALIZED";
+							PositionPrototype proto = order.Alert.PositionPrototype;
+							if (proto == null) return priceSL_asString;
+
 							double priceSL = proto.PriceStopLossActivation;
-							string priceSL_asString = priceSL.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
-							return priceSL_asString + " SLactivation [" + proto.StopLossActivation_distanceFromStopLoss + "]";
+							priceSL_asString = priceSL.ToString("N" + this.dataSnapshot.PricingDecimalForSymbol);
+							priceSL_asString += " SLactivation [" + proto.StopLossActivation_distanceFromStopLoss + "]";
+							return priceSL_asString;
 
 						case MarketLimitStop.Limit:
 						default:

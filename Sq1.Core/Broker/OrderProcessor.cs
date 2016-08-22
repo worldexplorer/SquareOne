@@ -98,9 +98,15 @@ namespace Sq1.Core.Broker {
 					Assembler.PopupException(msg, null, false);
 
 					string msg2 = "IM_USING_ALERTS_EXIT_BAR_NOW__NOT_STREAMING__DO_I_HAVE_TO_ADJUST_HERE?";
-					alert.Strategy.Script.Executor.RemovePendingExitAlerts_closePositionsBacktestLeftHanging(alert);
-					msg = "DID_I_CLOSE_THIS_PENDING_ALERT_HAVING_NO_LIVE_POSITION? " + alert;
-					Assembler.PopupException(msg, null, false);
+					ScriptExecutor executor = alert.Executor_nullForDeserialized;
+					if (executor != null) {
+						executor.RemovePendingExitAlerts_closePositionsBacktestLeftHanging(alert);
+						msg = "DID_I_CLOSE_THIS_PENDING_ALERT_HAVING_NO_LIVE_POSITION? " + alert;
+						Assembler.PopupException(msg, null, false);
+					} else {
+						msg = "alert.Executor_nullForDeserialized: " + alert;
+						Assembler.PopupException(msg, null, false);
+					}
 					return null;
 				}
 				//adjustExitOrderQtyRequestedToMatchEntry(order);

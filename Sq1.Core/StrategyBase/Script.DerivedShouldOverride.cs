@@ -25,7 +25,9 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public virtual void OnPositionOpened_callback(Position positionOpened) {
 		}
-		public virtual void OnPositionOpened_prototypeSlTpPlaced_callback(Position positionOpenedByPrototype) {
+		public virtual void OnPositionOpened_prototypedEntryFilled_SlTpWillBePlacedSoon_callback(Position positionOpenedByPrototype) {
+		}
+		public virtual void OnPositionOpened_prototypedExitFilled_callback(Position positionOpenedByPrototype) {
 		}
 		public virtual void OnPositionClosed_callback(Position positionClosed) {
 		}

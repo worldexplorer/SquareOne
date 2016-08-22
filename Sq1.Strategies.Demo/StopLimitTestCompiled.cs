@@ -140,7 +140,7 @@ namespace Sq1.Strategies.Demo {
 			string msig = " //OnAlertNotSubmittedCallback(" + alertNotSubmitted + ", " + barNotSubmittedRelno + ")";
 			Assembler.PopupException("NEVER_HAPPENED_SO_FAR " + msig);
 		}
-		public override void OnPositionOpened_prototypeSlTpPlaced_callback(Position positionOpenedProto) {
+		public override void OnPositionOpened_prototypedEntryFilled_SlTpWillBePlacedSoon_callback(Position positionOpenedProto) {
 			PositionPrototype proto = positionOpenedProto.Prototype;
 			if (proto == null) return;
 

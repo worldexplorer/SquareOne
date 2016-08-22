@@ -16,8 +16,9 @@ namespace Sq1.Widgets.Exceptions {
 		public void Initialize() {
 			string rootPath = Assembler.InstanceInitialized.AppDataPath;
 			this.Logrotator.Initialize(rootPath, "Exceptions.json", "Exceptions", null);
-			this.Logrotator.Deserialize();
-			base.InnerList.AddRange(this.Logrotator.EntityDeserialized);
+			List<Exception> deserialized = this.Logrotator.Deserialize();
+			//base.InnerList.AddRange(this.Logrotator.EntityDeserialized);
+			base.InnerList.AddRange(deserialized);
 			this.Logrotator.StartSerializerThread();
 		}
 

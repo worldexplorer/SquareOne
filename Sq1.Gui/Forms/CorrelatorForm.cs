@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace Sq1.Gui.Forms {
 	public partial class CorrelatorForm : DockContentImproved {
-		ChartFormManager chartFormsManager;
-		public bool Initialized { get { return this.chartFormsManager != null; } }
+		ChartFormManager chartFormManager;
+		public bool Initialized { get { return this.chartFormManager != null; } }
 
 		// INVOKED_BY_DOCKCONTENT.DESERIALIZE_FROM_XML
 		public CorrelatorForm() {
 			InitializeComponent();
+			base.HideOnClose = false;
 		}
 
 		// INVOKED_AT_USER_CLICK
@@ -27,40 +28,40 @@ namespace Sq1.Gui.Forms {
 		// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos
 		// using ":" since "=" leads to an exception in DockPanelPersistor.cs
 		protected override string GetPersistString() {
-			return "Correlator:" + this.CorrelatorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.DataSnapshot.ChartSerno;
+			return "Correlator:" + this.CorrelatorControl.GetType().FullName + ",ChartSerno:" + this.chartFormManager.DataSnapshot.ChartSerno;
 		}
 
 		// INVOKED_AFTER_DOCKCONTENT.DESERIALIZE_FROM_XML
-		internal void Initialize(ChartFormManager chartFormsManagerPassed) {
-			if (chartFormsManagerPassed == null) {
+		internal void Initialize(ChartFormManager chartFormManagerPassed) {
+			if (chartFormManagerPassed == null) {
 				string msg = "USE_DIFFERENT_VAR_NAME__DONT_PASS_CHART_FORMS_MANAGER=NULL:WindowTitlePullFromStrategy()_WILL_THROW";
 				Assembler.PopupException(msg);
 			}
-			if (this.chartFormsManager == chartFormsManagerPassed) return;
+			if (this.chartFormManager == chartFormManagerPassed) return;
 
-			if (this.chartFormsManager != null) {
-				this.chartFormsManager.Executor.Correlator
+			if (this.chartFormManager != null) {
+				this.chartFormManager.Executor.Correlator
 				.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
 					-= new EventHandler<SequencedBacktestsEventArgs>(
 						correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
 			}
-			this.chartFormsManager = chartFormsManagerPassed;
-			this.chartFormsManager.Executor.Correlator
+			this.chartFormManager = chartFormManagerPassed;
+			this.chartFormManager.Executor.Correlator
 				.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
 					-= new EventHandler<SequencedBacktestsEventArgs>(
 						correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
-			this.chartFormsManager.Executor.Correlator
+			this.chartFormManager.Executor.Correlator
 				.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
 					+= new EventHandler<SequencedBacktestsEventArgs>(
 						correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
 
-			this.CorrelatorControl.Initialize(this.chartFormsManager.Executor.Correlator);
+			this.CorrelatorControl.Initialize(this.chartFormManager.Executor.Correlator);
 			this.WindowTitlePullFromStrategy();
 		}
 
 		public void WindowTitlePullFromStrategy() {
 			try {
-				string windowTitle = "Correlator :: " + this.chartFormsManager.WhoImServing_moveMeToExecutor;
+				string windowTitle = "Correlator :: " + this.chartFormManager.WhoImServing_moveMeToExecutor;
 				//if (this.chartFormsManager.Strategy.ActivatedFromDll == true) windowTitle += "-DLL";
 				//if (this.chartFormsManager.ScriptEditedNeedsSaving) {
 				//	windowTitle = ChartFormsManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
@@ -92,7 +93,7 @@ namespace Sq1.Gui.Forms {
 
 			//v1
 			this.CorrelatorControl.Initialize(originalSequencedBacktests
-				, this.chartFormsManager.Executor.Strategy.RelPathAndNameForSequencerResults
+				, this.chartFormManager.Executor.Strategy.RelPathAndNameForSequencerResults
 				, originalSequencedBacktests.SymbolScaleIntervalDataRange);
 			//v2 COULDNT_SET_SUBSET_PERCENTAGE
 			//Task letGuiDraw = new Task(delegate() {

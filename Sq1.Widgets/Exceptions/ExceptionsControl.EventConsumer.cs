@@ -155,9 +155,38 @@ namespace Sq1.Widgets.Exceptions {
 			this.selectMostRecentException();
 			this.ctxTree.Visible = true;	// keep it open
 		}
-		void mniRefresh_Click(object sender, EventArgs e) {
-			this.flushExceptionsToOLV_switchToGuiThread();
+
+		void mniTreeRebuildAll_Click(object sender, EventArgs e) {
+			string msig = " //mniTreeRebuildAll_Click";
+			try {
+				this.flushExceptionsToOLV_switchToGuiThread();
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			} finally {
+				this.ctxTree.Show();
+			}
 		}
+		void mniTreeCollapseAll_Click(object sender, EventArgs e) {
+			string msig = " //mniTreeCollapseAll_Click";
+			try {
+				this.olvTreeExceptions.CollapseAll();
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			} finally {
+				this.ctxTree.Show();
+			}
+		}
+		void mniTreeExpandAll_Click(object sender, EventArgs e) {
+			string msig = " //mniTreeExpandAll_Click";
+			try {
+				this.olvTreeExceptions.ExpandAll();
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			} finally {
+				this.ctxTree.Show();
+			}
+		}
+
 		void mniShowHeaders_Click(object sender, EventArgs e) {
 			try {
 				this.dataSnapshot.ShowHeaders = this.mniShowHeader.Checked;

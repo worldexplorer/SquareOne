@@ -98,8 +98,8 @@ namespace Sq1.Core.StrategyBase {
 						Alert stopLoss		= extendPriceEmitted_toCurrentBar_forOrdersReplaced[0];
 						Alert takeProfit	= extendPriceEmitted_toCurrentBar_forOrdersReplaced[1];
 						if (stopLoss.IsExitAlert && takeProfit.IsExitAlert) {
-							PositionPrototype takeProfitPrototype = takeProfit.PositionPrototype_bothForEntryAndExit_nullUnsafe;
-							PositionPrototype   stopLossPrototype =   stopLoss.PositionPrototype_bothForEntryAndExit_nullUnsafe;
+							PositionPrototype takeProfitPrototype = takeProfit.PositionPrototype;
+							PositionPrototype   stopLossPrototype =   stopLoss.PositionPrototype;
 							if (takeProfitPrototype != null &&
 								  stopLossPrototype != null &&
 								  stopLossPrototype == takeProfitPrototype) {

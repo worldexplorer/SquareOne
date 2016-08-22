@@ -650,7 +650,7 @@ namespace Sq1.Core.StrategyBase {
 				Quote quote_whenClicked = alert.DataSource_fromBars.StreamingAdapter
 					.StreamingDataSnapshot.GetQuoteLast_forSymbol_nullUnsafe(alert.Symbol);
 				ReporterPokeUnit pokeUnit = this.ScriptInvoke_Post_dealWithNewAlerts_fillPendings_killDoomed_emitOrders_onNewQuote_onNewBar_onGuiClick(quote_whenClicked);
-				int mustBeZero = pokeUnit.PositionsOpenNow.Count;
+				int mustBeOne = pokeUnit.PositionsOpenNow.Count;
 			} catch (Exception ex) {
 				Assembler.PopupException(invoker, ex);
 			} finally {
